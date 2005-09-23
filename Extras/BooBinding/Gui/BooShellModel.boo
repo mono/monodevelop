@@ -63,11 +63,19 @@ class BooShellModel(IShellModel):
 	
 	References as IList:
 		get:	
-			return _booShell.References
+			refs as IList
+			try:
+				refs = _booShell.References
+			except:
+				pass
+			return refs
 	
 	def constructor():
 		getRemoteShellObject()
-		_booShell.Run ()
+		try:
+			_booShell.Run ()
+		except:
+			pass
 
 	private def getRemoteShellObject ():
 		_procService as ProcessService = ServiceManager.GetService (typeof (ProcessService))
@@ -76,11 +84,17 @@ class BooShellModel(IShellModel):
 			raise Exception ("Unable to instantiate remote BooShell object")
 	
 	def Reset () as bool:
-		_booShell.Reset()
+		try:
+			_booShell.Reset()
+		except:
+			return false
 		return true
 	
 	def LoadAssembly (assemblyPath as string) as bool:
-		_booShell.LoadAssembly (assemblyPath)
+		try:
+			_booShell.LoadAssembly (assemblyPath)
+		except:
+			return false
 		return true
 	
 	def GetOutput () as (string):
@@ -114,8 +128,11 @@ class BooShellModel(IShellModel):
 
 
 				if com is not null:
-					_booShell.QueueInput (com)
-					lines = _booShell.GetOutput ()
+					try:
+						_booShell.QueueInput (com)
+						lines = _booShell.GetOutput ()
+					except:
+						pass
 					if lines is not null:
 						EnqueueOutput (lines)
 					com = null
@@ -141,7 +158,10 @@ class BooShellModel(IShellModel):
 	
 	def Dispose ():
 		_thread.Abort ()
-		_booShell.Dispose ()
+		try:
+			_booShell.Dispose ()
+		except:
+			pass
 		
 	def print (obj):
 		lock _outputQueue:

@@ -1,3 +1,8 @@
+2005-09-23  Peter Johanson  <latexer@gentoo.org> 
+
+	* Gui/BooShellModel.boo: Wrap all access to remote process object in
+	try/except to handle nasty remoting exception. Not really a fix.
+
 2005-08-29  Peter Johanson  <latexer@gentoo.org> 
 
 	* Parser/Visitor.boo: Fix line number off-by-one error.
