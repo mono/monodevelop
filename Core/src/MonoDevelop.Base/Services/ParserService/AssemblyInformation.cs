@@ -115,7 +115,7 @@ namespace MonoDevelop.Services {
 			} catch {
 			}
 			if(asm == null) {
-				Runtime.LoggingService.InfoFormat ("Unable to load {0}", fileName);
+				Runtime.LoggingService.ErrorFormat ("Unable to load {0}", fileName);
 				return;
 			}
 			foreach (Type type in asm.GetTypes()) {

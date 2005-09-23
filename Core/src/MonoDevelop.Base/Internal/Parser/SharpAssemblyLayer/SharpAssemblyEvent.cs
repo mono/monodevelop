@@ -123,7 +123,7 @@ namespace MonoDevelop.Internal.Parser {
 
 			} else {                  // TypeSpec
 				returnType = new SharpAssemblyReturnType("NOT_SUPPORTED");
-				Runtime.LoggingService.Info("SharpAssemblyEvent: TypeSpec -- not supported");
+				Runtime.LoggingService.Debug ("SharpAssemblyEvent: TypeSpec -- not supported");
 			}
 			
 		}

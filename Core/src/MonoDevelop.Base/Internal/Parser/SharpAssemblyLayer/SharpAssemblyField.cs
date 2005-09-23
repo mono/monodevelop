@@ -133,7 +133,7 @@ namespace MonoDevelop.Internal.Parser {
 					}
 					binReader.Close();
 				} catch {
-					Runtime.LoggingService.Info("SharpAssemblyField: Error reading constant value");
+					Runtime.LoggingService.Error ("SharpAssemblyField: Error reading constant value");
 				}
 			}
 		}

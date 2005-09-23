@@ -64,7 +64,7 @@ namespace MonoDevelop.Services
 								ParseColor (reader.GetAttribute ("foreground"), ref sts.Foreground);
 								ParseColor (reader.GetAttribute ("background"), ref sts.Background);
 								lang.SetTagStyle (name, sts);
-								Runtime.LoggingService.InfoFormat ("Overrode style {0} {1}", lang.Name, name);
+								Runtime.LoggingService.DebugFormat ("Overrode style {0} {1}", lang.Name, name);
 								break;
 							case "SourceLanguage":
 								lang = FindLanguage (reader.GetAttribute ("name"));
@@ -77,7 +77,7 @@ namespace MonoDevelop.Services
 				}
 			}
 			catch (XmlException e) {
-				Runtime.LoggingService.Warn (e.ToString ());
+				Runtime.LoggingService.Error (e.ToString ());
 			}
 			reader.Close ();
 		}
@@ -153,7 +153,7 @@ namespace MonoDevelop.Services
 					writer.WriteEndAttribute ();
 
 					writer.WriteEndElement ();
-					Runtime.LoggingService.InfoFormat ("Preserved style {0} {1}", sl.Name, tag.Id);
+					Runtime.LoggingService.DebugFormat ("Preserved style {0} {1}", sl.Name, tag.Id);
 				}
 
 				writer.WriteEndElement ();

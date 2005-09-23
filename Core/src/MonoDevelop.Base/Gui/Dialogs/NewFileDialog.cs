@@ -69,7 +69,7 @@ namespace MonoDevelop.Gui.Dialogs
 					imglist.Add(bitmap);
 					tmp[entry.Key] = ++i;
 				} else {
-					Runtime.LoggingService.InfoFormat(GettextCatalog.GetString ("Can't load bitmap {0} using default"), entry.Key.ToString ());
+					Runtime.LoggingService.ErrorFormat(GettextCatalog.GetString ("Can't load bitmap {0} using default"), entry.Key.ToString ());
 				}
 			}
 			

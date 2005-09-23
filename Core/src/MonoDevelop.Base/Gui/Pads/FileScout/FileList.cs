@@ -87,7 +87,7 @@ namespace MonoDevelop.Gui.Pads
 		}
 		
 		void ItemRemoved (FileListItem item) {
-			Runtime.LoggingService.Info ("remove called");
+			Runtime.LoggingService.Debug ("remove called");
 			store.Remove (ref selectedIter);
 		}
 		

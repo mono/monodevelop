@@ -1,3 +1,37 @@
+2005-09-23  Christian Hergert   <christian.hergert@gmail.com>
+
+	* Core/src/MonoDevelop.Base/Commands/VBConverter/ConvertBuffer.cs: Update
+	logging calls to reflect a level more representative of the information.
+	* Core/src/MonoDevelop.Base/Commands/ToolsCommands.cs
+	* Core/src/MonoDevelop.Base/Commands/AutostartCommands.cs
+	* Core/src/MonoDevelop.Base/Services/DispatchService/DispatchService.cs
+	* Core/src/MonoDevelop.Base/Services/ParserService/DefaultParserService.cs
+	* Core/src/MonoDevelop.Base/Services/ParserService/AssemblyInformation.cs
+	* Core/src/MonoDevelop.Base/Services/ParserService/CodeCompletionDatabase.cs
+	* Core/src/MonoDevelop.Base/Gui/Dialogs/Wizard/WizardDialog.cs
+	* Core/src/MonoDevelop.Base/Gui/Dialogs/NewFileDialog.cs
+	* Core/src/MonoDevelop.Base/Gui/Pads/HelpBrowser/MonodocTreePad.cs
+	* Core/src/MonoDevelop.Base/Gui/Pads/HelpBrowser/HelpViewer.cs
+	* Core/src/MonoDevelop.Base/Gui/Pads/FileScout/FileList.cs
+	* Core/src/MonoDevelop.Base/Gui/BrowserDisplayBinding/HtmlViewPane.cs
+	* Core/src/MonoDevelop.Base/Gui/Workbench/Layouts/SdiWorkspaceLayout.cs
+	* Core/src/MonoDevelop.Base/Gui/Workbench/DefaultWorkbench.cs
+	* Core/src/MonoDevelop.Base/Internal/Project/Project/DotNetProject.cs
+	* Core/src/MonoDevelop.Base/Internal/Project/Project/IncludeFilesDialog.cs
+	* Core/src/MonoDevelop.Base/Internal/Project/Project/Project.cs
+	* Core/src/MonoDevelop.Base/Internal/Project/Combine/Combine.cs
+	* Core/src/MonoDevelop.Base/Internal/ProgressMonitoring/ConsoleProgressMonitor.cs
+	* Core/src/MonoDevelop.Base/Internal/ProgressMonitoring/MessageDialogProgressMonitor.cs
+	* Core/src/MonoDevelop.Base/Internal/ProgressMonitoring/BaseProgressMonitor.cs
+	* Core/src/MonoDevelop.Base/Internal/Parser/SharpAssemblyLayer/SharpAssemblyEvent.cs
+	* Core/src/MonoDevelop.Base/Internal/Parser/SharpAssemblyLayer/SharpAssemblyReturnType.cs
+	* Core/src/MonoDevelop.Base/Internal/Parser/SharpAssemblyLayer/SharpAssemblyAttribute.cs
+	* Core/src/MonoDevelop.Base/Internal/Parser/SharpAssemblyLayer/SharpAssemblyField.cs
+	* Core/src/MonoDevelop.Base/Internal/Parser/SharpAssemblyLayer/SharpAssemblyClass.cs
+	* Core/src/AddIns/DisplayBindings/SourceEditor/Services/SourceViewService.cs
+	* Core/src/MonoDevelop.Startup/app.config: Change default threshold to
+	ERROR.
+
 2005-08-21  Peter Johanson  <latexer@gentoo.org>
 
 	* configure.in: Bump required boo version. Needed for new -embedres

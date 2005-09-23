@@ -185,7 +185,7 @@ namespace MonoDevelop.Gui.Dialogs
 				dialogPanel.Remove (dialogPanel.Child);
 			}
 			if (CurrentWizardPane.ToString () == "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.CreationFinishedPanel") {
-				Runtime.LoggingService.Info ("This is an ugly hack for an even uglier bug, Restart MD now");
+				Runtime.LoggingService.Fatal ("This is an ugly hack for an even uglier bug, Restart MD now");
 				System.Environment.Exit (0);
 			}
 			dialogPanel.Add(CurrentWizardPane.Control);

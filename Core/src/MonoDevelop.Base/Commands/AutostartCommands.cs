@@ -65,7 +65,7 @@ namespace MonoDevelop.Commands
 						Runtime.FileService.OpenFile (file);
 					
 					} catch (Exception e) {
-						Runtime.LoggingService.InfoFormat("unable to open file {0} exception was :\n{1}", file, e.ToString());
+						Runtime.LoggingService.ErrorFormat ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
 				}
 			}
