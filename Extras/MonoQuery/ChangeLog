@@ -1,3 +1,7 @@
+2005-09-23	Christian Hergert	<christian.hergert@gmail.com>
+
+	* Update svn:ignore
+
 2005-09-22	Christian Hergert	<christian.hergert@gmail.com>
 
 	* Mono.Data.Sql/Providers/NpgsqlDbProvider.cs: Encapsulate GetDateTime

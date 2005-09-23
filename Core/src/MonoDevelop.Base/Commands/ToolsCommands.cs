@@ -61,8 +61,8 @@ namespace MonoDevelop.Commands
 			}
 			
 			// debug command and args
-			Runtime.LoggingService.Info("command : " + command);
-			Runtime.LoggingService.Info("args    : " + args);
+			Runtime.LoggingService.Debug("command : " + command);
+			Runtime.LoggingService.Debug("args    : " + args);
 			
 			// create the process
 			IProgressMonitor monitor = Runtime.TaskService.GetRunProgressMonitor ();
@@ -78,7 +78,7 @@ namespace MonoDevelop.Commands
 					p = Runtime.ProcessService.StartProcess (command, args, workingDirectory, null);
 
 				p.WaitForOutput ();
-				Runtime.LoggingService.Info ("DONE");
+				Runtime.LoggingService.Debug ("DONE");
 				
 				monitor.Log.WriteLine ();
 				if (p.ExitCode == 0) {

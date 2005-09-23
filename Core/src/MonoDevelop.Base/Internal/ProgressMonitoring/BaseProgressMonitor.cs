@@ -127,7 +127,7 @@ namespace MonoDevelop.Services
 			
 			errorsMessages.Add (message);
 			if (ex != null) {
-				Runtime.LoggingService.Info (ex);
+				Runtime.LoggingService.Error (ex);
 				errorException = ex;
 			}
 		}

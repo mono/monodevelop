@@ -138,7 +138,7 @@ namespace MonoDevelop.Internal.Parser {
 					break;
 				
 				default:
-					Runtime.LoggingService.Info("NOT supported: " + dt.ToString());
+					Runtime.LoggingService.Debug ("NOT supported: " + dt.ToString());
 					fullyQualifiedName += " NOT_SUPPORTED [" + dt.ToString() + "]";
 					break;
 			}
@@ -174,7 +174,7 @@ namespace MonoDevelop.Internal.Parser {
 			} else {
 				FullyQualifiedName = assembly.Reader.GetStringFromHeap(typeRefTable[index].Nspace) + "." + 
 			                                                assembly.Reader.GetStringFromHeap(typeRefTable[index].Name);
-			    Runtime.LoggingService.Info("SharpAssemblyReturnType from TypeRef: TypeRef not resolved!");
+			    Runtime.LoggingService.Debug ("SharpAssemblyReturnType from TypeRef: TypeRef not resolved!");
 			}
 			declaredin = assembly.GetRefAssemblyFor(index);
 		}
@@ -185,7 +185,7 @@ namespace MonoDevelop.Internal.Parser {
 			try {
 				GetDataType(assembly, ref blobSignatureIndex);
 			} catch (Exception e) {
-				Runtime.LoggingService.Info("Got exception in ReturnType creation: " + e.ToString());
+				Runtime.LoggingService.Error ("Got exception in ReturnType creation: " + e.ToString());
 				FullyQualifiedName = "GOT_EXCEPTION";
 			}
 			

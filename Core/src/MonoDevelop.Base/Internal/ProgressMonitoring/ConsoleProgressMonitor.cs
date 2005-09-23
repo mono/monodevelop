@@ -35,7 +35,7 @@ namespace MonoDevelop.Services
 	{
 		public override void BeginTask (string name, int totalWork)
 		{
-			Runtime.LoggingService.Info ("*** " + name);
+			Runtime.LoggingService.Debug ("*** " + name);
 		}
 		
 		public override TextWriter Log {
@@ -44,18 +44,18 @@ namespace MonoDevelop.Services
 		
 		public override void ReportSuccess (string message)
 		{
-			Runtime.LoggingService.Info (message);
+			Runtime.LoggingService.Debug (message);
 		}
 		
 		public override void ReportWarning (string message)
 		{
-			Runtime.LoggingService.Info ("WARNING: " + message);
+			Runtime.LoggingService.Warn ("WARNING: " + message);
 		}
 		
 		public override void ReportError (string message, Exception ex)
 		{
-			Runtime.LoggingService.Info ("ERROR: " + message);
-			Runtime.LoggingService.Info (ex);
+			Runtime.LoggingService.Error ("ERROR: " + message);
+			Runtime.LoggingService.Error (ex);
 		}
 	}
 }

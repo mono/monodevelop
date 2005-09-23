@@ -47,7 +47,7 @@ namespace MonoDevelop.Internal.Parser {
 				case 3: // TypeRef -- nested type
 					return GetNestedName(asm, typeRefTable, val) + "+" + asm.Reader.GetStringFromHeap(typeRefTable[index].Name);
 				default: // other token - not supported
-					Runtime.LoggingService.Info("GetNestedName: Unsupported resolution scope!");
+					Runtime.LoggingService.Debug ("GetNestedName: Unsupported resolution scope!");
 					goto case 3;
 			}
 		}
@@ -80,7 +80,7 @@ namespace MonoDevelop.Internal.Parser {
 			SharpAssembly_ declaringAssembly = referencingAssembly.GetRefAssemblyFor(index);
 			if (declaringAssembly == null) {
 				Console.Write("FromTypeRef failed for: " + name + " declared in assembly " + referencingAssembly.Name);
-				Runtime.LoggingService.Info(": Declaring assembly not found.");
+				Runtime.LoggingService.Debug (": Declaring assembly not found.");
 				return null;
 			}
 			
@@ -105,7 +105,7 @@ namespace MonoDevelop.Internal.Parser {
 			}
 			
 			Console.Write("FromTypeRef failed for: " + name + " declared in assembly " + referencingAssembly.Name);
-			Runtime.LoggingService.Info(": Matching type not found for nested name: " + nestedName);
+			Runtime.LoggingService.Debug (": Matching type not found for nested name: " + nestedName);
 			return null;
 		}
 		
@@ -296,7 +296,7 @@ namespace MonoDevelop.Internal.Parser {
 				case 1:  // TypeRef
 					return FromTypeRef(assembly, nIndex);
 				default:
-					Runtime.LoggingService.Info("GetTypeRefOrDefClass: Wrong TypeDefOrRef coded index!");
+					Runtime.LoggingService.Debug ("GetTypeRefOrDefClass: Wrong TypeDefOrRef coded index!");
 					return null;
 			}
 		}
@@ -432,7 +432,7 @@ namespace MonoDevelop.Internal.Parser {
 					IClass newclass = new SharpAssemblyClass(assembly, typeDefTable, i);
 					classes.Add(newclass);
 				} catch {
-					Runtime.LoggingService.Info("GetAssemblyTypes: Error loading class " + i);
+					Runtime.LoggingService.Debug ("GetAssemblyTypes: Error loading class " + i);
 				}
 			}
 			

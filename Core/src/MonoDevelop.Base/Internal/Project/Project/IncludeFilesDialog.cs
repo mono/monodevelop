@@ -42,7 +42,7 @@ namespace MonoDevelop.Internal.Project
 		
 		public IncludeFilesDialog(Project project, StringCollection newFiles)
 		{
-			Runtime.LoggingService.Info ("*** Include files dialog ***");
+			Runtime.LoggingService.Debug ("*** Include files dialog ***");
 			// we must do it from *here* otherwise, we get this assembly, not the caller
 			Glade.XML glade = new Glade.XML (null, "Base.glade", "IncludeFilesDialogWidget", null);
 			glade.Autoconnect (this);

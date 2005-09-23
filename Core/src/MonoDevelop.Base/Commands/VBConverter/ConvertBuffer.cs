@@ -49,7 +49,7 @@ namespace MonoDevelop.Commands
 				VBNetVisitor vbv = new VBNetVisitor();
 				vbv.Visit(p.compilationUnit, null);
 				
-				Runtime.LoggingService.Info(vbv.SourceText.ToString());
+				Runtime.LoggingService.Debug(vbv.SourceText.ToString());
 				Runtime.FileService.NewFile ("Generated.VB", "VBNET", vbv.SourceText.ToString());
 			}
 		}

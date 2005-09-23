@@ -207,7 +207,7 @@ namespace MonoDevelop.Services
 			// being thrown and corrupting the textarea control
 			try {
 				IParser parser = parserService.GetParser (fileName);
-				//Runtime.LoggingService.Info("Parse info : " + GetParseInformation(fileName).MostRecentCompilationUnit.Tag);
+				//Runtime.LoggingService.DebugFormat ("Parse info : {0}", GetParseInformation(fileName).MostRecentCompilationUnit.Tag);
 				if (parser != null) {
 					return parser.Resolve (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
 				}
@@ -445,7 +445,7 @@ namespace MonoDevelop.Services
 						return;
 				}
 				catch (Exception ex) {
-					Runtime.LoggingService.Info (ex);
+					Runtime.LoggingService.Error (ex);
 				}
 			}
 
@@ -912,9 +912,7 @@ namespace MonoDevelop.Services
 					lastUpdateSize[fileName] = contentHash;
 				}
 			} catch (Exception e) {
-				try {
-					Runtime.LoggingService.Info(e.ToString());
-				} catch {}
+				Runtime.LoggingService.Error (e.ToString ());
 			}
 		}
 		
@@ -1102,7 +1100,7 @@ namespace MonoDevelop.Services
 		
 		public string SearchNamespace (CodeCompletionDatabase db, IUsing usin, string partitialNamespaceName, bool caseSensitive)
 		{
-//			Runtime.LoggingService.Info("SearchNamespace : >{0}<", partitialNamespaceName);
+//			Runtime.LoggingService.DebugFormat ("SearchNamespace : >{0}<", partitialNamespaceName);
 			if (NamespaceExists (db, partitialNamespaceName, caseSensitive)) {
 				return partitialNamespaceName;
 			}
@@ -1191,7 +1189,7 @@ namespace MonoDevelop.Services
 		
 		public IClass SearchType (CodeCompletionDatabase db, IUsing iusing, string partitialTypeName, bool caseSensitive)
 		{
-//			Runtime.LoggingService.Info("Search type : >{0}<", partitialTypeName);
+			Runtime.LoggingService.Debug ("Search type : >{0}<", partitialTypeName);
 			IClass c = GetClass (db, partitialTypeName, caseSensitive);
 			if (c != null) {
 				return c;
@@ -1199,10 +1197,10 @@ namespace MonoDevelop.Services
 			
 			foreach (string str in iusing.Usings) {
 				string possibleType = String.Concat(str, ".", partitialTypeName);
-//				Runtime.LoggingService.Info("looking for " + possibleType);
+				Runtime.LoggingService.Debug ("looking for {0}", possibleType);
 				c = GetClass (db, possibleType, caseSensitive);
 				if (c != null) {
-//					Runtime.LoggingService.Info("Found!");
+					Runtime.LoggingService.Debug ("Found!");
 					return c;
 				}
 			}
@@ -1212,10 +1210,10 @@ namespace MonoDevelop.Services
 			if (declaringNamespace != null) {
 				while (declaringNamespace.Length > 0) {
 					string className = String.Concat(declaringNamespace, ".", partitialTypeName);
-//					Runtime.LoggingService.Info("looking for " + className);
+					Runtime.LoggingService.DebugFormat ("looking for {0}", className);
 					c = GetClass (db, className, caseSensitive);
 					if (c != null) {
-//						Runtime.LoggingService.Info("Found!");
+						Runtime.LoggingService.Debug ("Found!");
 						return c;
 					}
 					int index = declaringNamespace.IndexOf('.');
@@ -1233,10 +1231,10 @@ namespace MonoDevelop.Services
 					string className = null;
 					if (aliasString.Length > 0) {
 						className = String.Concat(entry.Value.ToString(), partitialTypeName.Remove(0, aliasString.Length));
-//						Runtime.LoggingService.Info("looking for " + className);
+						Runtime.LoggingService.DebugFormat ("looking for {0}", className);
 						c = GetClass (db, className, caseSensitive);
 						if (c != null) {
-//							Runtime.LoggingService.Info("Found!");
+							Runtime.LoggingService.Debug ("Found!");
 							return c;
 						}
 					}
