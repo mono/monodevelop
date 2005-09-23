@@ -1,0 +1,2019 @@
+# German MonoDevelop translation.
+# Copyright (C) 2004 Gustav Schauwecker
+# This file is distributed under the same license as the MonoDevelop package.
+# Gustav Schauwecker <gustl@cashmoral.com>, 2005.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-04-07 07:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Gustav Schauwecker <gustl@cashmoral.com>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:1
+msgid "#CvsLib"
+msgstr "#CvsLib"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:2
+msgid "#ZipLib"
+msgstr "#ZipLib"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:3
+msgid "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:4
+msgid "${res:Dialog.Options.CombineOptions.Configurations.PanelName}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:5
+msgid "${res:Dialog.Options.CombineOptions.Dependencies.PanelName}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:6
+msgid "${res:Dialog.Options.IDEOptions.HelpGeneratingPanelText}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:7
+msgid "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:8
+msgid "${res:Dialog.Options.PrjOptions.DeployFile.PanelName}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:9
+msgid "${res:OpenFileTabEventHandler.ContextMenu.Close}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:10
+msgid "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:11
+msgid "${res:OpenFileTabEventHandler.ContextMenu.Save}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:12
+msgid "${res:OpenFileTabEventHandler.CopyPathName}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:13
+msgid "${res:ProjectComponent.ContextMenu.Deploy}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:14
+msgid "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:15
+msgid "${res:ProjectComponent.ContextMenu.RunTests}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:16
+msgid "${res:ProjectComponent.ContextMenu.ViewDocumentation}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:17
+msgid "${res:XML.MainMenu.FileMenu.PrintPreview}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:18
+msgid "${res:XML.MainMenu.FileMenu.Print}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:19
+msgid "${res:XML.MainMenu.HelpMenu.GPL}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:20
+msgid "${res:XML.MainMenu.HelpMenu.ReadMe}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:21
+msgid "${res:XML.MainMenu.HelpMenu.StyleGuide}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:22
+msgid "${res:XML.MainMenu.PluginMenu.Manager}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:23
+msgid "${res:XML.MainMenu.PluginMenu}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:24
+msgid "${res:XML.MainMenu.ProjectMenu.Deploy}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:25
+msgid "${res:XML.MainMenu.ProjectMenu.Options}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:26
+msgid "${res:XML.MainMenu.ProjectMenu.RunTests}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:27
+msgid "${res:XML.MainMenu.ProjectMenu}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:28
+msgid "${res:XML.MainMenu.RunMenu.BuildProject}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:29
+msgid "${res:XML.MainMenu.RunMenu.RebuildProject}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:30
+msgid "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:31
+msgid "&AlphaSierraPapa"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:32
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:25
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:1
+#: ../Core/src/AddIns/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
+msgid "-"
+msgstr "-"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:33
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:34
+msgid "Add Files"
+msgstr "Dateien hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:35
+msgid "Add New File"
+msgstr "Neue Datei hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:36
+msgid "Add New Folder"
+msgstr "Neuen Ordner hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:37
+msgid "Add New Project..."
+msgstr "Neues Projekt hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:38
+msgid "Add New Solution..."
+msgstr "Neue Solution hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:39
+msgid "Add Resource"
+msgstr "Ressource hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:40
+msgid "Add Tab"
+msgstr "Reiter hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:41
+msgid "Add Web Reference"
+msgstr "Web-Verweis hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:42
+msgid "Add existing Solution"
+msgstr "Vorhandene Solution hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:43
+msgid "Add existing _Project"
+msgstr "Vorhandenes _Projekt hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:44
+msgid "Announcement List"
+msgstr "Ankündigungsliste"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:45
+msgid "Buil_d Project"
+msgstr "Projekt erstellen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:46
+msgid "Build"
+msgstr "Erstellen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:47
+msgid "Build Project"
+msgstr "Projekt erstellen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:48
+msgid "Build Properties"
+msgstr "Erstellungs-Eigenschaften"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:49
+msgid "C#"
+msgstr "C#"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:50
+msgid "C# Corner"
+msgstr "C# Corner"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:51
+msgid "C# Help"
+msgstr "C# Hilfe"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:52
+msgid "C_omment Line(s)"
+msgstr "Zeile(n) in Kommentar umwandeln"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:53
+msgid "Choose Location"
+msgstr "Ort wählen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:54
+msgid "Classes"
+msgstr "Klassen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:55
+msgid "Close All"
+msgstr "Alle schließen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:56
+msgid "Close Sol_ution"
+msgstr "Sol_ution schließen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:57
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharpBinding.addin.xml.h:1
+msgid "Code Generation"
+msgstr "Quelltext-Erzeugung"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:58
+msgid "Coding"
+msgstr "Programmieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:59
+msgid "Common"
+msgstr "Allgemein"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:60
+msgid "Community Forums"
+msgstr "Foren der Gemeinschaft"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:61
+msgid "Compile"
+msgstr "Kompilieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:62
+msgid "Compile _All"
+msgstr "_Alle kompilieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:63
+msgid "Convert C# Project to VB.NET"
+msgstr "Konvertiere C# Projekt nach VB.NET"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:64
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:32
+msgid "Copy"
+msgstr "Kopieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:65
+msgid "Create Database"
+msgstr "Datenbank erzeugen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:66
+msgid "Cu_t"
+msgstr "Ausschneiden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:67
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:33
+msgid "Cut"
+msgstr "Ausschneiden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:68
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:34
+msgid "Delete"
+msgstr "Löschen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:69
+msgid "Delete Tab"
+msgstr "Reiter Löschen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:70
+msgid "Downloads"
+msgstr "Downloads"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:71
+msgid "Edit References"
+msgstr "Referenzen bearbeiten"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:72
+msgid "ExportSignature"
+msgstr "Export-Signatur"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:73
+msgid "External Tools"
+msgstr "Externe Werkzeuge"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:74
+msgid "File..."
+msgstr "Datei..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:75
+msgid "Finished"
+msgstr "Beendet"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:76
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:39
+msgid "General"
+msgstr "Allgemein"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:77
+msgid "Generate Makefiles"
+msgstr "Makefiles erzeugen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:78
+msgid "GotDotNet"
+msgstr "GotDotNet"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:79
+msgid "Group members by access"
+msgstr "Gruppiere Mitglieder nach Zugriff"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:80
+msgid "Group members by member type"
+msgstr "Gruppiere Mitglieder nach Typ"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:81
+msgid "Include"
+msgstr "Einbinden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:82
+msgid "Include To Project"
+msgstr "In Projekt einfügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:83
+msgid "Integrated Projects"
+msgstr "Enthaltene Projekte"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:84
+msgid "Load/Save"
+msgstr "Laden/Speichern"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:85
+msgid "Magic Library"
+msgstr "Magic Bibliothek"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:86
+msgid "Mono Project"
+msgstr "Mono Projekt"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:87
+msgid "MonoDevelop"
+msgstr "MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:88
+msgid "MonoDevelop Options"
+msgstr "MonoDevelop Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:89
+msgid "Move Item Down"
+msgstr "Element nach unten verschieben"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:90
+msgid "Move Item up"
+msgstr "Element nach oben verschieben"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:91
+msgid "Move Tab Down"
+msgstr "Reiter nach unten verschieben"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:92
+msgid "Move Tab Up"
+msgstr "Reiter nach oben verschieben"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:93
+msgid "NAnt"
+msgstr "NAnt"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:94
+msgid "NDoc"
+msgstr "NDoc"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:95
+msgid "N_ew Solution/Project..."
+msgstr "N_eue Solution/Projekt..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:96
+msgid "Nested namespaces"
+msgstr "Verschachtelte Namespaces"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:97
+msgid "New File"
+msgstr "Neue Datei"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:98
+msgid "New Folder"
+msgstr "Neuer Ordner"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:99
+msgid "New _File"
+msgstr "Neue Datei"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:100
+msgid "O_pen"
+msgstr "Öffnen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:101
+msgid "Open File"
+msgstr "Datei öffnen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:102
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:46
+msgid "Paste"
+msgstr "Einfügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:103
+msgid "Project _Options"
+msgstr "Projekt-Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:104
+msgid "Project options"
+msgstr "Projekt-Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:105
+msgid "Re_name"
+msgstr "Umbe_nennen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:106
+msgid "Rebuild Project"
+msgstr "Projekt neu erstellen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:107
+msgid "Rebuild _Solution"
+msgstr "Solution neu erstellen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:108
+msgid "Recent Solu_tions"
+msgstr "Zuletzt benutzte Solutions"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:109
+msgid "Recent _Files"
+msgstr "Zuletzt benutzte Dateien"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:110
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:111
+msgid "Remove"
+msgstr "Entfernen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:112
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:113
+msgid "Rename Tab"
+msgstr "Reiter umbenennen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:114
+msgid "Reset Property"
+msgstr "Property zurücksetzen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:115
+msgid "Run"
+msgstr "Ausführen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:116
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:50
+msgid "Save"
+msgstr "Speichern"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:117
+msgid "Save A_ll"
+msgstr "A_lle Speichern"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:118
+msgid "Save All"
+msgstr "Alle Speichern"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:119
+msgid "Save _As..."
+msgstr "Speichern unter..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:120
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:58
+msgid "Select _All"
+msgstr "Alles auswählen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:121
+msgid "Send Us a Mail"
+msgstr "Senden Sie uns eine Mail"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:122
+msgid "Set As Startup Project"
+msgstr "Als Start-Projekt setzten"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:123
+msgid "Set as active"
+msgstr "Als aktiv setzen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:124
+msgid "Setup"
+msgstr "Einrichten"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:125
+msgid "SharpDevelop"
+msgstr "SharpDevelop"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:126
+msgid "Show All Files"
+msgstr "Alle Dateien anzeigen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:127
+msgid "Show Description"
+msgstr "Beschreibung anzeigen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:128
+msgid "Show project structure"
+msgstr "Projekt-Struktur anzeigen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:129
+msgid "Solution"
+msgstr "Solution"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:130
+msgid "Solution Options"
+msgstr "Solution-Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:131
+msgid "Solution/Project..."
+msgstr "Solution/Projekt..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:132
+msgid "Startup Properties"
+msgstr "Start-Eigenschaften"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:133
+msgid "Tools"
+msgstr "Werkzeuge"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:134
+msgid "Use Existing File"
+msgstr "Bestehende Datei verwenden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:135
+msgid "Visual style"
+msgstr "Optischer Stil"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:136
+msgid "_About"
+msgstr "Über"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:137
+msgid "_Clear Recent Files"
+msgstr "Liste der zuletzt geöffneten Dateien löschen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:138
+msgid "_Clear Recent Solutions"
+msgstr "Liste der zuletzt geöffneten Solutions löschen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:139
+msgid "_Close All"
+msgstr "Alle schließen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:140
+msgid "_Close File"
+msgstr "Datei schließen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:141
+msgid "_Compile"
+msgstr "kompilieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:142
+msgid "_Copy"
+msgstr "Kopieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:143
+msgid "_Cut"
+msgstr "Ausschneiden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:144
+msgid "_Delete"
+msgstr "Löschen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:145
+msgid "_Edit"
+msgstr "Bearbeiten"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:146
+msgid "_File"
+msgstr "Datei"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:147
+msgid "_Full Screen"
+msgstr "Vollbild"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:148
+msgid "_Help"
+msgstr "_Hilfe"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:149
+msgid "_Help..."
+msgstr "_Hilfe..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:150
+msgid "_Indent Selection"
+msgstr "Auswahl einrücken"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:151
+msgid "_Layouts"
+msgstr "_Layouts"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:152
+msgid "_New"
+msgstr "_Neu"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:153
+msgid "_New File..."
+msgstr "_Neue Datei..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:154
+msgid "_Next Window"
+msgstr "_Nächstes Fenster"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:155
+msgid "_Open"
+msgstr "Öffnen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:156
+msgid "_Open..."
+msgstr "Öffnen..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:157
+msgid "_Paste"
+msgstr "Einfügen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:158
+msgid "_Preferences"
+msgstr "Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:159
+msgid "_Previous Window"
+msgstr "Vorheriges Fenster"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:160
+msgid "_Quit"
+msgstr "Beenden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:161
+msgid "_Redo"
+msgstr "Wiederholen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:162
+msgid "_Reload File"
+msgstr "Datei erneut laden"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:163
+msgid "_Remove"
+msgstr "Entfernen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:164
+msgid "_Run"
+msgstr "Ausführen"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:165
+msgid "_Save"
+msgstr "_Speichern"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:166
+msgid "_Tip of the Day..."
+msgstr "_Tipp des Tages..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:167
+msgid "_Uncomment Line(s)"
+msgstr "Zeile(n) entkommentieren"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:168
+msgid "_Undo"
+msgstr "Rückgängig"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:169
+msgid "_Unindent Selection"
+msgstr "Auswahl ausrücken"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:170
+msgid "_View"
+msgstr "Ansicht"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:171
+msgid "_Web"
+msgstr "_Web"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:172
+msgid "_Window"
+msgstr "Fenster"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:173
+msgid "_Word Count..."
+msgstr "_Wörter zählen..."
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:174
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:66
+msgid "bogus_label"
+msgstr "bogus_label"
+
+#: ../Core/src/MonoDevelop.Base/MonoDevelopCore.addin.xml.h:175
+msgid "cshrp.net"
+msgstr "cshrp.net"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:1
+msgid "# Any single digit"
+msgstr "# irgendeine Ziffer"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:2
+msgid "${res:ProjectComponent.ContextMenu.HtmlExport}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:3
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:4
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:5
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:6
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:7
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:8
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:9
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:10
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:11
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:12
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:13
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:14
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:15
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:16
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:17
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:18
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:19
+msgid "${res:XML.MainMenu.ToolMenu.GenerateCode}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:20
+msgid "${res:XML.MainMenu.ToolMenu.InsColor}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:21
+msgid "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:22
+msgid "${res:XML.MainMenu.WindowMenu.Split}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:23
+msgid "${res:XML.TextAreaContextMenu.UncommentSelection}"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:24
+msgid "* Zero or more of any character"
+msgstr "* Null oder mehr eines beliebigen Zeichens"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:26
+msgid "? Any single character"
+msgstr "? Ein beliebiges Zeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:27
+msgid "Behavior"
+msgstr "Verhalten"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:28
+msgid "Buffer Options"
+msgstr "Puffer-Einstellungen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:29
+msgid "Clear Bookmarks"
+msgstr "Lesezeichen löschen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:30
+msgid "Close"
+msgstr "Schließen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:31
+msgid "Code Templates"
+msgstr "Quelltext-Vorlagen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:35
+msgid "F_ind In Files..."
+msgstr "Suche in Dateien..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:36
+msgid "Find"
+msgstr "Suchen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:37
+msgid "Find Next"
+msgstr "Weitersuchen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:38
+msgid "Find _Next"
+msgstr "Weitersuchen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:40
+msgid "Goto Matching _Brace"
+msgstr "Gehe zu passender Klammer"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:41
+msgid "Highlighting Mode"
+msgstr "Hervorhebungsmodus"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:42
+msgid "Indent Selection"
+msgstr "Auswahl einrücken"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:43
+msgid "Markers And Rulers"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:44
+msgid "Markers and Rulers"
+msgstr "Markierungen und Lineale"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:45
+msgid "Next Bookmark"
+msgstr "Nächstes Lesezeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:47
+msgid "Previous Bookmark"
+msgstr "Vorheriges Lesezeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:48
+msgid "R_eplace In Files..."
+msgstr "In Dateien Ersetzen..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:49
+msgid "Replace"
+msgstr "Ersetzen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:51
+msgid "Save As"
+msgstr "Speichern unter"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:52
+msgid "Syntax highlighting"
+msgstr "Syntax-Hervorhebung"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:53
+msgid "Text Editor"
+msgstr "Texteditor"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:54
+msgid "Toggle Bookmark"
+msgstr "Lesezeichen an-/ausschalten"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:55
+msgid "Toggle Comments"
+msgstr "Kommentar an-/ausschalten"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:56
+msgid "[!] Any one character not in the set"
+msgstr "[!] Ein beliebiges Zeichen das nicht in der Menge ist"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:57
+msgid "[] Any one character in the set"
+msgstr "[] Ein beliebiges Zeichen aus der Menge"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:58
+msgid "_Clear Bookmarks"
+msgstr "Lesezeichen löschen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:59
+msgid "_Find..."
+msgstr "Suchen..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:60
+msgid "_Goto Line..."
+msgstr "_Gehe zu Zeile..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:61
+msgid "_Next Bookmark"
+msgstr "_Nächstes Lesezeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:62
+msgid "_Previous Bookmark"
+msgstr "_Vorheriges Lesezeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:63
+msgid "_Replace..."
+msgstr "Ersetzen..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:64
+msgid "_Search"
+msgstr "_Suchen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:65
+msgid "_Toggle Bookmark"
+msgstr "_Lesezeichen an-/ausschalten"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharpBinding.addin.xml.h:2
+msgid "Output"
+msgstr "Ausgabe"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:2
+msgid "Debug"
+msgstr "Debug"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:3
+msgid "Debug Project"
+msgstr "Projekt debuggen"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:4
+msgid "Kill Application"
+msgstr "Anwendung töten"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:5
+msgid "Pause/Resume"
+msgstr "Pause/Fortfahren"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:6
+msgid "Step Into"
+msgstr "Einzelschritt"
+
+#: ../Core/src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:7
+msgid "Step Over"
+msgstr "Überspringen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:1
+msgid "   "
+msgstr "   "
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:2
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:1
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:1
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:1
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:3
+msgid " > "
+msgstr " > "
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:4
+msgid "<b>Code generation options</b>"
+msgstr "<b>Einstellungen zur Quelltext-Erzeugung</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:5
+msgid "<b>Comment generation options</b>"
+msgstr "<b>Einstellungen zur Kommentar-Erzeugung</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:6
+msgid "<b>Execute scripts </b>"
+msgstr "<b>Skripte ausführen</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:7
+msgid "<b>Include</b>"
+msgstr "<b>Einbeziehen</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:8
+msgid "<b>Load</b>"
+msgstr "<b>Laden</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:9
+msgid "<b>Location</b>"
+msgstr "<b>Ort</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:10
+msgid "<b>On Project Load</b>"
+msgstr "<b>Beim Laden des Projekts</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:11
+msgid "<b>Output Directory</b>"
+msgstr "<b>Ausgabe-Verzeichnis</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:12
+msgid "<b>Output</b>"
+msgstr "<b>Ausgabe</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:13
+msgid "<b>Project Information</b>"
+msgstr "<b>Projekt-Informationen</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:14
+msgid "<b>Save</b>"
+msgstr "<b>Speichern</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:15
+msgid "<b>Template</b>"
+msgstr "<b>Vorlage</b>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:16
+msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
+msgstr "<span weight=\"bold\" size=\"x-large\">Titel</span>"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:17
+msgid "Action"
+msgstr "Aktion"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:18
+msgid "Add References"
+msgstr "Verweis hinzufügen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:19
+msgid "All Files"
+msgstr "Alle Dateien"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:20
+msgid "Always create backup copy"
+msgstr "Immer eine Sicherungskopie erstellen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:21
+msgid "Assembly _name"
+msgstr "Assembly-Name"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:22
+msgid "Automatically _include found files"
+msgstr "Automatisch die gefundenen Dateien einbinden"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:23
+msgid "Build and run options"
+msgstr "Erzeugungs- und Ausführungs-Einstellungen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:24
+msgid "BuildPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:25
+msgid "Cat_egories:"
+msgstr "Kat_egorien:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:26
+msgid "CombineStartupPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:27
+msgid "Compilation _target"
+msgstr "Ziel der Kompilation"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:28
+msgid "CompileFileOptionsPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:29
+msgid "Create seperate _Solution subdirectory"
+msgstr "Erzeuge ein getrenntes Solution-Unterverzeichnis"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:30
+msgid "Creates a new C# Project"
+msgstr "Erzeuge ein neues C#-Projekt"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:31
+msgid "Default _Solution location"
+msgstr "Standartverzeichnis der Solution"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:32
+msgid "DeployFileOptionsPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:33
+msgid "Did you know that you can design lots of cool things with glade?"
+msgstr "Wussten Sie, dass Sie mit glade eine Menge an coolen Dingen entwerfen können?"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:34
+msgid "Did you know?"
+msgstr "Wussten Sie?"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:35
+msgid "Enable _viewstate"
+msgstr "Viewstate aktivieren"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:36
+msgid "Execute co_mmand"
+msgstr "Befehl ausführen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:37
+msgid "ExternalToolPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:38
+msgid "GeneralProjectOptionsPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:39
+msgid "Generate _additional comments"
+msgstr "Erzeuge zusätzliche Kommentare"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:40
+msgid "Generate _documentation comments"
+msgstr "Erzeuge Dokumentations-Kommentare"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:41
+msgid "Include Found Files"
+msgstr "Gefundene Dateien einbinden"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:42
+msgid "Layout name:"
+msgstr "Layout Name:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:43
+msgid "Load user-specific settings with the document"
+msgstr "Lade benutzerspezifische Einstellungen mit dem Dokument" 
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:44
+msgid "LoadSavePanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:45
+msgid "New Files"
+msgstr "Neue Dateien"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:46
+msgid "New Files Only"
+msgstr "Nur neue Dateien"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:47
+msgid "New Solution"
+msgstr "Neue Solution"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:48
+msgid "New layout"
+msgstr "Neues Layout"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:49
+msgid "Options"
+msgstr "Optionen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:50
+msgid "Output _path"
+msgstr "Ausgabepfad"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:51
+msgid "OutputOptionsPanel"
+msgstr ""
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:52
+msgid "Paramet_ers"
+msgstr "Paramet_er"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:53
+msgid "Pause _console output"
+msgstr "Konsoleausgabe pausieren"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:54
+msgid "Project _Subdirectory:"
+msgstr "Unterverzeichnis des Projekts:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:55
+msgid "Project will be saved in: /dev/null"
+msgstr "Das Projekt wird gespeichert in: /dev/null"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:56
+msgid "Run on e_xternal console"
+msgstr "In e_xterner Konsole ausführen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:57
+msgid "Search for new _files on load"
+msgstr "Beim Laden nach neuen Dateien suchen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:59
+msgid "Select command"
+msgstr "Befehl auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:60
+msgid "Select default location"
+msgstr "Standart-Verzeichnis auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:61
+msgid "Select deploy script"
+msgstr "Einrichtungsskript auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:62
+msgid "Select output directory"
+msgstr "Ausgabeverzeichnis auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:63
+msgid "Select output path"
+msgstr "Ausgabepfad auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:64
+msgid "Select target location"
+msgstr "Positon des Ziels auswählen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:65
+msgid "Show _output pad when build starts"
+msgstr "Zeige das Ausgabefeld bei einer Erzeugung"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:66
+msgid "Show _task list pad if build finished with errors"
+msgstr "Zeige das Aufgabenliste-Feld, wenn die Erzeugung fehlschlug"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:67
+msgid "Show extensions in project scout"
+msgstr "Zeige Erweiterungen im  Projekt-Kundschafter"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:68
+msgid "Show hidden files and directories"
+msgstr "Zeige versteckte Dateien und Verzeichnisse"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:69
+msgid "Tip of the day"
+msgstr "Tipp des Tages"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:70
+msgid "Use _Output Window"
+msgstr "Benutze das Ausgabefenster"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:71
+msgid "View"
+msgstr "Ansicht"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:72
+msgid "With _scriptfile"
+msgstr "Mit Skriptdatei"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:73
+msgid "_After build"
+msgstr "Nach einer Erzeugung"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:74
+msgid "_Arguments"
+msgstr "_Argumente"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:75
+msgid "_Before build"
+msgstr "_Bevor einer Erzeugung"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:76
+msgid "_Command"
+msgstr "Befehl"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:77
+msgid "_Deploy target:"
+msgstr "Verbreitungsziel:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:78
+msgid "_Description"
+msgstr "Beschreibung"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:79
+msgid "_Don't save changes to open documents "
+msgstr "Änderungen an geöffneten Dokumenten nicht speichern"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:80
+msgid "_Else on same line as closing bracket"
+msgstr "_Else in der selben Zeile wie die schließende Klammer"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:81
+msgid "_Include files in compile run"
+msgstr "Dateien in Kompilierungsdurchlauf einbinden"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:82
+msgid "_Insert blank lines between members"
+msgstr "Leerzeilen zwischen Members einfügen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:83
+msgid "_Load previous solution on startup"
+msgstr "Zuletzt geöffnete Solution beim Programmstart laden"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:84
+msgid "_Location:"
+msgstr "Ort:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:85
+msgid "_Multiple Startup Project"
+msgstr "Mehrfaches Start-Projekt"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:86
+msgid "_Name"
+msgstr "_Name"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:87
+msgid "_Name:"
+msgstr "_Name:"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:88
+msgid "_Next Tip"
+msgstr "_Nächster Tipp"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:89
+msgid "_Project Files"
+msgstr "_Projektdateien"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:90
+msgid "_Prompt for arguments"
+msgstr "Nach Argumenten fragen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:91
+msgid "_Prompt to save changes to open documents"
+msgstr "Nachfragen ob Änderungen in offenen Dokumenten gespeichert werden sollen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:92
+msgid "_Save Changes to open documents"
+msgstr "Änderungen in offenen Dokumenten speichern"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:93
+msgid "_Show at startup"
+msgstr "Beim Starten anzeigen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:94
+msgid "_Single Startup Project"
+msgstr "Einfaches Startprojekt"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:95
+msgid "_Start code block on the same line"
+msgstr "Beginn Codeblock in der selben Zeile"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:96
+msgid "_Title"
+msgstr "_Titel"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:97
+msgid "_Use full type names"
+msgstr "Benutze vollständige Typnamen"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:98
+msgid "_Working Directory"
+msgstr "Arbeitsverzeichnis"
+
+#: ../Core/src/MonoDevelop.Base/Base.glade.h:99
+msgid "cmbBuildOptions"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:2
+msgid "&"
+msgstr "&"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:3
+msgid "<b>Behavior</b>"
+msgstr "<b>Verhalten</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:4
+msgid "<b>Elements</b>"
+msgstr "<b>Elemente</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:5
+msgid "<b>File encoding</b>"
+msgstr "<b>Dateikodierung</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:6
+msgid "<b>Font</b>"
+msgstr "<b>Schrift</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:7
+msgid "<b>General Options</b>"
+msgstr "<b>Allgemeine Optionen</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:8
+msgid "<b>Markers</b>"
+msgstr "<b>Markierungen</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:9
+msgid "<b>Rulers</b>"
+msgstr "<b>Lineale</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:10
+msgid "<b>Tabs</b>"
+msgstr "<b>Reiter</b>"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:11
+msgid "A_uto insert curly braces"
+msgstr "A_utomatisch geschweifte Klammern einfügen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:12
+msgid "Add Group"
+msgstr "Gruppe hinzufügen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:13
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:14
+msgid "BehaviorTextEditorPanel"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:15
+msgid "C_onvert Tabs to Spaces"
+msgstr "K_onvertiere Tabulatoren in Leerzeichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:16
+msgid "Choose _encoding"
+msgstr "Kodierung wählen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:17
+msgid "CodeTemplatePane"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:18
+msgid "Edit Group"
+msgstr "Gruppe bearbeiten"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:19
+msgid "Enable code _completion"
+msgstr "Code-Vervollständigung aktivierien"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:20
+msgid "Enable code _folding"
+msgstr "Code-Faltung aktivieren"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:21
+msgid "Enable syntax highlighting"
+msgstr "Syntaxhervorhebung aktivieren"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:22
+msgid "Extension"
+msgstr "Erweiterung"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:23
+msgid "GeneralTextEditorPanel"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:24
+msgid "Highlight _matching bracket"
+msgstr "Übereinstimmende Klammern hervorheben"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:25
+msgid "I_ndentation"
+msgstr "Einrückung"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:26
+msgid "MarkersTextEditorPanel"
+msgstr ""
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:27
+msgid "None"
+msgstr "Nichts"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:28
+msgid "Remove Group"
+msgstr "Gruppe entfernen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:29
+msgid "Restore default"
+msgstr "Auf Vorgabe zurücksetzen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:30
+msgid "Show _column ruler,"
+msgstr "Zeige das Spaltenlineal"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:31
+msgid "Show _line numbers"
+msgstr "Zeige die Zeilennummern"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:32
+msgid "Use default _monospace font"
+msgstr "Benutze die vorgegebene Monospace Schrift"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:33
+msgid "Use default _sans-serif font"
+msgstr "Benutze die vorgegebene Sans-Serif Schrift"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:34
+msgid "_Automatic template insertion"
+msgstr "Automatisches einfügen der Vorlagen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:35
+msgid "_Indentation size"
+msgstr "Einrückungsbreite"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:36
+msgid "_Tab size"
+msgstr "Tabulatorbreite"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:37
+msgid "_Underline errors"
+msgstr "Fehler unterstreichen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:38
+msgid "_Use custom font:"
+msgstr "Benutze eigene Schrift:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:39
+msgid "at column"
+msgstr "bei Spalte"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:1
+msgid "..."
+msgstr "..."
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:2
+msgid ">"
+msgstr ">"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:3
+msgid "Case sensitive"
+msgstr "Groß-/Kleinschreibung berücksichtigen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:4
+msgid "Directory:"
+msgstr "Verzeichnis:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:5
+msgid "Filemask:"
+msgstr "Dateimaske:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:6
+msgid "Find Dialog"
+msgstr "Suchen-Dialog"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:7
+msgid "Find:"
+msgstr "Suche:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:8
+msgid "Go to Line"
+msgstr "Gehe zu Zeile"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:9
+msgid "R_eplace All"
+msgstr "All_e Ersetzen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:10
+msgid "Recurse subdirectories"
+msgstr "In Unterverzeichnisse hinabsteigen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:11
+msgid "Replace Dialog"
+msgstr "Ersetzen-Dialog"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:12
+msgid "Replace:"
+msgstr "Ersetzen:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:13
+msgid "Search in:"
+msgstr "Suchen in:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:14
+msgid "Use special search strategy:"
+msgstr "Benutze spezielle Suchstrategie:"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:15
+msgid "Whole word only"
+msgstr "Nur ganzes Wörter"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:16
+msgid "Whole words only"
+msgstr "Nur ganze Wörter"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:17
+msgid "_Go to Line"
+msgstr "_Gehe zu Zeile"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:18
+msgid "_Line Number:"
+msgstr "Zeilennummer"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:19
+msgid "_Mark All"
+msgstr "Alles markieren"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:20
+msgid "_Replace"
+msgstr "Ersetzen"
+
+#: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:21
+msgid "_Stop"
+msgstr "_Stopp"
+
+#: ../Core/src/AddIns/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:2
+msgid "_Import Visual Studio .NET Project"
+msgstr "Importiere Visual Studio .NET Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/BlankCombine.xpt.xml.h:1
+msgid "A blank solution"
+msgstr "Eine leere Solution"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/BlankCombine.xpt.xml.h:2
+msgid "Blank Solution"
+msgstr "Leere Solution"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
+#: ../Core/src/AddIns/BackendBindings/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:1
+msgid "Console Project"
+msgstr "Konsole-Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
+msgid "Creates a new C# console project."
+msgstr "Erzeug ein neues C# Konsole-Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
+msgid "Creates a secure C# Web Service, using SessionState"
+msgstr "Erzeugt einen sicheren C#-Web-Service, der SessionState benutzt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:2
+msgid "Secure Web Service"
+msgstr "Sicherer Web Service"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/CSharpWebService.xft.xml.h:1
+msgid "Creates a C# Web Service."
+msgstr "Erzeugt einen C# Web Service"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/CSharpWebService.xft.xml.h:2
+msgid "Web Service"
+msgstr "Web Service"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
+msgid "Creates an empty C# file."
+msgstr "Erzeugt eine leere C# Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/EmptyVBFile.xft.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:2
+msgid "Empty File"
+msgstr "Leere Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyHTMLFile.xft.xml.h:1
+msgid "Creates an empty HTML file."
+msgstr "Erzeugt eine leere HTML Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyHTMLFile.xft.xml.h:2
+msgid "Empty HTML File"
+msgstr "Leere Html Datei"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/EmptyNemerleFile.xft.xml.h:1
+msgid "Creates an empty Nemerle file"
+msgstr "Erzeugt eine leere Nemerle Datei"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/EmptyNemerleFile.xft.xml.h:2
+msgid "Empty file"
+msgstr "Leere Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyProject.xpt.xml.h:1
+msgid "Creates an empty C# project."
+msgstr "Erzeug ein leeres C# Projekt."
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyProject.xpt.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleEmptyProject.xpt.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:2
+msgid "Empty Project"
+msgstr "Leeres Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyResourceFile.xft.xml.h:1
+msgid "Creates an empty resource file."
+msgstr "Erzeugt eine leere Ressourcendatei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyResourceFile.xft.xml.h:2
+msgid "Empty Resource File"
+msgstr "Leere Ressourcendatei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyTextFile.xft.xml.h:1
+msgid "Creates an empty text file."
+msgstr "Erzeugt eine leere Textdatei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyTextFile.xft.xml.h:2
+msgid "Empty Text File"
+msgstr "Leere Textdatei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyXMLFile.xft.xml.h:1
+msgid "Creates an empty XML file."
+msgstr "Erzeugt eine leere XML-Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyXMLFile.xft.xml.h:2
+msgid "Empty XML File"
+msgstr "Leere XML-Datei"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
+msgid "Glade# Project"
+msgstr "Glade# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
+msgid "a Glade# project with one window and button"
+msgstr "Ein Glade#-Projekt mit einem Fenster und einem Button"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:1
+msgid "Creates a Gnome# program."
+msgstr "Erzeugt ein Gnome# Programm"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:2
+msgid "Gnome# Program"
+msgstr "Gnome# Programm"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Gnome# project"
+msgstr "Erzeugt ein Gnome# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Gnome# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
+msgid "Creates a Gtk# project."
+msgstr "Erzeugt ein Gtk# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Gtk# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window."
+msgstr "Erzeugt ein top-level Gtk#-Fenster"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:2
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:2
+msgid "Gtk# Window"
+msgstr "Gtk# Fenster"
+
+#: ../Core/src/AddIns/BackendBindings/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:2
+msgid "ILAsm Console Project"
+msgstr "ILAsm Konsole-Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/Library.xpt.xml.h:1
+msgid "Creates an empty C# class library"
+msgstr "Erzeugt eine leere C#-Bibliothek"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/Library.xpt.xml.h:2
+msgid "Library"
+msgstr "Bibliothek"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleEmptyProject.xpt.xml.h:1
+msgid "Creates an empty Nemerle project"
+msgstr "Erzeugt ein leeres Nemerle-Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:2
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:2
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:2
+msgid "<b>Code Generation</b>"
+msgstr "<b>Quelltext-Erzeugung</b>"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:3
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:3
+msgid "<b>Warnings</b>"
+msgstr "<b>Warnungen</b>"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:4
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:4
+msgid "Allow '_unsafe' code"
+msgstr "Erlaube '_unsicheren' code"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:5
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:5
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:5
+msgid "CodeGenerationPanel"
+msgstr ""
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:6
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:6
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:6
+msgid "Compile _Target"
+msgstr "Kompilierungsziel"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:7
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:7
+msgid "Define S_ymbols"
+msgstr "Definiere S_ymbole"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:8
+msgid "Emit _debugging information"
+msgstr "Debug-Informationen ausgeben"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:9
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:8
+msgid "Enable _optimizations"
+msgstr "Optimierungen aktivieren"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:10
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:9
+msgid "Generate _xml documentation"
+msgstr "XML-Dokumentation erzeugen"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:11
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:10
+msgid "Treat warnings as _errors"
+msgstr "Behandle Warnungen als Fehler"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:12
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:11
+msgid "_Generate overflow checks"
+msgstr "Erzeuge Überlauf-Überprüfungen"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:13
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:12
+msgid "_Main Class"
+msgstr "Hauptklasse"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/CSharp.glade.h:14
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/VB.glade.h:13
+msgid "_Warning Level"
+msgstr "Warnstufe"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/AppConfigFile.xft.xml.h:1
+msgid "Application Configuration File"
+msgstr "Konfigurationsdatei der Anwendung"
+
+#: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/AppConfigFile.xft.xml.h:2
+msgid "Creates a .NET application configuration file."
+msgstr "Erzeugt eine .NET Anwendungs-Konfigurationsdatei"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:3
+msgid "<b>Optimizations</b>"
+msgstr "<b>Optimierungen</b>"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:4
+msgid "Boolean constant matching optimization"
+msgstr "Boolean constant matching Optimierung"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:7
+msgid "Do not load standard library"
+msgstr "Die Standartbibliothek nicht laden"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:8
+msgid "Do not load standard macros"
+msgstr "Die Standartmakros nicht laden"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:9
+msgid ""
+"Executable\n"
+"Library"
+msgstr ""
+"Programm\n"
+"Bibliothek"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:11
+msgid "General tail call optimization"
+msgstr "General tail call Optimierung"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:12
+msgid "Ignore warnings"
+msgstr "Ignoriere Warnungen"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:13
+msgid "Ordinal constant matching optimization"
+msgstr "Ordinal constant matching Optimierung"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:14
+msgid "String constant matching optimization"
+msgstr "String constant matching Optimierung"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gnome# project"
+msgstr "Erzeugt ein Nemerle/Gnome# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gtk# project"
+msgstr "Erzeugt ein Nemerle/Gtk# Projekt"
+
+#: ../Core/src/AddIns/BackendBindings/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window"
+msgstr "Erzeugt ein top-level Gtk#-Fenster"
+
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/EmptyVBFile.xft.xml.h:1
+msgid "Creates an empty VB.Net file."
+msgstr "Erzeugt eine leere VB.Net-Datei"
+
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:1
+msgid "Creates an empty VB.Net solution."
+msgstr "Erzeugt eine leere VB.Net-Solution"
+
+#: ../Core/src/AddIns/BackendBindings/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console VB.Net project"
+msgstr "Erzeugt ein VB.Net-Konsole-Projekt"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:1
+msgid "Creates an empty Java file."
+msgstr "Erzeugt eine leere Java-Datei"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:1
+msgid "Creates an empty Java solution."
+msgstr "Erzeugt eine leere Java-Solution"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project with IKVM"
+msgstr "Erzeugt ein Konsole-Java-Projekt mit IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
+msgid "IKVM Console Project"
+msgstr "IKVM Konsole-Projekt"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:1
+msgid "Create a Glade# Java project with IKVM"
+msgstr "Erzeugt ein Glade# Java-Projekt mit IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:2
+msgid "IKVM Glade# Project"
+msgstr "IKVM Glade# Projekt"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "Erzeugt ein Gnome# Java Projekt mit IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
+msgid "IKVM Gnome# Project"
+msgstr "IKVM Gnome# Projekt"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:1
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "Erzeugt ein Gtk# Java-Projekt mit IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:2
+msgid "IKVM Gtk# Project"
+msgstr "IKVM Gtk#-Projekt"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:1
+msgid "AWT Applet"
+msgstr "AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:2
+msgid "Creates a Java AWT Applet"
+msgstr "Erzeugt ein Java AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:1
+msgid "AWT Project"
+msgstr "AWT Projekt"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:2
+msgid "Creates a Java AWT project."
+msgstr "Erzeugt ein Java AWT Projekt"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:1
+msgid "AWT Application"
+msgstr "AWT Anwendung"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:2
+msgid "Creates a Java AWT application."
+msgstr "Erzeugt eine Java AWT Anwendung"
+
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console Java project"
+msgstr "Erzeugt ein Konsole Java Projekt"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:1
+msgid "Creates an AWT dialog."
+msgstr "Erzeugt einen AWT Dialog"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:2
+msgid "Java AWT Dialog"
+msgstr "Java AWT Dialog"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:1
+msgid "AWT Frame"
+msgstr "AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:2
+msgid "Creates a Java AWT Frame"
+msgstr "Erzeugt einen Java AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:1
+msgid "AWT OK Dialog"
+msgstr "AWT OK Dialog"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:2
+msgid "Creates a Java AWT OK Dialog."
+msgstr "Erzeugt einen Java AWT OK Dialog"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:1
+msgid "AWT Panel"
+msgstr "AWT Panel"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:2
+msgid "Creates a Java AWT panel."
+msgstr "Erzeugt ein Java AWT panel"

@@ -1,0 +1,7 @@
+This is version control support for MD, including
+supporting libraries:
+	Diff: for finding differences between files
+	DiffWidget: for displaying differences in Gtk
+	VersionControl: abstraction over various systems
+		e.g. subversion
+The addin itself is in the AddIn directory.

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "01/10/2001"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Empty Project</_Name>
+		<Category>C#</Category>
+		<Icon>res:C#.Project.EmptyProject</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an empty C# project.</_Description>
+	</TemplateConfiguration>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "."/>
+	</Combine>
+</Template>

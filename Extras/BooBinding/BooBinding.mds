@@ -1,0 +1,20 @@
+<Combine name="BooBinding" fileversion="2.0">
+  <Configurations>
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="BooBinding" />
+      <Entry build="True" name="BooShell" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="BooBinding" />
+      <Entry build="True" name="BooShell" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="BooBinding" single="True">
+    <Execute type="None" entry="BooBinding" />
+    <Execute type="None" entry="BooShell" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./BooBinding.mdp" />
+    <Entry filename="./BooShell/BooShell.mdp" />
+  </Entries>
+</Combine>

@@ -1,0 +1,55 @@
+<AddIn name        = "Nemerle Language Binding"
+       author      = "Todd Berman"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "Nemerle Language Binding"
+       version     = "0.6">
+
+  <Runtime>
+    <Import assembly = "NemerleBinding.dll"/>
+  </Runtime>
+
+  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+    <FileFilter id = "Nemerle"
+                insertbefore = "AllFiles"
+                name = "Nemerle Files (*.n)"
+                extensions = "*.n"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/FileTemplates">
+    <FileTemplate id = "EmptyNemerleFile" resource = "EmptyNemerleFile.xft.xml"/>
+    <FileTemplate id = "NemerleGtkSharpWindow" resource = "NemerleGtkSharpWindow.xft.xml"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectTemplates">
+    <ProjectTemplate id = "EmptyNemerleProject" resource = "NemerleEmptyProject.xpt.xml"/>
+    <ProjectTemplate id = "NemerleGtkSharpProject" resource = "NemerleGtkSharpProject.xpt.xml"/>
+    <ProjectTemplate id = "NemerleGnomeSharpProject" resource = "NemerleGnomeSharpProject.xpt.xml"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activelanguage = "Nemerle">
+      <DialogPanel id = "NemerleCodeGenerationPanel"
+                   _label = "Code Generation"
+                   class = "NemerleBinding.CodeGenerationPanel"/>
+      <DialogPanel id = "NemerleOutputPanel"
+                   _label = "Output"
+                   class = "NemerleBinding.OutputPanel"/>
+    </Conditional>
+  </Extension>
+
+  <Extension path = "/Workspace/Icons">
+    <Icon id = "NemerlePrj"
+          language = "Nemerle"
+          resource = "res:Nemerle.ProjectIcon"/>
+    <Icon id = "NemerleFile"
+          extensions = ".n"
+          resource = "res:Nemerle.FileIcon"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+    <LanguageBinding id = "Nemerle"
+                     supportedextensions = ".n"
+                     class = "NemerleBinding.NemerleLanguageBinding" />
+  </Extension>
+</AddIn>

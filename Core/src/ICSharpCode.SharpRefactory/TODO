@@ -1,0 +1,4 @@
+- add C# 2.0 features
+	option 1 - wait to see if SD writes 2.0 stuff
+	option 2 - write it ourselves based on current one
+	option 3 - use gmcs parser

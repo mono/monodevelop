@@ -1,0 +1,152 @@
+2005-08-20  John Luke  <john.luke@gmail.com>
+
+	* DockItem.cs: fix some warnings with the new
+	gtk#
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* MonoDevelop.Dock.mdp: references update
+
+2005-06-27  John Luke  <john.luke@gmail.com>
+
+	* DockLayout.cs: Save part of placeholders support
+	
+2005-06-27  John Luke  <john.luke@gmail.com>
+
+	* DockLayout.cs: catch exception on invalid XML
+	(SetupObject) guard against missing name attribute
+	part of bug #75289, based on patch from
+	Matthew Wright <matthew@willowgreen.f2s.com>
+
+2005-06-04  John Luke  <john.luke@gmail.com>
+
+	* DockPaned.cs: handle Shift|F8 to avoid crash for now
+	* GdlDockTest.cs: remove C# 2 features
+
+2005-04-28  John Luke  <john.luke@gmail.com>
+
+	* DockBar.cs: remove redundent RemoveItem call
+	* DockItem.cs: remove redundent LayoutChanged event
+	
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-04-16  John Luke  <john.luke@gmail.com>
+
+	* DockItem.cs:
+	* Dock.cs:
+	* DockItemGrip.cs:
+	* DockNotebook.cs:
+	* DockPaned.cs: use ForAll overload that takes a Callback
+	* DockMaster.cs: remove unused field
+
+2005-04-06  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Dock.mdp:
+	* MonoDevelop.Dock.mds: add project files
+
+2005-03-31  John Luke  <john.luke@gmail.com>
+
+	* DockPaned.cs: only emit layout_changed when
+	the position has changed and on button release
+
+2005-03-31  John Luke  <john.luke@gmail.com>
+
+	* *.cs: add license headers
+	* TODO: update
+
+2005-03-29  Alp Toker  <alp@atoker.com>
+
+	* DockPaned.cs: make the central pane resize rather than the edge
+	panes
+
+2005-03-24  John Luke  <john.luke@gmail.com>
+
+	* DockLayout.cs (UpdateItemsModel): reduce chances of being stuck
+	endlessly in the loop, thanks to toshok for pointing me to it
+
+2005-03-17  John Luke  <john.luke@gmail.com>
+
+	* Dock.cs:
+	* DockItem.cs:
+	* DockItemGrip.cs: clean up SizeRequest and SizeAllocate
+	fixes one of our resizing bugs
+
+2005-03-15  John Luke  <john.luke@gmail.com>
+
+	* DockBar.cs:
+	* DockBarButton.cs: simplify by just using the
+	Clicked signal
+
+2005-03-15  John Luke  <john.luke@gmail.com>
+
+	* DockItemBehavior.cs: add NoGrip flag
+	* DockItem.cs:
+	* DockItemGrip.cs: hide/show the DockItemGrip based
+	on NoGrip flag, not Locked status and update for that
+
+2005-03-15  John Luke  <john.luke@gmail.com>
+
+	* DockItem.cs: add comment about saving position
+	* DockPaned.cs: override OnChildPlacement
+
+2005-03-15  Lluis Sanchez Gual <lluis@novell.com>
+
+	* DockItemGrip.cs: Redraw the grip if the title or the icon changes.
+	Added some padding between the icon and the label.
+
+2005-03-14  Lluis Sanchez Gual <lluis@novell.com>
+
+	* DockItem.cs: Added property for getting the default position.
+
+2005-03-13  Todd Berman  <tberman@off.net>
+
+	* DockPlaceholder.cs: Use Conditional instead of #if
+
+2005-03-13  John Luke  <john.luke@gmail.com>
+
+	* DockNotebook.cs: not Automatic
+	* DockPlaceholder.cs: port detach_cb and dock_cb
+	is Automatic
+	use Stack instead of ArrayList
+	* DockMaster.cs: restore IsAutomatic code
+	* DockItem.cs: not Automatic
+	* DockObject.cs: small null check fix
+
+2005-03-13  John Luke  <john.luke@gmail.com>
+
+	* DockPaned.cs: fix little orientaion bug when
+	loading the layout
+
+2005-03-12  Todd Berman  <tberman@off.net>
+
+	* DockItemGrip.cs: use .SetMarkup, not .SetText
+
+2005-03-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItemGrip.cs, DockMaster.cs: Fix potential memory leaks.
+
+2005-02-28  John Luke  <john.luke@gmail.com>
+
+	* DockBarButton.cs: new Button wrapper
+	* DockBar.cs: fix iconfiy/uniconify
+	* DockItem.cs: add item to dockbar on iconify
+	* DockItemGrip.cs: fix warning by adding new to Item prop
+
+2005-02-18  John Luke  <john.luke@gmail.com>
+
+	* Gdl.mdsx
+	* Gdl.cmbx
+	* Makefile.Gdl
+	* Makefile.solution.Gdl
+	* make.sh
+	* DockTest.cmbx: these were broken
+	just kill it unless someone puts back a working project
+
+	* DockItemGrip.cs
+	* DockPlaceholder.cs
+	* DockItem.cs
+	* DockBar.cs: use WidgetFlags
+
+	* Makefile: use this to build for now

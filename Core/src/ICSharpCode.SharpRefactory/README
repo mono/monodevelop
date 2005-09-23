@@ -1,0 +1,10 @@
+
+Run 'make test' to run both the tests.
+
+errors
+------
+tests that the parser should report an error
+
+tests
+-----
+tests that the parser should not report an error

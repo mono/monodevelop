@@ -1,0 +1,85 @@
+<AddIn name        = "Boo Language Binding"
+       author      = "Peter Johanson"
+       copyright   = "GPL"
+       url         = "http://boo.codehaus.org"
+       description = "Boo Language Binding"
+       version     = "0.1">
+
+  <Runtime>
+    <Import assembly = "BooBinding.dll"/>
+  </Runtime>
+
+  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+    <FileFilter id = "Boo"
+                insertbefore = "AllFiles"
+                name = "Boo Files (*.boo)"
+                extensions = "*.boo"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/FileTemplates">
+    <FileTemplate id = "EmptyBooFile" resource = "EmptyBooFile.xft.xml"/>
+    <FileTemplate id = "BooGtkSharpWindow" resource = "BooGtkSharpWindow.xft.xml"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectTemplates">
+    <ProjectTemplate id = "EmptyBooProject" resource = "EmptyBooProject.xpt.xml"/>
+    <ProjectTemplate id = "BooGtkSharpProject" resource = "BooGtkSharpProject.xpt.xml"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activelanguage = "Boo">
+      <DialogPanel id = "BooCodeGenerationPanel"
+                   _label = "Code Generation"
+                   class = "BooBinding.Gui.OptionPanels.CodeGenerationPanel"/>
+    </Conditional>
+  </Extension>
+
+  <Extension path = "/Workspace/Icons">
+    <Icon id = "BooPrj"
+          language = "Boo"
+          resource = "res:Boo.ProjectIcon"/>
+    <Icon id = "BooFile"
+          extensions = ".boo"
+          resource = "res:Boo.FileIcon"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+    <LanguageBinding id = "Boo"
+                     supportedextensions = ".boo"
+                     class = "BooBinding.BooLanguageBinding" />
+  </Extension>
+
+  <Extension path = "/Workspace/Parser">
+	<Class id    = "BooParser"
+	       class = "BooBinding.Parser.BooParser"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/Ambiences">
+	  <Class id    = "Boo"
+		 class = "BooBinding.BooAmbience"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/Views">
+	<Class    id    = "BooShell" 
+		  insertafter = "TaskList"
+		  class               = "BooBinding.Pads.BooShellPadContent"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/Pads">
+	<Pad id = "BooBinding.Pads.BooShellPadContent" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+ 	<ContextPad id = "BooBinding.Pads.BooShellPadContent" />
+  </Extension>
+  <Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+	<DialogPanel id    = "BooShellOptions"
+		     insertafter = "ToolsOptions"
+		     _label = "Boo Shell">
+		<DialogPanel    id = "General"
+				_label = "General"
+				class = "BooBinding.Gui.OptionPanels.GeneralBooShellPanel" />
+	</DialogPanel>
+  </Extension>
+
+</AddIn>

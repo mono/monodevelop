@@ -1,0 +1,318 @@
+<AddIn name        = "New Editor"
+       author      = "Ben Maurer"
+       copyright   = ""
+       url         = ""
+       description = ""
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="../bin/MonoDevelop.SourceEditor.dll"/>
+		<!-- <Import assembly="../bin/MonoDevelop.TextEditor.dll"/> -->
+		<!-- <Import assembly="../bin/MonoDevelop.DefaultTexteditor.dll"/> -->
+	</Runtime>
+
+	<Extension path = "/Workspace/Services">
+		<Class id = "SourceViewService" class="MonoDevelop.Services.SourceViewService" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
+		<DialogPanel id = "CodeTemplates"
+		             _label = "Code Templates"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.CodeTemplatePane"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu">
+		<!-- AddIn to the Project Add Menu -->
+		<!-- <Conditional ownerstate="ProjectSelected">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "Separator5"
+			          _label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.ExportProjectToHtml"/>
+		</Conditional> -->
+	</Extension>
+	
+	<!-- <Extension path = "/SharpDevelop/Workbench/MainMenu/Project">
+		<Conditional activeproject="*">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "Separator2"
+			          _label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.ExportProjectToHtml"/>
+		</Conditional>
+	</Extension> -->
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<!-- AddIn to the project browser context menu -->
+		<!-- <Conditional activeproject="*">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "SetAsStartupProjectSeparator"
+			          _label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.ExportProjectToHtml"/>
+		</Conditional> -->
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.HighlightingTypeList"
+				type = "array|radio"
+				_label = "bogus_label" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.ShowBufferOptions"
+				_label = "Buffer Options"
+				icon = "md-properties-icon" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.ToggleBookmark"
+				icon = "md-toggle-bookmark"
+				shortcut = "Control|F2"
+				description = "Toggle Bookmark"
+				_label = "Toggle Bookmark" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.PrevBookmark"
+				icon = "md-goto-prevbookmark"
+				shortcut = "Shift|F2"
+				description = "Previous Bookmark"
+				_label = "Previous Bookmark" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.NextBookmark"
+				icon = "md-goto-nextbookmark"
+				shortcut = "F2"
+				description = "Next Bookmark"
+				_label = "Next Bookmark" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.ClearBookmarks"
+				icon = "md-clear-all-bookmarks"
+				description = "Clear Bookmarks"
+				_label = "Clear Bookmarks" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.GotoLineNumber"
+				_label = "_Goto Line..." 
+				description = "Goto line"
+				shortcut = "Control|G" />
+		<Command id = "MonoDevelop.DefaultEditor.EditorCommands.GotoMatchingBrace"
+				_label = "Goto Matching _Brace" 
+				description = "Goto Matching Brace" 
+				shortcut = "Control|B" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.Paste" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.Delete" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Commands.FileCommands.SaveAs" />
+		<CommandItem id = "MonoDevelop.Commands.FileCommands.CloseFile" />
+		<SeparatorItem id = "Separator2" _label = "-" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.CommentCode" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.UncommentCode" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.IndentSelection" />
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.UnIndentSelection" />
+		<ItemSet id = "FileMode" _label = "Highlighting Mode">
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.HighlightingTypeList" />
+		</ItemSet>
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.ShowBufferOptions" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/ToolBar">
+		<ItemSet id = "Search" insertafter = "Standard" insertbefore = "Build">
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.Find" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.FindNext" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.Replace" />
+			<SeparatorItem id = "SearchSeparator" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.ToggleBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.PrevBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.NextBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.ClearBookmarks" />
+		</ItemSet>
+	</Extension>
+	
+	
+	<Extension path = "/SharpDevelop/Workbench/MainMenu">
+		<ItemSet id = "Search" insertafter ="View" insertbefore ="Tools" _label = "_Search">
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.Find" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.FindPrevious" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.FindNext" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.FindNextSelection" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.Replace" />
+			
+			<SeparatorItem id = "SearchSeparator" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.FindInFiles" />
+			<CommandItem id = "MonoDevelop.Commands.SearchCommands.ReplaceInFiles" />
+				
+			<SeparatorItem id = "SearchInFilesSeparator" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.ToggleBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.PrevBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.NextBookmark" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.ClearBookmarks" />
+
+			<SeparatorItem id = "Separator2" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.GotoLineNumber" />
+			<SeparatorItem id = "Separator3" />
+			<CommandItem id = "MonoDevelop.DefaultEditor.EditorCommands.GotoMatchingBrace" />
+		</ItemSet>
+	</Extension>
+	
+	<!--
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/Window">
+		<Conditional activewindow="MonoDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<MenuItem id = "SplitTextEditor"
+			          insertafter="NxtPrvSeparator"
+			          insertbefore="CloseAll"
+			          _label = "${res:XML.MainMenu.WindowMenu.Split}"
+			          icon  = "Icons.16x16.SplitWindow"
+			          description = "${res:XML.MainMenu.WindowMenu.Split.Description}"
+			          class ="MonoDevelop.DefaultEditor.EditorCommands.SplitTextEditor"/>
+		</Conditional> 
+	</Extension>
+	-->
+	
+	<!-- <Extension path = "/SharpDevelop/Workbench/MainMenu/Edit">
+                <MenuItem insertafter = "Delete" insertbefore = "SelectAll" id = "Separator2" _label = "-" />
+                <MenuItem insertafter = "Separator2" insertbefore = "Separator3" id = "Format" _label = "${res:XML.MainMenu.EditMenu.FormatMenu}">
+	                <Conditional activewindow="MonoDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+                        
+                        <MenuItem id = "RemoveLeadingWs" 
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.RemoveLeadingWS"/>
+                        <MenuItem id = "RemoveTrailingWs"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs.Description}"
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.RemoveTrailingWS"/>
+                        <MenuItem id = "Seperator1" _label = "-" />
+                        <MenuItem id = "UpperCase"  
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}" 
+                                  icon = "Icons.16x16.LowerToUpperCase" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ToUpperCase"/>
+                        <MenuItem id = "LowerCase" 
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}" 
+                                  icon = "Icons.16x16.UpperToLowerCase" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase.Description}"
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ToLowerCase"/>
+                        <MenuItem id = "Capitalize"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.CapitalizeAction"/>
+                        <MenuItem id = "InvertCase"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.InvertCaseAction"/>
+                        <MenuItem id = "Separator2" _label = "-" />
+                        <MenuItem id = "SortSelection"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.SortSelection"/>
+                        <MenuItem id = "Separator3" _label = "-" />
+                        <MenuItem id = "Tabs2Spaces" 
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}" 
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ConvertTabsToSpaces"/>
+                        <MenuItem id = "Spaces2Tabs"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab.Description}"
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ConvertSpacesToTabs"/>
+                        <MenuItem id = "LeadingTabs2Spaces"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ConvertLeadingTabsToSpaces"/>
+                        <MenuItem id = "LeadingSpaces2Tabs"
+                                  _label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"   
+                                  description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab.Description}" 
+                                  class ="MonoDevelop.DefaultEditor.EditorCommands.ConvertLeadingSpacesToTabs"/>
+        		</Conditional>
+                </MenuItem>
+                <MenuItem insertafter = "Format" insertbefore = "Separator3" id = "Folding" _label = "${res:XML.MainMenu.EditMenu.FoldingMenu}">
+	                <Conditional activewindow="MonoDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+	                        <MenuItem id          = "ToggleFolding"
+        	                          _label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+                	                  description = "Toggles the current selected folding"
+					  shortcut    = "Shift|Control|M"
+	                                  class       = "MonoDevelop.DefaultEditor.EditorCommands.ToggleFolding"/>
+	                        <MenuItem id          = "ToggleAllFoldings"
+        	                          _label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+	         	                  description = "Toggles all foldings" 
+       					  shortcut    = "Shift|Control|L"
+	                                  class       = "MonoDevelop.DefaultEditor.EditorCommands.ToggleAllFoldings"/>
+	                        <MenuItem id          = "ShowDefinitionsOnly"
+        	                          _label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+                	                  description = "Shows only the definitions" 
+       					  shortcut    = "Shift|Control|P"
+	                                  class       = "MonoDevelop.DefaultEditor.EditorCommands.ShowDefinitionsOnly"/>
+        		</Conditional>
+                </MenuItem>
+                <MenuItem insertafter = "Separator2" insertbefore = "SelectAll" id = "Separator3" _label = "-" />
+	</Extension> -->
+
+	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
+		<DialogPanel id = "General"
+		             _label = "General"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.GeneralTextEditorPanel"/>
+		<DialogPanel id = "Markers"
+		             _label = "Markers and Rulers"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.MarkersTextEditorPanel"/>
+		<DialogPanel id = "Behavior"
+		             _label = "Behavior"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+		<DialogPanel id = "SyntaxHighlighting"
+		             _label = "Syntax highlighting"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.SyntaxHighlightingPanel"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "TextEditorOptions"
+		             insertafter = "CodingOptions"
+		             insertbefore = "ToolsOptions"
+		             _label = "Text Editor">
+			<DialogPanel id = "General"
+			             _label = "General"
+			             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.GeneralTextEditorPanel"/>
+			<DialogPanel id = "Markers"
+			             _label = "Markers And Rulers"
+			             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.MarkersTextEditorPanel"/>
+			<DialogPanel id = "Behavior"
+			             _label = "Behavior"
+			             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+			<DialogPanel id = "SyntaxHighlighting"
+		             _label = "Syntax highlighting"
+		             class = "MonoDevelop.EditorBindings.Gui.OptionPanels.SyntaxHighlightingPanel"/>
+		</DialogPanel>
+	</Extension>
+
+<!--	
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<Conditional activewindow="MonoDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<MenuItem id = "InsertColor"
+			          insertafter = "Separator1" insertbefore = "Separator2"
+			          _label = "${res:XML.MainMenu.ToolMenu.InsColor}" 
+			          description = "${res:XML.MainMenu.ToolMenu.InsColor.Description}" 
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.ShowColorDialog"/>
+			<MenuItem id = "Separator2" _label = "-" />
+
+			<MenuItem id = "GenerateCodeAction"
+			          insertafter = "Separator2"
+			          _label = "${res:XML.MainMenu.ToolMenu.GenerateCode}" 
+			          description = "${res:XML.MainMenu.ToolMenu.GenerateCode.Description}" 
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.GenerateCodeAction"/>
+			<MenuItem id = "ShowQuickHelp"
+			          _label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}" 
+			          description = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc.Description}" 
+			          shortcut = "Control|Q"
+			          class = "MonoDevelop.DefaultEditor.EditorCommands.QuickDocumentation"/> 
+			<MenuItem id = "Separator3" _label = "-" />
+		</Conditional>
+	</Extension>
+-->	
+	
+	<!-- Note : Most actions are put directly into the control, because 
+	            they're used for the standalone version too, only put keys in the
+	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
+	<Extension path = "/AddIns/DefaultTextEditor/EditActions">
+		<EditAction id = "TemplateCompletion" class = "MonoDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>		
+		<EditAction id = "IndentSelection" class = "MonoDevelop.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>		
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "NewText"
+		       supportedformats = "Text Files,Source Files"
+		       class = "MonoDevelop.SourceEditor.Gui.SourceEditorDisplayBinding" />
+	</Extension>
+	
+</AddIn>

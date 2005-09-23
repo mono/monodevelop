@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Template originator   = "Levi Bard" 
+          created      = "10/19/2004"
+          lastModified = "10/23/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Console Project</_Name>
+		<Category>VBNet</Category>
+		<Icon>res:VB.Project.DOSProject</Icon>
+		<LanguageName>VBNet</LanguageName>
+		<_Description>Create a console VB.Net project</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "application.vb"/>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<!--  <Options Target = "Class" PauseConsoleOutput = "True" /> -->
+	
+			<Files>
+				<File name = "application.vb">
+<![CDATA['''''
+'  application.vb
+' 
+'  created on ${Date} at ${Time}
+'''''
+
+Public Class application
+	Public Shared Sub Main()
+		System.Console.WriteLine("Hello world!")
+	End Sub
+End Class
+]]></File>		
+			</Files>
+		</Project>
+	</Combine>
+</Template>

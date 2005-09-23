@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Template Originator="John Luke" 
+          Language="GtkSharpWindow" Created="1/02/2004" LastModified="2/25/2004">
+	
+	<TemplateConfiguration>
+		<_Name>Gtk# Window</_Name>
+		<Icon>res:C#.File.Form</Icon>
+		<Category>C#</Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a top-level Gtk# window.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".cs" DefaultName="MyWindow">
+<![CDATA[// created on ${Date} at ${Time}
+using System;
+using Gtk;
+using GtkSharp;
+
+namespace MyWindow
+{
+	public class CreatedWindow : Window
+	{
+		public CreatedWindow () : base ("MyWindow")
+		{
+		}
+	}
+}
+]]></File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

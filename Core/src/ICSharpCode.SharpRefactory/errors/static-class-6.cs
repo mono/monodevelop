@@ -1,0 +1,6 @@
+static class Foo
+{
+	~Foo ()
+	{
+	}
+}

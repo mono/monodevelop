@@ -1,0 +1,16 @@
+<Combine name="MonoQuery" fileversion="2.0">
+  <Configurations>
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="MonoQuery" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="MonoQuery" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="MonoQuery" single="True">
+    <Execute type="None" entry="MonoQuery" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./MonoQuery.mdp" />
+  </Entries>
+</Combine>

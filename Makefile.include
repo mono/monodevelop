@@ -1,0 +1,3 @@
+
+build_sources = $(addprefix $(srcdir)/, $(FILES)) $(GENERATED_FILES)
+

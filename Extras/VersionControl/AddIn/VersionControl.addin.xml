@@ -1,0 +1,55 @@
+<AddIn name      = "MonoDevelop Version Control Addin"
+       author    = "Joshua Tauberer"
+       copyright = "GPL"
+       url       = "http://taubz.for.net/code/diff"
+       description = "A MonoDevelop addin for using version control systems like Subversion"
+       version   = "0.1">
+ 
+   <Runtime>
+           <Import assembly="Diff.dll"/>
+           <Import assembly="DiffWidget.dll"/>
+           <Import assembly="VersionControl.dll"/>
+           <Import assembly="VersionControlAddIn.dll"/>
+   </Runtime>
+ 
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Gui.Pads.ProjectPad">
+		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
+		<NodeBuilder id = "VersionControlNodeExtension" class = "VersionControlPlugin.VersionControlNodeExtension"/>
+	</Extension>
+        
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "VersionControlPlugin.Commands.Diff" 
+			_label = "Diff"
+			description = "Show the changes made to the local copy since the last update."/>
+		<Command id = "VersionControlPlugin.Commands.Log" 
+			_label = "Log"
+			description = "Shows the commit history of the file or folder."/>
+		<Command id = "VersionControlPlugin.Commands.Status" 
+			_label = "Status"
+			description = "Shows the status of files in the folder."/>
+		<Command id = "VersionControlPlugin.Commands.Update" 
+			_label = "Update"
+			description = "Updates the local copy with remote changes."/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
+		<CommandItem id = "VersionControlPlugin.Commands.Diff"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+	</Extension>
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
+		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+	</Extension>
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+	</Extension>
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
+		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+	</Extension>
+</AddIn>
+	

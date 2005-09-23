@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template originator   = "Gary Gray" 
+          created      = "09/05/2001"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+                <_Name>Empty Project</_Name>
+                <Category>Java</Category>
+                <Icon>res:Java.Project.EmptyProject</Icon>
+                <LanguageName>Java</LanguageName>
+                <_Description>Creates an empty Java solution.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "."/>
+	</Combine>
+</Template>

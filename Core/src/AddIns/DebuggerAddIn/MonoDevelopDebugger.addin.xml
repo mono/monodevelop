@@ -1,0 +1,29 @@
+<AddIn name	 = "MonoDevelop Debugger"
+       author	 = "Todd Berman"
+       copyright = "GPL"
+       url       = ""
+       description = ""
+       version   = "0.3">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Debugger.dll"/>
+	</Runtime>
+
+	<Extension path="/Workspace/Services">
+		<Class id = "DebuggingService"
+		    class = "MonoDevelop.Debugger.DebuggingService"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Pads">
+		<Pad id = "MonoDevelop.Debugger.LocalsPad"     class = "MonoDevelop.Debugger.LocalsPad"/>
+		<Pad id = "MonoDevelop.Debugger.StackTracePad" class = "MonoDevelop.Debugger.StackTracePad"/>
+		<Pad id = "MonoDevelop.Debugger.ThreadPad"     class = "MonoDevelop.Debugger.ThreadPad"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Contexts/Debug">
+		<ContextPad id = "MonoDevelop.Debugger.LocalsPad" />
+		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
+		<ContextPad id = "MonoDevelop.Debugger.ThreadPad" />
+	</Extension>
+</AddIn>
+

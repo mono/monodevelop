@@ -1,0 +1,12 @@
+ - bug in debug mode where everything goes into 1 notebook
+	(probably placeholder related)
+ - placeholders in layout store/restore
+ - docs
+ - when we can use pango 1.6, use the built-in ellipsizing
+ - audit event emitting frequency
+ - use less ArrayLists
+ - doubleclick to toggle maximize/restore of a tab
+
+potential new features
+ - restore size/position on de-iconify?
+ - autohide, bug 54686

@@ -1,0 +1,5 @@
+2004-10-25  John Luke  <john.luke@gmail.com>
+
+	* AssemblyAnalzer.cs: comment Console.WriteLine
+	* Resolution.cs: remove Variables stuff for string substitution
+	the Rules can just pass in the final text.

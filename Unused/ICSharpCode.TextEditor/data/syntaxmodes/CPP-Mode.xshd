@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger -->
+
+<SyntaxDefinition name = "C++" extensions = ".c;.h;.cc;.C;.cpp;.hpp">
+
+	<Environment>
+		<Default      color = "SystemColors.WindowText"    bgcolor = "SystemColors.Window"/>
+		<Selection    color = "SystemColors.HighlightText" bgcolor = "SystemColors.Highlight"/>
+<!--		<Selection    bgcolor = "LightBlue"/> -->
+		<VRuler       color = "SystemColors.ControlLight"/>
+		<InvalidLines color = "Red"/>
+		<CaretMarker  color = "Yellow"/>
+		
+		<LineNumbers  color = "SystemColors.ControlDark" bgcolor = "SystemColors.Window"/>
+		
+		<FoldLine     color = "#808080" bgcolor="Black"/>
+		<FoldMarker   color = "#808080" bgcolor="White"/>
+		
+		<EOLMarkers   color = "#E0E0E5"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+	</Environment>
+	
+	<Properties>
+		<Property name="LineComment" value="//"/>
+	</Properties>
+	
+	<Digits   name = "Digits" bold = "false" italic = "false" color = "Black"/>
+	
+	<RuleSets>
+		<RuleSet ignorecase = "false">
+	  		<Delimiters>~!%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
+		
+			<Span name = "LINECOMMENT" bold = "false" italic = "false" color = "SlateGray" stopateol = "true">
+				<Begin>//</Begin>
+			</Span>
+			
+			<Span name = "BLOCKCOMMENT" bold = "false" italic = "false" color = "SlateGray" stopateol = "false">
+				<Begin>/*</Begin>
+				<End>*/</End>
+			</Span>
+		  	
+			<Span name = "STRING" bold = "false" italic = "false" color = "Black" stopateol = "true">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+			
+			<Span name = "CHAR" bold = "false" italic = "false" color = "Black" stopateol = "true">
+				<Begin>'</Begin>
+				<End>'</End>
+			</Span>
+			
+			<KeyWords name = "PreProcessor" bold="false" italic="false" color="Blue">
+				<Key word = "#define" />
+			        <Key word = "#if" />
+			        <Key word = "#elif" /> 
+			        <Key word = "#else" />
+			        <Key word = "#endif" />
+			        <Key word = "#ifdef" />
+			</KeyWords>
+	
+			<KeyWords name = "KEYWORD1" bold="true" italic="false" color="Blue">
+				<Key word = "and" />
+				<Key word = "and_eq" />
+				<Key word = "asm" />
+				<Key word = "auto" />
+				<Key word = "bitand" />
+				<Key word = "bitor" />
+				<Key word = "bool" />
+				<Key word = "break" />
+				<Key word = "case" />
+				<Key word = "catch" />
+				<Key word = "char" />
+				<Key word = "class" />
+				<Key word = "compl" />
+				<Key word = "const" />
+				<Key word = "const_cast" />
+				<Key word = "continue" />
+				<Key word = "default" />
+				<Key word = "delete" />
+				<Key word = "do" />
+				<Key word = "double" />
+				<Key word = "dynamic_cast" />
+				<Key word = "else" />
+				<Key word = "enum" />
+				<Key word = "explicit" />
+				<Key word = "export" />
+				<Key word = "extern" />
+				<Key word = "false" />
+				<Key word = "float" />
+				<Key word = "for" />
+				<Key word = "friend" />
+				<Key word = "goto" />
+				<Key word = "if" />
+				<Key word = "inline" />
+				<Key word = "int" />
+				<Key word = "long" />
+				<Key word = "mutable" />
+				<Key word = "namespace" />
+				<Key word = "new" />
+				<Key word = "not" />
+				<Key word = "not_eq" />
+				<Key word = "operator" />
+				<Key word = "or" />
+				<Key word = "or_eq" />
+				<Key word = "private" />
+				<Key word = "protected" />
+				<Key word = "public" />
+				<Key word = "register" />
+				<Key word = "reinterpret_cast" />
+				<Key word = "return" />
+				<Key word = "short" />
+				<Key word = "signed" />
+				<Key word = "sizeof" />
+				<Key word = "static" />
+				<Key word = "static_cast" />
+				<Key word = "struct" />
+				<Key word = "switch" />
+				<Key word = "template" />
+				<Key word = "this" />
+				<Key word = "throw" />
+				<Key word = "true" />
+				<Key word = "try" />
+				<Key word = "typedef" />
+				<Key word = "typeid" />
+				<Key word = "typename" />
+				<Key word = "union" />
+				<Key word = "unsigned" />
+				<Key word = "using" />
+				<Key word = "virtual" />
+				<Key word = "void" />
+				<Key word = "volatile" />
+				<Key word = "while" />
+				<Key word = "xor" />
+				<Key word = "xor_eq" />
+			</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>
+

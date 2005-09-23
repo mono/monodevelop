@@ -1,0 +1,436 @@
+2005-09-23  Peter Johanson  <latexer@gentoo.org>
+
+	* CSharpBindingCompilerManager.cs: Fix mcs location detection.
+
+2005-08-20  Peter Johanson  <latexer@gentoo.org>
+
+	* templates/GnomeSharp2Project.xpt.xml:
+	* templates/GladeSharp2Project.xpt.xml:
+	* templates/GtkSharp2Project.xpt.xml: Change gtk-sharp references to
+	match new assembly versions.
+
+2005-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpAmbience.cs: Don't include the inheritance tree when converting
+	an enum.
+
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* templates/*:
+	* CSharpBinding.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* CSharpBinding.mdp: references update
+
+2005-08-10  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* CSharpBindingCompilerManager.cs: Disable implicit references to
+	system assemblies. All references must now be explicitely specified.
+
+2005-08-06  Ben Motmans  <ben.motmans@gmail.com>
+
+	* CSharpBindingCompilerManager.cs: correctly parse mcs errors.
+
+2005-08-09  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/Parser.cs:
+	* Parser/Resolver.cs:
+	* Gui/CodeGenerationPanel.cs: Use the new IParserContext API.
+	
+	* Parser/TypeVisitor.cs: Made the class internal.
+
+2005-07-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharp.glade:
+	* Gui/CodeGenerationPanel.cs: Use a combo entry for the main class
+	field. Disable that entry when building a library.
+
+2005-07-14  Ben Motmans  <ben.motmans@gmail.com>
+
+	* templates/GladeSharp2Project.xpt.xml:
+	removed duplicate reference to glade-sharp-2.0
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CSharpCompilerParameters.cs: Implement ICloneable.
+	* CSharpLanguageBinding.cs: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-05-15  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* CSharp.glade: Several fixes to make the dialogs more conforming
+	to the HIG.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-04-09  John Luke  <john.luke@gmail.com>
+
+	* PrettyPrinter: kill (it was empty)
+	* Parser/ExpressionFinder.cs: remove redundent assignment
+	to fix warning
+	* Gui/CodeGenerationPanel.cs: remove unused StringParserService
+	section
+
+2005-03-20  John Luke  <john.luke@gmail.com>
+
+	* CSharpBindingCompilerManager.cs: display warning on invalid
+	reference lookup, partial fix for bug #70645
+
+2005-03-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Resolver.cs: Track api changes.
+
+2005-02-16  Ben Motmans  <ben.motmans@gmail.com>
+
+	* ConsoleProject.xpt.xml:
+	* CSharpSessionStateWebService.xpt.xml:
+	* CSharpWebService.xpt.xml:
+	* Library.xpt.xml:
+	Consistent naming
+
+	* GladeSharp2Project.xpt.xml:
+	* GnomeSharp2Project.xpt.xml:
+	* GtkSharp2Project.xpt.xml:
+	* CSharpBinding.addin.xml:
+	* Makefile.am:
+	Added templates
+
+2005-02-18  John Luke  <john.luke@gmail.com>
+
+	* CSharpCompilerManager.cs: pass /optimize if enabled
+
+2005-02-05  John Luke  <john.luke@gmail.com>
+
+	* Gui/CodeGenerationPanel.cs: enable doc generation
+
+2005-02-01  John Luke  <john.luke@gmail.com>
+
+	* Parser/Parser.cs: use ErrorInfo
+
+2005-01-28  John Luke  <john.luke@gmail.com>
+
+	* Parser/Resolver.cs (IsAccessible):
+	internal should return true
+	fixes bug# 60526
+
+2005-01-28  John Luke  <john.luke@gmail.com>
+
+	* Parser/Resolver.cs: remove incorrect special case
+	for properties that made them visible to completion
+	incorrectly on static to instance and vice-versa
+	fixes bug# 69741
+
+2005-01-28  John Luke  <john.luke@gmail.com>
+
+	* Parser/Parser.cs: update to CanParse
+	* Parser/*.cs: update some minor fixes from SD
+
+2005-01-27  John Luke  <john.luke@gmail.com>
+
+	* CSharpBindingCompilerManager.cs:
+	* Parser/CSharpVisitor.cs:
+	* Parser/Resolver.cs:
+	* FormattingStrategy/CSharpFormattingStrategy.cs: comment out
+	some unused lines that produced warnings
+
+2005-01-27  John Luke  <john.luke@gmail.com>
+
+	* CSharp.glade: update to new glade format
+	* Gui/CodeGenerationPanel.cs:
+	* CSharp.glade: use ComboBox instead of OptionMenu
+
+2005-01-26  John Luke  <john.luke@gmail.com>
+
+	* templates/GtkSharpProject.xpt.xml
+	* templates/GnomeSharpProgram.xft.xml
+	* templates/GladeSharpProject.xpt.xml: clean up,
+	consistent naming, spacing, tabbing
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpLanguageBinding.cs: 
+	* CSharpBindingCompilerManager.cs: Use the new progress monitor API.
+	
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpLanguageBinding.cs: 
+	* Gui/ChooseRuntimePanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* CSharpBindingCompilerManager.cs:
+	* CSharpBinding.addin.xml:
+	* Parser/Parser.cs:
+	* Parser/Resolver.cs: Follow architecture changes.
+	
+	* Project/CSharpCompilerParameters.cs: Moved some parameters and enum
+	definitions to DotNetProjectConfiguration.
+	
+	* CSharp.glade:
+	* Gui/OutputOptionsPanel.cs: Removed dialog now implemented in Monodevelop.Base.
+
+	* Project/CSharpProject.cs:
+	* CSharpBindingExecutionManager.cs.in: Removed. Not needed any more.
+	
+	* Makefile.am: Updated.
+
+2004-12-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBindingCompilerManager.cs: StatusBarService.ProgressMonitor is
+	not a StatusBar widget any more.
+
+2004-12-09  Todd Berman  <tberman@off.net>
+
+	* CSharpBindingCompilerManager.cs: mcs in Mono 1.1.3 now outputs error
+	on stderr instead of stdout. The old code just inspected stdout, now
+	we look at both.
+
+2004-12-08  Everaldo Canuto  <everaldo_canuto@yahoo.com.br>
+
+	* CSharpBindingCompilerManager.cs: Add support to multiple compilers
+	in Makefiles generated by MonoDevelop.
+
+2004-12-07  Alexandre Gomes <alexmipego@hotmail.com>
+
+	* CSharpLanguageBinding.cs: Added CommentTag to be used by (Un)CommentCode
+
+2004-11-16  Todd Berman  <tberman@off.net>
+
+	* CSharpBindingCompilerManager.cs: Properly output local assembly
+	references.
+
+2004-11-09  Todd Berman  <tberman@off.net>
+
+	* CSharpBindingCompilerManager.cs: Use SAS for assembly detection.
+	This doesnt seem to break anything for me.
+
+2004-11-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+      
+	* Parser/Parser.cs: Added HandlesFileExtension to work with new
+	IParser
+
+2004-11-01  Todd Berman  <tberman@off.net>
+
+	* CSharpBindingExecutionManager.cs.in: Add fu to actually properly run
+	the execute script.
+
+2004-09-25  Peter Johanson <latexer@gentoo.org>
+
+	* CSharpBindingCompilerManager.cs: Hack to a hack to fix compilation
+	on 1.1.1 with the new corlib location.
+
+2004-09-20  Valters Svabe  <valters@inbox.lv>
+
+	* CSharpBindingExecutionManager.cs.in: Respect PauseConsoleOutput
+	option.
+
+2004-07-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Resolver.cs: When locating the inner or outer classes, get the 
+	  class from the parser service, since it has all type names resolved 
+	  (the one got from the compilation unit does not).
+
+2004-07-05  Todd Berman  <tberman@off.net>
+
+	* CSharpBindingExecutionManager.cs: removed.
+	* CSharpBindingExecutionManager.cs.in: Added
+	* Makefile.am: modified.
+	This patch is from Marcin Krzyzanowski <krzak@pld-linux.org> and it
+	fixes mint issues.
+
+2004-07-04  John Luke  <jluke@cfl.rr.com>
+
+	* Gui/OutputOptionsPanel.cs: use MessageService, remove ResourceService
+
+2004-07-01  Todd Berman  <tberman@off.net>
+
+	* Parser/Resolver.cs: fix up CtrlSpace resolving to add this. members
+	to the completion window. We need to figure out what is causing the
+	public class MyWindow : Window not working but the public class
+	MyWindow : Gtk.Window still works and this stuff will look good.
+	* Gui/OutputOptionsPanel.cs: remove dup'd namespace.
+
+2004-06-22  John Luke <jluke@cfl.rr.com>
+
+	* CSharpBindingCompilerManager.cs: be explicit when copying the
+	assembly to avoid silent failures (use build/bin/. not build/bin)
+
+2004-06-17  John Luke  <jluke@cfl.rr.com>
+
+	* Gui/OutputOptionsPanel.cs: Use MonoDevelop.Gui.Widgets.FileSelector
+	instead of Gtk.FileSelection
+
+2004-05-30  Lluis Sanchez Gual  <lluis@ximian.com>
+
+	* Parser/Resolver.cs: Resolve base classes using a deep search in all
+	  project references. In SearchType, fixed namespace lookup so it works
+	  for inner classes as well.
+
+2004-05-27  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: fix up projects with space in
+	their name.
+
+2004-05-26  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: more makefile magic.
+
+2004-05-25  Todd Berman  <tberman@sevenl.net>
+
+	* Parser/Parser.cs: Update MonodocResolver and IsAsResolver.
+	* Parser/Resolver.cs: Update MonodocResolver and IsAsResolver
+
+2004-05-25  Lluis Sanchez Gual  <lluis@ximian.com>
+
+	* Parser/Parser.cs: Set the file name to the region of each parsed class.
+	  Added IProject parameter in CtrlSpace and Resolve.
+	* Parser/Resolver.cs: Added IProject parameter where needed. Use new 
+	  methods in IParserService.
+
+2004-05-25  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpLanguageBinding.cs: signature change for GenerateMakefile
+	* CSharpBindingCompilerManager.cs: lots of new stuff, make run compat
+	stuff, etc, etc
+
+2004-05-22  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: add "s to work around potential
+	spaces... spaces... urgh. closes bug #58840
+
+2004-05-18  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: add a warning to the top of the
+	makefiles.
+
+2004-05-18  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: change from /option to -option
+
+2004-05-16  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: output a much better makefile.
+	now using /pkg, checking for deps, etc.
+	* Parser/Parser.cs: passthrough for Monodoc resolver.
+	* Parser/Resolver.cs: New resolver for identifying a type and sending
+	back a monodoc url for it. It needs to be worked on to return proper
+	M: style urls in addition to T: style urls.
+
+2004-05-08  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: output /define and /main properly.
+
+2004-05-08  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: output /unsafe properly.
+
+2004-04-29  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: add a clean target
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingExecutionManager.cs: People running apps from the IDE
+	can be assumed to want line numbers if we can give them. Adding --debug
+	to the execution.
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: add code for project references.
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManger.cs: add code for assembly references
+	and embeding resources.
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpLanguageBinding.cs: implemented GetMakefile passthru.
+	* CSharpBindingCompilerManager.cs: dirty dirty dirty first draft run
+	through of GenerateMakefile, I have tested this with exactly *one*
+	project, and that is all, just wanted to get something in svn.
+
+2004-04-24  Todd Berman  <tberman@sevenl.net>
+
+	* Parser/Parser.cs: new IsAsResolver passthrough.
+	* Parser/Resolver.cs: new IsAsResolver to manage some (limited)
+	completion there.
+
+2004-04-23  John Luke  <jluke@cfl.rr.com>
+
+	* CsharpBindingCompilerManager.cs: add /codepage:utf8
+
+2004-04-19  Todd Berman  <tberman@sevenl.net>
+
+	* Parser/Resolver.cs: Turn local variables into a properly consumable
+	type for code completion.
+
+2004-04-09  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingCompilerManager.cs: Show that something is going
+	on so people dont get too worried. (Speed might need some work)
+	* Makefile.am: add glib
+
+2004-04-04  John Luke  <jluke@cfl.rr.com>
+
+	* CSharpBindingExecutionManager.cs: improve error message
+
+2004-04-03  Todd Berman  <tberman@sevenl.net>
+
+	* Gui/OutputOptionsPanel.cs:
+	* Gui/CodeGenerationPanel.cs: gettextify
+
+2004-04-03  Todd Berman  <tberman@sevenl.net>
+
+	* Project/CSharpCompilerParameters.cs: duh, refix library target bug
+
+2004-04-01  Todd Berman  <tberman@sevenl.net>
+
+	* Gui/OutputOptionsPanel.cs: parse resource string, closes bug #56325
+
+2004-03-31  Todd Berman  <tberman@sevenl.net>
+
+	* CSharpBindingExecutionManager.cs: dont test CompileTarget, for now
+	assume *everything* is being run in a terminal and pausing for output.
+
+2004-03-31  Todd Berman  <tberman@sevenl.net>
+
+	* Makefile.am: i think this fixed nick's bug.
+
+2004-03-28  John Luke  <jluke@cfl.rr.com>
+
+	* Parser/Resolver.cs: comment some CWL's that were causing exceptions
+
+2003-03-27  Todd Berman  <tberman@sevenl.net>
+
+	* *: update parser and other things from upstream.
+
+2003-03-26  John Luke  <jluke@cfl.rr.com>
+
+	* CSharpBindingExecutionManager.cs: use xterm instead of
+	gnome-terminal, fixes bug #53689 and also works when people
+	don't have gnome-terminal installed
+
+2004-03-22  Todd Berman  <tberman@sevenl.net>
+
+	* Project/CSharpCompilerParameters.cs: reverse WinExe and Library in
+	the enum, closing bug #55881. fix from vdaron
+
+2004-03-21  Todd Berman  <tberman@sevenl.net>
+
+	* Parser/Parser.cs:
+	* Parser/CSharpVisitor.cs:
+	* Parser/Resolver.cs:
+	* Parser/TypeVisitor.cs:
+	* Parser/SharpDevelopTree/Indexer.cs:
+	* Parser/SharpDevelopTree/Method.cs:
+	* Parser/SharpDevelopTree/Event.cs:
+	* Parser/SharpDevelopTree/ReturnType.cs:
+	* Parser/SharpDevelopTree/Field.cs:
+	* Parser/SharpDevelopTree/Property.cs:
+	* Parser/SharpDevelopTree/Constructor.cs:
+	* Parser/SharpDevelopTree/Class.cs: changes to reflect brand spankin
+	new parser. (from #D)

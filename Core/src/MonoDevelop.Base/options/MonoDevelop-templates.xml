@@ -1,0 +1,66 @@
+<CodeTemplates version="2.0">
+  <CodeTemplateGroup extensions=".cs">
+    <CodeTemplate template="classp" description="class declaration (public)">public class |
+{
+	
+}</CodeTemplate>
+    <CodeTemplate template="forb" description="for block">for (|; ; ) {
+
+}</CodeTemplate>
+    <CodeTemplate template="fors" description="for (no braces)">for (|; ; )</CodeTemplate>
+    <CodeTemplate template="ifb" description="if statement">if (|) {
+	
+}</CodeTemplate>
+    <CodeTemplate template="ife" description="if else">if (|) {
+	
+} else {
+	
+}</CodeTemplate>
+    <CodeTemplate template="ifs" description="if statement (no braces)">if (|)</CodeTemplate>
+    <CodeTemplate template="switchd" description="switch statement (with default)">switch (|) {
+case:
+case:
+default:
+}</CodeTemplate>
+    <CodeTemplate template="switchs" description="switch statement">switch (|) {
+case :
+case :
+}</CodeTemplate>
+    <CodeTemplate template="tryc" description="try / catch">try {
+|
+} catch (Exception) {
+	
+}</CodeTemplate>
+    <CodeTemplate template="trycf" description="try / catch / finally">try {
+|
+} catch (Exception) {
+
+} finally {
+
+}</CodeTemplate>
+    <CodeTemplate template="tryf" description="try / finally">try {
+|
+} finally {
+
+}</CodeTemplate>
+    <CodeTemplate template="whileb" description="while">while (|) {
+
+}</CodeTemplate>
+    <CodeTemplate template="whiles" description="while (no braces)">while (|)</CodeTemplate>
+    <CodeTemplate template="scwl" description="System.Console.WriteLine">System.Console.WriteLine(|);</CodeTemplate>
+    <CodeTemplate template="scw" description="System.Console.Write">System.Console.Write(|);</CodeTemplate>
+  </CodeTemplateGroup>
+  <CodeTemplateGroup extensions=".html;.htm">
+    <CodeTemplate template="boldb" description="bold block">&lt;b&gt;|${Selection}&lt;/b&gt;</CodeTemplate>
+    <CodeTemplate template="commentb" description="comment block">&lt;!--|${Selection}--&gt;</CodeTemplate>
+    <CodeTemplate template="heading1b" description="heading 1 block">&lt;h1&gt;|${Selection}&lt;/h1&gt;</CodeTemplate>
+    <CodeTemplate template="heading2b" description="heading 2 block">&lt;h2&gt;|${Selection}&lt;/h2&gt;</CodeTemplate>
+    <CodeTemplate template="heading3b" description="heading 3 block">&lt;h3&gt;|${Selection}&lt;/h3&gt;</CodeTemplate>
+    <CodeTemplate template="heading4b" description="heading 4 block">&lt;h4&gt;|${Selection}&lt;/h4&gt;</CodeTemplate>
+    <CodeTemplate template="italicb" description="italic block">&lt;i&gt;|${Selection}&lt;/i&gt;</CodeTemplate>
+    <CodeTemplate template="parab" description="paragraph block">&lt;p&gt;|${Selection}&lt;/p&gt;</CodeTemplate>
+  </CodeTemplateGroup>
+  <CodeTemplateGroup extensions=".xml;.xfrm;.addin;.xft;.xpt">
+    <CodeTemplate template="commentb" description="comment block">&lt;!--|${Selection}--&gt;</CodeTemplate>
+  </CodeTemplateGroup>
+</CodeTemplates>

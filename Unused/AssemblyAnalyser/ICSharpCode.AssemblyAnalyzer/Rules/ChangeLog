@@ -1,0 +1,5 @@
+2004-10-25  John Luke  <john.luke@gmail.com>
+
+	* All Rules: add the Description, Details, and Resoltion text into the rule
+	I18N will be done in another way, don't use contractions in text,
+	fix some typos spelling

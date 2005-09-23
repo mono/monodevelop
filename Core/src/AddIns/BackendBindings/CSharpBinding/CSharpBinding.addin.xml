@@ -1,0 +1,126 @@
+<AddIn name        = "CSharp Language Binding"
+       author      = "Todd Berman"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com/"
+       description = "CSharp Language Binding"
+       version     = "0.6">
+	
+	<Runtime>
+		<Import assembly = "CSharpBinding.dll"/>
+	</Runtime>
+
+	<Extension path = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "CSharp"
+		       class = "MonoDevelop.Services.CSharpAmbience"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/FileTemplates">
+		<FileTemplate id = "SessionState" resource = "CSharpSessionStateWebService.xft.xml"/>
+		<FileTemplate id = "WebService" resource = "CSharpWebService.xft.xml"/>
+		<FileTemplate id = "Empty" resource = "EmptyCSharpFile.xft.xml"/>
+		<FileTemplate id = "GnomeSharpProgram" resource = "GnomeSharpProgram.xft.xml"/>
+		<FileTemplate id = "GtkSharpWindow" resource = "GtkSharpWindow.xft.xml"/>
+		<FileTemplate id = "EmptyHTMLFile" resource = "EmptyHTMLFile.xft.xml"/>
+		<FileTemplate id = "AppConfigFile" resource = "AppConfigFile.xft.xml"/>
+		<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
+		<FileTemplate id = "EmptyTextFile" resource = "EmptyTextFile.xft.xml"/>
+		<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectTemplates">
+		<ProjectTemplate id = "ConsoleProject" resource = "ConsoleProject.xpt.xml"/>
+		<ProjectTemplate id = "EmptyProject" resource = "EmptyProject.xpt.xml"/>
+		<ProjectTemplate id = "GladeSharpProject" resource = "GladeSharpProject.xpt.xml"/>
+		<ProjectTemplate id = "GladeSharp2Project" resource = "GladeSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "GnomeSharpProject" resource = "GnomeSharpProject.xpt.xml"/>
+		<ProjectTemplate id = "GnomeSharp2Project" resource = "GnomeSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "GtkSharpProject" resource = "GtkSharpProject.xpt.xml"/>
+		<ProjectTemplate id = "GtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "Library" resource = "Library.xpt.xml"/>
+		<ProjectTemplate id = "BlankCombine" resource = "BlankCombine.xpt.xml"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "CSharp"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.CSharpFiles}"
+			    extensions = "*.cs"/>
+		<FileFilter id = "Assemblies"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.AssemblyFiles}"
+		            extensions = "*.exe,*.dll"/>
+			    
+		<FileFilter id = "Html"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.WebFiles}"
+		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp"/>
+			    
+		<FileFilter id = "Xml"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.XmlFiles}"
+		            extensions = "*.xml"/>
+		<FileFilter id = "Resources"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.ResourceFiles}"
+		            extensions = "*.resources,*.resx"/>
+	</Extension>
+
+	<Extension path = "/Workspace/Parser">
+		<Class id    = "CSharpParser" 
+		       class = "CSharpBinding.Parser.TParser"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Conditional activelanguage="C#">
+			<DialogPanel id = "CSharpCodeGenerationPanel"
+			             _label = "Code Generation"
+			             class = "CSharpBinding.CodeGenerationPanel"/>
+			<DialogPanel id = "CSharpOutputOptionsPanel"
+			             _label = "Output"
+			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+		</Conditional>
+	</Extension>
+		
+<!--	<Extension path = "/AddIns/DefaultTextEditor/Formater">
+		<Conditional textcontent = "C#">
+			<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
+		</Conditional>
+		<Conditional textcontent = "VBNET">
+			<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class ="VBBinding.FormattingStrategy.VBFormattingStrategy"/>
+		</Conditional>
+		<Conditional textcontent = "Java">
+			<Class id ="JavaFormatter" insertbefore="DefaultFormatter" class = "JavaBinding.FormattingStrategy.JavaFormattingStrategy"/>
+		</Conditional>
+	</Extension> -->
+	
+	<Extension path = "/Workspace/Icons">
+		<!-- C# -->
+		<Icon id         = "C#Prj"
+		      language   = "C#"
+		      resource   = "res:C#.ProjectIcon"/>
+
+		<Icon id         = "C#File"
+		      extensions = ".cs"
+		      resource   = "res:C#.FileIcon"/>
+		
+		<!-- Resources -->
+		<Icon id         = "ResourceFileIcon"
+		      extensions = ".resources,.resx"
+		      resource   = "md-resource-file-icon" />
+		<!-- XML -->
+		<Icon id         = "XmlFileIcon"
+		      extensions = ".xml"
+		      resource   = "md-file-xml-icon" />
+		<!-- TextFiles -->
+		<Icon id         = "TextFileIcon"
+		      extensions = ".txt,.doc"
+		      resource   = "md-text-file-icon"/>
+
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id    = "CSharp"
+		                 supportedextensions = ".cs"
+		                 class = "CSharpBinding.CSharpLanguageBinding" />
+    </Extension>
+</AddIn>

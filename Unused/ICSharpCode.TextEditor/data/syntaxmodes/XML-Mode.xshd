@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!-- syntaxdefinition for XML 2000 by Mike Krueger -->
+<SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd">
+	
+	<Environment>
+		<Default      color = "SystemColors.WindowText"    bgcolor = "SystemColors.Window"/>
+		<Selection    color = "SystemColors.HighlightText" bgcolor = "SystemColors.Highlight"/>
+<!--		<Selection    bgcolor = "LightBlue"/> -->
+		<VRuler       color = "SystemColors.ControlLight"/>
+		<InvalidLines color = "Red"/>
+		<CaretMarker  color = "Yellow"/>
+		
+		<LineNumbers  color = "SystemColors.ControlDark" bgcolor = "SystemColors.Window"/>
+		
+		<FoldLine     color = "#808080" bgcolor="Black"/>
+		<FoldMarker   color = "#808080" bgcolor="White"/>
+		
+		<EOLMarkers   color = "#E0E0E5"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+	</Environment>
+	
+	<Digits name="Digits" bold="false" italic="false" color="DarkBlue" />
+	<RuleSets>
+		<RuleSet ignorecase="false" noescapesequences="true">
+			<!-- It is not necessary to define span-delimiting characters as delimiters -->
+			<Delimiters></Delimiters>
+
+			<Span name="Comment" bold="false" italic="false" color="DarkSlateGray" stopateol="false">
+				<Begin>&lt;!--</Begin>
+				<End>--&gt;</End>
+			</Span>
+			<Span name="CDataSection" bold="false" italic="false" color="Blue" stopateol="false">
+				<Begin>&lt;![CDATA[</Begin>
+				<End>]]&gt;</End>
+			</Span>
+			<Span name="DocTypeSection" bold="false" italic="false" color="Blue" stopateol="false">
+				<Begin>&lt;!DOCTYPE</Begin>
+				<End>&gt;</End>
+			</Span>
+			<Span name="XmlDecl" bold="false" italic="false" color="Blue" stopateol="false">
+				<Begin>&lt;?</Begin>
+				<End>?&gt;</End>
+			</Span>
+			<Span name="XmlTag" rule="XmlTagSet" bold="false" italic="false" color="DarkMagenta" stopateol="false">
+				<Begin>&lt;</Begin>
+				<End>&gt;</End>
+			</Span>
+			<Span name="EntityReference" bold="false" italic="false" color="Blue" stopateol="true">
+				<Begin>&amp;</Begin>
+				<End>;</End>
+			</Span>
+		</RuleSet>
+
+		<RuleSet name="XmlTagSet" ignorecase="false" noescapesequences="true">
+			<Delimiters>/=</Delimiters>
+			<Span name="String" bold="false" italic="false" color="Blue" stopateol="true">
+				<Begin>&quot;</Begin>
+				<End>&quot;</End>
+			</Span>
+			<Span name="Char" bold="false" italic="false" color="Blue" stopateol="true">
+				<Begin>&apos;</Begin>
+				<End>&apos;</End>
+			</Span>
+			<MarkPrevious bold="false" italic="false" color="Red">=</MarkPrevious>
+			<KeyWords name="Slash" bold="false" italic="false" color="DarkMagenta">
+				<Key word="/" />
+			</KeyWords>
+			<KeyWords name="Assignment" bold="false" italic="false" color="Blue">
+				<Key word="=" />
+			</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>

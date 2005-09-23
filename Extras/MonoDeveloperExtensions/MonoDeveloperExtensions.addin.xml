@@ -1,0 +1,130 @@
+<AddIn name        = "MonoDeveloperExtensions"
+       author      = "Lluis Sanchez Gual"
+       copyright   = "(c) 2005 Novell, Inc."
+       url         = "http://www.monodevelop.com"
+       description = "MonoDevelop extensions for Mono developers"
+       version     = "0.0.1">
+    
+    <Runtime>
+        <Import assembly="MonoDeveloperExtensions.dll"/>
+    </Runtime>
+	
+	<Dependencies>
+		<AddIn name="MonoDevelop NUnit" />
+	</Dependencies>
+
+	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+		<FileFormat id = "MonoMakefile"
+						class = "MonoDeveloper.MonoMakefileFormat" />
+	</Extension>
+	
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activeproject = "MonoMakefile">
+		<DialogPanel id = "MonoMakefileOptionsPanel"
+					 _label = "Output"
+					 class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+    </Conditional>
+  </Extension>
+  
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDeveloper.Commands.Install"
+				defaultHandler = "MonoDeveloper.InstallHandler"
+				icon = "md-network"
+				_label = "Install" />
+		<Command id = "MonoDeveloper.Commands.SvnUpdate"
+				  _label = "Update" />
+		<Command id = "MonoDeveloper.Commands.SvnAdd"
+				  _label = "Add" />
+		<Command id = "MonoDeveloper.Commands.SvnCommit"
+				  _label = "Commit" />
+		<Command id = "MonoDeveloper.Commands.SvnDiff"
+				  _label = "Diff" />
+		<Command id = "MonoDeveloper.Commands.SvnStat"
+				  _label = "Stat" />
+		<Command id = "MonoDeveloper.Commands.SvnInfo"
+				  _label = "Info" />
+		<Command id = "MonoDeveloper.Commands.SvnRevert"
+				  _label = "Revert" />
+	</Extension>
+			
+	<Extension path = "/SharpDevelop/Workbench/ToolBar/Build">
+		<CommandItem id = "MonoDeveloper.Commands.Install" insertafter="MonoDevelop.Commands.ProjectCommands.Run"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<Conditional activeproject="MonoMakefile" action="Exclude">
+			<CommandItem id = "MonoDeveloper.Commands.Install"
+					  insertafter = "BuildGroupSeparator"
+					  insertbefore = "Add" />
+			<ItemSet id = "Svn" _label="Subversion">
+				<CommandItem id = "MonoDeveloper.Commands.SvnUpdate"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnAdd"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnCommit"/>
+				<SeparatorItem id = "s1" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnDiff"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnStat"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnInfo"/>
+				<SeparatorItem id = "s2" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnRevert"/>
+			</ItemSet>
+			<SeparatorItem id = "svnSep" />
+		</Conditional>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultFileNode">
+		<Conditional activeproject="MonoMakefile" action="Exclude">
+			<ItemSet id = "Svn" _label="Subversion">
+				<CommandItem id = "MonoDeveloper.Commands.SvnUpdate"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnAdd"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnCommit"/>
+				<SeparatorItem id = "s1" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnDiff"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnStat"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnInfo"/>
+				<SeparatorItem id = "s2" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnRevert"/>
+			</ItemSet>
+			<SeparatorItem id = "svnSep" />
+		</Conditional>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
+		<Conditional activeproject="MonoMakefile" action="Exclude">
+			<ItemSet id = "Svn" _label="Subversion" insertafter = "OpenSeparator" insertbefore = "Add">
+				<CommandItem id = "MonoDeveloper.Commands.SvnUpdate"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnAdd"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnCommit"/>
+				<SeparatorItem id = "s1" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnDiff"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnStat"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnInfo"/>
+				<SeparatorItem id = "s2" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnRevert"/>
+			</ItemSet>
+			<SeparatorItem id = "svnSep" />
+		</Conditional>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
+		<Conditional activeproject="MonoMakefile" action="Exclude">
+			<ItemSet id = "Svn" _label="Subversion" insertbefore = "Add">
+				<CommandItem id = "MonoDeveloper.Commands.SvnUpdate"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnAdd"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnCommit"/>
+				<SeparatorItem id = "s1" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnDiff"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnStat"/>
+				<CommandItem id = "MonoDeveloper.Commands.SvnInfo"/>
+				<SeparatorItem id = "s2" />
+				<CommandItem id = "MonoDeveloper.Commands.SvnRevert"/>
+			</ItemSet>
+			<SeparatorItem id = "svnSep" />
+		</Conditional>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Gui.Pads.ProjectPad">
+		<NodeBuilder id = "MonoProjectBuilder" class = "MonoDeveloper.MonoProjectBuilder"/>
+	</Extension>
+	
+</AddIn>
+

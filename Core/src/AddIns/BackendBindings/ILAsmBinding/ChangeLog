@@ -1,0 +1,87 @@
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* ILAsmConsoleProject.xpt.xml: Properly reference resource icons.
+	* ILAsmBinding.addin.xml:
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* ILAsmBinding.mdp: references update
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/ILAsmCompilerParameters.cs: Implement ICloneable.
+	* ILAsmLanguageBinding.cs: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-02-16  Ben Motmans  <ben.motmans@gmail.com>
+
+	* ILAsmConsoleProject.xpt.xml: Consistent naming
+
+2005-01-24  John Luke  <john.luke@gmail.com>
+
+	* ILAsmCompilerManager.cs: update to work like CSharpBinding
+	and add some primitive error parsing
+
+2005-01-24  John Luke  <john.luke@gmail.com>
+
+	* ILAsmCompilerManager.cs: remove unused lines and fix 2 warnings
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmLanguageBinding.cs:
+	* ILAsmCompilerManager.cs: Use the new progress monitor API.
+
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmCompilerManager.cs:
+	* Gui/CompilerParametersPanel.cs:
+	* ILAsmBinding.addin.xml:
+	* ILAsmLanguageBinding.cs: Follow architecture changes.
+	
+	* Project/ILAsmProject.cs: Removed. Not needed any more.
+	* Project/ILAsmCompilerParameters.cs: All parameters have been moved to
+	DotNetProjectConfiguration.
+	* Project/CompilationTarget.cs: Moved to Monodevelop.Base.
+	* Makefile.am: Updated.
+	
+2004-12-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmCompilerManager.cs: StatusBarService.ProgressMonitor is not a
+	StatusBar widget any more.
+
+2004-12-07  Alexandre Gomes <alexmipego@hotmail.com>
+
+	* ILAsmLanguageBinding.cs: Added CommentTag to be used by (Un)CommentCode
+
+2004-06-08  John Luke  <jluke@cfl.rr.com>
+
+	* ILAsmCompilerManager.cs:
+	* ILAsmExecutionManager.cs: use (cmd, args) overload of ProcessStartInfo
+	constructor so I can compile and run hello world on Beta2
+
+2004-05-25  Todd Berman  <tberman@sevenl.net>
+
+	* ILAsmLanguageBinding.cs: sigchange for GenerateMakefile
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* ILAsmLanguageBinding.cs: stubbing GenerateMakefile
+
+
+2004-04-26  John Luke  <jluke@cfl.rr.com>
+
+	* *.cs: ILAsmBinding namespace
+	* ILAsmCompilerManager.cs: change it to work like the Java one
+	* Project/CompilationParameters.cs: use /exe and /dll
+
+
+
+
+	import from SD svn
+	not yet working and untested
+

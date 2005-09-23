@@ -1,0 +1,3175 @@
+# Turkish translation of MonoDevelop
+# Copyright (C) 2004 Novell, Inc.
+# This file is distributed under the same license as the MonoDevelop package.
+# Enver ALTIN <skyblue@skyblue.gen.tr>, 2004.
+# , fuzzy
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-09-19 03:27+0300\n"
+"PO-Revision-Date: 2004-09-19 05:44+0300\n"
+"Last-Translator: Enver ALTIN <skyblue@skyblue.gen.tr>\n"
+"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:1
+msgid "#CvsLib"
+msgstr "#CvsLib"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:2
+msgid "#ZipLib"
+msgstr "#ZipLib"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:3
+msgid "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
+msgstr "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:4
+msgid "${res:Dialog.Options.CombineOptions.Configurations.PanelName}"
+msgstr "${res:Dialog.Options.CombineOptions.Configurations.PanelName}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:5
+msgid "${res:Dialog.Options.CombineOptions.Dependencies.PanelName}"
+msgstr "${res:Dialog.Options.CombineOptions.Dependencies.PanelName}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:6
+msgid "${res:Dialog.Options.IDEOptions.HelpGeneratingPanelText}"
+msgstr "${res:Dialog.Options.IDEOptions.HelpGeneratingPanelText}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:7
+msgid "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+msgstr "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:8
+msgid "${res:Dialog.Options.PrjOptions.DeployFile.PanelName}"
+msgstr "${res:Dialog.Options.PrjOptions.DeployFile.PanelName}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:9
+msgid "${res:OpenFileTabEventHandler.ContextMenu.Close}"
+msgstr "${res:OpenFileTabEventHandler.ContextMenu.Close}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:10
+msgid "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
+msgstr "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:11
+msgid "${res:OpenFileTabEventHandler.ContextMenu.Save}"
+msgstr "${res:OpenFileTabEventHandler.ContextMenu.Save}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:12
+msgid "${res:OpenFileTabEventHandler.CopyPathName}"
+msgstr "${res:OpenFileTabEventHandler.CopyPathName}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:13
+msgid "${res:ProjectComponent.ContextMenu.Deploy}"
+msgstr "${res:ProjectComponent.ContextMenu.Deploy}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:14
+msgid "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
+msgstr "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:15
+msgid "${res:ProjectComponent.ContextMenu.RunTests}"
+msgstr "${res:ProjectComponent.ContextMenu.RunTests}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:16
+msgid "${res:ProjectComponent.ContextMenu.ViewDocumentation}"
+msgstr "${res:ProjectComponent.ContextMenu.ViewDocumentation}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:17
+msgid "${res:XML.MainMenu.FileMenu.PrintPreview}"
+msgstr "${res:XML.MainMenu.FileMenu.PrintPreview}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:18
+msgid "${res:XML.MainMenu.FileMenu.Print}"
+msgstr "${res:XML.MainMenu.FileMenu.Print}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:19
+msgid "${res:XML.MainMenu.HelpMenu.GPL}"
+msgstr "${res:XML.MainMenu.HelpMenu.GPL}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:20
+msgid "${res:XML.MainMenu.HelpMenu.ReadMe}"
+msgstr "${res:XML.MainMenu.HelpMenu.ReadMe}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:21
+msgid "${res:XML.MainMenu.HelpMenu.StyleGuide}"
+msgstr "${res:XML.MainMenu.HelpMenu.StyleGuide}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:22
+msgid "${res:XML.MainMenu.PluginMenu.Manager}"
+msgstr "${res:XML.MainMenu.PluginMenu.Manager}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:23
+msgid "${res:XML.MainMenu.PluginMenu}"
+msgstr "${res:XML.MainMenu.PluginMenu}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:24
+msgid "${res:XML.MainMenu.ProjectMenu.Deploy}"
+msgstr "${res:XML.MainMenu.ProjectMenu.Deploy}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:25
+msgid "${res:XML.MainMenu.ProjectMenu.Options}"
+msgstr "${res:XML.MainMenu.ProjectMenu.Options}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:26
+msgid "${res:XML.MainMenu.ProjectMenu.RunTests}"
+msgstr "${res:XML.MainMenu.ProjectMenu.RunTests}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:27
+msgid "${res:XML.MainMenu.ProjectMenu}"
+msgstr "${res:XML.MainMenu.ProjectMenu}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:28
+msgid "${res:XML.MainMenu.RunMenu.BuildProject}"
+msgstr "${res:XML.MainMenu.RunMenu.BuildProject}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:29
+msgid "${res:XML.MainMenu.RunMenu.RebuildProject}"
+msgstr "${res:XML.MainMenu.RunMenu.RebuildProject}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:30
+msgid "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
+msgstr "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:31
+msgid "&AlphaSierraPapa"
+msgstr "&AlphaSierraPapa"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:32
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:25
+#: build/AddIns/AddIns/Misc/StartPage/StartPage.addin.xml.h:2
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:1
+#: src/AddIns/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
+msgid "-"
+msgstr "-"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:33
+msgid "Add"
+msgstr "Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:34
+msgid "Add Files"
+msgstr "Dosya Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:35
+msgid "Add New File"
+msgstr "Yeni Dosya Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:36
+msgid "Add New Folder"
+msgstr "Yeni Dizin Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:37
+msgid "Add New Project..."
+msgstr "Yeni Proje Ekle..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:38
+msgid "Add New Solution..."
+msgstr "Yeni Çözüm Ekle..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:39
+msgid "Add Resource"
+msgstr "Kaynak Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:40
+msgid "Add Tab"
+msgstr "Sekme Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:41
+msgid "Add Web Reference"
+msgstr "Web Referansı Ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:42
+msgid "Add existing Solution"
+msgstr "Mevcut çözümü ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:43
+msgid "Add existing _Project"
+msgstr "Mevcut _Projeyi ekle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:44
+msgid "Announcement List"
+msgstr "Duyuru Listesi"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:45
+msgid "Buil_d Project"
+msgstr "Projeyi inşa et"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:46
+msgid "Build"
+msgstr "İnşa et"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:47
+msgid "Build Project"
+msgstr "Projeyi inşa et"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:48
+msgid "Build Properties"
+msgstr "İnşa özellikleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:49
+msgid "C#"
+msgstr "C#"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:50
+msgid "C# Corner"
+msgstr "C# Köşesi"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:51
+msgid "C# Help"
+msgstr "C# Yardımı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:52
+msgid "Choose Location"
+msgstr "Konum seçin"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:53
+msgid "Close Sol_ution"
+msgstr "Çözümü kapat"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:54
+#: build/AddIns/AddIns/BackendBindings/BackendBindings.addin.xml.h:1
+msgid "Code Generation"
+msgstr "Kod oluşturma"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:55
+msgid "Coding"
+msgstr "Kodlama"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:56
+msgid "Common"
+msgstr "Ortak"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:57
+msgid "Community Forums"
+msgstr "Topluluk forumları"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:58
+#: src/Main/Base/Commands/MenuItemBuilders.cs:296
+msgid "Compile"
+msgstr "Derle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:59
+msgid "Compile _All"
+msgstr "Tümünü derle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:60
+msgid "Convert C# Project to VB.NET"
+msgstr "C# Projesini VB.NET'e dönüştür"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:61
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:32
+msgid "Copy"
+msgstr "Kopyala"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:62
+msgid "Create Database"
+msgstr "Veritabanı oluştur"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:63
+msgid "Cu_t"
+msgstr "Kes"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:64
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:33
+msgid "Cut"
+msgstr "Kes"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:65
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:34
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:262
+msgid "Delete"
+msgstr "Sil"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:66
+msgid "Delete Tab"
+msgstr "Sekme sil"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:67
+msgid "Downloads"
+msgstr "İndirilenler"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:68
+msgid "Edit References"
+msgstr "Referansları düzenle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:69
+msgid "ExportSignature"
+msgstr "İmza aktar"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:70
+msgid "External Tools"
+msgstr "Harici araçlar"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:71
+msgid "File..."
+msgstr "Dosya..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:72
+msgid "Finished"
+msgstr "Tamamlandı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:73
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:39
+msgid "General"
+msgstr "Genel"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:74
+msgid "Generate Makefiles"
+msgstr "Makefile'ları oluştur"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:75
+msgid "GotDotNet"
+msgstr "GotDotNet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:76
+msgid "Include"
+msgstr "İçer"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:77
+msgid "Integrated Projects"
+msgstr "Tümleşik projeler"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:78
+msgid "Load/Save"
+msgstr "Yükle/Kaydet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:79
+msgid "Magic Library"
+msgstr "Sihirli kütüphane"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:80
+msgid "Mono Project"
+msgstr "Mono Projesi"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:81
+msgid "MonoDevelop"
+msgstr "MonoDevelop"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:82
+msgid "MonoDevelop Options"
+msgstr "MonoDevelop Seçenekleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:83
+msgid "Move Item Down"
+msgstr "Öğeyi aşağı taşı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:84
+msgid "Move Item up"
+msgstr "Öğeyi yukarı taşı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:85
+msgid "Move Tab Down"
+msgstr "Sekmeyi aşağı taşı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:86
+msgid "Move Tab Up"
+msgstr "Sekmeyi yukarı taşı"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:87
+msgid "NAnt"
+msgstr "NAnt"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:88
+msgid "NDoc"
+msgstr "NDoc"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:89
+msgid "N_ew Solution/Project..."
+msgstr "Y_eni Çözüm/Proje..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:90
+msgid "New File"
+msgstr "Yeni dosya"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:91
+#: src/Main/Base/Commands/ProjectBrowserCommands/FolderNodeCommands.cs:197
+msgid "New Folder"
+msgstr "Yeni Klasör"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:92
+msgid "New _File"
+msgstr "Yeni Dosya"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:93
+msgid "O_pen"
+msgstr "Aç"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:94
+msgid "Open File"
+msgstr "Dosya aç"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:95
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:46
+msgid "Paste"
+msgstr "Yapıştır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:96
+msgid "Project _Options"
+msgstr "Pr_oje Seçenekleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:97
+msgid "Project options"
+msgstr "Proje seçenekleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:98
+msgid "Re_name"
+msgstr "Ye_niden adlandır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:99
+msgid "Rebuild Project"
+msgstr "Projeyi yeniden inşa et"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:100
+msgid "Rebuild _Solution"
+msgstr "Çözümü yeniden inşa et"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:101
+msgid "Recent Solu_tions"
+msgstr "En son çözümler"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:102
+msgid "Recent _Files"
+msgstr "En son dosyalar"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:103
+msgid "Refresh"
+msgstr "Tazele"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:104
+msgid "Remove"
+msgstr "Çıkar"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:105
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:259
+msgid "Rename"
+msgstr "Yeniden adlandır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:106
+msgid "Rename Tab"
+msgstr "Sekmeyi yeniden adlandır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:107
+msgid "Reset Property"
+msgstr "Özelliği sıfırla"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:108
+msgid "Run"
+msgstr "Çalıştır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:109
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:50
+msgid "Save"
+msgstr "Kaydet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:110
+msgid "Save A_ll"
+msgstr "Tümünü kaydet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:111
+msgid "Save All"
+msgstr "Tümünü kaydet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:112
+msgid "Save _As..."
+msgstr "F_arklı kaydet..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:113
+msgid "Select _All"
+msgstr "Tümünü seç"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:114
+msgid "Send Us a Mail"
+msgstr "Bize bir e-posta gönderin"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:115
+msgid "Set As Startup Project"
+msgstr "Başlangıç projesi olarak ayarla"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:116
+msgid "Set as active"
+msgstr "Etkin olarak ayarla"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:117
+msgid "Setup"
+msgstr "Ayarla"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:118
+msgid "SharpDevelop"
+msgstr "SharpDevelop"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:119
+msgid "Show Description"
+msgstr "Betimlemeyi göster"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:120
+msgid "Solution Options"
+msgstr "Çözüm seçenekleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:121
+msgid "Solution/Project..."
+msgstr "Çözüm/Proje..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:122
+msgid "Startup Properties"
+msgstr "Başlangıç özellikleri"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:123
+msgid "Tools"
+msgstr "Araçlar"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:124
+msgid "Use Existing File"
+msgstr "Mevcut dosyayı kullan"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:125
+msgid "Visual style"
+msgstr "Görsel biçem"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:126
+msgid "_About"
+msgstr "H_akkında"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:127
+msgid "_Clear Recent Files"
+msgstr "En son dosyaları temizle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:128
+msgid "_Clear Recent Solutions"
+msgstr "En son çözümleri temizle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:129
+msgid "_Close All"
+msgstr "Tümünü kapat"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:130
+msgid "_Close File"
+msgstr "Dosyayı kapat"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:131
+msgid "_Compile"
+msgstr "Derle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:132
+msgid "_Copy"
+msgstr "Kopyala"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:133
+msgid "_Delete"
+msgstr "Sil"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:134
+msgid "_Edit"
+msgstr "Düzenle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:135
+msgid "_File"
+msgstr "Dosya"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:136
+msgid "_Full Screen"
+msgstr "Tam ekran"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:137
+msgid "_Help"
+msgstr "Yardım"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:138
+msgid "_Help..."
+msgstr "Yardım..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:139
+msgid "_Layouts"
+msgstr "Yerleşimler"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:140
+msgid "_New"
+msgstr "Ye_ni"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:141
+msgid "_New File..."
+msgstr "Ye_ni dosya..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:142
+msgid "_Next Window"
+msgstr "So_nraki pencere"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:143
+msgid "_Open"
+msgstr "Aç"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:144
+msgid "_Open..."
+msgstr "Aç..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:145
+msgid "_Paste"
+msgstr "Ya_pıştır"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:146
+msgid "_Preferences"
+msgstr "Tercihler"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:147
+msgid "_Previous Window"
+msgstr "Önceki _pencere"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:148
+msgid "_Quit"
+msgstr "Çık"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:149
+msgid "_Redo"
+msgstr "Tek_rarla"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:150
+msgid "_Reload File"
+msgstr "Dosyayı yeniden yükle"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:151
+msgid "_Remove"
+msgstr "Çıka_r"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:152
+msgid "_Run"
+msgstr "Çalıştı_r"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:153
+msgid "_Save"
+msgstr "Kaydet"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:154
+msgid "_Tip of the Day..."
+msgstr "Günün ipucu..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:155
+msgid "_Undo"
+msgstr "Geri al"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:156
+msgid "_View"
+msgstr "Görünüm"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:157
+msgid "_Web"
+msgstr "_Web"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:158
+msgid "_Window"
+msgstr "Pencere"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:159
+msgid "_Word Count..."
+msgstr "Sözcük sayısı..."
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:160
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:65
+msgid "bogus_label"
+msgstr "bogus_label"
+
+#: build/AddIns/SharpDevelopCore.addin.xml.h:161
+msgid "cshrp.net"
+msgstr "cshrp.net"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:1
+msgid "# Any single digit"
+msgstr "# Any single digit"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:2
+msgid "${res:ProjectComponent.ContextMenu.HtmlExport}"
+msgstr "${res:ProjectComponent.ContextMenu.HtmlExport}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:3
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+msgstr "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:4
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+msgstr "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:5
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+msgstr "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:6
+msgid "${res:XML.MainMenu.EditMenu.FoldingMenu}"
+msgstr "${res:XML.MainMenu.EditMenu.FoldingMenu}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:7
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:8
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:9
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:10
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:11
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:12
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:13
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:14
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:15
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:16
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:17
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:18
+msgid "${res:XML.MainMenu.EditMenu.FormatMenu}"
+msgstr "${res:XML.MainMenu.EditMenu.FormatMenu}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:19
+msgid "${res:XML.MainMenu.ToolMenu.GenerateCode}"
+msgstr "${res:XML.MainMenu.ToolMenu.GenerateCode}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:20
+msgid "${res:XML.MainMenu.ToolMenu.InsColor}"
+msgstr "${res:XML.MainMenu.ToolMenu.InsColor}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:21
+msgid "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
+msgstr "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:22
+msgid "${res:XML.MainMenu.WindowMenu.Split}"
+msgstr "${res:XML.MainMenu.WindowMenu.Split}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:23
+msgid "${res:XML.TextAreaContextMenu.UncommentSelection}"
+msgstr "${res:XML.TextAreaContextMenu.UncommentSelection}"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:24
+msgid "* Zero or more of any character"
+msgstr "* Sıfır veya daha fazla sayıda herhangi bir karakter"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:26
+msgid "? Any single character"
+msgstr "? Herhangi bir tek karakter"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:27
+msgid "Behavior"
+msgstr "Davranış"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:28
+msgid "Buffer Options"
+msgstr "Tampon seçenekleri"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:29
+msgid "Clear Bookmarks"
+msgstr "Yer imlerini temizle"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:30
+msgid "Close"
+msgstr "Kapat"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:31
+msgid "Code Templates"
+msgstr "Kod şablonları"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:35
+msgid "F_ind In Files..."
+msgstr "Dosyalarda bul..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:36
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:194
+msgid "Find"
+msgstr "Bul"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:37
+msgid "Find Next"
+msgstr "Sonrakini bul"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:38
+msgid "Find _Next"
+msgstr "So_nrakini bul"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:40
+msgid "Goto Matching _Brace"
+msgstr "Eşleşen paranteze git"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:41
+msgid "Highlighting Mode"
+msgstr "Aydınlatma kipi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:42
+msgid "Indent Selection"
+msgstr "Girinti seçimi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:43
+msgid "Markers And Rulers"
+msgstr "İmler ve cetveller"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:44
+msgid "Markers and Rulers"
+msgstr "İmler·ve·cetveller"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:45
+msgid "Next Bookmark"
+msgstr "Sonraki yer imi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:47
+msgid "Previous Bookmark"
+msgstr "Önceki yer imi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:48
+msgid "R_eplace In Files..."
+msgstr "Dosyalarda değiştir..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:49
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:189
+msgid "Replace"
+msgstr "Değiştir..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:51
+msgid "Save As"
+msgstr "Farklı kaydet"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:52
+msgid "Text Editor"
+msgstr "Metin düzenleyici"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:53
+msgid "Toggle Bookmark"
+msgstr "Yer imi ekle/kaldır"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:54
+msgid "Toggle Comments"
+msgstr "Yorum durumunu değiştir"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:55
+msgid "[!] Any one character not in the set"
+msgstr "[!] Seri içerisinde olmayan herhangi bir karakter"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:56
+msgid "[] Any one character in the set"
+msgstr "[] Seri içerisindeki herhangi bir karakter"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:57
+msgid "_Clear Bookmarks"
+msgstr "Yer imlerini temizle"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:58
+msgid "_Find..."
+msgstr "Bul..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:59
+msgid "_Goto Line..."
+msgstr "Satıra _git..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:60
+msgid "_Next Bookmark"
+msgstr "So_nraki yer imi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:61
+msgid "_Previous Bookmark"
+msgstr "Önceki yer imi"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:62
+msgid "_Replace..."
+msgstr "Değişti_r..."
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:63
+msgid "_Search"
+msgstr "Ara"
+
+#: build/AddIns/MonoDevelopNewEditor.addin.xml.h:64
+msgid "_Toggle Bookmark"
+msgstr "Yer imi ekle/kaldır"
+
+#: build/AddIns/AddIns/BackendBindings/BackendBindings.addin.xml.h:2
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Pads/CompilerMessageView.cs:44
+msgid "Output"
+msgstr "Çıktı"
+
+#: build/AddIns/AddIns/Misc/StartPage/StartPage.addin.xml.h:1
+msgid "${res:XML.MainMenu.ViewMenu.ShowStartPage}"
+msgstr "${res:XML.MainMenu.ViewMenu.ShowStartPage}"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:2
+msgid "Debug"
+msgstr "Hata ayıkla"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:3
+msgid "Debug Project"
+msgstr "Projede hata ayıkla"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:4
+msgid "Kill Application"
+msgstr "Uygulamayı öldür"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:5
+msgid "Pause/Resume"
+msgstr "Duraklat/sürdür"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:6
+msgid "Step Into"
+msgstr "Çağrıya adım at"
+
+#: src/AddIns/DebuggerAddIn/MonoDevelopDebugger.addin.xml.h:7
+msgid "Step Over"
+msgstr "Çağrı üzerinden adım at"
+
+#: data/resources/glade/Base.glade.h:1
+msgid "   "
+msgstr "   "
+
+#: data/resources/glade/Base.glade.h:2 data/resources/glade/CSharp.glade.h:1
+#: data/resources/glade/EditorBindings.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: data/resources/glade/Base.glade.h:3
+msgid " > "
+msgstr " > "
+
+#: data/resources/glade/Base.glade.h:4 data/resources/glade/CSharp.glade.h:2
+#: data/resources/glade/texteditoraddin.glade.h:1
+msgid "*"
+msgstr "*"
+
+#: data/resources/glade/Base.glade.h:5 data/resources/glade/CSharp.glade.h:3
+#: data/resources/glade/texteditoraddin.glade.h:2
+msgid "..."
+msgstr "..."
+
+#: data/resources/glade/Base.glade.h:6
+msgid "<b>Code generation options</b>"
+msgstr "<b>Kod oluşturma seçenekleri</b>"
+
+#: data/resources/glade/Base.glade.h:7
+msgid "<b>Comment generation options</b>"
+msgstr "<b>Yorum oluşturma seçenekleri</b>"
+
+#: data/resources/glade/Base.glade.h:8
+msgid "<b>Include</b>"
+msgstr "<b>İçer</b>"
+
+#: data/resources/glade/Base.glade.h:9
+msgid "<b>Load</b>"
+msgstr "<b>Yükle</b>"
+
+#: data/resources/glade/Base.glade.h:10
+msgid "<b>Location</b>"
+msgstr "<b>Konum</b>"
+
+#: data/resources/glade/Base.glade.h:11
+msgid "<b>On Project Load</b>"
+msgstr "<b>Proje yüklemesi sırasında</b>"
+
+#: data/resources/glade/Base.glade.h:12
+msgid "<b>Output Directory</b>"
+msgstr "<b>Çıktı dizini</b>"
+
+#: data/resources/glade/Base.glade.h:13
+msgid "<b>Project Information</b>"
+msgstr "<b>Proje bilgisi</b>"
+
+#: data/resources/glade/Base.glade.h:14
+msgid "<b>Save</b>"
+msgstr "<b>Kaydet</b>"
+
+#: data/resources/glade/Base.glade.h:15
+msgid "<b>Template</b>"
+msgstr "<b>Şablon</b>"
+
+#: data/resources/glade/Base.glade.h:16
+msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
+msgstr "<span weight=\"bold\" size=\"x-large\">Başlık</span>"
+
+#: data/resources/glade/Base.glade.h:17
+msgid "Action"
+msgstr "Eylem"
+
+#: data/resources/glade/Base.glade.h:18
+msgid "Add References"
+msgstr "Referanslar ekle"
+
+#: data/resources/glade/Base.glade.h:19
+msgid "All Files"
+msgstr "Tüm dosyalar"
+
+#: data/resources/glade/Base.glade.h:20
+msgid "Always create backup copy"
+msgstr "Her zaman yedek kopyası oluştur"
+
+#: data/resources/glade/Base.glade.h:21
+msgid "Automaticly _include found files"
+msgstr "Bulunan dosyaları otomat_ik olarak içer"
+
+#. FIXME: il8n this
+#: data/resources/glade/Base.glade.h:22
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/AssemblyReferencePanel.cs:28
+msgid "Browse"
+msgstr "Gözat"
+
+#: data/resources/glade/Base.glade.h:23
+msgid "Build and run options"
+msgstr "İnşa etme ve çalıştırma seçenekleri"
+
+#: data/resources/glade/Base.glade.h:24
+msgid "BuildPanel"
+msgstr "BuildPanel"
+
+#: data/resources/glade/Base.glade.h:25
+msgid "Cat_egories:"
+msgstr "Kat_egoriler:"
+
+#: data/resources/glade/Base.glade.h:26
+msgid "Clear Selection"
+msgstr "Seçimi temizle"
+
+#: data/resources/glade/Base.glade.h:27
+msgid "CombineStartupPanel"
+msgstr "CombineStartupPanel"
+
+#: data/resources/glade/Base.glade.h:28
+msgid "Compilation _target"
+msgstr "Derleme hedefi"
+
+#: data/resources/glade/Base.glade.h:29
+msgid "CompileFileOptionsPanel"
+msgstr "CompileFileOptionsPanel"
+
+#: data/resources/glade/Base.glade.h:30
+msgid "Create seperate c_ombine subdirectory"
+msgstr "Ayrı bir birleşim altdizini oluştur"
+
+#: data/resources/glade/Base.glade.h:31
+msgid "Creates a new C# Project"
+msgstr "Yeni bir C# projesi oluşturur"
+
+#: data/resources/glade/Base.glade.h:32
+msgid "Default _solution location"
+msgstr "Öntanımlı çözüm konumu"
+
+#: data/resources/glade/Base.glade.h:33
+msgid "DeployFileOptionsPanel"
+msgstr "DeployFileOptionsPanel"
+
+#: data/resources/glade/Base.glade.h:34
+msgid "Did you know that you can design lots of cool things with glade?"
+msgstr "Glade kullanarak hızla çok sayıda ilginç tasarımlar yapabileceğinizi biliyor muydunuz?"
+
+#: data/resources/glade/Base.glade.h:35
+msgid "Did you know?"
+msgstr "Biliyor muydunuz?"
+
+#: data/resources/glade/Base.glade.h:36
+msgid "Enable _viewstate"
+msgstr "Görünüm durumunu etkinleştir"
+
+#: data/resources/glade/Base.glade.h:37
+msgid "ExternalToolPanel"
+msgstr "ExternalToolPanel"
+
+#: data/resources/glade/Base.glade.h:38
+msgid "GNU GENERAL PUBLIC LICENSE"
+msgstr "GNU Genel Kamu Lisansı"
+
+#: data/resources/glade/Base.glade.h:39
+msgid "GeneralProjectOptionsPanel"
+msgstr "GeneralProjectOptionsPanel"
+
+#: data/resources/glade/Base.glade.h:40
+msgid "Generate _additional comments"
+msgstr "Ek yoruml_ar oluştur"
+
+#: data/resources/glade/Base.glade.h:41
+msgid "Generate _documentation comments"
+msgstr "Belgeleme yorumları oluştur"
+
+#: data/resources/glade/Base.glade.h:42
+msgid "Include Found Files"
+msgstr "Bulunan dosyaları içer"
+
+#: data/resources/glade/Base.glade.h:43
+msgid "Layout name:"
+msgstr "Yerleşim adı:"
+
+#: data/resources/glade/Base.glade.h:44
+msgid "Line Terminator Style"
+msgstr "Satır sonlandırıcı biçemi"
+
+#: data/resources/glade/Base.glade.h:45
+msgid "Load user-specific settings with the document"
+msgstr "Belge ile kullanıcıya özel ayarları yükle"
+
+#: data/resources/glade/Base.glade.h:46
+msgid "LoadSavePanel"
+msgstr "LoadSavePanel"
+
+#: data/resources/glade/Base.glade.h:47
+msgid "Macintosh"
+msgstr "Macintosh"
+
+#: data/resources/glade/Base.glade.h:48
+msgid "New Files"
+msgstr "Yeni dosyalar"
+
+#: data/resources/glade/Base.glade.h:49
+msgid "New Files Only"
+msgstr "Sadece yeni dosyalar"
+
+#: data/resources/glade/Base.glade.h:50
+msgid "New Solution"
+msgstr "Yeni çözüm"
+
+#: data/resources/glade/Base.glade.h:51
+msgid "New layout"
+msgstr "Yeni yerleşim"
+
+#: data/resources/glade/Base.glade.h:52
+msgid "Options"
+msgstr "Seçenekler"
+
+#: data/resources/glade/Base.glade.h:53
+msgid "Project _Subdirectory:"
+msgstr "Proje altdizini:"
+
+#: data/resources/glade/Base.glade.h:54
+msgid "Project will be saved in: /dev/null"
+msgstr "Proje /dev/null içerisine kaydedilecek"
+
+#: data/resources/glade/Base.glade.h:55
+msgid "Search for new _files on load"
+msgstr "Yükleme sırasında yeni dosyalar ara"
+
+#: data/resources/glade/Base.glade.h:56
+msgid "Select All"
+msgstr "Tümünü seç"
+
+#: data/resources/glade/Base.glade.h:57
+msgid "Show Extensions in project scout"
+msgstr "Proje izlecinde uzantıları göster"
+
+#: data/resources/glade/Base.glade.h:58
+msgid "Show _output pad when build starts"
+msgstr "İnşa başladığında çıktı bölümünü göster"
+
+#: data/resources/glade/Base.glade.h:59
+msgid "Show _task list pad if build finished with errors"
+msgstr "İnşa hata ile sonuçlanırsa görev lis_tesi bölümünü göster"
+
+#: data/resources/glade/Base.glade.h:60
+msgid "Show hidden files and directories"
+msgstr "Gizli dosya ve dizinleri göster"
+
+#: data/resources/glade/Base.glade.h:61
+msgid "Tip of the day"
+msgstr "Günün ipucu"
+
+#: data/resources/glade/Base.glade.h:62
+msgid "Unix"
+msgstr "Unix"
+
+#: data/resources/glade/Base.glade.h:63
+msgid "Use _Output Window"
+msgstr "Çıktı penceresini kullan"
+
+#: data/resources/glade/Base.glade.h:64
+msgid "View"
+msgstr "Görünüm"
+
+#: data/resources/glade/Base.glade.h:65
+msgid "Windows"
+msgstr "Pencereler"
+
+#: data/resources/glade/Base.glade.h:66
+msgid "With _scriptfile"
+msgstr "Betik do_syası ile"
+
+#: data/resources/glade/Base.glade.h:67
+msgid "_Arguments"
+msgstr "_Argümanlar"
+
+#: data/resources/glade/Base.glade.h:68
+#: src/Libraries/MonoDevelop.Gui.Widgets/FolderDialog/BaseFileEntry.cs:22
+msgid "_Browse..."
+msgstr "Gözat..."
+
+#: data/resources/glade/Base.glade.h:69
+msgid "_Command"
+msgstr "Komut"
+
+#: data/resources/glade/Base.glade.h:70
+msgid "_Deploy target:"
+msgstr "Yerleştirme he_defi:"
+
+#: data/resources/glade/Base.glade.h:71
+#: src/Main/Base/Gui/Dialogs/OptionPanels/EditTemplateDialog.cs:64
+#: src/Main/Base/Internal/Templates/FileTemplate.cs:128
+msgid "_Description"
+msgstr "Betimleme"
+
+#: data/resources/glade/Base.glade.h:72
+msgid "_Don't save changes to open documents "
+msgstr "Açık belgeler_deki değişiklikleri kaydetme"
+
+#: data/resources/glade/Base.glade.h:73
+msgid "_Else on same line as closing bracket"
+msgstr "Aynı satırdaki else deyimi kapatma parantezidir"
+
+#: data/resources/glade/Base.glade.h:74
+msgid "_Include files in compile run"
+msgstr "Derleme işleminde dosyaları içer"
+
+#: data/resources/glade/Base.glade.h:75
+msgid "_Insert blank lines between members"
+msgstr "Üyeler arasına boş satırlar ekle"
+
+#: data/resources/glade/Base.glade.h:76
+msgid "_Load previous solution on startup"
+msgstr "Baş_langıçta önceki çözümü yükle"
+
+#: data/resources/glade/Base.glade.h:77
+msgid "_Location:"
+msgstr "Konum:"
+
+#: data/resources/glade/Base.glade.h:78
+msgid "_Multiple Startup Project"
+msgstr "Çoklu başlangıç projesi"
+
+#: data/resources/glade/Base.glade.h:79
+#: src/Main/Base/Internal/Templates/FileTemplate.cs:123
+msgid "_Name"
+msgstr "Ad"
+
+#: data/resources/glade/Base.glade.h:80
+msgid "_Name:"
+msgstr "Ad:"
+
+#: data/resources/glade/Base.glade.h:81
+msgid "_Next Tip"
+msgstr "So_nraki ipucu"
+
+#: data/resources/glade/Base.glade.h:82
+msgid "_Project Files"
+msgstr "_Proje dosyaları"
+
+#: data/resources/glade/Base.glade.h:83
+msgid "_Prompt for Arguments"
+msgstr "Argümanları iste"
+
+#: data/resources/glade/Base.glade.h:84
+msgid "_Prompt to save changes to open documents"
+msgstr "Açık belgelerdeki değişiklikleri kaydetme onayı iste"
+
+#: data/resources/glade/Base.glade.h:85
+msgid "_Save Changes to open documents"
+msgstr "Açık belgelerdeki değişiklikleri kaydet"
+
+#: data/resources/glade/Base.glade.h:86
+msgid "_Show at startup"
+msgstr "Başlangıçta gö_ster"
+
+#: data/resources/glade/Base.glade.h:87
+msgid "_Single Startup Project"
+msgstr "Tek başlangıç proje_si"
+
+#: data/resources/glade/Base.glade.h:88
+msgid "_Start code block on the same line"
+msgstr "Kod bloğuna aynı _satırda başla"
+
+#: data/resources/glade/Base.glade.h:89
+msgid "_Title"
+msgstr "Başlık"
+
+#: data/resources/glade/Base.glade.h:90
+msgid "_Use full type names"
+msgstr "Tam tip adlarını kullan"
+
+#: data/resources/glade/Base.glade.h:91
+msgid "_Working Dir."
+msgstr "Çalışma dizini:"
+
+#: data/resources/glade/Base.glade.h:92
+msgid "cmbBuildOptions"
+msgstr "cmbBuildOptions"
+
+#: data/resources/glade/CSharp.glade.h:4
+msgid "<b>Code Generation</b>"
+msgstr "<b>Kod oluşturma</b>"
+
+#: data/resources/glade/CSharp.glade.h:5
+msgid "<b>Execute scripts </b>"
+msgstr "<b>Betikleri çalıştır </b>"
+
+#: data/resources/glade/CSharp.glade.h:6
+msgid "<b>Output</b>"
+msgstr "<b>Çıktı</b>"
+
+#: data/resources/glade/CSharp.glade.h:7
+msgid "<b>Warnings</b>"
+msgstr "<b>Uyarılar</b>"
+
+#: data/resources/glade/CSharp.glade.h:8
+msgid "Allow '_unsafe' code"
+msgstr "Güvensiz koda izin ver"
+
+#: data/resources/glade/CSharp.glade.h:9
+msgid "Assembly _name"
+msgstr "Çevirme adı"
+
+#: data/resources/glade/CSharp.glade.h:10
+msgid "CodeGenerationPanel"
+msgstr "CodeGenerationPanel"
+
+#: data/resources/glade/CSharp.glade.h:11
+msgid "Compile _Target"
+msgstr "Derleme hedefi"
+
+#: data/resources/glade/CSharp.glade.h:12
+msgid "Define S_ymbols"
+msgstr "Sembelleri tanımla"
+
+#: data/resources/glade/CSharp.glade.h:13
+msgid "Emit _debugging information"
+msgstr "Hata ayıklama bilgisini ekle"
+
+#: data/resources/glade/CSharp.glade.h:14
+msgid "Enable _optimizations"
+msgstr "Eniyilemelere izin ver"
+
+#: data/resources/glade/CSharp.glade.h:15
+msgid "Execute Command"
+msgstr "Komut çalıştır"
+
+#: data/resources/glade/CSharp.glade.h:16
+msgid "Generate _xml documentation"
+msgstr "_XML belgeleme oluştur"
+
+#: data/resources/glade/CSharp.glade.h:17
+msgid "Output _path"
+msgstr "Çıktı dizini"
+
+#: data/resources/glade/CSharp.glade.h:18
+msgid "OutputOptionsPanel"
+msgstr "OutputOptionsPanel"
+
+#: data/resources/glade/CSharp.glade.h:19
+msgid "Paramet_ers"
+msgstr "Param_etreler"
+
+#: data/resources/glade/CSharp.glade.h:20
+msgid "Pause _console output"
+msgstr "Konsole çıktısını duraksat"
+
+#: data/resources/glade/CSharp.glade.h:21
+msgid "Treat warnings as _errors"
+msgstr "Uyarıları hata farzet"
+
+#: data/resources/glade/CSharp.glade.h:22
+msgid "_After Build"
+msgstr "Derleme sonr_asında"
+
+#: data/resources/glade/CSharp.glade.h:23
+msgid "_Before build"
+msgstr "Derleme öncesinde"
+
+#: data/resources/glade/CSharp.glade.h:24
+msgid "_Generate overflow checks"
+msgstr "Taşma denetimleri oluştur"
+
+#: data/resources/glade/CSharp.glade.h:25
+msgid "_Main Class"
+msgstr "Ana sınıf"
+
+#: data/resources/glade/CSharp.glade.h:26
+msgid "_Warning Level"
+msgstr "Uyarı düzeyi"
+
+#: data/resources/glade/EditorBindings.glade.h:2
+msgid "&"
+msgstr "&"
+
+#: data/resources/glade/EditorBindings.glade.h:3
+msgid "<b>Behavior</b>"
+msgstr "<b>Davranış</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:4
+msgid "<b>File encoding</b>"
+msgstr "<b>Dosya kodlaması</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:5
+msgid "<b>Font</b>"
+msgstr "<b>Yazıtipi</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:6
+msgid "<b>General Options</b>"
+msgstr "<b>Genel seçenekler</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:7
+msgid "<b>Markers</b>"
+msgstr "<b>İşaretleyiciler</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:8
+msgid "<b>Rulers</b>"
+msgstr "<b>Cetveller</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:9
+msgid "<b>Tabs</b>"
+msgstr "<b>Sekmeler</b>"
+
+#: data/resources/glade/EditorBindings.glade.h:10
+msgid "A_uto insert curly braces"
+msgstr "Küme parantezlerini otomatik ekle"
+
+#: data/resources/glade/EditorBindings.glade.h:11
+msgid "Add Group"
+msgstr "Grup ekle"
+
+#: data/resources/glade/EditorBindings.glade.h:12
+msgid "Automatic"
+msgstr "Otomatik"
+
+#: data/resources/glade/EditorBindings.glade.h:13
+msgid "BehaviorTextEditorPanel"
+msgstr "BehaviorTextEditorPanel"
+
+#: data/resources/glade/EditorBindings.glade.h:14
+msgid "C_onvert Tabs to Spaces"
+msgstr "Sekmeleri boşluklara dönüştür"
+
+#: data/resources/glade/EditorBindings.glade.h:15
+msgid "Character Markers"
+msgstr "Karakter işaretleyiciler"
+
+#: data/resources/glade/EditorBindings.glade.h:16
+msgid "Choose _encoding"
+msgstr "Kodlama s_eçin"
+
+#: data/resources/glade/EditorBindings.glade.h:17
+msgid "CodeTemplatePane"
+msgstr "CodeTemplatePane"
+
+#: data/resources/glade/EditorBindings.glade.h:18
+msgid "Edit"
+msgstr "Düzenle"
+
+#: data/resources/glade/EditorBindings.glade.h:19
+msgid "Edit Group"
+msgstr "Grup düzenle"
+
+#: data/resources/glade/EditorBindings.glade.h:20
+msgid "Enable code _completion"
+msgstr "Kod tamamlamaya izin ver"
+
+#: data/resources/glade/EditorBindings.glade.h:21
+msgid "Enable code _folding"
+msgstr "Kod katlamaya izin ver"
+
+#: data/resources/glade/EditorBindings.glade.h:22
+msgid "Enable double buffering"
+msgstr "Çift tamponlamaya izin ver"
+
+#: data/resources/glade/EditorBindings.glade.h:23
+msgid "Extension"
+msgstr "Uzantı"
+
+#: data/resources/glade/EditorBindings.glade.h:24
+msgid "GeneralTextEditorPanel"
+msgstr "GeneralTextEditorPanel"
+
+#: data/resources/glade/EditorBindings.glade.h:25
+msgid "Highlight _matching bracket"
+msgstr "Eşleşen parantezi aydınlat"
+
+#: data/resources/glade/EditorBindings.glade.h:26
+msgid "I_ndentation"
+msgstr "Giri_ntileme"
+
+#: data/resources/glade/EditorBindings.glade.h:27
+msgid "MarkersTextEditorPanel"
+msgstr "MarkersTextEditorPanel"
+
+#: data/resources/glade/EditorBindings.glade.h:28
+msgid "None"
+msgstr "Yok"
+
+#: data/resources/glade/EditorBindings.glade.h:29
+msgid "Remove Group"
+msgstr "Grup çıkar"
+
+#: data/resources/glade/EditorBindings.glade.h:30
+msgid "Show _EOL markers"
+msgstr "Satır sonu işaretlerini göster"
+
+#: data/resources/glade/EditorBindings.glade.h:31
+msgid "Show _column ruler,"
+msgstr "Kolon cetvelini göster,"
+
+#: data/resources/glade/EditorBindings.glade.h:32
+msgid "Show _horizontal ruler"
+msgstr "Yatay cetveli göster"
+
+#: data/resources/glade/EditorBindings.glade.h:33
+msgid "Show _invalid lines"
+msgstr "Geçers_iz satırları göster"
+
+#: data/resources/glade/EditorBindings.glade.h:34
+msgid "Show _line numbers"
+msgstr "Satır numara_larını göster"
+
+#: data/resources/glade/EditorBindings.glade.h:35
+msgid "Show _spaces"
+msgstr "Boşlukları gö_ster"
+
+#: data/resources/glade/EditorBindings.glade.h:36
+msgid "Show _tabs"
+msgstr "Sekmeleri gös_ter"
+
+#: data/resources/glade/EditorBindings.glade.h:37
+msgid "Use default _monospace font"
+msgstr "Öntanı_mlı sabit genişlikli yazıtipi kullan"
+
+#: data/resources/glade/EditorBindings.glade.h:38
+msgid "Use default _sans-serif font"
+msgstr "Öntanımlı _sans-serif yazıtipi kullan"
+
+#: data/resources/glade/EditorBindings.glade.h:39
+msgid "_Automatic template insertion"
+msgstr "Otomatik şablon araya ekleme"
+
+#: data/resources/glade/EditorBindings.glade.h:40
+msgid "_Can move caret behind EOL"
+msgstr "Düzeltme imi satır sonunun ardına hareket edebilir"
+
+#: data/resources/glade/EditorBindings.glade.h:41
+msgid "_Hide mouse cursor while typing"
+msgstr "Yazarken fare imlecini gizle"
+
+#: data/resources/glade/EditorBindings.glade.h:42
+msgid "_Indentation size"
+msgstr "Girintileme boyu"
+
+#: data/resources/glade/EditorBindings.glade.h:43
+msgid "_Tab size"
+msgstr "Sekme büyüklüğü"
+
+#: data/resources/glade/EditorBindings.glade.h:44
+msgid "_Underline errors"
+msgstr "Hataların altını çiz"
+
+#: data/resources/glade/EditorBindings.glade.h:45
+msgid "_Use custom font:"
+msgstr "Özel yazıtipi kullan"
+
+#: data/resources/glade/EditorBindings.glade.h:46
+msgid "at column"
+msgstr "kolon"
+
+#: data/resources/glade/EditorBindings.glade.h:47
+msgid "if (foo) Console.WriteLine (\"foo!\");"
+msgstr "if (foo) Console.WriteLine (\"foo!\");"
+
+#: data/resources/glade/texteditoraddin.glade.h:3
+msgid ">"
+msgstr ">"
+
+#: data/resources/glade/texteditoraddin.glade.h:4
+msgid "Case sensitive"
+msgstr "Büyük/küçük harfe duyarlı"
+
+#: data/resources/glade/texteditoraddin.glade.h:5
+msgid "Directory:"
+msgstr "Dizin:"
+
+#: data/resources/glade/texteditoraddin.glade.h:6
+msgid "Filemask:"
+msgstr "Dosya maskesi:"
+
+#: data/resources/glade/texteditoraddin.glade.h:7
+msgid "Find Dialog"
+msgstr "Bul diyaloğu"
+
+#: data/resources/glade/texteditoraddin.glade.h:8
+msgid "Find:"
+msgstr "Bul:"
+
+#: data/resources/glade/texteditoraddin.glade.h:9
+msgid "Go to Line"
+msgstr "Satıra git"
+
+#: data/resources/glade/texteditoraddin.glade.h:10
+msgid "R_eplace All"
+msgstr "Tümünü değişti_r"
+
+#: data/resources/glade/texteditoraddin.glade.h:11
+msgid "Recurse subdirectories"
+msgstr "Altdizinleri de incele"
+
+#: data/resources/glade/texteditoraddin.glade.h:12
+msgid "Replace Dialog"
+msgstr "Değiştirme diyaloğu"
+
+#: data/resources/glade/texteditoraddin.glade.h:13
+msgid "Replace:"
+msgstr "Değiştir:"
+
+#: data/resources/glade/texteditoraddin.glade.h:14
+msgid "Search in:"
+msgstr "Ara:"
+
+#: data/resources/glade/texteditoraddin.glade.h:15
+msgid "Use special search strategy:"
+msgstr "Özel arama stratejisi kullan:"
+
+#: data/resources/glade/texteditoraddin.glade.h:16
+msgid "Whole word only"
+msgstr "Yalnızca tüm sözcük"
+
+#: data/resources/glade/texteditoraddin.glade.h:17
+msgid "Whole words only"
+msgstr "Yalnızca tüm sözcükler"
+
+#: data/resources/glade/texteditoraddin.glade.h:18
+msgid "_Go to Line"
+msgstr "Satıra _git"
+
+#: data/resources/glade/texteditoraddin.glade.h:19
+msgid "_Line Number:"
+msgstr "Satır numarası:"
+
+#: data/resources/glade/texteditoraddin.glade.h:20
+msgid "_Mark All"
+msgstr "Tü_münü seç"
+
+#: data/resources/glade/texteditoraddin.glade.h:21
+msgid "_Replace"
+msgstr "Değişti_r"
+
+#: data/resources/glade/texteditoraddin.glade.h:22
+msgid "searchPatternEntry"
+msgstr "searchPatternEntry"
+
+#: src/Main/Base/Gui/Dialogs/CommonAboutDialog.cs:56
+msgid "translator-credits"
+msgstr "Enver ALTIN <ealtin@parkyeri.com>"
+
+#: src/Main/Base/Gui/Dialogs/CommonAboutDialog.cs:141
+#: src/Main/Base/Gui/Dialogs/CommonAboutDialog.cs:154
+msgid "About MonoDevelop"
+msgstr "MonoDevelop hakkında"
+
+#. nb.AppendPage (aatp, new Label ("Authors"));
+#. nb.AppendPage (changelog, new Label ("ChangeLog"));
+#: src/Main/Base/Gui/Dialogs/CommonAboutDialog.cs:158
+msgid "Version Info"
+msgstr "Sürüm bilgisi"
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:159
+msgid "Project will be saved at"
+msgstr "Projenin kaydedileceği konum"
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:204
+msgid ""
+"Illegal project name. \n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"Geçersiz proje adı. \n"
+"Yalnızca harfleri, rakamları, boşluk, nokta veya altçizgi ('_') kullanın."
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:214
+msgid ""
+"Illegal project name.\n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"Geçersiz·proje·adı.\n"
+"Yalnızca·harfleri,·rakamları,·boşluk,·nokta·veya·altçizgi·('_')·kullanın."
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:219
+msgid "A Project with that name is already in your Project Space"
+msgstr "Proje alanınızda bu adda bir proje zaten var"
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:238
+#, csharp-format
+msgid "Could not create file {0}. File already exists."
+msgstr "Dosya oluşturulamadı {0]: Dosya zaten var"
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:242
+#, csharp-format
+msgid "You do not have permission to create to {0}"
+msgstr "{0} oluşturmak için gerekli yetkiniz yok"
+
+#: src/Main/Base/Gui/Dialogs/NewProjectDialog.cs:320
+msgid "Combine Location"
+msgstr "Birleşim konumu"
+
+#: src/Main/Base/Gui/Dialogs/NewFileDialog.cs:75
+#, csharp-format
+msgid "Can't load bitmap {0} using default"
+msgstr "Bit haritası {0} yüklenemiyor, öntanımlı kullanılıyor"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/EditTemplateDialog.cs:65
+msgid "_Template"
+msgstr "Şablon"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:43
+msgid "Item Path"
+msgstr "Öğe yolu"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:44
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:67
+msgid "_Item Directory"
+msgstr "Öğe d_izini"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:45
+msgid "Item file name"
+msgstr "Öğe dosya adı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:46
+msgid "Item extension"
+msgstr "Öğe uzantısı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:48
+msgid "Current line"
+msgstr "Şu anki satır"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:49
+msgid "Current column"
+msgstr "Şu anki kolon"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:50
+msgid "Current text"
+msgstr "Şu anki metin"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:52
+msgid "Target Path"
+msgstr "Hedef yolu"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:53
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:69
+msgid "_Target Directory"
+msgstr "Hedef dizini"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:54
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:70
+msgid "Target Name"
+msgstr "Hedef adı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:55
+msgid "Target Extension"
+msgstr "Hedef uzantısı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:57
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:72
+msgid "_Project Directory"
+msgstr "_Proje dizini"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:58
+msgid "Project file name"
+msgstr "Proje dosya adı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:60
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:74
+msgid "_Solution Directory"
+msgstr "Çözüm dizini"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:61
+msgid "Solution File Name"
+msgstr "Çözüm dosya adı"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:63
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:76
+msgid "MonoDevelop Startup Directory"
+msgstr "MonoDevelop başlangıç dizini"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:140
+msgid "_Tools"
+msgstr "Araçlar"
+
+#. string[] fileFilters  = (string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#. bool foundFilter      = false;
+#. search filter like in the current selected project
+#.
+#. IProjectService projectService = (IProjectService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(IProjectService));
+#.
+#. if (projectService.CurrentSelectedProject != null) {
+#. LanguageBindingService languageBindingService = (LanguageBindingService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(LanguageBindingService));
+#.
+#. LanguageBindingCodon languageCodon = languageBindingService.GetCodonPerLanguageName(projectService.CurrentSelectedProject.ProjectType);
+#. for (int i = 0; !foundFilter && i < fileFilters.Length; ++i) {
+#. for (int j = 0; !foundFilter && j < languageCodon.Supportedextensions.Length; ++j) {
+#. if (fileFilters[i].IndexOf(languageCodon.Supportedextensions[j]) >= 0) {
+#. break;
+#. }
+#. }
+#. }
+#. }
+#.
+#. // search filter like in the current open file
+#. if (!foundFilter) {
+#. IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+#. if (window != null) {
+#. for (int i = 0; i < fileFilters.Length; ++i) {
+#. if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#. break;
+#. }
+#. }
+#. }
+#. }
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:162
+#: src/Main/Base/Commands/FileCommands.cs:227
+#: src/Main/Base/Commands/FileCommands.cs:292
+#: src/Main/Base/Commands/ProjectBrowserCommands/ResourceFolderNodeCommands.cs:48
+msgid "File to Open"
+msgstr "Açılacak dosya"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:312
+msgid "New Tool"
+msgstr "Yeni araç"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:351
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:161
+msgid "Control not found!"
+msgstr "Denetim bulunamadı!"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:372
+#, csharp-format
+msgid "The command of tool \"{0}\" is invalid."
+msgstr "Araç \"{0}\"'ın komutu geçersiz."
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ExternalToolPanel.cs:378
+#, csharp-format
+msgid "The working directory of tool \"{0}\" is invalid."
+msgstr "Araç \"{0}\"'ın çalışma dizini geçersiz."
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/CompileFileProjectOptions.cs:100
+#, csharp-format
+msgid "File {0} not found in {1}."
+msgstr "Dosya {0}, {1} içerisinde bulunamadı."
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs:92
+msgid "Select your File"
+msgstr "Dosyanızı seçin"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs:103
+msgid "Select the target directory"
+msgstr "Hedef dizini seçin"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs:133
+msgid "Invalid deploy target specified"
+msgstr "Geçersiz yerleştirme hedefi belirtildi"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs:140
+msgid "Invalid deploy script specified"
+msgstr "Geçersiz yerleştirme betiği belirtildi"
+
+#: src/Main/Base/Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs:146
+msgid "Deploy script doesn't exists"
+msgstr "Yerleştirme betiği bulunamadı"
+
+#: src/Main/Base/Gui/Dialogs/ProjectOptionsDialog.cs:40
+msgid "Project Options"
+msgstr "Proje seçenekleri"
+
+#: src/Main/Base/Gui/Dialogs/ProjectOptionsDialog.cs:59
+msgid "Configurations"
+msgstr "Yapılandırmalar"
+
+#: src/Main/Base/Gui/Dialogs/ProjectOptionsDialog.cs:65
+#: src/Main/Base/Gui/Dialogs/ProjectOptionsDialog.cs:176
+#: src/Main/Base/Gui/Dialogs/ProjectOptionsDialog.cs:209
+msgid "(Active)"
+msgstr "(Etkin)"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/AssemblyReferencePanel.cs:37
+msgid "Find .Net Assembly"
+msgstr ".NET çevirmesi bul"
+
+#. FIXME: il8n this
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/AssemblyReferencePanel.cs:62
+#, csharp-format
+msgid "File {0} is not a valid .Net Assembly"
+msgstr "Dosya {0} geçerli bir .NET çevirmesi değil"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/GacReferencePanel.cs:40
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:75
+msgid "Reference Name"
+msgstr "Referans adı"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/GacReferencePanel.cs:51
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:44
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:161
+msgid "Version"
+msgstr "Sürüm"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/GacReferencePanel.cs:52
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:162
+#: src/Main/Base/Gui/Pads/OpenTaskView.cs:152
+msgid "Path"
+msgstr "Yol"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/GacReferencePanel.cs:122
+msgid ""
+"ERROR: non-mono runtime detected, please use the mono runtime for this piece "
+"of MonoDevelop for the time being"
+msgstr ""
+"HATA: Mono olmayan çalışma zamanı kitaplıkları bulundu, lütfen Monodevelop için şimdilik Mono çalışma zamanı kitaplıkları kullanın"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/ProjectReferencePanel.cs:32
+msgid "Project Name"
+msgstr "Proje adı"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/ProjectReferencePanel.cs:33
+msgid "Project Directory"
+msgstr "Proje dizini"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:76
+msgid "Type"
+msgstr "Tür"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:77
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:81
+msgid "Location"
+msgstr "Konum"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:93
+msgid "Global Assembly Cache"
+msgstr "Genel Çevirme Önbelleği"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:94
+msgid "Projects"
+msgstr "Projeler"
+
+#: src/Main/Base/Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:95
+msgid ".Net Assembly"
+msgstr ".NET çevirmesi"
+
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:49
+msgid "Released under the GNU General Public license."
+msgstr "GNU Genel Kamu Lisansı altında yayımlandı."
+
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:160
+msgid "Name"
+msgstr "Ad"
+
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:192
+#: src/Main/Base/Gui/Dialogs/SharpDevelopAboutPanels.cs:213
+msgid "dynamic"
+msgstr "Dinamik"
+
+#: src/Main/Base/Gui/Dialogs/TreeViewOptions.cs:154
+msgid "MonoDevelop options"
+msgstr "MonoDevelop seçenekleri"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:57
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:113
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:147
+msgid "total"
+msgstr "toplam"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:99
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:116
+msgid "You must save the file"
+msgstr "Dosyayı kaydetmelisiniz"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:131
+msgid "Unsaved changed to open files were not included in counting"
+msgstr "Sayımda kaydedilmemiş dosyalara yapılmış değişiklikler dikkate alınmadı"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:144
+msgid "You must be in project mode"
+msgstr "Proje kipinde olmalısınız"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:252
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:308
+#: src/Main/Base/Gui/Pads/OpenTaskView.cs:153
+msgid "File"
+msgstr "Dosya"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:253
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:312
+msgid "Chars"
+msgstr "Karakterler"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:254
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:316
+msgid "Words"
+msgstr "Sözcükler"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:255
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:320
+msgid "Lines"
+msgstr "Satırlar"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:291
+msgid "Word Count"
+msgstr "Sözcük sayısı"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:333
+msgid "_Count where"
+msgstr "Sayıla_cak konum"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:339
+msgid "Current file"
+msgstr "Şimdiki dosya"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:340
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:196
+msgid "All open files"
+msgstr "Tüm açık dosyalar"
+
+#: src/Main/Base/Gui/Dialogs/WordCountDialog.cs:341
+msgid "Whole solution"
+msgstr "Tüm çözüm"
+
+#: src/Main/Base/Gui/AbstractBaseViewContent.cs:35
+msgid "Abstract Content"
+msgstr "Soyut içerik"
+
+#: src/Main/Base/Gui/AbstractViewContent.cs:27
+msgid "Change me"
+msgstr "Beni değiştir"
+
+#: src/Main/Base/Gui/BrowserDisplayBinding/HtmlViewPane.cs:45
+msgid "Web Browser"
+msgstr "Web gezgini"
+
+#: src/Main/Base/Gui/BrowserDisplayBinding/HtmlViewPane.cs:209
+#: src/Main/Base/Gui/Pads/ClassScout/ClassScout.cs:138
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#: src/Main/Base/Gui/BrowserDisplayBinding/HtmlViewPane.cs:222
+msgid "Done."
+msgstr "Tamamlandı."
+
+#: src/Main/Base/Gui/Components/StatusBar/SdStatusBar.cs:76
+#: src/Main/Base/Gui/Components/StatusBar/SdStatusBar.cs:81
+#, csharp-format
+msgid "Error : {0}"
+msgstr "Hata: {0}"
+
+#: src/Main/Base/Gui/Components/StatusBar/SdStatusBar.cs:86
+#, csharp-format
+msgid "ln {0} col {1} ch {2}"
+msgstr "{0}'da kolon {1} ch {2}"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:54
+#: src/Main/Base/Gui/Pads/FileScout/FileScout.cs:23
+msgid "Files"
+msgstr "Dosyalar"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:57
+msgid "Size"
+msgstr "Boyut"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:60
+msgid "Last modified"
+msgstr "Son değiştirilme"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:171
+msgid "Are you sure you want to delete this file?"
+msgstr "Bu dosyayı silmek istediğinizden emin misiniz?"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:171
+msgid "Delete files"
+msgstr "Dosyaları sil"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:200
+msgid "Delete file"
+msgstr "Dosyayı sil"
+
+#: src/Main/Base/Gui/Pads/FileScout/FileList.cs:203
+msgid "Rename file"
+msgstr "Dosyayı yeniden adlandır"
+
+#: src/Main/Base/Gui/Pads/HelpBrowser/HelpViewer.cs:34
+#: src/Main/Base/Gui/Pads/HelpBrowser/MonodocTreePad.cs:118
+msgid "Documentation"
+msgstr "Belgelendirme"
+
+#: src/Main/Base/Gui/ErrorHandlers/CombineLoadError.cs:28
+#, csharp-format
+msgid ""
+"Could not load the {0} '{1}'.\n"
+"\n"
+"{2}"
+msgstr ""
+"{0} yüklenemedi '{1}'\n"
+"\n"
+"{2}"
+
+#: src/Main/Base/Gui/Pads/ClassScout/ClassScout.cs:78
+msgid "Classes"
+msgstr "Sınıflar"
+
+#: src/Main/Base/Gui/Pads/ClassScout/ClassScout.cs:359
+msgid "No class builder found"
+msgstr "Sınıf inşa edici bulunamadı"
+
+#: src/Main/Base/Gui/Pads/HelpBrowser/MonodocTreePad.cs:30
+msgid "Help"
+msgstr "Yardım"
+
+#: src/Main/Base/Gui/Pads/HelpBrowser/MonodocTreePad.cs:40
+msgid "Mono Documentation"
+msgstr "Mono belgelendirme"
+
+#: src/Main/Base/Gui/Pads/OpenTaskView.cs:38
+msgid "Task List"
+msgstr "Görev listesi"
+
+#: src/Main/Base/Gui/Pads/OpenTaskView.cs:150
+msgid "Line"
+msgstr "Satır"
+
+#: src/Main/Base/Gui/Pads/OpenTaskView.cs:151
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:117
+msgid "Description"
+msgstr "Betimleme"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:66
+#, csharp-format
+msgid "Solution name may not contain any of the following characters: {0}"
+msgstr "Çözüm adı şu karakterlerden herhangi birini içeremez: {0}"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:82
+#, csharp-format
+msgid "Solution {0}"
+msgstr "Çözüm {0}"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:85
+#, csharp-format
+msgid "Solution {0} (1 entry)"
+msgstr "Çözüm {0} (1 girdi)"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:88
+#, csharp-format
+msgid "Solution {0} ({1} entries)"
+msgstr "Çözüm {0} ({1} girdi)"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/CombineBrowserNode.cs:107
+#, csharp-format
+msgid "Do you really want to remove solution {0} from solution {1}?"
+msgstr "Çözüm {0}'ı çözüm {1] içerisinden çıkarmak istediğinize emin misiniz?"
+
+#. assume duplicate file
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/DirectoryNode.cs:107
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/FileNode.cs:121
+msgid "File or directory name is already in use, choose a different one."
+msgstr "Dosya veya dizin ismi kullanımda, başka bir tercih yapın."
+
+#. new file name with wildcard (*, ?) characters in it
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/DirectoryNode.cs:110
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/FileNode.cs:123
+msgid ""
+"The file name you have chosen contains illegal characters. Please choose a "
+"different file name."
+msgstr ""
+"Seçtiğiniz dosya adı geçersiz karakterler içeriyor, lütfen başka bir dosya adı seçin."
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/DirectoryNode.cs:127
+#, csharp-format
+msgid "Do you want to remove folder {0} from project {1}?"
+msgstr "{0} dizinini {0} projesi içerisinden çıkarmak istiyor musunuz?"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/FileNode.cs:136
+#, csharp-format
+msgid "Are you sure you want to remove file {0} from project {1}?"
+msgstr "{0} dosyasını proje {1} içerisinden çıkarmak istediğinizden emin misiniz?"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/BrowserNode/ProjectBrowserNode.cs:109
+#, csharp-format
+msgid "Do you really want to remove project {0} from solution {1}"
+msgstr "{0} projesini {1} çözümünden ayırmak istediğinize emin misiniz?"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/NodeBuilder/DefaultDotNetNodeBuilder.cs:39
+msgid "Web References"
+msgstr "Web referansları"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/NodeBuilder/DefaultDotNetNodeBuilder.cs:54
+msgid "Resource Files"
+msgstr "Kaynak dosyaları"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/NodeBuilder/DefaultDotNetNodeBuilder.cs:60
+msgid "References"
+msgstr "Kaynaklar"
+
+#: src/Main/Base/Gui/Pads/ProjectBrowser/ProjectBrowserView.cs:58
+msgid "Solution"
+msgstr "Çözüm"
+
+#: src/Main/Base/Gui/Workbench/DefaultWorkbench.cs:537
+#: src/Main/Base/Commands/RunCommands.cs:240
+#: src/Main/Base/Services/Project/DefaultProjectService.cs:155
+msgid "Ready"
+msgstr "Hazır"
+
+#: src/Main/Base/Gui/Workbench/Layouts/SdiWorkspaceWindow.cs:220
+msgid "Do you want to save the current changes"
+msgstr "Şu andaki değişlikleri kaydetmek ister misiniz?"
+
+#: src/Main/Base/Gui/Workbench/Layouts/SdiWorkspaceWindow.cs:228
+msgid "Do you really want to discard your changes ?"
+msgstr "Değişikliklerinizden vazgeçmek istediğinizden emin misiniz?"
+
+#: src/Main/Base/Commands/ClassBrowserCommands/ClassBrowserCommands.cs:44
+msgid "Not implemented"
+msgstr "Henüz tamamlanmadı"
+
+#: src/Main/Base/Commands/FileCommands.cs:101
+msgid "Are you sure that you want to reload the file?"
+msgstr "Dosyayı yeniden yüklemek istediğinizden emin misiniz?"
+
+#.
+#. using (SaveFileDialog fdiag = new SaveFileDialog()) {
+#. fdiag.OverwritePrompt = true;
+#. fdiag.AddExtension    = true;
+#.
+#. string[] fileFilters  = (string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#. fdiag.Filter          = String.Join("|", fileFilters);
+#. for (int i = 0; i < fileFilters.Length; ++i) {
+#. if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#. fdiag.FilterIndex = i + 1;
+#. break;
+#. }
+#. }
+#: src/Main/Base/Commands/FileCommands.cs:146
+msgid "Save as..."
+msgstr "Farklı kaydet..."
+
+#: src/Main/Base/Commands/FileCommands.cs:158
+#, csharp-format
+msgid "File name {0} is invalid"
+msgstr "Dosya adı {0} geçersiz"
+
+#: src/Main/Base/Commands/FileCommands.cs:190
+msgid "Save File As..."
+msgstr "Dosyayı farklı kaydet..."
+
+#: src/Main/Base/Commands/FileCommands.cs:206
+msgid "File saved"
+msgstr "Dosya kaydedildi"
+
+#: src/Main/Base/Commands/FileCommands.cs:248
+#, csharp-format
+msgid "Can't open file {0} as project"
+msgstr "Dosya {0} proje olarak açılamadı"
+
+#: src/Main/Base/Commands/FileCommands.cs:398
+msgid "Are you sure you want to clear recent files list?"
+msgstr "En son dosyalar listesini temizlemek istediğinizden emin misiniz?"
+
+#: src/Main/Base/Commands/FileCommands.cs:398
+msgid "Clear recent files"
+msgstr "En son dosyaları temizle"
+
+#: src/Main/Base/Commands/FileCommands.cs:414
+msgid "Are you sure you want to clear recent projects list?"
+msgstr "En son projeler listesini temizlemek istediğinizden emin misiniz?"
+
+#: src/Main/Base/Commands/FileCommands.cs:414
+msgid "Clear recent projects"
+msgstr "En son projeleri temizle"
+
+#: src/Main/Base/Commands/HelpCommands.cs:80
+#, csharp-format
+msgid ""
+"Can not execute or view {0}\n"
+" Please check that the file exists and that you can open this file."
+msgstr ""
+"{0} çalıştırılamadı veya görüntülenemedi\n"
+" Lütfen dosyanın varlığını ve bu dosyanın açılabildiğini denetleyin."
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:66
+msgid "recent files"
+msgstr "en son dosyalar"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:102
+#, csharp-format
+msgid "load solution {0}"
+msgstr "çözümü yükle: {0}"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:107
+msgid "recent solutions"
+msgstr "en son çözümler"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:142
+msgid "Start tool"
+msgstr "Başlangıç aracı"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:166
+#, csharp-format
+msgid "Enter any arguments you want to use while launching tool, {0}:"
+msgstr "Araç {0} çalıştırılırken kullanmak istediğiniz argümanları girin:"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:166
+#, csharp-format
+msgid "Command Arguments for {0}"
+msgstr "{0} için komut argümanları"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:193
+#, csharp-format
+msgid ""
+"External program execution failed.\n"
+"Error while starting:\n"
+" '{0} {1}'"
+msgstr ""
+"Harici program çalıştırılamadı.\n"
+"'{0} {1}' başlatılırken hata."
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:235
+msgid "Activate this window"
+msgstr "Bu pencereyi etkinleştir"
+
+#: src/Main/Base/Commands/MenuItemBuilders.cs:297
+msgid "Deploy"
+msgstr "Yerleştir"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:63
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:139
+msgid "Invalid Project File"
+msgstr "Geçersiz proje dosyası"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:102
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:181
+msgid "Invalid Solution File"
+msgstr "Geçersiz çözüm dosyası"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:118
+msgid "Add a Project"
+msgstr "Proje ekle"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/CombineNodeCommands.cs:159
+msgid "Add a Combine"
+msgstr "Birleşim ekle"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/FolderNodeCommands.cs:45
+msgid "Add files"
+msgstr "Dosyalar ekle"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/FolderNodeCommands.cs:65
+#, csharp-format
+msgid "{0} is outside the project directory, what should I do?"
+msgstr "{0} proje dizini dışında, ne yapayım?"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/FolderNodeCommands.cs:67
+msgid "_Move"
+msgstr "Taşı"
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/FolderNodeCommands.cs:82
+msgid ""
+"An error occurred while attempt to move/copy that file. Please check your "
+"permissions."
+msgstr ""
+"İlgili dosyanın kopyalanması/taşınması sırasında bir hata oluştu. Lütfen izinlerinizi kontrol edin."
+
+#: src/Main/Base/Commands/ProjectBrowserCommands/ResourceFolderNodeCommands.cs:61
+#, csharp-format
+msgid "Resource file '{0}' does not exist"
+msgstr "Kaynak dosyası '{0}' mevcut değil"
+
+#: src/Main/Base/Commands/ProjectCommands.cs:37
+msgid "Assembly not Found (Compile the project first)"
+msgstr "Çevirme bulunamadı (önce projeyi derleyin)"
+
+#: src/Main/Base/Commands/RunCommands.cs:46
+msgid "Successful"
+msgstr "Başarılı"
+
+#: src/Main/Base/Commands/RunCommands.cs:49
+#, csharp-format
+msgid "{0} errors, {1} warnings"
+msgstr "{0} hata, {1} uyarı"
+
+#: src/Main/Base/Commands/RunCommands.cs:74
+#: src/Main/Base/Commands/RunCommands.cs:148
+#, csharp-format
+msgid "Language binding {0} can't compile {1}"
+msgstr "Dil bağıntısı {0} {1}'i derleyemedi"
+
+#: src/Main/Base/Commands/RunCommands.cs:88
+#: src/Main/Base/Commands/RunCommands.cs:162
+msgid "No source file for compilation found. Please save unsaved files"
+msgstr "Derleme için kaynak dosyası bulunamadı. Lütfen kaydetmediğiniz dosyaları kaydedin."
+
+#: src/Main/Base/Commands/RunCommands.cs:92
+#: src/Main/Base/Commands/RunCommands.cs:166
+#: src/Main/Base/Commands/RunCommands.cs:278
+#: src/Main/Base/Commands/RunCommands.cs:310
+#, csharp-format
+msgid ""
+"---------------------- Done ----------------------\n"
+"\n"
+"Build: {0} succeeded, {1} failed\n"
+msgstr ""
+"---------------------- Tamamlandı ----------------------\n"
+"\n"
+"İnşa: {0} başarılı, {1} başarısız\n"
+
+#: src/Main/Base/Commands/RunCommands.cs:96
+#: src/Main/Base/Commands/RunCommands.cs:170
+msgid "Error while compiling"
+msgstr "Derleme sırasında hata"
+
+#: src/Main/Base/Commands/RunCommands.cs:205
+msgid "Executing"
+msgstr "Çalıştırılıyor"
+
+#: src/Main/Base/Commands/RunCommands.cs:218
+msgid ""
+"Cannot execute Run command, cannot find startup project.\n"
+"Please define a startup project for the combine in the combine properties."
+msgstr ""
+"Çalıştırma komutu başlatılamadı, başlangıç projesi bulunamadı.\n"
+"Lütfen birleşim için birleşim özellikleri içerisinden bir başlangıç projesi tanımlayın."
+
+#: src/Main/Base/Commands/RunCommands.cs:231
+msgid "No runnable executable found."
+msgstr "Çalıştırılabilir uygulama bulunamadı."
+
+#: src/Main/Base/Commands/RunCommands.cs:238
+msgid "Error while running"
+msgstr "Çalıştırma sırasında hata"
+
+#: src/Main/Base/Commands/RunCommands.cs:281
+#: src/Main/Base/Commands/RunCommands.cs:313
+#, csharp-format
+msgid "Error while compiling project {0}"
+msgstr "Proje {0} derleme sırasında hata"
+
+#: src/Main/Base/Internal/ExternalTool/ToolLoader.cs:89
+msgid "Can't load external tools configuration file"
+msgstr "Harici araçlar yapılandırma dosyası yüklenemedi"
+
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:203
+#, csharp-format
+msgid "Can't find language binding for {0}"
+msgstr "{0} için dil bağıntısı bulunamadı."
+
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:355
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:366
+#: src/Main/Base/Internal/Project/Project/AbstractProject.cs:511
+msgid ""
+"Can't save solution\n"
+"Please check your file and directory permissions."
+msgstr ""
+"Çözüm kaydedilemedi\n"
+"Lütfen dosya ve dizin izinlerinizi kontrol edin."
+
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:373
+msgid "Save Combine As..."
+msgstr "Birleşimi farklı kaydet..."
+
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:379
+msgid "Combine saved"
+msgstr "Birleşim kaydedildi"
+
+#: src/Main/Base/Internal/Project/Combine/Combine.cs:625
+msgid ""
+"Cyclic dependencies can not be built with this version.\n"
+"But we are working on it."
+msgstr ""
+"Dönüşsel bağımlılıklar bu sürüm ile inşa edilemez.\n"
+"Fakat üzerinde çalışıyoruz."
+
+#: src/Main/Base/Internal/Project/Combine/CombineEntry.cs:115
+#, csharp-format
+msgid "Compiling: {0}"
+msgstr "Derleniyor: {0}"
+
+#: src/Main/Base/Internal/Project/Combine/CombineEntry.cs:133
+#, csharp-format
+msgid ""
+"------ Build started: Project: {0} Configuration: {1} ------\n"
+"\n"
+"Performing main compilation...\n"
+msgstr ""
+"------ İnşa başladı: Proje: {0} Yapılandırma: {1} ------\n"
+"\n"
+"Ana derleme gerçekleştiriliyor...\n"
+
+#: src/Main/Base/Internal/Project/Combine/CombineEntry.cs:136
+#: src/Main/Base/Internal/Project/Combine/CombineEntry.cs:150
+#, csharp-format
+msgid "Execute : {0}"
+msgstr "Çalıştır : {0}"
+
+#: src/Main/Base/Internal/Project/Combine/CombineEntry.cs:173
+#, csharp-format
+msgid ""
+"Build complete -- {0} errors, {1} warnings\n"
+"\n"
+msgstr ""
+"İnşa tamamlandı -- {0} hata, {1} uyarı\n"
+"\n"
+
+#: src/Main/Base/Internal/Project/Project/AbstractProject.cs:266
+#, csharp-format
+msgid ""
+"Old project file format found.\n"
+" It will be automatically converted to {0} information"
+msgstr ""
+"Eski proje dosya biçemi bulundu.\n"
+" Otomatik olarak {0} bilgisine dönüştürülecek."
+
+#: src/Main/Base/Internal/Project/Project/AbstractProject.cs:281
+msgid ""
+"Error writing the old project file.\n"
+"Check if you have write permission on the project file (.prjx).\n"
+" A non persistent proxy project will be created but no changes will be "
+"saved.\n"
+"It is better if you close MonoDevelop and correct the problem."
+msgstr ""
+"Eski proje dosyası yazılırken hata.\n"
+"Proje dosyasına (.prjx) yazma yetkiniz olduğunu denetleyin.\n"
+"Kalıcı olmayan bir vekil proje oluşturulacak fakat herhangi bir değişiklik kaydedilmeyecek.\n"
+"MonoDevelop'u kapatıp sorunu çözerseniz daha iyi olur."
+
+#: src/Main/Base/Internal/Project/Project/AbstractProject.cs:526
+msgid "Save Project As..."
+msgstr "Projeyi farklı kaydet..."
+
+#: src/Main/Base/Internal/Project/Project/AbstractProject.cs:533
+msgid "Project saved"
+msgstr "Proje kaydedildi"
+
+#: src/Main/Base/Internal/Project/Project/Deployment/AssemblyDeploy.cs:28
+msgid "Can't deploy: no deployment target set"
+msgstr "Yerleştirme hatası: Yerleştirme hedefi ayarlanmamış."
+
+#: src/Main/Base/Internal/Project/Project/Deployment/FileDeploy.cs:23
+#: src/Main/Base/Internal/Project/Project/Deployment/ScriptDeploy.cs:23
+msgid "Can't deploy: you forgot to specify a deployment script"
+msgstr "Yerleştirme hatası: Yerleştirme betiğini belirtmeyi unuttunuz"
+
+#: src/Main/Base/Internal/Project/Project/Deployment/ScriptDeploy.cs:35
+msgid "Error while executing deploy script"
+msgstr "Yerleştirme betiği çalıştırılırken hata"
+
+#. set up dialog title
+#: src/Main/Base/Internal/Project/Project/IncludeFilesDialog.cs:51
+#, csharp-format
+msgid "Found new files in {0}"
+msgstr "{0} içerisinde yeni dosyalar bulundu"
+
+#: src/Main/Base/Internal/Templates/CodeTemplateLoader.cs:108
+msgid "Can't load templates configuration file"
+msgstr "Şablon yapılandırma dosyası yüklenemedi"
+
+#: src/Main/Base/Internal/Templates/FileTemplate.cs:170
+#, csharp-format
+msgid "Error loading template file {0}"
+msgstr "Şablon dosyası {0} yüklenmesi sırasında hata"
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/CombineDescriptor.cs:100
+#, csharp-format
+msgid ""
+"Solution file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"Çözüm dosyası {0} mevcut, bu dosyanın üzerine yazmak ister misiniz?"
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:87
+#, csharp-format
+msgid "Can't create project with type : {0}"
+msgstr "{0} tipinde proje oluşturulamıyor."
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:113
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:139
+#, csharp-format
+msgid ""
+"File {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr "Dosya {0} zaten var, bu dosyanın üzerine yazmak ister misiniz?"
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:113
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:139
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:162
+msgid "File already exists"
+msgstr "Dosya zaten var"
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:127
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:153
+#, csharp-format
+msgid "File {0} could not be written."
+msgstr "Dosya {0} yazılamadı."
+
+#: src/Main/Base/Internal/Templates/ProjectTemplates/ProjectDescriptor.cs:162
+#, csharp-format
+msgid ""
+"Project file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"Proje dosyası {0} zaten var, bu dosyanın üzerine yazmak ister misiniz?"
+
+#: src/Main/Base/Services/DisplayBinding/DisplayBindingService.cs:61
+#, csharp-format
+msgid "Didnt match on mimetype: {0}, trying filename"
+msgstr "MIME türü eşleşmedi: {0}, dosya adı deneniyor."
+
+#: src/Main/Base/Services/File/DefaultFileService.cs:262
+#, csharp-format
+msgid "Can't remove directory {0}"
+msgstr "{0} dizini silinemedi"
+
+#: src/Main/Base/Services/File/DefaultFileService.cs:271
+#, csharp-format
+msgid "Can't remove file {0}"
+msgstr "{0} dosyası silinemedi"
+
+#: src/Main/Base/Services/File/DefaultFileService.cs:286
+#, csharp-format
+msgid "Can't rename directory {0}"
+msgstr "{0} dizini yeniden adlandırılamadı"
+
+#: src/Main/Base/Services/File/DefaultFileService.cs:295
+#, csharp-format
+msgid "Can't rename file {0}"
+msgstr "{0} dosyası yeniden adlandırılamadı"
+
+#: src/Main/Base/Services/MessageService.cs:133
+msgid "Question"
+msgstr "Soru"
+
+#: src/Main/Base/Services/ParserService/DefaultParserService.cs:197
+msgid "Generate code completion database"
+msgstr "Kod tamamlama veritabanını oluştur"
+
+#: src/Main/Base/Services/ParserService/DefaultParserService.cs:207
+msgid "Writing class"
+msgstr "Sınıf yazılıyor"
+
+#: src/Main/Base/Services/Project/DefaultProjectService.cs:136
+msgid "Opening Combine..."
+msgstr "Birleşim açılıyor..."
+
+#: src/Main/Base/Services/Project/DefaultProjectService.cs:286
+#, csharp-format
+msgid "Compiling {0}"
+msgstr "{0} derleniyor"
+
+#: src/Main/Base/Services/Project/DefaultProjectService.cs:344
+msgid "Save changed files?"
+msgstr "Değiştirilmiş dosyalar kaydedilsin mi?"
+
+#: src/Main/Base/Services/StatusBar/DefaultStatusBarService.cs:68
+msgid "INS"
+msgstr "ARYEKLE"
+
+#: src/Main/Base/Services/StatusBar/DefaultStatusBarService.cs:68
+msgid "OVR"
+msgstr "ÜZRYZ"
+
+#: src/Main/Base/Services/ResourceNotFoundException.cs:20
+#, csharp-format
+msgid "Resource not found: {0}"
+msgstr "Kaynak bulunamadı: {0}"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:79
+msgid "Up one level"
+msgstr "Bir seviye yukarı"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:80
+msgid "Home"
+msgstr "Ev dizini"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:253
+msgid "Open with file browser"
+msgstr "Dosya gözatıcısı ile aç"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:256
+msgid "Open with terminal"
+msgstr "Terminal ile aç"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:265
+msgid "Create new folder"
+msgstr "Yeni dizin oluştur"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:328
+#, csharp-format
+msgid "Cannot enter '{0}' folder"
+msgstr "'{0}' dizini içerisine girilemedi"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:364
+#, csharp-format
+msgid "Could not rename folder '{0}' to '{1}'"
+msgstr "'{0}' dizininin adı '{1}' olarak değiştirilemedi"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:382
+#, csharp-format
+msgid "Could not create new folder '{0}'"
+msgstr "Yeni dizin oluşturulamadı: {0}"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:404
+msgid "Are you sure you want to delete this folder?"
+msgstr "Bu dizini silmek istediğinizden emin misiniz?"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:404
+msgid "Delete folder"
+msgstr "Dizini sil"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/FileBrowser/FileBrowser.cs:414
+#, csharp-format
+msgid "Could not delete folder '{0}'"
+msgstr "Dizin silinemedi: '{0}'"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:51
+msgid "Go back"
+msgstr "Geri git"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:52
+msgid "Go forward"
+msgstr "İleri git"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:53
+msgid "Stop loading"
+msgstr "Yüklemeyi durdur"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:54
+msgid "Reload page"
+msgstr "Sayfayı yeniden yükle"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:55
+msgid "Address"
+msgstr "Adres"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Navbar/Navbar.cs:56
+msgid "Load address"
+msgstr "Adresi yükle"
+
+#: src/Libraries/MonoDevelop.Gui.Widgets/Tree/TreeNodeCollection.cs:171
+msgid "Attempt to remove a non node from the tree"
+msgstr "Ağaç içerisinden olmayan bir dalın çıkarılması denendi"
+
+#. FIXME: i18n
+#: src/AddIns/DisplayBindings/SourceEditor/Commands/ToolCommands.cs:30
+msgid "Insert a color hex string"
+msgstr "Renk hex içeriği ekle"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:141
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:176
+msgid "Wildcards"
+msgstr "Joker karakterler"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:144
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:178
+msgid "Regular Expressions"
+msgstr "Düzenli ifadeler"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:160
+msgid "Current File"
+msgstr "Şimdiki dosya"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:162
+msgid "All Open Files"
+msgstr "Tüm açık dosyalar"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceDialog.cs:164
+msgid "Entire Project"
+msgstr "Tüm proje"
+
+#. FIXME: make this a resource in the resource file
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/EditTemplateGroupDialog.cs:61
+#, csharp-format
+msgid "{0} Code Group"
+msgstr "{0} kod grubu"
+
+#. set the label properties
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:98
+msgid "Replace in Files"
+msgstr "Dosyalarda değiştir"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:194
+msgid "Directories"
+msgstr "Dizinler"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:198
+msgid "Whole project"
+msgstr "Tüm proje"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:257
+msgid "Select directory"
+msgstr "Dizin seç"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:308
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:313
+#, csharp-format
+msgid "Invalid directory name: {0}"
+msgstr "Geçersiz dizin adı: {0}"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/Dialogs/ReplaceInFilesDialog.cs:318
+#, csharp-format
+msgid "Invalid file mask: {0}"
+msgstr "Geçersiz dosya maskesi: {0}"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:113
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:129
+msgid "Template"
+msgstr "Şablon"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:181
+msgid "New "
+msgstr "Yeni"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/OptionPanels/CodeTemplatePanel.cs:194
+msgid "Edit "
+msgstr "Düzenle"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Gui/SourceEditorDisplayBinding.cs:151
+msgid "Source Editor"
+msgstr "Kaynak düzenleyici"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:82
+#, csharp-format
+msgid "Match at offset {0}"
+msgstr "Göreli konum {0}'da eşleştir"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:126
+#, csharp-format
+msgid "The search could not be finished: {0}"
+msgstr "Arama tamamlanamadı: {0}"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:128
+msgid "Search cancelled."
+msgstr "Arama iptal edildi."
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:130
+#, csharp-format
+msgid "Search completed. {0} matches found in {1} files."
+msgstr "Arama tamamlandı: {1} dosyada {0} eşleşme bulundu."
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:153
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:204
+msgid "There is a search already in progress. Do you want to cancel it?"
+msgstr "Devam eden bir arama işlemi var. Durdurmak ister misiniz?"
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:163
+#, csharp-format
+msgid "Replacing '{0}' in {1}."
+msgstr "{1} içerisindeki '{0}' değiştiriliyor."
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceInFilesManager.cs:214
+#, csharp-format
+msgid "Looking for '{0}' in {1}."
+msgstr "{1} içerisinde '{0}' aranıyor."
+
+#. MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Mark all done", "Finished");
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceManager.cs:104
+msgid "Mark all completed"
+msgstr "Tümünü tamamlandı olarak işaretle"
+
+#. MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceManager.cs:137
+#, csharp-format
+msgid "Replace all finished. {0} matches found."
+msgstr "Tümünü değiştirme tamamlandı. {0} eşleşme bulundu."
+
+#: src/AddIns/DisplayBindings/SourceEditor/Search/SearchReplaceManager.cs:176
+msgid "Not Found"
+msgstr "Bulunamadı"
+
+#: src/AddIns/BackendBindings/CSharpBinding/Gui/CodeGenerationPanel.cs:63
+msgid "Executable"
+msgstr "Uygulama"
+
+#: src/AddIns/BackendBindings/CSharpBinding/Gui/CodeGenerationPanel.cs:65
+msgid "Library"
+msgstr "Kütüphane"
+
+#: src/AddIns/BackendBindings/CSharpBinding/Gui/OutputOptionsPanel.cs:75
+msgid "Invalid assembly name specified"
+msgstr "Geçersiz çevirme adı belirtildi"
+
+#: src/AddIns/BackendBindings/CSharpBinding/Gui/OutputOptionsPanel.cs:80
+msgid "Invalid output directory specified"
+msgstr "Geçersiz çıktı dizini belirtildi"
+
+#: src/AddIns/BackendBindings/CSharpBinding/Gui/OutputOptionsPanel.cs:97
+msgid "Select the directory in which the assembly will be created"
+msgstr "Çevirmenin oluşturulacağı dizini seçin"
+
+#: src/AddIns/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:2
+msgid "_Import Visual Studio .NET Project"
+msgstr "V_isual Studio .NET Projesi aktar"
+
+#: build/AddIns/AddIns/BackendBindings/templates/BlankCombine.xpt.xml.h:1
+msgid "A blank solution"
+msgstr "Boş bir çözüm"
+
+#: build/AddIns/AddIns/BackendBindings/templates/BlankCombine.xpt.xml.h:2
+msgid "Blank Solution"
+msgstr "Boş çözüm"
+
+#: build/AddIns/AddIns/BackendBindings/templates/ConsoleProject.xpt.xml.h:1
+msgid "Console Project"
+msgstr "Konsol projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/ConsoleProject.xpt.xml.h:2
+msgid "Creates a new console project."
+msgstr "Yeni bir konsol projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/CSharpSessionStateWebService.xft.xml.h:1
+msgid "Creates a secure C# Web Service, using SessionState"
+msgstr "SessionState kullanarak güvenli bir C# Web hizmeti oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/CSharpSessionStateWebService.xft.xml.h:2
+msgid "Secure C# Web Service"
+msgstr "Güvenli C# Web hizmeti"
+
+#: build/AddIns/AddIns/BackendBindings/templates/CSharpWebService.xft.xml.h:1
+msgid "C# Web Service"
+msgstr "C# Web hizmeti"
+
+#: build/AddIns/AddIns/BackendBindings/templates/CSharpWebService.xft.xml.h:2
+msgid "Creates a C# Web Service."
+msgstr "Bir C# Web hizmeti oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyCSharpFile.xft.xml.h:1
+msgid "Creates an empty C# file."
+msgstr "Boş bir C# dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyCSharpFile.xft.xml.h:2
+msgid "Empty File"
+msgstr "Boş dosya"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyHTMLFile.xft.xml.h:1
+msgid "Creates an empty HTML file."
+msgstr "Boş bir HTML dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyHTMLFile.xft.xml.h:2
+msgid "Empty HTML File"
+msgstr "Boş HTML dosyası"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyJavaFile.xft.xml.h:1
+msgid "Creates an empty Java file."
+msgstr "Boş bir Java dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyJavaFile.xft.xml.h:2
+msgid "Empty Java File"
+msgstr "Boş Java dosyası"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyJavaProject.xpt.xml.h:1
+msgid "Creates an empty Java solution."
+msgstr "Boş bir Java çözümü oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyJavaProject.xpt.xml.h:2
+msgid "Empty Java Project"
+msgstr "Boş Java Projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyNemerleFile.xft.xml.h:1
+msgid "Creates an empty Nemerle file"
+msgstr "Boş Nemerle dosyası oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyNemerleFile.xft.xml.h:2
+msgid "Empty file"
+msgstr "Boş dosya"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyProject.xpt.xml.h:1
+msgid "Creates an empty C# project."
+msgstr "Boş bir C# projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyProject.xpt.xml.h:2
+#: build/AddIns/AddIns/BackendBindings/templates/NemerleEmptyProject.xpt.xml.h:2
+msgid "Empty Project"
+msgstr "Boş Proje"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyResourceFile.xft.xml.h:1
+msgid "Creates an empty resource file."
+msgstr "Boş bir kaynak dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyResourceFile.xft.xml.h:2
+msgid "Empty Resource File"
+msgstr "Boş kaynak dosyası"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyTextFile.xft.xml.h:1
+msgid "Creates an empty text file."
+msgstr "Boş bir metin dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyTextFile.xft.xml.h:2
+msgid "Empty Text File"
+msgstr "Boş metin dosyası"
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyXMLFile.xft.xml.h:1
+msgid "Creates an empty XML file."
+msgstr "Boş bir XML dosyası oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/EmptyXMLFile.xft.xml.h:2
+msgid "Empty XML File"
+msgstr "Boş XML dosyası"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GladeSharpProject.xpt.xml.h:1
+msgid "Glade# Project"
+msgstr "Glade# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GladeSharpProject.xpt.xml.h:2
+msgid "a Glade# project with one window and button"
+msgstr "Bir pencere ve bir butonu olan bir Glade# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GnomeSharpProgram.xft.xml.h:1
+msgid "Creates a Gnome# program."
+msgstr "Bir Gnome# programı oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/GnomeSharpProgram.xft.xml.h:2
+msgid "Gnome# Program"
+msgstr "Gnome# programı"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Gnome# project"
+msgstr "Bir Gnome# projesi oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Gnome# Projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GtkSharpProject.xpt.xml.h:1
+msgid "Creates a Gtk# project."
+msgstr "Bir Gtk# projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/GtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Gtk# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/GtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window."
+msgstr "Üst-düzey bir Gtk# penceresi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/GtkSharpWindow.xft.xml.h:2
+msgid "Gtk# Window"
+msgstr "Gtk# penceresi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project with IKVM"
+msgstr "IKVM kullanarak bir konsol Java projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
+msgid "IKVM Console Project"
+msgstr "IKVM Konsol Projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGladeApplicationProject.xpt.xml.h:1
+msgid "Create a Glade# Java project with IKVM"
+msgstr "IKVM kullanarak bir Glade# Java projesi oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGladeApplicationProject.xpt.xml.h:2
+msgid "IKVM Glade# Project"
+msgstr "IKVM Glade# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "IKVM kullanarak bir Gnome# Java projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
+msgid "IKVM Gnome# Project"
+msgstr "IKVM Gnome# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGtkApplicationProject.xpt.xml.h:1
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "IKVM kullanarak bir Gtk# Java projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/IkvmGtkApplicationProject.xpt.xml.h:2
+msgid "IKVM Gtk# Project"
+msgstr "IKVM Gtk# projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/ILAsmConsoleProject.xpt.xml.h:1
+msgid "ILAsm Console Project"
+msgstr "ILAsm Konsol Projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplet.xft.xml.h:1
+msgid "Creates an AWT Applet"
+msgstr "Bir AWT uygulamacığı oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplet.xft.xml.h:2
+msgid "Java AWT Applet"
+msgstr "Java AWT Uygulamacığı"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplicationProject.xpt.xml.h:1
+msgid "Creates an AWT project."
+msgstr "Bir AWT projesi oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplicationProject.xpt.xml.h:2
+msgid "Java AWT Project"
+msgstr "Java AWT projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplication.xft.xml.h:1
+msgid "Creates an AWT application."
+msgstr "Bir AWT uygulaması oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaApplication.xft.xml.h:2
+msgid "Java AWT Application"
+msgstr "Java AWT uygulaması"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project"
+msgstr "Bir konsol Java projesi oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaConsoleApplicationProject.xpt.xml.h:2
+msgid "Java Console Project"
+msgstr "Java Konsol projesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaDialog.xft.xml.h:1
+msgid "Creates an AWT dialog."
+msgstr "Bir AWT diyaloğu oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaDialog.xft.xml.h:2
+msgid "Java AWT Dialog"
+msgstr "Java AWT diyaloğu"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaFrame.xft.xml.h:1
+msgid "Creates an AWT Frame"
+msgstr "Bir AWT çerçevesi oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaFrame.xft.xml.h:2
+msgid "Java AWT Frame"
+msgstr "Java AWT çerçevesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaOKDialog.xft.xml.h:1
+msgid "Creates an AWT OK Dialog."
+msgstr "Bir AWT OK diyaloğu oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaOKDialog.xft.xml.h:2
+msgid "Java AWT OK Dialog"
+msgstr "Java AWT OK diyaloğu"
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaPanel.xft.xml.h:1
+msgid "Creates an AWT panel."
+msgstr "Bir AWT paneli oluşturur."
+
+#: build/AddIns/AddIns/BackendBindings/templates/JavaPanel.xft.xml.h:2
+msgid "Java AWT Panel"
+msgstr "Java AWT Paneli"
+
+#: build/AddIns/AddIns/BackendBindings/templates/Library.xpt.xml.h:1
+msgid "C# Library"
+msgstr "C# Kütüphanesi"
+
+#: build/AddIns/AddIns/BackendBindings/templates/Library.xpt.xml.h:2
+msgid "Creates an empty C# class library"
+msgstr "Boş bir C# sınıf kütüphanesi oluşturur"
+
+#: build/AddIns/AddIns/BackendBindings/templates/NemerleEmptyProject.xpt.xml.h:1
+msgid "Creates an empty Nemerle project"
+msgstr "Boş bir Nemerle projesi oluşturur"
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template originator   = "Peter Johanson" 
+	  created      = "04/03/2005"
+	  lastModified = "04/03/2005">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+                <_Name>Empty Project</_Name>
+                <Category>Boo</Category>
+                <Icon>res:Boo.Project.EmptyProject</Icon>
+                <LanguageName>Boo</LanguageName>
+                <_Description>Creates an empty Boo solution.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "."/>
+	</Combine>
+</Template>

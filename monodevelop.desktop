@@ -1,0 +1,17 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=MonoDevelop
+GenericName=Integrated Development Environment
+Comment=Integrated Development Environment
+Exec=monodevelop
+TryExec=monodevelop
+Icon=monodevelop.png
+StartupNotify=true
+Terminal=false
+Type=Application
+MimeType=text/x-csharp;application/x-mds;application/x-mdp;application/x-cmbx;application/x-prjx;
+Categories=Application;Development;
+X-GNOME-Bugzilla-Bugzilla=Ximian
+X-GNOME-Bugzilla-Product=MonoDevelop
+X-GNOME-Bugzilla-OtherBinaries=monodevelop

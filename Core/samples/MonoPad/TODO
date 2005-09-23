@@ -1,0 +1,18 @@
+1.- Fix mouse event handling. Some weirdness happens when selecting
+    text with the mouse and it moves to the margins. This behaviour
+	seems to be the same as in Windows, though.
+
+2.- Improve speed. There are two main issues to consider
+    a) Improve drawing speed. Profiling is needed, and avoid using pango
+    so heavely. A posible solution is to simplify the calculations when
+    the font is monospaced, or, even, allow only monospaced fonts.
+    b) Avoid redrawing the entire screen when possible. The redrawing code
+    is too pessimistic and that slows things
+    down too much. This has to do with the following point
+
+3.- Fix the invalidation calculations. In TextArea.cs there is a Invalidate
+    method that gets called when a redraw is needed. I don't understand the
+    coordinates received (seen by tracing them), so it's necessary to
+    understand them and fix the method, fix the calculations on origin 
+    (better) or both.
+

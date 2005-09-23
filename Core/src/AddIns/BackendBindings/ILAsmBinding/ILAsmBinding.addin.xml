@@ -1,0 +1,31 @@
+<AddIn name        = "ILAsm Language Binding"
+       author      = "Todd Berman"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "ILAsm Language Binding"
+       version     = "0.6">
+
+  <Runtime>
+    <Import assembly = "ILAsmBinding.dll"/>
+  </Runtime>
+
+  <Extension path = "/MonoDevelop/ProjectTemplates">
+    <ProjectTemplate id = "ILAsmConsoleProject"
+                     resource = "ILAsmConsoleProject.xpt.xml"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activelanguage = "ILAsm">
+      <DialogPanel id = "ILAsmCompilerParametersPanel"
+                   _label = "Compiler"
+                   class = "ILAsmBinding.CompilerParametersPanel"/>
+    </Conditional>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+    <LanguageBinding id = "ILAsm"
+                     supportedextensions = ".il"
+                     class = "ILAsmBinding.ILAsmLanguageBinding"/>
+  </Extension>
+
+</AddIn>

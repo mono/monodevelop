@@ -1,0 +1,85 @@
+2005-06-28  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.am (FILES): Move AssemblyInfo.cs ...
+	(GENERATED_FILES): ... here.
+
+2005-04-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* prj2make-sharp-lib.addin.xml:
+	* prj2make-sharp-lib-Commands.cs: Use the new syntax for defining
+	commands and implementing commands.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-03-18  Francisco "Paco" Martinez <paco@mfcon.com>
+	* MsPrjHelpe.cs: 
+	Mono 2.0 has been commented out until further notice.
+	Gtk# 2.0 is searched first for a match otherwise it goes to Gtk# 1.0
+	Added Gecko# 2.0 (0.7) is searched first for a match otherwise it goes to Gecko# 1.0 (0.6)
+	
+	* MsPrjHelper.cs and MdPrjHelper.cs:
+	I also included the changes inside the patch in http://bugzilla.ximian.com/show_bug.cgi?id=73705.
+
+2004-08-07  Todd Berman  <tberman@off.net>
+
+	* AssemblyInfo.cs.in: Use new ASSEMBLY_VERSION variable.
+
+2004-06-17  John Luke  <jluke@cfl.rr.com>
+
+	* Makefile.am: add reference to MonoDevelop.Gui.Widgets
+	* *.Makefile: remove generated makefile from svn
+	* prj2make-sharp-Commands.cs : use MonoDevelop.Gui.Widgets.FileSelector
+	instead of Gtk.FileSelection
+
+2004-06-14  Francisco "Paco" Martinez <paco@mfcon.com>
+	
+	Changes to correctly specify GAC type references on imported projects from VS .NET csproj files
+
+	Files changed
+	* MdPrjHelper.cs 
+	* MsPrjHelper.cs
+	* Prj2MakeSharp.prjx -- modernized the GAC references
+	* PrjxInfo.cs
+	* Makefile.am -- include the added pkgconfiginvoker.cs file to the compilation 
+
+	Files added
+	* pkgconfiginvoker.cs -- This should be removed or depracated in future releases to avoid duplicity of
+	functionality
+
+2004-05-31  Francisco "Paco" Martinez <paco@mfcon.com>
+
+	* src/Addin/prj2make-sharp-lib/MsPrjHelper.cs: corrects problems with
+	the import of items flag as content so it will not try to build those
+
+2004-05-17  Todd Berman  <tberman@sevenl.net>
+
+	* prj2make-sharp-lib-Commands.cs: use HOME instead of Personal
+
+2004-04-25  Francisco "Paco" Martinez <paco@mfcon.com>
+	Files removed
+	* AssemblyInfo.cs -- This file is now generated in the build by
+		AssemblyInfo.cs.in
+
+2004-04-25  Francisco "Paco" Martinez <paco@mfcon.com>
+	
+	Files changed
+	* ChangeLog  -- Edited to better reflect the files included in the original import into the repository.
+	
+	Files added
+	* AssemblyInfo.cs
+	* AssemblyInfo.cs.in
+	* CsprojInfo.cs
+	* csproj_ver2003.cs
+	* Makefile.am
+	* MdPrjHelper.cs
+	* MsPrjHelper.cs
+	* prj2make-sharp-lib.addin.xml
+	* prj2make-sharp-lib.cmbx
+	* prj2make-sharp-lib-Commands.cs
+	* prj2make-sharp-lib.prjx
+	* PrjHelper.cs
+	* PrjxInfo.cs
+	* sharp_d_cmbx.cs
+	* sharp_d_prjx.cs

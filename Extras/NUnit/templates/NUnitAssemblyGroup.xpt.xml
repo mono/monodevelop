@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Template originator   = "Lluis Sanchez" 
+          created      = "12/07/2005"
+          lastModified = "12/07/2005">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>NUnit assembly test collection</_Name>
+		<Category>NUnit</Category>
+<!--		<Icon>Java.Project.DOSProject</Icon> -->
+		<_Description>Create an NUnit assembly test collection</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<CombineEntry name = "${ProjectName}" directory = "." type = "MonoDevelop.NUnit.NUnitAssemblyGroupProject, MonoDevelop.NUnit">
+		</CombineEntry>
+	</Combine>
+</Template>

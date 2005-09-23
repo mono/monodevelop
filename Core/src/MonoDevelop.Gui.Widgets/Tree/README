@@ -1,0 +1,4 @@
+This is a little and rough emulation of some widgets of Windows.Forms
+using Gtk. The goal is to be able to get the pads ported without changing
+the code too much, but we need to improve the implementation of these
+clases (easier, I think) or change the pads.

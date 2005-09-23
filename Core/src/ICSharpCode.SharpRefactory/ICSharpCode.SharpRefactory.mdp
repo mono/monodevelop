@@ -1,0 +1,140 @@
+<Project name="ICSharpCode.SharpRefactory" fileversion="2.0" language="C#" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/bin" assembly="ICSharpCode.SharpRefactory" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/bin" assembly="ICSharpCode.SharpRefactory" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/CodeDOM/CodeDOMVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Lexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Reader/FileReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Reader/IReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Reader/StringReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/BlankLine.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/Comment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/CommentType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/PreProcessingDirective.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/SpecialTracker.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/SpecialType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Lexer/Specials/TagComment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/AbstractASTVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/AbstractNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/AttributeTargets.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/DebugASTVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Enums.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/IASTVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/INode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/LookupTableVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Modifier.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ArrayCreateExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ArrayInitializerExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/AssignmentExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/BaseReferenceExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/BinaryOperatorExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/CastExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/CheckedExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ConditionalExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/DirectionExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/Expression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/FieldReferenceExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/IdentifierExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/IndexerExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/InvocationExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ObjectCreateExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ParenthesizedExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/PointerReferenceExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/PrimitiveExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/SizeOfExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/StackAllocExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/ThisReferenceExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/TypeOfExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/TypeReferenceExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/UnaryOperatorExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Expressions/UncheckedExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/AttributeSection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/DelegateDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/ExternAliasDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/NamespaceDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/TypeDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/UsingAliasDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/GlobalScope/UsingDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/BlockStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/BreakStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/CheckedStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/ContinueStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/DoWhileStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/EmptyStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/FixedStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/ForeachStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/ForStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/GotoCaseStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/GotoStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/IfElseStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/IfStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/LabelStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/LocalVariableDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/LockStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/ReturnStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/Statement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/StatementExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/SwitchStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/ThrowStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/TryCatchStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/UncheckedStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/UnsafeStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/UsingStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/WhileStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/Statements/YieldStatement.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/ConstructorDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/DestructorDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/EventAddRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/EventDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/EventRemoveRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/FieldDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/IndexerDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/MethodDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/OperatorDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/ParameterDeclarationExpression.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/PropertyDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/PropertyGetRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/PropertySetRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/TypeReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/AST/TypeLevel/VariableDeclaration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/Error.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/Modifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/ParserUtil.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/keywordlist/Keywords.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/keywordlist/Tokens.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/OutputFormatter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/PrettyPrintData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/PrettyPrintOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/PrettyPrintUtil.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/PrettyPrintVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/PrettyPrinter/SpecialVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/VBConverter/VBNetRefactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/VBConverter/VBNetVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Parser/generated/cs.ATG" subtype="Code" buildaction="Nothing" />
+    <File name="./src/Parser/generated/Makefile" subtype="Code" buildaction="Nothing" />
+    <File name="./src/Parser/generated/Parser.frame" subtype="Code" buildaction="Nothing" />
+    <File name="./src/Parser/generated/Scanner.frame" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="False" refto="System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+</Project>

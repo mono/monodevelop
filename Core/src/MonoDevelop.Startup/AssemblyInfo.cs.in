@@ -1,0 +1,31 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
+//     <version value="$version"/>
+// </file>
+
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[assembly: AssemblyTitle("MonoDevelop")]
+[assembly: AssemblyDescription("A full-featured IDE for Mono and Gtk#.")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("MonoDevelop")]
+// I don't wish to discredit SharpDevelop and Mike's work,
+// nor to discredit our work, so someone should
+// check with them about how they want things displayed here
+// and in the About box in the gui
+[assembly: AssemblyCopyright("(c) 2004 MonoDevelop Team and Mike Krueger 2000-2003")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("@ASSEMBLY_VERSION@")]
+[assembly: AssemblyDelaySign(false)]
+[assembly: AssemblyKeyFile("")] // ..\\src\\SharpDevelop\\sharpdevelop.key
+
+[assembly: Mono.About ("http://monodevelop.com")]
+[assembly: Mono.UsageComplement ("")]
+
+// maybe list people here, but for now this is fine
+[assembly: Mono.Author ("MonoDevelop Team")]

@@ -1,0 +1,284 @@
+2005-08-29  Peter Johanson  <latexer@gentoo.org> 
+
+	* Parser/Visitor.boo: Fix line number off-by-one error.
+
+2005-08-23  Peter Johanson  <latexer@gentoo.org> 
+
+	* BooBindingCompilerServices.boo: Add support for compiling in
+	embedded resources from projects.
+
+2005-08-21  Peter Johanson  <latexer@gentoo.org> 
+
+	* tempaltes/*: Fix icon references to use new resource naming
+	convention.
+
+2005-08-21  Peter Johanson  <latexer@gentoo.org> 
+
+	* Makefile.am: Use new -embedres option in boo.
+	* BooShell/BooShell.boo: Fix foreach over a CollectionBase.
+	* Gui/OptionPanels/CodeCompilationPanel.boo: Fix required for boo's
+	new method invocation changes.
+
+2005-08-20  Peter Johanson  <latexer@gentoo.org> 
+
+	* templates/BooGtkSharpProject.xpt.xml: Fix gtk-sharp references to
+	match new assembly versions.
+
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* templates/*:
+	* BooBinding.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-08-15  Peter Johanson  <latexer@gentoo.org>
+
+	* Gui/ShellTextvView: Fix file sharing violation that killed multiple
+	MD instances when the boo shell was enabled.
+
+2005-08-10  Peter Johanson  <latexer@gentoo.org>
+
+	* Gui/ShellTextView.boo: Fix small problem with
+	blank lines being accept, and causing errors in the interpreter.
+
+2005-08-10  Peter Johanson  <latexer@gentoo.org>
+
+	* Parser/ExpressionTypeVisitor.boo:
+	* Parser/Resolver.boo:
+	* Parser/ReturnType.boo:
+	* Parser/ExpressionFinder.boo:
+	* Parser/BooParser.boo:
+	* Parser/VariableLookupVisitor.boo:
+	* Parser/Visitor.boo: Add better error reporting via logging by type.
+
+2005-08-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/ReturnType.boo:
+	* Parser/ExpressionTypeVisitor.boo:
+	* Parser/Resolver.boo:
+	* Parser/BooParser.boo:
+	* Gui/ShellTextView.boo: Use the new IParserContext API.
+
+2005-07-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/OptionPanels/GeneralShellPanel.boo:
+	* Gui/OptionPanels/GeneralBooShellPanel.boo:
+	* Gui/OptionPanels/CodeCompilationPanel.boo:
+	Removed unused namespace import.
+
+2005-07-20  Peter Johanson  <latexer@gentoo.org>
+
+	* Gui/IShellModel.boo:
+	* Gui/ShellTextView.boo:
+	* Gui/BooShellModel.boo:
+	* Gui/OptionPanels/CodeCompilationPanel.boo:
+	* Properties/ShellProperties.boo:
+	* Parser/Resolver.boo:
+	* Parser/BooParser.boo:
+	* BooShellPadContent.boo:
+	* BooShell/BooShell.boo: Lots of cleanup, and add initial support for
+	code completion in the shell.
+	* Makefile.am: Revert makefile change that snuck in.
+
+2005-07-19  Peter Johanson  <latexer@gentoo.org>
+
+	* templates/BooGtkSharpWindow.xft.xml: Fix small typo.
+
+2005-07-19  Peter Johanson  <latexer@gentoo.org>
+
+	* BooAmbience: Changes to consolidate code, and actually markup the
+	items if IncludePangoMarkup is set.
+
+2005-07-18  Peter Johanson  <latexer@gentoo.org>
+
+	* BooBinding.addin.xml: Put the boo shell on the bottom by default.
+
+2005-07-18  Peter Johanson  <latexer@gentoo.org>
+
+	* Parser/Resolver.boo:
+	* BooLanguageBinding.boo: Remove some extraneous ';' characters, and
+	use the new 'char()' literal instead of the previous hack for getting
+	a char.
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooShellPadContent.boo: Make sure all shell controls are visible.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/BooCompilerParameters.boo: Implement ICloneable.
+	* BooLanguageBinding.boo: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-06-04  Peter Johanson <latexer@gentoo.org>
+
+	* Gui/OptionPanels/CodeCompilationPanel.boo:
+	* Project/BooCompilerParameters.boo: Remove compiler selection items,
+	as they are unneeded now that we use Boo's API for compilation
+
+2005-06-02  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/BooParser.boo: Re-apply change to include
+	ProcessMethodBodies step in the visitor. Problems this change caused
+	have been resolved elsewhere.
+	* Parser/Visitor.boo: Use the region of the property if the region for
+	the getter/setter is null (happens with [Getter()], etc AST
+	attributes).
+
+2005-05-31  Peter Johanson <latexer@gentoo.org>
+
+	* BooBindingCompilerServices.boo: Make sure we
+	only generate the assembly in the file, not
+	loaded into memory.
+
+2005-05-30  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/TypeMembers.boo: Cleanup, and add handling
+	of get/set for properties properly.
+	* Parser/Visitor.boo: Handling of get/set for properties,
+	move to using FullName where appropriate for class members,
+	and set enum return types to null.
+
+2005-05-30  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/Visitor.boo: Only abort parsing on parser
+	errors. We may have type binding errors that should be
+	ignored, since we do the resolving of those ourselves.
+	* Parser/TypeMembers.boo: Constructors should have a fully
+	qualified name of 'ctor', not '#ctor'.
+	* Parser/Resolver.boo: Fix problem with 'super' not always
+	finding the super class.
+	
+2005-05-29  Peter Johanson <latexer@gentoo.org>
+
+	* BooBindingCompilerServices.boo: Redo most of the
+	compiler stuff to use the Boo API instead of calling
+	out to booc in a seperate process. Is faster, and removes
+	the gross regexes previously used to parse errors.
+
+2005-05-27  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/*: Various cleanups of print statements,
+	as well as various fixes to improve resolution of
+	fields and local variables.
+
+2005-05-24  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/BooParser.boo: One small fix to return
+	a new CompilationUnit instead of null in case
+	of a failed parse attempt.
+
+2005-05-24  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/Visitor.boo: Cull out compiler
+	generated fields, and note if errors occured
+	before this visitor and return immediate if so.
+	* Parser/BooParser.boo: Keep a cache of successful
+	parser results, and return those for any files that
+	error out due to syntax errors, etc.
+
+2005-05-22  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/Resolver.boo: More cleanups,
+	and make static/non-static member showing work
+	properly.
+
+2005-05-22  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/BooParser.boo:
+	* Parser/Resolver.boo: Various small cleanups
+	* Parser/Visitor.boo: Some small cleanups, and parse
+	events now as well.
+
+2005-05-21  Peter Johanson <latexer@gentoo.org>
+
+	* BooShellPadContent.cs: Make the pad placement
+	easier to find when first viewing the shell.
+
+2005-05-21  Peter Johanson <latexer@gentoo.org>
+
+	* Parser/BooParser.boo: Move filename assignment to
+	after parsing is complete. Makes the class browser (mostly)
+	work now.
+
+2005-05-19  Peter Johanson <latexer@gentoo.org>
+
+	* BooBinding.mp{p,s}:
+	* BooShell/BooShell.mp{p,s}:
+	Add project files for compiling the BooBinding using MD.
+
+2005-05-10  Peter Johanson <latexer@gentoo.org>
+
+	* Gui/ShellTextView.boo: Use a normal StreamWriter
+	instead of the Boo.IO stuff, since Boo.IO has moved
+	in current Boo SVN to Boo.Lang.IO
+
+2005-05-04  Peter Johanson <latexer@gentoo.org>
+
+	* BooShell/BooShell.boo: Make sure we 
+	dispose of the worker thread.
+
+2005-05-04  Peter Johanson <latexer@gentoo.org>
+
+	* Gui/BooShellModel.boo: Don't join the aborted
+	thread. This isn't needed, and hangs mono-1.1.7 and
+	newer.
+
+2005-05-03  Peter Johanson <latexer@gentoo.org>
+
+	* BooShell/BooShell.boo: Make sure we don't get
+	disposed prematurely.
+
+2005-05-02  Peter Johanson <latexer@gentoo.org>
+
+	* Remoting/*:
+	* Gui/BooShellModel.boo:
+	* BooShell/BooShell.boo:
+	* Makefile.am: Switch over to using the new
+	RemoteProcessObject API. Removes the need for
+	all of BooShell.Remoting, and simplifies things
+	elsewhere.
+
+2005-05-02  Peter Johanson <latexer@gentoo.org>
+
+	* Gui/BooShellModel.boo: Fix from lluis to make
+	MD not crash when right clicking the shell with
+	no projects open.
+
+2005-05-02  Peter Johanson <latexer@gentoo.org>
+	
+	* BooShell/BooShell.boo: Convert to using Monitor instead
+	of just lock(), prevents the 100% utilization by mono
+	as reported by several folks.
+	* Gui/BooShellModel.boo: Some Monitor fixes, and a small
+	fix to make pasted input with multiple lines get processed
+	properly.
+
+2005-04-28  Rafael Monoman Teixeira <rafaelteixeirabr@hotmail.com>
+
+	* Makefile.am: added missing dependency for target $(ASSEMBLY)
+
+2005-04-25  Peter Johanson <latexer@gentoo.org>
+
+	* BooShellServer/BooShellServer.boo:
+	Small fix to make sure the shell server
+	doesn't exit unexpectedly.
+
+2005-04-25  Peter Johanson <latexer@gentoo.org>
+
+	* Properties/GeneralShellProperties.boo:
+	* Gui/*: Lots of changes to handle new shell
+	handling, as well as adding the ability to
+	load the assemblies generated by the currently
+	open solution/combine.
+	* Remoting/*: Library for doing remoting
+	using unix sockets
+	* BooShell/BooShell.boo: New shell object
+	created out of process from MD for projection
+	* BooShellServer/BooShellServer.boo: Remoting
+	server for serving up the BooShell objects
+
+2005-04-25  Peter Johanson <latexer@gentoo.org>
+
+	* Initial import of the Boo addin.
+

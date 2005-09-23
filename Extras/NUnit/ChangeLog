@@ -1,0 +1,47 @@
+2005-09-22  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Services/NUnitService.cs:
+	* Services/CombineTestGroup.cs:
+	* Services/NUnitProjectTestSuite.cs:
+	* Services/SystemTestProvider.cs: Only generate a test suite for
+	projects that reference the nunit.framework assembly.
+
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* templates/*:
+	* MonoDevelopNUnit.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+	* Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs: Track changes in
+	the Stock class.
+
+2005-08-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitService.cs:
+	* Gui/UnitTestOptionsDialog.cs: Track changes in TreeViewOptions.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* MonoDevelop.NUnit.mdp: references update
+
+2005-08-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitProjectTestSuite.cs: Use the new IParserContext API.
+
+2005-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestPad.cs:
+	* Gui/TestResultsPad.cs: Use the new command service to show
+	context menus.
+
+2005-07-27  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Project/NUnitAssemblyGroupProject.cs: Track api changes.
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* New addin implementation.
+
+2005-03-16  John Luke  <john.luke@gmail.com>
+
+	* Redo the nunit addin based on gnunit

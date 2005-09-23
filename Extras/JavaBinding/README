@@ -1,0 +1,7 @@
+
+MonoDevelop's support of Java is accompished via IKVM.NET
+(see http://www.ikvm.net) and it intended to allow writing
+.NET applications and libraries in Java.  With this in mind
+we will be moving to producing .NET assemblies instead of
+java class files or jars by default.
+

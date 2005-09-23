@@ -1,0 +1,5 @@
+This code comes from the Diff library at
+  http://taubz.for.net/code/diff
+which is the Perl Algorithm::Diff module
+converted to C#, and so may be covered by
+the Perl Artistic License.

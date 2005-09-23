@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<Template Originator="Christoph Wille" Language="C#" Created="6/13/2001" LastModified="6/13/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Secure Web Service</_Name>
+		<Icon>res:C#.File.WebFile</Icon>
+		<Category>C#</Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a secure C# Web Service, using SessionState</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".asmx" DefaultName="WebService">
+
+<![CDATA[<%@ WebService Language="C#" Class="YourClassname" %>
+// created on ${Date} at ${Time}
+using System;
+using System.Web.Services;
+
+public class YourClassname : WebService
+{
+	[ WebMethod(EnableSession=true) ]
+	public bool Login(string Username, string Password) 
+	{ 
+		// replace with database code to your liking
+		if ("user" == Username && "pwd" == Password)
+		{
+		  Session["LoggedIn"] = true;
+		  return true;
+		}
+		else
+		{
+		  Session["LoggedIn"] = false;
+		}
+		return false;
+	}
+		
+	[ WebMethod(EnableSession=true) ]
+	public bool IsUserLoggedIn()
+	{
+		object loggedIn = Session["LoggedIn"];
+		if (null != loggedIn) return (bool)loggedIn;
+		return false;
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

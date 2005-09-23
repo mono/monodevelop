@@ -1,0 +1,5 @@
+2005-08-08  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* src/mdhost.cs: Use an internal tcp channel for communication with
+	host. Get the host object reference from the standard input. Make
+	sure the ProcessHost's lease does not expire.

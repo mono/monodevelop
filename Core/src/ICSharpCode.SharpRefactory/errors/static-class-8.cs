@@ -1,0 +1,3 @@
+static sealed class Foo
+{
+}

@@ -1,0 +1,69 @@
+
+This is MonoDevelop which is intended to be a full-featured
+integrated development environment (IDE) for mono and Gtk#.
+It was originally a port of SharpDevelop 0.98.
+See http://monodevelop.com/ for more info.
+
+Compiling for users
+-------------------
+./configure --prefix=`pkg-config --variable=prefix mono`
+make
+make install
+
+the pkg-config line is to get MD installed with the rest of mono/gtk-sharp/etc
+
+This is *required*
+
+Compiling for developers
+------------------------
+To compile run the following command:
+
+./autogen.sh
+make
+
+To run MonoDevelop:
+make run
+
+Example:
+make clean && make && make run
+
+Installing
+----------
+Installing is currently optional.
+(Use make run to use MonoDevelop without installing.)
+
+make install
+
+Dependencies
+------------
+Mono >= 1.1.4
+Gtk# >= 2.3.90
+monodoc >= 1.0
+gecko-sharp >= 0.10
+gtksourceview-sharp >= 0.10
+
+References
+----------
+SharpDevelop Tech Notes
+http://www.icsharpcode.net/TechNotes/
+
+Gnome Human Interface Guidelines (HIG)
+http://developer.gnome.org/projects/gup/hig/1.0/
+
+freedesktop.org standards
+http://freedesktop.org/Standards/
+
+Integrating with GNOME (a little out of date)
+http://developers.sun.com/solaris/articles/integrating_gnome.html
+
+Bugzilla
+http://bugzilla.mozilla.org/bugwritinghelp.html
+http://bugzilla.mozilla.org/page.cgi?id=etiquette.html
+
+Discussion, Bugs, Patches
+-------------------------
+monodevelop-list@lists.ximian.com (questions and discussion)
+monodevelop-patches-list@lists.ximian.com (track commits to MonoDevelop)
+monodevelop-bugs@lists.ximian.com (track MonoDevelop bugzilla component)
+http://bugzilla.ximian.com (submit bugs and patches here)
+

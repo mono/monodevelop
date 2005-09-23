@@ -1,0 +1,262 @@
+2005-08-21  Peter Johanson  <latexer@gentoo.org>
+
+	* configure.in: Bump required boo version. Needed for new -embedres
+	option.
+
+2005-08-21  Christian Hergert   <christian.hergert@gmail.com>
+
+	* contrib/FirebirdSql.Data.Firebird.license.txt: License for firebord
+	.net provider.
+	* contrib/Makefile.am: Update to include firebird
+	* contrib/FirebirdSql.Data.Firebird.dll: Firebird .net provider
+
+2005-08-20  John Luke  <john.luke@gmail.com>
+
+	* *.mdp: update
+
+2005-08-20  John Luke  <john.luke@gmail.com>
+
+	* README: update deps
+	
+2005-08-20  Peter Johanson  <latexer@gentoo.org> 
+
+	* configure.in: Bump required gtk-sharp version, needed for new
+	assembly versions in template files.
+
+2005-08-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Remove the icons directory.
+
+2005-08-13	Chrstian Hergert	<christian.hergert@gmail.com>
+
+	* build/data/resources/icons/Makefile.am: Add missing MonoQuery.Column
+	icon.
+
+2005-08-08  John Luke  <john.luke@gmail.com>
+
+	* configure.in: add conditional for version control addin
+
+2005-08-05  Alp Toker  <alp@atoker.com>
+
+	* monodevelop.in: Remove 'function' bash-ism to make the launcher script
+	POSIX sh compatible.
+
+2005-08-02	Chrstian Hergert	<christian.hergert@gmail.com>
+
+	* configure.in: Remove monoquery autoconf options. We no longer need them.
+	* build/data/resources/icons: Added some icons donated from MySQL.
+
+2005-07-21  Peter Johanson  <latexer@gentoo.org> 
+
+	* configure.in: Bump boo dep as needed by recent completion changes.
+
+2005-07-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* monodevelop.in: Set MONODEVELOP_DISPATCH_DEBUG when running with
+	--debug option.
+
+2005-07-15  John Luke  <john.luke@gmail.com>
+
+	* .mdp: set localcopy="False"
+
+2005-07-15  John Luke  <john.luke@gmail.com>
+
+	* .mdp: update
+	* MonoDevelop.mds: update gtk-sharp versions and
+	add some new files
+	
+2005-07-15  John Luke  <john.luke@gmail.com>
+
+	* configure.in: sort AC_OUTPUT section
+	* help/: mv from Core/help
+	* xmldocs.make: move from Core/xmldocs.make
+	* omf.make: move from Core/omf.make
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Added options for building the NUunit addin and the
+	mono extensions addin.
+
+2005-07-08  John Luke  <john.luke@gmail.com>
+
+	* configure.in: update mono dep to >= 1.1.4
+	for various reasons and remove the MONO_POSIX_OEE
+	check
+	* README: update deps
+
+2005-06-28  John Luke  <john.luke@gmail.com>
+
+	* *.mdp:
+	* MonoDevelop.mds: partial MonoDevelop project files for testing
+
+2005-06-28  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.include (build_sources): Allow Makefiles to define
+	GENERATED_FILES that are picked up from builddir.
+
+2005-06-22  Joshua Tauberer  <tauberer@for.net>
+	* configure.in: Added Extras/VersionControl automake files to the
+	  build.
+	* Extras/VersionControl: Checked in VersionControl addin files.
+
+2005-06-08  Todd Berman  <tberman@off.net>
+
+	* monodevelop.in: Remove bashism, patch from meebey (mail@meebey.net)
+
+2005-06-01  Todd Berman  <tberman@off.net>
+
+	* */*: Make MD -langversion:ISO-1 compliant, and add checking to the
+	makefiles
+
+2005-05-31  Peter Johanson <latexer@gentoo.org>
+
+	* configure.in: Bump boo version requirement.
+
+2005-05-25  Wade Berrier <wberrier@novell.com>
+
+	* monodevelop.in:
+	    - Also search the firefox shell script for MOZILLA_FIVE_HOME.
+	    This was done for installations that have firefox installed, 
+	    but no mozilla shell script
+
+
+2005-05-15  Ben Maurer  <bmaurer@ximian.com>
+
+	* configure.in, */Makefile.am:
+	    - Use prefix/lib ratehr than libdir to clean up amd64
+	    packaging
+	    - Don't use gnome_prefix for installing stuff, just put it in
+	    the normal install prefix. If you install MD to a prefix, you
+	    will have to add your prefix to XDG_DATA_DIRS, just like you
+	    need to modify your PATH.
+	    - Allow people to disable update-mime-database (for packagers)
+	    - Misc. Makefile cleanups
+
+2005-05-06  John Luke  <john.luke@gmail.com>
+
+	* AUTHORS: mv here from Core/AUTHORS
+	* README: mv here from Core/README
+
+2005-05-03  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Added mdhost.
+
+2005-04-26  Ben Maurer <bmaurer@ximian.com>
+	
+	* po/POTFILES.in: remove dead files.
+
+2005-04-18  Peter Johanson <latexer@gentoo.org>
+
+	* configure.in: Add Boo addin logic
+
+2005-04-18  Peter Johanson <latexer@gentoo.org>
+
+	* configure.in: Add monodevelop.pc generation
+	* Makefile.am: Add monodevelop.pc installation/cleanup
+	* monodevelop.pc.in: New monodevelop.pc file for external addins to
+	use.
+
+2005-04-16  John Luke  <john.luke@gmail.com>
+
+	* configure.in: bump gtk# dep to 1.9.3 for latest dock changes
+	remove MonoDevelop.Gui.Utils config file
+
+2005-04-14  Raja R Harinath  <rharinath@novell.com>
+
+	* contrib/Makefile.am (log4net.dll): Copy from $(srcdir).
+
+2005-04-03  John Luke  <john.luke@gmail.com>
+
+	* autogen.sh: add back aclocal
+
+2005-04-01	Christian Hergert	<christian.hergert@gmail.com>
+
+	* contrib/: Add folder for external libraries
+	* contrib/log4net.dll: Apache Logging .NET Library
+	* contrib/log4net.license.txt: log4net license
+	* contrib/Makefile.am: Makefile for contrib libraries
+	* configure.in: Add the new Makefile.am files
+
+2005-03-13  John Luke  <john.luke@gmail.com>
+
+	* autogen.sh: remove libtool, autoheader, and aclocal
+	usage, I dont think we'll need it
+
+2005-03-13  John Luke  <john.luke@gmail.com>
+
+	* configure.in: remove gdkdock & c-related stuff
+	add Core/src/MonoDevelop.Dock/Makefile output
+	* Core/gdldock: kill
+	* Core/src/Makefile.am: add MonoDevelop.Dock
+	* Core/Makefile.am: remove gdldock
+
+2005-03-12  Todd Berman  <tberman@off.net>
+
+	* configure.in: push/branch 0.6
+
+2005-02-28  John Luke  <john.luke@gmail.com>
+
+	* monodevelop.in: use /bin/sh and exec instead
+	of running from bash
+
+2005-02-24  John Luke  <john.luke@gmail.com>
+
+	* configure.in: move JavaBinding to Extras
+	and some incomplete dep-checking for ikvm
+
+2005-02-09  John Luke  <john.luke@gmail.com>
+
+	* */Makefile.am: build to build/bin/ so the make CSC='mcs -g'
+	and then running with --debug will work
+	almost fix distcheck
+	* po/POTFILES.in: update
+	* configure.in: dep on gtk-sharp-2 > 1.9.2
+
+2005-02-10  Christian Hergert <christian.hergert@gmail.com>
+
+	* configure.in: Gecko# updated their pkg-config settings. We now check
+	for gecko-sharp-2.0.
+
+2005-02-10  Todd Berman  <tberman@off.net>
+
+	* Makefile.am: add --debug to make run.
+	* monodevelop.xml: Add .mds and .mdp
+
+2005-02-09  John Luke  <john.luke@gmail.com>
+
+	* configure.in: remove obsolete NOTE
+
+2005-02-07  Chris Toshok  <toshok@ximian.com>
+
+	* configure.in: re-enable the debugger foo, with
+	--enable-debugger.
+
+2005-02-02  Christian Hergert <chris@mosaix.net>
+
+	* configure.in: Added dynamic control of sqlite in monoquery
+	via substring autofoo.
+
+2005-01-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Added MonoDeveloperExtensions addin.
+
+2005-01-26  John Luke  <john.luke@gmail.com>
+
+	* configure.in: check for gnome-vfs
+
+2005-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Removed some obsolete files from build.
+
+2005-01-11  John Luke  <john.luke@gmail.com>
+
+	* monodevelop.applications:
+	* monodevelop.keys:
+	* monodevelop.mime: kill old style mime stuff, since we depend
+	on a newer gnome via gtk#2
+	* configure.in: AC_SUBST the path of update_mime_database and
+	rename the variable to UPDATE_MIME_DB
+	* Makefile.am: remove old mime stuff, use UPDATE_MIME_DB
+	variable from configure
+
+Test

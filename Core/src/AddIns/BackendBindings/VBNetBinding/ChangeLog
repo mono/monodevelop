@@ -1,0 +1,131 @@
+2005-08-20  John Luke  <john.luke@gmail.com>
+
+	* Parser/Resolver.cs:
+	* Parser/ExpressionFinder.cs: fix 2 warnings of assigning
+	a variable to itself
+	
+2005-08-20  Peter Johanson  <latexer@gentoo.org> 
+
+	* templates/VBGtkSharp2Project.xpt.xml: Fix gtk-sharp references to
+	match new assembly versions.
+
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* templates/*:
+	* VBNetBinding.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-08-09  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/Resolver.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* Parser/Parser.cs: Use the new IParserContext API.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/VBCompilerParameters.cs: Implement ICloneable.
+	* VBLanguageBinding.cs: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-07-01  John Luke  <john.luke@gmail.com>
+
+	* SharpRefeactoryVB/Makefile.am:
+	build to MonoDevelop/build/bin so .mdb file goes to the right place
+	remove stray CSC definition
+
+2005-05-06  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: replace 'make' with $(MAKE)
+	This fixes it on FreeBSD, should work everywhere.
+	by cnehren@gmail.com (Christopher Nehren)
+	
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-03-30  John Luke  <john.luke@gmail.com>
+
+	* Parser/Parser.cs: stop printing 'Entering VB parser'
+
+2005-03-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Resolver.cs: Track api changes.
+
+2005-02-16  Ben Motmans  <ben.motmans@gmail.com>
+
+	* EmptyVBFile.xpt.xml:
+	* EmptyVBProject.xpt.xml:
+	* VBConsoleApplicationProject.xpt.xml:
+	Consistent naming
+
+	* VBGtkSharpProject.xpt.xml:
+	* VBGtkSharp2Project.xpt.xml:
+	* VBNetBinding.addin.xml:
+	* Makefile.am:
+	Added templates
+
+2005-01-28  John Luke  <john.luke@gmail.com>
+
+	* SharpRefactoryVB/src/Lexer/Lexer.cs:
+	* SharpRefactoryVB/src/Parser/generated/Parser.cs:
+	* SharpRefactoryVB/src/Parser/generated/VBNET.ATG:
+	warning fixes for unused code
+	* SharpRefactoryVB/src/Parser/generated/Makefile:
+	add makefile to regen parser
+
+2005-01-28  John Luke  <john.luke@gmail.com>
+
+	* Parser/Parser.cs: update to CanParse
+
+2005-01-27  John Luke  <john.luke@gmail.com>
+
+	* VB.glade: update to new glade format
+
+	* VB.glade:
+	* Gui/CodeGenerationPanel.cs:
+	* Parser/VBNetVisitor.cs:
+	* Parser/Resolver.cs:
+	* VBBindingCompilerServices.cs: fix some warnings,
+	use ComboBox instead of OptionMenu
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBBindingCompilerServices.cs: 
+	* VBLanguageBinding.cs: Use the new progress monitor API.
+	
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBCompilerPanel.cs:
+	* Gui/ChooseRuntimePanel.cs:
+	* Gui/VBDocConfigurationPanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* VBNetBinding.addin.xml:
+	* ProjectNodeBuilder.cs:
+	* Parser/Parser.cs:
+	* Parser/Resolver.cs:
+	* VBBindingCompilerServices.cs:
+	* VBLanguageBinding.cs: Follow architecture changes.
+
+	* Gui/OutputOptionsPanel.cs:
+	* VB.glade: Removed dialog now implemented in Monodevelop.Base.
+	
+	* Project/VBCompilerParameters.cs: Moved some parameters and enum
+	definitions to DotNetProjectConfiguration.
+	
+	* Project/VBProject.cs:
+	* VBBindingExecutionServices.cs: Removed. Not needed any more.
+	* Makefile.am: Updated.
+
+2004-12-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBBindingCompilerServices.cs: StatusBarService.ProgressMonitor is not a
+	StatusBar widget any more.
+
+2004-12-07  Alexandre Gomes <alexmipego@hotmail.com>
+
+	* VBLanguageBinding.cs: Added CommentTag to be used by (Un)CommentCode
+
+2004-11-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Imported from #D and made to work with MD tools and namespaces

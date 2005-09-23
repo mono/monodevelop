@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Template originator   = "John Luke"
+          created      = "04/25/2004"
+          lastModified = "04/25/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Python Gtk Project</_Name>
+		<Category>Python</Category>
+		<Icon>C#.Project.DOSProject</Icon>
+		<LanguageName>Python</LanguageName>
+		<_Description>Python Gtk Project</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "main.py"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			<Files>
+				<!-- this is the included IronPython example -->
+				<File name="main.py"><![CDATA[import Gtk
+                                                                                
+Gtk.Application.Init()
+w = Gtk.Window("hello world")
+w.DeleteEvent += lambda *ignore: Gtk.Application.Quit()
+                                                                                
+b = Gtk.Button("click me")
+                                                                                
+def say_hello(o, args): print "hello"
+                                                                                
+b.Clicked += say_hello
+                                                                                
+w.Add(b)
+w.ShowAll()
+Gtk.Application.Run()]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

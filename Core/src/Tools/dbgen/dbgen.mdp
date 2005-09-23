@@ -1,0 +1,27 @@
+<Project name="dbgen" fileversion="2.0" language="C#" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../../build/bin" assembly="dbgen" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../../build/bin" assembly="dbgen" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/dbgen.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Base" />
+  </References>
+</Project>

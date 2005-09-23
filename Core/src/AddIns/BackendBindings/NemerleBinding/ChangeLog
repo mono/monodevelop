@@ -1,0 +1,120 @@
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* NemerleGnomeSharpProject.xpt.xml:
+	* NemerleGtkSharpProject.xpt.xml:
+	* NemerleEmptyProject.xpt.xml:
+	* EmptyNemerleFile.xft.xml:
+	* NemerleGtkSharpWindow.xft.xml:
+	* NemerleBinding.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/NemerleParameters.cs: Implement ICloneable.
+	* NemerleLanguageBinding.cs: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-01-27  John Luke  <john.luke@gmail.com>
+
+	* Nemerle.glade:
+	* Gui/CodeGenerationPanel.cs:
+	* NemerleBindingCompilerServices.cs: fix some warnings,
+	use ComboBox instead of OptionMenu
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NemerleBindingCompilerServices.cs: 
+	* NemerleLanguageBinding.cs: Use the new progress monitor API.
+	
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NemerleBinding.addin.xml:
+	* Gui/CodeGenerationPanel.cs:
+	* NemerleLanguageBinding.cs:
+	* NemerleBindingCompilerServices.cs: Follow architecture changes.
+	
+	* Project/NemerleParameters.cs: Moved some common parameters to
+	DotNetProjectConfiguration.
+	
+	* Gui/OutputPanel.cs:
+	* Nemerle.glade: Removed dialog now implemented in Monodevelop.Base.
+	
+	* Project/NemerleProject.cs:
+	* NemerleBindingExecutionServices.cs.in: Removed.
+	* Makefile.am: Updated.
+
+2004-12-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NemerleBindingCompilerServices.cs: StatusBarService.ProgressMonitor is
+	not a StatusBar widget any more.
+
+2004-12-07  Alexandre Gomes <alexmipego@hotmail.com>
+
+	* NemerleLanguageBinding.cs: Added CommentTag to be used by (Un)CommentCode
+
+2004-07-06  Todd Berman  <tberman@off.net>
+
+	* NemerleBindingExecutionServices.cs: removed.
+	* NemerleBindingExecutionServices.cs.in: Added.
+	* Makefile.am: adjusted.
+	This patch is from Marcin Krzyzanowski <krzak@pld-linux.org> and it
+	fixes mint vs mono issues at runtime.
+
+2004-06-26  Pawel Rozanski  <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingCompilerServices.cs: add GenerateMakefile method.
+	* NemerleLanguageBinding.cs: runs GenerateMakefile
+
+2004-06-23  Pawel Rozanski  <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingCompilerServices.cs: one line fix for ProcessStartInfo.
+
+2004-06-17  John Luke  <jluke@cfl.rr.com>
+
+	* Gui/OutputPanel.cs: use MonoDevelop.Gui.Widgets.FileSelector
+	instead of Gtk.FileSelection
+
+2004-05-25  Todd Berman  <tberman@sevenl.net>
+
+	* NemerleLanguageBinding.cs: signature change for Generate Makefile.
+
+2004-05-20  Pawel Rozanski  <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingCompilerServices.cs: updated ncc output parser.
+
+2004-05-04  Pawel Rozanski  <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingExecutionServices.cs: use xterm to run project
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* NemerleLanguageBinding.cs: stubbing GenerateMakefile
+
+2004-04-28  Pawel Rozanski  <tokugawa@afn.no-ip.org>
+
+	* Gui/OutputPanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* NemerleBindingCompilerServices.cs:
+	* Project/NemerleParameters.cs:
+	* Project/NemerleProject.cs:
+	* NemerleBindingExecutionServices.cs:
+	NemerleParameters uses more from inherited AbstractProjectConfiguration
+	class
+
+2004-04-16  Pawel Rozanski <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingCompilerServices.cs: without temp files now,
+	Process.StandardOutput based interface
+
+2004-04-14  Pawel Rozanski <tokugawa@afn.no-ip.org>
+
+	* NemerleBindingCompilerServices.cs: uses the StatusBarService
+
+2004-04-13  Pawel Rozanski <tokugawa@afn.no-ip.org>
+
+	stripped DOS '\r' from newlines

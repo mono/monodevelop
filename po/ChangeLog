@@ -1,0 +1,69 @@
+2005-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* POTFILES.in: Updated.
+
+2005-07-29  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po: more updates.
+
+2005-07-29  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* POTFiles.in: Updated.
+	* ja_JP.po: ditto.
+
+2005-05-23  Martin Willemoes Hansen  <mwh@sysrq.dk>
+
+	* da.po: Updated Danish translation.
+
+2005-05-20  Martin Willemoes Hansen  <mwh@sysrq.dk>
+
+	* da.po: Updated Danish translation.
+
+2005-04-19  Martin Willemoes Hansen  <mwh@sysrq.dk>
+
+	* da.po: Updated Danish translation.
+
+2005-04-15  Martin Willemoes Hansen  <mwh@sysrq.dk>
+
+	* da.po: Updated Danish translation.
+
+2005-04-12  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* POTFiles.in: Updated.
+	* ja_JP.po: ditto.
+
+2005-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* POTFILES.in: Updated.
+
+2005-01-08  Christian Hergert <chris@mosaix.net>
+
+	* Added MonoQuery files to POTFILES.in
+
+2004-10-27  Vincent Daron <vdaron@ask.be>
+
+	* fr.po: updated.
+
+2004-09-19  Enver ALTIN  <ealtin@parkyeri.com>
+
+	* tr.po: Initially created Turkish translation.
+
+2004-07-12  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po: updated.
+
+2004-06-23  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po: updated for MD 0.5
+
+2004-06-13  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po: up2date
+
+2004-04-25  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po: initial creation.
+
+2004-04-02  Todd Berman  <tberman@sevenl.net>
+
+	* *: Initial creation of po/ and adding en_CA.po

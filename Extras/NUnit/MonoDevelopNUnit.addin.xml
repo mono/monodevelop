@@ -1,0 +1,111 @@
+<AddIn name	 = "MonoDevelop NUnit"
+       author	 = "John Luke"
+       copyright = "GPL"
+       url       = "http://monodevelop.com"
+       description = "NUnit testing tool"
+       version   = "0.6">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.NUnit.dll" />
+	</Runtime>
+
+	<Extension path="/Workspace/Services">
+		<Class id = "NUnitService" class = "MonoDevelop.NUnit.NUnitService" insertafter = "CommandService"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Pads">
+		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultPlacement = "Left" _label = "Unit Tests" icon = "md-combine-icon" class = "MonoDevelop.NUnit.TestPad">
+			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
+			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
+			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
+		</SolutionPad>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Gui.Pads.ProjectPad">
+		<NodeBuilder id = "NUnitAssemblyGroupNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupNodeBuilder"/>
+		<NodeBuilder id = "NUnitAssemblyGroupConfigurationNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupConfigurationNodeBuilder"/>
+		<NodeBuilder id = "TestAssemblyNodeBuilder" class = "MonoDevelop.NUnit.TestAssemblyNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+		<ContextPad id = "MonoDevelop.NUnit.TestPad" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.Commands.TestCommands.RunTest" _label = "Run Test" />
+		<Command id = "MonoDevelop.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
+		<Command id = "MonoDevelop.Commands.TestCommands.SelectTestInTree" _label = "Select test in tree" />
+		<Command id = "MonoDevelop.Commands.TestCommands.ShowTestDetails" _label = "Show results pad" />
+		<Command id = "MonoDevelop.Commands.TestChartCommands.UseTimeScale" _label = "Proportional time scale" type="check"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.SingleDayResult" _label = "Show one result per day" type="check"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.ShowResults" _label = "Results chart" type="radio"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.ShowTime" _label = "Time chart" type="radio"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.ShowSuccessfulTests" _label = "Show successful tests" type="check"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.ShowFailedTests" _label = "Show failed tests" type="check"/>
+		<Command id = "MonoDevelop.Commands.TestChartCommands.ShowIgnoredTests" _label = "Show ignored tests" type="check"/>
+		<Command id = "MonoDevelop.Commands.NUnitProjectCommands.AddAssembly" _label = "Add assembly ..."/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroupConfiguration">
+		<CommandItem id = "MonoDevelop.Commands.NUnitProjectCommands.AddAssembly" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TestAssembly">
+		<CommandItem id = "MonoDevelop.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/TestPad/ContextMenu">
+		<CommandItem id = "MonoDevelop.Commands.TestCommands.RunTest" />
+		<CommandItem id = "MonoDevelop.Commands.TestCommands.ShowTestCode" />
+		<CommandItem id = "MonoDevelop.Commands.TestCommands.ShowTestDetails" />
+		<SeparatorItem id = "s1" />
+		<CommandItem id = "MonoDevelop.Commands.ProjectCommands.Options" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/TestResultsPad/ContextMenu">
+		<CommandItem id = "MonoDevelop.Commands.TestCommands.ShowTestCode" />
+		<CommandItem id = "MonoDevelop.Commands.TestCommands.SelectTestInTree" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/TestChart/ContextMenu">
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.ShowResults" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.ShowTime" />
+		<SeparatorItem id = "s1" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.ShowSuccessfulTests" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.ShowFailedTests" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.ShowIgnoredTests" />
+		<SeparatorItem id = "s2" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.UseTimeScale" />
+		<CommandItem id = "MonoDevelop.Commands.TestChartCommands.SingleDayResult" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions">
+		<DialogPanel id = "NUnitOptionsPanel"
+					 _label = "NUnit options"
+					 class = "MonoDevelop.NUnit.NUnitOptionsDialog"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions">
+		<DialogPanel id = "Configurations"
+					 _label = "Configurations" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties">
+		<DialogPanel id = "NUnitOptionsPanel"
+					 _label = "NUnit Categories"
+					 class = "MonoDevelop.NUnit.NUnitOptionsPanel"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectTemplates">
+		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>
+	</Extension>
+  
+	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+		<FileFormat id="NUnitAssemblyGroupFileFormat"
+		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
+	</Extension>
+
+</AddIn>

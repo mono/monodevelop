@@ -1,0 +1,36 @@
+<Project name="MonoDevelop.Gui.Utils" fileversion="2.0" language="C#" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/bin" assembly="MonoDevelop.Gui.Utils" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/bin" assembly="MonoDevelop.Gui.Utils" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ReportingStream/ReportingStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FileIcons/FileIconLoader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DirectoryArchive/Bz2Support.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DirectoryArchive/Decompressor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DirectoryArchive/GzSupport.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DirectoryArchive/TarDecompressor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DirectoryArchive/ZipDecompressor.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="False" refto="ICSharpCode.SharpZipLib, Version=0.6.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73" />
+    <ProjectReference type="Gac" localcopy="False" refto="gtk-sharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="gnome-sharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="gdk-sharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+</Project>

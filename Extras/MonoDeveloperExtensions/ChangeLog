@@ -1,0 +1,56 @@
+2005-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	 * MonoProject.cs: Use the new regex for parsing error messages.
+	 * Commands.cs: Use an external console for the ci command.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* MonoDeveloperExtensions.mdp: references update
+
+2005-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDeveloperExtensions/Commands.cs:
+	* MonoDeveloperExtensions/MonoProject.cs: Track api changes.
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoMakefileFormat.cs: Avoid adding projects twice.
+	* MonoProject.cs: 
+	* MonoTestProvider.cs: Generate a unit test tree for assemblies that
+	have a Test directory.
+	* Makefile.am: Added conditional build.
+	* MonoDeveloperExtensions.addin.xml: This addin depends on the nunit addin.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoProject.cs: Implemented CreateConfiguration method.
+	* MonoDeveloperExtensions.addin.xml: Added install command
+	  to the correct toolbar.
+
+2005-04-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDeveloperExtensions.addin.xml:
+	* Commands.cs: Use the new command service. Added hacky support for
+	basic svn operations.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-04-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoProject.cs: Look for ChangeLog files in a more rational 
+	(and faster) way.
+
+2005-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoProject.cs: Update the sources file when files are renamed.
+	Don't add the ChangeLog file to the project for now, it's too slow
+	to look for it.
+
+2005-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoProject.cs: Don't try to parse errors from the stdout, only
+	from stderr.
+	* MonoMakefileFormat.cs: In GetValidFormatName, keep the file path.
+

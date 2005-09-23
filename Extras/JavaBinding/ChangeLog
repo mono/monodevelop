@@ -1,0 +1,175 @@
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* templates/*:
+	* JavaBinding.addin.xml: Properly reference resource icons and
+	templates.
+	* Makefile.am: Embed icon and templates as resources.
+
+2005-08-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Resolver.cs:
+	* Parser/Parser.cs: Use the new IParserContext API.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/JavaCompilerParameters.cs: Implement ICloneable.
+	* JavaLanguageBinding.cs	: CreateCompilationParameters now returns an
+	ICloneable.
+
+2005-06-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ProjectConfigurationPropertyPanel.cs: Fix build.
+
+2005-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBindingCompilerServices.cs: Automatically generate wrappers
+	for referenced assemblies. Improved error parsing. Many fixes.
+	* ProjectConfigurationPropertyPanel.cs: Moved to Glade.
+	* JavaLanguageBinding.cs: Added some global configuration properties.
+	* JavaCompilerParameters.cs: Added missing DefineSymbols property.
+	* JavaBinding.addin.xml: Added new configuration dialogs and a new
+	template.
+	* Makefile.am: Added a new template and a glade file.
+	* templates/IkvmGtkApplicationProject.xpt.xml:
+	* templates/IkvmGladeApplicationProject.xpt.xml:
+	* templates/IkvmGnomeApplicationProject.xpt.xml: Added GTK references
+	in the GTK# projects.
+	* templates/IkvmConsoleApplicationProject.xpt.xml: Removed hard-coded
+	classpath.
+	* Java.glade: New glade file for java options.
+	* Gui/GlobalOptionsPanel.cs: New java options panel.
+	* templates/IkvmLibraryProject.xpt.xml: New project template.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-02-16  Ben Motmans  <ben.motmans@gmail.com>
+
+	* EmptyJavaFile:
+	* EmptyJavaProject:
+	* JavaConsoleApplicationProject:
+	* JavaApplicationProject:
+	* JavaApplication:
+	* JavaApplet:
+	* JavaFrame:
+	* JavaOKDialog:
+	* JavaPanel:
+	Consistent naming
+
+2005-02-05  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am
+	* JavaBinding.addin.xml: remove custom node builder
+	* ProjectTreeBuilder/JavaNodeBuilder.cs: remove custom
+	node builder in favor of using the default so references
+	can be added (ikvm projects need IKVM.GNU.Classpath.dll and
+	IKVM.Runtime.dll)
+	* JavaBindingCompilerServices.cs: work like the C# bindings,
+	error parsing is broken but Im pretty sure it already was
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBindingCompilerServices.cs: 
+	* JavaLanguageBinding.cs: Use the new progress monitor API.
+	
+2005-01-16  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: remove FormattingStrategy from build
+	* JavaLanguageBinding.cs: make const LanguageName internal
+	comment out NotImplementedException for GenerateMakefile
+	so it doesn't abort MD when running
+	* JavaBindingCompilerServices.cs: remove warnings
+	* ProjectTreeBuilder/JavaNodeBuilder.cs: remove some unused
+	code that caused warnings, use MonoDevelop.Services.Runtime
+	instead of old method of getting services
+	* TODO: add
+	* template/Ikvm*.xft: Target "Exe" or "WinExe" instead of "Class"
+
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBindingCompilerServices.cs:
+	* Gui/ProjectConfigurationPropertyPanel.cs:
+	* JavaLanguageBinding.cs:
+	* JavaBinding.addin.xml:
+	* ProjectTreeBuilder/JavaNodeBuilder.cs: Follow architecture changes.
+	
+	* JavaCompilerParameters.cs: Moved some parameters and enum
+	definitions to DotNetProjectConfiguration.
+	
+	* Project/JavaProject.cs: Removed. Not needed any more.
+	* Makefile.am: Updated.
+
+2004-12-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBindingCompilerServices.cs: StatusBarService.ProgressMonitor is
+	not a StatusBar widget any more.
+
+2004-12-07  Alexandre Gomes <alexmipego@hotmail.com>
+
+	* JavaLanguageBinding.cs: Added CommentTag to be used by (Un)CommentCode
+
+2004-11-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Parser/Parser.cs: Added HandlesFileExtension() to work with new
+	IParser
+
+2004-07-05  John Luke  <jluke@cfl.rr.com>
+
+	* *.cs: cleanup everything
+	remove single file compile/run
+	remove runtime choices and use ikvmc to produce assemblies
+
+	need to check errors on ikvmc part, I wish there was a better
+	way than screen-scraping to do this.
+
+	convert line endings to unix, not sure why they were dos style
+
+2004-06-08  John Luke  <jluke@cfl.rr.com>
+
+	* JavaBindingCompilerService.cs: rework so Process.Start works
+	* JavaBindingExecutionService.cs: rework so Process.Start works
+	by using ProcessStartInfo (cmd, args)
+	add support for using Gij
+	* Gui/ProjectConfigurationPropertyPanel.cs:
+	enable Java, remove Mono, and add Gij runtimes
+	* JavaRuntime.cs: add Gij
+
+2004-05-25  Todd Berman  <tberman@sevenl.net>
+
+	* JavaLanguageBinding.cs: signature change for GenerateMakefile.
+
+2004-04-28  Todd Berman  <tberman@sevenl.net>
+
+	* JavaLanguageBinding.cs: stubbing GenerateMakefile.
+
+2004-04-16  John Luke  <jluke@cfl.rr.com>
+
+	* JavaBindingCompilerService.cs:
+	rework error parsing to work off of Streams instead of temp files
+	allows javac errors to work, gcj maybe not	
+	set the column of the error
+	specify the output directory
+	* Project/JavaCompilerOptions: add runtime prop
+	* JavaBindingExecutionService.cs:  add prelim support
+	for choosing runtime
+	* JavaCompiler.cs:
+	* JavaRuntime.cs: add enums for compiler and runtime
+
+2004-04-09  John Luke  <jluke@cfl.rr.com>
+
+	* JavaBindingCompilerService.cs: account for classpath when compiling,
+	work with gcj or javac, cleanup old code
+	* Gui/ProjectConfigurationPropertyPanel.cs: rough port, needs major HIG love,
+	cleanup, add RadioButtons to select from gcj and javac
+	* JavaBindingExecutionService.cs: use ikvm instead of java runtime
+	* Parser/*: make a copy of the CSharpBinding/Parser in case I am crazy enough
+	to port the parser to work with Java (not built yet)
+	* Project/JavaCompilerParameters.cs: add javac/gcj .Compiler property,
+	fix CompilerPath from being hardcoded
+
+2004-03-25  John Luke  <jluke@cfl.rr.com>
+	
+	import from SD and make it build with our
+	namespaces and SourceEditor
+	change to work like CSharpBinding 

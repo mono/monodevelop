@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<Template originator   = "John Luke"
+          created      = "04/25/2004"
+          lastModified = "04/25/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Python Console Project</_Name>
+		<Category>Python</Category>
+		<Icon>C#.Project.DOSProject</Icon>
+		<LanguageName>Python</LanguageName>
+		<_Description>Python Console Project</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "main.py"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			<Files>
+				<File name="main.py"><![CDATA[print "hello"]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

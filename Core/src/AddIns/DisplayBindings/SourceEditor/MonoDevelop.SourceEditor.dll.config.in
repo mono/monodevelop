@@ -1,0 +1,5 @@
+<configuration>
+  <dllmap dll="libglib-2.0-0.dll" target="libglib-2.0@LIB_PREFIX@.0@LIB_SUFFIX@" />
+  <dllmap dll="gtksourceview-1.0" target="libgtksourceview-1.0@LIB_PREFIX@.0@LIB_SUFFIX@" />
+  <dllmap dll="libgtk-win32-2.0-0.dll" target="libgtk-x11-2.0@LIB_PREFIX@.0@LIB_SUFFIX@" />
+</configuration>

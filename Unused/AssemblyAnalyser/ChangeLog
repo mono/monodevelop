@@ -1,0 +1,5 @@
+2004-10-26  John Luke  <john.luke@gmail.com>
+
+	* re-update the non-gui parts from SD svn and use it (mostly)
+	un-modified, only resources/I18N stuff should be different
+	update the Gui stuff to compile with ICSharpCode namespaces

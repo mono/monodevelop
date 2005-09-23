@@ -1,0 +1,33 @@
+<AddIn name        = "Python Language Binding"
+       author      = "John Luke"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "Python Language Binding"
+       version     = "0.6">
+
+  <Runtime>
+    <Import assembly = "PythonBinding.dll"/>
+  </Runtime>
+
+  <Extension path = "/MonoDevelop/ProjectTemplates">
+    <ProjectTemplate id = "PythonConsoleProject"
+                     resource = "templates/PythonConsoleProject.xpt.xml"/>
+    <ProjectTemplate id = "PythonGtkProject"
+                     resource = "templates/PythonGtkProject.xpt.xml"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activeproject = "Python">
+      <DialogPanel id = "PythonCompilerParametersPanel"
+                   _label = "Compiler"
+                   class = "PythonBinding.CompilerParametersPanel"/>
+    </Conditional>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+    <LanguageBinding id = "Python"
+                     supportedextensions = ".py"
+                     class = "PythonBinding.PythonLanguageBinding"/>
+  </Extension>
+
+</AddIn>

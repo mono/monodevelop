@@ -1,0 +1,157 @@
+2005-08-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIns/Codons/AbstractCodon.cs: Make the ID attribute optional.
+	In general, IDs are only needed when codons can be extended, or when
+	the entity they represent requires an ID. There are some kind of codons
+	which don't have any of those requirements, and the ID is not needed.
+	
+	* AddIns/AddIn.cs: Added method for getting a resource from an addin's
+	asseblies.
+	
+	* AddIns/Codons/CodonFactory.cs:
+	* AddIns/DefaultAddInTree.cs:
+	* AddIns/Codons/DuplicateCodonException.cs: Improve error message.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* MonoDevelop.Core.mdp: references update
+
+2005-07-29  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Core.mdp: add new files and references
+	
+2005-07-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIns/AssemblyLoader.cs:
+	* AddIns/DefaultAddInTree.cs:
+	* AddIns/AddInTreeSingleton.cs: Added an assembly sanity check, which
+	ensures that all addins reference the same assembly versions.
+
+2005-07-22  John Luke  <john.luke@gmail.com>
+
+	* AddIns/Addin.cs: remove unused variable warning
+	
+2005-07-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* AddIns/AddInTreeSingleton.cs: Added a method that explicitely
+	initializes the tree of addins, and which returns a list of load errors
+	instead of throwing an exception if something fails.
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* AddIns/AddIn.cs:
+	* AddIns/AddInTreeSingleton.cs:
+	* AddIns/AddInCollection.cs:
+	* AddIns/AddInLoadException.cs: Implemented some basic support for
+	declaring addin dependencies.
+
+2005-06-27  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Core.mdp:
+	* MonoDevelop.Core.mds: add project files
+
+2005-06-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* Services/IMessageService.cs: Added methods to ask a question
+	with a cancel option.
+
+2005-04-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIns/AddIn.cs: Added GetType method.
+
+2005-03-24  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.am (FILES): Move AssemblyInfo.cs ...
+	(build_sources): ... here.
+
+2005-02-20  John Luke  <john.luke@gmail.com>
+
+	* Services/ServiceManager.cs:
+	* Services/IMessageService.cs:
+	* Services/AbstractService.cs:
+	* Services/FileUtilityService.cs:
+	* Services/IService.cs:
+	* Makefile.am: remove System.Drawing stuff
+	dont define:LINUX
+	* Services/SaveErrorChooseDialog.cs:
+	* Services/SaveErrorInformDialog.cs: remove SWF cruft
+
+	* ./AddIns/Codons/CodonNameAttribute.cs
+	* ./AddIns/PathAttribute.cs
+	* ./AddIns/XmlMemberAttributeAttribute.cs
+	* ./AddIns/Conditions/ConditionAttribute.cs
+	* ./AddIns/XmlMemberArraryAttribute.cs: mark attributes sealed
+
+2005-01-31  Todd Berman  <tberman@off.net>
+
+	* AddIns/AddIn.cs: Remove usage of AddIn.xsd, it is a bad solution.
+	* Makefile.am:
+	* AddIn.xsd: Remove AddIn.xsd
+
+2005-01-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn.xsd: Defined new codon for project formats.
+
+2005-01-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIns/AddIn.cs: Use IsDefined() to look for custom attributes. It's
+	faster and uses less memory than GetCustomAttribute().
+
+2005-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn.xsd: Added new codon type, and new condition.
+
+2004-08-07  Todd Berman  <tberman@off.net>
+
+	* AssemblyInfo.cs.in: Use new ASSEMBLY_VERSION variable.
+
+2004-07-05  Todd Berman  <tberman@off.net>
+
+	* Services/GettextCatalog.cs: removed
+	* Services/GettextCatalog.cs.in: Added, this is a passthru to
+	Mono.Posix.Catalog. We are using the .in so that the locale dir is
+	specified properly.
+	* Makefile.am: Add .cs.in rules to generate, etc.
+
+2004-07-02  Todd Berman  <tberman@off.net>
+
+	* Services/FileUtilityService.cs: remove some unneeded code, and
+	fix a string.
+
+2004-06-28  Todd Berman  <tberman@off.net>
+
+	* AddIns/AddIn.cs: Add a C.WL so you dont get weird errors without
+	some more info.
+	* Makefile.am: fixup makefile so that if the AddIn.xsd changes, the
+	assembly is rebuilt.
+
+2004-06-23  Todd Berman  <tberman@off.net>
+
+	* Services/ServiceManager.cs: protected ctor added.
+
+2004-06-23  Todd Berman  <tberman@off.net>
+
+	* Services/ServiceManager.cs: make GetService a static method, hide
+	the instance everywhere.
+
+2004-05-29  Vladimir Vukicevic  <vladimir@pobox.com>
+
+	* Services/GettextCatalog.cs: fix marshalling issues and gettext
+
+2004-05-26  Todd Berman  <tberman@sevenl.net>
+
+	* Services/GettextCatalog.cs: oops, thats not what i wanted i guess.
+
+2004-05-26  Todd Berman  <tberman@sevenl.net>
+
+	* Services/GettextCatalog.cs: change to string marshaling to prevent
+	leaks.
+
+2004-04-04  Todd Berman  <tberman@sevenl.net>
+
+	* AddIns/AddInTreeSingleton.cs: Change to .addin.xml to allow gettext
+
+2004-04-02  Todd Berman  <tberman@sevenl.net>
+
+	* Makefile.am: add GettextCatalog.cs.
+	* Services/GettextCatalog.cs: move here so other libs can use easier.

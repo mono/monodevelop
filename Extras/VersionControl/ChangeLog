@@ -1,0 +1,44 @@
+2005-09-20  Josh Tauberer <tauberer@for.net>
+
+	* AddIn/Statuses.cs,Logs.cs: Some widgets needed
+	  to be shown since MD is calling Show() less.
+	* VersionControl/Subversion.cs: Not all entries
+	  returned by svn have a URL, e.g. obstructed entries.
+	  So don't rely on that to get the local path.
+
+2005-09-04  Josh Tauberer <tauberer@for.net>
+
+	* AddIn/Makefile.am: Was broken since last time
+	  it was changed.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+	* AddIn/AddIn.mdp
+	* VersionControl/VersionControl.mdp
+	* Diff/Diff.mdp
+	* DiffWidget/DiffWidget.mdp: references update
+
+2005-08-08  John Luke  <john.luke@gmail.com>
+
+	* AddIn/Makefile.am:
+	* Diff/Makefile.am:
+	* DiffWidget/Makefile.am:
+	* VersionControl/Makefile.am: fix distcheck,
+	make it conditional on ENABLE_VERSIONCONTROL,
+	and install it when enabled
+
+2005-07-01  Joshua Tauberer <tauberer@for.net>
+
+	* Added MD solution files for VersionControl.
+	* Project pad overlays now update when files
+	  are modified.
+	* Project pad context menus enabled for
+	  folders and combines.
+	* Subversion: Don't report diffs available
+	  for unchanged files.
+	* This was committed with the addin!
+
+2005-06-22  Joshua Tauberer <tauberer@for.net>
+
+	* Added VersionControl into repo (but sadly the addin
+	  cannot add itself into the repo yet!).

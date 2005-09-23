@@ -1,0 +1,76 @@
+<AddIn name        = "Java Language Binding"
+       author      = "Todd Berman"
+       copyright   = "GPL"
+       url         = "http://www.monodevelop.com"
+       description = "Java Language Binding"
+       version     = "0.6">
+
+  <Runtime>
+    <Import assembly = "JavaBinding.dll"/>
+  </Runtime>
+
+  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+    <FileFilter id = "Java"
+                insertbefore = "AllFiles"
+                name = "Java Files (*.java)"
+                extensions = "*.java"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/FileTemplates">
+    <FileTemplate id = "JavaApplet" resource = "JavaApplet.xft.xml"/>
+    <FileTemplate id = "JavaApplication" resource = "JavaApplication.xft.xml"/>
+    <FileTemplate id = "JavaDialog" resource = "JavaDialog.xft.xml"/>
+    <FileTemplate id = "JavaFrame" resource = "JavaFrame.xft.xml"/>
+    <FileTemplate id = "JavaOKDialog" resource = "JavaOKDialog.xft.xml"/>
+    <FileTemplate id = "JavaPanel" resource = "JavaPanel.xft.xml"/>
+    <FileTemplate id = "EmptyJavaFile" resource = "EmptyJavaFile.xft.xml"/>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectTemplates">
+    <ProjectTemplate id = "EmptyJavaProject" resource = "EmptyJavaProject.xpt.xml"/>
+    <ProjectTemplate id = "IkvmConsoleApplicationProject" resource = "IkvmConsoleApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "IkvmGladeApplicationProject" resource = "IkvmGladeApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "IkvmGnomeApplicationProject" resource = "IkvmGnomeApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "IkvmGtkApplicationProject" resource = "IkvmGtkApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "JavaApplicationProject" resource = "JavaApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "JavaConsoleApplicationProject" resource = "JavaConsoleApplicationProject.xpt.xml"/>
+    <ProjectTemplate id = "IkvmLibraryProject" resource = "IkvmLibraryProject.xpt.xml"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+    <Conditional activelanguage = "Java">
+      <DialogPanel id = "JavaProjectPanel"
+                   _label = "Code Generation"
+                   class = "JavaBinding.ProjectConfigurationPropertyPanel"/>
+	  <DialogPanel id = "JavaOutputOptionsPanel"
+				 _label = "Output"
+				 class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+    </Conditional>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+	<DialogPanel id    = "JavaOptions"
+		     insertafter = "ToolsOptions"
+		     _label = "Java">
+		<DialogPanel    id = "General"
+				_label = "General"
+				class = "JavaBinding.GlobalOptionsPanelPanel" />
+	</DialogPanel>
+  </Extension>
+
+  <Extension path = "/Workspace/Icons">
+    <Icon id = "JavaPrj"
+          language = "Java"
+          resource = "res:Java.ProjectIcon"/>
+    <Icon id = "JavaFile"
+          extensions = ".java"
+          resource = "res:Java.FileIcon"/>
+  </Extension>
+
+  <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
+    <LanguageBinding id = "Java"
+                     supportedextensions = ".java"
+                     class = "JavaBinding.JavaLanguageBinding" />
+  </Extension>
+
+</AddIn>

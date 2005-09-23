@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Template Originator="Levi Bard" Language="VBNet" Created="10/19/2004" LastModified="10/19/2004">
+	
+	<TemplateConfiguration>
+                <_Name>Empty File</_Name>
+                <Icon>res:VB.File.EmptyFile</Icon>
+                <Category>VBNet</Category>
+                <LanguageName>VBNet</LanguageName>
+                <_Description>Creates an empty VB.Net file.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+        <File DefaultExtension=".vb" DefaultName="EmptyVBfile">
+			<![CDATA['created on ${Date} at ${Time}]]>
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

@@ -1,0 +1,7 @@
+
+This is a binding for IronPython and MonoDevelop.
+See http://ironpython.com
+
+You will need to have IronPythonConsole an executable in
+your path that executes the interpreter correctly.
+

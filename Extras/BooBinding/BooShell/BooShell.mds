@@ -1,0 +1,16 @@
+<Combine name="BooShell" fileversion="2.0">
+  <Configurations>
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="BooShell" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="BooShell" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="BooShell" single="True">
+    <Execute type="None" entry="BooShell" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./BooShell.mdp" />
+  </Entries>
+</Combine>
