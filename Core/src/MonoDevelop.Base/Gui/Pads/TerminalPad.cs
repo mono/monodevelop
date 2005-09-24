@@ -228,7 +228,7 @@ namespace MonoDevelop.Gui.Pads
 			if (palette_colors.Length >= 2) {
 				term.SetColors (palette_colors[0],
 					palette_colors[palette_colors.Length - 1],
-					palette_colors[palette_colors.Length - 1],
+					palette_colors,
 					palette_colors.Length);
 			}
 
