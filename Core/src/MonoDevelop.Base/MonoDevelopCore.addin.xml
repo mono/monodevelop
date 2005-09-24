@@ -678,6 +678,7 @@
 		<Pad id = "MonoDevelop.Gui.Pads.FileScout" class = "MonoDevelop.Gui.Pads.FileScout"/>
 		<Pad id = "MonoDevelop.Gui.Pads.OpenTaskView" class = "MonoDevelop.Gui.Pads.OpenTaskView"/>
 		<Pad id = "MonoDevelop.Gui.Pads.HelpTree" class = "MonoDevelop.Gui.Pads.HelpTree"/>
+		<Pad id = "MonoDevelop.Gui.Pads.TerminalPad" class = "MonoDevelop.Gui.Pads.TerminalPad"/>
 
 		<SolutionPad id = "MonoDevelop.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
@@ -711,7 +712,6 @@
 <!--			   
 		<Pad id = "SideBar" class = "MonoDevelop.Gui.Pads.SideBarView"/>
 		<Pad id = "PropertyPad" class = "MonoDevelop.Gui.Pads.PropertyPad"/>
-		<Pad id = "TerminalPad" class = "MonoDevelop.Gui.Pads.TerminalPad"/>
 -->			 
 	</Extension>
 	
@@ -722,12 +722,14 @@
 			<ContextPad id = "MonoDevelop.Gui.Pads.FileScout" />
 			<ContextPad id = "MonoDevelop.Gui.Pads.HelpTree" />
 			<ContextPad id = "MonoDevelop.Gui.Pads.OpenTaskView"/>
+			<ContextPad id = "MonoDevelop.Gui.Pads.TerminalPad"/>
 		</WorkbenchContext>
 		<WorkbenchContext id = "Debug">
 			<ContextPad id = "MonoDevelop.Gui.Pads.ProjectPad"/>
 			<ContextPad id = "MonoDevelop.Gui.Pads.ClassPad" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Gui.Pads.FileScout" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Gui.Pads.HelpTree" defaultVisible = "False"/>
+			<ContextPad id = "MonoDevelop.Gui.Pads.TerminalPad" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Gui.Pads.OpenTaskView"/>
 		</WorkbenchContext>
 	</Extension>

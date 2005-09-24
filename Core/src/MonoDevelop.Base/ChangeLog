@@ -1,3 +1,11 @@
+2005-09-23	Christian Hergert	<christian.hergert@gmail.com>
+
+	* MonoDevelop.Base.mdp: Update
+	* Gui/Pads/TerminalPad.cs: Cleanup, build against svn head, start work of
+	integrating gconf profiles.
+	* Makefile.am: Update
+	* MonoDevelopCore.addin.xml: Add terminal pad
+
 2005-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/File/DefaultFileService.cs: In OpenFile, properly select the

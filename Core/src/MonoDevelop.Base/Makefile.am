@@ -15,6 +15,8 @@ DLLS = /r:System.Drawing /r:ICSharpCode.SharpZipLib.dll \
 	$(GECKO_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GTKHTML_SHARP_LIBS) \
+	$(VTE_SHARP_LIBS) \
+	$(GCONF_SHARP_LIBS) \
 	$(MONODOC_LIBS)
 
 FILES= \
@@ -67,6 +69,7 @@ Gui/Pads/SolutionPad/TreeViewPad.cs \
 Gui/Pads/SolutionPad/TypeNodeBuilder.cs \
 Gui/Pads/DefaultMonitorPad.cs \
 Gui/Pads/SearchResultPad.cs \
+Gui/Pads/TerminalPad.cs \
 Gui/ToolWidgets/ConfigurationComboBox.cs \
 Gui/AbstractPadContent.cs \
 Gui/ISecondaryViewContent.cs \
