@@ -7,6 +7,8 @@
 
 using System;
 
+using MonoDevelop.Base;
+
 using MonoDevelop.Core.Services;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns.Codons;
@@ -52,7 +54,7 @@ namespace MonoDevelop.Commands
 				}
 			}
 			
-			foreach (string file in SplashScreenForm.GetRequestedFileList()) {
+			foreach (string file in StartupInfo.GetRequestedFileList()) {
 				//FIXME: use mimetypes
 				if (Runtime.ProjectService.IsCombineEntryFile (file)) {
 					try {

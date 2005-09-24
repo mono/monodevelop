@@ -9,8 +9,6 @@ namespace MonoDevelop.Gui.Dialogs {
 	public class SplashScreenForm : Gtk.Window
 	{
 		static SplashScreenForm splashScreen = new SplashScreenForm();
-		static ArrayList requestedFileList = new ArrayList();
-		static ArrayList parameterList = new ArrayList();
 		static ProgressBar progress;
 		static VBox vbox;
 		
@@ -18,9 +16,9 @@ namespace MonoDevelop.Gui.Dialogs {
 			get {
 				return splashScreen;
 			}
-		}		
+		}
 		
-		public SplashScreenForm() : base (Gtk.WindowType.Popup)
+		public SplashScreenForm () : base (Gtk.WindowType.Popup)
 		{
 			this.Decorated = false;
 			this.WindowPosition = WindowPosition.Center;
@@ -44,61 +42,14 @@ namespace MonoDevelop.Gui.Dialogs {
 			this.Add (vbox);
 		}
 
-		public static string[] GetParameterList()
-		{
-			return GetStringArray(parameterList);
-		}
-		
-		public static string[] GetRequestedFileList()
-		{
-			return GetStringArray(requestedFileList);
-		}
-		
-		static string[] GetStringArray(ArrayList list)
-		{
-			return (string[])list.ToArray(typeof(string));
-		}
-
-		public static void SetProgress(double Percentage)
+		public static void SetProgress (double Percentage)
 		{
 			progress.Fraction = Percentage;
 		}
 
-		public static void SetMessage(string Message)
+		public static void SetMessage (string Message)
 		{
 			progress.Text = Message;
-		}
-		
-		public static void SetCommandLineArgs(string[] args)
-		{
-			requestedFileList.Clear();
-			parameterList.Clear();
-			
-			foreach (string arg in args)
-			{
-				string a = arg;
-				// this does not yet work with relative paths
-				if (a[0] == '~')
-				{
-					a = System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), a.Substring (1));
-				}
-				
-				if (System.IO.File.Exists (a))
-				{
-					requestedFileList.Add (a);
-					return;
-				}
-	
-				if (a[0] == '-' || a[0] == '/') {
-					int markerLength = 1;
-					
-					if (a.Length >= 2 && a[0] == '-' && a[1] == '-') {
-						markerLength = 2;
-					}
-					
-					parameterList.Add(a.Substring (markerLength));
-				}
-			}
 		}
 	}
 }

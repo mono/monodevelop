@@ -517,6 +517,7 @@
     <File name="./Services/Tasks/SearchProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Pads/SearchResultPad.cs" subtype="Code" buildaction="Compile" />
     <File name="./Internal/Codons/StockIconCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./StartupInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

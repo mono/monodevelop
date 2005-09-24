@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Services
 	public class FileUtilityService : AbstractService
 	{
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
-		readonly static char[] dir_sep = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
+		//readonly static char[] dir_sep = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
 		string sharpDevelopRootPath;
 		
 		public string SharpDevelopRootPath {

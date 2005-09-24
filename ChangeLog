@@ -1,5 +1,26 @@
 2005-09-23  Christian Hergert   <christian.hergert@gmail.com>
 
+	* Lots of svn:ignore updates to include *.pidb
+	* Core/src/MonoDevelop.Base/MonoDevelop.Base.mdp: update with new file
+	* Core/src/MonoDevelop.Base/Commands/AutostartCommands.cs: Use new
+	StartupInfo class to get files that should be loaded on startup.
+	* Core/src/MonoDevelop.Base/StartupInfo.cs: Remove the startup related
+	information from SplashScreenForm to this class.
+	* Core/src/MonoDevelop.Base/Gui/Dialogs/SplashScreen.cs: Remove startup
+	related information.
+	* Core/src/MonoDevelop.Base/Gui/Dialogs/ErrorDialog.cs: Make disposable
+	* Core/src/MonoDevelop.Base/Makefile.am: Add new file
+	* Core/src/MonoDevelop.Startup/MonoDevelopMain.cs: Reflect splash screen
+	changes.
+	* Core/src/MonoDevelop.Core/AddIns/AddIn.cs: comment out unused private
+	method.
+	* Core/src/MonoDevelop.Core/Services/ServiceManager.cs: Make a callback
+	when a service is about to be loaded, or has been loaded.
+	* Core/src/MonoDevelop.Core/Services/FileUtilityService.cs: Comment out
+	unused private static variable.
+
+2005-09-23  Christian Hergert   <christian.hergert@gmail.com>
+
 	* Core/src/MonoDevelop.Base/Commands/VBConverter/ConvertBuffer.cs: Update
 	logging calls to reflect a level more representative of the information.
 	* Core/src/MonoDevelop.Base/Commands/ToolsCommands.cs

@@ -32,7 +32,7 @@ using Glade;
 
 namespace MonoDevelop.Gui.Dialogs
 {
-	public class ErrorDialog
+	public class ErrorDialog : IDisposable
 	{
 		[Glade.Widget ("ErrorDialog")] Dialog dialog;
 		[Glade.Widget] Button okButton;
@@ -89,6 +89,12 @@ namespace MonoDevelop.Gui.Dialogs
 		{
 			dialog.ShowAll ();
 			dialog.Run ();
+		}
+		
+		public void Dispose ()
+		{
+			dialog.Destroy ();
+			dialog.Dispose ();
 		}
 		
 		void OnClose (object sender, EventArgs args)

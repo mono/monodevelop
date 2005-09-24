@@ -508,7 +508,8 @@ Internal/Serialization/SerializationContext.cs \
 Internal/Serialization/EnumDataType.cs \
 Internal/Serialization/PrimitiveDataType.cs \
 Internal/Serialization/XmlDataSerializer.cs \
-Internal/Serialization/DataSerializer.cs
+Internal/Serialization/DataSerializer.cs \
+StartupInfo.cs
 
 RES = \
 Base.glade \

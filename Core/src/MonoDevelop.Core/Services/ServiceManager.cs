@@ -13,6 +13,46 @@ using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core.Services
 {
+	public delegate void ServiceLoadCallback (object sender, ServiceLoadArgs args);
+
+	public enum ServiceLoadType
+	{
+		LoadStarted,
+		LoadCompleted
+	}
+
+	public class ServiceLoadArgs : EventArgs
+	{
+		private IService        service       = null;
+		private ServiceLoadType loadType      = ServiceLoadType.LoadStarted;
+		private int             totalServices = 0;
+
+		public ServiceLoadArgs (IService service, ServiceLoadType loadType, int totalServices)
+		{
+			this.service       = service;
+			this.loadType      = loadType;
+			this.totalServices = totalServices;
+		}
+
+		public IService Service {
+			get {
+				return service;
+			}
+		}
+
+		public ServiceLoadType LoadType {
+			get {
+				return loadType;
+			}
+		}
+
+		public int TotalServices {
+			get {
+				return totalServices;
+			}
+		}
+	}
+
 	/// <summary>
 	/// This class does basic service handling for you.
 	/// </summary>
@@ -21,7 +61,8 @@ namespace MonoDevelop.Core.Services
 		ArrayList serviceList       = new ArrayList();
 		Hashtable servicesHashtable = new Hashtable();
 		
-		static ServiceManager defaultServiceManager = new ServiceManager();
+		static ServiceManager      defaultServiceManager = new ServiceManager();
+		static ServiceLoadCallback serviceLoadCallback   = null;
 
 		protected ServiceManager ()
 		{
@@ -59,8 +100,13 @@ namespace MonoDevelop.Core.Services
 			AddServices((IService[])AddInTreeSingleton.AddInTree.GetTreeNode(servicesPath).BuildChildItems(defaultServiceManager).ToArray(typeof(IService)));
 			
 			// initialize all services
+			int totalServices = defaultServiceManager.serviceList.Count;
+			int i = 0;
 			foreach (IService service in defaultServiceManager.serviceList) {
+				i++;
+				SendCallback (service, ServiceLoadType.LoadStarted, totalServices);
 				service.InitializeService();
+				SendCallback (service, ServiceLoadType.LoadCompleted, totalServices);
 			}
 		}
 		
@@ -83,6 +129,15 @@ namespace MonoDevelop.Core.Services
 		{
 			foreach (IService service in services) {
 				AddService(service);
+			}
+		}
+
+		public static ServiceLoadCallback ServiceLoadCallback {
+			get {
+				return serviceLoadCallback;
+			}
+			set {
+				serviceLoadCallback = value;
 			}
 		}
 		
@@ -125,6 +180,12 @@ namespace MonoDevelop.Core.Services
 			}
 			
 			return null;
+		}
+
+		static void SendCallback (IService service, ServiceLoadType loadType, int totalServices)
+		{
+			if (serviceLoadCallback != null)
+				serviceLoadCallback (typeof (ServiceManager), new ServiceLoadArgs (service, loadType, totalServices));
 		}
 	}
 }

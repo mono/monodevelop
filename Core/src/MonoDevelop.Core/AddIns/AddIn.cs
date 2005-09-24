@@ -141,13 +141,13 @@ namespace MonoDevelop.Core.AddIns
 		}
 		
 		ArrayList errors = null;
-		void ValidationHandler(object sender, ValidationEventArgs args)
+		/*void ValidationHandler(object sender, ValidationEventArgs args)
 		{
 			if (errors == null) {
 				errors = new ArrayList();
 			}
 			errors.Add(args);
-		}
+		}*/
 		
 		void ReportErrors(string fileName)
 		{
