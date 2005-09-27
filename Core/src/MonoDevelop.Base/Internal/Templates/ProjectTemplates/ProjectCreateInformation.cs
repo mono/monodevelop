@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -8,10 +8,7 @@ using System.IO;
 using System.Collections;
 using System.Xml;
 
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// This class holds all information the language binding need to create

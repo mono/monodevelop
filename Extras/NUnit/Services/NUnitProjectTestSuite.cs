@@ -32,9 +32,10 @@ using System.Reflection;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Ide.Gui;
 
 using NUnit.Core;
 
@@ -55,7 +56,7 @@ namespace MonoDevelop.NUnit
 			this.project = project;
 			lastAssemblyTime = GetAssemblyTime ();
 			project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			Runtime.ProjectService.EndBuild += new ProjectCompileEventHandler (OnProjectBuilt);
+			IdeApp.ProjectOperations.EndBuild += new ProjectCompileEventHandler (OnProjectBuilt);
 		}
 		
 		public static NUnitProjectTestSuite CreateTest (Project project)
@@ -68,7 +69,7 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
 		{
-			IParserContext ctx = Runtime.ProjectService.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			IClass cls = ctx.GetClass (fullClassName);
 			if (cls == null)
 				return null;
@@ -83,7 +84,7 @@ namespace MonoDevelop.NUnit
 		public override void Dispose ()
 		{
 			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			Runtime.ProjectService.EndBuild -= new ProjectCompileEventHandler (OnProjectBuilt);
+			IdeApp.ProjectOperations.EndBuild -= new ProjectCompileEventHandler (OnProjectBuilt);
 			base.Dispose ();
 		}
 		

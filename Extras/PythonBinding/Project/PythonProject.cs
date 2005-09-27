@@ -3,8 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Xml;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
+using MonoDevelop.Projects;
 
 namespace PythonBinding
 {

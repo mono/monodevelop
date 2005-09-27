@@ -7,9 +7,9 @@
 
 using System;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// Is thrown when the GlobalResource manager can't find a requested

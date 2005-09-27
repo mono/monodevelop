@@ -30,11 +30,14 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectFolderNodeBuilder: FolderNodeBuilder
 	{
@@ -73,8 +76,8 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
 			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
 			
-			fileRenamedHandler = (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRenamed));
-			fileRemovedHandler = (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRemoved));
+			fileRenamedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRenamed));
+			fileRemovedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnFolderRemoved));
 		}
 		
 		public override void OnNodeAdded (object dataObject)
@@ -147,13 +150,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				try {
 					
 					if (Runtime.FileUtilityService.IsValidFileName (newFoldername)) {
-						Runtime.FileService.RenameFile (oldFoldername, newFoldername);
-						Runtime.ProjectService.SaveCombine();
+						Services.FileService.RenameFile (oldFoldername, newFoldername);
+						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Runtime.MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+					Services.MessageService.ShowError(GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Runtime.MessageService.ShowError(GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					Services.MessageService.ShowError(GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -163,7 +166,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		{
 			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
 			
-			bool yes = Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you want to remove folder {0}?"), folder.Name));
+			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you want to remove folder {0}?"), folder.Name));
 			if (!yes) return;
 			
 			Project project = folder.Project;
@@ -182,7 +185,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				folder.Project.ProjectFiles.Remove (file);
 
 //			folder.Remove ();
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		public override DragOperation CanDragNode ()

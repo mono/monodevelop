@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Xml;
 using System.IO;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.SharpAssembly.Metadata.Rows;
 using MonoDevelop.SharpAssembly.Metadata;
 using MonoDevelop.SharpAssembly.PE;
@@ -19,10 +19,10 @@ using SharpAssembly_=MonoDevelop.SharpAssembly.Assembly.SharpAssembly;
 using AssemblyReader=MonoDevelop.SharpAssembly.Assembly.AssemblyReader;
 using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribute;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	public class SharpAssemblyAttribute : AbstractAttribute
+	internal class SharpAssemblyAttribute : AbstractAttribute
 	{
 		SharpAssemblyClass attributeType;
 		

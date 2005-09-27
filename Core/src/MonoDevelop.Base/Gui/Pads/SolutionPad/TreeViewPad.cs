@@ -33,30 +33,28 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Collections.Utility;
 using System.Xml;
 using System.Resources;
 using System.Text;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	/// <summary>
 	/// This class implements a project browser.
 	/// </summary>
 	public class TreeViewPad : IPadContent, IMementoCapable, ICommandDelegatorRouter
 	{
-		string title;
-		string icon;
+		IPadWindow window;
 		string id;
 		string defaultPosition = "left";
 		
@@ -115,13 +113,13 @@ namespace MonoDevelop.Gui.Pads
 		}
 
 		public string Title {
-			get { return title; }
-			set { title = value; }
+			get { return window.Title; }
+			set { window.Title = value; }
 		}
 
 		public string Icon {
-			get { return icon; }
-			set { icon = value; }
+			get { return window.Icon; }
+			set { window.Icon = value; }
 		}
 
 		public void RedrawContent()
@@ -132,12 +130,17 @@ namespace MonoDevelop.Gui.Pads
 		{
 		}
 		
-		public TreeViewPad (string label, string icon, NodeBuilder[] builders, TreePadOption[] options)
+		public TreeViewPad (NodeBuilder[] builders, TreePadOption[] options)
 		{
-			Initialize (label, icon, builders, options);
+			Initialize (builders, options);
 		}
 		
-		public virtual void Initialize (string label, string icon, NodeBuilder[] builders, TreePadOption[] options)
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			this.window = window;
+		}
+		
+		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			// Create default options
 			
@@ -164,8 +167,6 @@ namespace MonoDevelop.Gui.Pads
 			}
 			
 			NodeBuilders = builders;
-			Title = label;
-			Icon = icon;
 
 			builderContext = new TreeBuilderContext (this);
 			
@@ -949,16 +950,16 @@ namespace MonoDevelop.Gui.Pads
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					Runtime.Gui.CommandService.ShowContextMenu (opset);
+					IdeApp.CommandService.ShowContextMenu (opset);
 				}
 			} else {
-				CommandEntrySet eset = Runtime.Gui.CommandService.CreateCommandEntrySet (nb.ContextMenuAddinPath);
+				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (nb.ContextMenuAddinPath);
 				eset.AddItem (Command.Separator);
 				CommandEntrySet opset = eset.AddItemSet (GettextCatalog.GetString ("Display Options"));
 				opset.AddItem (ViewCommands.TreeDisplayOptionList);
 				opset.AddItem (Command.Separator);
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-				Runtime.Gui.CommandService.ShowContextMenu (eset);
+				IdeApp.CommandService.ShowContextMenu (eset);
 			}
 		}
 		
@@ -1625,13 +1626,13 @@ namespace MonoDevelop.Gui.Pads
 				if (dataObject == pad.copyObject && pad.currentTransferOperation == DragOperation.Move) {
 					Gdk.Pixbuf gicon = pad.builderContext.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
-						gicon = Runtime.Gui.Icons.MakeTransparent (icon, 0.5);
+						gicon = Services.Icons.MakeTransparent (icon, 0.5);
 						pad.builderContext.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
 					gicon = pad.builderContext.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
-						gicon = Runtime.Gui.Icons.MakeTransparent (closedIcon, 0.5);
+						gicon = Services.Icons.MakeTransparent (closedIcon, 0.5);
 						pad.builderContext.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;
@@ -1706,7 +1707,7 @@ namespace MonoDevelop.Gui.Pads
 		}
 	}
 	
-	public class TreeViewPadMemento : IXmlConvertable
+	internal class TreeViewPadMemento : IXmlConvertable
 	{
 		TreeViewPad treeView = null;
 		XmlElement parent = null;

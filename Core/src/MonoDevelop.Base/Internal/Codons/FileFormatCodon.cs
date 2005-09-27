@@ -32,13 +32,13 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Projects.Extensions
 {
 	[CodonNameAttribute ("FileFormat")]
-	public class FileFormatCodon : AbstractCodon
+	internal class FileFormatCodon : AbstractCodon
 	{
 		IFileFormat fileFormat;
 		

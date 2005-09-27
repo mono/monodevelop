@@ -9,12 +9,12 @@ using System;
 using System.Drawing;
 using Gtk;
 
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
-namespace MonoDevelop.Gui.BrowserDisplayBinding
+namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 {
 	public class BrowserDisplayBinding : IDisplayBinding, ISecondaryDisplayBinding
 	{

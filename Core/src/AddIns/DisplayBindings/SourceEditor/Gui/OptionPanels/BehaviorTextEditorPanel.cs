@@ -9,20 +9,18 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Internal.Templates;
+using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
-using MonoDevelop.TextEditor;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.EditorBindings.FormattingStrategy;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
 using Gtk;
 
-namespace MonoDevelop.EditorBindings.Gui.OptionPanels
+namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {
 	/// <summary>
 	/// Summary description for Form8.

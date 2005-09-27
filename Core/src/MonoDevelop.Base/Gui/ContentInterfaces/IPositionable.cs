@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
 	/// <summary>
 	/// If a IViewContent object is from the type IPositionable it signals

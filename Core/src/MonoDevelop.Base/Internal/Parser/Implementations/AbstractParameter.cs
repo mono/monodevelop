@@ -6,9 +6,9 @@
 // </file>
 using System;
 using System.Reflection;
-using System.Collections.Utility;
+using MonoDevelop.Projects.Utility;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 
 	[Serializable]

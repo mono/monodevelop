@@ -1,14 +1,14 @@
 using Gtk;
 using GLib;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Ide.Gui;
 
 using System;
 using System.IO;
@@ -90,7 +90,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				underlineErrors = value;
 				/* still too broken to leave on
 				if (underlineErrors) {
-					ps.ParseInformationChanged += (ParseInformationEventHandler) Runtime.DispatchService.GuiDispatch (new ParseInformationEventHandler (ParseChanged));
+					ps.ParseInformationChanged += (ParseInformationEventHandler) Services.DispatchService.GuiDispatch (new ParseInformationEventHandler (ParseChanged));
 				}
 				else {
 					ps.ParseInformationChanged -= ParseChanged;
@@ -740,7 +740,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void CommentCode ()
 		{
 			string commentTag = "//"; // as default
-			commentTag = Runtime.Languages.GetBindingPerFileName (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName).CommentTag;
+			commentTag = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName).CommentTag;
 			
 			TextIter textStart;
 			TextIter textEnd;
@@ -773,7 +773,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void UncommentCode ()
 		{
 			string commentTag = "//"; // as default
-			commentTag = Runtime.Languages.GetBindingPerFileName (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName).CommentTag;
+			commentTag = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName).CommentTag;
 			
 			TextIter textStart;
 			TextIter textEnd;

@@ -11,9 +11,7 @@ using System.Reflection;
 using System.Collections.Specialized;
 using System.IO;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.AddIns
 {

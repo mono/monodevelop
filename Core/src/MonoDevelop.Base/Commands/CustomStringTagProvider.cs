@@ -15,22 +15,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
-
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Internal.Project;
-
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	internal class SharpDevelopStringTagProvider :  IStringTagProvider 
 	{
-		IProjectService projectService = Runtime.ProjectService;
-		
 		public string[] Tags {
 			get {
 				return new string[] { "ITEMPATH", "ITEMDIR", "ITEMFILENAME", "ITEMEXT",
@@ -44,20 +39,20 @@ namespace MonoDevelop.Commands
 		
 		string GetCurrentItemPath()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsViewOnly && !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled) {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName;
+			if (IdeApp.Workbench.ActiveDocument != null && !IdeApp.Workbench.ActiveDocument.Window.ViewContent.IsViewOnly && !IdeApp.Workbench.ActiveDocument.Window.ViewContent.IsUntitled) {
+				return IdeApp.Workbench.ActiveDocument.FileName;
 			}
 			return String.Empty;
 		}
 		
 		string GetCurrentTargetPath()
 		{
-			if (projectService.CurrentSelectedProject != null) {
-				return projectService.CurrentSelectedProject.GetOutputFileName ();
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				return IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName ();
 			}
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName;
-				Project project = projectService.GetProject (fileName);
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				string fileName = IdeApp.Workbench.ActiveDocument.FileName;
+				Project project = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (fileName);
 				if (project != null) return project.GetOutputFileName();
 			}
 			return String.Empty;
@@ -117,24 +112,24 @@ namespace MonoDevelop.Commands
 					break;
 				
 				case "PROJECTDIR":
-					if (projectService.CurrentSelectedProject != null) {
-						return projectService.CurrentSelectedProject.BaseDirectory;
+					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+						return IdeApp.ProjectOperations.CurrentSelectedProject.BaseDirectory;
 					}
 					break;
 				case "PROJECTFILENAME":
-					if (projectService.CurrentSelectedProject != null) {
+					if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
 						try {
-							return Path.GetFileName(projectService.CurrentSelectedProject.FileName);
+							return Path.GetFileName(IdeApp.ProjectOperations.CurrentSelectedProject.FileName);
 						} catch (Exception) {}
 					}
 					break;
 				
 				case "COMBINEDIR":
-					return Path.GetDirectoryName (projectService.CurrentOpenCombine.FileName);
+					return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
 
 				case "COMBINEFILENAME":
 					try {
-						return Path.GetFileName(projectService.CurrentOpenCombine.FileName);
+						return Path.GetFileName (IdeApp.ProjectOperations.CurrentOpenCombine.FileName);
 					} catch (Exception) {}
 					break;
 				case "STARTUPPATH":

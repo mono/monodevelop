@@ -13,7 +13,7 @@ using System.Xml;
 using System.Reflection;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 { 
 	/// <summary>
 	/// This class handles the Global Properties for the IDE, all what can be configured should be

@@ -28,8 +28,8 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.NUnit;
 
 namespace MonoDeveloper

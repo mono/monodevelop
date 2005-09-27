@@ -6,7 +6,7 @@ using System.Collections;
 
 using RefParser = ICSharpCode.SharpRefactory.Parser;
 using AST = ICSharpCode.SharpRefactory.Parser.AST;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using CSharpBinding.Parser.SharpDevelopTree;
 
 namespace CSharpBinding.Parser

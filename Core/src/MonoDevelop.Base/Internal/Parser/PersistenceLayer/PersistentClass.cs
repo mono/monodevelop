@@ -11,12 +11,12 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentClass : AbstractClass
+	internal sealed class PersistentClass : AbstractClass
 	{
 		public override ICompilationUnit CompilationUnit {
 			get {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Internal.Parser
 		}
 	}
 	
-	public class PersistentRegion: DefaultRegion
+	internal class PersistentRegion: DefaultRegion
 	{
 		public PersistentRegion (): base (-1,-1)
 		{
@@ -186,7 +186,7 @@ namespace MonoDevelop.Internal.Parser
 		}
 	}
 	
-	public class PersistentHelper
+	internal class PersistentHelper
 	{
 		public static void WriteString (string s, BinaryWriter writer, INameEncoder nameTable)
 		{

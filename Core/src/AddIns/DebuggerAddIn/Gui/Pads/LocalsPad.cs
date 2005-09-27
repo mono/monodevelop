@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Reflection;
 using Gtk;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
-using Stock = MonoDevelop.Gui.Stock;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using Stock = MonoDevelop.Core.Gui.Stock;
+using MonoDevelop.Ide.Gui;
 
 using Mono.Debugger;
 using Mono.Debugger.Languages;
@@ -91,8 +92,14 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			Runtime.DebuggingService.PausedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
-			Runtime.DebuggingService.StoppedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
+			Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
+			Services.DebuggingService.StoppedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
+		}
+		
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			window.Title = "Locals";
+			window.Icon = Stock.OutputIcon;
 		}
 
 		bool InsertArrayChildren (TreeIter parent, ITargetArrayObject array)
@@ -228,7 +235,7 @@ namespace MonoDevelop.Debugger
 						store.SetValue (iter, NAME_COL, "Raw View");
 						store.SetValue (iter, RAW_VIEW_COL, true);
 
-						Gdk.Pixbuf icon = Runtime.Gui.Resources.GetIcon (Stock.Class, Gtk.IconSize.Menu);
+						Gdk.Pixbuf icon = Services.Resources.GetIcon (Stock.Class, Gtk.IconSize.Menu);
 						if (icon != null)
 							store.SetValue (iter, PIXBUF_COL, icon);
 
@@ -250,7 +257,7 @@ namespace MonoDevelop.Debugger
 
 #if NET_2_0
 			if (!raw_view) {
-				DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+				DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 				DebuggerTypeProxyAttribute pattr = GetDebuggerTypeProxyAttribute (dbgr, sobj);
 
 				if (pattr != null) {
@@ -306,7 +313,7 @@ namespace MonoDevelop.Debugger
 #if NET_2_0
 		void VisualizerActivate (object sender, EventArgs args)
 		{
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+			DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 	  		DebuggerVisualizerAttribute va_attr = (DebuggerVisualizerAttribute)visualizers_by_item [sender];
 			TreeModel model;
 			TreeIter selected_iter;
@@ -339,7 +346,7 @@ namespace MonoDevelop.Debugger
 
 		Gtk.Menu CreatePopup ()
 		{
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+			DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 			TreeModel model;
 			TreeIter selected_iter;
 			ITargetObject obj;
@@ -493,7 +500,7 @@ namespace MonoDevelop.Debugger
 			case TargetObjectKind.Class:
 				try {
 #if NET_2_0
-					DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+					DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 					DebuggerDisplayAttribute dattr = GetDebuggerDisplayAttribute (dbgr, obj);
 					if (dattr != null) {
 						return dbgr.AttributeHandler.EvaluateDebuggerDisplay (obj, dattr.Value);
@@ -520,8 +527,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (iter, NAME_COL, name);
 			store.SetValue (iter, VALUE_COL, GetObjectValueString (obj));
 			store.SetValue (iter, TYPE_COL,
-					obj == null ? "" : Runtime.Ambience.CurrentAmbience.GetIntrinsicTypeName (obj.TypeInfo.Type.Name));
-			Gdk.Pixbuf icon = Runtime.Gui.Resources.GetIcon (icon_name, Gtk.IconSize.Menu);
+					obj == null ? "" : Services.Ambience.CurrentAmbience.GetIntrinsicTypeName (obj.TypeInfo.Type.Name));
+			Gdk.Pixbuf icon = Services.Resources.GetIcon (icon_name, Gtk.IconSize.Menu);
 			if (icon != null)
 				store.SetValue (iter, PIXBUF_COL, icon);
 			if (obj != null)
@@ -533,7 +540,7 @@ namespace MonoDevelop.Debugger
 			string icon = "";
 
 			if (obj.TypeInfo.Type.TypeHandle is Type)
-				icon = Runtime.Gui.Icons.GetIcon ((Type)obj.TypeInfo.Type.TypeHandle);
+				icon = Services.Icons.GetIcon ((Type)obj.TypeInfo.Type.TypeHandle);
 
 			return icon;
 		}
@@ -544,9 +551,9 @@ namespace MonoDevelop.Debugger
 
 #if mdb_api_brokenness
 			if (member.Handle is PropertyInfo)
-				icon = Runtime.Gui.Icons.GetIcon ((PropertyInfo)member.Handle);
+				icon = Services.Icons.GetIcon ((PropertyInfo)member.Handle);
 			else if (member.Handle is FieldInfo)
-				icon = Runtime.Gui.Icons.GetIcon ((FieldInfo)member.Handle);
+				icon = Services.Icons.GetIcon ((FieldInfo)member.Handle);
 #endif
 
 			return icon;
@@ -708,21 +715,25 @@ namespace MonoDevelop.Debugger
 
 			} catch (Exception e) {
 				Console.WriteLine ("error getting variables for current stack frame: {0}", e);
-				store.Clear ();
-				iters = new Hashtable ();
+				Reset ();
 			}
+		}
+		
+		public void Reset ()
+		{
+			variable_rows.Clear ();
+			store.Clear ();
+			iters.Clear ();
 		}
 
 		protected void OnStoppedEvent (object o, EventArgs args)
 		{
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
-			current_frame = dbgr.CurrentFrame;
-			UpdateDisplay ();
+			Reset ();
 		}
 
 		protected void OnPausedEvent (object o, EventArgs args)
 		{
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+			DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 			current_frame = dbgr.CurrentFrame;
 			UpdateDisplay ();
 		}
@@ -780,38 +791,9 @@ namespace MonoDevelop.Debugger
 			get { return "Bottom"; }
 		}
 
-		public string Title {
-			get {
-				return "Locals";
-			}
-		}
-
-		public string Icon {
-			get {
-				return Stock.OutputIcon;
-			}
-		}
-
 		public void RedrawContent ()
 		{
 			UpdateDisplay ();
 		}
-
-		protected virtual void OnTitleChanged(EventArgs e)
-		{
-				if (TitleChanged != null) {
-						TitleChanged(this, e);
-				}
-		}
-		protected virtual void OnIconChanged(EventArgs e)
-		{
-				if (IconChanged != null) {
-						IconChanged(this, e);
-				}
-		}
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
-
-
 	}
 }

@@ -13,7 +13,7 @@ using System.Xml.Xsl;
 using System.Security;
 using System.Security.Permissions;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// This class is used to convert xml files using xslt

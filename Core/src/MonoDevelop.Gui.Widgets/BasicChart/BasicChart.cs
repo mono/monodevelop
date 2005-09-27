@@ -31,7 +31,7 @@ using System.Collections;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets.Chart
+namespace MonoDevelop.Components.Chart
 {
 	public class BasicChart: DrawingArea
 	{

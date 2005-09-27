@@ -11,8 +11,8 @@ using System.Drawing;
 
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 using AssemblyAnalyser = ICSharpCode.AssemblyAnalyser.AssemblyAnalyser;
 using Resolution = ICSharpCode.AssemblyAnalyser.Resolution;
@@ -136,7 +136,7 @@ namespace MonoDevelop.AssemblyAnalyser
 				Position position = parserService.GetPosition (res.Item.Replace ('+', '.'));
 				
 				if (position != null && position.Cu != null) {
-					IFileService fileService = (IFileService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IFileService));
+					IFileService fileService = (IFileService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IFileService));
 					Console.WriteLine("File name : " + position.Cu.FileName);
 					fileService.JumpToFilePosition(position.Cu.FileName, Math.Max(0, position.Line - 1), Math.Max(0, position.Column - 1));
 				}

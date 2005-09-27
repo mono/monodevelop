@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Resources;
 using System.Reflection;
 
-namespace MonoDevelop.Gui.Components
+namespace MonoDevelop.Core.Gui.Components
 {
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple=false, Inherited=true)]
 	public class LocalizedPropertyAttribute : Attribute

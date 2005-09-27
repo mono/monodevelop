@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public interface ICommandRouter
 	{

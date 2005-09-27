@@ -24,7 +24,7 @@ using GLib;
 using Gtk;
 using System.Runtime.InteropServices;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 	/// <summary>
 	/// Column for inserting into a DataGrid

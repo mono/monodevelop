@@ -31,13 +31,13 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("PadOption")]
-	public class PadOptionCodon : AbstractCodon
+	internal class PadOptionCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("_label", IsRequired=true)]
 		string label = null;

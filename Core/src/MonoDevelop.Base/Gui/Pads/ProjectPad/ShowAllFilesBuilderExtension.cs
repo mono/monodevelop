@@ -30,10 +30,12 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ShowAllFilesBuilderExtension: NodeBuilderExtension
 	{
@@ -58,28 +60,28 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			fileAddedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
+			fileRemovedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
 			
-			createdHandler = (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileAdded));
-			deletedHandler = (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileDeleted));
-			renamedHandler = (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileRenamed));
+			createdHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileAdded));
+			deletedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileDeleted));
+			renamedHandler = (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (OnSystemFileRenamed));
 			
-			Runtime.ProjectService.FileAddedToProject += fileAddedHandler;
-			Runtime.ProjectService.FileRemovedFromProject += fileRemovedHandler;
+			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
+			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
 			
-			Runtime.FileService.FileRenamed += renamedHandler;
-			Runtime.FileService.FileRemoved += deletedHandler;
-			Runtime.FileService.FileCreated += createdHandler;
+			Services.FileService.FileRenamed += renamedHandler;
+			Services.FileService.FileRemoved += deletedHandler;
+			Services.FileService.FileCreated += createdHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			Runtime.ProjectService.FileAddedToProject -= fileAddedHandler;
-			Runtime.ProjectService.FileRemovedFromProject -= fileRemovedHandler;
-			Runtime.FileService.FileRenamed -= renamedHandler;
-			Runtime.FileService.FileRemoved -= deletedHandler;
-			Runtime.FileService.FileCreated -= createdHandler;
+			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
+			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
+			Services.FileService.FileRenamed -= renamedHandler;
+			Services.FileService.FileRemoved -= deletedHandler;
+			Services.FileService.FileCreated -= createdHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -112,13 +114,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				if (!HasProjectFiles (pf.Project, thisPath)) {
 					Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
-						gicon = Runtime.Gui.Icons.MakeTransparent (icon, 0.5);
+						gicon = Services.Icons.MakeTransparent (icon, 0.5);
 						Context.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
 					gicon = Context.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
-						gicon = Runtime.Gui.Icons.MakeTransparent (closedIcon, 0.5);
+						gicon = Services.Icons.MakeTransparent (closedIcon, 0.5);
 						Context.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;
@@ -330,10 +332,10 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			string source = ((SystemFile)dataObject).Path;
 			
-			using (IProgressMonitor monitor = Runtime.TaskService.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
-				Runtime.ProjectService.TransferFiles (monitor, null, source, targetProject, targetPath, move, false);
+				IdeApp.ProjectOperations.TransferFiles (monitor, null, source, targetProject, targetPath, move, false);
 			}
 		}
 	}

@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
 	public class DefaultRegion : System.MarshalByRefObject, IRegion

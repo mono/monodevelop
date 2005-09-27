@@ -12,10 +12,10 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Xml;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// External language bindings may choose to extend this class.

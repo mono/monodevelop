@@ -30,12 +30,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
-	public class MdsFileFormat: IFileFormat
+	internal class MdsFileFormat: IFileFormat
 	{
 		public string Name {
 			get { return "MonoDevelop Combine"; }
@@ -67,7 +67,7 @@ namespace MonoDevelop.Internal.Project
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving combine: {0}"), file), 1);
 				XmlTextWriter tw = new XmlTextWriter (sw);
 				tw.Formatting = Formatting.Indented;
-				DataSerializer serializer = new DataSerializer (Runtime.ProjectService.DataContext, file);
+				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor);
 				combineWriter.WriteCombine (tw, combine);
 			} catch (Exception ex) {
@@ -86,7 +86,7 @@ namespace MonoDevelop.Internal.Project
 			string version = reader.GetAttribute ("version");
 			if (version == null) version = reader.GetAttribute ("fileversion");
 			
-			DataSerializer serializer = new DataSerializer (Runtime.ProjectService.DataContext, file);
+			DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 			ICombineReader combineReader = null;
 			
 			if (version == "1.0" || version == "1") {

@@ -26,7 +26,8 @@ FormattingStrategy/IndentStyle.cs \
 FormattingStrategy/IFormattingStrategy.cs \
 FormattingStrategy/IFormattableDocument.cs \
 Codons/EditActionCodon.cs \
-Services/SourceViewService.cs
+Services/SourceViewService.cs \
+Services/Services.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs

@@ -4,14 +4,13 @@ using System.IO;
 
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
 
 using VersionControl;
 

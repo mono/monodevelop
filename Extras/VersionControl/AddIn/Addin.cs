@@ -4,13 +4,13 @@ using System.IO;
 
 using Gtk;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui.Pads.ProjectPad;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Commands;
-using MonoDevelop.Services;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Projects;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 using VersionControl;
 
@@ -282,7 +282,7 @@ namespace VersionControlPlugin {
 			get { return ""; }
 		}
 		
-		MonoDevelop.Internal.Project.Project IViewContent.Project {
+		MonoDevelop.Projects.Project IViewContent.Project {
 			get { return null; }
 			set { }
 		}

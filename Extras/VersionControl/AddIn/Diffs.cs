@@ -7,10 +7,8 @@ using Gtk;
 using VersionControl;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 
 using Algorithm.Diff.Gtk;
 
@@ -34,7 +32,7 @@ namespace VersionControlPlugin {
 						Path.GetFileName(filepath),
 						vc.GetPathToBaseText(filepath),
 						filepath);
-					MonoDevelop.Gui.WorkbenchSingleton.Workbench.ShowView(d, true);
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 					return true;
 				}
 			}
@@ -48,7 +46,7 @@ namespace VersionControlPlugin {
 			
 		public static void Show(string name, string lefttext, string righttext) {
 			DiffView d = new DiffView(name, split(lefttext), split(righttext));
-			MonoDevelop.Gui.WorkbenchSingleton.Workbench.ShowView(d, true);
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument(d, true);
 		}
 		
 		public DiffView(string name, string left, string right) 

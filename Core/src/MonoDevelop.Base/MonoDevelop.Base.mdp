@@ -18,7 +18,6 @@
   </DeploymentInformation>
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Commands/AutostartCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands/CustomStringTagProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands/DebugCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands/EditCommands.cs" subtype="Code" buildaction="Compile" />
@@ -29,8 +28,6 @@
     <File name="./Commands/ToolsCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands/ViewCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands/WindowCommands.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Commands/VBConverter/ConvertBuffer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Commands/VBConverter/ConvertProject.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/DefaultLoggingService.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/IconService.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ILoggingService.cs" subtype="Code" buildaction="Compile" />
@@ -310,8 +307,6 @@
     <File name="./Gui/Components/LocalizedPropertyGrid/LocalizedObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Components/LocalizedPropertyGrid/LocalizedPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Components/LocalizedPropertyGrid/LocalizedPropertyDescriptor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Gui/Components/StatusBar/IStatusIcon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Gui/Components/StatusBar/SdStatusBar.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/ContentInterfaces/IBookmarkBuffer.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/ContentInterfaces/IClipboardHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/ContentInterfaces/ICodeStyleOperations.cs" subtype="Code" buildaction="Compile" />
@@ -347,7 +342,6 @@
     <File name="./Gui/Dialogs/OptionPanels/IDEOptions/BuildPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Dialogs/OptionPanels/IDEOptions/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Dialogs/OptionPanels/IDEOptions/LoadSavePanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Gui/Dialogs/OptionPanels/IDEOptions/ProjectAndCombinePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Dialogs/OptionPanels/IDEOptions/SelectStylePanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Dialogs/OptionPanels/ProjectOptions/CompileFileProjectOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Dialogs/OptionPanels/ProjectOptions/DeployFileOptions.cs" subtype="Code" buildaction="Compile" />
@@ -486,6 +480,16 @@
     <File name="./Internal/Templates/ProjectTemplates/CombineEntryDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/ToolWidgets/ConfigurationComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="./Base.glade" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./AssemblyInfo.cs.in" subtype="Code" buildaction="Nothing" />
+    <File name="./Base.gladep" subtype="Code" buildaction="Nothing" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Base.dll.config" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelopCore.addin.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./TestBase.glade" subtype="Code" buildaction="Nothing" />
+    <File name="./Gui/IPadContainer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/BrowserDisplayBinding/AxSHDocVw.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/BrowserDisplayBinding/HTMLInterfaces.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/BrowserDisplayBinding/SHDocVw.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Completion/CodeCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Completion/CodeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Completion/CommentCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
@@ -497,10 +501,26 @@
     <File name="./Gui/Completion/ListWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Completion/TemplateCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Completion/TextUtilities.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Services/ProcessService/IProcessAsyncOperation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Services/ProcessService/MintPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Services/ProcessService/MonoPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Services/ProcessService/NativePlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/Dialogs/CombineConfiguration/CombineEntryConfigurationsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/Dialogs/CombineConfiguration/ConfigurationManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/Document.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/DocumentCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/HelpOperations.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/Ide.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/Pad.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/PadCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/ProjectOperations.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/Workbench.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/SystemAssemblyService.cs.meu" subtype="Code" buildaction="Nothing" />
+    <File name="./Services/ParserService/AssemblyCodeCompletionDatabase.cs.nou" subtype="Code" buildaction="Nothing" />
+    <File name="./options/DefaultEditingLayout.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./options/MonoDevelop-templates.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./options/MonoDevelop-tools.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./options/MonoDevelopProperties.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./options/TipsOfTheDay.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./Gui/Components/StatusBar/IStatusIcon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/Components/StatusBar/SdStatusBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/ProgressMonitors.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ProcessService/DefaultExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ProcessService/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ProcessService/ExternalConsoleFactory.cs" subtype="Code" buildaction="Compile" />
@@ -508,11 +528,31 @@
     <File name="./Services/ProcessService/IConsoleFactory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ProcessService/IExecutionHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/ProcessService/IExecutionHandlerFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/ProcessService/IProcessAsyncOperation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/ProcessService/MintPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/ProcessService/MonoPlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/ProcessService/NativePlatformExecutionHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./Internal/Codons/ExecutionHandlerCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Commands/AutostartCommands.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Commands/VBConverter/ConvertBuffer.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Commands/VBConverter/ConvertProject.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Gui/Components/MenuButtonEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Internal/Codons/Commands/LocalCommandItemCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Internal/ProgressMonitoring/AggregatedOperationMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Internal/ProgressMonitoring/MessageDialogProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Internal/ProgressMonitoring/SynchronizedProgressMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Internal/ProgressMonitoring/AggregatedOperationMonitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Gui/Components/MenuButtonEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Internal/Remoting/UnixChannel.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixClient.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixClientChannel.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixClientTransportSink.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixClientTransportSinkProvider.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixListener.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixMessageIO.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixServerChannel.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Internal/Remoting/UnixServerTransportSink.cs" subtype="Code" buildaction="Exclude" />
+    <File name="./Services/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IdeApplication/Services.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Services/ProjectsServices.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/Tasks/ISearchProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Services/Tasks/SearchProgressMonitor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/Pads/SearchResultPad.cs" subtype="Code" buildaction="Compile" />

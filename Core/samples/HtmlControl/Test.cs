@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 using GtkSharp;
-using MonoDevelop.Gui.HtmlControl;
+using MonoDevelop.Components.HtmlControl;
 
 class HtmlTest
 {

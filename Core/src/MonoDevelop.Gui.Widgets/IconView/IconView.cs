@@ -4,7 +4,7 @@ using System.Collections;
 using Gtk;
 using Gnome;
 
-namespace MonoDevelop.Gui.Widgets {
+namespace MonoDevelop.Components {
 	public class IconView : ScrolledWindow {
 		IconList iconList;
 		

@@ -29,9 +29,10 @@ import System
 import System.Collections
 import System.Diagnostics
 import System.IO
-import MonoDevelop.Services
-import MonoDevelop.Internal.Project
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Core
+import MonoDevelop.Projects
+import MonoDevelop.Projects.Parser
+import MonoDevelop.IdeApplication.Gui
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
 import Boo.Lang.Compiler.Pipelines
@@ -87,8 +88,8 @@ class BooParser(IParser):
 		compiler = BooCompiler()
 		compiler.Parameters.Input.Add(StringInput(fileName, fileContent))
 		project as Project
-		if MonoDevelop.Services.Runtime.ProjectService.CurrentOpenCombine is not null:
-			for entry as Project in MonoDevelop.Services.Runtime.ProjectService.CurrentOpenCombine.GetAllProjects():
+		if Ide.ProjectOperations.CurrentOpenCombine is not null:
+			for entry as Project in Ide.ProjectOperations.CurrentOpenCombine.GetAllProjects():
 				if entry.IsFileInProject(fileName):
 					project = entry
 		
@@ -180,7 +181,7 @@ class BooParser(IParser):
 		Error (self.GetType(), message)
 
 	static def Log (type, message):
-		MonoDevelop.Services.Runtime.LoggingService.Debug (type.ToString (), message)
+		MonoDevelop.Core.Runtime.LoggingService.Debug (type.ToString (), message)
 	
 	static def Error (type, message):
-		MonoDevelop.Services.Runtime.LoggingService.Error (type.ToString (), message)
+		MonoDevelop.Core.Runtime.LoggingService.Error (type.ToString (), message)

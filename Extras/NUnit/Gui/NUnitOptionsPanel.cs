@@ -32,11 +32,11 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Gui.Dialogs;
 using Gtk;
 
 namespace MonoDevelop.NUnit

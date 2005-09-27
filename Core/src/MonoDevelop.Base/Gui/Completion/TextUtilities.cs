@@ -9,7 +9,7 @@ using System;
 using System.Text;
 using System.Diagnostics;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	public sealed class TextUtilities
 	{

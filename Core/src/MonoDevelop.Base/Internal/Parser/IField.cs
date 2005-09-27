@@ -7,7 +7,7 @@
 using System;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public interface IField : IMember
 	{

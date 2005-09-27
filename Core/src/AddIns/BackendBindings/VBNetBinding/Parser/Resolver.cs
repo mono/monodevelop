@@ -9,8 +9,9 @@ using System;
 using System.Collections;
 using System.Drawing;
 
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 using ICSharpCode.SharpRefactory.Parser.AST.VB;
 using ICSharpCode.SharpRefactory.Parser.VB;

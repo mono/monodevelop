@@ -10,13 +10,11 @@ using System.Collections;
 using System.Reflection;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.AddIns.Codons;
 
-using MonoDevelop.Gui.Components;
-using MonoDevelop.TextEditor.Actions;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.SourceEditor.Actions;
 
-namespace MonoDevelop.DefaultEditor.Codons
+namespace MonoDevelop.SourceEditor.Codons
 {
 	[CodonNameAttribute("EditAction")]
 	public class EditActionCodon : AbstractCodon

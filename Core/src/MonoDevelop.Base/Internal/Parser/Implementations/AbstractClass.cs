@@ -8,10 +8,10 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Collections.Utility;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Utility;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	public abstract class AbstractClass : AbstractNamedEntity, IClass, IComparable

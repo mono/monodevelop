@@ -11,7 +11,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public class ForwardTextFileIterator : ITextIterator
 	{

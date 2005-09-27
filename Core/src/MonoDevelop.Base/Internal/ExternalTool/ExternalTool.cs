@@ -9,9 +9,10 @@ using System;
 using System.Diagnostics;
 using System.Xml;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Internal.ExternalTool
+namespace MonoDevelop.Ide.ExternalTools
 {
 	/// <summary>
 	/// This class describes an external tool, which is a external program

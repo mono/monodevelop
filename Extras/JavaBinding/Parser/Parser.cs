@@ -7,8 +7,8 @@
 using System;
 using System.Drawing;
 using System.Collections;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
 using JavaBinding.Parser.SharpDevelopTree;
 using JRefactory.Parser;
 

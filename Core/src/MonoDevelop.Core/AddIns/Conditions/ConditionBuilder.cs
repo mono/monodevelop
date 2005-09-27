@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Collections.Specialized;
 using System.Reflection;
 
-namespace MonoDevelop.Core.AddIns.Conditions
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// The condition builder builds a new condition

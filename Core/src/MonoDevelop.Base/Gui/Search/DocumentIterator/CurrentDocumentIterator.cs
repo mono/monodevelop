@@ -7,8 +7,9 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class CurrentDocumentIterator : IDocumentIterator
 	{
@@ -24,10 +25,10 @@ namespace MonoDevelop.Gui.Search
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName == null) {
-					return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
+				if (IdeApp.Workbench.ActiveDocument.FileName == null) {
+					return IdeApp.Workbench.ActiveDocument.Window.ViewContent.UntitledName;
 				}
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName;
+				return IdeApp.Workbench.ActiveDocument.FileName;
 			}
 		}
 		
@@ -36,7 +37,7 @@ namespace MonoDevelop.Gui.Search
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as IDocumentInformation;
+				return IdeApp.Workbench.ActiveDocument.Content as IDocumentInformation;
 			}
 		}
 			

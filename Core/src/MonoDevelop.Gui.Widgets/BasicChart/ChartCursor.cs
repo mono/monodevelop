@@ -29,7 +29,7 @@
 using System;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets.Chart
+namespace MonoDevelop.Components.Chart
 {
 	public class ChartCursor
 	{

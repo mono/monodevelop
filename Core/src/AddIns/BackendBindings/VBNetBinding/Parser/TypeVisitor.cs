@@ -8,7 +8,7 @@ using ICSharpCode.SharpRefactory.Parser.VB;
 using ICSharpCode.SharpRefactory.Parser.AST.VB;
 using VBBinding.Parser.SharpDevelopTree;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace VBBinding.Parser
 {

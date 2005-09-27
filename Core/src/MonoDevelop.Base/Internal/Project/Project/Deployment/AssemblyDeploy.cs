@@ -8,10 +8,9 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class AssemblyDeploy  : IDeploymentStrategy
 	{
@@ -24,17 +23,12 @@ namespace MonoDevelop.Internal.Project
 		public void DeployProject(Project project)
 		{
 			if (project.DeployInformation.DeployTarget.Length == 0) {
-				Runtime.MessageService.ShowError(GettextCatalog.GetString ("Can't deploy: no deployment target set"));
-				return;
+				throw new Exception (GettextCatalog.GetString ("Can't deploy: no deployment target set"));
 			}
-			try {
-				if (File.Exists (project.GetOutputFileName ()))
-					File.Copy (project.GetOutputFileName (), Path.GetFileName (project.GetOutputFileName ()), true);
-				else
-					throw new Exception("Assembly not found.");
-			} catch (Exception e) {
-				Runtime.MessageService.ShowError(e);
-			}
+			if (File.Exists (project.GetOutputFileName ()))
+				File.Copy (project.GetOutputFileName (), Path.GetFileName (project.GetOutputFileName ()), true);
+			else
+				throw new Exception("Assembly not found.");
 		}
 	}
 }

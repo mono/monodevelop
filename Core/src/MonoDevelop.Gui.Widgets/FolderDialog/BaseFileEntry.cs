@@ -3,9 +3,9 @@ using System.IO;
 using Gtk;
 using Gdk;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Widgets {
+namespace MonoDevelop.Components {
 	public abstract class BaseFileEntry : Gtk.HBox {
 		
 		string name;

@@ -4,13 +4,12 @@ using System.Text;
 using Pango;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Dialogs.OptionPanels;
-using MonoDevelop.TextEditor;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.EditorBindings.FormattingStrategy;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
-namespace MonoDevelop.EditorBindings.Properties {
+namespace MonoDevelop.SourceEditor.Properties {
 	public enum LineViewerStyle {
 		// No line viewer will be displayed
 		None,
@@ -42,7 +41,7 @@ namespace MonoDevelop.EditorBindings.Properties {
 	public class TextEditorProperties {
 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 		static IProperties properties = ((IProperties) propertyService.GetProperty (
-			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
+			"MonoDevelop.SourceEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new DefaultProperties()));
 		
 		public static int TabIndent {

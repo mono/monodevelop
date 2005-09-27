@@ -30,26 +30,31 @@ using System;
 using System.Xml;
 using System.Collections;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
-	public class CommandService : AbstractService
+	public class CommandService
 	{
 		CommandManager manager = new CommandManager ();
 		
-		public override void InitializeService()
+		public CommandService ()
 		{
-			base.InitializeService();
-			
-			ArrayList commandCodons = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Commands").BuildChildItems (null);
+			manager.CommandError += new CommandErrorHandler (OnCommandError);
+		}
+		
+		public void LoadCommands (string addinPath)
+		{
+			ArrayList commandCodons = AddInTreeSingleton.AddInTree.GetTreeNode (addinPath).BuildChildItems (null);
 			foreach (Command cmd in commandCodons)
 				manager.RegisterCommand (cmd, null);
-				
-			manager.CommandError += new CommandErrorHandler (OnCommandError);
+		}
+		
+		public void EnableUpdate ()
+		{
 			manager.EnableIdleUpdate = true;
 		}
 		
@@ -103,6 +108,11 @@ namespace MonoDevelop.Services
 			return manager.CreateMenu (cset);
 		}
 		
+		public void ShowContextMenu (Gtk.Menu menu)
+		{
+			menu.Popup (null, null, null, IntPtr.Zero, 0, Gtk.Global.CurrentEventTime);
+		}
+		
 		public Gtk.Menu CreateMenu (CommandEntrySet cset)
 		{
 			return manager.CreateMenu (cset);
@@ -129,7 +139,7 @@ namespace MonoDevelop.Services
 		
 		void OnCommandError (object sender, CommandErrorArgs args)
 		{
-			Runtime.MessageService.ShowError (args.Exception, args.ErrorMessage);
+			Services.MessageService.ShowError (args.Exception, args.ErrorMessage);
 		}
 	}
 }

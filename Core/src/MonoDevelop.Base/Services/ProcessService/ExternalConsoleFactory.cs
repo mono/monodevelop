@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public sealed class ExternalConsoleFactory: IConsoleFactory
 	{

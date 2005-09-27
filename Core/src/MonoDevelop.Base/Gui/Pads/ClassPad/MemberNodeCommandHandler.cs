@@ -29,37 +29,20 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class MemberNodeCommandHandler: NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{
 			string file = GetFileName ();
-			IAsyncOperation op = Runtime.FileService.OpenFile (file);
-			op.Completed += new OperationHandler (OnFileOpened);
-		}
-		
-		private void OnFileOpened (IAsyncOperation op)
-		{
-			if (!op.Success) return;
-			
 			IMember member = CurrentNode.DataItem as IMember;
 			int line = member.Region.BeginLine;
-			string file = GetFileName ();
-			
-			IWorkbenchWindow window = Runtime.FileService.GetOpenFile (file);
-			if (window == null) {
-				return;
-			}
-			
-			IViewContent content = window.ViewContent;
-			if (content is IPositionable) {
-				((IPositionable)content).JumpTo (Math.Max (1, line), 1);
-			}
+			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);
 		}
 		
 		string GetFileName ()

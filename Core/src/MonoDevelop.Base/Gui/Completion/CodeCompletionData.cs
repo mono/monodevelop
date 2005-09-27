@@ -12,17 +12,15 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Ambience;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	class CodeCompletionData : ICompletionDataWithMarkup
 	{
-		IconService classBrowserIconService = (IconService) ServiceManager.GetService (typeof (IconService));
-		static AmbienceService ambienceService = (AmbienceService) ServiceManager.GetService (typeof (AmbienceService));
-		
 		string image;
 		string text;
 		string description;
@@ -35,7 +33,7 @@ namespace MonoDevelop.Gui.Completion
 		static IAmbience PangoAmbience
 		{
 			get {
-				IAmbience asvc = ambienceService.CurrentAmbience;
+				IAmbience asvc = Services.Ambience.CurrentAmbience;
 				asvc.ConversionFlags |= ConversionFlags.IncludePangoMarkup;
 				return asvc;
 			}
@@ -153,19 +151,19 @@ namespace MonoDevelop.Gui.Completion
 		
 		public CodeCompletionData (IClass c)
 		{
-			image = classBrowserIconService.GetIcon(c);
+			image = Services.Icons.GetIcon(c);
 			text = c.Name;
 			completionString = c.Name;
-			description = ambienceService.CurrentAmbience.Convert(c);
+			description = Services.Ambience.CurrentAmbience.Convert(c);
 			pango_description  = PangoAmbience.Convert(c);
 			documentation = c.Documentation;
 		}
 		
 		public CodeCompletionData (IMethod method)
 		{
-			image  = classBrowserIconService.GetIcon(method);
+			image  = Services.Icons.GetIcon(method);
 			text        = method.Name;
-			description = ambienceService.CurrentAmbience.Convert(method);
+			description = Services.Ambience.CurrentAmbience.Convert(method);
 			pango_description  = PangoAmbience.Convert (method);
 			completionString = method.Name;
 			documentation = method.Documentation;
@@ -173,9 +171,9 @@ namespace MonoDevelop.Gui.Completion
 		
 		public CodeCompletionData (IField field)
 		{
-			image  = classBrowserIconService.GetIcon(field);
+			image  = Services.Icons.GetIcon(field);
 			text        = field.Name;
-			description = ambienceService.CurrentAmbience.Convert(field);
+			description = Services.Ambience.CurrentAmbience.Convert(field);
 			pango_description  = PangoAmbience.Convert (field);
 			completionString = field.Name;
 			documentation = field.Documentation;
@@ -183,9 +181,9 @@ namespace MonoDevelop.Gui.Completion
 		
 		public CodeCompletionData (IProperty property)
 		{
-			image  = classBrowserIconService.GetIcon(property);
+			image  = Services.Icons.GetIcon(property);
 			text        = property.Name;
-			description = ambienceService.CurrentAmbience.Convert(property);
+			description = Services.Ambience.CurrentAmbience.Convert(property);
 			pango_description  = PangoAmbience.Convert (property);
 			completionString = property.Name;
 			documentation = property.Documentation;
@@ -193,9 +191,9 @@ namespace MonoDevelop.Gui.Completion
 		
 		public CodeCompletionData (IEvent e)
 		{
-			image  = classBrowserIconService.GetIcon(e);
+			image  = Services.Icons.GetIcon(e);
 			text        = e.Name;
-			description = ambienceService.CurrentAmbience.Convert(e);
+			description = Services.Ambience.CurrentAmbience.Convert(e);
 			pango_description  = PangoAmbience.Convert (e);
 			completionString = e.Name;
 			documentation = e.Documentation;
@@ -203,7 +201,7 @@ namespace MonoDevelop.Gui.Completion
 
 		public CodeCompletionData (IParameter o)
 		{
-			image = MonoDevelop.Gui.Stock.Field;
+			image = MonoDevelop.Core.Gui.Stock.Field;
 			text  = o.Name;
 			description = "";
 			pango_description = "";

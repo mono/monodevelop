@@ -7,17 +7,17 @@
 
 using System;
 
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CompileFileProjectOptions : AbstractOptionPanel
 	{
@@ -84,7 +84,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					if (j < project.ProjectFiles.Count) {
 						project.ProjectFiles[j].BuildAction = (bool) store.GetValue(current, 0) ? BuildAction.Compile : BuildAction.Nothing;
 					} else {
-						Runtime.MessageService.ShowError (String.Format (GettextCatalog.GetString ("File {0} not found in {1}."), name, project.Name));
+						Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("File {0} not found in {1}."), name, project.Name));
 						success = false;
 					}
 				}

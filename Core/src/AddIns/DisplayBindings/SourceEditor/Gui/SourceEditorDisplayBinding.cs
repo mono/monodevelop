@@ -2,19 +2,20 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.EditorBindings.Properties;
-using MonoDevelop.EditorBindings.FormattingStrategy;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Search;
-
-using MonoDevelop.TextEditor.Document;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.SourceEditor.Properties;
+using MonoDevelop.SourceEditor.FormattingStrategy;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.SourceEditor.Document;
 
 using Gtk;
 using GtkSourceView;
@@ -185,23 +186,23 @@ namespace MonoDevelop.SourceEditor.Gui
 			CaretModeChanged (null, null);
 			SetInitialValues ();
 			
-			propertyHanlder = (PropertyEventHandler) Runtime.DispatchService.GuiDispatch (new PropertyEventHandler (PropertiesChanged));
+			propertyHanlder = (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (PropertiesChanged));
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
+			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.SourceEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			properties.PropertyChanged += propertyHanlder;
 			fsw = new FileSystemWatcher ();
-			fsw.Changed += (FileSystemEventHandler) Runtime.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			fsw.Changed += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			UpdateFSW (null, null);
 			mainBox.PackStart (se, true, true, 0);
 			
-			if (Runtime.DebuggingService != null) {
-				breakpointAddedHandler = (BreakpointEventHandler) Runtime.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointAdded));
-				breakpointRemovedHandler = (BreakpointEventHandler) Runtime.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointRemoved));
-				executionChangedHandler = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
+			if (Services.DebuggingService != null) {
+				breakpointAddedHandler = (BreakpointEventHandler) Services.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointAdded));
+				breakpointRemovedHandler = (BreakpointEventHandler) Services.DispatchService.GuiDispatch (new BreakpointEventHandler (OnBreakpointRemoved));
+				executionChangedHandler = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
 				
-				Runtime.DebuggingService.BreakpointAdded += breakpointAddedHandler;
-				Runtime.DebuggingService.BreakpointRemoved += breakpointRemovedHandler;
-				Runtime.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
+				Services.DebuggingService.BreakpointAdded += breakpointAddedHandler;
+				Services.DebuggingService.BreakpointRemoved += breakpointRemovedHandler;
+				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
 			mainBox.ShowAll ();
 		}
@@ -236,10 +237,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public override void Dispose()
 		{
-			if (Runtime.DebuggingService != null) {
-				Runtime.DebuggingService.BreakpointAdded -= breakpointAddedHandler;
-				Runtime.DebuggingService.BreakpointRemoved -= breakpointRemovedHandler;
-				Runtime.DebuggingService.ExecutionLocationChanged -= executionChangedHandler;
+			if (Services.DebuggingService != null) {
+				Services.DebuggingService.BreakpointAdded -= breakpointAddedHandler;
+				Services.DebuggingService.BreakpointRemoved -= breakpointRemovedHandler;
+				Services.DebuggingService.ExecutionLocationChanged -= executionChangedHandler;
 			}
 
 			mainBox.Remove (se);
@@ -270,7 +271,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (!Runtime.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
+					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
 						return;
 				}
 				warnOverwrite = false;
@@ -297,8 +298,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			ContentName = fileName;
 			InitializeFormatter ();
 			
-			if (Runtime.DebuggingService != null) {
-				foreach (IBreakpoint b in Runtime.DebuggingService.GetBreakpointsAtFile (fileName))
+			if (Services.DebuggingService != null) {
+				foreach (IBreakpoint b in Services.DebuggingService.GetBreakpointsAtFile (fileName))
 					se.View.ShowBreakpointAt (b.Line - 1);
 					
 				UpdateExecutionLocation ();
@@ -327,8 +328,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (currentExecutionLine != -1)
 				se.View.ClearExecutingAt (currentExecutionLine - 1);
 
-			if (Runtime.DebuggingService.CurrentFilename == ContentName) {
-				currentExecutionLine = Runtime.DebuggingService.CurrentLineNumber;
+			if (Services.DebuggingService.CurrentFilename == ContentName) {
+				currentExecutionLine = Services.DebuggingService.CurrentLineNumber;
 				se.View.ExecutingAt (currentExecutionLine - 1);
 				
 				TextIter itr = se.Buffer.GetIterAtLine (currentExecutionLine - 1);
@@ -346,7 +347,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (reloadBar == null) {
 				reloadBar = new HBox ();
 				reloadBar.BorderWidth = 3;
-				Gtk.Image img = Runtime.Gui.Resources.GetImage ("gtk-dialog-warning", IconSize.Menu);
+				Gtk.Image img = Services.Resources.GetImage ("gtk-dialog-warning", IconSize.Menu);
 				reloadBar.PackStart (img, false, false, 2);
 				reloadBar.PackStart (new Gtk.Label (GettextCatalog.GetString ("This file has been changed outside of MonoDevelop")), false, false, 5);
 				HBox box = new HBox ();
@@ -375,7 +376,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				editorBar.Remove (reloadBar);
 				WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
-				Runtime.MessageService.ShowError (ex, "Could not reload the file.");
+				Services.MessageService.ShowError (ex, "Could not reload the file.");
 			}
 		}
 		

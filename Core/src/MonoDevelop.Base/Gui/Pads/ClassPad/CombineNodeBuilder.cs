@@ -29,10 +29,11 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
@@ -42,9 +43,9 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			combineEntryAdded = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
+			combineEntryRemoved = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
+			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
 		}
 			
 		public override Type NodeDataType {

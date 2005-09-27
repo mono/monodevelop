@@ -6,8 +6,9 @@
 // </file>
 
 using System;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	public class GuiSyncContext: SyncContext
 	{
@@ -16,7 +17,7 @@ namespace MonoDevelop.Services
 		public override void Dispatch (StatefulMessageHandler cb, object ob)
 		{
 			if (dispatcher == null)
-				dispatcher = Runtime.DispatchService;
+				dispatcher = Services.DispatchService;
 				
 			if (dispatcher.IsGuiThread)
 				cb (ob);
@@ -27,7 +28,7 @@ namespace MonoDevelop.Services
 		public override void AsyncDispatch (StatefulMessageHandler cb, object ob)
 		{
 			if (dispatcher == null)
-				dispatcher = Runtime.DispatchService;
+				dispatcher = Services.DispatchService;
 				
 			dispatcher.GuiDispatch (cb, ob);
 		}

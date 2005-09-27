@@ -8,23 +8,19 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Drawing;
 using System.Reflection;
 using System.Resources;
-using System.Diagnostics;
-using System.Threading;
-using System.Xml;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
-using Stock = MonoDevelop.Gui.Stock;
+using MonoDevelop.Core.Gui;
+using Stock = MonoDevelop.Core.Gui.Stock;
 
-namespace MonoDevelop.Core.Services {
+namespace MonoDevelop.Projects.Gui
+{
 	public class IconService : AbstractService {
 		Hashtable extensionHashtable   = new Hashtable ();
 		Hashtable projectFileHashtable = new Hashtable ();

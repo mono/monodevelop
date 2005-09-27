@@ -31,7 +31,7 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	public class XmlDataSerializer
 	{

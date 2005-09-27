@@ -31,12 +31,11 @@ using System.Data;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
 
 using MonoQuery.Commands;
 
@@ -125,7 +124,7 @@ namespace MonoQuery
 		{
 			TableSchema table = CurrentNode.DataItem as TableSchema;
 			string query = String.Format ("SELECT * FROM {0}", table.Name);
-			table.Provider.ExecuteSQL (query, (SQLCallback) Runtime.DispatchService.GuiDispatch (new SQLCallback (ActivateSQLCallback)));
+			table.Provider.ExecuteSQL (query, (SQLCallback) Services.DispatchService.GuiDispatch (new SQLCallback (ActivateSQLCallback)));
 		}
 		
 		protected void ActivateSQLCallback (object sender, object res)
@@ -133,7 +132,7 @@ namespace MonoQuery
 			DataTable results = (res as DataTable);
 			
 			DataGridView dataView = new DataGridView (results);
-			Runtime.Gui.Workbench.ShowView (dataView, true);
+			IdeApp.Workbench.OpenDocument (dataView, true);
 		}
 		
 		[CommandHandler (MonoQueryCommands.QueryCommand)]
@@ -143,7 +142,7 @@ namespace MonoQuery
 			TableSchema table = (TableSchema) CurrentNode.DataItem;
 			sql.Connection = table.Provider;
 			sql.Text = String.Format ("SELECT * FROM {0}", table.Name);
-			Runtime.Gui.Workbench.ShowView (sql, true);
+			IdeApp.Workbench.OpenDocument (sql, true);
 		}
 		
 		[CommandHandler (MonoQueryCommands.EmptyTable)]
@@ -152,7 +151,7 @@ namespace MonoQuery
 			TableSchema table = (TableSchema) CurrentNode.DataItem;
 			table.Provider.ExecuteSQL (String.Format (
 				"DELETE FROM {0}", table.Name));
-			Runtime.Gui.StatusBar.SetMessage (
+			IdeApp.Workbench.StatusBar.SetMessage (
 				GettextCatalog.GetString ("Table emptied"));
 		}
 		
@@ -162,7 +161,7 @@ namespace MonoQuery
 			TableSchema table = (TableSchema) CurrentNode.DataItem;
 			table.Provider.ExecuteSQL (String.Format (
 				"DROP TABLE {0}", table.Name));
-			Runtime.Gui.StatusBar.SetMessage (
+			IdeApp.Workbench.StatusBar.SetMessage (
 				GettextCatalog.GetString ("Table dropped"));
 			
 			OnRefresh ();

@@ -16,10 +16,8 @@ using System.CodeDom.Compiler;
 using System.Threading;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace ILAsmBinding
 {
@@ -31,7 +29,7 @@ namespace ILAsmBinding
 		
 		public ILAsmLanguageBinding ()
 		{
-			Runtime.ProjectService.DataContext.IncludeType (typeof(ILAsmCompilerParameters));
+			Services.ProjectService.DataContext.IncludeType (typeof(ILAsmCompilerParameters));
 		}
 		
 		public string Language {

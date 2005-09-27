@@ -7,24 +7,23 @@
 
 using System;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.DefaultEditor.Commands
+namespace MonoDevelop.SourceEditor.Commands
 {
 /*
 	public class ExportProjectToHtml : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			IProjectService projectService = (IProjectService) MonoDevelop.Core.Services.ServiceManager.GetService (typeof (IProjectService));
+			IProjectService projectService = (IProjectService) MonoDevelop.Core.ServiceManager.GetService (typeof (IProjectService));
 			if (projectService.CurrentSelectedProject != null) {
 			
 				using (ExportProjectToHtmlDialog ephd = new ExportProjectToHtmlDialog (projectService.CurrentSelectedProject)) {
-					ephd.TransientFor = (Gtk.Window) WorkbenchSingleton.Workbench;
+					ephd.TransientFor = IdeApp.Workbench.RootWindow;
 					ephd.Run ();
 					ephd.Hide ();
 				}

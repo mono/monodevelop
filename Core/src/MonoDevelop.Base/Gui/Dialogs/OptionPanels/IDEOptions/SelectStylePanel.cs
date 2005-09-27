@@ -8,17 +8,16 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	internal class SelectStylePanel : AbstractOptionPanel
 	{
@@ -43,15 +42,15 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					
 			public SelectStylePanelWidget () : base ("Base.glade", "SelectStylePanel")
 			{
-				extensionButton.Active  = Runtime.Properties.GetProperty("MonoDevelop.Gui.ProjectBrowser.ShowExtensions", true);
-				hiddenButton.Active  = Runtime.Properties.GetProperty("MonoDevelop.Gui.FileScout.ShowHidden", false);
+				extensionButton.Active  = Runtime.Properties.GetProperty("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", true);
+				hiddenButton.Active  = Runtime.Properties.GetProperty("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 
 			}
 			
 			public void Store()
 			{
-				Runtime.Properties.SetProperty("MonoDevelop.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
-				Runtime.Properties.SetProperty("MonoDevelop.Gui.FileScout.ShowHidden", hiddenButton.Active);
+				Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions", extensionButton.Active);
+				Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			}
 		}
 	}

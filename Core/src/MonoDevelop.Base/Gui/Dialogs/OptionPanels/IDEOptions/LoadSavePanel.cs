@@ -9,14 +9,13 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	/// <summary>
 	/// Summary description for Form1.
@@ -59,7 +58,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 				// load the internationalized strings.
 				//
 				projectLocationTextBox.GtkEntry.Text = Runtime.Properties.GetProperty(
-					"MonoDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+					"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
 					System.IO.Path.Combine(System.Environment.GetEnvironmentVariable ("HOME"),
 							"Projects")).ToString();
 				projectLocationTextBox.DirectoryEntry = true;
@@ -84,11 +83,11 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 				string projectPath = projectLocationTextBox.GtkEntry.Text;
 				if (projectPath.Length > 0) {
 					if (!Runtime.FileUtilityService.IsValidFileName(projectPath)) {
-						Runtime.MessageService.ShowError("Invalid project path specified");
+						Services.MessageService.ShowError("Invalid project path specified");
 						return false;
 					}
 				}
-				Runtime.Properties.SetProperty("MonoDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
+				Runtime.Properties.SetProperty("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", projectPath);
 				
 				return true;
 			}

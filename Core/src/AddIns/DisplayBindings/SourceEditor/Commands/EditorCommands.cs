@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.DefaultEditor
+namespace MonoDevelop.SourceEditor
 {
 	public enum EditorCommands
 	{

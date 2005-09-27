@@ -13,10 +13,10 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Reflection;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	/// <summary>
 	/// Summary description for WebReference.

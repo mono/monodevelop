@@ -10,17 +10,17 @@ using System.IO;
 using System.Drawing;
 using System.ComponentModel;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Search;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui;
 
 using Glade;
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class ReplaceInFilesDialog
 	{
@@ -113,7 +113,7 @@ namespace MonoDevelop.Gui.Dialogs
 			{
 				ReplaceDialogPointer = this.FindInFilesDialogWidget;
 			}
-			ReplaceDialogPointer.TransientFor = (Gtk.Window)WorkbenchSingleton.Workbench;
+			ReplaceDialogPointer.TransientFor = IdeApp.Workbench.RootWindow;
 		}
 
 		protected void OnClosed()
@@ -264,7 +264,7 @@ namespace MonoDevelop.Gui.Dialogs
 			if (defaultFolder == string.Empty || defaultFolder == null) {
 				// only use the bew project default path if there is no path set
 				defaultFolder =	PropertyService.GetProperty (
-						"MonoDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+						"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
 						System.IO.Path.Combine (
 							System.Environment.GetEnvironmentVariable ("HOME"),
 							"Projects")).ToString ();

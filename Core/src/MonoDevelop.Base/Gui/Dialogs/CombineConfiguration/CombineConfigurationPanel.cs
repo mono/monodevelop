@@ -2,13 +2,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineConfigurationPanel : AbstractOptionPanel
 	{

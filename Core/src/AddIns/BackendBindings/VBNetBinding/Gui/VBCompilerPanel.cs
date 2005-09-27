@@ -11,12 +11,11 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 
 namespace VBBinding
 {

@@ -9,9 +9,9 @@ using System;
 using System.Xml;
 using System.Diagnostics;
 using System.ComponentModel;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace CSharpBinding
 {

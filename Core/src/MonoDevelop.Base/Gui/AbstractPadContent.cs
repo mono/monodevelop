@@ -8,33 +8,45 @@
 using System;
 using System.Drawing;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
-		string title;
-		string icon;
 		string id;
 		string defaultPosition = "left";
+		IPadWindow window;
+		string title;
+		string icon;
+		
+		public AbstractPadContent (string title) : this(title, null)
+		{
+			id = GetType ().FullName;
+		}
+		
+		public AbstractPadContent (string title, string iconResoureName)
+		{
+			this.title = title;
+			this.icon  = iconResoureName;
+			id = GetType ().FullName;
+		}
+		
+		public void Initialize (IPadWindow window)
+		{
+			this.window = window;
+			if (title != null) window.Title = title;
+			if (icon != null) window.Icon  = icon;
+		}
+		
+		public IPadWindow Window {
+			get { return window; }
+		}
 		
 		public abstract Gtk.Widget Control {
 			get;
 		}
 		
-		public virtual string Title {
-			get {
-				return title;
-			}
-		}
-		
-		public virtual string Icon {
-			get {
-				return icon;
-			}
-		}
-
 		public string Id {
 			get { return id; }
 			set { id = value; }
@@ -45,18 +57,6 @@ namespace MonoDevelop.Gui
 			set { defaultPosition = value; }
 		}
 		
-		public AbstractPadContent(string title) : this(title, null)
-		{
-			id = GetType ().FullName;
-		}
-		
-		public AbstractPadContent(string title, string iconResoureName)
-		{
-			this.title = title;
-			this.icon  = iconResoureName;
-			id = GetType ().FullName;
-		}
-		
 		public virtual void RedrawContent()
 		{
 		}
@@ -64,22 +64,5 @@ namespace MonoDevelop.Gui
 		public virtual void Dispose()
 		{
 		}
-		
-		protected virtual void OnTitleChanged(EventArgs e)
-		{
-			if (TitleChanged != null) {
-				TitleChanged(this, e);
-			}
-		}
-		
-		protected virtual void OnIconChanged(EventArgs e)
-		{
-			if (IconChanged != null) {
-				IconChanged(this, e);
-			}
-		}
-		
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
 	}
 }

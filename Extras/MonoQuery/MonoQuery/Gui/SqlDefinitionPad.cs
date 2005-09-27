@@ -29,11 +29,11 @@
 using System;
 using System.Resources;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 using GtkSourceView;

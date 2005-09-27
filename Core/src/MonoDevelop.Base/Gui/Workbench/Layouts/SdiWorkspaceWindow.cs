@@ -12,17 +12,18 @@ using Gtk;
 
 using Gdl;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
 
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Commands;
-
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandRouter
 	{
+		IWorkbench workbench;
 		Notebook   viewTabControl = null;
 		IViewContent content;
 		ArrayList    subViewContents = null;
@@ -39,6 +40,30 @@ namespace MonoDevelop.Gui
 		bool show_notification = false;
 		
 		ViewCommandHandlers commandHandler;
+		
+		public SdiWorkspaceWindow (IWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
+		{
+			this.workbench = workbench;
+			this.tabControl = tabControl;
+			this.content = content;
+			this.tabLabel = tabLabel;
+			this.tabPage = content.Control;
+			
+			content.WorkbenchWindow = this;
+			
+			content.ContentNameChanged += new EventHandler(SetTitleEvent);
+			content.DirtyChanged       += new EventHandler(SetTitleEvent);
+			content.BeforeSave         += new EventHandler(BeforeSave);
+			content.ContentChanged     += new EventHandler (OnContentChanged);
+			
+			ShadowType = ShadowType.None;
+			Add (content.Control);
+			content.Control.Show ();
+			Show ();
+			SetTitleEvent(null, null);
+
+			commandHandler = new ViewCommandHandlers (this);
+		}
 		
 		protected SdiWorkspaceWindow (IntPtr p): base (p)
 		{
@@ -110,29 +135,7 @@ namespace MonoDevelop.Gui
 			tabControl.CurrentPage = toSelect;
 		}
 		
-		public SdiWorkspaceWindow(IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
-		{
-			this.tabControl = tabControl;
-			this.content = content;
-			this.tabLabel = tabLabel;
-			this.tabPage = content.Control;
-			
-			content.WorkbenchWindow = this;
-			
-			content.ContentNameChanged += new EventHandler(SetTitleEvent);
-			content.DirtyChanged       += new EventHandler(SetTitleEvent);
-			content.BeforeSave         += new EventHandler(BeforeSave);
-			content.ContentChanged     += new EventHandler (OnContentChanged);
-			
-			ShadowType = ShadowType.None;
-			Add (content.Control);
-			content.Control.Show ();
-			Show ();
-			SetTitleEvent(null, null);
 
-			commandHandler = new ViewCommandHandlers (this);
-		}
-		
 		void BeforeSave(object sender, EventArgs e)
 		{
 			ISecondaryViewContent secondaryViewContent = ActiveViewContent as ISecondaryViewContent;
@@ -164,7 +167,7 @@ namespace MonoDevelop.Gui
 					bool   found     = true;
 					while (found) {
 						found = false;
-						foreach (IViewContent windowContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
+						foreach (IViewContent windowContent in workbench.ViewContentCollection) {
 							string title = windowContent.WorkbenchWindow.Title;
 							if (title.EndsWith("*") || title.EndsWith("+")) {
 								title = title.Substring(0, title.Length - 1);
@@ -185,7 +188,7 @@ namespace MonoDevelop.Gui
 			
 			if (content.IsDirty) {
 				newTitle += "*";
-				Runtime.ProjectService.MarkFileDirty (content.ContentName);
+				IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
 			}
@@ -205,38 +208,17 @@ namespace MonoDevelop.Gui
 			}
 		}
 		
-		public void CloseWindow(bool force, bool fromMenu, int pageNum)
+		public void CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
-			if (!force && ViewContent != null && ViewContent.IsDirty) {
-				
-				QuestionResponse response = Runtime.MessageService.AskQuestionWithCancel (GettextCatalog.GetString ("Do you want to save the current changes"));
-				
-				if (response == QuestionResponse.Cancel) {
-					return;
-				}
+			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force);
+			OnClosing (args);
+			if (args.Cancel)
+				return;
 
-				if (response == QuestionResponse.Yes) {
-					if (content.ContentName == null) {
-						while (true) {
-							Runtime.FileService.SaveFileAs (this);
-							if (ViewContent.IsDirty) {
-								if (Runtime.MessageService.AskQuestion(GettextCatalog.GetString ("Do you really want to discard your changes ?"))) {
-									break;
-								}
-							} else {
-								break;
-							}
-						}
-						
-					} else {
-						Runtime.FileUtilityService.ObservedSave(new FileOperationDelegate(ViewContent.Save), ViewContent.ContentName , FileErrorPolicy.ProvideAlternative);
-					}
-				}
-			}
 			if (fromMenu == true) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.RemoveTab (tabControl.CurrentPage);
+				workbench.WorkbenchLayout.RemoveTab (tabControl.CurrentPage);
 			} else {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.RemoveTab (pageNum);
+				workbench.WorkbenchLayout.RemoveTab (pageNum);
 			}
 			OnWindowDeselected(EventArgs.Empty);
 			
@@ -248,7 +230,8 @@ namespace MonoDevelop.Gui
 			
 			Remove (content.Control);
 			content.Dispose ();
-			OnCloseEvent(null);
+
+			OnClosed (null);
 			
 			this.content = null;
 			this.tabControl = null;
@@ -323,11 +306,18 @@ namespace MonoDevelop.Gui
 			}
 		}
 
-		protected virtual void OnCloseEvent(EventArgs e)
+		protected virtual void OnClosing (WorkbenchWindowEventArgs e)
+		{
+			if (Closing != null) {
+				Closing (this, e);
+			}
+		}
+
+		protected virtual void OnClosed (EventArgs e)
 		{
 			OnWindowDeselected(e);
-			if (CloseEvent != null) {
-				CloseEvent(this, e);
+			if (Closed != null) {
+				Closed (this, e);
 			}
 		}
 
@@ -348,6 +338,7 @@ namespace MonoDevelop.Gui
 		public event EventHandler WindowDeselected;
 				
 		public event EventHandler TitleChanged;
-		public event EventHandler CloseEvent;
+		public event EventHandler Closed;
+		public event WorkbenchWindowEventHandler Closing;
 	}
 }

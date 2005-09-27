@@ -6,25 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml;
 
-using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Parser;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	/// <summary>
 	/// 

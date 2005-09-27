@@ -3,10 +3,9 @@ using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using MonoDevelop.Core.Execution;
 
-using MonoDevelop.Core.Services;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core
 {
 	public class SystemAssemblyService : AbstractService
 	{

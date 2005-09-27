@@ -8,9 +8,9 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.ErrorHandlers
+namespace MonoDevelop.Core.Gui.ErrorHandlers
 {
 	internal class CombineLoadError
 	{

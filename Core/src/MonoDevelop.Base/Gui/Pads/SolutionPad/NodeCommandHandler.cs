@@ -27,9 +27,10 @@
 //
 
 using System;
-using MonoDevelop.Commands;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class NodeCommandHandler: ICommandRouter
 	{

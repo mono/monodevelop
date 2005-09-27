@@ -30,11 +30,12 @@ using System;
 using System.Collections;
 using System.IO;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 using System.Reflection;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	internal class ProjectCodeCompletionDatabase: CodeCompletionDatabase
 	{

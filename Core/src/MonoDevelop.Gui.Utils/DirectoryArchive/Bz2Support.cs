@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace MonoDevelop.Gui.Utils.DirectoryArchive {
+namespace MonoDevelop.Core.Utils.DirectoryArchive {
 	
 	public class BZip2Decompressor : ISingleFileDecompressor {
 		public Stream Decompress (Stream input)

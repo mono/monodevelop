@@ -29,9 +29,9 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class SystemFile
 	{

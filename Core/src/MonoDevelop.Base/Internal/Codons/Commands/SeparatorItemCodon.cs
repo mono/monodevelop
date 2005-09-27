@@ -31,13 +31,13 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Commands;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute ("SeparatorItem")]
-	public class SeparatorItemCodon : AbstractCodon
+	internal class SeparatorItemCodon : AbstractCodon
 	{
 		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
 		{

@@ -10,26 +10,26 @@ using System.Drawing;
 using System.DirectoryServices; // for SortDirection
 using System.ComponentModel;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 //using MonoDevelop.XmlForms;
-//using MonoDevelop.Gui.XmlForms;
+//using MonoDevelop.Core.Gui.XmlForms;
 using MonoDevelop.TextEditor;
 
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class SortOptionsDialog //: BaseSharpDevelopForm
 	{/*
-		public static readonly string removeDupesOption       = "MonoDevelop.Gui.Dialogs.SortOptionsDialog.RemoveDuplicateLines";
-		public static readonly string caseSensitiveOption     = "MonoDevelop.Gui.Dialogs.SortOptionsDialog.CaseSensitive";
-		public static readonly string ignoreWhiteSpacesOption = "MonoDevelop.Gui.Dialogs.SortOptionsDialog.IgnoreWhitespaces";
-		public static readonly string sortDirectionOption     = "MonoDevelop.Gui.Dialogs.SortOptionsDialog.SortDirection";
+		public static readonly string removeDupesOption       = "MonoDevelop.Core.Gui.Dialogs.SortOptionsDialog.RemoveDuplicateLines";
+		public static readonly string caseSensitiveOption     = "MonoDevelop.Core.Gui.Dialogs.SortOptionsDialog.CaseSensitive";
+		public static readonly string ignoreWhiteSpacesOption = "MonoDevelop.Core.Gui.Dialogs.SortOptionsDialog.IgnoreWhitespaces";
+		public static readonly string sortDirectionOption     = "MonoDevelop.Core.Gui.Dialogs.SortOptionsDialog.SortDirection";
 		
 		static PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 		

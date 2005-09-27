@@ -12,8 +12,8 @@ using System.Reflection;
 
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 using AssemblyAnalyser = ICSharpCode.AssemblyAnalyser.AssemblyAnalyser;
 

@@ -7,20 +7,16 @@
 
 using System;
 using System.IO;
-using System.Drawing;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Services;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class OutputOptionsPanel : AbstractOptionPanel
 	{
@@ -63,12 +59,12 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 				}
 				
 				if (!Runtime.FileUtilityService.IsValidFileName(assemblyNameEntry.Text)) {
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
 					return false;
 				}
 
 				if (!Runtime.FileUtilityService.IsValidFileName (outputPathButton.Filename)) {
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
 					return false;
 				}
 				

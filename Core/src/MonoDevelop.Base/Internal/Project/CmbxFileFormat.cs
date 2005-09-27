@@ -30,12 +30,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
-	public class CmbxFileFormat: IFileFormat
+	internal class CmbxFileFormat: IFileFormat
 	{
 		public string Name {
 			get { return "MonoDevelop Combine"; }
@@ -67,7 +67,7 @@ namespace MonoDevelop.Internal.Project
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving combine: {0}"), file), 1);
 				XmlTextWriter tw = new XmlTextWriter (sw);
 				tw.Formatting = Formatting.Indented;
-				DataSerializer serializer = new DataSerializer (Runtime.ProjectService.DataContext, file);
+				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor);
 				combineWriter.WriteCombine (tw, combine);
 			} catch (Exception ex) {
@@ -86,7 +86,7 @@ namespace MonoDevelop.Internal.Project
 			string version = reader.GetAttribute ("version");
 			if (version == null) version = reader.GetAttribute ("fileversion");
 			
-			DataSerializer serializer = new DataSerializer (Runtime.ProjectService.DataContext, file);
+			DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 			ICombineReader combineReader = null;
 			
 			if (version == "1.0" || version == "1") {
@@ -154,7 +154,7 @@ namespace MonoDevelop.Internal.Project
 				while (MoveToNextElement (reader)) {
 					string nodefile = reader.GetAttribute ("filename");
 					nodefile = Runtime.FileUtilityService.RelativeToAbsolutePath (basePath, nodefile);
-					combine.Entries.Add ((CombineEntry) Runtime.ProjectService.ReadFile (nodefile, monitor));
+					combine.Entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
 					reader.Skip ();
 				}
 				monitor.EndTask ();
@@ -165,7 +165,7 @@ namespace MonoDevelop.Internal.Project
 				foreach (DataNode data in item.ItemData) {
 					DataItem conf = data as DataItem;
 					if (conf == null) continue;
-					Runtime.ProjectService.DataContext.SetTypeInfo (conf, typeof(CombineConfiguration));
+					Services.ProjectService.DataContext.SetTypeInfo (conf, typeof(CombineConfiguration));
 				}
 				return item;
 			}
@@ -213,7 +213,7 @@ namespace MonoDevelop.Internal.Project
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading combine: {0}"), combine.FileName), files.Count);
 				try {
 					foreach (string nodefile in files) {
-						combine.Entries.Add ((CombineEntry) Runtime.ProjectService.ReadFile (nodefile, monitor));
+						combine.Entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
 						monitor.Step (1);
 					}
 				} finally {
@@ -256,7 +256,7 @@ namespace MonoDevelop.Internal.Project
 				writer.WriteStartElement ("Entry");
 				writer.WriteAttributeString ("filename", entry.RelativeFileName);
 				writer.WriteEndElement ();
-				Runtime.ProjectService.WriteFile (entry.FileName, entry, monitor);
+				Services.ProjectService.WriteFile (entry.FileName, entry, monitor);
 			}
 			writer.WriteEndElement ();
 		}

@@ -28,10 +28,10 @@ namespace BooBinding.Parser
 import System
 import System.Collections
 import System.Diagnostics
-import MonoDevelop.Internal.Parser
-import MonoDevelop.Core.Services
-import MonoDevelop.Services
+import MonoDevelop.Projects.Parser
+import MonoDevelop.Core
 import Boo.Lang.Compiler.Ast as AST
+import MonoDevelop.IdeApplication.Gui;
 
 /////////////////////////////////////
 ///          Return Type          ///
@@ -193,8 +193,7 @@ class InferredReturnType(AbstractReturnType):
 	
 	def Resolve() as IReturnType:
 		resolver = Resolver()
-		projService = ServiceManager.GetService(typeof(ProjectService)) as ProjectService
-		if resolver.Initialize(projService.ParserDatabase.GetFileParserContext (_filename), _caretLine, _caretColumn, _filename):
+		if resolver.Initialize(Ide.ProjectOperations.ParserDatabase.GetFileParserContext (_filename), _caretLine, _caretColumn, _filename):
 			visitor = ExpressionTypeVisitor(Resolver : resolver)
 			visitor.Visit(_expression)
 			return visitor.ReturnType

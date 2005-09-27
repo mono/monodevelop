@@ -7,7 +7,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	///     <para>

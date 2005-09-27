@@ -28,9 +28,9 @@
 
 
 using System;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	internal class SimpleCodeCompletionDatabase: CodeCompletionDatabase
 	{

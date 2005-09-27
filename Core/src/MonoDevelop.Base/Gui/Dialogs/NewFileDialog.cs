@@ -9,19 +9,20 @@ using System;
 using System.Collections;
 using System.IO;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Templates;
+using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Gui;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
-using IconView = MonoDevelop.Gui.Widgets.IconView;
+using MonoDevelop.Components;
+using IconView = MonoDevelop.Components.IconView;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	/// <summary>
 	///  This class is for creating a new "empty" file
@@ -45,7 +46,7 @@ namespace MonoDevelop.Gui.Dialogs
 
 		public NewFileDialog () : base ()
 		{
-			this.TransientFor = (Window) WorkbenchSingleton.Workbench;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
 			
@@ -57,13 +58,13 @@ namespace MonoDevelop.Gui.Dialogs
 			PixbufList smalllist  = new PixbufList();
 			PixbufList imglist    = new PixbufList();
 			
-			smalllist.Add(Runtime.Gui.Resources.GetBitmap("md-empty-file-icon"));
-			imglist.Add(Runtime.Gui.Resources.GetBitmap("md-empty-file-icon"));
+			smalllist.Add(Services.Resources.GetBitmap("md-empty-file-icon"));
+			imglist.Add(Services.Resources.GetBitmap("md-empty-file-icon"));
 			
 			int i = 0;
 			Hashtable tmp = new Hashtable(icons);
 			foreach (DictionaryEntry entry in icons) {
-				Gdk.Pixbuf bitmap = Runtime.Gui.Resources.GetBitmap(entry.Key.ToString(), Gtk.IconSize.LargeToolbar);
+				Gdk.Pixbuf bitmap = Services.Resources.GetBitmap(entry.Key.ToString(), Gtk.IconSize.LargeToolbar);
 				if (bitmap != null) {
 					smalllist.Add(bitmap);
 					imglist.Add(bitmap);
@@ -146,7 +147,7 @@ namespace MonoDevelop.Gui.Dialogs
 				foreach (TemplateItem item in (ArrayList)((Gtk.TreeStore)mdl).GetValue (iter, 2)) {
 					//templateStore.AppendValues (item.Name, item.Template);
 					
-					TemplateView.AddIcon(new Gtk.Image(Runtime.Gui.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item.Template);
+					TemplateView.AddIcon(new Gtk.Image(Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item.Template);
 				}
 				okButton.Sensitive = false;
 			}
@@ -178,7 +179,7 @@ namespace MonoDevelop.Gui.Dialogs
 		
 		public void SaveFile(string filename, string content, string languageName, bool showFile)
 		{
-			Runtime.FileService.NewFile(filename, languageName, content);
+			IdeApp.Workbench.NewDocument (filename, languageName, content);
 		}
 
 		public event EventHandler OnOked;	
@@ -208,8 +209,8 @@ namespace MonoDevelop.Gui.Dialogs
 					}
 				}
 				
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.SelectWindow();
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					IdeApp.Workbench.ActiveDocument.Select ();
 				}
 				if (OnOked != null)
 					OnOked (null, null);
@@ -338,8 +339,8 @@ namespace MonoDevelop.Gui.Dialogs
 			this.VBox.PackStart (infoLabelFrame, false, false, 6);
 
 			cat_imglist = new PixbufList();
-			cat_imglist.Add(Runtime.Gui.Resources.GetBitmap("md-open-folder"));
-			cat_imglist.Add(Runtime.Gui.Resources.GetBitmap("md-closed-folder"));
+			cat_imglist.Add(Services.Resources.GetBitmap("md-open-folder"));
+			cat_imglist.Add(Services.Resources.GetBitmap("md-closed-folder"));
 			catView.Selection.Changed += new EventHandler (CategoryChange);
 			TemplateView.IconSelected += new EventHandler(SelectedIndexChange);
 			TemplateView.IconDoubleClicked += new EventHandler(OpenEvent);

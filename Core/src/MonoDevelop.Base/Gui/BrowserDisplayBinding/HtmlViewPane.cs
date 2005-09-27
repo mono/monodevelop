@@ -9,17 +9,15 @@ using System;
 using Gtk;
 using Gecko;
 
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.HtmlControl;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Components;
+using MonoDevelop.Components.HtmlControl;
 
-namespace MonoDevelop.Gui.BrowserDisplayBinding
+namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 {
 	public class BrowserPane : AbstractViewContent, ISecondaryViewContent
 	{	
@@ -151,7 +149,7 @@ namespace MonoDevelop.Gui.BrowserDisplayBinding
 		{
 			Shadow = Gtk.ShadowType.In;
 			VBox mainbox = new VBox (false, 2);
-			status = (SdStatusBar) Runtime.Gui.StatusBar.Control;
+			status = (SdStatusBar) Services.StatusBar.Control;
 			
 			if (showNavigation) {
 				
@@ -193,7 +191,7 @@ namespace MonoDevelop.Gui.BrowserDisplayBinding
 
 		private void OnNetStart (object o, EventArgs args)
 		{
-			Runtime.Gui.StatusBar.SetMessage (GettextCatalog.GetString ("Loading..."));
+			Services.StatusBar.SetMessage (GettextCatalog.GetString ("Loading..."));
 			loading = true;
 			GLib.Idle.Add (new GLib.IdleHandler (Pulse));
 		}
@@ -206,7 +204,7 @@ namespace MonoDevelop.Gui.BrowserDisplayBinding
 				return true;
 			}
 			status.EndProgress ();
-			Runtime.Gui.StatusBar.SetMessage (GettextCatalog.GetString ("Done."));
+			Services.StatusBar.SetMessage (GettextCatalog.GetString ("Done."));
 			return false;
 		}
 

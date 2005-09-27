@@ -29,7 +29,7 @@
 
 using System;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class NullAsyncOperation: IAsyncOperation
 	{

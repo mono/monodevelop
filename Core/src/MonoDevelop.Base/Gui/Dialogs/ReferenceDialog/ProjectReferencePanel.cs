@@ -6,13 +6,14 @@
 // </file>
 using System;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs {
+namespace MonoDevelop.Ide.Gui.Dialogs {
 	
 	internal class ProjectReferencePanel : VBox, IReferencePanel
 	{
@@ -101,7 +102,7 @@ namespace MonoDevelop.Gui.Dialogs {
 		
 		void PopulateListView (Project configureProject)
 		{
-			Combine openCombine = Runtime.ProjectService.CurrentOpenCombine;
+			Combine openCombine = IdeApp.ProjectOperations.CurrentOpenCombine;
 			
 			if (openCombine == null) {
 				return;
@@ -113,7 +114,7 @@ namespace MonoDevelop.Gui.Dialogs {
 					continue;
 				}
 
-				string iconName = Runtime.Gui.Icons.GetImageForProjectType (projectEntry.ProjectType);
+				string iconName = Services.Icons.GetImageForProjectType (projectEntry.ProjectType);
 				Gdk.Pixbuf icon = treeView.RenderIcon (iconName, Gtk.IconSize.Menu, "");
 				store.AppendValues (projectEntry.Name, projectEntry.BaseDirectory, projectEntry, false, icon);
 			}

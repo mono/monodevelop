@@ -29,9 +29,9 @@
 using System;
 using System.Collections;
 using System.IO;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using System.Text.RegularExpressions;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
 namespace MonoDeveloper
 {

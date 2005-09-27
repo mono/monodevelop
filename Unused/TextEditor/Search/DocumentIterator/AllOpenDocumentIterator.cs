@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor;
 
@@ -30,11 +30,11 @@ namespace MonoDevelop.TextEditor.Document
 					return null;
 				}
 				
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName == null) {
-					return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
+				if (IdeApp.Workbench.ActiveDocument.FileName == null) {
+					return IdeApp.Workbench.ActiveDocument.Window.ViewContent.UntitledName;
 				}
 				
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.ContentName;
+				return IdeApp.Workbench.ActiveDocument.FileName;
 			}
 		}
 		
@@ -51,8 +51,8 @@ namespace MonoDevelop.TextEditor.Document
 		
 		int GetCurIndex()
 		{
-			for (int i = 0; i < WorkbenchSingleton.Workbench.ViewContentCollection.Count; ++i) {
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent == WorkbenchSingleton.Workbench.ViewContentCollection[i]) {
+			for (int i = 0; i < IdeApp.Workbench.Documents.Count; ++i) {
+				if (IdeApp.Workbench.ActiveDocument == IdeApp.Workbench.Documents [i]) {
 					return i;
 				}
 			}
@@ -71,11 +71,11 @@ namespace MonoDevelop.TextEditor.Document
 				return true;
 			}
 			
-			int nextIndex = (curIndex + 1) % WorkbenchSingleton.Workbench.ViewContentCollection.Count;
+			int nextIndex = (curIndex + 1) % IdeApp.Workbench.Documents.Count;
 			if (nextIndex == startIndex) {
 				return false;
 			}
-			WorkbenchSingleton.Workbench.ViewContentCollection[nextIndex].WorkbenchWindow.SelectWindow();
+			IdeApp.Workbench.Documents [nextIndex].Select ();
 			return true;
 		}
 		
@@ -91,12 +91,12 @@ namespace MonoDevelop.TextEditor.Document
 			}
 			
 			if (curIndex == 0) {
-				curIndex = WorkbenchSingleton.Workbench.ViewContentCollection.Count - 1;
+				curIndex = IdeApp.Workbench.Documents.Count - 1;
 			}
 			
 			if (curIndex > 0) {
 				--curIndex;
-				WorkbenchSingleton.Workbench.ViewContentCollection[curIndex].WorkbenchWindow.SelectWindow();
+				IdeApp.Workbench.Documents [curIndex].Select ();
 				return true;
 			}
 			return false;

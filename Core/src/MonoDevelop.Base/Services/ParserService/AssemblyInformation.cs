@@ -10,18 +10,17 @@ using System.IO;
 using System.Collections;
 using System.Threading;
 using System.Xml;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
 //using ICSharpCode.SharpAssembly.Metadata.Rows;
 //using ICSharpCode.SharpAssembly.Metadata;
 //using ICSharpCode.SharpAssembly.PE;
 //using ICSharpCode.SharpAssembly;
 using System.Reflection;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
 
-namespace MonoDevelop.Services {
+namespace MonoDevelop.Projects.Parser {
 	
 	/// <summary>
 	/// This class loads an assembly and converts all types from this assembly

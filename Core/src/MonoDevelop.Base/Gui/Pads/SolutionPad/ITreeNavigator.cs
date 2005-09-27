@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public interface ITreeNavigator
 	{

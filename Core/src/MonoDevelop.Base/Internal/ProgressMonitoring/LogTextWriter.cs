@@ -32,7 +32,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public delegate void LogTextEventHandler (string writtenText);
 	

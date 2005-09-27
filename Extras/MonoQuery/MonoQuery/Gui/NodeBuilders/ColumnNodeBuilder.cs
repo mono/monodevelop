@@ -30,8 +30,8 @@ using System;
 using System.Text.RegularExpressions;
 
 using Mono.Data.Sql;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoQuery
 {

@@ -5,9 +5,9 @@
 //     <version value="$version"/>
 // </file>
 
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum EntryExecuteType {
 		None,

@@ -31,14 +31,12 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core.AddIns;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Internal.Project;
-
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute ("StockIcon")]
-	public class StockIconCodon : AbstractCodon
+	internal class StockIconCodon : AbstractCodon
 	{
 		[XmlMemberAttribute ("stockid", IsRequired = true)]
 		string stockid;

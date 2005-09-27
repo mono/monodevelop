@@ -9,11 +9,12 @@ using System;
 using System.Collections;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum WindowCommands
 	{
@@ -26,11 +27,11 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (IdeApp.Workbench.ActiveDocument == null) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent);
-			WorkbenchSingleton.Workbench.ViewContentCollection[(index + 1) % WorkbenchSingleton.Workbench.ViewContentCollection.Count].WorkbenchWindow.SelectWindow();
+			int index = IdeApp.Workbench.Documents.IndexOf (IdeApp.Workbench.ActiveDocument);
+			IdeApp.Workbench.Documents [(index + 1) % IdeApp.Workbench.Documents.Count].Select ();
 		}
 	}
 	
@@ -38,11 +39,11 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (IdeApp.Workbench.ActiveDocument == null) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent);
-			WorkbenchSingleton.Workbench.ViewContentCollection[(index + WorkbenchSingleton.Workbench.ViewContentCollection.Count - 1) % WorkbenchSingleton.Workbench.ViewContentCollection.Count].WorkbenchWindow.SelectWindow();
+			int index = IdeApp.Workbench.Documents.IndexOf (IdeApp.Workbench.ActiveDocument);
+			IdeApp.Workbench.Documents [(index + IdeApp.Workbench.Documents.Count - 1) % IdeApp.Workbench.Documents.Count].Select ();
 		}
 	}
 	
@@ -50,33 +51,33 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			int contentCount = WorkbenchSingleton.Workbench.ViewContentCollection.Count;
+			int contentCount = IdeApp.Workbench.Documents.Count;
 			if (contentCount == 0) return;
 			
 			for (int i = 0; i < contentCount; ++i) {
-				IViewContent content = (IViewContent)WorkbenchSingleton.Workbench.ViewContentCollection[i];
+				Document doc = IdeApp.Workbench.Documents [i];
 				
 				CommandInfo item = null;
-				if (content.WorkbenchWindow.ShowNotification) {
-					item = new CommandInfo ("<span foreground=\"blue\">" + content.WorkbenchWindow.Title + "</span>");
+				if (doc.Window.ShowNotification) {
+					item = new CommandInfo ("<span foreground=\"blue\">" + doc.Window.Title + "</span>");
 					item.UseMarkup = true;
 				} else {
-					item = new CommandInfo (content.WorkbenchWindow.Title);
+					item = new CommandInfo (doc.Window.Title);
 				}
 				
-				item.Checked = (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == content.WorkbenchWindow);
+				item.Checked = (IdeApp.Workbench.ActiveDocument == doc);
 				item.Description = GettextCatalog.GetString ("Activate this window");
 				
 				if (i + 1 <= 9)
 					item.AccelKey = "Alt|" + (i+1);
 				
-				info.Add (item, content.WorkbenchWindow);
+				info.Add (item, doc);
 			}
 		}
 		
-		protected override void Run (object window)
+		protected override void Run (object doc)
 		{
-			((IWorkbenchWindow)window).SelectWindow();
+			((Document)doc).Select ();
 		}
 	}
 }

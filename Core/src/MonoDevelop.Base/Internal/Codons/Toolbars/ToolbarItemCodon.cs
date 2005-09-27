@@ -10,17 +10,16 @@ using System.Collections;
 using System.Reflection;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
 
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute("ToolbarItem")]
-	public class ToolbarItemCodon : AbstractCodon
+	internal class ToolbarItemCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("icon")]
 		string icon        = null;

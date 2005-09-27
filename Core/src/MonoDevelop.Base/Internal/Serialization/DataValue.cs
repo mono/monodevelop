@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	public class DataValue: DataNode
 	{

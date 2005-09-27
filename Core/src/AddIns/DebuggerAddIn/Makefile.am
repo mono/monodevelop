@@ -17,6 +17,7 @@ EvaluationContext.cs \
 Expression.cs \
 DebuggerASTVisitor.cs \
 DebugAttributeHandler.cs \
+Services.cs \
 Gui/Pads/LocalsPad.cs \
 Gui/Pads/StackTracePad.cs \
 Gui/Pads/ThreadPad.cs

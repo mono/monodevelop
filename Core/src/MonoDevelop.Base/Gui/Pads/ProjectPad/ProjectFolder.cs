@@ -30,10 +30,10 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectFolder: IDisposable
 	{
@@ -59,9 +59,9 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				if (trackChanges != value) {
 					trackChanges = value;
 					if (trackChanges)
-						Runtime.FileService.FileRenamed += new FileEventHandler (OnFileRenamed);
+						Services.FileService.FileRenamed += new FileEventHandler (OnFileRenamed);
 					else
-						Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+						Services.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
 				}
 			}
 		}
@@ -109,7 +109,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 		public void Dispose ()
 		{
-			Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+			Services.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
 		}
 		
 		public void Remove ()

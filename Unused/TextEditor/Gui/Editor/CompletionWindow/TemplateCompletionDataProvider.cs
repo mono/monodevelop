@@ -11,8 +11,7 @@ using System.Reflection;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.TextEditor;
 using MonoDevelop.TextEditor.Gui.CompletionWindow;

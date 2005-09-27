@@ -11,7 +11,7 @@ using System.Collections;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 {
 	public delegate void ServiceLoadCallback (object sender, ServiceLoadArgs args);
 
@@ -98,7 +98,7 @@ namespace MonoDevelop.Core.Services
 		{
 			// add add-in tree services
 			AddServices((IService[])AddInTreeSingleton.AddInTree.GetTreeNode(servicesPath).BuildChildItems(defaultServiceManager).ToArray(typeof(IService)));
-			
+
 			// initialize all services
 			int totalServices = defaultServiceManager.serviceList.Count;
 			int i = 0;

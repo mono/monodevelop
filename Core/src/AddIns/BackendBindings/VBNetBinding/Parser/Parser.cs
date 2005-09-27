@@ -7,9 +7,9 @@
 using System;
 using System.Drawing;
 using System.Collections;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
 using ICSharpCode.SharpRefactory.Parser.VB;
 
@@ -122,7 +122,7 @@ namespace VBBinding.Parser
 		{
 			foreach (ICSharpCode.SharpRefactory.Parser.VB.TagComment tagComment in tagComments) {
 				DefaultRegion tagRegion = new DefaultRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
-				MonoDevelop.Internal.Parser.Tag tag = new MonoDevelop.Internal.Parser.Tag(tagComment.Tag, tagRegion);
+				MonoDevelop.Projects.Parser.Tag tag = new MonoDevelop.Projects.Parser.Tag(tagComment.Tag, tagRegion);
 				tag.CommentString = tagComment.CommentText;
 				cu.TagComments.Add(tag);
 			}

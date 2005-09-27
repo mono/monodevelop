@@ -11,9 +11,9 @@ using System.Text;
 using System.Reflection;
 
 using Gtk;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class AboutMonoDevelopTabPage : VBox
 	{

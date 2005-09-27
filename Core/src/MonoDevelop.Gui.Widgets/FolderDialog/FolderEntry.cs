@@ -3,7 +3,7 @@ using System.IO;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets {
+namespace MonoDevelop.Components {
 	public class FolderEntry : BaseFileEntry {
 
 		public FolderEntry (string name) : base (name)

@@ -2,13 +2,12 @@ using System;
 using System.IO;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
 namespace PythonBinding
 {

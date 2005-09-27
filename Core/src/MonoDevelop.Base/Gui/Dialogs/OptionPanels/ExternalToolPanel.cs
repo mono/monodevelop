@@ -10,15 +10,15 @@ using System.IO;
 using System.Collections;
 using Gtk;
 using Gnome;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-using MonoDevelop.Internal.ExternalTool;
+using MonoDevelop.Ide.ExternalTools;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Ide.Gui.OptionPanels
 {
 	internal class ExternalToolPane: AbstractOptionPanel
 	{
@@ -318,7 +318,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 			{
 				foreach (Widget control in controls) {				
 					if (control == null) {
-						Runtime.MessageService.ShowError (GettextCatalog.GetString ("Control not found!"));
+						Services.MessageService.ShowError (GettextCatalog.GetString ("Control not found!"));
 					} else {
 						control.Sensitive = enabled;
 					}
@@ -339,13 +339,13 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
 					
 					if (!Runtime.FileUtilityService.IsValidFileName (tool.Command)) {
-						Runtime.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), 
+						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), 
 										 tool.MenuCommand));
 						return false;
 					}
 					
 					if ((tool.InitialDirectory != "") && (!Runtime.FileUtilityService.IsValidFileName(tool.InitialDirectory))) {
-						Runtime.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,
+						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,
 											 tool.MenuCommand));
 						return false;
 					}

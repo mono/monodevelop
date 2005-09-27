@@ -1,6 +1,6 @@
 using System;
 
-namespace MonoDevelop.Gui.HtmlControl
+namespace MonoDevelop.Components.HtmlControl
 {
 	public enum ControlType
 	{

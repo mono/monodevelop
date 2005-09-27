@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public interface IClass : IDecoration
 	{

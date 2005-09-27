@@ -8,11 +8,11 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Ambience
 {
 	[Flags]
 	public enum ConversionFlags {

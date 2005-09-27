@@ -9,11 +9,11 @@ using System;
 using System.Collections;
 using System.IO;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class WholeProjectDocumentIterator : IDocumentIterator
 	{
@@ -46,10 +46,10 @@ namespace MonoDevelop.Gui.Search
 				}
 
 				string fileName = files[curIndex].ToString();
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				foreach (Document document in IdeApp.Workbench.Documents) {
 					// WINDOWS DEPENDENCY : ToUpper
-					if (content.ContentName != null && content.ContentName.ToUpper() == fileName.ToUpper()) {
-						IDocumentInformation doc = content as IDocumentInformation;
+					if (document.FileName != null && document.FileName.ToUpper() == fileName.ToUpper()) {
+						IDocumentInformation doc = document.Window.ViewContent as IDocumentInformation;
 						if (doc != null) return doc;
 					}
 				}
@@ -96,9 +96,8 @@ namespace MonoDevelop.Gui.Search
 		public void Reset() 
 		{
 			files.Clear();
-			IProjectService projectService = (IProjectService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(IProjectService));
-			if (projectService.CurrentOpenCombine != null) {
-				AddFiles(projectService.CurrentOpenCombine);
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				AddFiles (IdeApp.ProjectOperations.CurrentOpenCombine);
 			}
 			
 			curIndex = -1;

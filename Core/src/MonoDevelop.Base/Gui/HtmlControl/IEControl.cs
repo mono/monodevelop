@@ -8,7 +8,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.HtmlControl
+namespace MonoDevelop.Components.HtmlControl
 {
 	public class IEControl : AxHost, IWebBrowser
 	{

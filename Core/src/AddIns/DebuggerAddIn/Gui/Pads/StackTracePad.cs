@@ -9,10 +9,10 @@ using System.Runtime.InteropServices;
 using Mono.Debugger;
 using Mono.Debugger.Languages;
 
-using Stock = MonoDevelop.Gui.Stock;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using Stock = MonoDevelop.Core.Gui.Stock;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Debugger
 {
@@ -45,9 +45,15 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			Runtime.DebuggingService.PausedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
-			Runtime.DebuggingService.ResumedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnResumedEvent));
-			Runtime.DebuggingService.StoppedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
+			Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnPausedEvent));
+			Services.DebuggingService.ResumedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnResumedEvent));
+			Services.DebuggingService.StoppedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStoppedEvent));
+		}
+		
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			window.Title = "Call Stack";
+			window.Icon = Stock.OutputIcon;
 		}
 
 		public void UpdateDisplay ()
@@ -61,9 +67,9 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-//			string[] trace = Runtime.DebuggingService.Backtrace;
+//			string[] trace = Services.DebuggingService.Backtrace;
 
-			StackFrame[] stack = ((DebuggingService)Runtime.DebuggingService).GetStack ();
+			StackFrame[] stack = ((DebuggingService)Services.DebuggingService).GetStack ();
 			string[] trace = new string [stack.Length];
 			for (int n=0; n<stack.Length; n++)
 				trace [n] = stack [n].ToString ();
@@ -98,7 +104,7 @@ namespace MonoDevelop.Debugger
 
 		protected void OnPausedEvent (object o, EventArgs args)
 		{
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+			DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 			current_frame = dbgr.CurrentFrame;
 			UpdateDisplay ();
 		}
@@ -117,37 +123,9 @@ namespace MonoDevelop.Debugger
 			get { return "Bottom"; }
 		}
 
-		public string Title {
-			get {
-				return "Call Stack";
-			}
-		}
-
-		public string Icon {
-			get {
-				return Stock.OutputIcon;
-			}
-		}
-
 		public void RedrawContent ()
 		{
 			UpdateDisplay ();
 		}
-
-		protected virtual void OnTitleChanged(EventArgs e)
-		{
-				if (TitleChanged != null) {
-						TitleChanged(this, e);
-				}
-		}
-		protected virtual void OnIconChanged(EventArgs e)
-		{
-				if (IconChanged != null) {
-						IconChanged(this, e);
-				}
-		}
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
-	  
 	}
 }

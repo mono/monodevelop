@@ -1,5 +1,5 @@
 using System;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using ICSharpCode.SharpRefactory.Parser;
 
 namespace CSharpBinding.Parser.SharpDevelopTree

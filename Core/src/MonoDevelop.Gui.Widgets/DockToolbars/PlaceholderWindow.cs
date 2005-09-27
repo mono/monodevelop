@@ -27,7 +27,7 @@
 //
 
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	internal class PlaceholderWindow: Gtk.Window
 	{

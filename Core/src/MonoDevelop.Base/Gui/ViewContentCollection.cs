@@ -7,7 +7,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	///     <para>

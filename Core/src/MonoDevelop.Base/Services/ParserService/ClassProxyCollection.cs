@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	/// <summary>
 	///     <para>

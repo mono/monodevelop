@@ -7,11 +7,11 @@
 
 using System;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Ambience
 {
 	public class AmbienceService : AbstractService
 	{

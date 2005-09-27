@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Services 
+namespace MonoDevelop.Projects 
 {
 	public delegate void ProjectRenameEventHandler(object sender, ProjectRenameEventArgs e);
 	

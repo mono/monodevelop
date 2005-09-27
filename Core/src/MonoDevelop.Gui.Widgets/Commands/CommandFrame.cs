@@ -27,9 +27,9 @@
 //
 
 using System;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components.DockToolbars;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public class CommandFrame: DockToolbarFrame
 	{

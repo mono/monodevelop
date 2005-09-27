@@ -10,14 +10,9 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 
-using MonoDevelop.Core.AddIns;
+using MonoDevelop.Projects;
 
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
-
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	public delegate void ClassInformationEventHandler(object sender, ClassInformationEventArgs e);
 	

@@ -28,9 +28,9 @@
 
 using System;
 using System.Diagnostics;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public class LinkCommandEntry: CommandEntry
 	{

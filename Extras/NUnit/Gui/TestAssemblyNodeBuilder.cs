@@ -30,11 +30,13 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.NUnit
 {

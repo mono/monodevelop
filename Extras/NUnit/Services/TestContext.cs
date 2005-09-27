@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {

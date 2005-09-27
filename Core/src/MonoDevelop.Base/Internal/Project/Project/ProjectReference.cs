@@ -9,14 +9,12 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using System.ComponentModel;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum ReferenceType {
 		Assembly,
@@ -29,7 +27,7 @@ namespace MonoDevelop.Internal.Project
 	/// This class represent a reference information in an Project object.
 	/// </summary>
 	[DataItemAttribute ("Reference")]
-	public class ProjectReference : LocalizedObject, ICloneable, ICustomDataItem
+	public class ProjectReference : ICloneable, ICustomDataItem
 	{
 		[ItemProperty ("type")]
 		ReferenceType referenceType;
@@ -63,8 +61,6 @@ namespace MonoDevelop.Internal.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectReference.ReferenceType}",
-		                   Description ="${res:MonoDevelop.Internal.Project.ProjectReference.ReferenceType.Description})")]
 		public ReferenceType ReferenceType {
 			get {
 				return referenceType;
@@ -75,8 +71,6 @@ namespace MonoDevelop.Internal.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectReference.Reference}",
-		                   Description = "${res:MonoDevelop.Internal.Project.ProjectReference.Reference.Description}")]
 		public string Reference {
 			get {
 				return reference;
@@ -87,8 +81,6 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectReference.LocalCopy}",
-		                   Description = "${res:MonoDevelop.Internal.Project.ProjectReference.LocalCopy.Description}")]
 		[DefaultValue(true)]
 		public bool LocalCopy {
 			get {
@@ -96,7 +88,6 @@ namespace MonoDevelop.Internal.Project
 			}
 			set {
 				localCopy = value;
-				Runtime.ProjectService.SaveCombine();
 			}
 		}
 		

@@ -18,7 +18,7 @@ using MonoDevelop.TextEditor.Actions;
 using MonoDevelop.TextEditor;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
 using MonoDevelop.EditorBindings.FormattingStrategy;
 

@@ -30,11 +30,14 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectFileNodeBuilder: TypeNodeBuilder
 	{
@@ -64,7 +67,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 			label = Path.GetFileName (file.FilePath);
-			icon = Context.GetIcon (Runtime.Gui.Icons.GetImageForFile (file.FilePath));
+			icon = Context.GetIcon (Services.Icons.GetImageForFile (file.FilePath));
 		}
 		
 		public override object GetParentObject (object dataObject)
@@ -97,13 +100,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			if (oldname != newname) {
 				try {
 					if (Runtime.FileUtilityService.IsValidFileName (newname)) {
-						Runtime.FileService.RenameFile (oldname, newname);
-						Runtime.ProjectService.SaveCombine();
+						Services.FileService.RenameFile (oldname, newname);
+						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -111,7 +114,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
-			Runtime.FileService.OpenFile (file.FilePath);
+			IdeApp.Workbench.OpenDocument (file.FilePath);
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -134,7 +137,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			
-			bool yes = Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?"), Path.GetFileName (file.Name), project.Name));
+			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?"), Path.GetFileName (file.Name), project.Name));
 			if (!yes) return;
 
 			ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
@@ -146,7 +149,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				project.ProjectFiles.Add (folderFile);
 			}
 			project.ProjectFiles.Remove (file);
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
@@ -165,7 +168,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			} else {
 				finfo.BuildAction = BuildAction.Compile;
 			}
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
@@ -187,7 +190,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			} else {
 				project.DeployInformation.AddExcludedFile (finfo.Name);
 			}
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 	}
 }

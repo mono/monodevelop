@@ -11,21 +11,17 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Reflection;
 using System.Xml;
 using System.CodeDom.Compiler;
 
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum NewFileSearch {
 		None,
@@ -71,8 +67,6 @@ namespace MonoDevelop.Internal.Project
 			projectFileWatcher.Changed += new FileSystemEventHandler (OnFileChanged);
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectClass.Description}",
-		                   Description = "${res:MonoDevelop.Internal.Project.ProjectClass.Description.Description}")]
 		[DefaultValue("")]
 		public string Description {
 			get {
@@ -101,8 +95,6 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.Project.NewFileSearch}",
-		                   Description = "${res:MonoDevelop.Internal.Project.Project.NewFileSearch.Description}")]
 		[DefaultValue(NewFileSearch.None)]
 		public NewFileSearch NewFileSearch {
 			get {
@@ -124,8 +116,6 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.Project.ProjectType}",
-		                   Description = "${res:MonoDevelop.Internal.Project.Project.ProjectType.Description}")]
 		public abstract string ProjectType {
 			get;
 		}
@@ -151,60 +141,10 @@ namespace MonoDevelop.Internal.Project
 		{
 			return false;
 		}
-		
-		public void SearchNewFiles()
-		{
-			if (newFileSearch == NewFileSearch.None) {
-				return;
-			}
-
-			StringCollection newFiles   = new StringCollection();
-			StringCollection collection = Runtime.FileUtilityService.SearchDirectory (BaseDirectory, "*");
-
-			foreach (string sfile in collection) {
-				string extension = Path.GetExtension(sfile).ToUpper();
-				string file = Path.GetFileName (sfile);
-
-				if (!IsFileInProject(sfile) &&
-					extension != ".SCC" &&  // source safe control files -- Svante Lidmans
-					extension != ".DLL" &&
-					extension != ".PDB" &&
-					extension != ".EXE" &&
-					extension != ".CMBX" &&
-					extension != ".PRJX" &&
-					extension != ".SWP" &&
-					extension != ".MDSX" &&
-					extension != ".MDS" &&
-					extension != ".MDP" && 
-					extension != ".PIDB" &&
-					!file.EndsWith ("make.sh") &&
-					!file.EndsWith ("~") &&
-					!file.StartsWith (".") &&
-					!(Path.GetDirectoryName(sfile).IndexOf("CVS") != -1) &&
-					!(Path.GetDirectoryName(sfile).IndexOf(".svn") != -1) &&
-					!file.StartsWith ("Makefile") &&
-					!Path.GetDirectoryName(file).EndsWith("ProjectDocumentation")) {
-
-					newFiles.Add(sfile);
-				}
-			}
-			
-			if (newFiles.Count > 0) {
-				if (newFileSearch == NewFileSearch.OnLoadAutoInsert) {
-					foreach (string file in newFiles) {
-						ProjectFile newFile = new ProjectFile(file);
-						newFile.BuildAction = IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;
-						ProjectFiles.Add(newFile);
-					}
-				} else {
-					Runtime.DispatchService.GuiDispatch (new MessageHandler (new IncludeFilesDialog (this, newFiles).ShowDialog));
-				}
-			}
-		}
-		
+				
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
-			Project prj = Runtime.ProjectService.ReadFile (filename, monitor) as Project;
+			Project prj = Services.ProjectService.ReadFile (filename, monitor) as Project;
 			if (prj == null)
 				throw new InvalidOperationException ("Invalid project file: " + filename);
 			
@@ -226,21 +166,6 @@ namespace MonoDevelop.Internal.Project
 			return content;
 		}
 		
-		public void SaveProjectAs()
-		{
-			using (FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Save Project As..."))) {
-				//fdiag.Filename = System.Environment.GetEnvironmentVariable ("HOME");
-
-				if (fdiag.Run() == (int)Gtk.ResponseType.Ok) {
-					string filename = fdiag.Filename;
-					Save (filename, new ConsoleProgressMonitor ());
-					Runtime.MessageService.ShowMessage(filename, GettextCatalog.GetString ("Project saved"));
-				}
-				
-				fdiag.Hide ();
-			}
-		}
-
 		internal void RenameReferences(string oldName, string newName)
 		{
 			ArrayList toBeRemoved = new ArrayList();
@@ -477,11 +402,7 @@ namespace MonoDevelop.Internal.Project
 		
 		public override void Execute (IProgressMonitor monitor, ExecutionContext context)
 		{
-			if (Runtime.TaskService.Errors != 0) return;
-			
 			AbstractProjectConfiguration configuration = (AbstractProjectConfiguration) ActiveConfiguration;
-			if (Runtime.TaskService.Warnings != 0 && configuration != null && !configuration.RunWithWarnings)
-				return;
 				
 			string args = configuration.CommandLineParameters;
 			

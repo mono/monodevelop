@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 using System.Xml;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class NodeState
 	{

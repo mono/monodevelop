@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets.Chart
+namespace MonoDevelop.Components.Chart
 {
 	public class Serie
 	{

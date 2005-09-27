@@ -30,7 +30,7 @@
 using System;
 using System.IO;
 using System.Collections;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit

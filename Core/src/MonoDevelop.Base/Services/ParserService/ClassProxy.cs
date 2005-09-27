@@ -9,17 +9,14 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 
 using MonoDevelop.Core.AddIns;
 
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
 
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	internal class ClassProxy : AbstractNamedEntity, IComparable, IClass
 	{

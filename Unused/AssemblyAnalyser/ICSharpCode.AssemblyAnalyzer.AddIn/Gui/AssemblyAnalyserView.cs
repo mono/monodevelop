@@ -12,12 +12,12 @@ using System.Security.Policy;
 using System.Threading;
 using Gtk;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.HtmlControl;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Components.HtmlControl;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 using AssemblyAnalyser = ICSharpCode.AssemblyAnalyser.AssemblyAnalyser;
 

@@ -9,11 +9,11 @@ using System;
 using System.IO;
 using System.Drawing;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public class SearchOptions
 	{

@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// Interface to describe a sequence of characters that can be edited. 	

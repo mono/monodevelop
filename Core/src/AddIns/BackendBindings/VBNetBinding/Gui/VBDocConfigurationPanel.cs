@@ -8,12 +8,10 @@
 using System;
 using System.Drawing;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 
 namespace VBBinding

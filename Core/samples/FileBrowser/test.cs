@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 using GtkSharp;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
 class T
 {

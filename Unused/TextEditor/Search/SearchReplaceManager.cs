@@ -9,14 +9,15 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor;
 using MonoDevelop.EditorBindings.Search;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.TextEditor.Document
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.TextEditor.Document
 		static TextEditorControl OpenTextArea(string fileName) 
 		{
 			if (fileName != null) {
-				IFileService fileService = (IFileService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IFileService));
+				IFileService fileService = (IFileService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IFileService));
 				fileService.OpenFile(fileName);
 			}
 			

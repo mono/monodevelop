@@ -28,9 +28,9 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects
 {
 	public class FileFormatManager
 	{

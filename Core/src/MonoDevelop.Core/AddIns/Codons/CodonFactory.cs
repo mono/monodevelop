@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Xml;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// Creates a new <code>ICodon</code> object.

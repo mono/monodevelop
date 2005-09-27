@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public interface IDocumentInformation
 	{

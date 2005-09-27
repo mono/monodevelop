@@ -7,11 +7,11 @@
 
 using System;
 using System.Xml;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public abstract class AbstractConfiguration : IConfiguration, IExtendedDataItem
 	{

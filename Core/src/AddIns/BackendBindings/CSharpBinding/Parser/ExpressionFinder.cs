@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {

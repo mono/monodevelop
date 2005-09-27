@@ -8,10 +8,11 @@
 using System;
 using System.Collections;
 using System.CodeDom.Compiler;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Tasks
 {
 	public enum TaskType {
 		Error,
@@ -106,8 +107,7 @@ namespace MonoDevelop.Services
 		public void JumpToPosition()
 		{
 			if (fileName != null && fileName.Length > 0) {
-				IAsyncOperation op = Runtime.FileService.OpenFile (fileName);
-				op.Completed += new OperationHandler (OnFileOpened);
+				IdeApp.Workbench.OpenDocument (fileName, Math.Max(1, line), Math.Max(1, column), true);
 			}
 			
 //			CompilerResultListItem li = (CompilerResultListItem)OpenTaskView.FocusedItem;
@@ -125,20 +125,6 @@ namespace MonoDevelop.Services
 //				
 //				ContentWindow window = OpenWindow(filename);
 //			}
-		}
-		
-		private void OnFileOpened (IAsyncOperation op)
-		{
-			if (!op.Success) return;
-
-			IWorkbenchWindow window = Runtime.FileService.GetOpenFile(fileName);
-			if (window == null) {
-				return;
-			}
-			IViewContent content = window.ViewContent;
-			if (content is IPositionable) {
-				((IPositionable)content).JumpTo(Math.Max(1, line), Math.Max(1, column));
-			}
 		}
 	}
 }

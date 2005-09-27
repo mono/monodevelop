@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace MonoDevelop.Gui.Utils.DirectoryArchive {
+namespace MonoDevelop.Core.Utils.DirectoryArchive {
 	public sealed class ZipDecompressor : Decompressor {
 		public override void Extract(Stream CompressedData, string OutputPath)
 		{
@@ -14,7 +14,9 @@ namespace MonoDevelop.Gui.Utils.DirectoryArchive {
 				if (entry.IsDirectory)
 					continue;
 				EnsureDirectoryExists(Path.GetDirectoryName(outputFile));
-				CopyStream(zipFile.GetInputStream(entry), File.OpenWrite(outputFile));
+				using (Stream ws = File.OpenWrite(outputFile)) {
+					CopyStream(zipFile.GetInputStream(entry), ws);
+				}
 			}
 		
 		}

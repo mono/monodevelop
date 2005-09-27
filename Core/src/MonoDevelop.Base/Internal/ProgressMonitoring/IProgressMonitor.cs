@@ -30,7 +30,7 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core
 {
 	public delegate void MonitorHandler (IProgressMonitor monitor);
 	

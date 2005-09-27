@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.TextEditor.Document
 {

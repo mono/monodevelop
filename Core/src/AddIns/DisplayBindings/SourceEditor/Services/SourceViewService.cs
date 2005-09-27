@@ -5,11 +5,10 @@ using System.Text;
 using System.Xml;
 using GtkSourceView;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.DefaultEditor;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.SourceEditor
 {
 	public class SourceViewService : AbstractService
 	{

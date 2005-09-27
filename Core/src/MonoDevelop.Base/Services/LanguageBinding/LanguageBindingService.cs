@@ -12,13 +12,13 @@ using System.Collections;
 using System.Reflection;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Extensions;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects
 {
 	public class LanguageBindingService : AbstractService
 	{
@@ -42,7 +42,7 @@ namespace MonoDevelop.Services
 			return codon == null ? null : codon.LanguageBinding;
 		}
 
-		public LanguageBindingCodon GetCodonPerLanguageName(string languagename)
+		internal LanguageBindingCodon GetCodonPerLanguageName(string languagename)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {
 				if (binding.LanguageBinding.Language == languagename) {
@@ -52,7 +52,7 @@ namespace MonoDevelop.Services
 			return null;
 		}
 		
-		public LanguageBindingCodon GetCodonPerFileName(string filename)
+		internal LanguageBindingCodon GetCodonPerFileName(string filename)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {
 				if (binding.LanguageBinding.CanCompile(filename)) {
@@ -62,7 +62,7 @@ namespace MonoDevelop.Services
 			return null;
 		}
 		
-		public LanguageBindingCodon GetCodonPerProjectFile(string filename)
+		internal LanguageBindingCodon GetCodonPerProjectFile(string filename)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);

@@ -9,14 +9,13 @@ using System;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
-	public class WorkbenchSingleton
+/*	internal class WorkbenchSingleton
 	{
 		static IWorkbench workbench    = null;
 		
@@ -31,7 +30,7 @@ namespace MonoDevelop.Gui
 		
 		static WorkbenchSingleton()
 		{
-			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Runtime.DispatchService.GuiDispatch (new PropertyEventHandler(TrackPropertyChanges));
+			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler(TrackPropertyChanges));
 		}
 		
 		static void SetWbLayout()
@@ -47,7 +46,7 @@ namespace MonoDevelop.Gui
 		{
 			if (e.OldValue != e.NewValue) {
 				switch (e.Key) {
-					case "MonoDevelop.Gui.VisualStyle":
+					case "MonoDevelop.Core.Gui.VisualStyle":
 					case "CoreProperties.UILanguage":
 						workbench.RedrawAllComponents();
 						break;
@@ -60,5 +59,5 @@ namespace MonoDevelop.Gui
 			SetWbLayout();
 			workbench.RedrawAllComponents();
 		}
-	}
+	}*/
 }

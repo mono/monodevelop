@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class UnknownProjectVersionException : Exception
 	{

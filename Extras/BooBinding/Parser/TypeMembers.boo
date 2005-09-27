@@ -26,7 +26,7 @@
 namespace BooBinding.Parser
 
 import System
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Projects.Parser
 import Boo.Lang.Compiler.Ast as AST
 
 class Constructor(BooAbstractMethod):

@@ -5,9 +5,9 @@
 //     <version value="$version"/>
 // </file>
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.ErrorHandlers
+namespace MonoDevelop.Core.Gui.ErrorHandlers
 {
 	class GenericError
 	{
@@ -18,7 +18,7 @@ namespace MonoDevelop.Gui.ErrorHandlers
 		
 		public static void DisplayError(string message)
 		{
-			Runtime.MessageService.ShowError (message);
+			Services.MessageService.ShowError (message);
 		}
 	}
 }

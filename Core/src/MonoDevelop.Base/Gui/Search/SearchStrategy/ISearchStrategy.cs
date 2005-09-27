@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// This interface is the basic interface which all 

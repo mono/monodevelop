@@ -8,9 +8,9 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	public abstract class AbstractUsing : MarshalByRefObject, IUsing

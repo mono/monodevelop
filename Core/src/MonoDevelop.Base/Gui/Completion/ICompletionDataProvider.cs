@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Reflection;
-using System.Collections;
-using MonoDevelop.Internal.Project;
 
 using Gdk;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	public interface ICompletionDataProvider
 	{

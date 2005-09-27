@@ -13,18 +13,20 @@ using System.Xml;
 using System.Xml.Serialization;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
 using Gtk;
 using Gdl;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Commands;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.DockToolbars;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {	
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
@@ -50,6 +52,7 @@ namespace MonoDevelop.Gui
 		DockLayout dockLayout;
 		DragNotebook tabControl;
 		EventHandler contextChangedHandler;
+		Hashtable padWindows = new Hashtable ();
 		
 		WorkbenchContextCodon[] contextCodons;
 		bool initialized;
@@ -79,7 +82,7 @@ namespace MonoDevelop.Gui
 
 			vbox.PackStart (workbench.TopMenu, false, false, 0);
 			
-			toolbarFrame = new CommandFrame (Runtime.Gui.CommandService.CommandManager);
+			toolbarFrame = new CommandFrame (IdeApp.CommandService.CommandManager);
 			vbox.PackStart (toolbarFrame, true, true, 0);
 			
 			if (workbench.ToolBars != null) {
@@ -111,7 +114,7 @@ namespace MonoDevelop.Gui
 
 			workbench.Add (vbox);
 			
-			vbox.PackEnd (Runtime.Gui.StatusBar.Control, false, true, 0);
+			vbox.PackEnd (Services.StatusBar.Control, false, true, 0);
 			workbench.ShowAll ();
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
@@ -128,7 +131,6 @@ namespace MonoDevelop.Gui
 			}
 			
 			CreateDefaultLayout();
-			//RedrawAllComponents();
 			wbWindow.Show ();
 
 			workbench.ContextChanged += contextChangedHandler;
@@ -190,7 +192,7 @@ namespace MonoDevelop.Gui
 			
 			// get the default layout for the new context from the property service
 			CurrentLayout = Runtime.Properties.GetProperty
-				("MonoDevelop.Gui.SdiWorkbenchLayout." + ctxt.ToString (), "Default");
+				("MonoDevelop.Core.Gui.SdiWorkbenchLayout." + ctxt.ToString (), "Default");
 			
 			// make sure invalid pads for the new context are not visible
 			foreach (IPadContent content in old)
@@ -240,7 +242,7 @@ namespace MonoDevelop.Gui
 				toolbarFrame.CurrentLayout = newLayout;
 
 				// persist the selected layout for the current context
-				Runtime.Properties.SetProperty ("MonoDevelop.Gui.SdiWorkbenchLayout." +
+				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
 				                             workbenchContext.Id, value);
 			}
 		}
@@ -372,9 +374,17 @@ namespace MonoDevelop.Gui
 		
 		void AddPad (IPadContent content, string placement)
 		{
+			PadWindow window = new PadWindow (this, content);
+			window.Icon = "md-output-icon";
+			padWindows [content] = window;
+			content.Initialize (window);
+			
+			window.TitleChanged += new EventHandler (UpdatePad);
+			window.IconChanged += new EventHandler (UpdatePad);
+			
 			DockItem item = new DockItem (content.Id,
-								 content.Title,
-								 content.Icon,
+								 window.Title,
+								 window.Icon,
 								 DockItemBehavior.Normal);
 
 			Gtk.Label label = item.TabLabel as Gtk.Label;
@@ -390,9 +400,6 @@ namespace MonoDevelop.Gui
 				
 			item.Show ();
 			item.HideItem ();
-
-			content.TitleChanged += new EventHandler (UpdatePad);
-			content.IconChanged += new EventHandler (UpdatePad);
 			
 			DockPad (item, placement);
 
@@ -424,13 +431,13 @@ namespace MonoDevelop.Gui
 		
 		void UpdatePad (object source, EventArgs args)
 		{
-			IPadContent content = (IPadContent) source;
-			DockItem item = GetDockItem (content);
+			IPadWindow window = (IPadWindow) source;
+			DockItem item = GetDockItem (window.Content);
 			if (item != null) {
 				Gtk.Label label = item.TabLabel as Gtk.Label;
-				label.Markup = content.Title;
-				item.LongName = content.Title;
-				item.StockId = content.Icon;
+				label.Markup = window.Title;
+				item.LongName = window.Title;
+				item.StockId = window.Icon;
 			}
 		}
 
@@ -477,8 +484,13 @@ namespace MonoDevelop.Gui
 			foreach (IPadContent content in ((IWorkbench)workbench).PadContentCollection) {
 				DockItem item = dock.GetItemByName (content.Id);
 				if (item != null)
-					item.LongName = content.Title;
+					item.LongName = GetPadWindow (content).Title;
 			}
+		}
+		
+		public IPadWindow GetPadWindow (IPadContent content)
+		{
+			return (IPadWindow) padWindows [content];
 		}
 		
 		public void CloseWindowEvent(object sender, EventArgs e)
@@ -506,9 +518,9 @@ namespace MonoDevelop.Gui
 			tabLabel.Button.Clicked += new EventHandler (closeClicked);
 			tabLabel.Button.StateChanged += new StateChangedHandler (stateChanged);
 			tabLabel.ClearFlag (WidgetFlags.CanFocus);
-			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow(content, tabControl, tabLabel);
+			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (workbench, content, tabControl, tabLabel);
 
-			sdiWorkspaceWindow.CloseEvent += new EventHandler(CloseWindowEvent);
+			sdiWorkspaceWindow.Closed += new EventHandler(CloseWindowEvent);
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
 		
 			tabLabel.Show();
@@ -561,7 +573,7 @@ namespace MonoDevelop.Gui
 			try {
 				if (ActiveWorkbenchwindow != null) {
 					if (ActiveWorkbenchwindow.ViewContent.IsUntitled) {
-						((Gtk.Window)WorkbenchSingleton.Workbench).Title = "MonoDevelop";
+						((Gtk.Window)workbench).Title = "MonoDevelop";
 					} else {
 						string post = String.Empty;
 						if (ActiveWorkbenchwindow.ViewContent.IsDirty) {
@@ -569,18 +581,18 @@ namespace MonoDevelop.Gui
 						}
 						if (ActiveWorkbenchwindow.ViewContent.HasProject)
 						{
-							((Gtk.Window)WorkbenchSingleton.Workbench).Title = ActiveWorkbenchwindow.ViewContent.Project.Name + " - " + ActiveWorkbenchwindow.ViewContent.PathRelativeToProject + post + " - MonoDevelop";
+							((Gtk.Window)workbench).Title = ActiveWorkbenchwindow.ViewContent.Project.Name + " - " + ActiveWorkbenchwindow.ViewContent.PathRelativeToProject + post + " - MonoDevelop";
 						}
 						else
 						{
-							((Gtk.Window)WorkbenchSingleton.Workbench).Title = ActiveWorkbenchwindow.ViewContent.ContentName + post + " - MonoDevelop";
+							((Gtk.Window)workbench).Title = ActiveWorkbenchwindow.ViewContent.ContentName + post + " - MonoDevelop";
 						}
 					}
 				} else {
-					((Gtk.Window)WorkbenchSingleton.Workbench).Title = "MonoDevelop";
+					((Gtk.Window)workbench).Title = "MonoDevelop";
 				}
 			} catch {
-				((Gtk.Window)WorkbenchSingleton.Workbench).Title = "MonoDevelop";
+				((Gtk.Window)workbench).Title = "MonoDevelop";
 			}
 			if (ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
@@ -624,5 +636,6 @@ namespace MonoDevelop.Gui
 			}
 		}
 	}
-	
+
+
 }

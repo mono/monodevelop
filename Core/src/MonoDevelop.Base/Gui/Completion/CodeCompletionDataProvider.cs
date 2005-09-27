@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections;
@@ -14,18 +13,16 @@ using System.Collections.Specialized;
 using System.Xml;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
 
-using Stock = MonoDevelop.Gui.Stock;
+using Stock = MonoDevelop.Core.Gui.Stock;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	/// <summary>
 	/// Data provider for code completion.

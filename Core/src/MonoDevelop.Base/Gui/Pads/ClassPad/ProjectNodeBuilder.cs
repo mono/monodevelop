@@ -31,11 +31,12 @@ using System.IO;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
@@ -43,7 +44,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 
 		public ProjectNodeBuilder ()
 		{
-			projectNameChanged = (CombineEntryRenamedEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			projectNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
 		}
 		
 		public override Type NodeDataType {
@@ -71,7 +72,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		{
 			Project p = dataObject as Project;
 			label = p.Name;
-			string iconName = Runtime.Gui.Icons.GetImageForProjectType (p.ProjectType);
+			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
 			icon = Context.GetIcon (iconName);
 		}
 
@@ -85,7 +86,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		{
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
-			IParserContext ctx = Runtime.ProjectService.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			ArrayList list = ctx.GetNamespaceContents ("", false);
 			foreach (object ob in list) {
 				if (ob is string) {
@@ -102,7 +103,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
 		{
-			IParserContext ctx = Runtime.ProjectService.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			if (ctx.GetClassList (ns, false, true).Length > 0) {
 				if (builder.Options ["ShowProjects"])
 					builder.AddChild (new NamespaceData (project, ns));

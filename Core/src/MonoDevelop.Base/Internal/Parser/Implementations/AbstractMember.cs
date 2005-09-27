@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	public abstract class AbstractMember : AbstractNamedEntity, IMember

@@ -2,7 +2,7 @@ using Gdk;
 using Gtk;
 using System;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 
 	public delegate void TabsReorderedHandler (Widget widget, int oldPlacement, int newPlacement);

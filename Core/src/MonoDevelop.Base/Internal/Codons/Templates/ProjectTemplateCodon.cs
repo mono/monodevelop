@@ -9,12 +9,12 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute("ProjectTemplate")]
-	public class ProjectTemplateCodon : AbstractCodon
+	internal class ProjectTemplateCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("resource", IsRequired = true)]
 		string resource;

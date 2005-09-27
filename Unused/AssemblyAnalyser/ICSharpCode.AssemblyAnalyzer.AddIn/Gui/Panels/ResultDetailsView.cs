@@ -11,11 +11,11 @@ using System.Drawing;
 
 using Gtk;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
 
 using AssemblyAnalyser = ICSharpCode.AssemblyAnalyser.AssemblyAnalyser;
 using Resolution = ICSharpCode.AssemblyAnalyser.Resolution;
@@ -72,7 +72,7 @@ namespace MonoDevelop.AssemblyAnalyser
 			Position position = parserService.GetPosition (currentResolution.Item.Replace ('+', '.'));
 			
 			if (position != null && position.Cu != null) {
-				IFileService fileService = (IFileService)MonoDevelop.Core.Services.ServiceManager.GetService (typeof (IFileService));
+				IFileService fileService = (IFileService)MonoDevelop.Core.ServiceManager.GetService (typeof (IFileService));
 				fileService.JumpToFilePosition (position.Cu.FileName, Math.Max (0, position.Line - 1), Math.Max (0, position.Column - 1));
 			}
 			*/

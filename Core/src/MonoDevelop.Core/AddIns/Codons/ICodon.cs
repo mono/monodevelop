@@ -9,9 +9,8 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Xml; 
-using MonoDevelop.Core.AddIns.Conditions;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// The <code>ICodon</code> interface describes the basic funcionality

@@ -2,7 +2,7 @@
 
 using System.Diagnostics;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using ICSharpCode.SharpRefactory.Parser.VB;
 
 namespace VBBinding.Parser.SharpDevelopTree

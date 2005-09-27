@@ -4,8 +4,8 @@ using System.Threading;
 
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 namespace VersionControlPlugin {
 

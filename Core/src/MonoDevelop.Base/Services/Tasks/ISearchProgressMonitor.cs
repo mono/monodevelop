@@ -27,9 +27,9 @@
 //
 
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui.Search
 {	
 	public interface ISearchProgressMonitor: IProgressMonitor
 	{

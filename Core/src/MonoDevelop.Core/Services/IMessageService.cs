@@ -10,7 +10,7 @@ using System;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core.Gui
 {
 	public enum QuestionResponse
 	{
@@ -57,5 +57,7 @@ namespace MonoDevelop.Core.Services
 		// used to return text input from a user in response to a question
 		string GetTextResponse(string question, string caption, string initialValue);
 		string GetTextResponse(string question, string caption);
+		
+		object RootWindow { get; set; }
 	}
 }

@@ -8,10 +8,10 @@ using System;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionParameter : AbstractParameter
+	internal class ReflectionParameter : AbstractParameter
 	{
 		public ReflectionParameter(ParameterInfo parameterInfo, XmlNode methodNode)
 		{

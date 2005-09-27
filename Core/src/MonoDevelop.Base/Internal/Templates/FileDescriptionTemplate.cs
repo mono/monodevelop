@@ -11,7 +11,7 @@ using System.Xml;
 using System.Collections;
 using System.Diagnostics;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	internal class FileDescriptionTemplate
 	{

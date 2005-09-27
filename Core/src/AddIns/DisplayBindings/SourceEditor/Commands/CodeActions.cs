@@ -11,19 +11,18 @@ using System.Collections;
 using System.Text;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui;
-using MonoDevelop.TextEditor.Actions;
-using MonoDevelop.TextEditor;
-using MonoDevelop.Services;
-using MonoDevelop.EditorBindings.FormattingStrategy;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.SourceEditor.Actions;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.SourceEditor.Gui;
 
-namespace MonoDevelop.DefaultEditor.Commands
+namespace MonoDevelop.SourceEditor.Commands
 {
 	public class GenerateCodeAction : AbstractMenuCommand
 	{
@@ -38,7 +37,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			}
 			TextEditorControl textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
 			
-			IParserService parserService = (IParserService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));
+			IParserService parserService = (IParserService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IParserService));
 			
 			IParseInformation parseInformation = parserService.GetParseInformation(textEditorControl.FileName);
 			
@@ -91,15 +90,15 @@ namespace MonoDevelop.DefaultEditor.Commands
 		}*/
 	}
 	
-	public class SurroundCodeAction : AbstractEditAction
+/*	public class SurroundCodeAction : AbstractEditAction
 	{
 		public override void Execute(SourceEditorView editActionHandler)
 		{
-//			SelectionWindow selectionWindow = new SelectionWindow("Surround");
-//			selectionWindow.Show();
+			SelectionWindow selectionWindow = new SelectionWindow("Surround");
+			selectionWindow.Show();
 		}
 	}
-	
+*/	
 	/// <summary>
 	///     Add summary description for form
 	/// </summary>
@@ -675,7 +674,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 		
 		public InterfaceImplementorCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			IParserService parserService = (IParserService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));
+			IParserService parserService = (IParserService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IParserService));
 			
 			foreach (string className in currentClass.BaseTypes) {
 				IClass baseType = parserService.GetClass(className);
@@ -970,7 +969,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 		
 		public AbstractClassImplementorCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			IParserService parserService = (IParserService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));
+			IParserService parserService = (IParserService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IParserService));
 			
 			foreach (string className in currentClass.BaseTypes) {
 				IClass baseType = parserService.GetClass(className);

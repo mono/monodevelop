@@ -6,7 +6,7 @@
 // </file>
 using System;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public interface IRegion: IComparable
 	{

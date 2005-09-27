@@ -8,9 +8,9 @@
 using System;
 using System.Collections;
 using System.Text;
-using MonoDevelop.EditorBindings.FormattingStrategy;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
-namespace MonoDevelop.TextEditor.Document {
+namespace MonoDevelop.SourceEditor.Document {
 	/// <summary>
 	/// This class handles the auto and smart indenting in the textbuffer while
 	/// you type.

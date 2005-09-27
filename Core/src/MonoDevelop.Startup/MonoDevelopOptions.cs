@@ -1,7 +1,7 @@
 using System;
 using Mono.GetOptions;
 
-namespace MonoDevelop
+namespace MonoDevelop.Startup
 {
 	public class MonoDevelopOptions : Options
 	{

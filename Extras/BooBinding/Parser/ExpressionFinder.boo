@@ -27,7 +27,7 @@ namespace BooBinding.Parser
 
 import System
 import System.Text
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Projects.Parser
 
 class ExpressionFinder(IExpressionFinder):
 	// The expression finder can find an expression in a text

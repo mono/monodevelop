@@ -28,8 +28,9 @@
 
 
 using System;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	internal interface ICombineEntryDescriptor
 	{

@@ -7,10 +7,11 @@ using System.Drawing;
 using Gtk;
 using Gdk;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop 
+namespace MonoDevelop.Startup
 {
 	public enum  DialogResult{
 		Abort,
@@ -198,9 +199,7 @@ namespace MonoDevelop
 	
 		void SuspendLayout() {
 			this.Modal = true;
-			if (MonoDevelop.Gui.WorkbenchSingleton.Workbench != null) {
-				this.TransientFor = (Gtk.Window) MonoDevelop.Gui.WorkbenchSingleton.Workbench;
-			}
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 		}
 
 		void ResumeLayout() {

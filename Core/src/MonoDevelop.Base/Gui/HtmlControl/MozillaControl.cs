@@ -9,7 +9,7 @@
 using System;
 using Gecko;
 
-namespace MonoDevelop.Gui.HtmlControl
+namespace MonoDevelop.Components.HtmlControl
 {
 	public class MozillaControl : WebControl, IWebBrowser
 	{

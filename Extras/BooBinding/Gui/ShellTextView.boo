@@ -30,12 +30,13 @@ import GLib
 import Pango
 import GtkSourceView
 
-import MonoDevelop.Gui.Widgets
-import MonoDevelop.Gui.Completion
-import MonoDevelop.Core.Services
-import MonoDevelop.Services
+import MonoDevelop.Components
+import MonoDevelop.Projects.Gui.Completion
+import MonoDevelop.Core
 import MonoDevelop.Core.Properties
-import MonoDevelop.Internal.Project
+import MonoDevelop.Projects
+import MonoDevelop.IdeApplication.Gui
+import MonoDevelop.Projects.Parser
 
 /*
  * TODO
@@ -63,7 +64,6 @@ class ShellTextView (SourceView, ICompletionWidget):
 	private _auto_indent as bool
 	private _load_assembly_after_build as bool
 
-	private _projService as ProjectService
 	private _proj as Project
 
 	private _assembliesLoaded as bool
@@ -76,7 +76,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	
 	def constructor(model as IShellModel):
 		_projService = ServiceManager.GetService(typeof(ProjectService))
-		_parserService = _projService.ParserDatabase
+		_parserService = Ide.ProjectOperations.ParserDatabase
 
 		manager = SourceLanguagesManager()
 		buf = SourceBuffer(manager.GetLanguageFromMimeType(model.MimeType))
@@ -120,8 +120,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 		Buffer.TagTable.Add (tag)
 		prompt (false)
 
-		_projService.EndBuild += ProjectCompiled
-		_projService.CurrentProjectChanged += ProjectChanged
+		Ide.ProjectOperations.EndBuild += ProjectCompiled
+		Ide.ProjectOperations.CurrentProjectChanged += ProjectChanged
 
 		// Run our model. Needs to happen for models which may spawn threads,
 		// processes, etc
@@ -151,7 +151,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 			if assembly is not null:
 				_assemblies.Add(assembly)
 		else:
-			_combine = _projService.CurrentOpenCombine
+			_combine = Ide.ProjectOperations.CurrentOpenCombine
 			if _combine is null:
 				return _assemblies
 

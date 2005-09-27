@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Widgets.Chart
+namespace MonoDevelop.Components.Chart
 {
 	public class IntegerAxis: Axis
 	{

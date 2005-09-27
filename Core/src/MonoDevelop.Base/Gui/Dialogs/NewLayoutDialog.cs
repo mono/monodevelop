@@ -6,13 +6,13 @@ using System;
 
 using Gtk;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class NewLayoutDialog : IDisposable
 	{
-		IWorkbenchLayout wbLayout = WorkbenchSingleton.Workbench.WorkbenchLayout;
 		string[] existentLayouts;
 
 		[Glade.Widget] Entry layoutName;
@@ -31,8 +31,7 @@ namespace MonoDevelop.Gui.Dialogs
 			
 			layoutName.Changed += new EventHandler (OnNameChanged);
 
-			if (wbLayout != null)
-				existentLayouts = wbLayout.Layouts;
+			existentLayouts = IdeApp.Workbench.Layouts;
 		}
 
 		public void Dispose ()
@@ -48,14 +47,11 @@ namespace MonoDevelop.Gui.Dialogs
 
 		public void Run ()
 		{
-			if (wbLayout == null)
-				return;
-			
 			ResponseType response = (ResponseType) newLayoutDialog.Run ();
 			switch (response)
 			{
 			case ResponseType.Ok:
-				wbLayout.CurrentLayout = layoutName.Text;
+				IdeApp.Workbench.CurrentLayout = layoutName.Text;
 				break;
 			}
 

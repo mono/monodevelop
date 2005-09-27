@@ -10,13 +10,13 @@ using System.Drawing;
 using System.Reflection;
 using System.Collections;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Completion;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Ambience;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.SourceEditor.Gui;
 
@@ -89,9 +89,9 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 			
 			IParserContext parserContext;
 			if (project != null)
-				parserContext = Runtime.ProjectService.ParserDatabase.GetProjectParserContext (project);
+				parserContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			else
-				parserContext = Runtime.ProjectService.ParserDatabase.GetFileParserContext (fileName);
+				parserContext = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (fileName);
 			
 			ResolveResult results = parserContext.Resolve (methodObject, caretLineNumber, caretColumn, fileName, text);
 			

@@ -35,15 +35,13 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 using System.Reflection;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	internal class CodeCompletionDatabase: IDisposable
 	{
@@ -704,19 +702,22 @@ namespace MonoDevelop.Services
 				return null;
 		}
 	}
+}
 
-	public interface INameEncoder
+namespace MonoDevelop.Projects.Parser
+{
+	internal interface INameEncoder
 	{
 		int GetStringId (string text);
 	}
 	
-	public interface INameDecoder
+	internal interface INameDecoder
 	{
 		string GetStringValue (int id);
 	}
 	
 	
-	public class StringNameTable: INameEncoder, INameDecoder
+	internal class StringNameTable: INameEncoder, INameDecoder
 	{
 		string[] table;
 		

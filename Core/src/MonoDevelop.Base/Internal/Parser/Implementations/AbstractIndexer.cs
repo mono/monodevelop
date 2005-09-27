@@ -5,9 +5,9 @@
 //     <version value="$version"/>
 // </file>
 using System;
-using System.Collections.Utility;
+using MonoDevelop.Projects.Utility;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	public abstract class AbstractIndexer : AbstractMember, IIndexer

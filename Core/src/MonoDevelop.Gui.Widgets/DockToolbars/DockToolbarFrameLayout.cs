@@ -29,7 +29,7 @@
 using System;
 using System.Xml.Serialization;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	public class DockToolbarFrameLayout
 	{

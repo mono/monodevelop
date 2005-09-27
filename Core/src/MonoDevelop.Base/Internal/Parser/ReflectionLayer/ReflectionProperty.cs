@@ -9,10 +9,10 @@ using System.Collections;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionProperty : AbstractProperty 
+	internal class ReflectionProperty : AbstractProperty 
 	{
 		public ReflectionProperty(PropertyInfo propertyInfo, XmlDocument docs)
 		{

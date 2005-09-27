@@ -29,10 +29,13 @@
 using System;
 using System.Collections;
 using System.IO;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using System.Text.RegularExpressions;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDeveloper
 {
@@ -135,7 +138,7 @@ namespace MonoDeveloper
 			
 			Console.WriteLine ("{0} {1}", aname, GetOutputFileName ());
 			loading = false;
-			Runtime.ProjectService.CombineOpened += new CombineEventHandler (CombineOpened);
+			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (CombineOpened);
 		}
 		
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
@@ -213,7 +216,7 @@ namespace MonoDeveloper
 		public void CombineOpened (object sender, CombineEventArgs args)
 		{
 			foreach (string pref in refNames) {
-				Project p = Runtime.ProjectService.GetProject (pref);
+				Project p = IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (pref);
 				if (p != null) ProjectReferences.Add (new ProjectReference (p));
 			}
 		}
@@ -322,7 +325,7 @@ namespace MonoDeveloper
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			Runtime.ProjectService.CombineOpened -= new CombineEventHandler (CombineOpened);
+			IdeApp.ProjectOperations.CombineOpened -= new CombineEventHandler (CombineOpened);
 		}
 		
 		internal MonoTestSuite GetTestSuite ()

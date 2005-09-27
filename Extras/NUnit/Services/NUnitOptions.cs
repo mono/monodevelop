@@ -31,8 +31,8 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {

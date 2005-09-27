@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using ICSharpCode.SharpRefactory.Parser;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public interface ICompilationUnitBase
 	{

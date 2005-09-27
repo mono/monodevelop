@@ -14,28 +14,29 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 using ICSharpCode.SharpRefactory.PrettyPrinter;
 using ICSharpCode.SharpRefactory.Parser;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	internal class VBConvertBuffer : CommandHandler
 	{
 		protected override void Run()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
 			
 			if (window != null && window.ViewContent is IEditable) {
 				
@@ -43,14 +44,14 @@ namespace MonoDevelop.Commands
 				p.Parse(new Lexer(new ICSharpCode.SharpRefactory.Parser.StringReader(((IEditable)window.ViewContent).Text)));
 				
 				if (p.Errors.count > 0) {
-					Runtime.MessageService.ShowError("Correct source code errors first (only compileable C# source code would convert).");
+					Services.MessageService.ShowError("Correct source code errors first (only compileable C# source code would convert).");
 					return;
 				}
 				VBNetVisitor vbv = new VBNetVisitor();
 				vbv.Visit(p.compilationUnit, null);
 				
 				Runtime.LoggingService.Debug(vbv.SourceText.ToString());
-				Runtime.FileService.NewFile ("Generated.VB", "VBNET", vbv.SourceText.ToString());
+				IdeApp.Workbench.NewDocument ("Generated.VB", "VBNET", vbv.SourceText.ToString());
 			}
 		}
 	}

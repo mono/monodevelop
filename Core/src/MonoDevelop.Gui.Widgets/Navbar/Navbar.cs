@@ -1,8 +1,8 @@
 using System;
 using Gtk;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 	public class Navbar : VBox
 	{

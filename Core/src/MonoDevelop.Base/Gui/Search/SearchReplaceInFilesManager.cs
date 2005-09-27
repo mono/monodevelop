@@ -10,14 +10,16 @@ using System.Collections;
 using System.Diagnostics;
 using System.Threading;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public class SearchReplaceInFilesManager
 	{
@@ -75,8 +77,8 @@ namespace MonoDevelop.Gui.Search
 			Debug.Assert(searchOptions != null);
 			cancelled = false;
 			
-			searchMonitor = Runtime.TaskService.GetSearchProgressMonitor (true);
-			searchMonitor.CancelRequested += (MonitorHandler) Runtime.DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
+			searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+			searchMonitor.CancelRequested += (MonitorHandler) Services.DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
 			
 			InitializeDocumentIterator(null, null);
 			InitializeSearchStrategy(null, null);
@@ -85,7 +87,7 @@ namespace MonoDevelop.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Runtime.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
 				return false;
 			}
 			return true;
@@ -118,7 +120,7 @@ namespace MonoDevelop.Gui.Search
 		public static void ReplaceAll()
 		{
 			if (searching) {
-				if (!Runtime.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
+				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
 					return;
 				CancelSearch ();
 			}
@@ -131,7 +133,7 @@ namespace MonoDevelop.Gui.Search
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;
-			Runtime.DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
+			Services.DispatchService.BackgroundDispatch (new MessageHandler(ReplaceAllThread));
 		}
 		
 		static void ReplaceAllThread()
@@ -164,7 +166,7 @@ namespace MonoDevelop.Gui.Search
 		public static void FindAll()
 		{
 			if (searching) {
-				if (!Runtime.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
+				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("There is a search already in progress. Do you want to cancel it?")))
 					return;
 				CancelSearch ();
 			}
@@ -177,7 +179,7 @@ namespace MonoDevelop.Gui.Search
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;
-			Runtime.DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
+			Services.DispatchService.BackgroundDispatch (new MessageHandler(FindAllThread));
 		}
 		
 		static void FindAllThread()

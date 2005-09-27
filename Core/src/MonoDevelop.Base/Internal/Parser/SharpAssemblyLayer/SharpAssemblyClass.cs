@@ -10,14 +10,14 @@ using System.Collections;
 using System.Text;
 using System.Xml;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.SharpAssembly.Metadata.Rows;
 using MonoDevelop.SharpAssembly.Metadata;
 using MonoDevelop.SharpAssembly.PE;
 using MonoDevelop.SharpAssembly.Assembly;
 using SharpAssembly_ = MonoDevelop.SharpAssembly.Assembly.SharpAssembly;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
 	public class SharpAssemblyClass : AbstractClass

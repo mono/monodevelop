@@ -15,14 +15,16 @@ using System.Diagnostics;
 using System.Reflection;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	internal class OpenFileAction
 	{
@@ -35,7 +37,7 @@ namespace MonoDevelop.Internal.Templates
 		
 		public void Run(ProjectCreateInformation projectCreateInformation)
 		{
-			Runtime.FileService.OpenFile (projectCreateInformation.ProjectBasePath + Path.DirectorySeparatorChar + fileName);
+			IdeApp.Workbench.OpenDocument (projectCreateInformation.ProjectBasePath + Path.DirectorySeparatorChar + fileName);
 		}
 	}
 	
@@ -202,7 +204,7 @@ namespace MonoDevelop.Internal.Templates
 		
 		public void OpenCreatedCombine()
 		{
-			IAsyncOperation op = Runtime.ProjectService.OpenCombine (lastCombine);
+			IAsyncOperation op = IdeApp.ProjectOperations.OpenCombine (lastCombine);
 			op.WaitForCompleted ();
 			if (op.Success) {
 				foreach (OpenFileAction action in actions)
@@ -221,7 +223,7 @@ namespace MonoDevelop.Internal.Templates
 				try {
 					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.Resource));
 				} catch (Exception e) {
-					Runtime.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
+					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
 				}
 			}
 		}

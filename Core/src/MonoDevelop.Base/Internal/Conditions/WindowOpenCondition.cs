@@ -9,11 +9,11 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Codons
 {
 	[ConditionAttribute()]
 	internal class WindowOpenCondition : AbstractCondition
@@ -32,15 +32,11 @@ namespace MonoDevelop.Core.AddIns
 		
 		public override bool IsValid(object owner)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
-				return false;
-			}
-			
 			if (openwindow == "*") {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null;
+				return IdeApp.Workbench.ActiveDocument != null;
 			}
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				Type currentType = view.GetType();
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				Type currentType = doc.Window.ViewContent.GetType();
 				if (currentType.ToString() == openwindow) {
 					return true;
 				}

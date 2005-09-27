@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using MonoDevelop.Internal.Project;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	public delegate void FileEventHandler(object sender, FileEventArgs e);
 	

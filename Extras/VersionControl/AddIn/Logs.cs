@@ -5,7 +5,7 @@ using System.IO;
 using Gtk;
 using VersionControl;
 
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.Gui;
 
 namespace VersionControlPlugin {
@@ -56,7 +56,7 @@ namespace VersionControlPlugin {
 		
 			protected override void Finished() {
 				LogView d = new LogView(filepath, isDirectory, history, vc);
-				MonoDevelop.Gui.WorkbenchSingleton.Workbench.ShowView(d, true);
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 			}
 		}
 		
@@ -170,7 +170,7 @@ namespace VersionControlPlugin {
 	
 		public static void Show(string name, string file, string text) {
 			HistoricalFileView d = new HistoricalFileView(name, file, text);
-			MonoDevelop.Gui.WorkbenchSingleton.Workbench.ShowView(d, true);
+			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 		}
 			
 		public static void Show(string file, VersionControlSystem vc, object revPath, RevisionPtr revision) {

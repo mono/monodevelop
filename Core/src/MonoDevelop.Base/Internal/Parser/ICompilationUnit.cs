@@ -8,7 +8,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public interface ICompilationUnit : ICompilationUnitBase
 	{

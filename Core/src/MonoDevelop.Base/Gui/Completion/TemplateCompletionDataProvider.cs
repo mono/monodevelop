@@ -11,11 +11,12 @@ using System.Reflection;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Internal.Project;
-using Stock = MonoDevelop.Gui.Stock;
+using MonoDevelop.Projects;
+using Stock = MonoDevelop.Core.Gui.Stock;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeTemplates;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Ide.CodeTemplates
 {
 	public class TemplateCompletionDataProvider : ICompletionDataProvider
 	{

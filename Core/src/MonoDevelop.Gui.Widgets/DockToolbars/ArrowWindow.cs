@@ -30,7 +30,7 @@ using System;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	internal class ArrowWindow: Gtk.Window
 	{

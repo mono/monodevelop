@@ -14,20 +14,22 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Xml;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Gui.Dialogs;
 
-using MonoDevelop.Services;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 using GLib;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
@@ -104,6 +106,7 @@ namespace MonoDevelop.Gui
 				layout = value;
 				layout.Attach(this);
 				layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
+				RedrawAllComponents ();
 			}
 		}
 		
@@ -141,18 +144,13 @@ namespace MonoDevelop.Gui
 			HeightRequest = normalBounds.Height;
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
-			this.Icon = Runtime.Gui.Resources.GetBitmap ("md-sharp-develop-icon");
+			this.Icon = Services.Resources.GetBitmap ("md-sharp-develop-icon");
 			//this.WindowPosition = Gtk.WindowPosition.None;
-
-			IDebuggingService dbgr = Runtime.DebuggingService;
-			if (dbgr != null) {
-				dbgr.PausedEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (onDebuggerPaused));
-			}
 
 			Gtk.Drag.DestSet (this, Gtk.DestDefaults.Motion | Gtk.DestDefaults.Highlight | Gtk.DestDefaults.Drop, targetEntryTypes, Gdk.DragAction.Copy);
 			DragDataReceived += new Gtk.DragDataReceivedHandler (onDragDataRec);
 			
-			Runtime.Gui.CommandService.SetRootWindow (this);
+			IdeApp.CommandService.SetRootWindow (this);
 		}
 
 		void onDragDataRec (object o, Gtk.DragDataReceivedArgs args)
@@ -166,10 +164,10 @@ namespace MonoDevelop.Gui
 				if (file.StartsWith ("file://")) {
 					file = file.Substring (7);
 					try {
-						if (Runtime.ProjectService.IsCombineEntryFile (file))
-							Runtime.ProjectService.OpenCombine(file);
+						if (Services.ProjectService.IsCombineEntryFile (file))
+							IdeApp.ProjectOperations.OpenCombine(file);
 						else
-							Runtime.FileService.OpenFile (file);
+							IdeApp.Workbench.OpenDocument (file);
 					} catch (Exception e) {
 						Runtime.LoggingService.ErrorFormat ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
@@ -177,31 +175,19 @@ namespace MonoDevelop.Gui
 			}
 		}
 		
-		void onDebuggerPaused (object o, EventArgs e)
-		{
-			IDebuggingService dbgr = Runtime.DebuggingService;
-			if (dbgr != null) {
-				if (dbgr.CurrentFilename != String.Empty)
-					Runtime.FileService.OpenFile (dbgr.CurrentFilename);
-			}
-		}
-
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize
-			Runtime.ProjectService.CurrentProjectChanged += (ProjectEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
+			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) Services.DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
 
-			Runtime.FileService.FileRemoved += (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
-			Runtime.FileService.FileRenamed += (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
-			
-			Runtime.FileService.FileRemoved += (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (Runtime.FileService.RecentOpen.FileRemoved));
-			Runtime.FileService.FileRenamed += (FileEventHandler) Runtime.DispatchService.GuiDispatch (new FileEventHandler (Runtime.FileService.RecentOpen.FileRenamed));
+			Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
+			Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 
-			TopMenu = Runtime.Gui.CommandService.CreateMenuBar (mainMenuPath);
-			toolbars = Runtime.Gui.CommandService.CreateToolbarSet (toolbarsPath);
+			TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 		}
 				
 		public void CloseContent(IViewContent content)
@@ -444,11 +430,11 @@ namespace MonoDevelop.Gui
 		
 		public bool Close() 
 		{
-			Runtime.ProjectService.SaveCombinePreferences ();
+			IdeApp.ProjectOperations.SaveCombinePreferences ();
 
 			bool showDirtyDialog = false;
 
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection)
+			foreach (IViewContent content in ViewContentCollection)
 			{
 				if (content.IsDirty) {
 					showDirtyDialog = true;
@@ -463,8 +449,8 @@ namespace MonoDevelop.Gui
 					return false;
 			}
 			
-			Runtime.ProjectService.CloseCombine (false);
-			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", WorkbenchSingleton.Workbench.CreateMemento());
+			IdeApp.ProjectOperations.CloseCombine (false);
+			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
 			OnClosed (null);
 			return true;
 		}
@@ -520,7 +506,7 @@ namespace MonoDevelop.Gui
 			if (fileName == null || fileName.Length == 0)
 				return false;
 			
-			if (Runtime.ParserService.GetParser (fileName) == null)
+			if (Services.ParserService.GetParser (fileName) == null)
 				return false;
 			
 			string text = editable.Text;
@@ -535,7 +521,7 @@ namespace MonoDevelop.Gui
 		void AsyncParseCurrentFile (object ob)
 		{
 			object[] data = (object[]) ob;
-			Runtime.ProjectService.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
+			IdeApp.ProjectOperations.ParserDatabase.UpdateFile ((Project) data[0], (string) data[1], (string) data[2]);
 		}
 
 		public Gtk.Toolbar[] ToolBars {
@@ -555,8 +541,14 @@ namespace MonoDevelop.Gui
 		public void UpdateViews(object sender, EventArgs e)
 		{
 			PadCodon[] padCodons = (PadCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this)).ToArray(typeof(PadCodon));
-			foreach (PadCodon codon in padCodons)
+			foreach (PadCodon codon in padCodons) {
 				ShowPad (codon.Pad);
+				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);
+				if (codon.Label != null)
+					win.Title = codon.Label;
+				if (codon.Icon != null)
+					win.Icon = codon.Icon;
+			}
 		}
 		
 		// Handle keyboard shortcuts

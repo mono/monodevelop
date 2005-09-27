@@ -31,12 +31,14 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 using System.Reflection;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Documentation;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {	
 	internal class AssemblyCodeCompletionDatabase: CodeCompletionDatabase
 	{

@@ -10,11 +10,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
 using MonoDevelop.DefaultEditor.Gui.Editor;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.TextEditor.Document
@@ -58,10 +58,10 @@ namespace MonoDevelop.TextEditor.Document
 				}
 				IDocument document;
 				string fileName = files[curIndex].ToString();
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				foreach (Document doc in IdeApp.Workbench.Documents) {
 					// WINDOWS DEPENDENCY : ToUpper
-					if (content.ContentName != null &&
-						content.ContentName.ToUpper() == fileName.ToUpper()) {
+					if (doc.FileName != null &&
+						doc.FileName.ContentName.ToUpper() == fileName.ToUpper()) {
 						document = ((ITextEditorControlProvider)content).TextEditorControl.Document;
 						return new ProvidedDocumentInformation(document,
 						                                       fileName);
@@ -71,7 +71,7 @@ namespace MonoDevelop.TextEditor.Document
 				try {
 					strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
 				} catch (Exception) {
-					TaskService taskService = (TaskService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(TaskService));
+					TaskService taskService = (TaskService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(TaskService));
 					taskService.Tasks.Add(new Task(String.Empty, "can't access " + fileName, -1, -1));
 					return null;
 				}

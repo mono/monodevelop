@@ -31,7 +31,7 @@ using System.Collections;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	public enum Placement
 	{

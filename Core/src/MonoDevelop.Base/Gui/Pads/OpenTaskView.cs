@@ -12,22 +12,31 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class OpenTaskView : IPadContent
+	internal class OpenTaskView : IPadContent
 	{
 		ScrolledWindow sw;
 		Gtk.TreeView view;
 		ListStore store;
 		Clipboard clipboard;
 		Hashtable tasks = new Hashtable ();
+		IPadWindow window;
+		
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			this.window = window;
+			window.Title = GettextCatalog.GetString ("Task List");
+			window.Icon = MonoDevelop.Core.Gui.Stock.TaskListIcon;
+		}
 		
 		public Gtk.Widget Control {
 			get {
@@ -36,23 +45,11 @@ namespace MonoDevelop.Gui.Pads
 		}
 
 		public string Id {
-			get { return "MonoDevelop.Gui.Pads.OpenTaskView"; }
+			get { return "MonoDevelop.Ide.Gui.Pads.OpenTaskView"; }
 		}
 		
 		public string DefaultPlacement {
 			get { return "Bottom"; }
-		}
-		
-		public string Title {
-			get {
-				return GettextCatalog.GetString ("Task List");
-			}
-		}
-		
-		public string Icon {
-			get {
-				return MonoDevelop.Gui.Stock.TaskListIcon;
-			}
 		}
 		
 		public void RedrawContent()
@@ -91,11 +88,11 @@ namespace MonoDevelop.Gui.Pads
 			sw.ShadowType = ShadowType.In;
 			sw.Add (view);
 			
-			Runtime.TaskService.TasksChanged     += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (ShowResults));
-			Runtime.TaskService.TaskAdded        += (TaskEventHandler) Runtime.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			Runtime.ProjectService.EndBuild      += (ProjectCompileEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectCompileEventHandler (SelectTaskView));
-			Runtime.ProjectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			Runtime.ProjectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			Services.TaskService.TasksChanged     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
+			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
+			IdeApp.ProjectOperations.EndBuild      += (ProjectCompileEventHandler) Services.DispatchService.GuiDispatch (new ProjectCompileEventHandler (SelectTaskView));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 			Control.ShowAll ();
 		}
@@ -186,13 +183,13 @@ namespace MonoDevelop.Gui.Pads
 		
 		void SelectTaskView (bool success)
 		{
-			if (Runtime.TaskService.Tasks.Count > 0) {
+			if (Services.TaskService.Tasks.Count > 0) {
 				try {
-					if (WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible (this)) {
-						WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad (this);
-					} else if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
-						WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad (this);
-						WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad (this);
+					if (window.Visible)
+						window.Activate ();
+					else if ((bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowTaskListAfterBuild", true)) {
+						window.Visible = true;
+						window.Activate ();
 					}
 				} catch {}
 			}
@@ -216,7 +213,7 @@ namespace MonoDevelop.Gui.Pads
 			store.Clear ();
 			tasks.Clear ();
 			
-			foreach (Task t in Runtime.TaskService.Tasks) {
+			foreach (Task t in Services.TaskService.Tasks) {
 				AddTask (t);
 			}
 			SelectTaskView(true);
@@ -274,20 +271,6 @@ namespace MonoDevelop.Gui.Pads
 				path,
 				t, false, false, (int) Pango.Weight.Bold);
 		}
-		
-		protected virtual void OnTitleChanged (EventArgs e)
-		{
-			if (TitleChanged != null)
-				TitleChanged(this, e);
-		}
-		
-		protected virtual void OnIconChanged (EventArgs e)
-		{
-			if (IconChanged != null)
-				IconChanged (this, e);
-		}
-		
-		public event EventHandler TitleChanged, IconChanged;
 		
 		private void ItemToggled (object o, ToggledArgs args)
 		{

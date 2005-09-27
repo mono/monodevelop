@@ -6,21 +6,19 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.CodeDom.Compiler;
+using System.Text;
 using System.Collections;
+using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
-using System.Text;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class SearchResultPad : IPadContent
 	{
@@ -47,6 +45,7 @@ namespace MonoDevelop.Gui.Pads
 		
 		StringBuilder log = new StringBuilder ();
 		Widget control;
+		IPadWindow window;
 		
 		public SearchResultPad ()
 		{
@@ -67,7 +66,7 @@ namespace MonoDevelop.Gui.Pads
 			buttonClear.SetTooltip (tips, "Clear results", "Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
-			buttonOutput = new ToggleToolButton (MonoDevelop.Gui.Stock.OutputIcon);
+			buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
 			buttonOutput.Clicked += new EventHandler (OnButtonOutputClick);
 			buttonOutput.SetTooltip (tips, "Show output", "Show output");
 			toolbar.Insert (buttonOutput, -1);
@@ -131,10 +130,17 @@ namespace MonoDevelop.Gui.Pads
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
 		}
 		
+		public void Initialize (IPadWindow window)
+		{
+			this.window = window;
+			window.Icon = MonoDevelop.Core.Gui.Stock.FindIcon;
+			window.Title = GettextCatalog.GetString ("Search Results");
+		}
+		
 		public void BeginProgress (string title)
 		{
 			this.title = title;
-			this.markupTitle = "<span foreground=\"blue\">" + title + "</span>";
+			window.Title = "<span foreground=\"blue\">" + title + "</span>";
 			
 			matchCount = 0;
 			store.Clear ();
@@ -182,21 +188,9 @@ namespace MonoDevelop.Gui.Pads
 			get { return "Bottom"; }
 		}
 		
-		public string Title {
-			get {
-				return markupTitle;
-			}
-		}
-		
 		public string Id {
 			get { return id; }
 			set { id = value; }
-		}
-		
-		public string Icon {
-			get {
-				return MonoDevelop.Gui.Stock.FindIcon;
-			}
 		}
 		
 		public void RedrawContent()
@@ -277,7 +271,7 @@ namespace MonoDevelop.Gui.Pads
 				int line = (int) store.GetValue (iter, COL_LINE);
 				/*int line = (int)*/ store.GetValue (iter, COL_COLUMN);
 
-				Runtime.FileService.OpenFile (path, line, 1, true);
+				IdeApp.Workbench.OpenDocument (path, line, 1, true);
 			}
 		}
 		
@@ -289,7 +283,7 @@ namespace MonoDevelop.Gui.Pads
 				matchCount++;
 				
 				Gdk.Pixbuf stock;
-				stock = sw.RenderIcon (Runtime.Gui.Icons.GetImageForFile (file), Gtk.IconSize.SmallToolbar, "");
+				stock = sw.RenderIcon (Services.Icons.GetImageForFile (file), Gtk.IconSize.SmallToolbar, "");
 	
 				string tmpPath = file;
 				if (basePath != null)

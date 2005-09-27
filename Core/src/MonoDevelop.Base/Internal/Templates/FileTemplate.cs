@@ -13,13 +13,12 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	/// <summary>
 	/// This class defines and holds the new file templates.
@@ -171,7 +170,7 @@ namespace MonoDevelop.Internal.Templates
 				try {
 					LoadFileTemplate (codon.AddIn, codon.Resource);
 				} catch (Exception e) {
-					Runtime.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
+					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
 				}
 			}
 		}

@@ -11,10 +11,11 @@ using System.IO;
 using System.CodeDom.Compiler;
 using System.Text;
 
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Projects;
 
 namespace JavaBinding
 {

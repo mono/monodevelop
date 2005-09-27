@@ -10,18 +10,15 @@ using System.IO;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Conditions;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui;
-using MonoDevelop.TextEditor;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.DefaultEditor.Commands
+namespace MonoDevelop.SourceEditor.Commands
 {
 	public class ShowBufferOptions : AbstractMenuCommand
 	{
@@ -39,7 +36,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			ResourceService resourceService = (ResourceService)ServiceManager.Services.GetService(typeof(IResourceService));
 			*/
 			/*TabbedOptions o = new TabbedOptions(resourceService.GetString("Dialog.Options.BufferOptions"),
-			                                    ((IProperties)propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties())),
+			                                    ((IProperties)propertyService.GetProperty("MonoDevelop.SourceEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties())),
 			                                    AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));*/
 			//o.Width  = 450;
 			//o.Height = 425;

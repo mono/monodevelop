@@ -29,7 +29,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	public class DataCollection: IEnumerable
 	{

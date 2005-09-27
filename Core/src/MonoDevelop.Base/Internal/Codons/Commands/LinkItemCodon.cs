@@ -31,15 +31,15 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Commands;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute ("LinkItem")]
-	public class LinkItemCodon : AbstractCodon
+	internal class LinkItemCodon : AbstractCodon
 	{
 		[XmlMemberAttribute ("_label")]
 		string label;

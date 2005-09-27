@@ -10,10 +10,10 @@ using System.Text;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionIndexer : AbstractIndexer
+	internal class ReflectionIndexer : AbstractIndexer
 	{
 /*		string GetIndexerName(PropertyInfo propertyInfo)
 		{

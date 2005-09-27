@@ -9,12 +9,12 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Codons
 {
 	[ConditionAttribute()]
 	internal class CombineOpenCondition : AbstractCondition
@@ -33,7 +33,7 @@ namespace MonoDevelop.Core.AddIns
 		
 		public override bool IsValid(object owner)
 		{
-			return Runtime.ProjectService.CurrentOpenCombine != null || !isCombineOpen;
+			return IdeApp.ProjectOperations.CurrentOpenCombine != null || !isCombineOpen;
 		}
 	}
 }

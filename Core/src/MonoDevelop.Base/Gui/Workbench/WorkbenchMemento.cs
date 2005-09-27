@@ -11,7 +11,7 @@ using System.Xml;
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// This class contains the state of the <code>MdiWorkspace</code>, it is used to 

@@ -29,8 +29,9 @@
 using System;
 
 using Mono.Data.Sql;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoQuery
 {
@@ -70,7 +71,7 @@ namespace MonoQuery
 				try {
 					if (node.Provider.Open() == false) return;
 				} catch {
-					Runtime.MessageService.ShowMessage (GettextCatalog.GetString ("There was an error connecting to the database server."));
+					Services.MessageService.ShowMessage (GettextCatalog.GetString ("There was an error connecting to the database server."));
 					return;
 				}
 			}

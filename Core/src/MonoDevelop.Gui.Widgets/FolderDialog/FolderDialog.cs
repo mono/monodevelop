@@ -6,7 +6,7 @@
 using System;
 using Gtk;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 	public class FolderDialog : FileSelector
 	{

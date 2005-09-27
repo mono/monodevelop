@@ -8,14 +8,14 @@
 using System;
 using System.IO;
 using System.Text;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class AssemblyReferencePanel : HBox, IReferencePanel
 	{
@@ -72,7 +72,7 @@ namespace MonoDevelop.Gui.Dialogs
 					file);
 				} else {
 					// FIXME: il8n this
-					Runtime.MessageService.ShowError(String.Format (GettextCatalog.GetString ("File {0} is not a valid .Net Assembly"), file));
+					Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("File {0} is not a valid .Net Assembly"), file));
 				}
 			}
 		}

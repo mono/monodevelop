@@ -8,7 +8,7 @@
 using System;
 using System.Drawing.Printing;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
 	/// <summary>
 	/// If a IViewContent object is from the type IPrintable it signals

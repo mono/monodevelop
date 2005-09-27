@@ -12,9 +12,6 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.AddIns.Codons;
-
 namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>

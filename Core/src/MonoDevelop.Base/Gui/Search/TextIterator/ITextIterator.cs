@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// This iterator iterates on a text buffer strategy.

@@ -8,10 +8,7 @@
 using System;
 using System.Drawing;
 
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.ExternalTool;
-
-namespace MonoDevelop.Gui.Dialogs.OptionPanels 
+namespace MonoDevelop.Core.Gui.OptionPanels 
 {/*
 	public class PropertyGridPanel : AbstractOptionPanel
 	{

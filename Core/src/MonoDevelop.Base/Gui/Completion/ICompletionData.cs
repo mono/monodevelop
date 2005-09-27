@@ -6,11 +6,8 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Reflection;
-using System.Collections;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	public interface ICompletionData
 	{

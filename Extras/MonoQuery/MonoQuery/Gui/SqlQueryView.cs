@@ -35,10 +35,9 @@ using GtkSourceView;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoQuery
 {
@@ -148,7 +147,7 @@ namespace MonoQuery
 			service = (MonoQueryService)
 				ServiceManager.GetService (typeof (MonoQueryService));
 			changedHandler
-				 = (EventHandler) Runtime.DispatchService.GuiDispatch (
+				 = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
 					new EventHandler (OnProvidersChanged));
 			service.Providers.Changed += changedHandler;
 			
@@ -219,17 +218,17 @@ namespace MonoQuery
 			}
 
 			if (query.Trim ().Length > 0) {
-				Runtime.Gui.StatusBar.BeginProgress (
+				IdeApp.Workbench.StatusBar.BeginProgress (
 					GettextCatalog.GetString("Execuing sql query on")
 					+ String.Format (" {0}", Connection.Name));
-				Runtime.Gui.StatusBar.SetProgressFraction (0.1);
+				IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 
-				Runtime.Gui.StatusBar.SetMessage (
+				IdeApp.Workbench.StatusBar.SetMessage (
 					GettextCatalog.GetString ("Query sent, waiting for response."));
-				Runtime.Gui.StatusBar.SetProgressFraction (0.5);
+				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
-					Runtime.DispatchService.GuiDispatch (
+					MonoDevelop.Core.Gui.DispatchService.GuiDispatch (
 					new SQLCallback (OnExecuteReturn));
 
 				buf.MoveMark (buf.InsertMark, iter);
@@ -256,14 +255,14 @@ namespace MonoQuery
 			}
 
 			if (query.Trim ().Length > 0) {
-				Runtime.Gui.StatusBar.BeginProgress (
+				IdeApp.Workbench.StatusBar.BeginProgress (
 					GettextCatalog.GetString("Execuing sql query on")
 					+ String.Format (" {0}", Connection.Name));
-				Runtime.Gui.StatusBar.SetProgressFraction (0.1);
+				IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 
-				Runtime.Gui.StatusBar.SetMessage (
+				IdeApp.Workbench.StatusBar.SetMessage (
 					GettextCatalog.GetString ("Query sent, waiting for response."));
-				Runtime.Gui.StatusBar.SetProgressFraction (0.5);
+				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
 					Runtime.DispatchService.GuiDispatch (
@@ -280,19 +279,19 @@ namespace MonoQuery
 		
 		void OnExecuteReturn (object sender, object results)
 		{
-			Runtime.Gui.StatusBar.SetMessage (
+			IdeApp.Workbench.StatusBar.SetMessage (
 				GettextCatalog.GetString ("Query results received"));
-			Runtime.Gui.StatusBar.SetProgressFraction (0.9);
+			IdeApp.Workbench.StatusBar.SetProgressFraction (0.9);
 			
 			TextBuffer buf = (TextBuffer) sourceView.Buffer;
 			if (results == null) {
-				Runtime.Gui.StatusBar.ShowErrorMessage (
+				IdeApp.Workbench.StatusBar.ShowErrorMessage (
 					GettextCatalog.GetString ("Invalid select query"));
 				if (executeMode == 1)
 					sourceView.ScrollToMark (buf.InsertMark, 0.4, true, 0.0, 1.0);
 			} else {
 				DataGridView dataView = new DataGridView (results as DataTable);
-				Runtime.Gui.Workbench.ShowView (dataView, true);
+				IdeApp.Workbench.OpenDocument (dataView, true);
 
 				if (executeMode == 1) { 
 					// execute multiple SQL
@@ -301,16 +300,16 @@ namespace MonoQuery
 					string query = GetNextSqlStatement (buf, ref iter);
 					if (query.Trim ().Length > 0) {
 						SQLCallback callback = (SQLCallback)
-							Runtime.DispatchService.GuiDispatch (
+							MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
 							new SQLCallback (OnExecuteReturn));
 
 						// move insert mark to end of SQL statement to be executed
 						buf.MoveMark (buf.InsertMark, iter);
 						buf.MoveMark (buf.SelectionBound, iter);
 
-						Runtime.Gui.StatusBar.SetMessage (
+						IdeApp.Workbench.StatusBar.SetMessage (
 							GettextCatalog.GetString ("Query sent, waiting for response."));
-						Runtime.Gui.StatusBar.SetProgressFraction (0.5);
+						IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 						executeMode = 1;
 						offset = iter.Offset;
@@ -318,12 +317,12 @@ namespace MonoQuery
 					}
 					else {
 						sourceView.ScrollToMark (buf.InsertMark, 0.4, true, 0.0, 1.0);
-						Runtime.Gui.StatusBar.EndProgress ();
+						IdeApp.Workbench.StatusBar.EndProgress ();
 					}
 				}
 				else {
 					sourceView.ScrollToMark (buf.InsertMark, 0.4, true, 0.0, 1.0);
-					Runtime.Gui.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.EndProgress ();
 				}			
 			}
 		}
@@ -466,19 +465,19 @@ namespace MonoQuery
 		
 		void OnExplain (object sender, EventArgs args)
 		{
-			Runtime.Gui.StatusBar.BeginProgress (
+			IdeApp.Workbench.StatusBar.BeginProgress (
 				GettextCatalog.GetString("Execuing sql query on")
 				+ String.Format (" {0}", Connection.Name));
-			Runtime.Gui.StatusBar.SetProgressFraction (0.1);
+			IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 			
 			string query = sourceView.Buffer.Text;
 			SQLCallback callback = (SQLCallback)
-				Runtime.DispatchService.GuiDispatch (
+				MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
 				new SQLCallback (OnExecuteReturn));
 			
-			Runtime.Gui.StatusBar.SetMessage (
+			IdeApp.Workbench.StatusBar.SetMessage (
 				GettextCatalog.GetString ("Query sent, waiting for response."));
-			Runtime.Gui.StatusBar.SetProgressFraction (0.5);
+			IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 			
 			Connection.ExplainSQL (query, callback);
 		}

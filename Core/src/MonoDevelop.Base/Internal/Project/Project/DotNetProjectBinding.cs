@@ -29,11 +29,10 @@
 using System;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class DotNetProjectBinding : IProjectBinding
 	{
@@ -54,7 +53,7 @@ namespace MonoDevelop.Internal.Project
 		
 		public Project CreateSingleFileProject (string file)
 		{
-			ILanguageBinding binding = Runtime.Languages.GetBindingPerFileName (file);
+			ILanguageBinding binding = Services.Languages.GetBindingPerFileName (file);
 			if (binding != null) {
 				ProjectCreateInformation info = new ProjectCreateInformation ();
 				info.ProjectName = Path.GetFileNameWithoutExtension (file);

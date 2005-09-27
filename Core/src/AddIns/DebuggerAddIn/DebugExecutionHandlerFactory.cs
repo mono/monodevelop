@@ -28,7 +28,8 @@
 
 using System;
 using System.Threading;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Debugger
 		
 		public IExecutionHandler CreateExecutionHandler (string platformId)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				return null;
 
 			if (platformId == "Mono")

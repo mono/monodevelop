@@ -20,6 +20,16 @@ DLLS = /r:System.Drawing /r:ICSharpCode.SharpZipLib.dll \
 	$(MONODOC_LIBS)
 
 FILES= \
+IdeApplication/PadCollection.cs \
+IdeApplication/Pad.cs \
+IdeApplication/Document.cs \
+IdeApplication/DocumentCollection.cs \
+IdeApplication/Ide.cs \
+IdeApplication/ProjectOperations.cs \
+IdeApplication/HelpOperations.cs \
+IdeApplication/Workbench.cs \
+IdeApplication/ProgressMonitors.cs \
+IdeApplication/Services.cs \
 Gui/Pads/OpenTaskView.cs \
 Gui/Pads/FileScout/FileList.cs \
 Gui/Pads/FileScout/FileListItem.cs \
@@ -159,6 +169,7 @@ Gui/IWorkbench.cs \
 Gui/BrowserDisplayBinding/HtmlViewPane.cs \
 Gui/BrowserDisplayBinding/BrowserDisplayBinding.cs \
 Gui/IPadContent.cs \
+Gui/IPadContainer.cs \
 Gui/AbstractBaseViewContent.cs \
 Gui/PadContentCollection.cs \
 Gui/PixbufList.cs \
@@ -205,14 +216,13 @@ Commands/HelpCommands.cs \
 Commands/CustomStringTagProvider.cs \
 Commands/DebugCommands.cs \
 Commands/ProjectCommands.cs \
-Commands/VBConverter/ConvertProject.cs \
-Commands/VBConverter/ConvertBuffer.cs \
 Commands/EditCommands.cs \
 Commands/WindowCommands.cs \
-Commands/AutostartCommands.cs \
 Commands/ToolsCommands.cs \
 Commands/ViewCommands.cs \
 Commands/SearchCommands.cs \
+Services/ProjectsServices.cs \
+Services/ProjectsGuiServices.cs \
 Services/DebuggerService/IDebuggerService.cs \
 Services/DebuggerService/IBreakpoint.cs \
 Services/DebuggerService/BreakpointEventHandler.cs \
@@ -326,7 +336,6 @@ Internal/Codons/LanguageBinding/DefaultCompilerResult.cs \
 Internal/Codons/ProjectBinding/IProjectBinding.cs \
 Internal/Codons/ProjectBinding/ProjectBindingCodon.cs \
 Internal/Codons/DefaultDialogPanelDescriptor.cs \
-Internal/Codons/Toolbars/ToolbarItemCodon.cs \
 Internal/Codons/IDialogPanel.cs \
 Internal/Codons/DialogPanelCodon.cs \
 Internal/Codons/IDialogPanelDescriptor.cs \

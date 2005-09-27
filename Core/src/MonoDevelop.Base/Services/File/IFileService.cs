@@ -10,11 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// This interface describes the basic functions of the 
@@ -22,35 +18,6 @@ namespace MonoDevelop.Services
 	/// </summary>
 	public interface IFileService
 	{
-		/// <remarks>
-		/// gets the RecentOpen object.
-		/// </remarks>
-		RecentOpen RecentOpen {
-			get;
-		}
-		
-		/// <remarks>
-		/// Opens the file fileName in SharpDevelop (shows the file in
-		/// the workbench window)
-		/// </remarks>
-		IAsyncOperation OpenFile (string fileName);
-		IAsyncOperation OpenFile (string fileName, bool bringToFront);
-		IAsyncOperation OpenFile (string fileName, int line, int column, bool bringToFront);
-		
-		/// <remarks>
-		/// Opens a new file with a given name, language and file content
-		/// in the workbench window.
-		/// </remarks>
-		void NewFile(string defaultName, string language, string content);
-		
-		/// <remarks>
-		/// Gets an opened file by name, returns null, if the file is not open.
-		/// </remarks>
-		IWorkbenchWindow GetOpenFile(string fileName);
-		
-		void SaveFile (IWorkbenchWindow window);
-		void SaveFileAs (IWorkbenchWindow window);
-	
 		/// <remarks>
 		/// Removes a file physically
 		/// CAUTION : Use only this file for a remove operation, because it is important
@@ -86,5 +53,4 @@ namespace MonoDevelop.Services
 		/// </remarks>
 		event FileEventHandler FileCreated;
 	}
-	public delegate void FileOpeningFinished();
 }

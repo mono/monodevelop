@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
@@ -10,18 +10,18 @@ using System.IO;
 using System.Drawing;
 using System.ComponentModel;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 //using MonoDevelop.XmlForms;
-//using MonoDevelop.Gui.XmlForms;
+//using MonoDevelop.Core.Gui.XmlForms;
 using MonoDevelop.TextEditor;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class ReplaceInFilesDialog //: BaseSharpDevelopForm
 	{/*

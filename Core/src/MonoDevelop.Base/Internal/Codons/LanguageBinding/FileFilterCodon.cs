@@ -9,13 +9,14 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Services;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Projects.Extensions
 {
+	// FIXME: Unused
 	[CodonNameAttribute("FileFilter")]
-	public class FileFilterCodon : AbstractCodon
+	internal class FileFilterCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("name", IsRequired=true)]
 		string filtername       = null;

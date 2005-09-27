@@ -1,10 +1,9 @@
 using System;
 using Gtk;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 	public class FileSelector : FileChooserDialog
 	{
@@ -54,7 +53,7 @@ namespace MonoDevelop.Gui.Widgets
 				this.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
 
 			// add default project path as a MD bookmark
-			string pathName = propertyService.GetProperty ("MonoDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
+			string pathName = propertyService.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
 
 			if (fileUtilityService.IsDirectory (pathName))
 				this.AddShortcutFolder (pathName);

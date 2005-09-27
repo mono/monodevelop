@@ -8,29 +8,25 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using MonoDevelop.Core;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class ScriptDeploy : IDeploymentStrategy
 	{
 		public void DeployProject(Project project)
 		{
 			if (project.DeployInformation.DeployScript.Length == 0) {
-				Runtime.MessageService.ShowError(GettextCatalog.GetString ("Can't deploy: you forgot to specify a deployment script"));
-				return;
+				throw new Exception (GettextCatalog.GetString ("Can't deploy: you forgot to specify a deployment script"));
 			}
 			try {
-				FileUtilityService fileUtilityService = Runtime.FileUtilityService;
-				if (fileUtilityService.TestFileExists(project.DeployInformation.DeployScript)) {
+				if (File.Exists (project.DeployInformation.DeployScript)) {
 					ProcessStartInfo pInfo = new ProcessStartInfo(project.DeployInformation.DeployScript);
 					pInfo.WorkingDirectory = Path.GetDirectoryName(project.DeployInformation.DeployScript);
 					Process.Start(pInfo);
 				}
 			} catch (Exception e) {
-				Runtime.MessageService.ShowError(e, GettextCatalog.GetString ("Error while executing deploy script"));
+				throw new Exception (GettextCatalog.GetString ("Error while executing deploy script"), e);
 			}
 		}
 	}

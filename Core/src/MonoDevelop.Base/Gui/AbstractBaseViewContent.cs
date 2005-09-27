@@ -8,9 +8,9 @@
 using System;
 //using System.Windows.Forms;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	public abstract class AbstractBaseViewContent : IBaseViewContent
 	{

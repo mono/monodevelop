@@ -9,16 +9,17 @@ using System;
 using System.Collections;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Components.Commands;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.ExternalTool;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.ExternalTools;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum ToolCommands
 	{
@@ -38,7 +39,7 @@ namespace MonoDevelop.Commands
 		
 		protected override void Run (object tool)
 		{
-			Runtime.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunTool), tool);
+			Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunTool), tool);
 		}
 
 		private void RunTool (object ob)
@@ -52,7 +53,7 @@ namespace MonoDevelop.Commands
 			string args = stringParserService.Parse(tool.Arguments);
 			// prompt for args if needed
 			if (tool.PromptForArguments) {
-				args = Runtime.MessageService.GetTextResponse(String.Format (GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:"), tool.MenuCommand), String.Format (GettextCatalog.GetString ("Command Arguments for {0}"), tool.MenuCommand), args);
+				args = Services.MessageService.GetTextResponse(String.Format (GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:"), tool.MenuCommand), String.Format (GettextCatalog.GetString ("Command Arguments for {0}"), tool.MenuCommand), args);
 					
 				// if user selected cancel string will be null
 				if (args == null) {
@@ -65,7 +66,7 @@ namespace MonoDevelop.Commands
 			Runtime.LoggingService.Debug("args    : " + args);
 			
 			// create the process
-			IProgressMonitor monitor = Runtime.TaskService.GetRunProgressMonitor ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			monitor.Log.WriteLine ("Running: {0} {1} ...", command, args);
 			monitor.Log.WriteLine ();
 			

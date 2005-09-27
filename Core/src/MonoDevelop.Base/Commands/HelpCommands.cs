@@ -11,14 +11,15 @@ using System.IO;
 using System.Collections;
 using Gtk;
 
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum HelpCommands
 	{

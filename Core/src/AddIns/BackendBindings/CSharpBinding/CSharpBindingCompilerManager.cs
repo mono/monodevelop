@@ -13,12 +13,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Core.Services;
-
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace CSharpBinding
 {
@@ -56,7 +52,7 @@ namespace CSharpBinding
 							string pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
 							if (pkg.Trim () == String.Empty) {
 								string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
-								Runtime.MessageService.ShowWarning (msg);
+								monitor.ReportWarning (msg);
 								continue;
 							}
 							if (pkg == "MONO-SYSTEM") {
@@ -271,8 +267,7 @@ namespace CSharpBinding
 					break;
 				case ReferenceType.Project:
 					//string project_fileName = lib.GetReferencedFileName ();
-					IProjectService prjService = (IProjectService)ServiceManager.GetService (typeof (IProjectService));
-					CombineEntryCollection allProjects = prjService.CurrentOpenCombine.GetAllProjects();
+					CombineEntryCollection allProjects = project.RootCombine.GetAllProjects();
 					
 					foreach (Project projectEntry in allProjects) {
 						if (projectEntry.Name == lib.Reference) {

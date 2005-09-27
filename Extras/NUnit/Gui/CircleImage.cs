@@ -29,9 +29,8 @@
 using System;
 using Gdk;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {

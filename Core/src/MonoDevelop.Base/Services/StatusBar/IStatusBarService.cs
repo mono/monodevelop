@@ -5,11 +5,11 @@
 //     <version value="$version"/>
 // </file>
 using System.Drawing;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using Gtk;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core.Gui.Components;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {
 	public interface IStatusBarService
 	{

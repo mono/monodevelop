@@ -8,7 +8,7 @@
 using System;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.AddIns
 {

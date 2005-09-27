@@ -12,9 +12,9 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	/// <summary>
 	/// This class defines and holds text templates

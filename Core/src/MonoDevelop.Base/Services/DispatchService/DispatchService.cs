@@ -2,10 +2,9 @@ using System;
 using System.Threading;
 using System.Collections;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	public class DispatchService : AbstractService
 	{
@@ -83,7 +82,14 @@ namespace MonoDevelop.Services
 				Gtk.Application.RunIteration ();
 			guiDispatcher ();
 		}
-
+		
+		public void RunPendingEvents ()
+		{
+			while (Gtk.Application.EventsPending ())
+				Gtk.Application.RunIteration ();
+			guiDispatcher ();
+		}
+		
 		void QueueMessage (object msg)
 		{
 			lock (arrGuiQueue) {
@@ -130,19 +136,29 @@ namespace MonoDevelop.Services
 
 		private bool guiDispatcher ()
 		{
-			ArrayList msgList;
+			GenericMessageContainer msg;
+			int iterCount;
 			
 			lock (arrGuiQueue) {
-				if (arrGuiQueue.Count == 0) {
+				iterCount = arrGuiQueue.Count;
+				if (iterCount == 0) {
 					iIdle = 0;
 					return false;
 				}
-				msgList = (ArrayList) arrGuiQueue.Clone ();
-				arrGuiQueue.Clear ();
 			}
-
-			foreach (GenericMessageContainer msg in msgList) {
+			
+			for (int n=0; n<iterCount; n++) {
+				lock (arrGuiQueue) {
+					if (arrGuiQueue.Count == 0) {
+						iIdle = 0;
+						return false;
+					}
+					msg = (GenericMessageContainer) arrGuiQueue [0];
+					arrGuiQueue.RemoveAt (0);
+				}
+				
 				msg.Run ();
+				
 				if (msg.IsSynchronous)
 					lock (msg) Monitor.PulseAll (msg);
 				else if (msg.Exception != null)
@@ -153,10 +169,9 @@ namespace MonoDevelop.Services
 				if (arrGuiQueue.Count == 0) {
 					iIdle = 0;
 					return false;
-				}
+				} else
+					return true;
 			}
-
-			return true;
 		}
 
 		private void backgroundDispatcher ()
@@ -209,7 +224,7 @@ namespace MonoDevelop.Services
 		{
 			callback = cb;
 			this.isSynchronous = isSynchronous;
-			if (Runtime.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
+			if (Services.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
 
 		public virtual void Run ()
@@ -248,7 +263,7 @@ namespace MonoDevelop.Services
 			data = state;
 			callback = cb;
 			this.isSynchronous = isSynchronous;
-			if (Runtime.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
+			if (Services.DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
 		}
 		
 		public override void Run ()

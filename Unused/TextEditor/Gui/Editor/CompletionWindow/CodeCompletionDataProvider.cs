@@ -14,14 +14,13 @@ using System.Collections.Specialized;
 using System.Xml;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.TextEditor;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 using SharpDevelop.Internal.Parser;
 using MonoDevelop.TextEditor.Gui.CompletionWindow;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.DefaultEditor.Gui.Editor
 {
@@ -66,7 +65,7 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 			if (expression.Length == 0) {
 				return null;
 			}
-			IParserService           parserService           = (IParserService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));
+			IParserService           parserService           = (IParserService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IParserService));
 			if (charTyped == ' ') {
 				if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing")) {
 					string[] namespaces = parserService.GetNamespaceList("");

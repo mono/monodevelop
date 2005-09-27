@@ -27,10 +27,10 @@
 //
 
 using System;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	internal class ConfigurationComboBox: Gtk.Alignment
 	{
@@ -47,11 +47,11 @@ namespace MonoDevelop.Gui
 			Add (combo);
 			ShowAll ();
 			
-			onActiveConfigurationChanged = (ConfigurationEventHandler) Runtime.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
-			onConfigurationsChanged = (ConfigurationEventHandler) Runtime.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
+			onActiveConfigurationChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnActiveConfigurationChanged));
+			onConfigurationsChanged = (ConfigurationEventHandler) Services.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
 			
-			Runtime.ProjectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
-			Runtime.ProjectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CloseCombine));
 			Reset ();
 		}
 		
@@ -97,7 +97,7 @@ namespace MonoDevelop.Gui
 		void OnConfigurationsChanged (object sender, ConfigurationEventArgs e)
 		{
 			Console.WriteLine ("combo OnConfigurationsChanged");
-			RefreshCombo (Runtime.ProjectService.CurrentOpenCombine);
+			RefreshCombo (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		void OnActiveConfigurationChanged (object sender, ConfigurationEventArgs e)
@@ -114,12 +114,12 @@ namespace MonoDevelop.Gui
 		
 		protected void OnChanged (object sender, EventArgs args)
 		{
-			if (Runtime.ProjectService.CurrentOpenCombine != null) {
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				Gtk.TreeIter iter;
 				if (combo.GetActiveIter (out iter)) {
 					string cs = (string) combo.Model.GetValue (iter, 0);
-					IConfiguration conf = Runtime.ProjectService.CurrentOpenCombine.GetConfiguration (cs);
-					Runtime.ProjectService.CurrentOpenCombine.ActiveConfiguration = conf;
+					IConfiguration conf = IdeApp.ProjectOperations.CurrentOpenCombine.GetConfiguration (cs);
+					IdeApp.ProjectOperations.CurrentOpenCombine.ActiveConfiguration = conf;
 				}
 			}
 		}

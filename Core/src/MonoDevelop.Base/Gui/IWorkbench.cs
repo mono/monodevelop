@@ -7,8 +7,9 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	public class WorkbenchContext
 	{
@@ -46,7 +47,7 @@ namespace MonoDevelop.Gui
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	public interface IWorkbench : IMementoCapable
+	internal interface IWorkbench : IMementoCapable
 	{
 		/// <summary>
 		/// The title shown in the title bar.
@@ -81,7 +82,7 @@ namespace MonoDevelop.Gui
 			get;
 			set;
 		}
-				
+		
 		/// <summary>
 		/// Inserts a new <see cref="IViewContent"/> object in the workspace.
 		/// </summary>
@@ -91,6 +92,8 @@ namespace MonoDevelop.Gui
 		/// Inserts a new <see cref="IPadContent"/> object in the workspace.
 		/// </summary>
 		void ShowPad(IPadContent content);
+		
+		void CloseContent(IViewContent content);
 		
 		/// <summary>
 		/// Returns a pad from a specific type.
@@ -103,18 +106,13 @@ namespace MonoDevelop.Gui
 		void BringToFront (IPadContent content);
 		
 		/// <summary>
-		/// Closes the IViewContent content when content is open.
-		/// </summary>
-		void CloseContent(IViewContent content);
-		
-		/// <summary>
 		/// Closes all views inside the workbench.
 		/// </summary>
 		void CloseAllViews();
 		
 		/// <summary>
 		/// Re-initializes all components of the workbench, should be called
-		/// when a special property is changed that affects layout stuff.
+		/// when a special property is changed that affects layout st	uff.
 		/// (like language change) 
 		/// </summary>
 		void RedrawAllComponents();

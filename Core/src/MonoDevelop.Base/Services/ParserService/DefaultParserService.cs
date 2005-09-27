@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Collections;
-using System.Collections.Utility;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -20,14 +19,14 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using System.Xml;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Utility;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	public class DefaultParserService : AbstractService, IParserService
 	{
@@ -415,17 +414,6 @@ namespace MonoDevelop.Services
 			return parserService.GetExpressionFinder (fileName);
 		}
 		
-		private bool ContinueWithProcess(IProgressMonitor progressMonitor)
-		{
-			while (Gtk.Application.EventsPending ())
-				Gtk.Application.RunIteration ();
-
-			if (progressMonitor.IsCancelRequested)
-				return false;
-			else
-				return true;
-		}
-	
 		public void GenerateCodeCompletionDatabase(string createPath, IProgressMonitor progressMonitor)
 		{
 			if (progressMonitor != null)
@@ -441,7 +429,7 @@ namespace MonoDevelop.Services
 					if (progressMonitor != null)
 						progressMonitor.Step (1);
 						
-					if (!ContinueWithProcess (progressMonitor))
+					if (progressMonitor.IsCancelRequested)
 						return;
 				}
 				catch (Exception ex) {
@@ -463,6 +451,7 @@ namespace MonoDevelop.Services
 				propertyService.SetProperty ("SharpDevelop.CodeCompletion.DataDirectory", path);
 				propertyService.SaveProperties ();
 			}
+			path = Path.Combine (Runtime.FileUtilityService.GetDirectoryNameWithSeparator(propertyService.ConfigDirectory), "CodeCompletionData2");
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 

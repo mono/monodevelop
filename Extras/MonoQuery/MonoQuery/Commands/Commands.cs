@@ -29,10 +29,10 @@
 using System;
 using System.Reflection;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 using Gtk;
 

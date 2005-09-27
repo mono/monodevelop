@@ -10,17 +10,15 @@ using System.IO;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui;
-using MonoDevelop.TextEditor;
-using MonoDevelop.TextEditor.Actions;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Actions;
 
-namespace MonoDevelop.DefaultEditor.Commands
+namespace MonoDevelop.SourceEditor.Commands
 {
 	public class RemoveLeadingWS : AbstractEditActionMenuCommand
 	{
@@ -28,7 +26,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.RemoveLeadingWS();
+				//return new MonoDevelop.SourceEditor.Actions.RemoveLeadingWS();
 			}
 		}
 	}
@@ -39,7 +37,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.RemoveTrailingWS();
+				//return new MonoDevelop.SourceEditor.Actions.RemoveTrailingWS();
 			}
 		}
 	}
@@ -51,7 +49,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ToUpperCase();
+				//return new MonoDevelop.SourceEditor.Actions.ToUpperCase();
 			}
 		}
 	}
@@ -62,7 +60,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ToLowerCase();
+				//return new MonoDevelop.SourceEditor.Actions.ToLowerCase();
 			}
 		}
 	}
@@ -73,7 +71,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.InvertCaseAction();
+				//return new MonoDevelop.SourceEditor.Actions.InvertCaseAction();
 			}
 		}
 	}
@@ -84,7 +82,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.CapitalizeAction();
+				//return new MonoDevelop.SourceEditor.Actions.CapitalizeAction();
 			}
 		}
 	}
@@ -95,7 +93,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ConvertTabsToSpaces();
+				//return new MonoDevelop.SourceEditor.Actions.ConvertTabsToSpaces();
 			}
 		}
 	}
@@ -106,7 +104,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ConvertSpacesToTabs();
+				//return new MonoDevelop.SourceEditor.Actions.ConvertSpacesToTabs();
 			}
 		}
 	}
@@ -117,7 +115,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new Editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ConvertLeadingTabsToSpaces();
+				//return new MonoDevelop.SourceEditor.Actions.ConvertLeadingTabsToSpaces();
 			}
 		}
 	}
@@ -128,7 +126,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new Editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.ConvertLeadingSpacesToTabs();
+				//return new MonoDevelop.SourceEditor.Actions.ConvertLeadingSpacesToTabs();
 			}
 		}
 	}
@@ -142,7 +140,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			get {
 				Console.WriteLine ("Not implemented in the new Editor");
 				return null;
-				//return new MonoDevelop.TextEditor.Actions.FormatBuffer();
+				//return new MonoDevelop.SourceEditor.Actions.FormatBuffer();
 			}
 		}
 	}

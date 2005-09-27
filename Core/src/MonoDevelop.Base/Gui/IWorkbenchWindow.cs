@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// The IWorkbenchWindow is the basic interface to a window which
@@ -87,6 +87,27 @@ namespace MonoDevelop.Gui
 		/// <summary>
 		/// Is called after the window closes.
 		/// </summary>
-		event EventHandler CloseEvent;
+		event WorkbenchWindowEventHandler Closing;
+		
+		/// <summary>
+		/// Is called after the window closes.
+		/// </summary>
+		event EventHandler Closed;
+	}
+	
+	public delegate void WorkbenchWindowEventHandler (object sender, WorkbenchWindowEventArgs args);
+	
+	public class WorkbenchWindowEventArgs: System.ComponentModel.CancelEventArgs
+	{
+		bool forced;
+		
+		public WorkbenchWindowEventArgs (bool forced)
+		{
+			this.forced = forced;
+		}
+		
+		public bool Forced {
+			get { return forced; }
+		}
 	}
 }

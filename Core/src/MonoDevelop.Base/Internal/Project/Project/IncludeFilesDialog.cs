@@ -11,14 +11,14 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 using Gtk;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public class IncludeFilesDialog
 	{
@@ -126,7 +126,7 @@ namespace MonoDevelop.Internal.Project
 				store.IterNext(ref current);
 			}
 			
-			Runtime.ProjectService.SaveCombine ();
+			IdeApp.ProjectOperations.SaveCombine ();
 			
 			IncludeFilesDialogWidget.Destroy();
 		}

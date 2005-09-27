@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public delegate void CombineEntryRenamedEventHandler (object sender, CombineEntryRenamedEventArgs e);
 	

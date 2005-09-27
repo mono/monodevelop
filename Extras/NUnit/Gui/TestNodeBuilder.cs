@@ -29,10 +29,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
+using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {
@@ -43,8 +47,8 @@ namespace MonoDevelop.NUnit
 		
 		public TestNodeBuilder ()
 		{
-			testChanged = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnTestChanged));
-			testStatusChanged = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnTestStatusChanged));
+			testChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnTestChanged));
+			testStatusChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnTestStatusChanged));
 		}
 		
 		public override Type CommandHandlerType {
@@ -163,7 +167,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			SourceCodeLocation loc = test.SourceCodeLocation;
 			if (loc != null)
-				Runtime.FileService.OpenFile (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]

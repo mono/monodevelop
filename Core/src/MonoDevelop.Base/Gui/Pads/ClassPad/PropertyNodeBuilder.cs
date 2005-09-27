@@ -29,11 +29,12 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class PropertyNodeBuilder: MemberNodeBuilder
 	{
@@ -45,7 +46,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		{
 			IProperty data = dataObject as IProperty;
 			label = data.Name;
-			icon = Context.GetIcon (Runtime.Gui.Icons.GetIcon (data));
+			icon = Context.GetIcon (Services.Icons.GetIcon (data));
 		}
 	}
 }

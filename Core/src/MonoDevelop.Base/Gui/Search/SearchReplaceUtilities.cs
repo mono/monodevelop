@@ -7,14 +7,17 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal sealed class SearchReplaceUtilities
 	{
 		public static bool IsTextAreaSelected {
 			get {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is ITextBuffer;
+				return IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Content is ITextBuffer;
 			}
 		}
 		

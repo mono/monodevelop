@@ -30,13 +30,13 @@ using System;
 using System.Collections;
 using System.Threading;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using NUnit.Core;
+using MonoDevelop.Ide.Gui;
+using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {
@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 	{
 		ArrayList providers = new ArrayList ();
 		UnitTest rootTest;
-		TestResultsPad resultsPad;
+		Pad resultsPad;
 		
 		public NUnitService ()
 		{
@@ -53,22 +53,22 @@ namespace MonoDevelop.NUnit
 		public override void InitializeService ()
 		{
 			RegisterTestProvider (new SystemTestProvider ());
-			Runtime.ProjectService.CombineOpened += new CombineEventHandler (OnOpenCombine);
-			Runtime.ProjectService.CombineClosed += new CombineEventHandler (OnCloseCombine);
+			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (OnOpenCombine);
+			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCloseCombine);
 			
-			Runtime.ProjectService.DataContext.IncludeType (typeof(UnitTestOptionsSet));
-			Runtime.ProjectService.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
+			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
+			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test)
 		{
 			if (resultsPad == null) {
-				resultsPad = new TestResultsPad ();
-				Runtime.Gui.Workbench.ShowPad (resultsPad);
+				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad ());
 			}
 			
-			Runtime.Gui.Workbench.BringToFront (resultsPad);
-			TestSession session = new TestSession (test, resultsPad);
+			resultsPad.BringToFront ();
+			TestSession session = new TestSession (test, (TestResultsPad) resultsPad.Content);
 			session.Start ();
 			return session;
 		}
@@ -139,14 +139,15 @@ namespace MonoDevelop.NUnit
 				foreach (Type t in types) {
 					if (!typeof(ICloneable).IsAssignableFrom (t))
 						throw new InvalidOperationException ("Option types must implement ICloneable: " + t);
-					Runtime.ProjectService.DataContext.IncludeType (t);
+					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+					ps.DataContext.IncludeType (t);
 				}
 			}
 		}
 		
 		public static void ShowOptionsDialog (UnitTest test)
 		{
-			UnitTestOptionsDialog optionsDialog = new UnitTestOptionsDialog ((Gtk.Window)WorkbenchSingleton.Workbench, test);
+			UnitTestOptionsDialog optionsDialog = new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, test);
 			optionsDialog.Run ();
 		}
 		
@@ -239,7 +240,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (IsCompleted) return;
 			
-			if (Runtime.DispatchService.IsGuiThread) {
+			if (GuiServices.DispatchService.IsGuiThread) {
 				while (!IsCompleted) {
 					while (Gtk.Application.EventsPending ())
 						Gtk.Application.RunIteration ();

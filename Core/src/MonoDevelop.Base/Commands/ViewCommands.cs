@@ -9,15 +9,17 @@ using System;
 using System.Collections;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Components.Commands;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum ViewCommands
 	{
@@ -35,7 +37,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen = !((DefaultWorkbench)WorkbenchSingleton.Workbench).FullScreen;
+			IdeApp.Workbench.FullScreen = !IdeApp.Workbench.FullScreen;
 		}
 	}
 	
@@ -53,16 +55,16 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			if (Runtime.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), "MonoDevelop")) {
-				string clayout = WorkbenchSingleton.Workbench.WorkbenchLayout.CurrentLayout;
-				WorkbenchSingleton.Workbench.WorkbenchLayout.CurrentLayout = "Default";
-				WorkbenchSingleton.Workbench.WorkbenchLayout.DeleteLayout (clayout);
+			if (Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), "MonoDevelop")) {
+				string clayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = "Default";
+				IdeApp.Workbench.DeleteLayout (clayout);
 			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = WorkbenchSingleton.Workbench.WorkbenchLayout != null && WorkbenchSingleton.Workbench.WorkbenchLayout.CurrentLayout != "Default";
+			info.Enabled = IdeApp.Workbench.CurrentLayout != "Default";
 		}
 	}
 	
@@ -70,26 +72,18 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			IWorkbench wb = WorkbenchSingleton.Workbench;
-			if (wb.WorkbenchLayout != null) {
-				PadContentCollection pads = wb.WorkbenchLayout.PadContentCollection;
-				foreach (IPadContent padContent in pads) {
-					CommandInfo cmd = new CommandInfo (padContent.Title);
-					cmd.UseMarkup = true;
-					cmd.Checked = WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible (padContent);
-					info.Add (cmd, padContent);
-				}
+			foreach (Pad pad in IdeApp.Workbench.Pads) {
+				CommandInfo cmd = new CommandInfo (pad.Title);
+				cmd.UseMarkup = true;
+				cmd.Checked = pad.Visible;
+				info.Add (cmd, pad);
 			}
 		}
 		
 		protected override void Run (object ob)
 		{
-			IPadContent padContent = (IPadContent) ob;
-			if (WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible (padContent)) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad (padContent);
-			} else {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad (padContent);
-			}
+			Pad pad = (Pad) ob;
+			pad.Visible = !pad.Visible;
 		}
 	}
 	
@@ -97,21 +91,18 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			IWorkbench wb = WorkbenchSingleton.Workbench;
-			if (wb.WorkbenchLayout != null) {
-				string[] layouts = wb.WorkbenchLayout.Layouts;
-				Array.Sort (layouts);
-				foreach (string layout in layouts) {
-					CommandInfo cmd = new CommandInfo (layout);
-					cmd.Checked = (layout == wb.WorkbenchLayout.CurrentLayout);
-					info.Add (cmd, layout);
-				}
+			string[] layouts = IdeApp.Workbench.Layouts;
+			Array.Sort (layouts);
+			foreach (string layout in layouts) {
+				CommandInfo cmd = new CommandInfo (layout);
+				cmd.Checked = (layout == IdeApp.Workbench.CurrentLayout);
+				info.Add (cmd, layout);
 			}
 		}
 		
 		protected override void Run (object layout)
 		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.CurrentLayout = (string) layout;
+			IdeApp.Workbench.CurrentLayout = (string) layout;
 		}
 	}
 }

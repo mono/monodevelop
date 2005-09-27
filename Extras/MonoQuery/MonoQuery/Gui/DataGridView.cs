@@ -33,8 +33,9 @@ using Gtk;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoQuery
 {

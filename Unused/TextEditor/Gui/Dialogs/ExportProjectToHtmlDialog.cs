@@ -15,12 +15,12 @@ using System.IO;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.TextEditor.Util;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class ExportProjectToHtmlDialog //: Form
 	{/*

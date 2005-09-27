@@ -8,12 +8,13 @@ using System;
 using System.Diagnostics;
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {
 	internal class DefaultStatusBarService : GuiSyncAbstractService, IStatusBarService
 	{
@@ -22,13 +23,13 @@ namespace MonoDevelop.Services
 		
 		public DefaultStatusBarService()
 		{
-			statusBar = new SdStatusBar(this);
+			statusBar = new SdStatusBar ();
 		}
 		
 		protected override void OnInitialize (EventArgs e)
 		{
 			base.OnInitialize (e);
-			Runtime.ProjectService.CombineClosed += new CombineEventHandler (OnCombineClosed);
+			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCombineClosed);
 		}
 
 		public void Dispose()

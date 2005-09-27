@@ -17,10 +17,7 @@ using System.Xml.Schema;
 using System.Text;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Core.AddIns
 {
@@ -37,6 +34,8 @@ namespace MonoDevelop.Core.AddIns
 		string description = null;
 		string version     = null;
 		string fileName    = null;
+		
+		AddIn[] dependencies = new AddIn [0];
 		
 		Hashtable        runtimeLibraries       = new Hashtable();
 		
@@ -119,6 +118,10 @@ namespace MonoDevelop.Core.AddIns
 			get {
 				return runtimeLibraries;
 			}
+		}
+		
+		public AddIn[] Dependencies {
+			get { return dependencies; }
 		}
 		
 		/// <summary>
@@ -243,6 +246,8 @@ namespace MonoDevelop.Core.AddIns
 		void CheckDependencies (XmlElement deps)
 		{
 			if (deps != null) {
+				ArrayList list = new ArrayList ();
+				
 				foreach (object o in deps.ChildNodes) {
 					XmlElement dep = o as XmlElement;
 					if (dep == null) continue;
@@ -252,10 +257,12 @@ namespace MonoDevelop.Core.AddIns
 							AddIn addin = AddInTreeSingleton.AddInTree.AddIns [aname];
 							if (addin == null)
 								throw new MissingDependencyException ("Addin: " + aname);
+							list.Add (addin);
 							break;
 						}
 					}
 				}
+				dependencies = (AddIn[]) list.ToArray (typeof(AddIn));
 			}
 		}
 		
@@ -496,6 +503,13 @@ namespace MonoDevelop.Core.AddIns
 				Type t = ((Assembly)library.Value).GetType (className);
 				if (t != null)
 					return t;
+			}
+			
+			// Look in dependencies
+			
+			foreach (AddIn dep in Dependencies) {
+				Type t = dep.GetType (className);
+				if (t != null) return t;
 			}
 			
 			Type ct = Assembly.GetExecutingAssembly().GetType (className);

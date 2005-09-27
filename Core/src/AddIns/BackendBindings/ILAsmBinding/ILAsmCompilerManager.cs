@@ -14,11 +14,10 @@ using System.Text.RegularExpressions;
 using System.CodeDom.Compiler;
 using Gtk;
 
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
 namespace ILAsmBinding
 {

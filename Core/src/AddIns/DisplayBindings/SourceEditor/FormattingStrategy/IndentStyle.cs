@@ -1,4 +1,4 @@
-namespace MonoDevelop.EditorBindings.FormattingStrategy {
+namespace MonoDevelop.SourceEditor.FormattingStrategy {
 	/// <summary>
 	/// Describes the indent style
 	/// </summary>

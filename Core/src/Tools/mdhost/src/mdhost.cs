@@ -28,7 +28,8 @@
 
 
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;

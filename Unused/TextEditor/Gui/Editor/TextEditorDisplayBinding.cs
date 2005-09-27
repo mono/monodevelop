@@ -10,18 +10,17 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Printing;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.TextEditor;
 using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Undo;
 
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DefaultEditor.Gui.Editor
 {
@@ -335,13 +334,13 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 		{
 			Point    pos       = textAreaControl.Document.OffsetToPosition(textAreaControl.ActiveTextAreaControl.Caret.Offset);
 			LineSegment line   = textAreaControl.Document.GetLineSegment(pos.Y);
-			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));
+			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IStatusBarService));
 			statusBarService.SetCaretPosition(pos.X + 1, pos.Y + 1, textAreaControl.ActiveTextAreaControl.Caret.Offset - line.Offset + 1);
 		}
 		
 		void CaretModeChanged(object sender, EventArgs e)
 		{
-			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));
+			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IStatusBarService));
 			statusBarService.SetInsertMode(textAreaControl.ActiveTextAreaControl.Caret.CaretMode == CaretMode.InsertMode);
 		}
 				
@@ -378,7 +377,7 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 		}
 		
 
-#region MonoDevelop.Gui.IClipboardHandler interface implementation
+#region MonoDevelop.Core.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {
 			get {
 				return textAreaControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut;

@@ -1,10 +1,11 @@
 using System;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Codons
 {
 	[ConditionAttribute()]
 	internal class WorkbenchContextCondition : AbstractCondition
@@ -26,13 +27,10 @@ namespace MonoDevelop.Core.AddIns
 
 		public override bool IsValid (object owner)
 		{
-			if (WorkbenchSingleton.Workbench == null)
-				return false;
-
 			if (context == "*")
 				return true;
 
-			if (context == WorkbenchSingleton.Workbench.Context.Id)
+			if (context == IdeApp.Workbench.Context.Id)
 				return true;
 
 			return false;

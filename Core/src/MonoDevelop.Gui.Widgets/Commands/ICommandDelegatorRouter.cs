@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	// Redirects the command route to the object returned by
 	// GetDelegatedCommandTarget and when done, continues with

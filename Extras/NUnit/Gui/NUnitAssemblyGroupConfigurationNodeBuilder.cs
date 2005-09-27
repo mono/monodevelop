@@ -29,12 +29,15 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
+using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {
@@ -44,7 +47,7 @@ namespace MonoDevelop.NUnit
 		
 		public NUnitAssemblyGroupConfigurationNodeBuilder ()
 		{
-			assembliesChanged = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnAssembliesChanged));
+			assembliesChanged = (EventHandler) GuiServices.DispatchService.GuiDispatch (new EventHandler (OnAssembliesChanged));
 		}
 		
 		public override Type CommandHandlerType {
@@ -123,7 +126,7 @@ namespace MonoDevelop.NUnit
 				foreach (string file in fdiag.Filenames)
 					config.Assemblies.Add (new TestAssembly (file));
 				
-				Runtime.ProjectService.SaveCombine();
+				IdeApp.ProjectOperations.SaveCombine();
 			}
 			finally {
 				fdiag.Destroy ();

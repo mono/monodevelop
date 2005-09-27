@@ -10,7 +10,7 @@ using System.Text;
 using System.Reflection;
 using System.Xml;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.SharpAssembly.Metadata.Rows;
 using MonoDevelop.SharpAssembly.Metadata;
 using MonoDevelop.SharpAssembly.PE;
@@ -18,10 +18,10 @@ using SharpAssembly_=MonoDevelop.SharpAssembly.Assembly.SharpAssembly;
 using AssemblyReader=MonoDevelop.SharpAssembly.Assembly.AssemblyReader;
 using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribute;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	public class SharpAssemblyEvent : AbstractEvent
+	internal class SharpAssemblyEvent : AbstractEvent
 	{
 		public SharpAssemblyEvent(SharpAssembly_ asm, Event[] eventTable, SharpAssemblyClass declaringtype, uint index)
 		{

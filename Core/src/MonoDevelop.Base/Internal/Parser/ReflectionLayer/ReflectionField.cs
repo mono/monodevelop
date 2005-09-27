@@ -10,10 +10,10 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionField : AbstractField
+	internal class ReflectionField : AbstractField
 	{
 		public ReflectionField(FieldInfo fieldInfo, XmlDocument docs)
 		{

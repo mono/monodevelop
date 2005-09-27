@@ -11,10 +11,10 @@ using System.CodeDom.Compiler;
 using Gtk;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
+using MonoDevelop.Core.Gui.Codons;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	/// <summary>
 	/// This interface extends the IDialogPanel interface with wizard specific

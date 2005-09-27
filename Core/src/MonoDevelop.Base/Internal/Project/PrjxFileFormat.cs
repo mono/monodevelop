@@ -29,12 +29,12 @@
 using System;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
-	public class PrjxFileFormat: IFileFormat
+	internal class PrjxFileFormat: IFileFormat
 	{
 		public string Name {
 			get { return "SharpDevelop Project"; }
@@ -64,7 +64,7 @@ namespace MonoDevelop.Internal.Project
 			StreamWriter sw = new StreamWriter (file);
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving project: {0}"), file), 1);
-				XmlDataSerializer ser = new XmlDataSerializer (Runtime.ProjectService.DataContext);
+				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
 				ser.SerializationContext.BaseFile = file;
 				ser.Serialize (sw, project, typeof(Project));
 			} catch (Exception ex) {
@@ -83,7 +83,7 @@ namespace MonoDevelop.Internal.Project
 			string version = reader.GetAttribute ("version");
 			if (version == null) version = reader.GetAttribute ("fileversion");
 			
-			DataSerializer serializer = new DataSerializer (Runtime.ProjectService.DataContext, fileName);
+			DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, fileName);
 			IProjectReader projectReader = null;
 			
 			if (version == "1.0" || version == "1") {
@@ -171,10 +171,10 @@ namespace MonoDevelop.Internal.Project
 		{
 			if (reader.LocalName == "Configurations")
 			{
-				ILanguageBinding binding = Runtime.Languages.GetBindingPerLanguageName (project.LanguageName);
+				ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName);
 				object confObj = binding.CreateCompilationParameters (null);
 				Type confType = confObj.GetType ();
-				DataContext prjContext = Runtime.ProjectService.DataContext;
+				DataContext prjContext = Services.ProjectService.DataContext;
 				
 				DataItem item = base.ReadChild (reader, parent) as DataItem;
 				foreach (DataNode data in item.ItemData) {

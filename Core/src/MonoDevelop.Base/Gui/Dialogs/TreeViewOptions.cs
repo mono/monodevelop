@@ -9,15 +9,13 @@ using System;
 using System.IO;
 using System.Collections;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui.Codons;
+using MonoDevelop.Components.Commands;
 
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
-
-namespace MonoDevelop.Gui.Dialogs {
+namespace MonoDevelop.Core.Gui.Dialogs {
 	
 	/// <summary>
 	/// TreeView options are used, when more options will be edited (for something like

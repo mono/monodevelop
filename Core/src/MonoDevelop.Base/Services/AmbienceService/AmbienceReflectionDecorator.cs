@@ -9,11 +9,11 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Ambience
 {
 	/// <summary>
 	/// This class wraps a ILanguageConversion to System.Reflection

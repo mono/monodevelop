@@ -7,18 +7,17 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Drawing;
-using MonoDevelop.Core.AddIns.Codons;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineStartupPanel : AbstractOptionPanel
 	{
@@ -103,7 +102,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					}
 					
 					// tell the user we encountered and worked around an issue 
-					Runtime.MessageService.ShowError(GettextCatalog.GetString ("The Combine Execute Definitions for this Combine were invalid. A new empty set of Execute Definitions has been created."));
+					Services.MessageService.ShowError(GettextCatalog.GetString ("The Combine Execute Definitions for this Combine were invalid. A new empty set of Execute Definitions has been created."));
 				}
 					
  				entryTreeView.Selection.Changed += new EventHandler(SelectedEntryChanged);

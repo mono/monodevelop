@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public interface IDeploymentStrategy
 	{

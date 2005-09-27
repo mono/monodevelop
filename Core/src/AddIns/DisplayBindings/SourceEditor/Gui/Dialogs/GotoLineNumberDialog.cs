@@ -10,12 +10,14 @@ using System.IO;
 using System.Resources;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.SourceEditor.Gui.Dialogs
 {
 	public class GotoLineNumberDialog : IDisposable
 	{
@@ -32,7 +34,7 @@ namespace MonoDevelop.Gui.Dialogs
 		
 		public void Run ()
 		{
-			GotoLineDialog.TransientFor = (Gtk.Window) WorkbenchSingleton.Workbench;
+			GotoLineDialog.TransientFor = IdeApp.Workbench.RootWindow;
 			GotoLineDialog.ShowAll ();
 			IsVisible = true;
 			GotoLineDialog.Run ();
@@ -52,13 +54,10 @@ namespace MonoDevelop.Gui.Dialogs
 		void on_btn_go_to_line_clicked (object sender, EventArgs e)
 		{
 			try {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				
-				
-				if (window != null && window.ViewContent is IPositionable) {			
+				IPositionable view = IdeApp.Workbench.ActiveDocument.Content as IPositionable;
+				if (view != null) {			
 					int l = Math.Max (1, Int32.Parse(line_number_entry.Text));
-					
-					((IPositionable) window.ViewContent).JumpTo (l, 1);
+					view.JumpTo (l, 1);
 				}
 			} catch (Exception) {
 				

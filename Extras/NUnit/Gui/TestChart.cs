@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 using Gtk;
 using Gdk;
-using MonoDevelop.Gui.Widgets.Chart;
+using MonoDevelop.Components.Chart;
 
 namespace MonoDevelop.NUnit
 {

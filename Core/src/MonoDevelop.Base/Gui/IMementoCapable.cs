@@ -7,7 +7,7 @@
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// This interface flags an object beeing "mementocapable". This means that the

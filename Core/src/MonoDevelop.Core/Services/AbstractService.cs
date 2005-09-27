@@ -10,7 +10,7 @@ using System;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 {
 	public class AbstractService : IService
 	{

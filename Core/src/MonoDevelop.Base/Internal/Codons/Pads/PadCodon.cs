@@ -31,23 +31,38 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("Pad")]
-	public class PadCodon : AbstractCodon
+	internal class PadCodon : AbstractCodon
 	{
 		IPadContent content;
 		
 		[XmlMemberAttribute("context")]
 		string context = null;
 		
+		[XmlMemberAttribute("_label")]
+		string label = null;
+		
+		[XmlMemberAttribute("icon")]
+		string icon = null;
+
 		string[] contexts;
 		
 		public IPadContent Pad {
 			get { return content; }
+		}
+		
+		public string Label {
+			get { return label; }
+		}
+		
+		public string Icon {
+			get { return icon; }
 		}
 		
 		public string[] Contexts {

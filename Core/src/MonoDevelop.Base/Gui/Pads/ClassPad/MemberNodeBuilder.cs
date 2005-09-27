@@ -29,11 +29,11 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public abstract class MemberNodeBuilder: TypeNodeBuilder
 	{

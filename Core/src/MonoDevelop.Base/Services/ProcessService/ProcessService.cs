@@ -5,11 +5,10 @@ using System.Collections;
 using System.Threading;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public class ProcessService : AbstractService
 	{

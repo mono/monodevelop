@@ -1,8 +1,10 @@
 
 using System;
 using System.Reflection;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Documentation;
 
 public class CodeCompletionDatabaseGeneratorTool
 {

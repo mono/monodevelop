@@ -9,13 +9,13 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Projects.Extensions
 {
 	[CodonNameAttribute("LanguageBinding")]
-	public class LanguageBindingCodon : AbstractCodon
+	internal class LanguageBindingCodon : AbstractCodon
 	{
 		[XmlMemberArrayAttribute("supportedextensions")]
 		string[] supportedExtensions;

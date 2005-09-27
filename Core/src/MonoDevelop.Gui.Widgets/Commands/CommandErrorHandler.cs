@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public delegate void CommandErrorHandler (object sender, CommandErrorArgs args);
 	

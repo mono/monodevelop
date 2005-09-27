@@ -9,10 +9,7 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.Xml;
 
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// Each language module which is capable of compiling source

@@ -1,23 +1,19 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
 using System;
 using System.IO;
 using System.Collections;
-using System.Threading;
 using System.Resources;
-using System.Drawing;
-using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects
 {
 	public class LanguageService : AbstractService
 	{

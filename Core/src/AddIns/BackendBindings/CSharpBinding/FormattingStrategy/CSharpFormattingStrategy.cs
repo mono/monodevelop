@@ -11,13 +11,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 
-using MonoDevelop.TextEditor;
-using MonoDevelop.TextEditor.Document;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-
-using MonoDevelop.EditorBindings.FormattingStrategy;
+using MonoDevelop.Core;
 
 namespace CSharpBinding.FormattingStrategy {
 	/// <summary>

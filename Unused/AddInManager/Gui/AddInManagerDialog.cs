@@ -2,8 +2,8 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace AddInManager
 {
@@ -16,7 +16,7 @@ namespace AddInManager
 		{
 			this.BorderWidth = 12;
 			this.Title = GettextCatalog.GetString ("AddInManager");
-			this.TransientFor = (Window) WorkbenchSingleton.Workbench;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.SetDefaultSize (400, 350);
 
 			ScrolledWindow sw = new ScrolledWindow ();

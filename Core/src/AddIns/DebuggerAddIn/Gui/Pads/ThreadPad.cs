@@ -9,10 +9,10 @@ using System.Runtime.InteropServices;
 using Mono.Debugger;
 using Mono.Debugger.Languages;
 
-using Stock = MonoDevelop.Gui.Stock;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using Stock = MonoDevelop.Core.Gui.Stock;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Debugger
 {
@@ -79,7 +79,13 @@ namespace MonoDevelop.Debugger
 			Add (tree);
 			ShowAll ();
 
-			((DebuggingService)Runtime.DebuggingService).ThreadStateEvent += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnThreadEvent));
+			((DebuggingService)Services.DebuggingService).ThreadStateEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnThreadEvent));
+		}
+		
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			window.Title = "Threads";
+			window.Icon = Stock.OutputIcon;
 		}
 
 		void AddThread (Process thread)
@@ -138,7 +144,7 @@ namespace MonoDevelop.Debugger
 				threads_to_remove.Add (thread, thread);
 			}
 
-			foreach (Process t in ((DebuggingService)Runtime.DebuggingService).Threads) {
+			foreach (Process t in ((DebuggingService)Services.DebuggingService).Threads) {
 				if (t.State != TargetState.NO_TARGET && !t.IsDaemon) {
 					UpdateThread (t);
 					threads_to_remove.Remove (t);
@@ -178,33 +184,5 @@ namespace MonoDevelop.Debugger
 		public string DefaultPlacement {
 			get { return "Bottom"; }
 		}
-
-		public string Title {
-			get {
-				return "Threads";
-			}
-		}
-
-		public string Icon {
-			get {
-				return Stock.OutputIcon;
-			}
-		}
-
-                protected virtual void OnTitleChanged(EventArgs e)
-                {
-                        if (TitleChanged != null) {
-                                TitleChanged(this, e);
-                        }
-                }
-                protected virtual void OnIconChanged(EventArgs e)
-                {
-                        if (IconChanged != null) {
-                                IconChanged(this, e);
-                        }
-                }
-                public event EventHandler TitleChanged;
-                public event EventHandler IconChanged;
-	  
 	}
 }

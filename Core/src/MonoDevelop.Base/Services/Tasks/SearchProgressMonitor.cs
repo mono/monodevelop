@@ -31,17 +31,17 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
-using MonoDevelop.Services;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Ide.Gui.Pads;
 
 using Gtk;
 using Pango;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public class SearchProgressMonitor : BaseProgressMonitor, ISearchProgressMonitor
 	{
@@ -95,7 +95,7 @@ namespace MonoDevelop.Services
 			outputPad.EndProgress ();
 			base.OnCompleted ();
 			
-			Runtime.TaskService.ReleasePad (outputPad);
+			IdeApp.Workbench.ProgressMonitors.ReleasePad (outputPad);
 			outputPad = null;
 		}
 		

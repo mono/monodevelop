@@ -7,10 +7,9 @@ import System
 import Gtk
 import Gdk
 
-import MonoDevelop.Gui.Widgets
-import MonoDevelop.Core.Services
+import MonoDevelop.Components
 import MonoDevelop.Core.Properties
-import MonoDevelop.Services
+import MonoDevelop.Core
 
 class BooShellProperties (ShellProperties):
 	override PropertyName as string:

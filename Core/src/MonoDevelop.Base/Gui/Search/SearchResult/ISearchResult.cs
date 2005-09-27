@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// This interface describes the result a search strategy must

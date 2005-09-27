@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public interface ITreeOptions
 	{

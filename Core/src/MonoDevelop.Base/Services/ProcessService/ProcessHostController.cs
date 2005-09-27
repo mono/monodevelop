@@ -36,7 +36,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Timer = System.Timers.Timer;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	internal class ProcessHostController: MarshalByRefObject, IProcessHostController
 	{

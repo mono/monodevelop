@@ -4,11 +4,10 @@ using System.IO;
 using Gtk;
 using Monodoc;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 
 	public class HelpViewer : AbstractViewContent
@@ -41,15 +40,15 @@ namespace MonoDevelop.Gui
 		void OnUrl (object sender, OnUrlArgs args)
 		{
 			if (args.Url == null)
-				Runtime.Gui.StatusBar.SetMessage ("");
+				Services.StatusBar.SetMessage ("");
 			else
-				Runtime.Gui.StatusBar.SetMessage (args.Url);
+				Services.StatusBar.SetMessage (args.Url);
 		}
 
 		void UrlRequested (object sender, UrlRequestedArgs args)
 		{
 			Runtime.LoggingService.DebugFormat ("Image requested: {0}", args.Url);
-			Stream s = Runtime.Documentation.HelpTree.GetImage (args.Url);
+			Stream s = Services.Documentation.HelpTree.GetImage (args.Url);
 			
 			if (s != null) {
 				byte [] buffer = new byte [8192];
@@ -76,7 +75,7 @@ namespace MonoDevelop.Gui
 			
 			Node node;
 			
-			string res = Runtime.Documentation.HelpTree.RenderUrl (url, out node);
+			string res = Services.Documentation.HelpTree.RenderUrl (url, out node);
 			if (res != null) {
 				Render (res, node, url);
 			}

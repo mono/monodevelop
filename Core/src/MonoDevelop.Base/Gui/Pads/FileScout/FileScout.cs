@@ -1,15 +1,22 @@
 using System;
 
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class FileScout : Gtk.VPaned, IPadContent
+	internal class FileScout : Gtk.VPaned, IPadContent
 	{
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			window.Title = GettextCatalog.GetString ("Files");
+			window.Icon = Gtk.Stock.Open;
+		}
+		
 		public string Id {
-			get { return "MonoDevelop.Gui.Pads.FileScout"; }
+			get { return "MonoDevelop.Ide.Gui.Pads.FileScout"; }
 		}
 		
 		public string DefaultPlacement {
@@ -19,19 +26,6 @@ namespace MonoDevelop.Gui.Pads
 		public Gtk.Widget Control {
 			get {
 				return this;
-			}
-		}
-		
-		public string Title {
-			get {
-				return GettextCatalog.GetString ("Files");
-			}
-		}
-		
-		public string Icon {
-			get {
-				//return MonoDevelop.Gui.Stock.OpenFolderBitmap;
-				return Gtk.Stock.Open;
 			}
 		}
 		
@@ -46,8 +40,8 @@ namespace MonoDevelop.Gui.Pads
 		{
 			fb.DirectoryChangedEvent += new DirectoryChangedEventHandler (OnDirChanged);
 			filelister.RowActivated += new Gtk.RowActivatedHandler (FileSelected);
-			Runtime.ProjectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
-			Runtime.ProjectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineClosed));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineOpened));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler(OnCombineClosed));
 
 			Gtk.Frame treef  = new Gtk.Frame ();
 			treef.Add (fb);
@@ -69,7 +63,7 @@ namespace MonoDevelop.Gui.Pads
 		{
 			filelister.Clear ();
 
-			bool ignoreHidden = !Runtime.Properties.GetProperty ("MonoDevelop.Gui.FileScout.ShowHidden", false);
+			bool ignoreHidden = !Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fb.IgnoreHidden = ignoreHidden;
 
 			foreach (string f in fb.Files)
@@ -106,10 +100,10 @@ namespace MonoDevelop.Gui.Pads
 
 				//FIXME: use mimetypes not extensions
 				// also change to Project tab when its a project
-				if (Runtime.ProjectService.IsCombineEntryFile (item.FullName))
-					Runtime.ProjectService.OpenCombine (item.FullName);
+				if (Services.ProjectService.IsCombineEntryFile (item.FullName))
+					IdeApp.ProjectOperations.OpenCombine (item.FullName);
 				else
-					Runtime.FileService.OpenFile (item.FullName);
+					IdeApp.Workbench.OpenDocument (item.FullName);
 			}
 		}
 
@@ -126,16 +120,6 @@ namespace MonoDevelop.Gui.Pads
 		void OnCombineClosed(object sender, CombineEventArgs args)
 		{
 			fb.CurrentDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-		}
-
-		public event EventHandler TitleChanged {
-			add {}
-			remove {}
-		}
-		
-		public event EventHandler IconChanged {
-			add {}
-			remove {}
 		}
 	}
 }

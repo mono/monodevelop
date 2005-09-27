@@ -2,8 +2,8 @@ using System;
 using System.Xml;
 using System.Diagnostics;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace NemerleBinding
 {

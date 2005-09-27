@@ -1,12 +1,14 @@
 
 using System;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum DebugCommands
 	{
@@ -28,14 +30,14 @@ namespace MonoDevelop.Commands
 				string name = fs.Filename;
 				fs.Hide ();
 				if (response == (int)Gtk.ResponseType.Ok)
-					Runtime.ProjectService.DebugApplication (name);
+					IdeApp.ProjectOperations.DebugApplication (name);
 			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = Runtime.DebuggingService != null &&
-							Runtime.ProjectService.CurrentRunOperation.IsCompleted;
+			info.Enabled = Services.DebuggingService != null &&
+							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
 	
@@ -43,15 +45,15 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			Runtime.DebuggingService.StepOver();
+			Services.DebuggingService.StepOver();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 			else
-				info.Enabled = Runtime.DebuggingService.IsDebugging;
+				info.Enabled = Services.DebuggingService.IsDebugging;
 		}
 	}
 
@@ -59,15 +61,15 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			Runtime.DebuggingService.StepInto();
+			Services.DebuggingService.StepInto();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 			else
-				info.Enabled = Runtime.DebuggingService.IsDebugging;
+				info.Enabled = Services.DebuggingService.IsDebugging;
 		}
 	}
 	
@@ -75,15 +77,15 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			Runtime.DebuggingService.StepOut ();
+			Services.DebuggingService.StepOut ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 			else
-				info.Enabled = Runtime.DebuggingService.IsDebugging;
+				info.Enabled = Services.DebuggingService.IsDebugging;
 		}
 	}
 	
@@ -91,15 +93,15 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			Runtime.DebuggingService.Pause ();
+			Services.DebuggingService.Pause ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 			else
-				info.Enabled = Runtime.DebuggingService.IsRunning;
+				info.Enabled = Services.DebuggingService.IsRunning;
 		}
 	}
 	
@@ -107,12 +109,12 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			Runtime.DebuggingService.ClearAllBreakpoints ();
+			Services.DebuggingService.ClearAllBreakpoints ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 		}
 	}

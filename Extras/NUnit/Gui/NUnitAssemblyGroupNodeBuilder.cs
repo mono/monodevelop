@@ -29,11 +29,13 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Core.Gui;
+using GuiServices = MonoDevelop.Core.Gui.Services;
 
 namespace MonoDevelop.NUnit
 {
@@ -43,7 +45,7 @@ namespace MonoDevelop.NUnit
 		
 		public NUnitAssemblyGroupNodeBuilder ()
 		{
-			configsChanged = (ConfigurationEventHandler) Runtime.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
+			configsChanged = (ConfigurationEventHandler) GuiServices.DispatchService.GuiDispatch (new ConfigurationEventHandler (OnConfigurationsChanged));
 		}
 		
 		public override Type CommandHandlerType {

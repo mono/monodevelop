@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
-using MonoDevelop.Gui.Widgets;
 
-namespace System {
+namespace MonoDevelop.Projects.Utility {
 	[Serializable]
 	///<summary>
 	///Compares two objects by property.
@@ -63,5 +62,3 @@ namespace System {
 		}
 	}
 }
-
-

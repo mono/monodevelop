@@ -23,13 +23,12 @@ import System
 import Gtk
 import Pango
 
-import MonoDevelop.Internal.Project
-import MonoDevelop.Gui.Dialogs
-import MonoDevelop.Gui.Widgets
-import MonoDevelop.Services
-import MonoDevelop.Core.Services
+import MonoDevelop.Projects
+import MonoDevelop.Core.Gui.Dialogs
+import MonoDevelop.Components
+import MonoDevelop.Core
 import MonoDevelop.Core.Properties
-import MonoDevelop.Core.AddIns.Codons
+import MonoDevelop.Core.AddIns
 
 import BooBinding.Properties
 

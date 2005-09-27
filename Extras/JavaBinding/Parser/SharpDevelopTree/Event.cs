@@ -1,6 +1,6 @@
 // created on 06.08.2003 at 12:30
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree

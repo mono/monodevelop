@@ -9,12 +9,12 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 using Gtk;
 using GLib;

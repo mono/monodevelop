@@ -1,14 +1,15 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Prj2Make;
 using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
-using MonoDevelop.Commands;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -19,8 +20,6 @@ namespace MonoDevelop.Prj2Make
 
 	public class ImportPrj : CommandHandler
 	{
-		static PropertyService PropertyService = (PropertyService)ServiceManager.GetService (typeof (PropertyService));
-		
 		protected override void Run()
 		{
 			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"))) {
@@ -29,7 +28,6 @@ namespace MonoDevelop.Prj2Make
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
-				IProjectService proj = null;
 
 				if (response == (int)Gtk.ResponseType.Ok) {
 					switch (Path.GetExtension(name).ToUpper()) {
@@ -54,8 +52,7 @@ namespace MonoDevelop.Prj2Make
 					}
 					if (conversionSuccessfull == true) {
 						try {
-							proj = (IProjectService)ServiceManager.GetService (typeof (IProjectService));
-							proj.OpenCombine(name);
+							IdeApp.ProjectOperations.OpenCombine (name);
 						} catch (Exception ex) {
 							Console.WriteLine(ex.Message);
 						}

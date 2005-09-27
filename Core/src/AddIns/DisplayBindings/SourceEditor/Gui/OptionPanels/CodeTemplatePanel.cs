@@ -11,16 +11,15 @@ using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
-using MonoDevelop.EditorBindings.Gui.Dialogs;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.SourceEditor.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.EditorBindings.Gui.OptionPanels 
+namespace MonoDevelop.SourceEditor.Gui.OptionPanels 
 {
 	public class CodeTemplatePane : AbstractOptionPanel
 	{
@@ -29,8 +28,6 @@ namespace MonoDevelop.EditorBindings.Gui.OptionPanels
 			ArrayList templateGroups;
 			int       currentSelectedGroup = -1;
 			
-			// Services
-			MessageService MessageService = (MessageService)ServiceManager.GetService(typeof(MessageService));					
 			// Gtk widgets
 			[Glade.Widget] Label extensionLabel;
 			[Glade.Widget] Gtk.TreeView templateListView;
@@ -150,7 +147,7 @@ namespace MonoDevelop.EditorBindings.Gui.OptionPanels
 			{
 				foreach (Widget control in controls) {				
 					if (control == null) {
-						MessageService.ShowError(GettextCatalog.GetString ("Control not found!"));
+						Services.MessageService.ShowError(GettextCatalog.GetString ("Control not found!"));
 					} else {
 						control.Sensitive = enabled;
 					}

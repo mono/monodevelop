@@ -32,11 +32,12 @@ using System.Threading;
 using Gtk;
 using Gdk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.NUnit
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.NUnit
 	{
 		NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
 		
-		string title;
+		IPadWindow window;
 		VBox panel;
 		HPaned book;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
@@ -91,8 +92,6 @@ namespace MonoDevelop.NUnit
 		
 		public TestResultsPad ()
 		{
-			title = "Test results";
-			
 			testService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
 			
 			panel = new VBox ();
@@ -131,7 +130,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleToolButton ();
 			buttonOutput.Label = "Output";
 			buttonOutput.Active = false;
-			buttonOutput.IconWidget = Runtime.Gui.Resources.GetImage (MonoDevelop.Gui.Stock.OutputIcon, IconSize.SmallToolbar);
+			buttonOutput.IconWidget = Services.Resources.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.SmallToolbar);
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.IsImportant = true;
 			buttonOutput.SetTooltip (tips, "Show Output", "Show Output");
@@ -213,6 +212,13 @@ namespace MonoDevelop.NUnit
 			outputViewScrolled.Hide ();
 		}
 		
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			this.window = window;
+			window.Title = "Test results";
+			window.Icon = "md-combine-icon";
+		}
+		
 		public void Dispose ()
 		{
 		}
@@ -238,17 +244,16 @@ namespace MonoDevelop.NUnit
 			get { return "Bottom"; }
 		}
 		
-		public string Title {
-			get {
+		bool Running {
+			get { return running; }
+			set {
+				running = value;
+				string title = "Test results";
 				if (running) 
-					return "<span foreground=\"blue\">" + title + "</span>";
+					window.Title = "<span foreground=\"blue\">" + title + "</span>";
 				else
-					return title;
+					window.Title = title;
 			}
-		}
-		
-		public string Icon {
-			get { return "md-combine-icon"; }
 		}
 		
 		public Gtk.Widget Control {
@@ -260,9 +265,6 @@ namespace MonoDevelop.NUnit
 		public void RedrawContent ()
 		{
 		}
-		
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
 		
 		void UpdateCounters ()
 		{
@@ -294,12 +296,11 @@ namespace MonoDevelop.NUnit
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			cancel = false;
-			running = true;
+			Running = true;
 			
 			configuration = rootTest.ActiveConfiguration;
 			
 			AddStartMessage ();
-			OnTitleChanged ();
 		}
 		
 		public void AddStartMessage ()
@@ -344,8 +345,7 @@ namespace MonoDevelop.NUnit
 			
 			resultLabel.Markup = "<b>Tests</b>: " + testsRun + "  <b>Failed</b>: " + testsFailed + "  <b>Ignored</b>: " + testsIgnored;
 			
-			running = false;
-			OnTitleChanged ();
+			Running = false;
 		}
 		
 		void OnStopClicked (object sender, EventArgs args)
@@ -357,15 +357,16 @@ namespace MonoDevelop.NUnit
 		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3) {
-				Runtime.Gui.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
+				IdeApp.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
 			}
 		}
 		
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
 		{
-			TestPad pad = (TestPad) Runtime.Gui.Workbench.GetPad (typeof (TestPad));
-			pad.SelectTest (GetSelectedTest ());
+			Pad pad = IdeApp.Workbench.Pads [typeof(TestPad)];
+			TestPad content = (TestPad) pad.Content;
+			content.SelectTest (GetSelectedTest ());
 		}
 		
 		[CommandUpdateHandler (TestCommands.SelectTestInTree)]
@@ -383,7 +384,7 @@ namespace MonoDevelop.NUnit
 				return;
 			SourceCodeLocation loc = test.SourceCodeLocation;
 			if (loc != null)
-				Runtime.FileService.OpenFile (loc.FileName, loc.Line, loc.Column, true);
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
 		}
 		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
@@ -522,13 +523,6 @@ namespace MonoDevelop.NUnit
 		}
 		
 		public event TestHandler CancelRequested;
-
-		protected virtual void OnTitleChanged ()
-		{
-			if (TitleChanged != null) {
-				TitleChanged(this, null);
-			}
-		}
 	}
 }
 

@@ -27,9 +27,9 @@
 //
 
 using System;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using System.Collections;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.NUnit
 {

@@ -10,10 +10,10 @@ using System.Collections;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionMethod : AbstractMethod 
+	internal class ReflectionMethod : AbstractMethod 
 	{
 /*		string GetParamList(MethodBase methodBase)
 		{

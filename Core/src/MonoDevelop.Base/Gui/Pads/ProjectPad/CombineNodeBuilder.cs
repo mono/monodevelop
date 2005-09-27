@@ -29,11 +29,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
@@ -43,9 +46,9 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
-			combineNameChanged = (CombineEntryRenamedEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			combineEntryAdded = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
+			combineEntryRemoved = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
+			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
 		}
 
 		public override Type NodeDataType {
@@ -157,13 +160,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				Runtime.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}"), "', (, ), \", {, }, |"));
+				Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}"), "', (, ), \", {, }, |"));
 				return;
 			}
 			
 			Combine combine = (Combine) CurrentNode.DataItem;
 			combine.Name = newName;
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -187,10 +190,10 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
 			if (parent == null) return;
 			
-			bool yes = Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?"), combine.Name, parent.Name));
+			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?"), combine.Name, parent.Name));
 			if (yes) {
 				parent.Entries.Remove (combine);
-				Runtime.ProjectService.SaveCombine();
+				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}
 		
@@ -198,7 +201,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void AddNewProjectToCombine()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = Runtime.ProjectService.CreateProject (combine);
+			CombineEntry ce = IdeApp.ProjectOperations.CreateProject (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -208,7 +211,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void AddProjectToCombine()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = Runtime.ProjectService.AddCombineEntry (combine);
+			CombineEntry ce = IdeApp.ProjectOperations.AddCombineEntry (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -218,7 +221,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void AddNewCombineToCombine()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = Runtime.ProjectService.CreateCombine (combine);
+			CombineEntry ce = IdeApp.ProjectOperations.CreateCombine (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -228,7 +231,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void AddCombineToCombine()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			CombineEntry ce = Runtime.ProjectService.AddCombineEntry (combine);
+			CombineEntry ce = IdeApp.ProjectOperations.AddCombineEntry (combine);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -243,7 +246,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		[CommandHandler (ProjectCommands.Options)]
 		public void OnCombineOptions ()
 		{
-			Runtime.ProjectService.ShowOptions ((Combine) CurrentNode.DataItem);
+			IdeApp.ProjectOperations.ShowOptions ((Combine) CurrentNode.DataItem);
 		}
 	}
 }

@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using System.IO;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	[Flags]
 	public enum MonitorAction

@@ -10,11 +10,12 @@ using System.IO;
 using System.Xml;
 
 using Gtk;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class TipOfTheDayWindow
 	{
@@ -37,7 +38,7 @@ namespace MonoDevelop.Gui.Dialogs
 					
 			tipOfTheDayWindow.TypeHint = Gdk.WindowTypeHint.Dialog;
 
-			noshowCheckbutton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
+			noshowCheckbutton.Active = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false);
 			noshowCheckbutton.Toggled += new EventHandler (OnNoshow);
 			nextButton.Clicked += new EventHandler (OnNext);
 			closeButton.Clicked += new EventHandler (OnClose);
@@ -67,7 +68,7 @@ namespace MonoDevelop.Gui.Dialogs
 
 		void OnNoshow (object obj, EventArgs args)
 		{
-			Runtime.Properties.SetProperty ("MonoDevelop.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup",
+			Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup",
 						    noshowCheckbutton.Active);
 		}
 
@@ -92,7 +93,7 @@ namespace MonoDevelop.Gui.Dialogs
 
 		public void Show ()
 		{
-			tipOfTheDayWindow.TransientFor = (Window) WorkbenchSingleton.Workbench;
+			tipOfTheDayWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			tipOfTheDayWindow.WindowPosition = WindowPosition.CenterOnParent;
 			tipOfTheDayWindow.ShowAll ();
 		}

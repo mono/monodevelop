@@ -1,12 +1,13 @@
 
 using System;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum EditCommands
 	{
@@ -30,7 +31,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run ()
 		{
-			new TreeViewOptions ((Gtk.Window)WorkbenchSingleton.Workbench,
+			new TreeViewOptions (IdeApp.Workbench.RootWindow,
 				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
 				AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
 		}

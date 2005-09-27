@@ -6,13 +6,12 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Reflection;
 using System.Collections;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	public class DeclarationViewWindow : Window
 	{

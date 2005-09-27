@@ -31,13 +31,13 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Ide.Gui.Pads;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("NodeBuilder")]
-	public class NodeBuilderCodon : AbstractCodon
+	internal class NodeBuilderCodon : AbstractCodon
 	{
 		NodeBuilder builder;
 		

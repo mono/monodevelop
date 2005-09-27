@@ -8,13 +8,12 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class GacReferencePanel : VBox, IReferencePanel
 	{

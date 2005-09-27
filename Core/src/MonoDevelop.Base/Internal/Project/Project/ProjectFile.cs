@@ -11,10 +11,9 @@ using System.IO;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum Subtype {
 		Code,
@@ -37,7 +36,7 @@ namespace MonoDevelop.Internal.Project
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
-	public class ProjectFile : LocalizedObject, ICloneable
+	public class ProjectFile : ICloneable
 	{
 		[ProjectPathItemProperty("name")]
 		string filename;
@@ -79,8 +78,6 @@ namespace MonoDevelop.Internal.Project
 			project = prj;
 		}
 						
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectFile.Name}",
-		                   Description ="${res:MonoDevelop.Internal.Project.ProjectFile.Name.Description}")]
 		[ReadOnly(true)]
 		public string Name {
 			get {
@@ -124,8 +121,6 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.ProjectFile.BuildAction}",
-		                   Description ="${res:MonoDevelop.Internal.Project.ProjectFile.BuildAction.Description}")]
 		public BuildAction BuildAction {
 			get {
 				return buildaction;
@@ -157,7 +152,9 @@ namespace MonoDevelop.Internal.Project
 		
 		public object Clone()
 		{
-			return MemberwiseClone();
+			ProjectFile pf = (ProjectFile) MemberwiseClone();
+			pf.project = null;
+			return pf;
 		}
 		
 		public override string ToString()

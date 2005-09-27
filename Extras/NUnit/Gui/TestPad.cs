@@ -32,11 +32,12 @@ using System.Threading;
 using Gtk;
 using Gdk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.NUnit.Commands;
 
 namespace MonoDevelop.NUnit
 {
@@ -72,12 +73,12 @@ namespace MonoDevelop.NUnit
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 		
-		public override void Initialize (string label, string icon, NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
-			base.Initialize (label, icon, builders, options);
+			base.Initialize (builders, options);
 			
-			testChangedHandler = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
-			testService.TestSuiteChanged += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
+			testChangedHandler = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
+			testService.TestSuiteChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
 			
 			paned = new VPaned ();
 			paned.Pack1 (base.Control, true, true);
@@ -370,7 +371,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = (UnitTest) nav.DataItem;
 			
 			runningTestOperation = testService.RunTest (test);
-			runningTestOperation.Completed += (OperationHandler) Runtime.DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
+			runningTestOperation.Completed += (OperationHandler) Services.DispatchService.GuiDispatch (new OperationHandler (TestSessionCompleted));
 		}
 		
 		void TestSessionCompleted (IAsyncOperation op)
@@ -609,7 +610,7 @@ namespace MonoDevelop.NUnit
 		void OnChartPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3) {
-				Runtime.Gui.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
+				IdeApp.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
 			}
 		}
 		

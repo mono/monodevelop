@@ -28,9 +28,9 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Commands;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Components
+namespace MonoDevelop.Core.Gui.Components
 {
 	public class MenuButtonEntry : Gtk.HBox
 	{

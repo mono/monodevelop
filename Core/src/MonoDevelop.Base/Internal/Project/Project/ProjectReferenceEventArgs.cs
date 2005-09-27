@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public delegate void ProjectReferenceEventHandler(object sender, ProjectReferenceEventArgs e);
 	

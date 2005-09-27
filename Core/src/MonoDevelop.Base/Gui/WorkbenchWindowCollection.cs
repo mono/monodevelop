@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	///     <para>
@@ -17,7 +17,7 @@ namespace MonoDevelop.Gui
 	/// </summary>
 	/// <seealso cref="WorkspaceWindowCollection"/>
 	[Serializable()]
-	public class WorkbenchWindowCollection : CollectionBase {
+	internal class WorkbenchWindowCollection : CollectionBase {
 		
 		/// <summary>
 		///     <para>

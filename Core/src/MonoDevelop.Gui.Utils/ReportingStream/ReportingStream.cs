@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Gui.Utils.ReportingStream {
+namespace MonoDevelop.Core.Utils.ReportingStream {
 
 	public delegate void ReadNotification (object arg, int amount);
 

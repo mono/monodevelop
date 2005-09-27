@@ -7,10 +7,10 @@ using System.Xml;
 using System.CodeDom.Compiler;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 namespace PythonBinding
 {

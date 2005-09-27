@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public delegate void BreakpointEventHandler (object sender, BreakpointEventArgs args);
 	

@@ -29,7 +29,7 @@
 using System;
 using System.Diagnostics;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public class NativePlatformExecutionHandler: IExecutionHandler
 	{

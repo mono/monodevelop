@@ -7,10 +7,10 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionReturnType : AbstractReturnType
+	internal class ReflectionReturnType : AbstractReturnType
 	{
 		public ReflectionReturnType(Type type)
 		{

@@ -30,11 +30,14 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectNodeBuilder: FolderNodeBuilder
 	{
@@ -54,21 +57,21 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
-			fileRenamedHandler = (ProjectFileRenamedEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectNameChanged = (CombineEntryRenamedEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
+			fileAddedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
+			fileRemovedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			fileRenamedHandler = (ProjectFileRenamedEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
+			projectNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
 			
-			Runtime.ProjectService.FileAddedToProject += fileAddedHandler;
-			Runtime.ProjectService.FileRemovedFromProject += fileRemovedHandler;
-			Runtime.ProjectService.FileRenamedInProject += fileRenamedHandler;
+			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
+			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
+			IdeApp.ProjectOperations.FileRenamedInProject += fileRenamedHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			Runtime.ProjectService.FileAddedToProject -= fileAddedHandler;
-			Runtime.ProjectService.FileRemovedFromProject -= fileRemovedHandler;
-			Runtime.ProjectService.FileRenamedInProject -= fileRenamedHandler;
+			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
+			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
+			IdeApp.ProjectOperations.FileRenamedInProject -= fileRenamedHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -107,7 +110,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 
 			Project p = dataObject as Project;
 			label = p.Name;
-			string iconName = Runtime.Gui.Icons.GetImageForProjectType (p.ProjectType);
+			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
 			icon = Context.GetIcon (iconName);
 		}
 
@@ -247,13 +250,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				Runtime.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Project name may not contain any of the following characters: {0}"), "', (, ), \", {, }, |"));
+				Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Project name may not contain any of the following characters: {0}"), "', (, ), \", {, }, |"));
 				return;
 			}
 			
 			Project project = (Project) CurrentNode.DataItem;
 			project.Name = newName;
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		public override void ActivateItem ()
@@ -264,14 +267,14 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void OnProjectOptions ()
 		{
 			Project selectedProject = CurrentNode.DataItem as Project;
-			Runtime.ProjectService.ShowOptions (selectedProject);
+			IdeApp.ProjectOperations.ShowOptions (selectedProject);
 		}
 		
 		[CommandHandler (ProjectCommands.Deploy)]
 		public void OnProjectDeploy ()
 		{
 			Project selectedProject = CurrentNode.DataItem as Project;
-			Runtime.ProjectService.Deploy (selectedProject);
+			IdeApp.ProjectOperations.Deploy (selectedProject);
 		}
 		
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
@@ -282,7 +285,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			
 			combine.StartupEntry = project;
 			combine.SingleStartupProject = true;
-			Runtime.ProjectService.SaveCombine ();
+			IdeApp.ProjectOperations.SaveCombine ();
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
@@ -291,10 +294,10 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			Combine cmb = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;;
 			Project prj = CurrentNode.DataItem as Project;
 			
-			bool yes = Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}"), prj.Name, cmb.Name));
+			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to remove project {0} from solution {1}"), prj.Name, cmb.Name));
 			if (yes) {
 				cmb.RemoveEntry (prj);
-				Runtime.ProjectService.SaveCombine();
+				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}
 		
@@ -302,8 +305,8 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public void AddReferenceToProject ()
 		{
 			Project p = (Project) CurrentNode.DataItem;
-			if (Runtime.ProjectService.AddReferenceToProject (p))
-				Runtime.ProjectService.SaveCombine();
+			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
+				IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		public override DragOperation CanDragNode ()

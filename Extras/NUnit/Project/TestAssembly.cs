@@ -29,8 +29,8 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.NUnit
 {

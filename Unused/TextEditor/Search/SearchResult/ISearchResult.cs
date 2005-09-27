@@ -10,7 +10,7 @@ using System.IO;
 using System.Drawing;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 
 namespace MonoDevelop.TextEditor.Document
 {

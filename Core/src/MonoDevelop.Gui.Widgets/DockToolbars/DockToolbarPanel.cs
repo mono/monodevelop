@@ -31,7 +31,7 @@ using Gtk;
 using Gdk;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	internal class DockToolbarPanel: FixedPanel
 	{

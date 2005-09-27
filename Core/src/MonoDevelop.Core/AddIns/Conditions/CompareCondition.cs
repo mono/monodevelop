@@ -7,9 +7,9 @@
 
 using System;
 using System.Xml;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Core.AddIns.Conditions
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// This condition compares two strings using the stringParserService 

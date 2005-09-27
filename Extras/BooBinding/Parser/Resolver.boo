@@ -30,8 +30,10 @@ import System
 import System.Collections
 import System.Diagnostics
 import System.IO
-import MonoDevelop.Services
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Core
+import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects
+import MonoDevelop.IdeApplication.Gui
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast as AST
 import Boo.Lang.Compiler.IO
@@ -256,7 +258,7 @@ class Resolver:
 				return false if _callingClass.Region.BeginLine > caretLine
 
 /*		if _project == null:
-			for project as Project in MonoDevelop.Services.Runtime.ProjectService.CurrentOpenCombine.GetAllProjects():
+			for project as Project in Ide.ProjectOperations.CurrentOpenCombine.GetAllProjects():
 				if project.IsFileInProject(fileName):
 					_project = project
 					break

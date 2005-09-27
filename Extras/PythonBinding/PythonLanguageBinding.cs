@@ -16,9 +16,8 @@ using System.CodeDom.Compiler;
 using System.Threading;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
 namespace PythonBinding
 {

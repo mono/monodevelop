@@ -8,7 +8,7 @@
 using System;
 using System.Drawing.Printing;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
 	/// <summary>
 	/// </summary>

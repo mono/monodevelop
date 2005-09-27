@@ -11,13 +11,13 @@ using System.Collections;
 using Gtk;
 using Monodoc;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class HelpTree : AbstractPadContent
+	internal class HelpTree : AbstractPadContent
 	{
 		TreeStore store;
 		TreeView  tree_view;
@@ -34,7 +34,7 @@ namespace MonoDevelop.Gui.Pads
 			tree_view.Selection.Changed += new EventHandler (RowActivated);
 			
 			store = new TreeStore (typeof (string), typeof (Node));
-			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), Runtime.Documentation.HelpTree);
+			root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), Services.Documentation.HelpTree);
 
 			PopulateNode (root_iter);
 
@@ -96,32 +96,18 @@ namespace MonoDevelop.Gui.Pads
 				if (n.tree.HelpSource != null) {
 					s = n.tree.HelpSource.GetText (url, out match);
 					if (s != null) {
-						ShowDocs (s, match, url);
+						IdeApp.HelpOperations.ShowDocs (s, match, url);
 						return;
 					}
 				}
 
-				s = Runtime.Documentation.HelpTree.RenderUrl (url, out match);
+				s = Services.Documentation.HelpTree.RenderUrl (url, out match);
 				if (s != null) {
-					ShowDocs (s, match, url);
+					IdeApp.HelpOperations.ShowDocs (s, match, url);
 					return;
 				}
 				Runtime.LoggingService.Error ("Couldnt find match");
 			}
-		}
-
-		void ShowDocs (string text, Node matched_node, string url)
-		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content.ContentName == GettextCatalog.GetString ("Documentation")) {
-					((HelpViewer)content).Render (text, matched_node, url);
-					content.WorkbenchWindow.SelectWindow ();
-					return;
-				}
-			}
-			HelpViewer new_content = new HelpViewer ();
-			new_content.Render (text, matched_node, url);
-			WorkbenchSingleton.Workbench.ShowView (new_content, true);
 		}
 
 		void PopulateNode (TreeIter parent)

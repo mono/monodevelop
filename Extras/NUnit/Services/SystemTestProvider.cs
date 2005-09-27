@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit

@@ -84,6 +84,7 @@
     <File name="./BasicChart/Serie.cs" subtype="Code" buildaction="Compile" />
     <File name="./BasicChart/TickEnumerator.cs" subtype="Code" buildaction="Compile" />
     <File name="./Tree" subtype="Directory" buildaction="Compile" />
+    <File name="./Commands/LocalCommandEntry.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

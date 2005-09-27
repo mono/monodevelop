@@ -31,10 +31,11 @@ using System.Threading;
 using System.Runtime.Remoting.Messaging;
 
 using Mono.Data.Sql;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
 using MonoQuery.Commands;
 
 namespace MonoQuery
@@ -56,12 +57,12 @@ namespace MonoQuery
 		
 		public DatabaseNodeBuilder ()
 		{
-			providerNameChanged = (DbProviderChangedEventHandler) Runtime.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderNameChanged));
-			connectionStateChanged = (DbProviderChangedEventHandler) Runtime.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderStateChanged));
-			providerRefreshed = (DbProviderChangedEventHandler) Runtime.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderRefreshed));
+			providerNameChanged = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderNameChanged));
+			connectionStateChanged = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderStateChanged));
+			providerRefreshed = (DbProviderChangedEventHandler) Services.DispatchService.GuiDispatch (new DbProviderChangedEventHandler (OnProviderRefreshed));
 			
-			ExpandToNode += (ExpandToNodeHandler) Runtime.DispatchService.GuiDispatch (new ExpandToNodeHandler (OnExpandToNode));
-			AddChildEvent += (AddChildHandler) Runtime.DispatchService.GuiDispatch (new AddChildHandler (OnAddChild));
+			ExpandToNode += (ExpandToNodeHandler) Services.DispatchService.GuiDispatch (new ExpandToNodeHandler (OnExpandToNode));
+			AddChildEvent += (AddChildHandler) Services.DispatchService.GuiDispatch (new AddChildHandler (OnAddChild));
 		}
 		
 		public override Type NodeDataType {
@@ -248,7 +249,7 @@ namespace MonoQuery
 		{
 			SqlQueryView sql = new SqlQueryView ();
 			sql.Connection = (DbProviderBase) CurrentNode.DataItem;
-			Runtime.Gui.Workbench.ShowView (sql, true);
+			IdeApp.Workbench.OpenDocument (sql, true);
 			
 			CurrentNode.MoveToParent ();
 		}

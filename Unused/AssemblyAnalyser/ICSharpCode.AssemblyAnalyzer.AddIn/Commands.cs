@@ -7,8 +7,8 @@
 using System;
 using System.Reflection;
 
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
 using ICSharpCode.AssemblyAnalyser.Rules;
 
@@ -19,7 +19,7 @@ namespace MonoDevelop.AssemblyAnalyser
 		public override void Run ()
 		{
 			if (AssemblyAnalyserView.AssemblyAnalyserViewInstance == null) {
-				WorkbenchSingleton.Workbench.ShowView (new AssemblyAnalyserView ());
+				IdeApp.Workbench.OpenDocument (new AssemblyAnalyserView ());
 			} else {
 				AssemblyAnalyserView.AssemblyAnalyserViewInstance.WorkbenchWindow.SelectWindow ();
 			}

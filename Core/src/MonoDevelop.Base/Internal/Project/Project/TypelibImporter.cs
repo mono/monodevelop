@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 using Microsoft.Win32;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// Wraps code to import a typelibrary

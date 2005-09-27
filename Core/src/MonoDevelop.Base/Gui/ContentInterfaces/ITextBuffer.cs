@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface ITextBuffer
 	{

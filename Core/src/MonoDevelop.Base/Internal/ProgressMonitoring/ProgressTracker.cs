@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class ProgressTracker
 	{

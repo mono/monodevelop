@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -7,7 +7,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	///     <para>
@@ -16,7 +16,7 @@ namespace MonoDevelop.Gui
 	/// </summary>
 	/// <seealso cref='.PadContentCollection'/>
 	[Serializable()]
-	public class PadContentCollection : CollectionBase {
+	internal class PadContentCollection : CollectionBase {
 		
 		/// <summary>
 		///     <para>

@@ -31,7 +31,7 @@ endif # ENABLE_UPDATE_MIMEDB
 run: runmd
 
 runmd: $(PROGRAM)
-	cd build/bin && LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` $(RUNTIME) --debug MonoDevelop.exe
+	cd build/bin && MONO_PATH=$(MONO_PATH):build/AddIns LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` $(RUNTIME) --debug MonoDevelop.exe
 
 pad: $(MONOPAD)
 
@@ -40,6 +40,9 @@ runpad: $(MONOPAD)
 
 run-profile: $(PROGRAM)
 	cd build/bin && mono -O=inline --profile MonoDevelop.exe
+
+run-profile-heap: $(PROGRAM)
+	cd build/bin && mono -O=inline --profile=heap:heaplog MonoDevelop.exe
 
 profile-pad: $(MONOPAD)
 	cd build/bin && mono -O=inline --profile MonoPad.exe

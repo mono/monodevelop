@@ -4,10 +4,9 @@ using System.Globalization;
 using System.Resources;
 using System.Reflection;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Components
+namespace MonoDevelop.Core.Gui.Components
 {
 	/// <summary>
 	/// LocalizedPropertyDescriptor enhances the base class bay obtaining the display name for a property

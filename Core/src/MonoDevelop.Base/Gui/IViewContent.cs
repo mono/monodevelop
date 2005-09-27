@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// IViewContent is the base interface for all editable data

@@ -50,6 +50,7 @@ BOOSHELL_FILES = BooShell/BooShell.boo
 
 RES = \
 templates/BooGtkSharpProject.xpt.xml \
+templates/BooLibraryProject.xpt.xml \
 templates/BooGtkSharpWindow.xft.xml \
 templates/EmptyBooFile.xft.xml \
 templates/EmptyBooProject.xpt.xml \

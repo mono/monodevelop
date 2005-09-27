@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public interface IProcessHostController
 	{

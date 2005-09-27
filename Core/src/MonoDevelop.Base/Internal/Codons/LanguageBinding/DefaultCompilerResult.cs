@@ -9,10 +9,7 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.Xml;
 
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// Default implementation of the ICompilerResult interface, this implementation

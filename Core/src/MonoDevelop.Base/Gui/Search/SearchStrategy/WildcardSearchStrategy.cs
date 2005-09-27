@@ -9,9 +9,9 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// Implements a wildcard search strategy.

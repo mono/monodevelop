@@ -9,13 +9,15 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public enum DocumentIteratorType {
 		None,
@@ -94,8 +96,8 @@ namespace MonoDevelop.Gui.Search
 		// TODO: Transform Replace Pattern
 		public static void Replace()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				IEditable editable = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as IEditable;
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				IEditable editable = IdeApp.Workbench.ActiveDocument.Content as IEditable;
 				if (editable.SelectedText == SearchOptions.SearchPattern.ToLower ()) {
 					editable.SelectedText = SearchOptions.ReplacePattern;
 				}
@@ -109,14 +111,14 @@ namespace MonoDevelop.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Runtime.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
 				return;
 			}
 			while (true) {
 				ISearchResult result = SearchReplaceManager.find.FindNext(searchOptions);
 				
 				if (result == null) {
-					Runtime.MessageService.ShowMessage(GettextCatalog.GetString ("Mark all completed"), DialogPointer ); 
+					Services.MessageService.ShowMessage(GettextCatalog.GetString ("Mark all completed"), DialogPointer ); 
 					find.Reset();
 					return;
 				} else {
@@ -135,7 +137,7 @@ namespace MonoDevelop.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Runtime.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
 				return;
 			}
 			
@@ -143,7 +145,7 @@ namespace MonoDevelop.Gui.Search
 				ISearchResult result = SearchReplaceManager.find.FindNext(SearchReplaceManager.searchOptions);
 				
 				if (result == null) {
-					Runtime.MessageService.ShowMessage( string.Format (GettextCatalog.GetString ("Replace all finished. {0} matches found."), find.MatchCount), DialogPointer );
+					Services.MessageService.ShowMessage( string.Format (GettextCatalog.GetString ("Replace all finished. {0} matches found."), find.MatchCount), DialogPointer );
 					find.Reset();
 					return;
 				} else {
@@ -190,7 +192,7 @@ namespace MonoDevelop.Gui.Search
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
-				Runtime.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
 				return;
 			}
 
@@ -203,7 +205,7 @@ namespace MonoDevelop.Gui.Search
 			lastResult = result;
 			
 			if (result == null) {
-				Runtime.MessageService.ShowMessage(GettextCatalog.GetString ("Search string not Found:") + "\n" + SearchOptions.SearchPattern, DialogPointer ); 
+				Services.MessageService.ShowMessage(GettextCatalog.GetString ("Search string not Found:") + "\n" + SearchOptions.SearchPattern, DialogPointer ); 
 				find.Reset();
 			} else {
 				ITextBuffer textArea = OpenView (result.FileName) as ITextBuffer;
@@ -226,8 +228,7 @@ namespace MonoDevelop.Gui.Search
 		
 		static object OpenView (string fileName) 
 		{
-			Runtime.FileService.OpenFile (fileName).WaitForCompleted ();
-			return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
+			return IdeApp.Workbench.OpenDocument (fileName).Window.ViewContent;
 		}
 		
 		internal static Gtk.Dialog DialogPointer 

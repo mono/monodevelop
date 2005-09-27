@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -11,14 +11,14 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Text;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Ambience
 {
 	public class CodeDOMGeneratorUtility 
 	{
-		AmbienceService ambienceService = Runtime.Ambience;
+		AmbienceService ambienceService = Services.Ambience;
 		
 		public CodeGeneratorOptions CreateCodeGeneratorOptions {
 			get {

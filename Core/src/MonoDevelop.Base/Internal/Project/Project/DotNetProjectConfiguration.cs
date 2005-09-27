@@ -28,9 +28,9 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum NetRuntime {
 		Mono,

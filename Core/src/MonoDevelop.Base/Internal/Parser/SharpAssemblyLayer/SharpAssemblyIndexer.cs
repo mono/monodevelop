@@ -14,10 +14,10 @@ using MonoDevelop.SharpAssembly.Metadata.Rows;
 using MonoDevelop.SharpAssembly.Metadata;
 using MonoDevelop.SharpAssembly.PE;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	public class SharpAssemblyIndexer : AbstractIndexer
+	internal class SharpAssemblyIndexer : AbstractIndexer
 	{
 	}
 }

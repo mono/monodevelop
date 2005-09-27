@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 
-namespace MonoDevelop.Gui 
+namespace MonoDevelop.Ide.Gui 
 {
 	/// <summary>
 	/// The IPadContent interface is the basic interface to all "tool" windows
@@ -16,6 +16,8 @@ namespace MonoDevelop.Gui
 	/// </summary>
 	public interface IPadContent : IDisposable
 	{
+		void Initialize (IPadWindow container);
+
 		/// <summary>
 		/// Id of the pad
 		/// </summary>
@@ -34,7 +36,7 @@ namespace MonoDevelop.Gui
 		string DefaultPlacement {
 			get;
 		}
-		
+/*		
 		/// <summary>
 		/// Returns the title of the pad.
 		/// </summary>
@@ -49,7 +51,7 @@ namespace MonoDevelop.Gui
 		string Icon {
 			get;
 		}
-
+*/
 		/// <summary>
 		/// Returns the Gtk Widget for this pad.
 		/// </summary>
@@ -63,15 +65,5 @@ namespace MonoDevelop.Gui
 		/// you know what you do.
 		/// </summary>
 		void RedrawContent();
-		
-		/// <summary>
-		/// Is called when the title of this pad has changed.
-		/// </summary>
-		event EventHandler TitleChanged;
-		
-		/// <summary>
-		/// Is called when the icon of this pad has changed.
-		/// </summary>
-		event EventHandler IconChanged;
 	}
 }

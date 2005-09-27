@@ -82,9 +82,9 @@ print
 
 using System;
 using System.Collections;
-using RS = MonoDevelop.Core.Services.ResourceService;
+using RS = MonoDevelop.Core.Gui.ResourceService;
 
-namespace MonoDevelop.Gui {
+namespace MonoDevelop.Core.Gui {
 	public class Stock {
 		internal static void Init ()
 		{

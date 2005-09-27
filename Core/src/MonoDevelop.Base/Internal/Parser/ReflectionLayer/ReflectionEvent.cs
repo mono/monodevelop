@@ -9,10 +9,10 @@ using System.Collections;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionEvent : AbstractEvent
+	internal class ReflectionEvent : AbstractEvent
 	{
 		public ReflectionEvent(EventInfo eventInfo, XmlDocument docs)
 		{

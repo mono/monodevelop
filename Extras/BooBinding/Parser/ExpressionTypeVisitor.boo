@@ -27,7 +27,7 @@ namespace BooBinding.Parser
 
 import System
 import System.Collections
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Projects.Parser
 import Boo.Lang.Compiler.Ast
 
 class ExpressionTypeVisitor(DepthFirstVisitor):

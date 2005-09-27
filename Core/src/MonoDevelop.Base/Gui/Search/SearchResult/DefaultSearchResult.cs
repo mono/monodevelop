@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class DefaultSearchResult : ISearchResult
 	{

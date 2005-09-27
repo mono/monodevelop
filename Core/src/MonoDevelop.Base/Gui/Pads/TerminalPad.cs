@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 using Gtk;
 using Vte;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class TerminalPad : IPadContent
 	{
@@ -27,7 +27,7 @@ namespace MonoDevelop.Gui.Pads
 
 		public string Id {
 			get {
-				return "MonoDevelop.Gui.Pads.TerminalPad";
+				return "MonoDevelop.Ide.Gui.Pads.TerminalPad";
 			}
 		}
 		
@@ -51,7 +51,7 @@ namespace MonoDevelop.Gui.Pads
 		
 		public string Icon {
 			get {
-				return MonoDevelop.Gui.Stock.OutputIcon;
+				return MonoDevelop.Core.Gui.Stock.OutputIcon;
 			}
 		}
 		
@@ -93,10 +93,10 @@ namespace MonoDevelop.Gui.Pads
 			Control.ShowAll ();
 			
 			/*
-			Runtime.TaskService.CompilerOutputChanged += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (SetOutput));
-			projectService.StartBuild += (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (SelectMessageView));
-			projectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
-			projectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
+			Services.TaskService.CompilerOutputChanged += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (SetOutput));
+			projectService.StartBuild += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (SelectMessageView));
+			projectService.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			projectService.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			*/
 		}
 
@@ -154,7 +154,7 @@ namespace MonoDevelop.Gui.Pads
 
 		void SetOutput2 ()
 		{
-			term.Feed (Runtime.TaskService.CompilerOutput.Replace ("\n", "\r\n"));
+			term.Feed (Services.TaskService.CompilerOutput.Replace ("\n", "\r\n"));
 		}
 		
 		void SetOutput (object sender, EventArgs e)
@@ -163,7 +163,7 @@ namespace MonoDevelop.Gui.Pads
 				SetOutput2 ();
 			}
 			else {
-				term.Feed (Runtime.TaskService.CompilerOutput.Replace ("\n", "\r\n"));
+				term.Feed (Services.TaskService.CompilerOutput.Replace ("\n", "\r\n"));
 			}
 		}
 

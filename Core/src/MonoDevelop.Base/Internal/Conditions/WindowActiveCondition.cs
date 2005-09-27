@@ -9,10 +9,11 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Codons
 {
 	[ConditionAttribute()]
 	internal class WindowActiveCondition : AbstractCondition
@@ -31,16 +32,13 @@ namespace MonoDevelop.Core.AddIns
 		
 		public override bool IsValid(object owner)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
-				return false;
-			}
 			if (activewindow == "*") {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null;
+				return IdeApp.Workbench.ActiveDocument != null;
 			}
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (IdeApp.Workbench.ActiveDocument == null) {
 				return false;
 			}
-			Type currentType = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.GetType();
+			Type currentType = IdeApp.Workbench.ActiveDocument.Content.GetType();
 			if (currentType.ToString() == activewindow) {
 				return true;
 			}

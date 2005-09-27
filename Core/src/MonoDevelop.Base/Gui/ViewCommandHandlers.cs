@@ -6,17 +6,19 @@ using Gtk;
 
 using Gdl;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Commands;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	public class ViewCommandHandlers: ICommandRouter
 	{
@@ -47,7 +49,7 @@ namespace MonoDevelop.Gui
 		[CommandHandler (FileCommands.Save)]
 		protected void OnSaveFile ()
 		{
-			Runtime.FileService.SaveFile (window);
+			IdeApp.Workbench.FindDocument (window).Save ();
 		}
 		
 		[CommandUpdateHandler (FileCommands.Save)]
@@ -68,13 +70,13 @@ namespace MonoDevelop.Gui
 		[CommandHandler (FileCommands.SaveAs)]
 		protected void OnSaveFileAs ()
 		{
-			Runtime.FileService.SaveFileAs (window);
+			IdeApp.Workbench.FindDocument (window).SaveAs ();
 		}
 		
 		[CommandHandler (FileCommands.ReloadFile)]
 		protected void OnReloadFile ()
 		{
-			if (Runtime.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?"))) {
+			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?"))) {
 				IXmlConvertable memento = null;
 				if (window.ViewContent is IMementoCapable) {
 					memento = ((IMementoCapable)window.ViewContent).CreateMemento();

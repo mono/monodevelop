@@ -29,11 +29,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectReferenceFolderNodeBuilder: TypeNodeBuilder
 	{
@@ -59,17 +62,17 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			addedHandler = (ProjectReferenceEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
-			removedHandler = (ProjectReferenceEventHandler) Runtime.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnRemoveReference));
+			addedHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
+			removedHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnRemoveReference));
 
-			Runtime.ProjectService.ReferenceAddedToProject += addedHandler;
-			Runtime.ProjectService.ReferenceRemovedFromProject += removedHandler;
+			IdeApp.ProjectOperations.ReferenceAddedToProject += addedHandler;
+			IdeApp.ProjectOperations.ReferenceRemovedFromProject += removedHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			Runtime.ProjectService.ReferenceAddedToProject -= addedHandler;
-			Runtime.ProjectService.ReferenceRemovedFromProject -= removedHandler;
+			IdeApp.ProjectOperations.ReferenceAddedToProject -= addedHandler;
+			IdeApp.ProjectOperations.ReferenceRemovedFromProject -= removedHandler;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -145,15 +148,15 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				Project p = nav.DataItem as Project;
 				p.ProjectReferences.Add ((ProjectReference) pref.Clone ());
 			}
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
 		public void AddReferenceToProject ()
 		{
 			Project p = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-			if (Runtime.ProjectService.AddReferenceToProject (p)) {
-				Runtime.ProjectService.SaveCombine();
+			if (IdeApp.ProjectOperations.AddReferenceToProject (p)) {
+				IdeApp.ProjectOperations.SaveCombine();
 				CurrentNode.Expanded = true;
 			}
 		}

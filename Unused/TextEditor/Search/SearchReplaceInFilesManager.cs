@@ -9,14 +9,14 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.EditorBindings.Search;
 
 namespace MonoDevelop.TextEditor.Document
@@ -61,7 +61,7 @@ namespace MonoDevelop.TextEditor.Document
 		/// </remarks>
 		static void DisplaySearchResult(ISearchResult result)
 		{
-			TaskService taskService = (TaskService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(TaskService));
+			TaskService taskService = (TaskService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(TaskService));
 			
 			// check if the current document is up to date
 			if (currentFileName != result.FileName) {
@@ -80,7 +80,7 @@ namespace MonoDevelop.TextEditor.Document
 		{
 			Debug.Assert(searchOptions != null);
 			
-			TaskService taskService = (TaskService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(TaskService));
+			TaskService taskService = (TaskService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(TaskService));
 			taskService.Tasks.Clear();
 			
 			InitializeDocumentIterator(null, null);
@@ -96,7 +96,7 @@ namespace MonoDevelop.TextEditor.Document
 		
 		static void FinishSearchInFiles()
 		{
-			TaskService taskService = (TaskService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(TaskService));
+			TaskService taskService = (TaskService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(TaskService));
 			taskService.NotifyTaskChange();
 			
 			OpenTaskView taskView = WorkbenchSingleton.Workbench.GetPad(typeof(OpenTaskView)) as OpenTaskView;

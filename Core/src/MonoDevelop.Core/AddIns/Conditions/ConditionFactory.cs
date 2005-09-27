@@ -8,7 +8,7 @@
 using System;
 using System.Xml;
 
-namespace MonoDevelop.Core.AddIns.Conditions
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// Creates a new <code>ICondition</code> object.

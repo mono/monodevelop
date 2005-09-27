@@ -33,7 +33,8 @@ using System.IO;
 using System.Collections;
 using System.Threading;
 
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit

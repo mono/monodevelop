@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IClipboardHandler
 	{

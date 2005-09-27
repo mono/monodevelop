@@ -8,15 +8,14 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui.Dialogs;
 
-using MonoDevelop.Services;
-
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute("DialogPanel")]
-	public class DialogPanelCodon : AbstractCodon
+	internal class DialogPanelCodon : AbstractCodon
 	{
 		[XmlMemberAttribute("_label", IsRequired=true)]
 		string label       = null;

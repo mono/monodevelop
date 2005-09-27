@@ -22,9 +22,10 @@ namespace BooBinding
 import System
 import System.Collections
 import System.Text
-import MonoDevelop.Internal.Parser
-import MonoDevelop.Services
+import MonoDevelop.Projects.Parser
+import MonoDevelop.Core
 import MonoDevelop.Core.Properties
+import MonoDevelop.Projects.Ambience
 
 class BooAmbience(AbstractAmbience):
 	[Getter(TypeConversionTable)]

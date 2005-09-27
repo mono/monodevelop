@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	[SyncContext (typeof(GuiSyncContext))]
 	public class GuiSyncObject: SyncObject

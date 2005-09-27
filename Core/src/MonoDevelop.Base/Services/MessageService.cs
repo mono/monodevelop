@@ -8,14 +8,14 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using Gtk;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// This interface must be implemented by all services.
@@ -23,15 +23,21 @@ namespace MonoDevelop.Core.Services
 	public class MessageService : GuiSyncAbstractService, IMessageService
 	{
 		StringParserService stringParserService = Runtime.StringParserService;
+		Gtk.Window rootWindow;
+		
+		public object RootWindow {
+			get { return rootWindow; }
+			set { rootWindow = (Gtk.Window) value; }
+		}
 		
 		public void ShowError(Exception ex)
 		{
-			ShowError(ex, null, (Window) WorkbenchSingleton.Workbench);
+			ShowError(ex, null, rootWindow);
 		}
 		
 		public void ShowError(string message)
 		{
-			ShowError(null, message, (Window) WorkbenchSingleton.Workbench);
+			ShowError(null, message, rootWindow);
 		}
 
 		public void ShowError (Window parent, string message)
@@ -41,7 +47,7 @@ namespace MonoDevelop.Core.Services
 		
 		public void ShowErrorFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowError(null, String.Format(stringParserService.Parse(formatstring), formatitems), (Window) WorkbenchSingleton.Workbench);
+			ShowError(null, String.Format(stringParserService.Parse(formatstring), formatitems), rootWindow);
 		}
 
 		private struct ErrorContainer
@@ -58,7 +64,7 @@ namespace MonoDevelop.Core.Services
 
 		public void ShowError (Exception ex, string message)
 		{
-			ShowError (ex, message, (Window) WorkbenchSingleton.Workbench);
+			ShowError (ex, message, rootWindow);
 		}
 
 		public void ShowError (Exception ex, string message, Window parent)
@@ -83,7 +89,7 @@ namespace MonoDevelop.Core.Services
 
 		public void ShowWarning(string message)
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog ((Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Warning, Gtk.ButtonsType.Ok, message);
+			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Warning, Gtk.ButtonsType.Ok, message);
 			md.Response += new Gtk.ResponseHandler (OnWarningResponse);
 			md.ShowAll ();
 		}
@@ -100,7 +106,7 @@ namespace MonoDevelop.Core.Services
 		
 		public bool AskQuestion(string question, string caption)
 		{
-			using (Gtk.MessageDialog md = new Gtk.MessageDialog ((Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.YesNo, question)) {
+			using (Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.YesNo, question)) {
 				int response = md.Run ();
 				md.Hide ();
 				
@@ -128,7 +134,7 @@ namespace MonoDevelop.Core.Services
 
 		public QuestionResponse AskQuestionWithCancel(string question, string caption)
 		{
-			using (Gtk.MessageDialog md = new Gtk.MessageDialog ((Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.None, question)) {
+			using (Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.None, question)) {
 				
 				md.AddActionWidget (new Button (Gtk.Stock.No), ResponseType.No);
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
@@ -192,14 +198,14 @@ namespace MonoDevelop.Core.Services
 		
 		public void ShowMessage(string message, string caption)
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog ((Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message);
+			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message);
 			md.Response += new Gtk.ResponseHandler(OnMessageResponse);
 			md.ShowAll ();
 		}
 
 		public void ShowMessage(string message, Gtk.Window parent )
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog ((Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message );
+			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message );
 			if ( parent != null )
 			{
 				md.TransientFor = parent;
@@ -219,7 +225,7 @@ namespace MonoDevelop.Core.Services
 		{
 			string returnValue = null;
 			
-			using (Gtk.Dialog md = new Gtk.Dialog (caption, (Gtk.Window) WorkbenchSingleton.Workbench, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent)) {
+			using (Gtk.Dialog md = new Gtk.Dialog (caption, rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent)) {
 				// add a label with the question
 				Gtk.Label questionLabel = new Gtk.Label(question);
 				questionLabel.UseMarkup = true;

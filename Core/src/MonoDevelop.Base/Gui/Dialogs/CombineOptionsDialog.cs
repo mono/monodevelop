@@ -31,13 +31,12 @@ using System.Collections;
 using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	public class CombineOptionsDialog : TreeViewOptions
 	{

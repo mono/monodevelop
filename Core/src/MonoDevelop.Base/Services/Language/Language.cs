@@ -15,7 +15,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects
 {
 	public class Language
 	{

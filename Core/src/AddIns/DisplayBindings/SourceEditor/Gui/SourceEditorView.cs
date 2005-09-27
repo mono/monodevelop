@@ -6,21 +6,21 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core.AddIns.Conditions;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.SourceEditor.InsightWindow;
-using MonoDevelop.EditorBindings.Properties;
-using MonoDevelop.EditorBindings.FormattingStrategy;
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Completion;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
-using MonoDevelop.DefaultEditor;
+using MonoDevelop.SourceEditor.Properties;
+using MonoDevelop.SourceEditor.FormattingStrategy;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
 
 using GtkSourceView;
 
@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					cset.AddItem (Command.Separator);
 					cset.AddItem (DebugCommands.ToggleBreakpoint);
 					cset.AddItem (DebugCommands.ClearAllBreakpoints);
-					Gtk.Menu menu = Runtime.Gui.CommandService.CreateMenu (cset);
+					Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 					
 					menu.Popup (null, null, null, 3, e.Time);
 				}
@@ -203,7 +203,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
 			Project project = ParentEditor.DisplayBinding.Project;
-			IParserDatabase pdb = Runtime.ProjectService.ParserDatabase;
+			IParserDatabase pdb = IdeApp.ProjectOperations.ParserDatabase;
 			
 			if (project != null)
 				return pdb.GetProjectParserContext (project);
@@ -253,16 +253,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (type == null || type.Length == 0)
 				return false;
 
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content.ContentName == GettextCatalog.GetString ("Documentation")) {
-					((HelpViewer)content).LoadUrl (type);
-					content.WorkbenchWindow.SelectWindow ();
-					return true;
-				}
-			}
-			HelpViewer new_content = new HelpViewer ();
-			new_content.LoadUrl (type);
-			WorkbenchSingleton.Workbench.ShowView (new_content, true);
+			IdeApp.HelpOperations.ShowHelp (type);
 			
 			return true;
 		}
@@ -303,7 +294,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			Gdk.Key key = evnt.Key;
 			uint state = (uint)evnt.State;
 			state &= 1101u;
-			const uint Normal = 0, Shift = 1, Control = 4, ShiftControl = 5; /*, Alt = 8*/
+			const uint Normal = 0, Shift = 1, Control = 4; /*, Alt = 8*/
 			
 			switch (state) {
 			case Normal:
@@ -335,14 +326,6 @@ namespace MonoDevelop.SourceEditor.Gui
 					break;
 				}
 				break;
-			case ShiftControl:
-				switch (key)
-				{
-				case Gdk.Key.ISO_Left_Tab:
-					WorkbenchSingleton.Workbench.WorkbenchLayout.PreviousTab();
-					return true;
-				}
-				break;
 			case Control:
 				switch (key) {
 				case Gdk.Key.space:
@@ -357,9 +340,6 @@ namespace MonoDevelop.SourceEditor.Gui
 					return true;
 				case Gdk.Key.Down:
 					ScrollDown ();
-					return true;
-				case Gdk.Key.Tab:
-					WorkbenchSingleton.Workbench.WorkbenchLayout.NextTab();
 					return true;
 				}
 				break;
@@ -681,7 +661,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		int IFormattableDocument.GetClosingBraceForLine (int ln, out int openingLine)
 		{
-			int offset = MonoDevelop.Gui.Completion.TextUtilities.SearchBracketBackward
+			int offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward
 				(this, Buffer.GetIterAtLine (ln).Offset - 1, '{', '}');
 			
 			openingLine = offset == -1 ? -1 : Buffer.GetIterAtOffset (offset).Line;

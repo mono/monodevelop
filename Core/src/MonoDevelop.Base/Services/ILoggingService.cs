@@ -1,7 +1,7 @@
 
 using System;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core
 {
 	public delegate void LogAppendedHandler(object sender, LogAppendedArgs args);
 

@@ -8,11 +8,9 @@
 using System;
 using System.Xml;
 
-
-using MonoDevelop.Core.AddIns.Conditions;
 using MonoDevelop.Core.AddIns;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor;
 

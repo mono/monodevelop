@@ -9,9 +9,9 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	public class ForwardTextIterator : ITextIterator
 	{

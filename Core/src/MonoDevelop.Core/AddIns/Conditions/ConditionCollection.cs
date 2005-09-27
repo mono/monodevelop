@@ -7,7 +7,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Core.AddIns.Conditions
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	///     <para>

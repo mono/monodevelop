@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Xml;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	public class CodonNotFoundException : System.Exception
 	{

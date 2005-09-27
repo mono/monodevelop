@@ -8,12 +8,10 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Core;
 
-using MonoDevelop.Services;
-
-namespace MonoDevelop.EditorBindings.Gui.Dialogs
+namespace MonoDevelop.SourceEditor.Gui.Dialogs
 {
 	public class EditTemplateGroupDialog : Gtk.Dialog 
 	{

@@ -9,9 +9,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Core.AddIns.Conditions;
-
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	[CodonNameAttribute("Class")]
 	public class ClassCodon : AbstractCodon

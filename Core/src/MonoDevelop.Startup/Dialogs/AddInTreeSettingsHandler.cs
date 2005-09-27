@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Collections;
 using System.Xml;
 
-namespace MonoDevelop
+namespace MonoDevelop.Startup
 {
 	public class AddInSettingsHandler : System.Configuration.IConfigurationSectionHandler
 	{

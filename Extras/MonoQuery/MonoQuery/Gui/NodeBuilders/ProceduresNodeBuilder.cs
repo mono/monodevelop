@@ -30,8 +30,9 @@ using System;
 using System.Threading;
 
 using Mono.Data.Sql;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoQuery
 {
@@ -46,7 +47,7 @@ namespace MonoQuery
 		
 		public ProceduresNodeBuilder()
 		{
-			AddProcedure += (AddProcedureHandler) Runtime.DispatchService.GuiDispatch (new AddProcedureHandler (OnProcedureAdd));
+			AddProcedure += (AddProcedureHandler) Services.DispatchService.GuiDispatch (new AddProcedureHandler (OnProcedureAdd));
 		}
 		
 		public override Type NodeDataType {

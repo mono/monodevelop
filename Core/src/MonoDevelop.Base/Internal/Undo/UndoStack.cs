@@ -9,7 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Undo
+namespace MonoDevelop.Ide.Gui.Undo
 {
 	/// <summary>
 	/// This class implements an undo stack

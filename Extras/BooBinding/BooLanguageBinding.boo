@@ -27,17 +27,16 @@ import System.Reflection
 import System.Resources
 import System.Xml
 
-import MonoDevelop.Internal.Project
-import MonoDevelop.Internal.Templates
-import MonoDevelop.Gui
-import MonoDevelop.Services
+import MonoDevelop.Projects
+import MonoDevelop.Core.Gui
+import MonoDevelop.Core
 
 public class BooLanguageBinding(ILanguageBinding):
 	internal static LanguageName = "Boo"
 	compilerServices = BooBindingCompilerServices ()
 	
 	public def constructor():
-		MonoDevelop.Services.Runtime.ProjectService.DataContext.IncludeType (typeof(BooCompilerParameters))
+		MonoDevelop.Projects.Services.ProjectService.DataContext.IncludeType (typeof(BooCompilerParameters))
 	
 	public Language as string:
 		get:

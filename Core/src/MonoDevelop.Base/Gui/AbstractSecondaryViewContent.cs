@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// </summary>

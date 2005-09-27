@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MonoDevelop.Gui.HtmlControl
+namespace MonoDevelop.Components.HtmlControl
 {
 	[
 	ComVisible(true),

@@ -34,8 +34,8 @@ using System.Collections;
 using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using NUnit.Core;
 
 namespace MonoDevelop.NUnit

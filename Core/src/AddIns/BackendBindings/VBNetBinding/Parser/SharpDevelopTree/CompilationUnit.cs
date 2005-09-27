@@ -1,6 +1,6 @@
 // created on 04.08.2003 at 17:31
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {

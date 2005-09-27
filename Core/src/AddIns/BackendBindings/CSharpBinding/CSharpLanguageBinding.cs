@@ -15,10 +15,8 @@ using System.Xml;
 using System.CodeDom.Compiler;
 using System.Threading;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace CSharpBinding
 {
@@ -30,7 +28,7 @@ namespace CSharpBinding
 		
 		public CSharpLanguageBinding ()
 		{
-			Runtime.ProjectService.DataContext.IncludeType (typeof(CSharpCompilerParameters));
+			Services.ProjectService.DataContext.IncludeType (typeof(CSharpCompilerParameters));
 		}
 		
 		public string Language {

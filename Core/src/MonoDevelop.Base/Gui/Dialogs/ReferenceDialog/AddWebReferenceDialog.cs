@@ -11,12 +11,11 @@ using System.Xml.Xsl;
 using System.CodeDom.Compiler;
 using System.Web.Services.Description;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.BrowserDisplayBinding;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	/// <summary>
 	/// Summary description for Form1.

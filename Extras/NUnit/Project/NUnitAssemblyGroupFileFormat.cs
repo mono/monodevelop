@@ -30,9 +30,9 @@
 using System;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {
@@ -66,7 +66,7 @@ namespace MonoDevelop.NUnit
 			StreamWriter sw = new StreamWriter (file);
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving project: {0}"), file), 1);
-				XmlDataSerializer ser = new XmlDataSerializer (Runtime.ProjectService.DataContext);
+				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
 				ser.SerializationContext.BaseFile = file;
 				ser.Serialize (sw, project, typeof(NUnitAssemblyGroupProject));
 			} catch (Exception ex) {
@@ -85,7 +85,7 @@ namespace MonoDevelop.NUnit
 				
 				reader.MoveToContent ();
 				
-				XmlDataSerializer ser = new XmlDataSerializer (Runtime.ProjectService.DataContext);
+				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
 				ser.SerializationContext.BaseFile = file;
 				
 				CombineEntry entry = (CombineEntry) ser.Deserialize (reader, typeof(NUnitAssemblyGroupProject));

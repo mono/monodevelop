@@ -3,9 +3,9 @@ using System.Xml;
 
 using Monodoc;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Documentation
 {
 
 	public class MonodocService : AbstractService

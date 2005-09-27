@@ -11,15 +11,14 @@ using System.Reflection;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.TextEditor;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 using SharpDevelop.Internal.Parser;
 using MonoDevelop.TextEditor.Gui.CompletionWindow;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.DefaultEditor.Gui.Editor
 {
@@ -29,7 +28,7 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 	public class CommentCompletionDataProvider : ICompletionDataProvider
 	{
 		static IconService classBrowserIconService = (IconService)ServiceManager.Services.GetService(typeof(IconService));
-		static IParserService           parserService           = (IParserService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));
+		static IParserService           parserService           = (IParserService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IParserService));
 		
 		int caretLineNumber;
 		int caretColumn;

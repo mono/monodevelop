@@ -3,15 +3,16 @@ using Gtk;
 using System;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.SourceEditor.Gui.Dialogs;
 using GtkSourceView;
-using MonoDevelop.DefaultEditor;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Search;
-using Stock = MonoDevelop.Gui.Stock;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Commands;
+using Stock = MonoDevelop.Core.Gui.Stock;
 
 namespace MonoDevelop.SourceEditor.Gui
 {
@@ -28,8 +29,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		static SourceEditor ()
 		{
 			dragIconPixbuf = new Gdk.Pixbuf (drag_icon_xpm);
-			executionMarkerPixbuf = Runtime.Gui.Resources.GetIcon (Stock.ExecutionMarker);
-			breakPointPixbuf = Runtime.Gui.Resources.GetIcon (Stock.BreakPoint);
+			executionMarkerPixbuf = Services.Resources.GetIcon (Stock.ExecutionMarker);
+			breakPointPixbuf = Services.Resources.GetIcon (Stock.BreakPoint);
 		}
 		
 		protected SourceEditor (IntPtr ptr): base (ptr)
@@ -182,16 +183,16 @@ namespace MonoDevelop.SourceEditor.Gui
 		[CommandHandler (DebugCommands.ToggleBreakpoint)]
 		public void ToggleBreakpoint ()
 		{
-			if (Runtime.DebuggingService != null && DisplayBinding.ContentName != null) {
+			if (Services.DebuggingService != null && DisplayBinding.ContentName != null) {
 				int line = Buffer.GetIterAtMark (Buffer.InsertMark).Line + 1;
-				Runtime.DebuggingService.ToggleBreakpoint (DisplayBinding.ContentName, line);
+				Services.DebuggingService.ToggleBreakpoint (DisplayBinding.ContentName, line);
 			}
 		}
 		
 		[CommandUpdateHandler (DebugCommands.ToggleBreakpoint)]
 		public void UpdateToggleBreakpoint (CommandInfo info)
 		{
-			if (Runtime.DebuggingService == null)
+			if (Services.DebuggingService == null)
 				info.Visible = false;
 			else
 				info.Enabled = DisplayBinding.ContentName != null;

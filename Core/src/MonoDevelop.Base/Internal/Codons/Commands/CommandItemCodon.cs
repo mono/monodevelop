@@ -31,13 +31,13 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Commands;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute ("CommandItem")]
-	public class CommandItemCodon : AbstractCodon
+	internal class CommandItemCodon : AbstractCodon
 	{
 		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
 		{

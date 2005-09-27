@@ -28,9 +28,9 @@
 
 
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public interface IFileFormat
 	{

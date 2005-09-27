@@ -11,19 +11,21 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
-using MonoDevelop.Services;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 using Gtk;
 using Pango;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {	
-	public class DefaultMonitorPad : IPadContent
+	internal class DefaultMonitorPad : IPadContent
 	{
+		IPadWindow window;
 		Gtk.TextBuffer buffer;
 		Gtk.TextView textEditorControl;
 		Gtk.ScrolledWindow scroller;
@@ -38,7 +40,6 @@ namespace MonoDevelop.Gui.Pads
 		ArrayList tags = new ArrayList ();
 		Stack indents = new Stack ();
 
-		string markupTitle;
 		string title;
 		string icon;
 		string id;
@@ -82,16 +83,22 @@ namespace MonoDevelop.Gui.Pads
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
 
-			Runtime.ProjectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
-			Runtime.ProjectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 
 			this.title = title;
 			this.icon = icon;
-			this.markupTitle = title;
 			
 			Control.ShowAll ();
 		}
 
+		void IPadContent.Initialize (IPadWindow window)
+		{
+			this.window = window;
+			window.Title = title;
+			window.Icon = icon;
+		}
+		
 		public IAsyncOperation AsyncOperation {
 			get {
 				return asyncOperation;
@@ -124,10 +131,8 @@ namespace MonoDevelop.Gui.Pads
 		public void BeginProgress (string title)
 		{
 			this.title = title;
-			this.markupTitle = "<span foreground=\"blue\">" + title + "</span>";
-			
 			buffer.Clear ();
-			OnTitleChanged (null);
+			window.Title = "<span foreground=\"blue\">" + title + "</span>";
 			buttonStop.Sensitive = true;
 		}
 		
@@ -164,14 +169,6 @@ namespace MonoDevelop.Gui.Pads
 			get { return hbox; }
 		}
 		
-		public string Title {
-			get { return markupTitle; }
-		}
-		
-		public string Icon {
-			get { return icon; }
-		}
-		
 		public string Id {
 			get { return id; }
 			set { id = value; }
@@ -183,8 +180,7 @@ namespace MonoDevelop.Gui.Pads
 		
 		public void EndProgress ()
 		{
-			markupTitle = title;
-			OnTitleChanged (null);
+			window.Title = title;
 			buttonStop.Sensitive = false;
 		}
 		
@@ -221,25 +217,6 @@ namespace MonoDevelop.Gui.Pads
 	
 		public void RedrawContent()
 		{
-			OnTitleChanged(null);
-			OnIconChanged(null);
 		}
-		
-		protected virtual void OnTitleChanged(EventArgs e)
-		{
-			if (TitleChanged != null) {
-				TitleChanged(this, e);
-			}
-		}
-
-		protected virtual void OnIconChanged(EventArgs e)
-		{
-			if (IconChanged != null) {
-				IconChanged(this, e);
-			}
-		}
-
-		public event EventHandler TitleChanged;
-		public event EventHandler IconChanged;
 	}
 }

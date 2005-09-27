@@ -11,12 +11,10 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 {
 	public enum FileErrorPolicy {
 		Inform,
@@ -76,23 +74,18 @@ namespace MonoDevelop.Core.Services
 		/// is true. The found files are added to the StringCollection 
 		/// <code>collection</code>.
 		/// </summary>
-		void SearchDirectory(string directory, string filemask, StringCollection collection, bool searchSubdirectories)
+		void SearchDirectory (string directory, string filemask, StringCollection collection, bool searchSubdirectories)
 		{
-			try {
-				string[] file = Directory.GetFiles(directory, filemask);
-				foreach (string f in file) {
-					collection.Add(f);
+			string[] file = Directory.GetFiles(directory, filemask);
+			foreach (string f in file) {
+				collection.Add(f);
+			}
+			
+			if (searchSubdirectories) {
+				string[] dir = Directory.GetDirectories(directory);
+				foreach (string d in dir) {
+					SearchDirectory(d, filemask, collection, searchSubdirectories);
 				}
-				
-				if (searchSubdirectories) {
-					string[] dir = Directory.GetDirectories(directory);
-					foreach (string d in dir) {
-						SearchDirectory(d, filemask, collection, searchSubdirectories);
-					}
-				}
-			} catch (Exception e) {
-				IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-				messageService.ShowError(e, "Can't access directory " + directory);
 			}
 		}
 		
@@ -183,16 +176,6 @@ namespace MonoDevelop.Core.Services
 			return !((nameWithoutExtension.StartsWith("COM") ||
 			          nameWithoutExtension.StartsWith("LPT")) &&
 			          Char.IsDigit(ch));
-		}
-		
-		public bool TestFileExists(string filename)
-		{
-			if (!File.Exists(filename)) {
-				IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-				messageService.ShowWarning(String.Format (GettextCatalog.GetString ("Can't find file {0}"), filename));
-				return false;
-			}
-			return true;
 		}
 		
 		public bool IsDirectory(string filename)

@@ -12,13 +12,11 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
-using MonoDevelop.Core.Services;
 
-using MonoDevelop.Services;
-
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Projects;
 
 namespace VBBinding {
 	
@@ -412,8 +410,7 @@ namespace VBBinding {
 					assembly_references.Add (Path.Combine (rel_path_to, Path.GetFileName (assembly_fileName)));
 					break;
 				case ReferenceType.Project:
-					IProjectService prjService = (IProjectService)ServiceManager.GetService (typeof (IProjectService));
-					CombineEntryCollection allProjects = prjService.CurrentOpenCombine.GetAllProjects();
+					CombineEntryCollection allProjects = project.RootCombine.GetAllProjects();
 					
 					foreach (Project projectEntry in allProjects) {
 						if (projectEntry.Name == lib.Reference) {

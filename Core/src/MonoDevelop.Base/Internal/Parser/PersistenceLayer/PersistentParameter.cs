@@ -7,12 +7,12 @@
 using System;
 using System.IO;
 using System.Reflection;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentParameter : AbstractParameter
+	internal sealed class PersistentParameter : AbstractParameter
 	{
 		public static PersistentParameter Resolve (IParameter source, ITypeResolver typeResolver)
 		{

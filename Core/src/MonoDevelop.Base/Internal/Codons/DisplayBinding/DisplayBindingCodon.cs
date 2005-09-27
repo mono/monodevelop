@@ -9,12 +9,13 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute("DisplayBinding")]
-	public class DisplayBindingCodon : AbstractCodon
+	internal class DisplayBindingCodon : AbstractCodon
 	{
 		[XmlMemberArrayAttribute("supportedformats")]
 		string[] supportedFormats;

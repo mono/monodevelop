@@ -33,12 +33,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	/// <summary>
 	/// This class is used inside the combine templates for projects.
@@ -65,7 +65,7 @@ namespace MonoDevelop.Internal.Templates
 			Type type = Type.GetType (typeName);
 			
 			if (type == null) {
-				Runtime.MessageService.ShowError(String.Format (GettextCatalog.GetString ("Can't create project with type : {0}"), typeName));
+				Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("Can't create project with type : {0}"), typeName));
 				return String.Empty;
 			}
 			
@@ -78,15 +78,15 @@ namespace MonoDevelop.Internal.Templates
 			
 			entry.Name = newProjectName;
 			
-			IFileFormat fileFormat = Runtime.ProjectService.FileFormats.GetFileFormatForObject (entry);
+			IFileFormat fileFormat = Services.ProjectService.FileFormats.GetFileFormatForObject (entry);
 			if (fileFormat == null)
 				throw new InvalidOperationException ("Can't find a file format for the type: " + type);
 
 			string fileName = fileFormat.GetValidFormatName (Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
 			
-			using (IProgressMonitor monitor = Runtime.TaskService.GetSaveProgressMonitor ()) {
+			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (fileName)) {
-					if (Runtime.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("Project file {0} already exists, do you want to overwrite\nthe existing file ?"), fileName),  GettextCatalog.GetString ("File already exists"))) {
+					if (Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("Project file {0} already exists, do you want to overwrite\nthe existing file ?"), fileName),  GettextCatalog.GetString ("File already exists"))) {
 						entry.Save (fileName, monitor);
 					}
 				} else {

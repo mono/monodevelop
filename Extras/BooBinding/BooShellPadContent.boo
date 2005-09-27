@@ -23,9 +23,9 @@ namespace BooBinding.Pads
 import System
 
 import MonoDevelop.Core.AddIns
-import MonoDevelop.Services
-import MonoDevelop.Core.Services
-import MonoDevelop.Gui
+import MonoDevelop.Core
+import MonoDevelop.Core.Gui
+import MonoDevelop.IdeApplication.Gui
 import BooBinding.Gui
 
 
@@ -48,10 +48,6 @@ public class BooShellPadContent (AbstractPadContent):
 		_shellView = ShellTextView (_model)
 		_scroller.Add(_shellView)
 		_scroller.ShowAll()
-
-	override def RedrawContent():
-		OnTitleChanged(null)
-		OnIconChanged(null)
 
 	override def Dispose():
 		_shellView.Dispose()

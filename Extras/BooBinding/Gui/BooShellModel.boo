@@ -30,8 +30,8 @@ import System.Runtime.Remoting.Channels
 import BooBinding.Properties
 import BooBinding.BooShell
 
-import MonoDevelop.Services
-import MonoDevelop.Core.Services
+import MonoDevelop.Core
+import MonoDevelop.Core.ProcessServices
 
 class BooShellModel(IShellModel):
 	private _props = BooShellProperties()

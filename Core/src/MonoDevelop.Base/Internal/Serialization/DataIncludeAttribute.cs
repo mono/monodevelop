@@ -30,7 +30,7 @@ using System;
 using System.Xml;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple=true)]
 	public class DataIncludeAttribute: Attribute

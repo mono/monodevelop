@@ -11,10 +11,8 @@ using System.Collections;
 using System.Diagnostics;
 using System.Xml;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace VBBinding
 {
@@ -32,7 +30,7 @@ namespace VBBinding
 		
 		public VBLanguageBinding ()
 		{
-			Runtime.ProjectService.DataContext.IncludeType (typeof(VBCompilerParameters));
+			Services.ProjectService.DataContext.IncludeType (typeof(VBCompilerParameters));
 		}
 		
 		public bool CanCompile(string fileName)

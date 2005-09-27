@@ -1,11 +1,11 @@
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
 class T
 {
 	static void Main ()
 	{
-		MonoDevelop.Gui.Utils.Vfs.Init ();
+		MonoDevelop.Core.Gui.Utils.Vfs.Init ();
 		FdoRecentFiles frf = new FdoRecentFiles ();	
 		frf.AddFile ("test.cs");
 		frf.AddProject ("test.cmbx");

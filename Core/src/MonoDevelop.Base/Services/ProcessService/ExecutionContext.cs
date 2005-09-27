@@ -27,8 +27,9 @@
 //
 
 using System;
+using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects
 {
 	[Serializable]
 	public class ExecutionContext
@@ -51,7 +52,7 @@ namespace MonoDevelop.Services
 		}
 		
 		public IConsoleFactory ExternalConsoleFactory {
-			get { return MonoDevelop.Services.ExternalConsoleFactory.Instance; }
+			get { return MonoDevelop.Core.Execution.ExternalConsoleFactory.Instance; }
 		}
 	}
 }

@@ -10,14 +10,14 @@ using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using System.Xml;
-using MonoDevelop.Internal.Templates;
+using MonoDevelop.Ide.Templates;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Services;
-
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.CodeTemplates
 {
 	/// <summary>
 	/// This class handles the code templates
@@ -100,7 +100,7 @@ namespace MonoDevelop.Internal.Templates
 				if (!LoadTemplatesFromStream(Runtime.Properties.DataDirectory + 
 				                             Path.DirectorySeparatorChar   + "options" +
 				                             Path.DirectorySeparatorChar   + TemplateFileName)) {
-					Runtime.MessageService.ShowWarning(GettextCatalog.GetString ("Can't load templates configuration file"));
+					Services.MessageService.ShowWarning(GettextCatalog.GetString ("Can't load templates configuration file"));
 				}
 			}
 		}

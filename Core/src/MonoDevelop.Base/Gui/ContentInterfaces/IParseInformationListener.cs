@@ -7,10 +7,10 @@
 
 using System;
 using System.Drawing.Printing;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Projects.Parser
 {
 	public interface IParseInformationListener
 	{

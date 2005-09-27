@@ -9,11 +9,12 @@ using System;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Ambience;
 
-namespace MonoDevelop.Services
+namespace CSharpBinding
 {
 	public class CSharpAmbience :  AbstractAmbience
 	{

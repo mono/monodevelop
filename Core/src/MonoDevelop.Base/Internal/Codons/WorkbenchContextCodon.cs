@@ -31,12 +31,12 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("WorkbenchContext")]
-	public class WorkbenchContextCodon : AbstractCodon
+	internal class WorkbenchContextCodon : AbstractCodon
 	{
 		ContextPadCodon[] pads;
 		

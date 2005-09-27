@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -8,138 +8,18 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskService : GuiSyncAbstractService, IConsoleFactory
+	public class TaskService : GuiSyncAbstractService
 	{
 		ArrayList tasks  = new ArrayList();
 		string    compilerOutput = String.Empty;
-		
-		ArrayList outputMonitors = new ArrayList ();
-		ArrayList searchMonitors = new ArrayList ();
-		int monitorId = 0;
-		
-		
-		/******************************/
-		
-		public IProgressMonitor GetBuildProgressMonitor ()
-		{
-			bool front = (bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowOutputWindowAtBuild", true);
-			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor ("Build Output", MonoDevelop.Gui.Stock.BuildCombine, front, true));
-			mon.AddSlaveMonitor (GetStatusProgressMonitor ("Building...", MonoDevelop.Gui.Stock.BuildCombine, false));
-			return mon;
-		}
-		
-		public IProgressMonitor GetRunProgressMonitor ()
-		{
-			return GetOutputProgressMonitor ("Application Output", MonoDevelop.Gui.Stock.RunProgramIcon, true, true);
-		}
-		
-		public IProgressMonitor GetLoadProgressMonitor ()
-		{
-			return GetStatusProgressMonitor ("Loading...", Stock.OpenFileIcon, true);
-		}
-		
-		public IProgressMonitor GetSaveProgressMonitor ()
-		{
-			return GetStatusProgressMonitor ("Saving...", Stock.SaveIcon, true);
-		}
-		
-		public IConsole CreateConsole (bool closeOnDispose)
-		{
-			return (IConsole) GetOutputProgressMonitor ("Application Output", MonoDevelop.Gui.Stock.RunProgramIcon, true, true);
-		}
-		
-		
-		/******************************/
-		
-		
-		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs)
-		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs);
-		}
-		
-		public IProgressMonitor GetBackgroundProgressMonitor (string title, string icon)
-		{
-			return new BackgroundProgressMonitor (title, icon);
-		}
-		
-		public IProgressMonitor GetOutputProgressMonitor (string title, string icon, bool bringToFront, bool allowMonitorReuse)
-		{
-			if (allowMonitorReuse) {
-				DefaultMonitorPad pad = null;
-				lock (outputMonitors) {
-					// Look for an available pad
-					for (int n=0; n<outputMonitors.Count; n++) {
-						DefaultMonitorPad mpad = (DefaultMonitorPad) outputMonitors [n];
-						if (mpad.Title == title) {
-							pad = mpad;
-							outputMonitors.RemoveAt (n);
-							break;
-						}
-					}
-				}
-				if (pad != null) {
-					if (bringToFront) Runtime.Gui.Workbench.BringToFront (pad);
-					return new OutputProgressMonitor (pad, title, icon);
-				}
-			}
-			
-			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon);
-			monitorPad.Id = "OutputPad" + (monitorId++);
-			Runtime.Gui.Workbench.ShowPad (monitorPad);
-			if (bringToFront) Runtime.Gui.Workbench.BringToFront (monitorPad);
-
-			return new OutputProgressMonitor (monitorPad, title, icon);
-		}
-
-		internal void ReleasePad (DefaultMonitorPad pad)
-		{
-			lock (outputMonitors) {
-				outputMonitors.Add (pad);
-			}
-		}
-		
-		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
-		{
-			SearchResultPad pad = null;
-			string title = GettextCatalog.GetString ("Search Results");
-			
-			lock (searchMonitors) {
-				// Look for an available pad
-				for (int n=0; n<searchMonitors.Count; n++) {
-					SearchResultPad mpad = (SearchResultPad) searchMonitors [n];
-					if (mpad.AllowReuse) {
-						pad = mpad;
-						searchMonitors.RemoveAt (n);
-						break;
-					}
-				}
-			}
-			if (pad != null) {
-				if (bringToFront) Runtime.Gui.Workbench.BringToFront (pad);
-				return new SearchProgressMonitor (pad, title);
-			}
-			
-			SearchResultPad monitorPad = new SearchResultPad ();
-			monitorPad.Id = "SearchPad" + (monitorId++);
-			Runtime.Gui.Workbench.ShowPad (monitorPad);
-			if (bringToFront) Runtime.Gui.Workbench.BringToFront (monitorPad);
-
-			return new SearchProgressMonitor (monitorPad, title);
-		}
-
-		internal void ReleasePad (SearchResultPad pad)
-		{
-			lock (searchMonitors) {
-				searchMonitors.Add (pad);
-			}
-		}
 		
 		[FreeDispatch]
 		public ICollection Tasks {
@@ -214,13 +94,13 @@ namespace MonoDevelop.Services
 		
 		public void ShowTasks ()
 		{
-			Runtime.DispatchService.GuiDispatch (new MessageHandler (ShowTasksCallback));
+			Services.DispatchService.GuiDispatch (new MessageHandler (ShowTasksCallback));
 		}
 		
 		void ShowTasksCallback ()
 		{
-			OpenTaskView taskView = Runtime.Gui.Workbench.GetPad(typeof(OpenTaskView)) as OpenTaskView;
-			if (taskView != null) Runtime.Gui.Workbench.BringToFront (taskView);
+			Pad pad = IdeApp.Workbench.Pads [typeof(OpenTaskView)];
+			if (pad != null) pad.BringToFront ();
 		}
 		
 		protected virtual void OnCompilerOutputChanged(EventArgs e)
@@ -247,8 +127,8 @@ namespace MonoDevelop.Services
 		public override void InitializeService()
 		{
 			base.InitializeService();
-			Runtime.FileService.FileRenamed += new FileEventHandler(CheckFileRename);
-			Runtime.FileService.FileRemoved += new FileEventHandler(CheckFileRemove);
+			Services.FileService.FileRenamed += new FileEventHandler(CheckFileRename);
+			Services.FileService.FileRemoved += new FileEventHandler(CheckFileRemove);
 		}
 		
 		void CheckFileRemove(object sender, FileEventArgs e)

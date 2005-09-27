@@ -6,8 +6,10 @@
 // (C) 2004 Todd Berman
 
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 
 	public interface IDebuggableEditor {

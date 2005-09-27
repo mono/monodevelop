@@ -30,12 +30,15 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ResourceFolderNodeBuilder: TypeNodeBuilder
 	{
@@ -109,7 +112,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		
 			foreach (string fileName in files)
 				project.AddFile (fileName, BuildAction.EmbedAsResource);
-			Runtime.ProjectService.SaveCombine ();
+			IdeApp.ProjectOperations.SaveCombine ();
 		}
 		
 		string[] AskFiles (Project project)
@@ -132,7 +135,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		{
 			foreach (string file in files) {
 				if (!System.IO.File.Exists (file)) {
-					Runtime.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Resource file '{0}' does not exist"), file));
+					Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Resource file '{0}' does not exist"), file));
 					return false;
 				}
 			}

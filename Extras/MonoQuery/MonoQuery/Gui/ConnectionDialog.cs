@@ -34,9 +34,8 @@ using Glade;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace MonoQuery
 {

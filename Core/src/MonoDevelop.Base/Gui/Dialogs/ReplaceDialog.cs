@@ -11,16 +11,16 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Collections.Specialized;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Search;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui;
 
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class ReplaceDialog
 	{
@@ -108,7 +108,7 @@ namespace MonoDevelop.Gui.Dialogs
 				ReplaceDialogPointer = this.FindDialogWidget;
 				markAllButton.UseUnderline = true;
 			}
-			ReplaceDialogPointer.TransientFor = (Gtk.Window)WorkbenchSingleton.Workbench;
+			ReplaceDialogPointer.TransientFor = IdeApp.Workbench.RootWindow;
 		}
 		
 		public ReplaceDialog(bool replaceMode)

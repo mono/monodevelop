@@ -26,10 +26,9 @@ import System.CodeDom.Compiler
 import System.Text
 import System.Reflection
 
-import MonoDevelop.Gui.Components
-import MonoDevelop.Services
-import MonoDevelop.Core.Services
-import MonoDevelop.Internal.Project
+import MonoDevelop.Core.Gui.Components
+import MonoDevelop.Core
+import MonoDevelop.Projects
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Resources

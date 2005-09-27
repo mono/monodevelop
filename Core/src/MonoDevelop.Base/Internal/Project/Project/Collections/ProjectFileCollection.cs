@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 using System.IO;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	///     <para>

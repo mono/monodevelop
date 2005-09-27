@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor;
 using MonoDevelop.EditorBindings.Search;

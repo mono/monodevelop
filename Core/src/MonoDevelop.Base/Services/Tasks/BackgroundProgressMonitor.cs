@@ -29,10 +29,13 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 using Gtk;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {
 	internal class BackgroundProgressMonitor: BaseProgressMonitor
 	{
@@ -42,8 +45,8 @@ namespace MonoDevelop.Services
 		public BackgroundProgressMonitor (string title, string iconName)
 		{
 			this.title = title;
-			Image img = Runtime.Gui.Resources.GetImage (iconName, Gtk.IconSize.Menu);
-			icon = Runtime.Gui.StatusBar.ShowStatusIcon (img);
+			Image img = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
+			icon = Services.StatusBar.ShowStatusIcon (img);
 		}
 		
 		protected override void OnProgressChanged ()
@@ -57,7 +60,7 @@ namespace MonoDevelop.Services
 		public override void Dispose()
 		{
 			base.Dispose ();
-			Runtime.Gui.StatusBar.HideStatusIcon (icon);
+			Services.StatusBar.HideStatusIcon (icon);
 		}
 	}
 }

@@ -8,7 +8,7 @@
 using System;
 using System.Xml;
 
-namespace MonoDevelop.Core.AddIns.Conditions
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// This is a abstract implementation of the <see cref="ICondition"/> interface.

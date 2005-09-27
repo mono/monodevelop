@@ -11,8 +11,8 @@ using System.Drawing;
 using System.Drawing.Text;
 
 using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.TextEditor;
 
 namespace MonoDevelop.DefaultEditor.Gui.Editor

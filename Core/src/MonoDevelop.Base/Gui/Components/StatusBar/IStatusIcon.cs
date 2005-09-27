@@ -29,7 +29,7 @@
 using System;
 using Gtk;
 
-namespace MonoDevelop.Gui.Components
+namespace MonoDevelop.Ide.Gui
 {
 	public interface IStatusIcon
 	{

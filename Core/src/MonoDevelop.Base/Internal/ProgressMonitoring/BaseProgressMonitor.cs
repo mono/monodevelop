@@ -31,8 +31,10 @@ using System;
 using System.Threading;
 using System.Collections.Specialized;
 using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui.ProgressMonitoring
 {
 	public class BaseProgressMonitor: GuiSyncObject, IProgressMonitor, IAsyncOperation
 	{
@@ -165,9 +167,9 @@ namespace MonoDevelop.Services
 		{
 			if (IsCompleted) return;
 			
-			if (Runtime.DispatchService.IsGuiThread) {
+			if (Services.DispatchService.IsGuiThread) {
 				while (!IsCompleted) {
-					Runtime.DispatchService.RunPendingEvents ();
+					Services.DispatchService.RunPendingEvents ();
 					Thread.Sleep (100);
 				}
 			} else {

@@ -29,9 +29,11 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {
 	internal class StatusProgressMonitor: BaseProgressMonitor
 	{
@@ -41,31 +43,31 @@ namespace MonoDevelop.Services
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs)
 		{
 			this.showErrorDialogs = showErrorDialogs;
-			icon = Runtime.Gui.Resources.GetImage (iconName, Gtk.IconSize.Menu);
-			Runtime.Gui.StatusBar.BeginProgress (title);
-			Runtime.Gui.StatusBar.SetMessage (icon, title);
+			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
+			Services.StatusBar.BeginProgress (title);
+			Services.StatusBar.SetMessage (icon, title);
 		}
 		
 		protected override void OnProgressChanged ()
 		{
-			Runtime.Gui.StatusBar.SetMessage (icon, CurrentTask);
+			Services.StatusBar.SetMessage (icon, CurrentTask);
 			if (!UnknownWork)
-				Runtime.Gui.StatusBar.SetProgressFraction (GlobalWork);
+				Services.StatusBar.SetProgressFraction (GlobalWork);
 		}
 		
 		protected override void OnCompleted ()
 		{
-			Runtime.Gui.StatusBar.EndProgress ();
+			Services.StatusBar.EndProgress ();
 
 			if (Errors.Count > 0) {
 				if (showErrorDialogs) {
 					string s = "";
 					foreach (string m in Errors)
 						s += m + "\n";
-					Runtime.MessageService.ShowError (ErrorException, s);
+					Services.MessageService.ShowError (ErrorException, s);
 				}
-				Gtk.Image img = Runtime.Gui.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
-				Runtime.Gui.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
+				Gtk.Image img = Services.Resources.GetImage (Stock.Error, Gtk.IconSize.Menu);
+				Services.StatusBar.SetMessage (img, Errors [Errors.Count - 1]);
 				base.OnCompleted ();
 				return;
 			}
@@ -75,21 +77,21 @@ namespace MonoDevelop.Services
 					string s = "";
 					foreach (string m in Warnings)
 						s += m + "\n";
-					Runtime.MessageService.ShowWarning (s);
+					Services.MessageService.ShowWarning (s);
 				}
 				
 				if (SuccessMessages.Count == 0) {
-					Gtk.Image img = Runtime.Gui.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
-					Runtime.Gui.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
+					Gtk.Image img = Services.Resources.GetImage (Stock.Warning, Gtk.IconSize.Menu);
+					Services.StatusBar.SetMessage (img, Warnings [Warnings.Count - 1]);
 					base.OnCompleted ();
 					return;
 				}
 			}
 			
 			if (SuccessMessages.Count > 0)
-				Runtime.Gui.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
+				Services.StatusBar.SetMessage (SuccessMessages [SuccessMessages.Count - 1]);
 			else
-				Runtime.Gui.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
+				Services.StatusBar.SetMessage (GettextCatalog.GetString ("Ready"));
 				
 			base.OnCompleted ();
 		}

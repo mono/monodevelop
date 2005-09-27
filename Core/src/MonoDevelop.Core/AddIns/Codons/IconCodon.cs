@@ -10,9 +10,8 @@ using System.Collections;
 using System.Reflection;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Conditions;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	[CodonNameAttribute("Icon")]
 	public class IconCodon : AbstractCodon

@@ -11,17 +11,19 @@ using System.Collections;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.ErrorHandlers;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Gui.ErrorHandlers;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using Freedesktop.RecentFiles;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects.Gui.Dialogs;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum FileCommands
 	{
@@ -65,9 +67,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run()
 		{
-			if ( WorkbenchSingleton.Workbench != null ) {
-				WorkbenchSingleton.Workbench.CloseAllViews();
-			}
+			IdeApp.Workbench.CloseAllDocuments ();
 		}
 	}
 	
@@ -75,40 +75,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run()
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content.IsViewOnly) {
-					continue;
-				}
-				
-				if (content.ContentName == null)
-				{
-					using (FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Save File As...")))
-					{
-						fdiag.SetFilename (System.Environment.GetEnvironmentVariable ("HOME"));
-						if (fdiag.Run () == (int) Gtk.ResponseType.Ok)
-						{
-							string fileName = fdiag.Filename;
-
-							// currently useless
-							if (Path.GetExtension(fileName).StartsWith("?") || Path.GetExtension(fileName) == "*")
-							{
-								fileName = Path.ChangeExtension(fileName, "");
-							}
-
-							if (Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(content.Save), fileName) == FileOperationResult.OK)
-							{
-								Runtime.MessageService.ShowMessage(fileName, GettextCatalog.GetString ("File saved"));
-							}
-						}
-					
-						fdiag.Hide ();
-					}
-				}
-				else
-				{
-					Runtime.FileUtilityService.ObservedSave (new FileOperationDelegate(content.Save), content.ContentName);
-				}
-			}
+			IdeApp.Workbench.SaveAll ();
 		}
 	}	
 	
@@ -121,10 +88,10 @@ namespace MonoDevelop.Commands
 			//bool foundFilter      = false;
 			// search filter like in the current selected project
 			/*
-			IProjectService projectService = (IProjectService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(IProjectService));
+			IProjectService projectService = (IProjectService)MonoDevelop.Core.ServiceManager.GetService(typeof(IProjectService));
 			
 			if (projectService.CurrentSelectedProject != null) {
-				LanguageBindingService languageBindingService = (LanguageBindingService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(LanguageBindingService));
+				LanguageBindingService languageBindingService = (LanguageBindingService)MonoDevelop.Core.ServiceManager.GetService(typeof(LanguageBindingService));
 				
 				LanguageBindingCodon languageCodon = languageBindingService.GetCodonPerLanguageName(projectService.CurrentSelectedProject.ProjectType);
 				for (int i = 0; !foundFilter && i < fileFilters.Length; ++i) {
@@ -152,10 +119,11 @@ namespace MonoDevelop.Commands
 				string name = fs.Filename;
 				fs.Hide ();
 				if (response == (int)Gtk.ResponseType.Ok) {
-					if (Runtime.ProjectService.IsCombineEntryFile (name))
-						Runtime.ProjectService.OpenCombine (name);
+					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+					if (ps.IsCombineEntryFile (name))
+						IdeApp.ProjectOperations.OpenCombine (name);
 					else
-						Runtime.FileService.OpenFile(name);
+						IdeApp.Workbench.OpenDocument(name);
 				}	
 			}
 		}
@@ -165,22 +133,20 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Run()
 		{
-			Runtime.ProjectService.CloseCombine();
+			IdeApp.ProjectOperations.CloseCombine();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = (Runtime.ProjectService.CurrentOpenCombine != null);
+			info.Enabled = (IdeApp.ProjectOperations.CurrentOpenCombine != null);
 		}
 	}
 		
 	internal class ExitHandler : CommandHandler
 	{
 		protected override void Run()
-		{			
-			if (((DefaultWorkbench)WorkbenchSingleton.Workbench).Close()) {
-				Gtk.Application.Quit();
-			}
+		{
+			IdeApp.Exit ();
 		}
 	}
 	
@@ -247,16 +213,16 @@ namespace MonoDevelop.Commands
 		protected override void Run()
 		{			
 			try {
-				if (Runtime.FileService.RecentOpen.RecentFile != null && Runtime.FileService.RecentOpen.RecentFile.Length > 0 && Runtime.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), GettextCatalog.GetString ("Clear recent files")))
+				if (IdeApp.Workbench.RecentOpen.RecentFile != null && IdeApp.Workbench.RecentOpen.RecentFile.Length > 0 && Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), GettextCatalog.GetString ("Clear recent files")))
 				{
-					Runtime.FileService.RecentOpen.ClearRecentFiles();
+					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
 				}
 			} catch {}
 		}
 	
 		protected override void Update (CommandInfo info)
 		{
-			RecentOpen recentOpen = Runtime.FileService.RecentOpen;
+			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			info.Enabled = (recentOpen.RecentFile != null && recentOpen.RecentFile.Length > 0);
 		}
 	}
@@ -266,16 +232,16 @@ namespace MonoDevelop.Commands
 		protected override void Run()
 		{			
 			try {
-				if (Runtime.FileService.RecentOpen.RecentProject != null && Runtime.FileService.RecentOpen.RecentProject.Length > 0 && Runtime.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), GettextCatalog.GetString ("Clear recent projects")))
+				if (IdeApp.Workbench.RecentOpen.RecentProject != null && IdeApp.Workbench.RecentOpen.RecentProject.Length > 0 && Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), GettextCatalog.GetString ("Clear recent projects")))
 				{
-					Runtime.FileService.RecentOpen.ClearRecentProjects();
+					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
 				}
 			} catch {}
 		}
 	
 		protected override void Update (CommandInfo info)
 		{
-			RecentOpen recentOpen = Runtime.FileService.RecentOpen;
+			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			info.Enabled = (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0);
 		}
 	}
@@ -284,7 +250,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			RecentOpen recentOpen = Runtime.FileService.RecentOpen;
+			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			if (recentOpen.RecentFile != null && recentOpen.RecentFile.Length > 0) {
 				for (int i = 0; i < recentOpen.RecentFile.Length; ++i) {
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
@@ -298,7 +264,7 @@ namespace MonoDevelop.Commands
 		
 		protected override void Run (object dataItem)
 		{
-			Runtime.FileService.OpenFile (dataItem.ToString());
+			IdeApp.Workbench.OpenDocument (dataItem.ToString());
 		}
 	}
 
@@ -306,7 +272,7 @@ namespace MonoDevelop.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			RecentOpen recentOpen = Runtime.FileService.RecentOpen;
+			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0) {
 				for (int i = 0; i < recentOpen.RecentProject.Length; ++i) {
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
@@ -326,9 +292,9 @@ namespace MonoDevelop.Commands
 			string filename = dataItem.ToString();
 			
 			try {
-				Runtime.ProjectService.OpenCombine(filename);
+				IdeApp.ProjectOperations.OpenCombine(filename);
 			} catch (Exception ex) {
-				CombineLoadError.HandleError(ex, filename);
+				Services.MessageService.ShowError (ex, "Could not load project or solution: " + filename);
 			}
 		}
 	}

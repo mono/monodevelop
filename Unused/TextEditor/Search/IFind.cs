@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.EditorBindings.Search;
 
 namespace MonoDevelop.TextEditor.Document

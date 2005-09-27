@@ -3,8 +3,8 @@ using System.Text;
 using System.Drawing;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Dialogs.OptionPanels;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.OptionPanels;
 
 using MonoDevelop.TextEditor;
 using MonoDevelop.TextEditor.Document;

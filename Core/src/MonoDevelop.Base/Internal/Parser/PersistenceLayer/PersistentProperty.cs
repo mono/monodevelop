@@ -7,12 +7,12 @@
 using System;
 using System.IO;
 using System.Reflection;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentProperty : AbstractProperty
+	internal sealed class PersistentProperty : AbstractProperty
 	{
 		const uint canGetFlag = (uint)(1 << 29);
 		const uint canSetFlag = (uint)(1 << 30);

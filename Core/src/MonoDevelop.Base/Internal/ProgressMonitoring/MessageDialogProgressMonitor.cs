@@ -29,8 +29,11 @@
 using System;
 using System.Collections.Specialized;
 using System.IO;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui.ProgressMonitoring
 {
 	// Progress monitor that reports errors and warnings in message dialogs.
 	
@@ -63,7 +66,7 @@ namespace MonoDevelop.Services
 		
 		protected override void OnCompleted ()
 		{
-			Runtime.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
 		
@@ -73,14 +76,14 @@ namespace MonoDevelop.Services
 				string s = "";
 				foreach (string m in errorsMessages)
 					s += m + "\n";
-				Runtime.MessageService.ShowError (errorException, s);
+				Services.MessageService.ShowError (errorException, s);
 			}
 			
 			if (warningMessages.Count > 0) {
 				string s = "";
 				foreach (string m in warningMessages)
 					s += m + "\n";
-				Runtime.MessageService.ShowWarning (s);
+				Services.MessageService.ShowWarning (s);
 			}
 		}
 	}

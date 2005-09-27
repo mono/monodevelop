@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	public class ClassDataType: DataType
 	{

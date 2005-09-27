@@ -10,14 +10,14 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Gui.Utils;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class FileList : Gtk.TreeView
+	internal class FileList : Gtk.TreeView
 	{
 		private FileSystemWatcher watcher;
 		private ArrayList Items;
@@ -152,7 +152,7 @@ namespace MonoDevelop.Gui.Pads
 		
 		private void OnDeleteFiles (object sender, EventArgs e)
 		{
-			if (Runtime.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to delete this file?"), GettextCatalog.GetString ("Delete files")))
+			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure you want to delete this file?"), GettextCatalog.GetString ("Delete files")))
 			{
 				try
 				{
@@ -161,7 +161,7 @@ namespace MonoDevelop.Gui.Pads
 				}
 				catch (Exception ex)
 				{
-					Runtime.MessageService.ShowError (ex, "Could not delete file '" + System.IO.Path.GetFileName (selectedItem.FullName) + "'");
+					Services.MessageService.ShowError (ex, "Could not delete file '" + System.IO.Path.GetFileName (selectedItem.FullName) + "'");
 				} 
 			}
 		}

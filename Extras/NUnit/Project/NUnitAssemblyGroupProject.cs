@@ -30,9 +30,9 @@
 using System;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.NUnit
 {

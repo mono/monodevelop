@@ -1,7 +1,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Core.Gui
 {
 	public class Stock
 	{

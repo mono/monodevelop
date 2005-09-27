@@ -7,14 +7,15 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Gui;
 
 using Mono.Debugger;
 using Mono.Debugger.Languages;
+using MonoDevelop.Ide.Gui;
+using BreakpointEventHandler = MonoDevelop.Core.Execution.BreakpointEventHandler;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -30,6 +31,7 @@ namespace MonoDevelop.Debugger
 		Hashtable procs = new Hashtable ();
 		Hashtable breakpoints = new Hashtable ();
 		DebuggerBackend backend;
+		bool firstStop = true;
 		IConsole console;
 		IProgressMonitor current_monitor;
 		DebugExecutionHandlerFactory executionHandlerFactory;
@@ -111,27 +113,38 @@ namespace MonoDevelop.Debugger
 
 		public bool AddBreakpoint (string filename, int linenum)
 		{
-			string key = filename + ":" + linenum;
-			if (breakpoints.Contains (key)) return true;
-			
-			BreakpointHandle brkptnum = null;
-			if (IsDebugging) {
-				Breakpoint point = CreateBreakpoint (key);
-				SourceLocation loc = backend.FindLocation(filename, linenum);
-				if (loc == null)
-					return false;
-				brkptnum = loc.InsertBreakpoint (proc, point);
+			bool paused = false;
+			try {
+				if (IsRunning) {
+					paused = true;
+					Pause ();
+				}
+				
+				string key = filename + ":" + linenum;
+				if (breakpoints.Contains (key)) return true;
+				
+				BreakpointHandle brkptnum = null;
+				if (IsDebugging) {
+					Breakpoint point = CreateBreakpoint (key);
+					SourceLocation loc = backend.FindLocation(filename, linenum);
+					if (loc == null)
+						return false;
+					brkptnum = loc.InsertBreakpoint (proc, point);
+				}
+				
+				BreakpointEntry entry = new BreakpointEntry (this, filename, linenum);
+				entry.Handle = brkptnum;
+	
+				breakpoints.Add (key, entry);
+				
+				if (BreakpointAdded != null)
+					BreakpointAdded (this, new BreakpointEventArgs (entry));
+	
+				return true;
+			} finally {
+				if (paused)
+					Resume ();
 			}
-			
-			BreakpointEntry entry = new BreakpointEntry (this, filename, linenum);
-			entry.Handle = brkptnum;
-
-			breakpoints.Add (key, entry);
-			
-			if (BreakpointAdded != null)
-				BreakpointAdded (this, new BreakpointEventArgs (entry));
-
-			return true;
 		}
 
 		public void RemoveBreakpoint (string filename, int linenum)
@@ -145,7 +158,7 @@ namespace MonoDevelop.Debugger
 
 		void RemoveBreakpoint (BreakpointEntry entry)
 		{
-			if (IsDebugging)
+			if (IsDebugging && entry.Handle != null)
 				entry.Handle.Remove (proc);
 
 			breakpoints.Remove (entry.FileName + ":" + entry.Line);
@@ -224,21 +237,33 @@ namespace MonoDevelop.Debugger
 		private void initialized_event (ThreadManager manager, Process process)
 		{
 			this.proc = process;
+			
+			Console.WriteLine ("initialized_event");
+			try {
 
 			proc.TargetOutput += new TargetOutputHandler (target_output);
 			proc.DebuggerOutput += new DebuggerOutputHandler (debugger_output);
 			proc.DebuggerError += new DebuggerErrorHandler (debugger_error);
 			proc.TargetEvent += new TargetEventHandler (target_event);
 
-			insert_breakpoints ();
+			Console.WriteLine ("p0");
+			//insert_breakpoints ();
 
+			Console.WriteLine ("p1");
+			
 			if (StartedEvent != null)
 				StartedEvent (this, EventArgs.Empty);
 
 			// This should not be needed, but it hangs if not dispatched in this way
 			// It's prolly a synchronization issue that does not show when the call
 			// is delayed by the dispatcher
-			Runtime.DispatchService.GuiDispatch (new StatefulMessageHandler (ChangeState), null);
+			Console.WriteLine ("p2");
+			Services.DispatchService.GuiDispatch (new StatefulMessageHandler (ChangeState), null);
+			}
+			catch (Exception ex) {
+				Console.WriteLine (ex);
+				throw;
+			}
 		}
 
 		void target_output (bool is_stderr, string line)
@@ -282,6 +307,7 @@ namespace MonoDevelop.Debugger
 			string[] keys = new string [breakpoints.Keys.Count];
 			breakpoints.Keys.CopyTo (keys, 0);
 			foreach (string key in keys) {
+				Console.WriteLine ("b4 " + key);
 				Breakpoint point = CreateBreakpoint (key);
 				string[] toks = point.Name.Split (':');
 				string filename = toks [0];
@@ -291,6 +317,11 @@ namespace MonoDevelop.Debugger
 					Console.WriteLine ("Couldn't find breakpoint location " + key + " " + backend.Modules.Length);
 					return;
 				}
+				
+				try {
+					ArrayList list = null;
+					object o = list.Count;
+				} catch {}
 				
 				BreakpointHandle handle = loc.InsertBreakpoint (proc, point);
 				((BreakpointEntry)breakpoints [key]).Handle = handle;
@@ -313,8 +344,13 @@ namespace MonoDevelop.Debugger
 					ResumedEvent (this, EventArgs.Empty);
 				}
 			} else {
-				if (PausedEvent != null)
-					PausedEvent (this, EventArgs.Empty);
+				if (firstStop) {
+					insert_breakpoints ();
+					firstStop = false;
+					Resume ();
+				} else
+					if (PausedEvent != null)
+						PausedEvent (this, EventArgs.Empty);
 			}
 			if (ExecutionLocationChanged != null)
 				ExecutionLocationChanged (this, EventArgs.Empty);
@@ -326,9 +362,9 @@ namespace MonoDevelop.Debugger
 		public event EventHandler StoppedEvent;
 		public event EventHandler ThreadStateEvent;
 		
-		public event MonoDevelop.Services.BreakpointEventHandler BreakpointAdded;
-		public event MonoDevelop.Services.BreakpointEventHandler BreakpointRemoved;
-		public event MonoDevelop.Services.BreakpointEventHandler BreakpointChanged;
+		public event BreakpointEventHandler BreakpointAdded;
+		public event BreakpointEventHandler BreakpointRemoved;
+		public event BreakpointEventHandler BreakpointChanged;
 		public event EventHandler ExecutionLocationChanged;
 
 		void KillApplication (object obj)
@@ -364,6 +400,8 @@ namespace MonoDevelop.Debugger
 		{
 			if (IsDebugging)
 				return;
+				
+			firstStop = true;
 
 #if NET_2_0
 			AttributeHandler.Rescan();
@@ -371,7 +409,7 @@ namespace MonoDevelop.Debugger
 			this.console = console;
 
 			backend = new DebuggerBackend ();
-			backend.ThreadManager.InitializedEvent += new ThreadEventHandler (initialized_event);
+			backend.ThreadManager.MainThreadCreatedEvent += new ThreadEventHandler (initialized_event);
 			backend.ThreadManager.ThreadCreatedEvent += new ThreadEventHandler (thread_created);
 			backend.ThreadManager.ThreadExitedEvent += new ThreadEventHandler (thread_exited);
 			backend.Run (new ProcessStart (null, argv));

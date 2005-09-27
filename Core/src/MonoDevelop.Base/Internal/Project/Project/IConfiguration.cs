@@ -6,9 +6,9 @@
 // </file>
 
 using System.Collections;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// This is the base interfaces for all configurations (projects and combines)

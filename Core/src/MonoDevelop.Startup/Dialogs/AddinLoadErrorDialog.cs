@@ -35,7 +35,7 @@ using System.Reflection;
 
 using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop
+namespace MonoDevelop.Startup
 {
 	public class AddinLoadErrorDialog
 	{

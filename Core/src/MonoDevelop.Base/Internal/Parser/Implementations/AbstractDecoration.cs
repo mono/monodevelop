@@ -6,10 +6,10 @@
 // </file>
 using System;
 using System.Collections;
-using System.Collections.Utility;
+using MonoDevelop.Projects.Utility;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration

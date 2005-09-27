@@ -29,13 +29,53 @@
 using System;
 using System.IO;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class ConsoleProgressMonitor: NullProgressMonitor
 	{
+		int columns = 80;
+		bool indent = true;
+		bool wrap = true;
+		int ilevel = 0;
+		int isize = 3;
+		LogTextWriter logger;
+		
+		public ConsoleProgressMonitor ()
+		{
+			logger = new LogTextWriter ();
+			logger.TextWritten += new LogTextEventHandler (WriteLog);
+		}
+		
+		public bool WrapText {
+			get { return wrap; }
+			set { wrap = value; }
+		}
+		
+		public int WrapColumns {
+			get { return columns; }
+			set { columns = value; }
+		}
+		
+		public bool IndentTasks {
+			get { return indent; }
+			set { indent = value; }
+		}
+		
 		public override void BeginTask (string name, int totalWork)
 		{
-			Runtime.LoggingService.Debug ("*** " + name);
+			WriteText (name);
+			ilevel += isize;
+		}
+		
+		public override void EndTask ()
+		{
+			ilevel -= isize;
+			if (ilevel < 0) ilevel = 0;
+		}
+		
+		void WriteLog (string text)
+		{
+			WriteText (text);
 		}
 		
 		public override TextWriter Log {
@@ -44,18 +84,60 @@ namespace MonoDevelop.Services
 		
 		public override void ReportSuccess (string message)
 		{
-			Runtime.LoggingService.Debug (message);
+			WriteText (message);
 		}
 		
 		public override void ReportWarning (string message)
 		{
-			Runtime.LoggingService.Warn ("WARNING: " + message);
+			WriteText ("WARNING: " + message);
 		}
 		
 		public override void ReportError (string message, Exception ex)
 		{
-			Runtime.LoggingService.Error ("ERROR: " + message);
-			Runtime.LoggingService.Error (ex);
+			if (message != null)
+				WriteText ("ERROR: " + message);
+			else if (ex != null)
+				WriteText ("ERROR: " + ex.Message);
 		}
-	}
+		
+		void WriteText (string text)
+		{
+			if (indent)
+				WriteText (text, ilevel, ilevel);
+			else
+				WriteText (text, 0, 0);
+		}
+		
+		void WriteText (string text, int initialLeftMargin, int leftMargin)
+		{
+			int n = 0;
+			int margin = initialLeftMargin;
+			int maxCols = wrap ? columns : int.MaxValue;
+			
+			if (text == "") {
+				Console.WriteLine ();
+				return;
+			}
+			
+			while (n < text.Length)
+			{
+				int col = margin;
+				int lastWhite = -1;
+				int sn = n;
+				while (col < maxCols && n < text.Length) {
+					if (char.IsWhiteSpace (text[n]))
+						lastWhite = n;
+					col++;
+					n++;
+				}
+				
+				if (lastWhite == -1 || col < maxCols)
+					lastWhite = n;
+				else if (col >= maxCols)
+					n = lastWhite + 1;
+				
+				Console.WriteLine (new String (' ', margin) + text.Substring (sn, lastWhite - sn));
+				margin = leftMargin;
+			}
+		}	}
 }

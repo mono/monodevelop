@@ -29,8 +29,8 @@
 using System;
 using System.IO;
 using System.Collections;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 using NUnit.Core;
 

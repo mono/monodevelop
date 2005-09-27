@@ -7,17 +7,11 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
-using System.IO;
 
-using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
-
-using MonoDevelop.Gui;
-
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {
 	public interface IParseInformation
 	{

@@ -14,8 +14,8 @@ using System.Text;
 using MonoDevelop.TextEditor;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 using MonoDevelop.EditorBindings.FormattingStrategy;
 
 namespace JavaBinding.FormattingStrategy

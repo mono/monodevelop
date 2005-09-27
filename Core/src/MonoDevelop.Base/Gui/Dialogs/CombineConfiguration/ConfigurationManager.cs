@@ -5,19 +5,18 @@
 //     <version value="$version"/>
 // </file>
 using System;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs
 {
 	/// <summary>
 	/// Summary description for Form2.
 	/// </summary>
-	public class ConfigurationManager //: System.Windows.Forms.Form
+	internal class ConfigurationManager //: System.Windows.Forms.Form
 	{/*
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.Label label1;
@@ -73,7 +72,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 		/// </summary>
 		private void InitializeComponent()
 		{
-			bool flat = Crownwood.Magic.Common.VisualStyle.IDE == (Crownwood.Magic.Common.VisualStyle)propertyService.GetProperty("MonoDevelop.Gui.VisualStyle", Crownwood.Magic.Common.VisualStyle.IDE);
+			bool flat = Crownwood.Magic.Common.VisualStyle.IDE == (Crownwood.Magic.Common.VisualStyle)propertyService.GetProperty("MonoDevelop.Core.Gui.VisualStyle", Crownwood.Magic.Common.VisualStyle.IDE);
 			
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();

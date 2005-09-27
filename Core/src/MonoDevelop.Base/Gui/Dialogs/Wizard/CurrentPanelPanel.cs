@@ -7,21 +7,18 @@
 
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Collections;
 using Gtk;
 using Gdk;
 using Pango;
 using System.Xml;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class CurrentPanelPanel : DrawingArea
 	{

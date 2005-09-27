@@ -1,4 +1,4 @@
-namespace MonoDevelop.EditorBindings.FormattingStrategy {
+namespace MonoDevelop.SourceEditor.FormattingStrategy {
 	public interface IFormattableDocument {
 		string GetLineAsString (int ln);
 		

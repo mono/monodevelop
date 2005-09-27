@@ -10,10 +10,9 @@ using System.Drawing;
 using System.Reflection;
 using System.Collections;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.TextEditor.Document;
 using SharpDevelop.Internal.Parser;
 using MonoDevelop.TextEditor;

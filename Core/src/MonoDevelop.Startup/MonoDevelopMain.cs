@@ -19,14 +19,15 @@ using Mono.Posix;
 
 using MonoDevelop.Base;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop
+namespace MonoDevelop.Startup
 {
 	public class SharpDevelopMain
 	{
@@ -92,11 +93,10 @@ namespace MonoDevelop
 			SetSplashInfo (0.1, "Initializing Addins ...");
 			
 			bool ignoreDefaultPath = false;
-			string [] addInDirs = MonoDevelop.AddInSettingsHandler.GetAddInDirectories (out ignoreDefaultPath);
+			string [] addInDirs = MonoDevelop.Startup.AddInSettingsHandler.GetAddInDirectories (out ignoreDefaultPath);
 			AddInTreeSingleton.SetAddInDirectories (addInDirs, ignoreDefaultPath);
 			RunMainLoop ();
 
-			ArrayList commands = null;
 			Exception error    = null;
 			
 			try {
@@ -123,15 +123,7 @@ namespace MonoDevelop
 				ServiceManager.ServiceLoadCallback = new ServiceLoadCallback (OnServiceLoad);
 				ServiceManager.InitializeServicesSubsystem("/Workspace/Services");
 
-				SetSplashInfo(0.8, "Initializing Autostart Addins ...");
-				commands = AddInTreeSingleton.AddInTree.GetTreeNode("/Workspace/Autostart").BuildChildItems(null);
-				
-				SetSplashInfo(1, "Loading MonoDevelop Workbench ...");
-				RunMainLoop ();
-				for (int i = 0; i < commands.Count - 1; ++i) {
-					((ICommand)commands[i]).Run();
-					RunMainLoop ();
-				}
+				SetSplashInfo(0.8, "Loading MonoDevelop Workbench ...");
 
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
@@ -162,11 +154,7 @@ namespace MonoDevelop
 				Console.WriteLine ("Socket already in use");
 			}
 
-			// run the last autostart command, this must be the workbench starting command
-			if (commands.Count > 0) {
-				RunMainLoop ();
-				((ICommand)commands[commands.Count - 1]).Run();
-			}
+			IdeApp.Run ();
 
 			// unloading services
 			File.Delete (socket_filename);
@@ -240,20 +228,18 @@ namespace MonoDevelop
 				string file = fileToOpen;
 				if (file == null || file.Length == 0)
 					return false;
-				if (Runtime.ProjectService.IsCombineEntryFile (file)) {
+				if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file)) {
 					try {
-						IProjectService projectService = (IProjectService)ServiceManager.GetService (typeof (IProjectService));
-						projectService.OpenCombine(file);
+						IdeApp.ProjectOperations.OpenCombine (file);
 					} catch (Exception e) {
 					}
 				} else {
 					try {
-						IFileService fileService = (IFileService)MonoDevelop.Core.Services.ServiceManager.GetService(typeof(IFileService));
-						fileService.OpenFile(file);
+						IdeApp.Workbench.OpenDocument (file);
 					} catch (Exception e) {
 					}
 				}
-				((Gtk.Window)WorkbenchSingleton.Workbench).Present ();
+				IdeApp.Workbench.RootWindow.Present ();
 				return false;
 			}
 		}

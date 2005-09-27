@@ -7,21 +7,19 @@
 
 using System;
 using System.IO;
-using System.Drawing;
 using System.Collections;
 
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Services;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels {
+namespace MonoDevelop.Ide.Gui.OptionPanels
+{
 	public class CodeGenerationPanel : AbstractOptionPanel {
 		
 		class CodeGenerationPanelWidget : GladeWidgetExtract {

@@ -9,12 +9,10 @@ using System;
 using System.Collections;
 using System.Xml;
 
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	/// <summary>
 	/// The <code>ILanguageBinding</code> interface is the base interface

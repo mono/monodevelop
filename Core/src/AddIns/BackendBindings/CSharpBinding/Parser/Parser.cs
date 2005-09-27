@@ -7,9 +7,9 @@
 using System;
 using System.Drawing;
 using System.Collections;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects;
 using CSharpBinding.Parser.SharpDevelopTree;
 using ICSharpCode.SharpRefactory.Parser;
 

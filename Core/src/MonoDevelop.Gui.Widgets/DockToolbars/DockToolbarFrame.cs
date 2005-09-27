@@ -33,7 +33,7 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	public class DockToolbarFrame: EventBox
 	{

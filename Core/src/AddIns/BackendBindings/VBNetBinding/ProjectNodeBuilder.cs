@@ -16,11 +16,11 @@ using System.Resources;
 using System.Xml;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads.ProjectBrowser;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads.ProjectBrowser;
+using MonoDevelop.Components;
 
 namespace VBBinding
 {

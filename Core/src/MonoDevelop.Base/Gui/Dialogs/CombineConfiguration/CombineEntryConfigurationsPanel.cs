@@ -30,15 +30,16 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineEntryConfigurationsPanel : AbstractOptionPanel
 	{
@@ -104,9 +105,9 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					do {
 						if (dlg.Run () == Gtk.ResponseType.Ok) {
 							if (dlg.Name.Length == 0) {
-								Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 							} else if (configData.Configurations [dlg.Name] != null) {
-								Runtime.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
+								Services.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
 							} else {
 								CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.Name, copyFrom, dlg.CreateChildren);
 								store.AppendValues (cc, cc.Name);
@@ -128,7 +129,7 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					return;
 				
 				if (configData.Configurations.Count == 1) {
-					Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
+					Services.MessageService.ShowWarning (GettextCatalog.GetString ("There must be at least one configuration."));
 					return;
 				}
 				
@@ -161,9 +162,9 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 					do {
 						if (dlg.Run () == Gtk.ResponseType.Ok) {
 							if (dlg.Name.Length == 0) {
-								Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
+								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 							} else if (configData.Configurations [dlg.Name] != null) {
-								Runtime.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
+								Services.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
 							} else {
 								configData.RenameConfiguration (cc.Name, dlg.Name, dlg.RenameChildren);
 								store.SetValue (iter, 1, cc.Name);

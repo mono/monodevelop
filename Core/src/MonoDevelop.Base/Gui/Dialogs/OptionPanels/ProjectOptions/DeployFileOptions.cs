@@ -7,21 +7,20 @@
 
 using System;
 using System.IO;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	internal class DeployFileProjectOptions : AbstractOptionPanel
 	{
@@ -99,20 +98,20 @@ namespace MonoDevelop.Gui.Dialogs.OptionPanels
 			{
 				if (selectTargetButton.Filename.Length > 0) {
 					if (!fileUtilityService.IsValidFileName(selectTargetButton.Filename)) {
-						Runtime.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy target specified"));
+						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy target specified"));
 						return false;
 					}
 				}
 				
 				if (selectScriptButton.Filename.Length > 0) {
 					if (!fileUtilityService.IsValidFileName(selectScriptButton.Filename)) {
-						Runtime.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy script specified"));
+						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy script specified"));
 						return false;				
 					}
 				}
 				
 				if (!System.IO.File.Exists(selectScriptButton.Filename)) {
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("Deploy script doesn't exists"));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Deploy script doesn't exists"));
 					return false;
  				}
 			

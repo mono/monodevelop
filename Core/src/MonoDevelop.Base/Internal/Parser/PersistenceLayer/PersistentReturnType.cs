@@ -6,12 +6,12 @@
 // </file>
 using System;
 using System.IO;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentReturnType : AbstractReturnType
+	internal sealed class PersistentReturnType : AbstractReturnType
 	{
 		public static PersistentReturnType Resolve (IReturnType source, ITypeResolver typeResolver)
 		{

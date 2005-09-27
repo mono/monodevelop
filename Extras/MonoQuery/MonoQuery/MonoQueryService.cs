@@ -34,10 +34,9 @@ using System.Xml.Serialization;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.Gui;
 
 namespace MonoQuery
 {

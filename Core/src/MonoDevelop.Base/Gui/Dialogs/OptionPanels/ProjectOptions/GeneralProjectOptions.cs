@@ -7,20 +7,19 @@
 
 using System;
 using System.IO;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Core.Gui.Dialogs;
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	// FIXME 
 	// - internationalize 

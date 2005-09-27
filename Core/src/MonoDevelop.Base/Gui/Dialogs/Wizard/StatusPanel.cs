@@ -13,18 +13,16 @@ using System.Collections;
 using System.ComponentModel;
 using System.Xml;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class StatusPanel : Gtk.DrawingArea
+	internal class StatusPanel : Gtk.DrawingArea
 	{
 		WizardDialog wizard;
 		Pixbuf bitmap = null;
@@ -46,7 +44,7 @@ namespace MonoDevelop.Gui.Dialogs
 			this.wizard = wizard;
 			SetSizeRequest (198, 400);
 
-			bitmap = Runtime.Gui.Resources.GetBitmap ("GeneralWizardBackground");
+			bitmap = Services.Resources.GetBitmap ("GeneralWizardBackground");
 
 			AddEvents ((int) (Gdk.EventMask.ExposureMask));
 			ExposeEvent += new Gtk.ExposeEventHandler (OnPaint);

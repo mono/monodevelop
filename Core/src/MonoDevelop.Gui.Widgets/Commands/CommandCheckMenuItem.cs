@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	internal class CommandCheckMenuItem: Gtk.CheckMenuItem, ICommandMenuItem
 	{

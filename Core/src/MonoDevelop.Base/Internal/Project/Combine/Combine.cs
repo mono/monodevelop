@@ -14,20 +14,18 @@ using System.Reflection;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
+using System.Threading;
 
 using Mono.Unix;
 using FileMode = Mono.Unix.FilePermissions;
 
-using MonoDevelop.Core.Services;
-
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(CombineConfiguration))]
 	public class Combine : CombineEntry
@@ -119,8 +117,6 @@ namespace MonoDevelop.Internal.Project
 		}
 
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.Combine.Description}",
-		                   Description ="${res:MonoDevelop.Internal.Project.Combine.Description.Description}")]
 		public string Description {
 			get {
 				return description;
@@ -130,8 +126,6 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		[LocalizedProperty("${res:MonoDevelop.Internal.Project.Combine.NeedsBuilding}",
-		                   Description ="${res:MonoDevelop.Internal.Project.Combine.NeedsBuilding.Description}")]
 		public override bool NeedsBuilding {
 			get {
 				foreach (CombineEntry entry in Entries)
@@ -261,7 +255,7 @@ namespace MonoDevelop.Internal.Project
 		public CombineEntry AddEntry (string filename, IProgressMonitor monitor)
 		{
 			if (monitor == null) monitor = new NullProgressMonitor ();
-			CombineEntry entry = Runtime.ProjectService.ReadFile (filename, monitor);
+			CombineEntry entry = Services.ProjectService.ReadFile (filename, monitor);
 			Entries.Add (entry);
 			return entry;
 		}
@@ -373,7 +367,9 @@ namespace MonoDevelop.Internal.Project
 					sd.Context = context;
 					sd.Entry = ced.Entry;
 					
-					Runtime.DispatchService.ThreadDispatch (new StatefulMessageHandler (ExecuteEntryAsync), sd);
+					Thread t = new Thread (new ThreadStart (sd.ExecuteEntryAsync));
+					t.IsBackground = true;
+					t.Start ();
 					list.Add (sd.Monitor.AsyncOperation);
 				}
 				foreach (IAsyncOperation op in list)
@@ -383,18 +379,17 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 		
-		void ExecuteEntryAsync (object ob)
-		{
-			EntryStartData sd = (EntryStartData) ob;
-			using (sd.Monitor) {
-				sd.Entry.Execute (sd.Monitor, sd.Context);
-			}
-		}
-		
 		class EntryStartData {
 			public IProgressMonitor Monitor;
 			public ExecutionContext Context;
 			public CombineEntry Entry;
+			
+			public void ExecuteEntryAsync ()
+			{
+				using (Monitor) {
+					Entry.Execute (Monitor, Context);
+				}
+			}
 		}
 		
 		public string[] GetAllConfigurations ()
@@ -578,6 +573,87 @@ namespace MonoDevelop.Internal.Project
 			}
 		}
 
+		public void RemoveFileFromProjects (string fileName)
+		{
+			if (Directory.Exists (fileName)) {
+				RemoveAllInDirectory(fileName);
+			} else {
+				RemoveFileFromAllProjects(fileName);
+			}
+		}
+
+		void RemoveAllInDirectory (string dirName)
+		{
+			CombineEntryCollection projects = GetAllProjects();
+			
+			restart:
+			foreach (Project projectEntry in projects) {
+				foreach (ProjectFile fInfo in projectEntry.ProjectFiles) {
+					if (fInfo.Name.StartsWith(dirName)) {
+						projectEntry.ProjectFiles.Remove(fInfo);
+						goto restart;
+					}
+				}
+			}
+		}
+		
+		void RemoveFileFromAllProjects (string fileName)
+		{
+			CombineEntryCollection projects = GetAllProjects();
+			
+			restart:
+			foreach (Project projectEntry in projects) {
+				foreach (ProjectReference rInfo in projectEntry.ProjectReferences) {
+					if (rInfo.ReferenceType == ReferenceType.Assembly && rInfo.Reference == fileName) {
+						projectEntry.ProjectReferences.Remove(rInfo);
+						goto restart;
+					}
+				}
+				foreach (ProjectFile fInfo in projectEntry.ProjectFiles) {
+					if (fInfo.Name == fileName) {
+						projectEntry.ProjectFiles.Remove(fInfo);
+						goto restart;
+					}
+				}
+			}
+		}
+		
+		public void RenameFileInProjects (string sourceFile, string targetFile)
+		{
+			if (Directory.Exists (targetFile)) {
+				RenameDirectoryInAllProjects (sourceFile, targetFile);
+			} else {
+				RenameFileInAllProjects(sourceFile, targetFile);
+			}
+		}
+		
+		void RenameFileInAllProjects (string oldName, string newName)
+		{
+			CombineEntryCollection projects = GetAllProjects();
+			
+			foreach (Project projectEntry in projects) {
+				foreach (ProjectFile fInfo in projectEntry.ProjectFiles) {
+					if (fInfo.Name == oldName) {
+						fInfo.Name = newName;
+					}
+				}
+			}
+		}
+
+		void RenameDirectoryInAllProjects (string oldName, string newName)
+		{
+			CombineEntryCollection projects = GetAllProjects();
+			
+			foreach (Project projectEntry in projects) {
+				foreach (ProjectFile fInfo in projectEntry.ProjectFiles) {
+					if (fInfo.Name.StartsWith(oldName)) {
+						fInfo.Name = newName + fInfo.Name.Substring(oldName.Length);
+					}
+				}
+			}
+		}
+
+		
 		public void GenerateMakefiles ()
 		{
 			GenerateMakefiles (null);

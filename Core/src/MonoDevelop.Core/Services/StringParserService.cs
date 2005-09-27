@@ -12,7 +12,7 @@ using System.Text;
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 {
 	/// <summary>
 	/// this class parses internal ${xyz} tags of sd.

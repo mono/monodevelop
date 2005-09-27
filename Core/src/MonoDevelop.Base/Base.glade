@@ -4,6 +4,7 @@
 <glade-interface>
 <requires lib="gnome"/>
 
+<!-- %%% begin split Core/src/MonoDevelop.Core.Gui/Base.glade replace CONTENT1 -->
 <widget class="GtkDialog" id="TreeViewOptionDialog">
   <property name="border_width">6</property>
   <property name="width_request">770</property>
@@ -308,7 +309,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Ide/Base.glade replace CONTENT1 -->
 <widget class="GtkDialog" id="NewProjectDialog">
   <property name="width_request">630</property>
   <property name="title" translatable="yes">New Solution</property>
@@ -2675,7 +2678,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Projects.Gui/Base.glade replace CONTENT1 -->
 <widget class="GtkWindow" id="GeneralProjectOptionsPanel">
   <property name="visible">True</property>
   <property name="title" translatable="yes">GeneralProjectOptionsPanel</property>
@@ -3846,7 +3851,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Ide/Base.glade replace CONTENT2 -->
 <widget class="GtkDialog" id="IncludeFilesDialogWidget">
   <property name="title" translatable="yes">Include Found Files</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -4265,7 +4272,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Projects.Gui/Base.glade replace CONTENT2 -->
 <widget class="GtkWindow" id="CombineBuildOptions">
   <property name="title" translatable="yes">cmbBuildOptions</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -4934,7 +4943,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Core.Gui/Base.glade replace CONTENT2 -->
 <widget class="GtkDialog" id="ErrorDialog">
   <property name="border_width">6</property>
   <property name="visible">True</property>
@@ -5129,7 +5140,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Ide/Base.glade replace CONTENT3 -->
 <widget class="GtkDialog" id="ReplaceDialogWidget">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Replace Dialog</property>
@@ -6951,7 +6964,9 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
+<!-- %%% begin split Core/src/MonoDevelop.Projects.Gui/Base.glade replace CONTENT3 -->
 <widget class="GtkWindow" id="CombineConfigurationsPanel">
   <property name="visible">True</property>
   <property name="title" translatable="yes">Configurations</property>
@@ -7622,5 +7637,6 @@
     </widget>
   </child>
 </widget>
+<!-- %%% end split -->
 
 </glade-interface>

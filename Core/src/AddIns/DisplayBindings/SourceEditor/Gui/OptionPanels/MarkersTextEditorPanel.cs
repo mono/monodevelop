@@ -8,18 +8,16 @@
 using System;
 using System.IO;
 
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Internal.ExternalTool;
+using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.EditorBindings.Gui.OptionPanels
+namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {
 	/// <summary>
 	/// Summary description for Form9.

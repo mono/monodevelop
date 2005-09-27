@@ -7,11 +7,15 @@
 
 using System;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Search;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	public enum SearchCommands
 	{
@@ -30,12 +34,14 @@ namespace MonoDevelop.Commands
 	{
 		public static void SetSearchPattern ()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window != null && window.ViewContent is ITextBuffer)
-			{
-				string selectedText = ((ITextBuffer)window.ViewContent).SelectedText;
-				if (selectedText != null && selectedText.Length > 0)
-					SearchReplaceInFilesManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
+				if (window != null && window.ViewContent is ITextBuffer)
+				{
+					string selectedText = ((ITextBuffer)window.ViewContent).SelectedText;
+					if (selectedText != null && selectedText.Length > 0)
+						SearchReplaceInFilesManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+				}
 			}
 		}
 

@@ -7,12 +7,12 @@
 using System;
 using System.IO;
 using System.Reflection;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentField : AbstractField
+	internal sealed class PersistentField : AbstractField
 	{
 		public static PersistentField Resolve (IField source, ITypeResolver typeResolver)
 		{

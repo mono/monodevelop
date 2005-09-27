@@ -8,9 +8,10 @@
 using System;
 using Gtk;
 
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui.Codons;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public abstract class AbstractOptionPanel : Frame, IDialogPanel
 	{

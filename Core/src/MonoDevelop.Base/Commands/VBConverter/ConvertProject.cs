@@ -14,22 +14,22 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 using ICSharpCode.SharpRefactory.PrettyPrinter;
 using ICSharpCode.SharpRefactory.Parser;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Ide.Commands
 {
 	internal class VBConvertProject : CommandHandler
 	{
@@ -52,8 +52,8 @@ namespace MonoDevelop.Commands
 		
 		protected override void Run()
 		{
-			if (Runtime.ProjectService.CurrentSelectedProject != null) {
-				foreach (ProjectFile file in Runtime.ProjectService.CurrentSelectedProject.ProjectFiles) {
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				foreach (ProjectFile file in IdeApp.ProjectOperations.CurrentSelectedProject.ProjectFiles) {
 					ConvertFile(file.Name, @"C:\\vbout\\" + Path.GetFileName(file.Name));
 				}
 			}

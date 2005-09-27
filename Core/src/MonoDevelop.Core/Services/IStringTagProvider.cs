@@ -12,7 +12,7 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core
 {
 	public interface IStringTagProvider 
 	{

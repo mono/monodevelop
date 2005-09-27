@@ -14,7 +14,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Activation;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	public class SyncContextAttribute: ContextAttribute, IContributeObjectSink
 	{

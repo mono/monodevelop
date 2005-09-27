@@ -11,19 +11,20 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Diagnostics;
-using MonoDevelop.Services;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 
 using Gtk;
 using Pango;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {	
-	public class OutputProgressMonitor : BaseProgressMonitor, IConsole
+	internal class OutputProgressMonitor : BaseProgressMonitor, IConsole
 	{
 		DefaultMonitorPad outputPad;
 		event EventHandler stopRequested;
@@ -74,7 +75,7 @@ namespace MonoDevelop.Services
 			outputPad.EndProgress ();
 			base.OnCompleted ();
 			
-			Runtime.TaskService.ReleasePad (outputPad);
+			IdeApp.Workbench.ProgressMonitors.ReleasePad (outputPad);
 			outputPad = null;
 		}
 		

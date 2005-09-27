@@ -7,9 +7,10 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Ambience
 {
 	public abstract class AbstractAmbience : IAmbience
 	{

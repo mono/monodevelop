@@ -6,7 +6,7 @@ using System.Collections;
 
 using RefParser = JRefactory.Parser;
 using AST = JRefactory.Parser.AST;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 using JavaBinding.Parser.SharpDevelopTree;
 
 namespace JavaBinding.Parser

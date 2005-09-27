@@ -31,7 +31,7 @@ using System;
 using System.Threading;
 using System.IO;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class NullProgressMonitor: IProgressMonitor, IAsyncOperation
 	{

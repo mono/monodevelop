@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -9,7 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Undo
+namespace MonoDevelop.Ide.Gui.Undo
 {
 	/// <summary>
 	/// This class stacks the last x operations from the undostack and makes
@@ -25,7 +25,7 @@ namespace MonoDevelop.Internal.Undo
 				throw new ArgumentNullException("stack");
 			}
 			
-			Debug.Assert(numops > 0 , "MonoDevelop.Internal.Undo.UndoQueue : numops should be > 0");
+			Debug.Assert(numops > 0 , "MonoDevelop.Ide.Gui.Undo.UndoQueue : numops should be > 0");
 			
 			for (int i = 0; i < numops; ++i) {
 				if (stack._UndoStack.Count > 0) {

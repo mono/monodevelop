@@ -10,7 +10,7 @@ using System.Collections;
 using System.Xml;
 using System.Diagnostics;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.CodeTemplates
 {
 	/// <summary>
 	/// This class reperesents a single Code Template

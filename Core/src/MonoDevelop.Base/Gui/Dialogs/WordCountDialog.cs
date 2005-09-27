@@ -11,13 +11,13 @@ using System.Drawing;
 using Gtk;
 using System.Collections;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class WordCountDialog : Dialog
 	{
@@ -89,30 +89,30 @@ namespace MonoDevelop.Gui.Dialogs
 			
 			switch (locationComboBox.Active) {
 			case 0: {// current file
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window != null) {
-					if (window.ViewContent.ContentName == null) {
-						Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
+				Document doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) {
+					if (doc.FileName == null) {
+						Services.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
 					} else {
-						Report r = GetReport(window.ViewContent.ContentName);
+						Report r = GetReport (doc.FileName);
 						if (r != null) items.Add(r);
 					}
 				}
 				break;
 			}
 			case 1: {// all open files
-				if (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
+				if (IdeApp.Workbench.Documents.Count > 0) {
 					bool dirty = false;
 					
 					total = new Report (GettextCatalog.GetString ("total"), 0, 0, 0);
-					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-						if (content.ContentName == null) {
-							Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
+					foreach (Document doc in IdeApp.Workbench.Documents) {
+						if (doc.FileName == null) {
+							Services.MessageService.ShowWarning (GettextCatalog.GetString ("You must save the file"));
 							continue;
 						} else {
-							Report r = GetReport(content.ContentName);
+							Report r = GetReport (doc.FileName);
 							if (r != null) {
-								if (content.IsDirty) dirty = true;
+								if (doc.IsDirty) dirty = true;
 								total += r;
 								items.Add(r);
 							}
@@ -120,18 +120,18 @@ namespace MonoDevelop.Gui.Dialogs
 					}
 					
 					if (dirty) {
-						Runtime.MessageService.ShowWarning (GettextCatalog.GetString ("Unsaved changed to open files were not included in counting"));
+						Services.MessageService.ShowWarning (GettextCatalog.GetString ("Unsaved changed to open files were not included in counting"));
 					}
 				}
 				break;
 			}
 			case 2: {// whole project
-				if (Runtime.ProjectService.CurrentOpenCombine == null) {
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("You must be in project mode"));
+				if (IdeApp.ProjectOperations.CurrentOpenCombine == null) {
+					Services.MessageService.ShowError (GettextCatalog.GetString ("You must be in project mode"));
 					break;
 				}
 				total = new Report (GettextCatalog.GetString ("total"), 0, 0, 0);
-				CountCombine (Runtime.ProjectService.CurrentOpenCombine, ref total);
+				CountCombine (IdeApp.ProjectOperations.CurrentOpenCombine, ref total);
 				break;
 			}
 			}
@@ -249,7 +249,7 @@ namespace MonoDevelop.Gui.Dialogs
 		public WordCountDialog ()
 		{
 			this.BorderWidth = 6;
-			this.TransientFor = (Window) WorkbenchSingleton.Workbench;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.HasSeparator = false;
 			InitializeComponents();
 			this.ShowAll ();
@@ -291,8 +291,8 @@ namespace MonoDevelop.Gui.Dialogs
 			linesColumn.Clicked += new EventHandler (SortEvt);
 			resultListView.AppendColumn (linesColumn);
 			
-			this.Icon = Runtime.Gui.Resources.GetIcon ("gtk-find");
-			this.TransientFor = (Window) WorkbenchSingleton.Workbench;
+			this.Icon = Services.Resources.GetIcon ("gtk-find");
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			
 			HBox hbox = new HBox (false, 0);
 			Label l = new Label (GettextCatalog.GetString ("_Count where"));

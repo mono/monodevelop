@@ -32,12 +32,15 @@ using System.Collections;
 using System.Text;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public abstract class FolderNodeBuilder: TypeNodeBuilder
 	{
@@ -166,16 +169,16 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				where = string.Format (GettextCatalog.GetString ("folder '{0}'"), Path.GetFileName (targetPath));
 			
 			if (ask) {
-				if (!Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to {0} {1} to {2}?"), how, what, where)))
+				if (!Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to {0} {1} to {2}?"), how, what, where)))
 					return;
 			}
 			
-			using (IProgressMonitor monitor = Runtime.TaskService.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
-				Runtime.ProjectService.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
+				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
 			}
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
@@ -197,7 +200,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 							MoveCopyFile (project, CurrentNode, file, true, true);
 						} else {
 							using (MessageDialog md = new MessageDialog (
-								 (Window) WorkbenchSingleton.Workbench,
+								 IdeApp.Workbench.RootWindow,
 								 DialogFlags.Modal | DialogFlags.DestroyWithParent,
 								 MessageType.Question, ButtonsType.None,
 								 String.Format (GettextCatalog.GetString ("{0} is outside the project directory, what should I do?"), file)))
@@ -226,7 +229,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 									MoveCopyFile (project, CurrentNode, file, ret == 2, false);
 								}
 								catch (Exception ex) {
-									Runtime.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
+									Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
 								}
 							}
 						}
@@ -250,12 +253,12 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 
 			if (filename != newfilename) {
 				if (File.Exists (newfilename)) {
-					if (!Runtime.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?"), newfilename), "MonoDevelop"))
+					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?"), newfilename), "MonoDevelop"))
 						return;
 				}
 				File.Copy (filename, newfilename, true);
 				if (move)
-					Runtime.FileService.RemoveFile (filename);
+					Services.FileService.RemoveFile (filename);
 			}
 			
 			if (project.IsCompileable (newfilename)) {
@@ -264,16 +267,16 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 				project.AddFile (newfilename, BuildAction.Nothing);
 			}
 
-			Runtime.ProjectService.SaveCombine();
+			IdeApp.ProjectOperations.SaveCombine();
 		}		
 
 		[CommandHandler (ProjectCommands.AddNewFiles)]
 		public void AddNewFileToProject()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			ProjectFile file = Runtime.ProjectService.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
+			ProjectFile file = IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
 			if (file != null) {
-				Runtime.ProjectService.SaveCombine();
+				IdeApp.ProjectOperations.SaveCombine();
 				CurrentNode.Expanded = true;
 				Tree.AddNodeInsertCallback (file, new TreeNodeCallback (OnFileInserted));
 			}

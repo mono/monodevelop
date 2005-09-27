@@ -9,11 +9,11 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
-using Project_ = MonoDevelop.Internal.Project.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using Project_ = MonoDevelop.Projects.Project;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 //	[Flags]
 //	public enum ShowMembers {

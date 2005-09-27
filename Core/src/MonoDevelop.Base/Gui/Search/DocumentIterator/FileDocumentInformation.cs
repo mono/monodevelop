@@ -10,7 +10,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class FileDocumentInformation: IDocumentInformation
 	{

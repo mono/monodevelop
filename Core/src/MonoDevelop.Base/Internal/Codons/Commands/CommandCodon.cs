@@ -31,15 +31,15 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Commands;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute ("Command")]
-	public class CommandCodon : AbstractCodon
+	internal class CommandCodon : AbstractCodon
 	{
 		[XmlMemberAttribute ("_label", IsRequired=true)]
 		string label;

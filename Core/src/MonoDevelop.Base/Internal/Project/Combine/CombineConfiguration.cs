@@ -13,13 +13,12 @@ using System.Reflection;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class CombineConfiguration : AbstractConfiguration
 	{

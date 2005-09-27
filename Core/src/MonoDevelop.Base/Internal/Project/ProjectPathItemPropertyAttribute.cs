@@ -28,10 +28,10 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Services;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public class ProjectPathItemProperty: ItemPropertyAttribute
 	{

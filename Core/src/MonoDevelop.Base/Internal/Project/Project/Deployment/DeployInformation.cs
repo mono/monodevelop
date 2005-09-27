@@ -10,10 +10,10 @@ using System.Collections;
 using System.IO;
 using System.Xml;
 
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public enum DeploymentStrategy {
 		Script,

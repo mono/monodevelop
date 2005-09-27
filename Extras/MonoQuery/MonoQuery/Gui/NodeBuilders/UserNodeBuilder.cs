@@ -29,9 +29,8 @@
 using System;
 
 using Mono.Data.Sql;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoQuery
 {

@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Collections;
 
 using MonoDevelop.SourceEditor.Gui;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.SourceEditor.InsightWindow
 {

@@ -4,8 +4,8 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Projects;
 
 namespace PythonBinding
 {

@@ -8,9 +8,9 @@
 using System;
 using System.Globalization;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Internal.Undo;
+using MonoDevelop.Ide.Gui.Undo;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	///  Only for fallback purposes.

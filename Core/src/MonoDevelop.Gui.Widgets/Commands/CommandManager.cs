@@ -30,7 +30,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public class CommandManager: IDisposable
 	{

@@ -13,10 +13,9 @@ using System.Reflection;
 using System.Resources;
 using System.Xml;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 
 namespace JavaBinding
@@ -33,7 +32,7 @@ namespace JavaBinding
 		
 		public JavaLanguageBinding ()
 		{
-			Runtime.ProjectService.DataContext.IncludeType (typeof(JavaCompilerParameters));
+			MonoDevelop.Projects.Services.ProjectService.DataContext.IncludeType (typeof(JavaCompilerParameters));
 		}
 		
 		public static GlobalProperties Properties {

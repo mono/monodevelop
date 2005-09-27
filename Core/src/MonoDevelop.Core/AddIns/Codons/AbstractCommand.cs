@@ -10,10 +10,9 @@ using System.Collections;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	/// <summary>
 	/// Abstract implementation of the <see cref="ICommand"/> interface.

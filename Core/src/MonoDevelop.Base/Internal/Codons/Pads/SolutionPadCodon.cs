@@ -31,37 +31,24 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("SolutionPad")]
-	public class SolutionPadCodon : PadCodon
+	internal class SolutionPadCodon : PadCodon
 	{
 		NodeBuilder[] builders;
 		TreePadOption[] options;
 		
-		[XmlMemberAttribute("_label", IsRequired=true)]
-		string label = null;
-		
-		[XmlMemberAttribute("icon")]
-		string icon = null;
-
 		[XmlMemberAttribute("defaultPlacement")]
 		string placement = null;
 
 		public NodeBuilder[] NodeBuilders {
 			get { return builders; }
-		}
-		
-		public string Label {
-			get { return label; }
-		}
-		
-		public string Icon {
-			get { return icon; }
 		}
 		
 		public string DefaultPlacement {
@@ -99,7 +86,7 @@ namespace MonoDevelop.Core.AddIns.Codons
 			} else
 				pad = new SolutionPad ();
 
-			pad.Initialize (label, icon, builders, options);
+			pad.Initialize (builders, options);
 			pad.DefaultPlacement = placement;
 			pad.Id = ID;
 			return pad;

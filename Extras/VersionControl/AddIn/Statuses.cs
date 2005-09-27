@@ -6,13 +6,11 @@ using Gtk;
 using VersionControl;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.SourceEditor.Gui;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
 namespace VersionControlPlugin {
 	public class StatusView : BaseView {
@@ -51,7 +49,7 @@ namespace VersionControlPlugin {
 				if (vc.IsDirectoryStatusAvailable(path)) {
 					if (test) return true;
 					StatusView d = new StatusView(path, vc);
-					MonoDevelop.Gui.WorkbenchSingleton.Workbench.ShowView(d, true);
+					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 					return true;
 				}
 			}

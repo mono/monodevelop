@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //   license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -17,17 +17,17 @@ using System.Xml;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui.Codons;
 
-namespace MonoDevelop.Core.Services
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	/// <summary>
 	/// This Class contains two ResourceManagers, which handle string and image resources
 	/// for the application. It do handle localization strings on this level.
 	/// </summary>
-	public class ImageButton : Gtk.Button
+	internal class ImageButton : Gtk.Button
 	{
 		public ImageButton (string stock, string label)
 		{
@@ -37,7 +37,10 @@ namespace MonoDevelop.Core.Services
 			this.Add(hbox1);
 		}
 	}
+}
 	
+namespace MonoDevelop.Core.Gui
+{
 	public class ResourceService : AbstractService
 	{
 		static Gtk.IconFactory iconFactory = null;

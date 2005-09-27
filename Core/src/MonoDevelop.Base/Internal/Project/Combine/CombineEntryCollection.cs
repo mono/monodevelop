@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public interface ICombineEntryCollection: IEnumerable
 	{

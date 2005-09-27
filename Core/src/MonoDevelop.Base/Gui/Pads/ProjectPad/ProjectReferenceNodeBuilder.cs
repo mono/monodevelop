@@ -30,11 +30,14 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectReferenceNodeBuilder: TypeNodeBuilder
 	{
@@ -93,7 +96,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			project.ProjectReferences.Remove (pref);
-			Runtime.ProjectService.SaveCombine ();
+			IdeApp.ProjectOperations.SaveCombine ();
 		}
 		
 		public override DragOperation CanDragNode ()

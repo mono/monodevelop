@@ -30,7 +30,7 @@ using System;
 using System.Xml;
 using System.Collections;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	[AttributeUsage (AttributeTargets.Class, AllowMultiple = false)]
 	public class DataItemAttribute: Attribute

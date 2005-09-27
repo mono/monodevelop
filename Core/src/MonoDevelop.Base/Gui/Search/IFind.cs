@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// The basic interface for search operations in a document.

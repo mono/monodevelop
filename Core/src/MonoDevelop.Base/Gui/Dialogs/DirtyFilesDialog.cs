@@ -3,12 +3,12 @@ using System.Collections;
 
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class DirtyFilesDialog : Gtk.Dialog
 	{
@@ -19,19 +19,21 @@ namespace MonoDevelop.Gui.Dialogs
 		TreeView tvFiles;
 		TreeStore tsFiles;
 
-		public DirtyFilesDialog() : base (GettextCatalog.GetString ("Save Files"), (Gtk.Window)WorkbenchSingleton.Workbench, DialogFlags.Modal)
+		public DirtyFilesDialog() : base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
 			tsFiles = new TreeStore (typeof (string), typeof (bool), typeof (SdiWorkspaceWindow), typeof (bool));
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
-			if (Runtime.ProjectService.CurrentOpenCombine != null) {
-				topCombineIter = tsFiles.AppendValues (String.Format (GettextCatalog.GetString ("Solution: {0}"), Runtime.ProjectService.CurrentOpenCombine.Name), true, null, false);
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				topCombineIter = tsFiles.AppendValues (String.Format (GettextCatalog.GetString ("Solution: {0}"), IdeApp.ProjectOperations.CurrentOpenCombine.Name), true, null, false);
 			}
-			foreach (IViewContent viewcontent in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (!viewcontent.IsDirty)
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if (!doc.IsDirty)
 					continue;
 				
+				IViewContent viewcontent = doc.Window.ViewContent;
+				 
 				if (viewcontent.HasProject) {
 					TreeIter projIter = TreeIter.Zero;
 					if (projectIters.ContainsKey (viewcontent.Project))

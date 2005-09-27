@@ -122,7 +122,7 @@
 		</Conditional>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Gui.Pads.ProjectPad">
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.IdeApplication.Gui.Pads.ProjectPad">
 		<NodeBuilder id = "MonoProjectBuilder" class = "MonoDeveloper.MonoProjectBuilder"/>
 	</Extension>
 	

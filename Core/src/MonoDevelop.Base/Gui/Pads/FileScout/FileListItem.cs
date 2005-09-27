@@ -1,12 +1,11 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	internal class FileListItem
 	{

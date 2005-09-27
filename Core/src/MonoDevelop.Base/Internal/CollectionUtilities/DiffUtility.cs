@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace System.Collections.Utility 
+namespace MonoDevelop.Projects.Utility 
 {
 	public class DiffUtility
 	{

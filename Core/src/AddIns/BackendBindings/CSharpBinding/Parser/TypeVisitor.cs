@@ -7,7 +7,7 @@ using ICSharpCode.SharpRefactory.Parser;
 using ICSharpCode.SharpRefactory.Parser.AST;
 using CSharpBinding.Parser.SharpDevelopTree;
 
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {

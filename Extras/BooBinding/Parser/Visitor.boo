@@ -27,8 +27,8 @@ namespace BooBinding.Parser
 
 import System
 import System.Collections
-import MonoDevelop.Services
-import MonoDevelop.Internal.Parser
+import MonoDevelop.Core
+import MonoDevelop.Projects.Parser
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast as AST
 import Boo.Lang.Compiler.IO

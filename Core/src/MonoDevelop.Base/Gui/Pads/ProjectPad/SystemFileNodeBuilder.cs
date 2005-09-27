@@ -30,11 +30,14 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class SystemFileNodeBuilder: TypeNodeBuilder
 	{
@@ -64,10 +67,10 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		{
 			SystemFile file = (SystemFile) dataObject;
 			label = file.Name;
-			icon = Context.GetIcon (Runtime.Gui.Icons.GetImageForFile (file.Path));
+			icon = Context.GetIcon (Services.Icons.GetImageForFile (file.Path));
 			Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 			if (gicon == null) {
-				gicon = Runtime.Gui.Icons.MakeTransparent (icon, 0.5);
+				gicon = Services.Icons.MakeTransparent (icon, 0.5);
 				Context.CacheComposedIcon (icon, "fade", gicon);
 			}
 			icon = gicon;
@@ -93,12 +96,12 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			if (oldname != newname) {
 				try {
 					if (Runtime.FileUtilityService.IsValidFileName (newname)) {
-						Runtime.FileService.RenameFile (oldname, newname);
+						Services.FileService.RenameFile (oldname, newname);
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
-					Runtime.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
 				}
 			}
 		}
@@ -106,7 +109,7 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		public override void ActivateItem ()
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
-			Runtime.FileService.OpenFile (file.Path);
+			IdeApp.Workbench.OpenDocument (file.Path);
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
@@ -114,13 +117,13 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			
-			bool yes = Runtime.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?"), file.Path));
+			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?"), file.Path));
 			if (!yes) return;
 
 			try {
-				Runtime.FileService.RemoveFile (file.Path);
+				Services.FileService.RemoveFile (file.Path);
 			} catch (Exception ex) {
-				Runtime.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file {0} could not be deleted"), file.Path));
+				Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file {0} could not be deleted"), file.Path));
 			}
 		}
 		

@@ -12,11 +12,10 @@ using System.Diagnostics;
 using System.Xml;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
-using MonoDevelop.Services;
-
-namespace MonoDevelop.Internal.ExternalTool
+namespace MonoDevelop.Ide.ExternalTools
 {
 	/// <summary>
 	/// This class handles the external tools 
@@ -81,7 +80,7 @@ namespace MonoDevelop.Internal.ExternalTool
 				if (!LoadToolsFromStream (Runtime.Properties.DataDirectory +
 				                         Path.DirectorySeparatorChar + "options" + 
 				                         Path.DirectorySeparatorChar + TOOLFILE)) {
-					Runtime.MessageService.ShowWarning(GettextCatalog.GetString ("Can't load external tools configuration file"));
+					Services.MessageService.ShowWarning(GettextCatalog.GetString ("Can't load external tools configuration file"));
 				}
 			}
 		}

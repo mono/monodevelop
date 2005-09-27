@@ -6,25 +6,30 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Xml;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core.Gui.Dialogs;
 
-namespace MonoDevelop.Gui.Dialogs {
+namespace MonoDevelop.Projects.Gui.Dialogs {
+
+	internal enum ProjectOptionsCommands
+	{
+		AddProjectConfiguration,
+		RenameProjectConfiguration,
+		RemoveProjectConfiguration,
+		SetActiveProjectConfiguration
+	}
 
 	/// <summary>
 	/// Dialog for viewing the project options (plain treeview isn't good enough :/)
 	/// </summary>
-	internal class ProjectOptionsDialog : TreeViewOptions
+	public class ProjectOptionsDialog : TreeViewOptions
 	{
 		Project  project;
 		
@@ -259,9 +264,6 @@ namespace MonoDevelop.Gui.Dialogs {
 		
 		#region context menu setup
 		
-		static string configNodeMenu = "/SharpDevelop/Workbench/ProjectOptions/ConfigNodeMenu";
-		static string selectConfigNodeMenu = "/SharpDevelop/Workbench/ProjectOptions/SelectedConfigMenu";
-		
 		// override select node to allow config and config child nodes (braches) to be selected
 		protected override void SelectNode(object sender, EventArgs e)
 		{
@@ -302,11 +304,16 @@ namespace MonoDevelop.Gui.Dialogs {
 	
 					// now see if the iter is the configuration root node iter
 					if (iter.Equals(configurationTreeNode)) {
-						CommandEntrySet cset = Runtime.Gui.CommandService.CreateCommandEntrySet (configNodeMenu);
+						CommandEntrySet cset = new CommandEntrySet ();
+						cset.Add (new LocalCommandEntry ("AddConfiguration", GettextCatalog.GetString ("Add")));
 						CommandManager.ShowContextMenu (cset);
 					} else if (path.Indices[0] == configPath.Indices[0] && (path.Depth - configPath.Depth) == 1) {
 						// now see if it's a specific configuration node (i.e. the configuration root node is it's parent
-						CommandEntrySet cset = Runtime.Gui.CommandService.CreateCommandEntrySet (selectConfigNodeMenu);
+						CommandEntrySet cset = new CommandEntrySet ();
+						cset.Add (new LocalCommandEntry ("RenameConfiguration", GettextCatalog.GetString ("Rename")));
+						cset.Add (new LocalCommandEntry ("RemoveConfiguration", GettextCatalog.GetString ("Remove")));
+						cset.Add (new CommandEntry (Command.Separator));
+						cset.Add (new LocalCommandEntry ("SetActiveConfiguration", GettextCatalog.GetString ("Set as active")));
 						CommandManager.ShowContextMenu (cset);
 					}
 				}

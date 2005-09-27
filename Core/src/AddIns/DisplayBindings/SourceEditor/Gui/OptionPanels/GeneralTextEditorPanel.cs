@@ -14,13 +14,11 @@ using Gnome;
 using Pango;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.EditorBindings.Gui.OptionPanels
+namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {
 	/// <summary>
 	/// General texteditor options panelS.

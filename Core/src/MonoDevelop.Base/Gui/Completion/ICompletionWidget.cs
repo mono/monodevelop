@@ -1,9 +1,9 @@
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 using Gtk;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 
 	public interface ICompletionWidget

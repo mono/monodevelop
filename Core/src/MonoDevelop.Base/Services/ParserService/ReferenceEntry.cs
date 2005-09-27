@@ -29,10 +29,10 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Projects.Parser
 {	
 	[Serializable]
 	class ReferenceEntry

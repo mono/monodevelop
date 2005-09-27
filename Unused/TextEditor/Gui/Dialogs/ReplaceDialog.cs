@@ -11,22 +11,22 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Collections.Specialized;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Gui.Editor;
 using MonoDevelop.TextEditor.Document;
 using MonoDevelop.Core.Properties;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 //using MonoDevelop.XmlForms;
-//using MonoDevelop.Gui.XmlForms;
+//using MonoDevelop.Core.Gui.XmlForms;
 using MonoDevelop.TextEditor;
 using MonoDevelop.EditorBindings.Search;
 
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class ReplaceDialog
 	{

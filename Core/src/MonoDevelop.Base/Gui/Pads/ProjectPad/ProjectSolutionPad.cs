@@ -29,17 +29,18 @@
 using System;
 using System.Resources;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Pads.ProjectPad
+namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class ProjectSolutionPad: SolutionPad
 	{
 		public ProjectSolutionPad ()
 		{
-			Runtime.Gui.Workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnWindowChanged);
+			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
 		}
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
@@ -48,26 +49,26 @@ namespace MonoDevelop.Gui.Pads.ProjectPad
 			ITreeNavigator nav = GetSelectedNode ();
 			if (nav != null) {
 				Project p = (Project) nav.GetParentDataItem (typeof(Project), true);
-				Runtime.ProjectService.CurrentSelectedProject = p;
+				IdeApp.ProjectOperations.CurrentSelectedProject = p;
 				Combine c = (Combine) nav.GetParentDataItem (typeof(Combine), true);
-				Runtime.ProjectService.CurrentSelectedCombine = c;
+				IdeApp.ProjectOperations.CurrentSelectedCombine = c;
 			}
 		}
 		
 		protected override void OnCloseCombine (object sender, CombineEventArgs e)
 		{
 			base.OnCloseCombine (sender, e);
-			Runtime.ProjectService.CurrentSelectedProject = null;
-			Runtime.ProjectService.CurrentSelectedCombine = null;
+			IdeApp.ProjectOperations.CurrentSelectedProject = null;
+			IdeApp.ProjectOperations.CurrentSelectedCombine = null;
 		}
 		
 		void OnWindowChanged (object ob, EventArgs args)
 		{
-			IWorkbenchWindow win = Runtime.Gui.Workbench.ActiveWorkbenchWindow;
-			if (win != null && win.ViewContent != null && win.ViewContent.Project != null) {
-				string file = win.ViewContent.ContentName;
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc != null && doc.Project != null) {
+				string file = doc.FileName;
 				if (file != null) {
-					ProjectFile pf = win.ViewContent.Project.ProjectFiles.GetFile (win.ViewContent.ContentName);
+					ProjectFile pf = doc.Project.ProjectFiles.GetFile (doc.FileName);
 					if (pf != null) {
 						ITreeNavigator nav = GetNodeAtObject (pf, true);
 						if (nav != null) {

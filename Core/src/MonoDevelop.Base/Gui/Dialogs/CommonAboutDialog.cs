@@ -8,17 +8,17 @@
 using System;
 using System.Text;
 
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 using Gdk;
 using Gtk;
 using GLib;
 using Pango;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal class ScrollBox : DrawingArea
 	{
@@ -139,7 +139,7 @@ namespace MonoDevelop.Gui.Dialogs
 		public CommonAboutDialog ()
 		{
 			this.Title = GettextCatalog.GetString ("About MonoDevelop");
-			this.TransientFor = (Gtk.Window) WorkbenchSingleton.Workbench;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			aboutPictureScrollBox = new ScrollBox ();
 		
 			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);

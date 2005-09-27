@@ -8,7 +8,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class RegExSearchStrategy : ISearchStrategy
 	{

@@ -6,8 +6,9 @@
 // </file>
 
 using System;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// The IWorkbenchLayout object is responsible for the layout of 
@@ -15,7 +16,7 @@ namespace MonoDevelop.Gui
 	/// implementation etc. it could be attached/detached at the runtime
 	/// to a workbench.
 	/// </summary>
-	public interface IWorkbenchLayout: IMementoCapable
+	internal interface IWorkbenchLayout: IMementoCapable
 	{
 		/// <summary>
 		/// The active workbench window.
@@ -60,6 +61,8 @@ namespace MonoDevelop.Gui
 		/// Shows a new <see cref="IPadContent"/>.
 		/// </summary>
 		void ShowPad(IPadContent content);
+		
+		IPadWindow GetPadWindow (IPadContent content);
 		
 		/// <summary>
 		/// Activates a pad (Show only makes it visible but Activate does

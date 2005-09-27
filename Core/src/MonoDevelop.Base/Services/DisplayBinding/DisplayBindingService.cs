@@ -12,19 +12,20 @@ using System.Collections;
 using System.Reflection;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Codons;
+using MonoDevelop.Ide.Codons;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	public class DisplayBindingService : AbstractService
+	internal class DisplayBindingService : AbstractService
 	{
 		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		DisplayBindingCodon[] bindings = null;

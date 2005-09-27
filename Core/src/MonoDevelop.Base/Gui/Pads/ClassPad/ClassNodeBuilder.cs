@@ -29,11 +29,13 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Parser;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Pads.ClassPad
+namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassNodeBuilder: TypeNodeBuilder
 	{
@@ -54,7 +56,7 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 		{
 			ClassData classData = dataObject as ClassData;
 			label = classData.Class.Name;
-			icon = Context.GetIcon (Runtime.Gui.Icons.GetIcon (classData.Class));
+			icon = Context.GetIcon (Services.Icons.GetIcon (classData.Class));
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -106,26 +108,11 @@ namespace MonoDevelop.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{
-			string file = GetFileName ();
-			IAsyncOperation op = Runtime.FileService.OpenFile (file);
-			op.Completed += new OperationHandler (OnFileOpened);
-		}
-		
-		private void OnFileOpened (IAsyncOperation op)
-		{
-			if (!op.Success) return;
-
 			ClassData cls = CurrentNode.DataItem as ClassData;
-			int line = cls.Class.Region.BeginLine;
 			string file = GetFileName ();
+			int line = cls.Class.Region.BeginLine;
 			
-			IWorkbenchWindow window = Runtime.FileService.GetOpenFile (file);
-			if (window == null) return;
-			
-			IViewContent content = window.ViewContent;
-			if (content is IPositionable) {
-				((IPositionable)content).JumpTo (Math.Max (1, line), 1);
-			}
+			IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);
 		}
 		
 		string GetFileName ()

@@ -10,8 +10,8 @@ using System.Xml;
 using System.Diagnostics;
 using System.ComponentModel;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace VBBinding {
 	

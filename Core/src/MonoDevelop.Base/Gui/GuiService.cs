@@ -1,38 +1,15 @@
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Core.Gui
 {
-	public class GuiService
+	public class Services
 	{
-		DisplayBindingService displayBindingService;
-		IconService icons;
-		ResourceService resourceService;
-		IStatusBarService statusBarService;
-		CommandService commandService;
-		
-		public IWorkbench Workbench {
-			get { return MonoDevelop.Gui.WorkbenchSingleton.Workbench; }
-		}
-	
-		public DisplayBindingService DisplayBindings {
-			get {
-				if (displayBindingService == null)
-					displayBindingService = (DisplayBindingService) ServiceManager.GetService (typeof(DisplayBindingService));
-				return displayBindingService;
-			}
-		}
-	
-		public IStatusBarService StatusBar {
-			get {
-				if (statusBarService == null)
-					statusBarService = (IStatusBarService) ServiceManager.GetService (typeof(IStatusBarService));
-				return statusBarService;
-			}
-		}
-	
-		public ResourceService Resources {
+		static ResourceService resourceService;
+		static MessageService messageService;
+		static DispatchService dispatchService;
+
+		public static ResourceService Resources {
 			get {
 				if (resourceService == null)
 					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
@@ -40,19 +17,19 @@ namespace MonoDevelop.Gui
 			}
 		}
 	
-		public IconService Icons {
+		public static MessageService MessageService {
 			get {
-				if (icons == null)
-					icons = (IconService) ServiceManager.GetService (typeof(IconService));
-				return icons;
+				if (messageService == null)
+					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
+				return messageService;
 			}
 		}
 	
-		public CommandService CommandService {
+		public static DispatchService DispatchService {
 			get {
-				if (commandService == null)
-					commandService = (CommandService) ServiceManager.GetService (typeof(CommandService));
-				return commandService;
+				if (dispatchService == null)
+					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
+				return dispatchService;
 			}
 		}
 	}

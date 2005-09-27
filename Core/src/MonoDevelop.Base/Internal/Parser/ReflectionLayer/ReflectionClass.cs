@@ -5,8 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
 using System;
 using System.Collections;
@@ -14,10 +13,10 @@ using System.Xml;
 using System.Reflection;
 using System.Collections.Specialized;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class ReflectionClass : AbstractClass
+	internal class ReflectionClass : AbstractClass
 	{
 		BindingFlags flags = BindingFlags.Instance  | 
 		                     BindingFlags.Static    | 
@@ -49,7 +48,7 @@ namespace MonoDevelop.Internal.Parser
 
 			FullyQualifiedName = type.FullName;
 
-			XmlDocument docs = Runtime.Documentation != null ? Runtime.Documentation.GetHelpXml (FullyQualifiedName) : null;
+			XmlDocument docs = Services.Documentation != null ? Services.Documentation.GetHelpXml (FullyQualifiedName) : null;
 			if (docs != null) {
 				XmlNode node = docs.SelectSingleNode ("/Type/Docs/summary");
 				if (node != null) {

@@ -10,11 +10,12 @@ using System.IO;
 using System.Diagnostics;
 using System.Xml;
 using System.Threading;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(DotNetProjectConfiguration))]
 	public class DotNetProject : Project
@@ -87,7 +88,7 @@ namespace MonoDevelop.Internal.Project
 		
 		ILanguageBinding FindLanguage (string name)
 		{
-			ILanguageBinding binding = Runtime.Languages.GetBindingPerLanguageName (language);
+			ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (language);
 			if (binding == null)
 				throw new InvalidOperationException ("Language not supported: " + language);
 			return binding;

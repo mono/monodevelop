@@ -13,12 +13,12 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
 
-using MonoDevelop.Services;
-
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	internal class CombineDescriptor: ICombineEntryDescriptor
 	{
@@ -70,7 +70,7 @@ namespace MonoDevelop.Internal.Templates
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
 			// Save combine
-			using (IProgressMonitor monitor = Runtime.TaskService.GetSaveProgressMonitor ()) {
+			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				string combineLocation = Runtime.FileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath) + newCombineName + ".mds";
 				if (File.Exists(combineLocation)) {
 					IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));

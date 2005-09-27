@@ -29,7 +29,8 @@ import Boo.Lang.Compiler
 import Gtk
 import GLib
 
-import MonoDevelop.Services
+import MonoDevelop.Core
+import MonoDevelop.Core.ProcessServices;
 
 class BooShell (RemoteProcessObject):
 	private _interpreter = InteractiveInterpreter(RememberLastValue: true, Print: print)

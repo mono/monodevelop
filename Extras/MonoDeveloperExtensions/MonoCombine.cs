@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
 namespace MonoDeveloper
 {	

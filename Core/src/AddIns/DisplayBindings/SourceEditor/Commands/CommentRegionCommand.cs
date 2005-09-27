@@ -10,15 +10,13 @@ using System.IO;
 using System.Collections;
 using System.Text;
 
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Codons;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui;
-using MonoDevelop.TextEditor;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.SourceEditor;
 
-namespace MonoDevelop.DefaultEditor.Commands
+namespace MonoDevelop.SourceEditor.Commands
 {
 	public class CommentRegion : AbstractMenuCommand
 	{ 
@@ -33,7 +31,7 @@ namespace MonoDevelop.DefaultEditor.Commands
 			}
 			
 			TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-			new MonoDevelop.TextEditor.Actions.ToggleComment().Execute(textarea.ActiveTextAreaControl.TextArea);
+			new MonoDevelop.SourceEditor.Actions.ToggleComment().Execute(textarea.ActiveTextAreaControl.TextArea);
 			*/
 		}
 	}

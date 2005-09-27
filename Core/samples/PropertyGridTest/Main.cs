@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Drawing;
 
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Test
 {

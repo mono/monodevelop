@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	public enum ClassType {
 		Class,

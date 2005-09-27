@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace System.Collections.Utility {
+namespace MonoDevelop.Projects.Utility {
    ///<summary>
    /// Utility class to aid in sorting collections
    /// Contains most common operations in sorting

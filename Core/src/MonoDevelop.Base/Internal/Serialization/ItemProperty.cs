@@ -29,7 +29,7 @@
 using System;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Serialization
+namespace MonoDevelop.Projects.Serialization
 {
 	public sealed class ItemProperty
 	{

@@ -31,11 +31,10 @@ using System.Data;
 
 using Mono.Data.Sql;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components;
 
 namespace MonoQuery
 {

@@ -9,9 +9,9 @@ using System;
 using System.Xml;
 using System.Diagnostics;
 
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Templates
+namespace MonoDevelop.Ide.Templates
 {
 	internal interface INewFileCreator
 	{

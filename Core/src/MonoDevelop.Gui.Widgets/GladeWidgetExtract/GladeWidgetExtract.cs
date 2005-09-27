@@ -11,7 +11,7 @@ using Glade;
 
 using Assembly = System.Reflection.Assembly;
 
-namespace MonoDevelop.Gui.Widgets {
+namespace MonoDevelop.Components {
 	public abstract class GladeWidgetExtract : HBox {
 		
 		Glade.XML glade;

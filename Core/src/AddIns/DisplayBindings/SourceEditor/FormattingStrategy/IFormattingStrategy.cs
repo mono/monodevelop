@@ -1,4 +1,4 @@
-namespace MonoDevelop.EditorBindings.FormattingStrategy {
+namespace MonoDevelop.SourceEditor.FormattingStrategy {
 	/// <summary>
 	/// This interface handles the auto and smart indenting and formating
 	/// in the document while  you type. Language bindings could overwrite this 

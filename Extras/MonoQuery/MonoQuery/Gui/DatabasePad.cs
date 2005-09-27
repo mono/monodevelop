@@ -29,11 +29,10 @@
 using System;
 using System.Resources;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
 using MonoQuery.Commands;
 
 using Mono.Data.Sql;

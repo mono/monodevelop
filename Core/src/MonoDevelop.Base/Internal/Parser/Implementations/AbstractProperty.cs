@@ -7,7 +7,7 @@
 using System;
 using System.Reflection;
 
-namespace MonoDevelop.Internal.Parser {
+namespace MonoDevelop.Projects.Parser {
 
 	[Serializable]
 	public abstract class AbstractProperty : AbstractMember, IProperty

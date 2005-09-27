@@ -13,11 +13,11 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Core.Gui.Components
 {
 	public delegate void DirectoryChangedEventHandler (string path);
 
@@ -62,12 +62,12 @@ namespace MonoDevelop.Gui.Widgets
 			Toolbar toolbar = new Toolbar ();
 			toolbar.IconSize = IconSize.SmallToolbar;
 
-			goUp = new ToolButton (Stock.GoUp);
+			goUp = new ToolButton (Gtk.Stock.GoUp);
 			goUp.Clicked += new EventHandler (OnGoUpClicked);
 			goUp.SetTooltip (tips, GettextCatalog.GetString ("Go up one level"), "Go up one level");
 			toolbar.Insert (goUp, -1);
 
-			goHome = new ToolButton (Stock.Home);
+			goHome = new ToolButton (Gtk.Stock.Home);
 			goHome.Clicked += new EventHandler (OnGoHomeClicked);
 			goHome.SetTooltip (tips, GettextCatalog.GetString ("Home"), "Home");
 			toolbar.Insert (goHome, -1);
@@ -80,7 +80,7 @@ namespace MonoDevelop.Gui.Widgets
 			this.PackStart (toolbar, false, true, 0);
 
 			IProperties p = (IProperties) PropertyService.GetProperty ("SharpDevelop.UI.SelectStyleOptions", new DefaultProperties ());
-			ignoreHidden = !p.GetProperty ("MonoDevelop.Gui.FileScout.ShowHidden", false);
+			ignoreHidden = !p.GetProperty ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 
 			tv = new Gtk.TreeView ();
 			tv.RulesHint = true;
@@ -445,7 +445,7 @@ namespace MonoDevelop.Gui.Widgets
 		} 
 	}
 
-	public class ToolbarEntry : ToolItem
+	internal class ToolbarEntry : ToolItem
 	{
 		Entry entry;
 

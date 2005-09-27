@@ -8,7 +8,7 @@
 using System;
 using MonoDevelop.SourceEditor.Gui;
 
-namespace MonoDevelop.TextEditor.Actions
+namespace MonoDevelop.SourceEditor.Actions
 {
 	/// <summary>
 	/// To define a new key for the textarea, you must write a class which

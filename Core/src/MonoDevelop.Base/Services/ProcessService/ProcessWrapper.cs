@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public delegate void ProcessEventHandler(object sender, string message);
 	

@@ -5,10 +5,9 @@ using System.IO;
 using System.CodeDom.Compiler;
 using System.Threading;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Components;
 
 namespace NemerleBinding
 {
@@ -230,8 +229,7 @@ namespace NemerleBinding
 					assembly_references.Add (Path.Combine (rel_path_to, Path.GetFileName (assembly_fileName)));
 					break;
 				case ReferenceType.Project:
-					IProjectService prjService = (IProjectService)ServiceManager.GetService (typeof (IProjectService));
-					CombineEntryCollection allProjects = prjService.CurrentOpenCombine.GetAllProjects();
+					CombineEntryCollection allProjects = project.RootCombine.GetAllProjects();
 					
 					foreach (Project projectEntry in allProjects) {
 						if (projectEntry.Name == lib.Reference) {

@@ -30,7 +30,7 @@ using System;
 using Gtk;
 using System.Xml.Serialization;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components.DockToolbars
 {
 	[XmlType ("floatingPosition")]
 	public class FloatingPosition: DockToolbarPosition

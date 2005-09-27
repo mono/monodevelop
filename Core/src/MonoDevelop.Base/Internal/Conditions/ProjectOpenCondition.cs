@@ -10,14 +10,13 @@ using System.Collections;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
-using MonoDevelop.Gui;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Project;
-
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Codons
 {
 	[ConditionAttribute()]
 	internal class ProjectOpenCondition : AbstractCondition
@@ -36,10 +35,10 @@ namespace MonoDevelop.Core.AddIns
 		
 		public override bool IsValid(object owner)
 		{
-			Project project = Runtime.ProjectService.CurrentSelectedProject;
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			
-			if (project == null && Runtime.ProjectService.CurrentOpenCombine != null) {
-				CombineEntryCollection projects = Runtime.ProjectService.CurrentOpenCombine.GetAllProjects();
+			if (project == null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				CombineEntryCollection projects = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects();
 				if (projects.Count > 0) {
 					project = (Project)projects[0];
 				}

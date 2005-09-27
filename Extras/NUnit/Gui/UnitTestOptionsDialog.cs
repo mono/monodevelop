@@ -31,11 +31,9 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Dialogs;
+using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.NUnit {
 

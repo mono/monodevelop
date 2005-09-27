@@ -30,12 +30,10 @@ using System;
 using System.IO;
 using Gtk;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.NUnit.Commands
 {
 	public enum TestCommands
 	{

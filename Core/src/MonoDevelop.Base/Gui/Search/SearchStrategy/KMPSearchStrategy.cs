@@ -7,7 +7,7 @@
 
 using System;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	/// <summary>
 	/// Implements the Knuth, Morris, Pratt searching algorithm.

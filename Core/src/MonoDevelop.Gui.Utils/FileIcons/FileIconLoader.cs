@@ -3,7 +3,7 @@ using System.Collections;
 
 using Gtk;
 
-namespace MonoDevelop.Gui.Utils
+namespace MonoDevelop.Core.Gui.Utils
 {
 	public sealed class FileIconLoader
 	{

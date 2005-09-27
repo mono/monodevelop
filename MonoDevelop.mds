@@ -16,6 +16,7 @@
       <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
       <Entry configuration="Debug" build="True" name="mdhost" />
       <Entry configuration="Debug" build="True" name="dbgen" />
+      <Entry configuration="Debug" build="True" name="JavaBinding" />
       <Entry configuration="Debug" build="True" name="VersionControl" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
@@ -34,6 +35,7 @@
       <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
       <Entry configuration="Debug" build="True" name="mdhost" />
       <Entry configuration="Debug" build="True" name="dbgen" />
+      <Entry configuration="Debug" build="True" name="JavaBinding" />
       <Entry configuration="Debug" build="True" name="VersionControl" />
     </Configuration>
   </Configurations>
@@ -53,6 +55,7 @@
     <Execute type="None" entry="MonoDeveloperExtensions" />
     <Execute type="None" entry="mdhost" />
     <Execute type="None" entry="dbgen" />
+    <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="VersionControl" />
   </StartMode>
   <Entries>
@@ -71,6 +74,7 @@
     <Entry filename="./Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.mdp" />
     <Entry filename="./Core/src/Tools/mdhost/mdhost.mdp" />
     <Entry filename="./Core/src/Tools/dbgen/dbgen.mdp" />
+    <Entry filename="./Extras/JavaBinding/JavaBinding.mdp" />
     <Entry filename="./Extras/VersionControl/VersionControl.mds" />
   </Entries>
 </Combine>

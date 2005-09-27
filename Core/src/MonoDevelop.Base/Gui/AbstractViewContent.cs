@@ -7,11 +7,10 @@
 
 using System;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	public abstract class AbstractViewContent : AbstractBaseViewContent, IViewContent
 	{

@@ -1,7 +1,7 @@
 using System;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	public class GuiSyncAbstractService : GuiSyncObject, IService
 	{

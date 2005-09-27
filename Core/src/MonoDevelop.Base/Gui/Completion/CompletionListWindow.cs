@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 
 using Gtk;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui;
 
-namespace MonoDevelop.Gui.Completion
+namespace MonoDevelop.Projects.Gui.Completion
 {
 	public class CompletionListWindow : ListWindow, IListDataProvider
 	{

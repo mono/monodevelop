@@ -1,8 +1,7 @@
 using System;
-using MonoDevelop.Core.AddIns.Codons;
 using AddInManager;
 
-namespace MonoDevelop.Commands
+namespace MonoDevelop.Components.Commands
 {
 	public class ShowAddInManager : AbstractMenuCommand
 	{

@@ -13,7 +13,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.GZip;
 
-namespace MonoDevelop.Gui.Utils.DirectoryArchive {
+namespace MonoDevelop.Core.Utils.DirectoryArchive {
 	public enum CompressionType { Zip, TarGz, TarBz2, Tar }
 
 	public interface ISingleFileDecompressor {

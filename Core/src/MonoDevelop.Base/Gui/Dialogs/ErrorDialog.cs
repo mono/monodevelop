@@ -30,7 +30,7 @@ using System;
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	public class ErrorDialog : IDisposable
 	{

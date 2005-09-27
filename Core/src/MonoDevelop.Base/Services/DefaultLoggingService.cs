@@ -3,12 +3,12 @@ using System;
 using System.IO;
 using System.Reflection;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 
 using log4net;
 using log4net.Config;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core
 {
 	internal class DefaultLoggingService : AbstractService, ILoggingService
 	{

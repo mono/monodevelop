@@ -5,11 +5,11 @@
 //     <version value="$version"/>
 // </file>
 using System;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using Gtk;
 using Gnome;
 
-namespace MonoDevelop.Gui.Components
+namespace MonoDevelop.Ide.Gui
 {
 	public class SdStatusBar : HBox
 	{
@@ -58,7 +58,7 @@ namespace MonoDevelop.Gui.Components
 			}
 		}
 		
-		public SdStatusBar (IStatusBarService manager)
+		public SdStatusBar ()
 		{
 			Spacing = 3;
 			BorderWidth = 1;

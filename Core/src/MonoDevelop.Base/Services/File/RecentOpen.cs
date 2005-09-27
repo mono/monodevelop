@@ -14,11 +14,11 @@ using Vfs = Gnome.Vfs.Vfs;
 using MimeType = Gnome.Vfs.MimeType;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Gui.Utils;
-using MonoDevelop.Services;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core;
 using Freedesktop.RecentFiles;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Gui
 {
 	/// <summary>
 	/// This class handles the recent open files and the recent open project files of MonoDevelop

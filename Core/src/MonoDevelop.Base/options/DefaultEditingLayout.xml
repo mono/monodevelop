@@ -4,15 +4,15 @@
     <dock name="__dock_1" floating="no" width="-1" height="-1" floatx="0" floaty="0">
       <paned orientation="horizontal" locked="no" position="226">
         <notebook orientation="vertical" locked="no" page="3">
-          <item name="MonoDevelop.Gui.Pads.FileScout" orientation="vertical" locked="no"/>
-          <item name="MonoDevelop.Gui.Pads.ClassPad" orientation="vertical" locked="no"/>
-          <item name="MonoDevelop.Gui.Pads.ProjectPad" orientation="vertical" locked="no"/>
-          <item name="MonoDevelop.Gui.Pads.HelpTree" orientation="vertical" locked="no"/>
+          <item name="MonoDevelop.IdeApplication.Gui.Pads.FileScout" orientation="vertical" locked="no"/>
+          <item name="MonoDevelop.IdeApplication.Gui.Pads.ClassPad" orientation="vertical" locked="no"/>
+          <item name="MonoDevelop.IdeApplication.Gui.Pads.ProjectPad" orientation="vertical" locked="no"/>
+          <item name="MonoDevelop.IdeApplication.Gui.Pads.HelpTree" orientation="vertical" locked="no"/>
         </notebook>
         <paned orientation="vertical" locked="no" position="319">
           <item name="Documents" orientation="vertical" locked="yes"/>
           <notebook orientation="vertical" locked="no" page="0">
-            <item name="MonoDevelop.Gui.Pads.OpenTaskView" orientation="vertical" locked="no"/>
+            <item name="MonoDevelop.IdeApplication.Gui.Pads.OpenTaskView" orientation="vertical" locked="no"/>
             <item name="MonoDevelop.EditorBindings.Gui.Pads.CompilerMessageView" orientation="vertical" locked="no"/>
             <item name="MonoDevelop.SourceEditor.Gui.DebuggerLocalsPad" orientation="vertical" locked="no"/>
           </notebook>

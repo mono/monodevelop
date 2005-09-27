@@ -28,9 +28,9 @@
 
 
 using System;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public delegate void ConfigurationEventHandler (object sender, ConfigurationEventArgs e);
 	

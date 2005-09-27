@@ -30,9 +30,11 @@ using System;
 using System.Threading;
 
 using Mono.Data.Sql;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Components.Commands;
 
 using MonoQuery.Commands;
 
@@ -51,8 +53,8 @@ namespace MonoQuery
 		
 		public TablesNodeBuilder()
 		{
-			AddTable += (AddTableHandler) Runtime.DispatchService.GuiDispatch (new AddTableHandler (OnTableAdd));
-			RefreshHandler = (EventHandler) Runtime.DispatchService.GuiDispatch (new EventHandler (OnRefreshEvent));
+			AddTable += (AddTableHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AddTableHandler (OnTableAdd));
+			RefreshHandler = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler (OnRefreshEvent));
 		}
 		
 		public override Type NodeDataType {
@@ -151,7 +153,7 @@ namespace MonoQuery
 			SqlQueryView sql = new SqlQueryView ();
 			TablesNode node = (TablesNode) CurrentNode.DataItem;
 			sql.Connection = node.Provider;
-			Runtime.Gui.Workbench.ShowView (sql, true);
+			IdeApp.Workbench.OpenDocument (sql, true);
 		}
 		
 		[CommandHandler (MonoQueryCommands.Refresh)]

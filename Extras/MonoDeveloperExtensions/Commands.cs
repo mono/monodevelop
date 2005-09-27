@@ -28,12 +28,14 @@
 
 using System;
 using System.IO;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Core.AddIns.Codons;
-using MonoDevelop.Gui.Pads;
-using MonoDevelop.Gui.Pads.ProjectPad;
-using MonoDevelop.Commands;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDeveloper
 {	
@@ -53,20 +55,20 @@ namespace MonoDeveloper
 	{
 		protected override void Run ()
 		{
-			MonoProject p = Runtime.ProjectService.CurrentSelectedProject as MonoProject;
+			MonoProject p = IdeApp.ProjectOperations.CurrentSelectedProject as MonoProject;
 			if (p != null)
-				Runtime.DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
+				MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (Install), p);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = Runtime.ProjectService.CurrentSelectedProject is MonoProject;
+			info.Visible = IdeApp.ProjectOperations.CurrentSelectedProject is MonoProject;
 		}
 		
 		void Install (object prj)
 		{
 			MonoProject p = prj as MonoProject;
-			using (IProgressMonitor monitor = Runtime.TaskService.GetBuildProgressMonitor ()) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
 				p.Install (monitor);
 			}
 		}
@@ -93,19 +95,19 @@ namespace MonoDeveloper
 		{
 			string path = GetPath ();
 			if (path == null) return;
-			Runtime.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunDiffAsync), path);
+			MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunDiffAsync), path);
 		}
 		
 		public void RunDiffAsync (object pa)
 		{
 			string path = (string) pa;
-			using (IProgressMonitor monitor = Runtime.TaskService.GetOutputProgressMonitor ("Subversion Output", "", true, true)) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Subversion Output", "", true, true)) {
 				monitor.Log.WriteLine ("Running: svn diff " + path + " ...");
 				StreamWriter w = new StreamWriter ("/tmp/tmp.diff");
 				ProcessWrapper p = Runtime.ProcessService.StartProcess ("svn", "diff " + path, null, w, monitor.Log, null);
 				p.WaitForOutput ();
 				w.Close ();
-				Runtime.FileService.OpenFile ("/tmp/tmp.diff");
+				IdeApp.Workbench.OpenDocument ("/tmp/tmp.diff");
 				monitor.Log.WriteLine ();
 				monitor.Log.WriteLine ("Done.");
 			}
@@ -138,7 +140,7 @@ namespace MonoDeveloper
 		[CommandHandler (Commands.SvnRevert)]
 		public void SvnRevert ()
 		{
-			if (Runtime.MessageService.AskQuestion ("Do you really want to revert " + GetPath() + "?"))
+			if (MonoDevelop.Core.Gui.Services.MessageService.AskQuestion ("Do you really want to revert " + GetPath() + "?"))
 				SvnRun ("revert {0}");
 		}
 		
@@ -167,14 +169,14 @@ namespace MonoDeveloper
 		{
 			string path = GetPath ();
 			if (path == null) return;
-			Runtime.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunAsync), new SvnCommand (cmd, path));
+			MonoDevelop.Core.Gui.Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (RunAsync), new SvnCommand (cmd, path));
 		}
 		
 		public virtual void RunAsync (object pa)
 		{
 			SvnCommand c = (SvnCommand) pa;
 			string cmd = string.Format (c.Command, c.Path);
-			using (IProgressMonitor monitor = Runtime.TaskService.GetOutputProgressMonitor ("Subversion Output", "", true, true)) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Subversion Output", "", true, true)) {
 				monitor.Log.WriteLine ("Running: svn " + cmd + " ...");
 				ProcessWrapper p = Runtime.ProcessService.StartProcess ("svn", cmd, null, monitor.Log, monitor.Log, null);
 				p.WaitForOutput ();

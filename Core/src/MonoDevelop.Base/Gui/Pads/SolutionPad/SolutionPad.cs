@@ -29,24 +29,25 @@
 using System;
 using System.Resources;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Gui.Pads
+namespace MonoDevelop.Ide.Gui.Pads
 {
 	public class SolutionPad : TreeViewPad
 	{
 		public SolutionPad ()
 		{
-			Runtime.ProjectService.CombineOpened += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			Runtime.ProjectService.CombineClosed += (CombineEventHandler) Runtime.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
-			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Runtime.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
 		}
 		
 		void TrackPropertyChange (object o, MonoDevelop.Core.Properties.PropertyEventArgs e)
 		{
-			if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Gui.ProjectBrowser.ShowExtensions") {
+			if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions") {
 				RedrawContent ();
 			}
 		}

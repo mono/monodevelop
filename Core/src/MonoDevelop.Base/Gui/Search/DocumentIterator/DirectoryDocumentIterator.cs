@@ -10,10 +10,9 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Gui.Search
+namespace MonoDevelop.Ide.Gui.Search
 {
 	internal class DirectoryDocumentIterator : IDocumentIterator
 	{

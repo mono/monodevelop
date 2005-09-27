@@ -8,14 +8,11 @@
 using System;
 using Gtk;
 
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.ExternalTool;
-using MonoDevelop.Gui.Dialogs;
-using MonoDevelop.Gui.Widgets;
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
 
 namespace JavaBinding
 {

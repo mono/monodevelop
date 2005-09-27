@@ -8,7 +8,7 @@ using System.Drawing;
 using Gtk;
 using Gdk;
 
-namespace MonoDevelop.Gui.Widgets
+namespace MonoDevelop.Components
 {
 	public class TabLabel : HBox
 	{

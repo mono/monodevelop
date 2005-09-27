@@ -7,8 +7,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-using MonoDevelop.Core.Services;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core;
 
 using Mono.Debugger;
 using Mono.Debugger.Languages;
@@ -75,7 +75,7 @@ namespace MonoDevelop.Debugger {
 		public string EvaluateDebuggerDisplay (ITargetObject obj, string display)
 		{
 			StringBuilder sb = new StringBuilder ("");
-			DebuggingService dbgr = (DebuggingService)Runtime.DebuggingService;
+			DebuggingService dbgr = (DebuggingService)Services.DebuggingService;
 			EvaluationContext ctx = new EvaluationContext (obj);
 
 			ctx.CurrentProcess = new ProcessHandle (dbgr.MainThread);

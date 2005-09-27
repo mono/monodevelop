@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 using SharpDevelop.Internal.Parser;
 using MonoDevelop.TextEditor.Document;
 

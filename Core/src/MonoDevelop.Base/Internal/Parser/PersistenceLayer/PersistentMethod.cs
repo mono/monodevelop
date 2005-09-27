@@ -8,12 +8,12 @@ using System;
 using System.IO;
 
 using System.Reflection;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Internal.Parser
+namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public sealed class PersistentMethod : AbstractMethod
+	internal sealed class PersistentMethod : AbstractMethod
 	{
 		public static PersistentMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{

@@ -10,17 +10,16 @@ using System.Collections;
 using System.Drawing;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.TextEditor.Document;
-using MonoDevelop.Gui;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DefaultEditor.Actions;
 using MonoDevelop.TextEditor;
 using MonoDevelop.TextEditor.Actions;
-using MonoDevelop.Internal.Templates;
-using MonoDevelop.Services;
-using MonoDevelop.Gui.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.TextEditor.Gui.InsightWindow;
 using MonoDevelop.TextEditor.Gui.CompletionWindow;
 
@@ -46,7 +45,7 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 		protected override void InitializeTextAreaControl(TextAreaControl newControl)
 		{
 			base.InitializeTextAreaControl(newControl);
-			MenuService menuService = (MenuService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(MenuService));
+			MenuService menuService = (MenuService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(MenuService));
 			newControl.ContextMenu = menuService.CreateContextMenu(this, contextMenuPath);
 			newControl.TextArea.KeyEventHandler += new MonoDevelop.TextEditor.KeyEventHandler(HandleKeyPress);
 			newControl.SelectionManager.SelectionChanged += new EventHandler(SelectionChanged);
@@ -55,7 +54,7 @@ namespace MonoDevelop.DefaultEditor.Gui.Editor
 		
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));
+			IStatusBarService statusBarService = (IStatusBarService)MonoDevelop.Core.ServiceManager.Services.GetService(typeof(IStatusBarService));
 			statusBarService.SetCaretPosition(ActiveTextAreaControl.TextArea.TextView.GetVisualColumn(ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column), ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column);
 		}
 		

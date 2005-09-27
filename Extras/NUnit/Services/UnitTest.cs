@@ -29,10 +29,10 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Serialization;
-using MonoDevelop.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.NUnit
 {

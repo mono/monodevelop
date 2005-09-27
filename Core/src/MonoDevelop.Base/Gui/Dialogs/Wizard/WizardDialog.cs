@@ -6,19 +6,17 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
-using System.Xml;
 
-using MonoDevelop.Services;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns.Codons;
+using MonoDevelop.Core.Gui.Codons;
+
 using Gtk;
 
-namespace MonoDevelop.Gui.Dialogs
+namespace MonoDevelop.Core.Gui.Dialogs
 {
 	/// <summary>
 	/// TreeView options are used, when more options will be edited (for something like
@@ -184,7 +182,7 @@ namespace MonoDevelop.Gui.Dialogs
 				statusPanel.GdkWindow.InvalidateRect (new Gdk.Rectangle (0, 0, 400, 400), true);
 				dialogPanel.Remove (dialogPanel.Child);
 			}
-			if (CurrentWizardPane.ToString () == "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.CreationFinishedPanel") {
+			if (CurrentWizardPane.ToString () == "MonoDevelop.Core.Gui.OptionPanels.CompletionDatabaseWizard.CreationFinishedPanel") {
 				Runtime.LoggingService.Fatal ("This is an ugly hack for an even uglier bug, Restart MD now");
 				System.Environment.Exit (0);
 			}

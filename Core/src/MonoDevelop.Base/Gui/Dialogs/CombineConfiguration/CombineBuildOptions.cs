@@ -7,17 +7,16 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Drawing;
-using MonoDevelop.Core.AddIns.Codons;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Internal.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 using Gtk;
-using MonoDevelop.Gui.Widgets;
+using MonoDevelop.Components;
 
-namespace MonoDevelop.Gui.Dialogs.OptionPanels
+namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 {
 	public class CombineBuildOptions : AbstractOptionPanel
 	{

@@ -14,14 +14,11 @@ using System.Diagnostics;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Gui.Components;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Services;
-using MonoDevelop.Internal.Serialization;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Internal.Project
+namespace MonoDevelop.Projects
 {
 	public abstract class CombineEntry : ICustomDataItem, IDisposable, IExtendedDataItem
 	{
@@ -116,19 +113,19 @@ namespace MonoDevelop.Internal.Project
 			get { return parentCombine; }
 		}
 		
+		public Combine RootCombine {
+			get { return parentCombine != null ? parentCombine.RootCombine : this as Combine; }
+		}
+		
 		public virtual void Save (string fileName, IProgressMonitor monitor)
 		{
 			FileName = fileName;
 			Save (monitor);
 		}
 		
-		public Combine RootCombine {
-			get { return parentCombine != null ? parentCombine.RootCombine : this as Combine; }
-		}
-		
 		public virtual void Save (IProgressMonitor monitor)
 		{
-			Runtime.ProjectService.WriteFile (FileName, this, monitor);
+			Services.ProjectService.WriteFile (FileName, this, monitor);
 		}
 		
 		internal void SetParentCombine (Combine combine)

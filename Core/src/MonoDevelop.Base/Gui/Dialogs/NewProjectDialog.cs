@@ -11,19 +11,19 @@ using System.IO;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui.Dialogs;
 
-using MonoDevelop.Services;
-using MonoDevelop.Gui;
-using MonoDevelop.Internal.Project;
-using MonoDevelop.Internal.Templates;
-
-using MonoDevelop.Gui.Widgets;
-using IconView = MonoDevelop.Gui.Widgets.IconView;
+using MonoDevelop.Components;
+using IconView = MonoDevelop.Components.IconView;
 using Gtk;
 using Glade;
 
-namespace MonoDevelop.Gui.Dialogs {
+namespace MonoDevelop.Ide.Gui.Dialogs {
 	/// <summary>
 	/// This class displays a new project dialog and sets up and creates a a new project,
 	/// the project types are described in an XML options file
@@ -59,7 +59,7 @@ namespace MonoDevelop.Gui.Dialogs {
 		{
 			this.openCombine = openCombine;
 			new Glade.XML (null, "Base.glade", "NewProjectDialog", null).Autoconnect (this);
-			dialog.TransientFor = (Window) WorkbenchSingleton.Workbench;			
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;			
 
 			InitializeTemplates ();
 		}
@@ -181,7 +181,7 @@ namespace MonoDevelop.Gui.Dialogs {
 			
 			if (showFile) {
 				string longfilename = fileUtilityService.GetDirectoryNameWithSeparator (ProjectSolution) + Runtime.StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
-				Runtime.FileService.OpenFile (longfilename);
+				IdeApp.Workbench.OpenDocument (longfilename);
 			}
 		}
 		
@@ -207,7 +207,7 @@ namespace MonoDevelop.Gui.Dialogs {
 			
 			//The one below seemed to be failing sometimes.
 			if(solution.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1) {
-				Runtime.MessageService.ShowError(dialog, GettextCatalog.GetString ("Illegal project name. \nOnly use letters, digits, space, '.' or '_'."));
+				Services.MessageService.ShowError(dialog, GettextCatalog.GetString ("Illegal project name. \nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}
 
@@ -215,17 +215,17 @@ namespace MonoDevelop.Gui.Dialogs {
 				&& (!fileUtilityService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
 			    !fileUtilityService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
 			    !fileUtilityService.IsValidFileName(location)) {
-				Runtime.MessageService.ShowError(dialog, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				Services.MessageService.ShowError(GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}
 
-			if (Runtime.ProjectService.GetProject (name) != null) {
-				Runtime.MessageService.ShowError(dialog, GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null && IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (name) != null) {
+				Services.MessageService.ShowError(GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return;
 			}
 			
 			Runtime.Properties.SetProperty (
-				"MonoDevelop.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
+				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 				chk_combine_directory.Active);
 			
 			if (TemplateView.CurrentlySelected != null && name.Length != 0) {
@@ -237,12 +237,12 @@ namespace MonoDevelop.Gui.Dialogs {
 				}
 				catch (IOException ioException)
 				{
-					Runtime.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("Could not create directory {0}. File already exists."), ProjectSolution));
+					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("Could not create directory {0}. File already exists."), ProjectSolution));
 					return;
 				}
 				catch (UnauthorizedAccessException accessException)
 				{
-					Runtime.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("You do not have permission to create to {0}"), ProjectSolution));
+					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("You do not have permission to create to {0}"), ProjectSolution));
 					return;
 				}
 				
@@ -322,7 +322,7 @@ namespace MonoDevelop.Gui.Dialogs {
 			hbox_for_browser.PackStart (entry_location, true, true, 0);
 			
 			
-			entry_location.DefaultPath = Runtime.Properties.GetProperty ("MonoDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
+			entry_location.DefaultPath = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
 			
 			PathChanged (null, null);
 			

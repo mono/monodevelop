@@ -31,12 +31,12 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns.Conditions;
+using MonoDevelop.Core.AddIns;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("ContextPad")]
-	public class ContextPadCodon : AbstractCodon
+	internal class ContextPadCodon : AbstractCodon
 	{
 //		[XmlMemberAttribute ("defaultVisible")]
 //		bool visible = true;

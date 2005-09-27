@@ -27,8 +27,9 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core.Execution
 {
 	public interface IProcessAsyncOperation: IAsyncOperation
 	{

@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 
-namespace MonoDevelop.BrowserDisplayBinding
+namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 {/*
 	[System.Windows.Forms.AxHost.ClsidAttribute("{8856f961-340a-11d0-a96b-00c04fd705a2}")]
 	[System.ComponentModel.DesignTimeVisibleAttribute(true)]

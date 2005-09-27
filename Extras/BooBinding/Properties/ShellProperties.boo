@@ -8,10 +8,9 @@ import Gtk
 import Gdk
 import Pango
 
-import MonoDevelop.Gui.Widgets
-import MonoDevelop.Core.Services
+import MonoDevelop.Components
 import MonoDevelop.Core.Properties
-import MonoDevelop.Services
+import MonoDevelop.Core
 
 class ShellProperties:
 	private propertyService = cast (PropertyService, ServiceManager.GetService (typeof(PropertyService)))

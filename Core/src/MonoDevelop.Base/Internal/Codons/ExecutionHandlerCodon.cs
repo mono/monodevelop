@@ -32,13 +32,14 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.AddIns.Conditions;
-using MonoDevelop.Services;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Core.AddIns.Codons
+namespace MonoDevelop.Core.AddIns
 {
 	[CodonNameAttribute ("ExecutionHandler")]
-	public class ExecutionHandlerCodon : AbstractCodon
+	class ExecutionHandlerCodon : AbstractCodon
 	{
 		IExecutionHandler handler;
 		
