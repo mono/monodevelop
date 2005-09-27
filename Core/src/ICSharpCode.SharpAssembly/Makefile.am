@@ -66,7 +66,7 @@ src/SharpAssembly/Metadata/MethodBody.cs \
 src/SharpAssembly/AssemblyInfo.cs \
 src/SharpAssembly/AssemblyNameNotFoundException.cs 
 
-DLL = $(top_builddir)/build/bin/ICSharpCode.SharpAssembly.dll
+DLL = $(top_builddir)/build/AddIns/ICSharpCode.SharpAssembly.dll
 
 all: $(DLL)
 

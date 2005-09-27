@@ -1,6 +1,6 @@
 DLLNAME = MonoDevelop.SourceEditor.dll
 CONFIG = $(DLLNAME).config
-DLL = $(top_builddir)/build/bin/$(DLLNAME)
+DLL = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES = \
 Gui/SourceEditorWidget.cs \
@@ -34,10 +34,12 @@ AssemblyInfo.cs
 
 REFS = /r:System.Drawing.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Utils.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
-	/r:$(top_builddir)/build/bin/ICSharpCode.SharpRefactory.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \

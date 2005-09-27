@@ -1,0 +1,33 @@
+<AddIn name        = "MonoDevelop.Core"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "MonoDevelop core module"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="../bin/MonoDevelop.Core.dll"/>
+	</Runtime>
+
+	<Extension path = "/Workspace/Services">
+		<Class id    = "SystemAssemblyService"
+		       class = "MonoDevelop.Core.SystemAssemblyService"/>
+		<Class id    = "ProcessService"
+		       class = "MonoDevelop.Core.Execution.ProcessService"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">
+		<ExecutionHandler id="Mono"
+					platform = "Mono"
+		            class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>
+		<ExecutionHandler id="Mint"
+					platform = "Mint"
+		            class = "MonoDevelop.Core.Execution.MintPlatformExecutionHandler"/>
+		<ExecutionHandler id="Native"
+					platform = "Native"
+		            class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
+	</Extension>
+	  
+
+
+</AddIn>

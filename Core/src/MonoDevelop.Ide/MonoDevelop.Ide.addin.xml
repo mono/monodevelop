@@ -1,0 +1,843 @@
+<AddIn name        = "MonoDevelop.Ide"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "MonoDevelop.Ide module"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Ide.dll"/>
+	</Runtime>
+
+
+	<Extension path = "/Workspace/Services">
+		<Class id    = "TaskService"
+		       class = "MonoDevelop.Ide.Tasks.TaskService"/>
+		<Class id    = "StatusBarService"
+		       class = "MonoDevelop.Ide.Gui.DefaultStatusBarService"/>
+		<Class id    = "DisplayBindingService"
+		       class = "MonoDevelop.Ide.Gui.DisplayBindingService"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "Browser"
+		                supportedformats = "Web Pages"
+		                class = "MonoDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
+		<Class id = "DefaultBuilder"
+		       class = "MonoDevelop.Ide.Gui.Pads.ProjectBrowser.DefaultDotNetNodeBuilder"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Commands">
+	
+		<!-- EditCommands -->
+				
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Copy"
+				_label = "_Copy"
+				icon = "gtk-copy" 
+				description = "Copy the selection" 
+				shortcut = "Control|C"/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Cut"
+				_label = "Cu_t"
+				icon = "gtk-cut" 
+				description = "Cut the selection" 
+				shortcut = "Control|X"/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Paste"
+				_label = "_Paste" 
+				icon = "gtk-paste"
+				description = "Paste" 
+				shortcut = "Control|V"/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Delete"
+				_label = "_Delete" 
+				description = "Delete the selection"
+				icon  = "gtk-delete" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Rename"
+				_label    = "Re_name"
+				shortcut = "F2" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Undo"
+				_label = "_Undo" 
+				icon = "gtk-undo" 
+				description = "Undo last action" 
+				shortcut = "Control|Z" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Redo" 
+				_label = "_Redo" 
+				icon = "gtk-redo" 
+				description = "Redo last undone action" 
+				shortcut = "Control|Y" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
+				_label = "Select _All" 
+				description = "Select all text" 
+				shortcut = "Control|A" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode"
+				shortcut = "Control|Alt|C"
+				description = "Comment selected lines of code" 
+				_label = "C_omment Line(s)" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode"
+				shortcut = "Control|Alt|U"
+				description = "Uncomment selected lines of code" 
+				_label = "_Uncomment Line(s)" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
+				shortcut = "Control|Alt|Home"
+				description = "Indent selected lines of code" 
+				_label = "_Indent Selection" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
+				shortcut = "Control|Alt|End"
+				description = "Unindent selected lines of code" 
+				_label = "_Unindent Selection" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
+				_label = "_Word Count..." 
+				description = "Count words in a text file"/>
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
+				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
+				_label = "_Preferences"
+				icon = "gtk-preferences"
+				description = "Show MonoDevelop preferences window" />
+				
+		<!-- ProjectCommands -->
+				
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
+				_label = "Add New Project..."
+				description = "Add a new project to the selected solution"
+				icon  = "md-new-project-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine"
+				_label = "Add New Solution..." 
+				description = "Add a new solution to the selected solution"
+				icon  = "md-new-project-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
+				description = "Add a project to the selected solution"
+				_label = "Add existing _Project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine"
+				description = "Add a solution to the selected solution"
+				_label = "Add existing Solution" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject"
+				_label = "_Remove From Project" 
+				description = "Remove an item from the project"
+				icon  = "gtk-delete" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
+				_label = "Options" 
+				description = "Show options window"
+				icon  = "md-properties-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
+				description = "Add a resource to the project"
+				_label = "Add Resource" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				description = "Edit project references"
+				_label = "Edit References" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
+				_label = "New _File" 
+				description = "Create a new file"
+				icon  = "gtk-new" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				_label = "Add Files" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
+				_label = "New Folder" 
+				description = "Create a new folder"
+				icon  = "md-new-folder-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
+				_label = "Include To Project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution"
+				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
+				_label = "Buil_d Solution"
+				shortcut = "F8"
+				description = "Build the solution"
+				icon  = "md-build-combine" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
+				defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
+				_label = "Buil_d" 
+				shortcut = "F7"
+				icon  = "md-build-current-selected-project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution"
+				defaultHandler = "MonoDevelop.Ide.Commands.RebuildSolutionHandler"
+				shortcut = "Control|F8"
+				_label = "Rebuild Solution" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"
+				defaultHandler = "MonoDevelop.Ide.Commands.RebuildHandler"
+				shortcut = "Control|F7"
+				_label = "Rebuild" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject"
+				_label = "Set As Startup Project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Run"
+				defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
+				icon = "gtk-execute"
+				shortcut = "F5"
+				description = "Run"
+				_label = "Run" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
+				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryHandler"
+				icon = "gtk-execute"
+				description = "Run"
+				_label = "Run" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug"
+				defaultHandler = "MonoDevelop.Ide.Commands.DebugHandler"
+				icon = "gtk-execute"
+				shortcut = "Control|F5"
+				description = "Debug"
+				_label = "Debug" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry"
+				defaultHandler = "MonoDevelop.Ide.Commands.DebugEntryHandler"
+				icon = "gtk-execute"
+				description = "Debug"
+				_label = "Debug" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean"
+				defaultHandler = "MonoDevelop.Ide.Commands.CleanHandler"
+				_label = "Clean" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution"
+				defaultHandler = "MonoDevelop.Ide.Commands.CleanSolutionHandler"
+				_label = "Clean Solution" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild"
+				type="check"
+				_label = "Build" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
+				type="check"
+				_label = "Deploy" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop"
+				defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
+				icon = "gtk-stop"
+				shortcut = "Shift|F5"
+				description = "Stop current build or application execution"
+				_label = "Stop" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector"
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.ConfigurationComboBox"
+				_label = "Active Configuration" />
+
+
+		<!-- FileCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile"
+				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
+				_label = "O_pen" 
+				shortcut = "Control|O"
+				description = "Open file or solution"
+				icon  = "gtk-open" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
+				defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
+				_label = "New File"
+				shortcut = "Control|N"
+				description = "Create a new file"
+				icon = "gtk-new" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save" 
+				icon = "gtk-save" 
+				shortcut = "Control|S"
+				description = "Save the active document"
+				_label = "Save" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
+				defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
+				icon = "md-save-all-icon" 
+				description = "Save all open files"
+				_label = "Save All" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
+				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
+				_label = "N_ew Solution/Project..." 
+				icon = "md-new-project-icon" 
+				description = "Create a new project" 
+				shortcut = "Control|Shift|N"  />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
+				_label = "_Close File" 
+				description = "Close active file"
+				icon = "gtk-close"
+				shortcut = "Control|W"/>
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles"
+				defaultHandler = "MonoDevelop.Ide.Commands.CloseAllFilesHandler"
+				_label = "Close All"
+				description = "Close All Files"
+				icon = "gtk-close"
+				shortcut = "Control|Shift|W" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine"
+				defaultHandler = "MonoDevelop.Ide.Commands.CloseCombineHandler"
+				_label = "Close Sol_ution" 
+				description = "Close solution"
+				icon = "md-close-combine-icon" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
+				_label = "_Reload File" 
+				shortcut = "Control|U"
+				description = "Reload the file" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
+				_label = "Save _As..."
+				icon = "gtk-save-as"
+				shortcut = "Control|Shift|S" 
+				description = "Save file as" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
+				defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
+				type="array"
+				_label = "Recent Files" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" 
+				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentFilesHandler"
+				_label = "_Clear Recent Files" 
+				description = "Clear recent files" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList"
+				defaultHandler = "MonoDevelop.Ide.Commands.RecentProjectListHandler"
+				type="array"
+				_label = "Recent Projects" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects"
+				defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentProjectsHandler"
+				_label = "_Clear Recent Solutions" 
+				description = "Clear recent solutions" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.Exit"
+				defaultHandler = "MonoDevelop.Ide.Commands.ExitHandler"
+				_label = "_Quit" 
+				icon = "gtk-quit" 
+				description = "Quit MonoDevelop"
+				shortcut = "Control|Q" />
+				
+		<!-- ViewCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList"
+				defaultHandler = "MonoDevelop.Ide.Commands.ViewListHandler"
+				type="check|array"
+				_label = "View List" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList"
+				defaultHandler = "MonoDevelop.Ide.Commands.LayoutListHandler"
+				type="radio|array"
+				_label = "Layout List" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout"
+				defaultHandler = "MonoDevelop.Ide.Commands.NewLayoutHandler"
+				_label = "_New Layout" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout"
+				defaultHandler = "MonoDevelop.Ide.Commands.DeleteCurrentLayoutHandler"
+				_label = "_Delete Current Layout" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen"
+				defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
+				_label = "_Full Screen" 
+				icon = "md-fullscreen" 
+				description = "Full Screen" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
+				_label = "Open" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.TreeDisplayOptionList"
+				type = "array|check"
+				_label = "Display Options List" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ResetTreeDisplayOptions"
+				_label = "Reset Options" />
+
+		<!-- ToolCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
+				defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
+				type="array"
+				_label = "Tool List" />
+				
+		<!-- WindowCommands -->
+		
+		<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
+				defaultHandler = "MonoDevelop.Ide.Commands.NextWindowHandler"
+				_label = "_Next Window"
+				icon = "gtk-go-forward"
+				description = "Show next window" 
+				shortcut = "Control|Page_Down" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow"
+				defaultHandler = "MonoDevelop.Ide.Commands.PrevWindowHandler"
+				_label = "_Previous Window"
+				icon = "gtk-go-back"
+				description = "Show previous window"
+				shortcut = "Control|Page_Up" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList"
+				defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
+				type="radio|array"
+				_label = "Window List" />
+				
+		<!-- HelpCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
+				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
+				_label = "_Tip of the Day..." 
+				icon = "md-tip-of-the-day" 
+				description = "Show tip of the day" />
+		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
+				defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
+				_label = "_About" 
+				icon = "gnome-stock-about" 
+				description = "Show about dialog" />
+				
+		<!-- DebugCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication"
+				defaultHandler = "MonoDevelop.Ide.Commands.DebugApplicationHandler"
+				_label = "Debug Application..." />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.Pause"
+				defaultHandler = "MonoDevelop.Ide.Commands.PauseDebugHandler"
+				_label = "Pause"
+				shortcut = "Control|F8" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepOver"
+				defaultHandler = "MonoDevelop.Ide.Commands.StepOverHandler"
+				_label = "Step Over"
+				shortcut = "F11" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepInto"
+				defaultHandler = "MonoDevelop.Ide.Commands.StepIntoHandler"
+				_label = "Step Into"
+				shortcut = "Control|F11" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.StepOut"
+				defaultHandler = "MonoDevelop.Ide.Commands.StepOutHandler"
+				_label = "Step Out"
+				shortcut = "Shift|F11" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint"
+				_label = "Toggle Breakpoint"
+				shortcut = "F9" />
+		<Command id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints"
+				defaultHandler = "MonoDevelop.Ide.Commands.ClearAllBreakpointsHandler"
+				_label = "Clear All Breakpoints" />
+
+		<!-- SearchCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Find"
+				_label = "_Find..." 
+				icon = "gtk-find" 
+				description = "Find" 
+				shortcut = "Control|F" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
+				_label = "Find _Next" 
+				icon = "md-find-next-icon" 
+				description = "Find next" 
+				shortcut = "F3" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
+				_label = "Find Next Selection" 
+				description = "Find next selection" 
+				shortcut = "Control|F3" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
+				_label = "Find _Previous" 
+				description = "Find previous" 
+				shortcut = "Shift|F3" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
+				_label = "Find _Previous Selection" 
+				description = "Find previous selection" 
+				shortcut = "Shift|Control|F3" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Replace"
+				_label = "_Replace..." 
+				icon = "gtk-find-and-replace" 
+				description = "Replace" 
+				shortcut = "Control|H" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
+				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
+				_label = "F_ind In Files..." 
+				icon = "md-find-in-files" 
+				description = "Find in files" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
+				defaultHandler = "MonoDevelop.Ide.Commands.ReplaceInFilesHandler"
+				_label = "R_eplace In Files..." 
+				icon = "md-replace-in-files" 
+				description = "Replace in files" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<SeparatorItem id = "RunSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
+		<SeparatorItem id = "CombineBuildGroupSeparator" />
+		<ItemSet id = "CombineAddMenu" _label = "Add" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine" />
+		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<SeparatorItem id = "CombineOptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ResourceFolderNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem id = "OpenSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+        
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultFileNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem id = "OpenSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<SeparatorItem id = "OpenSeparator" />
+		<ItemSet id = "Add" _label = "Add">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
+		</ItemSet>
+		<ItemSet id = "Include" _label = "Include">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" />
+		</ItemSet>
+		<SeparatorItem id = "IncludeSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+	</Extension>
+		
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
+		<SeparatorItem id = "IncludeToProjectSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
+		<ItemSet id = "Add" _label = "Add">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
+		</ItemSet>
+		<SeparatorItem id = "AddSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<SeparatorItem id = "RunSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
+		<SeparatorItem id = "BuildGroupSeparator" />
+		<ItemSet id = "Add" _label = "Add">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
+		</ItemSet>
+
+		<SeparatorItem id = "AddSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		
+		<SeparatorItem id = "SetAsStartupProjectSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
+		
+		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+	</Extension>
+	
+
+	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.AllFiles}"
+		            extensions = "*.*"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads">
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView" class = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
+
+		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
+			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.CombineNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFileNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ResourceFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFileNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
+		</SolutionPad>
+
+		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">
+			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
+			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
+			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
+			<PadOption id = "GroupByType" _label = "Group members by member type" defaultValue = "True" />
+			<PadOption id = "PublicApiOnly" _label = "Show public members only" defaultValue = "False" />
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.CombineNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ProjectNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.NamespaceNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ClassNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.EventNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.FieldNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.MethodNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.PropertyNodeBuilder"/>
+		</SolutionPad>
+
+<!--			   
+		<Pad id = "SideBar" class = "MonoDevelop.Ide.Gui.Pads.SideBarView"/>
+		<Pad id = "PropertyPad" class = "MonoDevelop.Ide.Gui.Pads.PropertyPad"/>
+		<Pad id = "TerminalPad" class = "MonoDevelop.Ide.Gui.Pads.TerminalPad"/>
+-->			 
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Contexts">
+		<WorkbenchContext id = "Edit">
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" />
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" />
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" />
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+		</WorkbenchContext>
+		<WorkbenchContext id = "Debug">
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultVisible = "False"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+		</WorkbenchContext>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "UIOptions"
+		             _label = "MonoDevelop Options">
+<!--			<DialogPanel id = "SelectCulture"
+			             _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>-->
+			<DialogPanel id = "SelectStyle"
+				         _label = "Visual style"
+				         class = "MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanel"/>
+			<DialogPanel id = "LoadSave"
+			             _label = "Load/Save"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel"/>
+			<!--  i8n the file -->
+			<DialogPanel id = "Build"
+			             _label = "Build"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel"/>
+		</DialogPanel>
+		<DialogPanel id    = "CodingOptions"
+		             _label = "Coding">
+			<DialogPanel id = "CodeGeneration"
+			             _label = "Code Generation"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel"/>
+		</DialogPanel>
+		
+		<DialogPanel id    = "ToolsOptions"
+		             _label = "Tools">
+		<DialogPanel id = "ExternalTools"
+		             _label = "External Tools"
+		             class = "MonoDevelop.Ide.Gui.OptionPanels.ExternalToolPane"/>
+		     <!-- ORIGINAL #D COMMENT			<DialogPanel id = "HtmlHelp"
+			             _label = "${res:Dialog.Options.IDEOptions.HelpGeneratingPanelText}"
+				     class = "MonoDevelop.Gui.Dialogs.OptionPanels.HelpGeneratingPanel"/>-->
+		</DialogPanel>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id = "Combine"
+		            name = "${res:SharpDevelop.FileFilter.CombineFiles}"
+		            extensions = "*.cmbx"/>
+		<FileFilter id = "Project"
+		            name = "${res:SharpDevelop.FileFilter.ProjectFiles}"
+		            extensions = "*.prjx"/>
+		<FileFilter id = "AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.AllFiles}"
+		            extensions = "*.*"/>
+	</Extension>
+	
+	<!-- Main Toolbar -->
+	
+	<Extension path = "/SharpDevelop/Workbench/ToolBar">
+		<ItemSet id = "Standard" _label = "Standard">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		</ItemSet>
+		<ItemSet id = "Build" _label = "Build">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
+		</ItemSet>
+	</Extension>
+
+	<!-- Main Menu -->
+
+	<Extension path = "/SharpDevelop/Workbench/MainMenu">
+		<ItemSet id = "File" _label = "_File">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
+			<SeparatorItem id = "OpenSep" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseCombine" />
+			<SeparatorItem id = "ReloadSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
+			
+			<SeparatorItem id = "RecentSeparator" />
+			<ItemSet id = "RecentFiles" _label = "Recent _Files">
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
+				<SeparatorItem id = "RecentFilesSeparator" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" />
+			</ItemSet>
+	                
+			<ItemSet id = "RecentProjects" _label = "Recent Solu_tions">
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" />
+				<SeparatorItem id = "RecentProjectsSeparator" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" />
+			</ItemSet>
+			
+			<SeparatorItem id = "ExitSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Exit" />
+		</ItemSet>
+	        
+		<ItemSet id = "Edit" _label = "_Edit">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
+			
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+
+			<SeparatorItem id = "Separator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+			
+			<SeparatorItem id = "Separator4" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+			
+			<SeparatorItem id = "Separator5" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
+			
+			<SeparatorItem id = "optionssep5" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+		</ItemSet>
+		
+		<ItemSet id = "View" _label = "_View">
+			<ItemSet id = "ViewToolbars" _label = "Toolbars">
+				<CommandItem id = "MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" />
+			</ItemSet>
+			<SeparatorItem id = "ViewItemsSeparator0" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+			<SeparatorItem id = "ViewItemsSeparator" />
+			<ItemSet id = "ViewLayouts" _label = "_Layouts">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
+				<SeparatorItem id = "ViewItemsSeparator" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
+			</ItemSet>
+			<SeparatorItem id = "ViewItemsSeparator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
+		</ItemSet>
+		
+		<ItemSet id = "Run" _label = "_Run">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" />
+			<SeparatorItem id = "Separator0" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
+			<SeparatorItem id = "Separator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
+			<SeparatorItem id = "Separator3" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepOver" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepInto" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.StepOut" />
+			<SeparatorItem id = "Separator4" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
+		</ItemSet>
+        
+		<ItemSet id = "Tools" _label = "Tools">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
+        </ItemSet>
+	        
+		<ItemSet id = "Window" _label = "_Window">
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />
+			<SeparatorItem id ="NxtPrvSeparator" /> 
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+			<SeparatorItem id = "contentSep" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
+		</ItemSet> 
+
+		<ItemSet id = "Help" _label = "_Help">
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
+			<SeparatorItem id = "Separator2" />
+			<ItemSet id = "Web" _label = "_Web">
+				<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
+				<ItemSet id = "C#" _label = "C#">
+					<LinkItem id = "cshrp.net" _label = "cshrp.net" link = "http://www.cshrp.net/" />
+					<LinkItem id = "C# Help" _label = "C# Help" link = "http://www.csharphelp.com" />
+					<LinkItem id = "C# Corner" _label = "C# Corner" link = "http://www.c-sharpcorner.com" />
+					<LinkItem id = "GotDotNet" _label = "GotDotNet" description = "Visit one of the best NET sites on the web" link = "http://www.gotdotnet.com/" />
+				</ItemSet>
+				<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
+			</ItemSet>
+			<SeparatorItem id = "Separator3" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.About" />
+		</ItemSet>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
+		<LocalCommandItem id = "@*Char" _label = "* Zero or more of any character" />
+		<LocalCommandItem id = "@?Char" _label = "? Any single character" />
+		<LocalCommandItem id = "@#Char" _label = "# Any single digit" />
+		<LocalCommandItem id = "@[]Char" _label = "[] Any one character in the set" />
+		<LocalCommandItem id = "@[!]Char" _label = "[!] Any one character not in the set" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/CompletionDatabaseWizard">
+		<DialogPanel id = "SetupPanel"
+		             _label = "Setup"
+		             class = "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.SetupPanel"/>
+		<DialogPanel id = "ChooseLocationPanel"
+		             _label = "Choose Location"
+		             class = "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.ChooseLocationPanel"/>
+		<DialogPanel id = "UseExistingFilePanel"
+		             _label = "Use Existing File"
+		             class = "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.UseExistingFilePanel"/>
+		<DialogPanel id = "CreateDatabasePanel"
+		             _label = "Create Database"
+		             class = "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.CreateDatabasePanel"/>
+		<DialogPanel id = "CreationSuccessful"
+		             _label = "Finished"
+		             class = "MonoDevelop.Gui.Dialogs.OptionPanels.CompletionDatabaseWizard.CreationFinishedPanel"/>
+	</Extension>
+	
+
+
+</AddIn>

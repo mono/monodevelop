@@ -1,7 +1,6 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Setup;
 
 namespace MonoDevelop.Core
 {
@@ -13,15 +12,6 @@ namespace MonoDevelop.Core
 		static SystemAssemblyService systemAssemblyService;
 		static FileUtilityService fileUtilityService;
 		static ILoggingService loggingService;
-		static SetupService setupService;
-
-		public static SetupService SetupService {
-			get {
-				if (setupService == null)
-					setupService = new SetupService ();
-				return setupService;
-			}
-		}
 	
 		public static ProcessService ProcessService {
 			get {

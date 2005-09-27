@@ -6,7 +6,9 @@ src/dbgen.cs
 
 all: $(ASSEMBLY)
 
-REFS = /r:$(top_builddir)/build/bin/MonoDevelop.Base.dll /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+REFS = /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll
 	
 $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$@

@@ -1,4 +1,4 @@
-DLL = $(top_builddir)/build/bin/ICSharpCode.SharpRefactory.dll
+DLL = $(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
 TEST = test-parser.exe
 
 REFS = -r:System.Drawing.dll

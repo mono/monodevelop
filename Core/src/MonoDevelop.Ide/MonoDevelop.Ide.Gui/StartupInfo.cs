@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 
-namespace MonoDevelop.Base
+namespace MonoDevelop.Ide.Gui
 {
 	public class StartupInfo
 	{

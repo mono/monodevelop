@@ -83,13 +83,6 @@ namespace MonoDevelop.Core.Gui
 			guiDispatcher ();
 		}
 		
-		public void RunPendingEvents ()
-		{
-			while (Gtk.Application.EventsPending ())
-				Gtk.Application.RunIteration ();
-			guiDispatcher ();
-		}
-		
 		void QueueMessage (object msg)
 		{
 			lock (arrGuiQueue) {

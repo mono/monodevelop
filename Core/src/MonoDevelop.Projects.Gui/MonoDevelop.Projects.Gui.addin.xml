@@ -1,0 +1,57 @@
+<AddIn name        = "MonoDevelop.Projects.Gui"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "MonoDevelop.Projects.Gui module"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Projects.Gui.dll"/>
+	</Runtime>
+
+
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+		<DialogPanel id    = "Common"
+		             _label = "General">
+			<DialogPanel id = "GeneralProjectPanel"
+			             _label = "Project options"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptions"/>
+			<DialogPanel id = "Compile"
+			             _label = "Compile"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileProjectOptions"/>
+<!--			<DialogPanel id = "Deploy"
+			             _label = "${res:Dialog.Options.PrjOptions.DeployFile.PanelName}"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeployFileProjectOptions"/> -->
+		</DialogPanel>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+		<DialogPanel id    = "Common"
+		             _label = "Common">
+			<DialogPanel id = "Startup"
+			             _label = "Startup Properties"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanel"/>
+			<DialogPanel id = "Build"
+						_label = "Build Properties"
+						class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptions"/>
+
+<!-- 		<DialogPanel id = "Dependency"
+			             _label = "${res:Dialog.Options.CombineOptions.Dependencies.PanelName}"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineDependencyPanel"/> -->
+
+		</DialogPanel>
+
+		<DialogPanel id = "Configurations"
+			             _label = "Configurations"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanel"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
+		<DialogPanel id = "EntryConfigurations"
+			             _label = "Configurations"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
+	</Extension>
+
+
+
+</AddIn>

@@ -17,7 +17,6 @@ using System.Text;
 
 using Mono.Posix;
 
-using MonoDevelop.Base;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;

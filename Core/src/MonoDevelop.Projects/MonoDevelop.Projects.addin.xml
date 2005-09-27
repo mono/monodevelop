@@ -1,0 +1,44 @@
+<AddIn name        = "MonoDevelop.Projects"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "MonoDevelop.Projects module"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Projects.dll"/>
+	</Runtime>
+
+	<Extension path = "/Workspace/Services">
+		<Class id    = "ProjectService"
+		       class = "MonoDevelop.Projects.ProjectService"/>
+		<Class id    = "ParserService"
+		       class = "MonoDevelop.Projects.Parser.DefaultParserService"/>
+		<Class id    = "LanguageService"
+		       class = "MonoDevelop.Projects.LanguageService"/>
+		<Class id    = "LanguageBindingService"
+		       class = "MonoDevelop.Projects.LanguageBindingService"/>
+		<Class id    = "AmbienceService"
+		       class = "MonoDevelop.Projects.Ambience.AmbienceService"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = ".NET"
+		       class = "MonoDevelop.Services.NetAmbience"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id = "DotNet"
+						class = "MonoDevelop.Projects.DotNetProjectBinding" />
+	</Extension>
+	  
+	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+		<FileFormat id="PrjxFileFormat"
+		            class="MonoDevelop.Projects.PrjxFileFormat"/>
+		<FileFormat id="CmbxFileFormat"
+		            class="MonoDevelop.Projects.CmbxFileFormat"/>
+	</Extension>
+	  
+
+
+</AddIn>

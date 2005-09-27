@@ -26,12 +26,12 @@
 using System;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core.Services;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 using Mono.Posix;
 
-namespace MonoDevelop.Services
+namespace MonoDevelop.Core
 {
 
 	public class GettextCatalog

@@ -1,0 +1,18 @@
+<AddIn name        = "MonoDevelop.Documentation"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "MonoDevelop Documentation module"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Documentation.dll"/>
+	</Runtime>
+
+	<Extension path = "/Workspace/Services">
+		<Class id    = "MonodocService"
+		       class = "MonoDevelop.Documentation.MonodocService"/>
+	</Extension>
+
+
+</AddIn>
