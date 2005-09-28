@@ -24,8 +24,7 @@
   <Extension path = "/MonoDevelop/ProjectTemplates">
     <ProjectTemplate id = "EmptyBooProject" resource = "EmptyBooProject.xpt.xml"/>
     <ProjectTemplate id = "BooGtkSharpProject" resource = "BooGtkSharpProject.xpt.xml"/>
-    <ProjectTemplate id = "BooLibraryProject"
-                     location = "templates/BooLibraryProject.xpt.xml"/>
+    <ProjectTemplate id = "BooLibraryProject" resource = "BooLibraryProject.xpt.xml"/>
   </Extension>
 
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">

@@ -114,14 +114,14 @@ MonoDevelop.Core/GettextCatalog.cs: $(srcdir)/MonoDevelop.Core/GettextCatalog.cs
 
 ADDIN = MonoDevelop.Core.addin.xml
 
-ADDIN_BUILD = $(top_builddir)/build/bin
+ADDIN_BUILD = $(top_builddir)/build/AddIns
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(DLL): $(build_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
