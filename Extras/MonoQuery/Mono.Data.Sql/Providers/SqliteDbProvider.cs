@@ -3,6 +3,7 @@
 //
 // Authors:
 //   Christian Hergert <chris@mosaix.net>
+//   Ankit Jain  <radical@corewars.org>
 //
 // Copyright (c) 2005 Christian Hergert
 //
@@ -43,7 +44,7 @@ namespace Mono.Data.Sql
 		
 		public override string ProviderName {
 			get {
-				return "SQLite Database (Incomplete)";
+				return "SQLite Database";
 			}
 		}
 		
@@ -99,6 +100,38 @@ namespace Mono.Data.Sql
 			OnClose ();
 		}
 		
+		public override bool SupportsSchemaType(Type type)
+		{
+			if (type == typeof(TableSchema))
+				return true;
+			if (type == typeof(ColumnSchema))
+				return true;
+			else if (type == typeof(UserSchema))
+				return false;
+			else
+				return false;
+		}
+		
+		public override DataTable ExecuteSQL (string SQLText)
+		{
+			try {
+				SqliteCommand command = new SqliteCommand ();
+				command.Connection = connection;
+				command.CommandText = SQLText;
+
+				DataSet resultSet = new DataSet ();
+
+				lock (adapter) {
+					adapter.SelectCommand = command;
+					adapter.Fill (resultSet);
+				}
+
+				return resultSet.Tables [0];
+			} catch {
+				return null;
+			}
+		}
+
 		public override ViewSchema[] GetViews ()
 		{
 			throw new NotImplementedException ();
@@ -106,12 +139,61 @@ namespace Mono.Data.Sql
 		
 		public override TableSchema[] GetTables ()
 		{
-			throw new NotImplementedException ();
+			if (IsOpen == false && Open () == false)
+				throw new InvalidOperationException ("Invalid connection");
+
+			ArrayList collection = new ArrayList ();
+
+			using (SqliteCommand command = new SqliteCommand ()) {
+				command.CommandText = "select * from sqlite_master";
+				command.Connection = this.connection;
+
+				SqliteDataReader r = command.ExecuteReader ();
+
+				while (r.Read ()) {
+					TableSchema table = new TableSchema ();
+					table.Provider = this;
+
+					table.Name = r.GetString (1);
+					collection.Add (table);
+				}
+
+				r.Close ();
+			}
+
+			return (TableSchema []) collection.ToArray (typeof (TableSchema));
 		}
 		
 		public override ColumnSchema[] GetTableColumns (TableSchema table)
 		{
-			throw new NotImplementedException ();
+			if ( IsOpen == false && Open () == false)
+				throw new InvalidOperationException ("Invalid connection");
+
+			ArrayList collection = new ArrayList ();
+			
+			using (SqliteCommand command = new SqliteCommand()) {
+				command.CommandText = "PRAGMA table_info('" +  table.Name + "')";
+				command.Connection = this.connection;
+				
+				SqliteDataReader r = command.ExecuteReader ();
+
+				while (r.Read ()) {
+					ColumnSchema column = new ColumnSchema ();
+					column.Provider = this;
+
+					column.ColumnID = r.GetInt32 (0);
+					column.Name = r.GetString (1);
+					column.DataTypeName = r.GetString (2);
+					column.NotNull = r.IsDBNull (3);
+					column.Default = r.GetString (4);
+					
+					collection.Add (column);
+				}
+
+				r.Close ();
+			}
+
+			return (ColumnSchema[]) collection.ToArray (typeof (ColumnSchema));
 		}
 		
 		public override ColumnSchema[] GetViewColumns (ViewSchema view)
