@@ -8,6 +8,10 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
 	</Runtime>
+	
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" />
+	</Dependencies>
 
 	<Extension path="/Workspace/Services">
 		<Class id = "NUnitService" class = "MonoDevelop.NUnit.NUnitService" insertafter = "CommandService"/>
@@ -54,7 +58,7 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TestAssembly">
-		<CommandItem id = "MonoDevelop.NUnit.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/TestPad/ContextMenu">
@@ -62,7 +66,7 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
 		<SeparatorItem id = "s1" />
-		<CommandItem id = "MonoDevelop.NUnit.Commands.ProjectCommands.Options" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/TestResultsPad/ContextMenu">

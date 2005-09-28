@@ -1,3 +1,7 @@
+2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Changed internal organization of files and namespaces.
+
 2005-08-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddIns/Codons/AbstractCodon.cs: Make the ID attribute optional.

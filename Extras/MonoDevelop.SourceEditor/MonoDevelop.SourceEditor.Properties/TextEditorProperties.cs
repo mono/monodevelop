@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.Properties {
 	public class TextEditorProperties {
 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 		static IProperties properties = ((IProperties) propertyService.GetProperty (
-			"MonoDevelop.SourceEditor.Document.Document.DefaultDocumentAggregatorProperties",
+			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new DefaultProperties()));
 		
 		public static int TabIndent {

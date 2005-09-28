@@ -11,7 +11,7 @@
 
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = "CSharp"
-		       class = "MonoDevelop.Services.CSharpAmbience"/>
+		       class = "CSharpBinding.CSharpAmbience"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/FileTemplates">

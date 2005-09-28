@@ -188,7 +188,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			propertyHanlder = (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (PropertiesChanged));
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.SourceEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
+			properties = ((IProperties) propertyService.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()));
 			properties.PropertyChanged += propertyHanlder;
 			fsw = new FileSystemWatcher ();
 			fsw.Changed += (FileSystemEventHandler) Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));

@@ -1,0 +1,278 @@
+2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Renamed to from MonoDevelop.Gui.Widgets to MonoDevelop.Components.
+	Changed internal organization of files and namespaces.
+
+2005-09-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CommandMenu.cs: Removed debug code.
+
+2005-08-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/CommandManager.cs: Added EnableIdleUpdate property.
+
+2005-08-20  John Luke  <john.luke@gmail.com>
+
+	* Commands/CommandFrame.cs:
+	* Commands/MenuToolButton.cs:
+	* Commands/CommandManager.cs: fix some warning
+	with the new gtk#
+
+2005-08-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TabLabel/TabLabel.cs:
+	* Makefile.am: Added MonoDevelop.Close.png as a resource.
+
+2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
+
+    * MonoDevelop.Gui.Widgets.mdp: references update
+
+2005-08-06  John Luke  <john.luke@gmail.com>
+
+    * MonoDevelop.Gui.Widgets.mdp: update
+
+2005-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Tree/TreeNodeCollection.cs:
+	* Tree/TreeNode.cs:
+	* Tree/TreeView.cs: Removed.
+
+	* Commands/ActionCommand.cs: Added constructor overload.
+	* Commands/CommandManager.cs: Added some overloads and helper methods.
+	
+	* Commands/CommandArrayInfo.cs:
+	* Commands/CommandInfo.cs:
+	* Commands/CommandMenuItem.cs: Allow separators in command arrays.
+	* Commands/LocalCommandEntry.cs: New kind of command entry, which
+	automatically registers a command if not previously registered.
+
+2005-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/CommandManager.cs: Improve error message when an exception is
+	thrown while executing a command.
+
+2005-07-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BasicChart/*: A simple chart widget.
+
+2005-07-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/ICommandDelegatorRouter.cs: New command routing interface.
+	* Commands/CommandRouterContainer: An implementation of
+	ICommandDelegatorRouter.
+	* Commands/CommandManager.cs: Implemented support for
+	ICommandDelegatorRouter.
+
+2005-06-28  Raja R Harinath  <rharinath@novell.com>
+
+	* Makefile.am (FILES): Move AssemblyInfo.cs ...
+	(GENERATED_FILES): ... here.
+
+2005-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockToolbars/*: Docking toolbars!
+	
+	* Commands/Command.cs: Command should be abstract.
+	* Commands/CommandToolbar.cs: This now is a dockable toolbar.
+	* Commands/CommandManager.cs: Register commands from CommandSystemCommands.
+	* Commands/CommandFrame.cs: A frame to use as main container for windows
+	that use commands in dockable toolbars.
+	* Commands/CommandSystemCommands.cs: Some configuration commands.
+
+2005-06-01  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: remove Dock/*
+	* Dock: removed
+	* */*.cs: remove GtkSharp and similar references
+
+2005-06-01  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: no longer using gnome-vfs in here
+	* FileBrowser/FileBrowser.cs: remove vfs remnents
+
+2005-06-01  John Luke  <john.luke@gmail.com>
+
+	* FileBrowser/FileBrowser.cs: adjust to FileIconLoader
+	change
+
+2005-05-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/CommandToolButton.cs: Only update button properties if
+	they have really changed.
+	* Commands/CommandManager.cs: Report errors using a new CommandError
+	event.
+	* Commands/CommandErrorHandler.cs: New delegate and event args for the
+	CommandError event.
+
+2005-05-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FileBrowser/FileBrowser.cs: Catch UnauthorizedAccessException errors.
+	* IconView/IconView.cs: Add a shadow to the icon view.
+	* TabLabel/TabLabel.cs: Added IntPtr constructor to make gtk# happy.
+
+2005-05-08  John Luke  <john.luke@gmail.com>
+
+	* Tree/TreeView.cs: use DefaultSortFunc property instead
+	* DataGrid/DataGrid.cs: use ColumnTypes property instead
+	
+2005-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/CommandManager.cs: Catch and report exceptions thrown
+	while dispatching commands.
+
+2005-05-04  Alp Toker  <alp@atoker.com>
+
+	* Commands/CommandToolButton.cs: enable UseUnderline. The Gtk+ docs
+	say "Labels shown on tool buttons never have mnemonics on them" so
+	this effectively just hides the underscore.
+
+2005-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands/CommandInfo.cs: Forgot to copy the description from the
+	command.
+
+2005-04-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Command/*: New command infrastructure.
+	* Makefile.am: Added new command files.
+
+2005-04-17  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: fix distcheck
+
+2005-04-16  John Luke  <john.luke@gmail.com>
+
+	* Tree/TreeView.cs:
+	* FileBrowser/FileBrowser.cs:
+	* TabLabel/TabLabel.cs: fix warnings mostly about obselete
+	Gtk# API
+
+2005-03-15  John Luke  <john.luke@gmail.com>
+
+	* FileBrowser/FileBrowser.cs: make enum internal
+	so it will compile with latest mcs
+
+2005-01-31  John Luke  <john.luke@gmail.com>
+
+	* FileBrowser/FileBrowser.cs: use ToolItem
+	instead of action crapola
+
+2005-01-27  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am:
+	* FileBrowser/FileBrowser.cs: use Gnome.Vfs
+	* FolderDialog/BaseFileEntry.cs: add new keyword
+	to prevent warning
+
+2005-01-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Tree/TreeNodeCollection.cs: Save some memory.
+
+2004-12-01  John Luke  <john.luke@gmail.com>
+
+	* FileBrowser/FileBrowser.cs: port to GtkAction
+	some other small updates
+	* Navbar/Navbar.cs: port to GtkAction
+
+2004-12-01  John Luke  <john.luke@gmail.com>
+
+	* FileSelector/FileSelector.cs: modified patch
+	from Rubens Ramos <rubensr@users.sourceforge.net>
+	to use the default path from the property service
+	and make sure it exists before adding it as a bookmark
+
+2004-12-01  John Luke  <john.luke@gmail.com>
+
+	* FileSelector/FileSelector.cs: improve this to take advantage
+	of the FileChooser and remove my old hacks that were likely buggy
+	use a switch for adding the buttons
+	add ~/Projects as a MD specific bookmark
+
+2004-10-29  Todd Berman  <tberman@off.net>
+
+	* FileSelector/FileSelector.cs: Add proper Save buttons.
+
+2004-10-16  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: remove MCS use $(CSC) from configure.in,
+	allows make CSC=foo to work consistently
+
+2004-09-25  Todd Berman  <tberman@off.net>
+
+	* FileBrowser/FileBrowser.cs: Use a ArrayList instead of a Hashtable
+	as it was just dup'd info. And use a using () construct instead of
+	.Close.
+
+2004-09-19  Fernando Herrera  <fherrera@onirica.com>
+
+	* Tree/TreeView.cs: Double click expands node.
+
+2004-08-07  Todd Berman  <tberman@off.net>
+
+	* AssemblyInfo.cs.in: Use new ASSEMBLY_VERSION variable.
+
+2004-06-21  John Luke  <jluke@cfl.rr.com>
+
+	* Tree/TreeView.cs: Scroll to the node when it is selected
+
+2004-06-18  Todd Berman  <tberman@sevenl.net>
+
+	* DragNotebook/DragNotebook.cs: dont emit the event if either the old
+	placement or the new is -1, as it isnt a real reorder.
+
+2004-06-18  Todd Berman  <tberman@sevenl.net>
+
+	* DragNotebook/DragNotebook.cs: add an event that gets fired when
+	a tab is reordered.
+	* TabLabel/TabLabel.cs: try to make this widget unfocusable (untested)
+
+2004-06-17  John Luke  <jluke@cfl.rr.com>
+
+	* FileSelector/FileSelector.cs: a thin wrapper for selecting files
+	* Makefile.am: add FileSelector
+	* FolderDialog/FileEntry.cs:
+	* FolderDialog/FolderDialog.cs: use FileSelector, remove *Sharp usings
+
+2004-06-07  John Luke  <jluke@cfl.rr.com>
+
+	* FileBrowser/FileBrowser.cs: use a toolbar with tooltips
+	instead of a hbuttonbox.
+
+2004-06-06  John Luke  <jluke@cfl.rr.com>
+
+	* TabLabel/TabLabel.cs: fix the size of the button to 18 so it is
+	not clipped, don't allow the button to expand/fill, make the label
+	do so
+
+2004-05-09  Todd Berman  <tberman@sevenl.net>
+
+	* DragNotebook/DragNotebook.cs: notebook from Inigo Illan to add
+	dragable reorg of the notebook.
+	* Makefile.am: add DragNotebook.cs to build.
+
+2004-04-13  John Luke  <jluke@cfl.rr.com>
+
+	* Navbar/Navbar.cs: switch the address entry to Gnome.Entry
+	so we get a little history
+
+2004-04-13  John Luke  <jluke@cfl.rr.com>
+	
+	* Navbar/Navbar.cs: add a navbar control for the web browser
+	removes the clutter in that area
+
+2004-04-03  Todd Berman  <tberman@sevenl.net>
+
+	* Tree/TreeNodeCollection.cs:
+	* FileBrowser/FileBrowser.cs:
+	* FolderDialog/BaseFileEntry.cs:
+	gettextify
+
+2004-03-31  Todd Berman  <tberman@sevenl.net>
+
+	* Tree/TreeNode.cs:
+	* Tree/TreeView.cs: Fixing gtk+ 2.4 regression with the change from
+	enum to integer. Using RenderIcon to workaround.
+
+2004-03-27  Todd Berman  <tberman@sevenl.net>
+
+	* Tree/TreeNodeCollection.cs: fix indentation
