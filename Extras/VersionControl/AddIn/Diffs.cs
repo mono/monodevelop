@@ -100,7 +100,7 @@ namespace VersionControlPlugin {
 			}
 						
 			DiffWidget.Options opts = new DiffWidget.Options();
-			opts.Font = MonoDevelop.EditorBindings.Properties.TextEditorProperties.Font.ToString();
+			opts.Font = MonoDevelop.SourceEditor.Properties.TextEditorProperties.Font.ToString();
 			opts.LeftName = "Repository";
 			opts.RightName = "Working Copy";
 			widget = new DiffWidget(diff, opts);

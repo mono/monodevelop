@@ -8,9 +8,12 @@ Commands.cs \
 MonoProjectConfiguration.cs \
 MonoTestProvider.cs
 
-REFS = /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-       /r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
-       /r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
+REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
        /r:$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
        /r:nunit.core.dll \
        $(GTK_SHARP_LIBS) \

@@ -35,7 +35,7 @@ import MonoDevelop.Projects.Gui.Completion
 import MonoDevelop.Core
 import MonoDevelop.Core.Properties
 import MonoDevelop.Projects
-import MonoDevelop.IdeApplication.Gui
+import MonoDevelop.Ide.Gui
 import MonoDevelop.Projects.Parser
 
 /*
@@ -75,8 +75,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	private _parserContext as IParserContext;
 	
 	def constructor(model as IShellModel):
-		_projService = ServiceManager.GetService(typeof(ProjectService))
-		_parserService = Ide.ProjectOperations.ParserDatabase
+		_parserService = IdeApp.ProjectOperations.ParserDatabase
 
 		manager = SourceLanguagesManager()
 		buf = SourceBuffer(manager.GetLanguageFromMimeType(model.MimeType))
@@ -120,8 +119,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 		Buffer.TagTable.Add (tag)
 		prompt (false)
 
-		Ide.ProjectOperations.EndBuild += ProjectCompiled
-		Ide.ProjectOperations.CurrentProjectChanged += ProjectChanged
+		IdeApp.ProjectOperations.EndBuild += ProjectCompiled
+		IdeApp.ProjectOperations.CurrentProjectChanged += ProjectChanged
 
 		// Run our model. Needs to happen for models which may spawn threads,
 		// processes, etc
@@ -151,7 +150,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 			if assembly is not null:
 				_assemblies.Add(assembly)
 		else:
-			_combine = Ide.ProjectOperations.CurrentOpenCombine
+			_combine = IdeApp.ProjectOperations.CurrentOpenCombine
 			if _combine is null:
 				return _assemblies
 

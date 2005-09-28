@@ -8,16 +8,20 @@ DLLS = -r:System.Drawing \
 	-r:System.Xml \
 	-r:System.Runtime.Remoting \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
-	-r:$(top_builddir)/build/bin/ICSharpCode.SharpRefactory.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	-r:$(BOOSHELL_LIB) \
 	$(BOO_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GCONF_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS)
 
-BOOSHELL_DLLS = -r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
+BOOSHELL_DLLS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+		-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 		$(GTK_SHARP_LIBS) \
 		$(BOO_LIBS)
 

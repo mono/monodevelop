@@ -5,7 +5,7 @@ using System.Threading;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace VersionControlPlugin {
 
@@ -27,8 +27,7 @@ namespace VersionControlPlugin {
 			
 			/*tracker = ((TaskService)ServiceManager.GetService(typeof(TaskService)))
 				.GetStatusProgressMonitor("Version Control", null, true);*/
-			tracker = ((TaskService)ServiceManager.GetService(typeof(TaskService)))
-				.GetOutputProgressMonitor("Version Control", null, true, true);
+			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("Version Control", null, true, true);
 		}
 		
 		public void Start() {

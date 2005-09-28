@@ -4,9 +4,10 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/prj2makesharp
 ASSEMBLY = $(ADDIN_BUILD)/prj2make-sharp-lib.dll
 
 DLLS = $(GTK_SHARP_LIBS) \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll
 
 
 FILES = \

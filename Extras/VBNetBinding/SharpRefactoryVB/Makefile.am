@@ -103,7 +103,7 @@ src/Parser/generated/Parser.cs
 
 build_sources = $(addprefix $(srcdir)/, $(FILES))
 
-DLL = $(top_builddir)/build/bin/ICSharpCode.SharpRefactory.VB.dll
+DLL = $(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.VB.dll
 
 REFS = /r:System.Drawing.dll
 

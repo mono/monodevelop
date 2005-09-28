@@ -4,9 +4,11 @@ ASSEMBLY = $(ADDIN_BUILD)/JavaBinding.dll
 
 DLLS = /r:System.Drawing.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.SourceEditor.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)

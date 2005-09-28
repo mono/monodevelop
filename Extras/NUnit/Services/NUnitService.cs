@@ -112,7 +112,7 @@ namespace MonoDevelop.NUnit
 			if (rootTest != null)
 				((IDisposable)rootTest).Dispose ();
 				
-			rootTest = BuildTest (Runtime.ProjectService.CurrentOpenCombine);
+			rootTest = BuildTest (IdeApp.ProjectOperations.CurrentOpenCombine);
 
 			if (TestSuiteChanged != null)
 				TestSuiteChanged (this, EventArgs.Empty);

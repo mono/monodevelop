@@ -47,9 +47,9 @@ namespace MonoQuery
 			service.Providers.Changed += new EventHandler (OnProvidersChanged);
 		}
 		
-		public override void Initialize (string label, string icon, NodeBuilder[] builders, TreePadOption[] options)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
-			base.Initialize (label, icon, builders, options);
+			base.Initialize (builders, options);
 			OnProvidersChanged (this, null);
 		}
 		

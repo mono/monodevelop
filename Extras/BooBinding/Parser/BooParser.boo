@@ -32,7 +32,7 @@ import System.IO
 import MonoDevelop.Core
 import MonoDevelop.Projects
 import MonoDevelop.Projects.Parser
-import MonoDevelop.IdeApplication.Gui
+import MonoDevelop.Ide.Gui
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
 import Boo.Lang.Compiler.Pipelines
@@ -88,8 +88,8 @@ class BooParser(IParser):
 		compiler = BooCompiler()
 		compiler.Parameters.Input.Add(StringInput(fileName, fileContent))
 		project as Project
-		if Ide.ProjectOperations.CurrentOpenCombine is not null:
-			for entry as Project in Ide.ProjectOperations.CurrentOpenCombine.GetAllProjects():
+		if IdeApp.ProjectOperations.CurrentOpenCombine is not null:
+			for entry as Project in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects():
 				if entry.IsFileInProject(fileName):
 					project = entry
 		

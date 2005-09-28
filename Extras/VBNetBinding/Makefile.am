@@ -6,12 +6,14 @@ SUBDIRS = SharpRefactoryVB
 
 DLLS = /r:System.Drawing.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.SourceEditor.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
-	/r:$(top_builddir)/build/bin/ICSharpCode.SharpRefactory.dll \
-	/r:$(top_builddir)/build/bin/ICSharpCode.SharpRefactory.VB.dll \
-	/r:$(top_builddir)/build/bin/ICSharpCode.SharpAssembly.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
+	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.VB.dll \
+	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpAssembly.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
 

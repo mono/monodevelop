@@ -10,7 +10,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.SourceEditor.Gui;
-using MonoDevelop.Core;
 
 namespace VersionControlPlugin {
 	public class StatusView : BaseView {

@@ -228,7 +228,7 @@ namespace MonoQuery
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
-					MonoDevelop.Core.Gui.DispatchService.GuiDispatch (
+					MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
 					new SQLCallback (OnExecuteReturn));
 
 				buf.MoveMark (buf.InsertMark, iter);
@@ -265,7 +265,7 @@ namespace MonoQuery
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.5);
 
 				SQLCallback callback = (SQLCallback)
-					Runtime.DispatchService.GuiDispatch (
+					MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (
 					new SQLCallback (OnExecuteReturn));
 
 				buf.MoveMark (buf.InsertMark, iter);

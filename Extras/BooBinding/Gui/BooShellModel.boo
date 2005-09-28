@@ -31,7 +31,7 @@ import BooBinding.Properties
 import BooBinding.BooShell
 
 import MonoDevelop.Core
-import MonoDevelop.Core.ProcessServices
+import MonoDevelop.Core.Execution
 
 class BooShellModel(IShellModel):
 	private _props = BooShellProperties()

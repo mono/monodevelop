@@ -33,7 +33,7 @@ import System.IO
 import MonoDevelop.Core
 import MonoDevelop.Projects.Parser
 import MonoDevelop.Projects
-import MonoDevelop.IdeApplication.Gui
+import MonoDevelop.Ide.Gui
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast as AST
 import Boo.Lang.Compiler.IO
