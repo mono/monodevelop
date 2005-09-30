@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.Remoting;
@@ -72,8 +73,13 @@ namespace MonoDevelop.Services
 				exitRequestEvent.Reset ();
 				
 				IChannel ch = ChannelServices.GetChannel ("tcp");
-				if (ch == null)
-					ChannelServices.RegisterChannel (new TcpChannel (0));
+				if (ch == null) {
+					Hashtable props = new Hashtable ();
+					props ["port"] = 0;
+					props ["bindTo"] = "127.0.0.1";
+					props ["useIpAddress"] = true;
+					ChannelServices.RegisterChannel (new TcpChannel (props, null, null));
+				}
 				
 				BinaryFormatter bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (this);

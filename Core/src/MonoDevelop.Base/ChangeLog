@@ -1,3 +1,9 @@
+2005-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/ProcessService/ProcessHostController.cs: Bind the tcp channel
+	directly to the localhost ip address. This should avoid name resolution
+	errors.
+
 2005-09-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/File/DefaultFileService.cs: In OpenFile, properly select the
