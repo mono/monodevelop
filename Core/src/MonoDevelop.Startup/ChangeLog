@@ -1,3 +1,8 @@
+2005-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopMain.cs: Name resolution check should not be needed
+	anymore.
+
 2005-08-29  John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Startup.glade: fix typo, bug #75914

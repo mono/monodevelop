@@ -100,7 +100,7 @@ namespace MonoDevelop
 
 			//remoting check
 			try {
-				Dns.GetHostByName (Dns.GetHostName ());
+//				Dns.GetHostByName (Dns.GetHostName ());		Should not be necessary any more
 			} catch {
 				ErrorDialog dialog = new ErrorDialog (null);
 				dialog.Message = "MonoDevelop failed to start. Local hostname cannot be resolved.";
