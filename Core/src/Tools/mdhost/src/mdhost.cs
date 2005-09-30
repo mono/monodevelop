@@ -45,6 +45,8 @@ public class MonoDevelopProcessHost
 		try {
 			Hashtable props = new Hashtable ();
 			props ["port"] = 0;
+			props ["bindTo"] = "127.0.0.1";
+			props ["useIpAddress"] = true;
 			props ["name"] = "__internal_tcp";
 			ChannelServices.RegisterChannel (new TcpChannel (props, null, null));
 			

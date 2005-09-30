@@ -1,3 +1,8 @@
+2005-09-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* src/mdhost.cs: Bind the tcp channel directly to the localhost ip
+	address. This should avoid name resolution errors.
+
 2005-08-08  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* src/mdhost.cs: Use an internal tcp channel for communication with
