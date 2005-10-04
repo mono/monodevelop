@@ -65,7 +65,7 @@ $(DLL) : $(build_sources) $(RES)
 	$(CSC) $(CSC_FLAGS) $(RES:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) \
 	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
 
-assemblydir = $(MD_ASSEMBLY_DIR)
+assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(DLL) $(CONFIG)
 
 addindir = $(MD_ADDIN_DIR)
