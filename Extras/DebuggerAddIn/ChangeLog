@@ -1,3 +1,8 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Services.cs: Added missing file.
+	* Makefile.am: Fixed assembly references.
+
 2005-08-08  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* DebuggingService.cs: Implement GetExecutionHandlerFactory method.

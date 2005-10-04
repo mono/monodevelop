@@ -5,10 +5,12 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 
 DLLS = $(GTK_SHARP_LIBS) \
 	$(MONO_DEBUGGER_LIBS) \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Base.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Gui.Widgets.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-        /r:$(top_builddir)/build/bin/ICSharpCode.SharpRefactory.dll
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+        /r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
 
 FILES = \
 DebuggingService.cs \
