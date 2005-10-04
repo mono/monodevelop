@@ -26,7 +26,7 @@ $(DLL): $(build_sources)
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
-assemblydir = $(MD_ASSEMBLY_DIR)
+assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(DLL)
 
 CLEANFILES = $(DLL) $(DLL).mdb

@@ -1,3 +1,7 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Install the assembly in the AddIns directory.
+
 2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	Created new assembly. Old ChangeLog entries can be found in the
