@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui
 				// Look for an available pad
 				for (int n=0; n<searchMonitors.Count; n++) {
 					Pad mpad = (Pad) searchMonitors [n];
-					if (((SearchProgressMonitor)mpad.Content).AllowReuse) {
+					if (((SearchResultPad)mpad.Content).AllowReuse) {
 						pad = mpad;
 						searchMonitors.RemoveAt (n);
 						break;

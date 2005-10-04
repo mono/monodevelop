@@ -27,7 +27,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ListStore store;
 		string basePath;
 		IAsyncOperation asyncOperation;
-		string markupTitle;
 		string title;
 		string id;
 		int matchCount;
@@ -148,14 +147,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (!logScroller.Visible)
 				log = new StringBuilder ();
 				
-			OnTitleChanged (null);
 			buttonStop.Sensitive = true;
 		}
 		
 		public void EndProgress ()
 		{
-			markupTitle = title;
-			OnTitleChanged (null);
+			window.Title = title;
 			buttonStop.Sensitive = false;
 			status.Text = " " + statusText;
 		}
@@ -303,19 +300,5 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			status.Text = " " + statusText + " - " + matchCount + " matches";
 		}
-		
-		protected virtual void OnTitleChanged (EventArgs e)
-		{
-			if (TitleChanged != null)
-				TitleChanged(this, e);
-		}
-		
-		protected virtual void OnIconChanged (EventArgs e)
-		{
-			if (IconChanged != null)
-				IconChanged (this, e);
-		}
-		
-		public event EventHandler TitleChanged, IconChanged;
 	}
 }

@@ -98,16 +98,6 @@ namespace MonoDevelop.Ide.Gui
 				//}
 				return layout;
 			}
-			set {
-				if (layout != null) {
-					layout.ActiveWorkbenchWindowChanged -= windowChangeEventHandler;
-					layout.Detach();
-				}
-				layout = value;
-				layout.Attach(this);
-				layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
-				RedrawAllComponents ();
-			}
 		}
 		
 		public PadContentCollection PadContentCollection {
@@ -538,17 +528,26 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public void UpdateViews(object sender, EventArgs e)
+		public void InitializeLayout (IWorkbenchLayout workbenchLayout)
 		{
 			PadCodon[] padCodons = (PadCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this)).ToArray(typeof(PadCodon));
-			foreach (PadCodon codon in padCodons) {
+			
+			foreach (PadCodon codon in padCodons)
 				ShowPad (codon.Pad);
+			
+			layout = workbenchLayout;
+			layout.Attach(this);
+			layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
+			
+			foreach (PadCodon codon in padCodons) {
 				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);
 				if (codon.Label != null)
 					win.Title = codon.Label;
 				if (codon.Icon != null)
 					win.Icon = codon.Icon;
 			}
+
+			RedrawAllComponents ();
 		}
 		
 		// Handle keyboard shortcuts

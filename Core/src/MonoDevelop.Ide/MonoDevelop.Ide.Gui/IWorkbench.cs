@@ -80,7 +80,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchLayout WorkbenchLayout {
 			get;
-			set;
 		}
 		
 		/// <summary>

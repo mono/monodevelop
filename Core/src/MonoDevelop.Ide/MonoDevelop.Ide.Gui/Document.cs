@@ -66,6 +66,9 @@ namespace MonoDevelop.Ide.Gui
 */
 		public virtual void Save ()
 		{
+			if (!Window.ViewContent.IsDirty)
+				return;
+
 			if (Window.ViewContent.ContentName == null) {
 				SaveAs ();
 			} else {

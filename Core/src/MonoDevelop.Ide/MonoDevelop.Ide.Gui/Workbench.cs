@@ -32,8 +32,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench = new DefaultWorkbench ();
 			
 			workbench.InitializeWorkspace();
-			workbench.WorkbenchLayout = new SdiWorkbenchLayout ();
-			workbench.UpdateViews(null, null);
+			workbench.InitializeLayout (new SdiWorkbenchLayout ());
 			
 			((Gtk.Window)workbench).Visible = false;
 			workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
