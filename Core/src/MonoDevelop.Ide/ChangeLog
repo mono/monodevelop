@@ -1,5 +1,9 @@
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Install the assembly in the AddIns directory.
+
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Fixed wrong cast on
 	find in files.
 	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs: Properly restore the

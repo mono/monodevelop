@@ -257,7 +257,7 @@ $(ASSEMBLY): $(build_sources) $(RES)
 	$(CSC) $(CSC_FLAGS) -codepage:utf8 -out:$@ -target:library $(DLLS) \
 		$(monodoc_libflags) $(RES:%=/resource:%) $(build_sources)
 
-assemblydir = $(MD_ASSEMBLY_DIR)
+assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(ASSEMBLY)
 
 addindir = $(MD_ADDIN_DIR)
