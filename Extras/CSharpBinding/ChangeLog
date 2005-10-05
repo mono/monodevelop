@@ -1,3 +1,7 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml: Added addin dependencies.
+
 2005-09-23  Peter Johanson  <latexer@gentoo.org>
 
 	* CSharpBindingCompilerManager.cs: Fix mcs location detection.
