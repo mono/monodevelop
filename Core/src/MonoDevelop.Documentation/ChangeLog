@@ -1,3 +1,9 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Documentation/MonodocService.cs: Load the tree in the
+	InitializeService method.
+	* MonoDevelop.Documentation.addin.xml: Added addin dependencies.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Install the assembly in the AddIns directory.

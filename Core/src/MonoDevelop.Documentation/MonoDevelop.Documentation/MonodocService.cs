@@ -13,11 +13,11 @@ namespace MonoDevelop.Documentation
 
 		RootTree helpTree;
 
-		public MonodocService () : base ()
+		public override void InitializeService ()
 		{
 			helpTree = RootTree.LoadTree ();
 		}
-
+		
 		public RootTree HelpTree {
 			get { return helpTree; }
 		}
