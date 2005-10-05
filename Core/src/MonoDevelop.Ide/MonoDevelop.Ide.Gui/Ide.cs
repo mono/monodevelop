@@ -2,10 +2,14 @@
 using System;
 using System.Collections;
 
+using System.Net;
+using System.Net.Sockets;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui.ErrorHandlers;
+using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
@@ -37,11 +41,15 @@ namespace MonoDevelop.Ide.Gui
 			get { return commandService; }
 		}
 		
-		public static void Run ()
+		public static void Initialize (IProgressMonitor monitor)
 		{
+			monitor.BeginTask ("Loading Workbench", 5);
+			
 			commandService.LoadCommands ("/SharpDevelop/Commands");
+			monitor.Step (1);
 
-			workbench.Initialize ();
+			workbench.Initialize (monitor);
+			monitor.Step (1);
 			
 			// register string tag provider (TODO: move to add-in tree :)
 			Runtime.StringParserService.RegisterStringTagProvider(new MonoDevelop.Ide.Commands.SharpDevelopStringTagProvider());
@@ -54,6 +62,7 @@ namespace MonoDevelop.Ide.Gui
 					IdeApp.ProjectOperations.OpenCombine(recentOpen.RecentProject[0].ToString());
 				}
 			}
+			monitor.Step (1);
 			
 			foreach (string file in StartupInfo.GetRequestedFileList()) {
 				//FIXME: use mimetypes
@@ -72,13 +81,19 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
+			monitor.Step (1);
 
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
+			monitor.Step (1);
 			
 			Services.MessageService.RootWindow = workbench.RootWindow;
 		
 			commandService.EnableUpdate ();
+			monitor.EndTask ();
+		}
 			
+		public static void Run ()
+		{
 			// finally run the workbench window ...
 			Gtk.Application.Run ();
 		}

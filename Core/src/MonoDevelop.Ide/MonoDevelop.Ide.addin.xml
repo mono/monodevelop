@@ -3,13 +3,25 @@
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
        description = "MonoDevelop.Ide module"
-       version     = "1.0.0">
+       version     = "0.9.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
 
+	<Dependencies>
+		<AddIn name="MonoDevelop.Core" version="0.9.0"/>
+		<AddIn name="MonoDevelop.Core.Gui" version="0.9.0"/>
+		<AddIn name="MonoDevelop.Projects" version="0.9.0"/>
+		<AddIn name="MonoDevelop.Projects.Gui" version="0.9.0"/>
+		<AddIn name="MonoDevelop.Documentation" version="0.9.0"/>
+	</Dependencies>
 
+	<Extension path = "/Workspace/Applications">
+		<Class id    = "IDE"
+		       class = "MonoDevelop.Ide.Gui.IdeStartup"/>
+	</Extension>
+	
 	<Extension path = "/Workspace/Services">
 		<Class id    = "TaskService"
 		       class = "MonoDevelop.Ide.Tasks.TaskService"/>

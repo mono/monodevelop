@@ -1,3 +1,33 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Use the new addin API.
+	
+	* Base.glade: Moved the addin load error dialog here from
+	MonoDevelop.Startup.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Moved here startup code from
+	MonoDevelop.Startup.
+	  
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Make it implement
+	IProgressMonitor.
+	* MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs: Fixed namespace
+	name.
+	* MonoDevelop.Ide.addin.xml: Added addin dependencies. Registered
+	the IDE application.
+	* Makefile.am: Added new files.
+	
+	* MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Moved initialization
+	code to InitializeService ().
+	
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs: Report progress while initializing
+	the workbench.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Install the assembly in the AddIns directory.

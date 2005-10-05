@@ -8,6 +8,7 @@ DLLS = /r:System.Drawing /r:ICSharpCode.SharpZipLib.dll \
 	/r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
 	/r:System.Data.dll /r:System.Web.Services.dll \
 	/r:Mono.Posix.dll \
+	/r:Mono.GetOptions.dll \
 	/r:System.Runtime.Remoting \
 	/r:$(top_builddir)/build/bin/log4net.dll \
 	$(GTK_SHARP_LIBS) \
@@ -100,6 +101,7 @@ MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
+MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
@@ -215,6 +217,7 @@ MonoDevelop.Ide.Gui/IStatusIcon.cs \
 MonoDevelop.Ide.Gui/SdStatusBar.cs \
 MonoDevelop.Ide.Gui/StartupInfo.cs \
 MonoDevelop.Ide.Gui/ProgressMonitors.cs \
+MonoDevelop.Ide.Gui/IdeStartup.cs \
 MonoDevelop.Ide/Services.cs \
 MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
@@ -222,6 +225,7 @@ MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 
 RES= \
 Base.glade \
+icons/SplashScreen.png \
 icons/Icons.AboutImage
 
 GENERATED_FILES = \
@@ -254,7 +258,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -codepage:utf8 -out:$@ -target:library $(DLLS) \
+	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) \
 		$(monodoc_libflags) $(RES:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)

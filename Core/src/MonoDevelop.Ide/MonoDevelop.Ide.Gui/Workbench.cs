@@ -27,25 +27,34 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler ActiveDocumentChanged;
 		
-		internal void Initialize ()
+		internal void Initialize (IProgressMonitor monitor)
 		{
-			workbench = new DefaultWorkbench ();
-			
-			workbench.InitializeWorkspace();
-			workbench.InitializeLayout (new SdiWorkbenchLayout ());
-			
-			((Gtk.Window)workbench).Visible = false;
-			workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
-			Runtime.Properties.PropertyChanged += new PropertyEventHandler(TrackPropertyChanges);
-			
-			if (Services.DebuggingService != null) {
-				Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
+			monitor.BeginTask ("Initializing Main Window", 4);
+			try {
+				workbench = new DefaultWorkbench ();
+				monitor.Step (1);
+				
+				workbench.InitializeWorkspace();
+				monitor.Step (1);
+				
+				workbench.InitializeLayout (new SdiWorkbenchLayout ());
+				monitor.Step (1);
+				
+				((Gtk.Window)workbench).Visible = false;
+				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
+				Runtime.Properties.PropertyChanged += new PropertyEventHandler(TrackPropertyChanges);
+				
+				if (Services.DebuggingService != null) {
+					Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
+				}
+				
+				Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
+				Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
+				
+				pads = null;	// Make sure we get an up to date pad list.
+			} finally {
+				monitor.EndTask ();
 			}
-			
-			Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
-			Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
-			
-			pads = null;	// Make sure we get an up to date pad list.
 		}
 		
 		/// <remarks>

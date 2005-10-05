@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static FileTemplate()
 		{
-			LoadTemplates ((FileTemplateCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode ("/MonoDevelop/FileTemplates").BuildChildItems (new object ()).ToArray (typeof (FileTemplateCodon))));
+			LoadTemplates ((FileTemplateCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/FileTemplates", typeof (FileTemplateCodon)));
 		}
 
 		static void LoadTemplates (FileTemplateCodon[] codons)

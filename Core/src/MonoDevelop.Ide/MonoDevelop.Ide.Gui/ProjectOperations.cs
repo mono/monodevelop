@@ -344,8 +344,8 @@ namespace MonoDevelop.Ide.Gui
 			if (entry is Project) {
 				Project selectedProject = (Project) entry;
 				
-				IAddInTreeNode generalOptionsNode          = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/GeneralOptions");
-				IAddInTreeNode configurationPropertiesNode = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
+				IAddInTreeNode generalOptionsNode          = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/GeneralOptions");
+				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
 				
 				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode);
 				if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
@@ -354,8 +354,8 @@ namespace MonoDevelop.Ide.Gui
 			} else if (entry is Combine) {
 				Combine combine = (Combine) entry;
 				
-				IAddInTreeNode generalOptionsNode          = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/GeneralOptions");
-				IAddInTreeNode configurationPropertiesNode = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
+				IAddInTreeNode generalOptionsNode          = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/GeneralOptions");
+				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
 				
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
 				optionsDialog.Run ();

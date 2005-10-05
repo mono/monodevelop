@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void InitializeLayout (IWorkbenchLayout workbenchLayout)
 		{
-			PadCodon[] padCodons = (PadCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this)).ToArray(typeof(PadCodon));
+			PadCodon[] padCodons = (PadCodon[]) Runtime.AddInService.GetTreeItems (viewContentPath, typeof(PadCodon));
 			
 			foreach (PadCodon codon in padCodons)
 				ShowPad (codon.Pad);

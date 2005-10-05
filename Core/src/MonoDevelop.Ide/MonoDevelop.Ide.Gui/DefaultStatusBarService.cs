@@ -23,12 +23,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public DefaultStatusBarService()
 		{
-			statusBar = new SdStatusBar ();
 		}
 		
 		protected override void OnInitialize (EventArgs e)
 		{
 			base.OnInitialize (e);
+			statusBar = new SdStatusBar ();
 			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCombineClosed);
 		}
 

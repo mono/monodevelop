@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// get the default layout for the new context from the property service
 			CurrentLayout = Runtime.Properties.GetProperty
-				("MonoDevelop.Core.Gui.SdiWorkbenchLayout." + ctxt.ToString (), "Default");
+				("MonoDevelop.Core.Gui.SdiWorkbenchLayout." + ctxt.Id, "Default");
 			
 			// make sure invalid pads for the new context are not visible
 			foreach (IPadContent content in old)
@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreateDefaultLayout()
 		{
-			contextCodons = (WorkbenchContextCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/Contexts").BuildChildItems(this)).ToArray(typeof(WorkbenchContextCodon));
+			contextCodons = (WorkbenchContextCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/Contexts", typeof(WorkbenchContextCodon));
 			PadContentCollection collection;
 			
 			// Set the pads specific of each context

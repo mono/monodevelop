@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Templates
 
 		static ProjectTemplate()
 		{
-			LoadTemplates ((ProjectTemplateCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode ("/MonoDevelop/ProjectTemplates").BuildChildItems (new object ()).ToArray (typeof (ProjectTemplateCodon))));
+			LoadTemplates ((ProjectTemplateCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/ProjectTemplates", typeof (ProjectTemplateCodon)));
 		}
 
 		static void LoadTemplates (ProjectTemplateCodon[] codons)

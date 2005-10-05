@@ -86,9 +86,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public DisplayBindingService()
+		public override void InitializeService ()
 		{
-			bindings = (DisplayBindingCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode(displayBindingPath).BuildChildItems(this)).ToArray(typeof(DisplayBindingCodon));
+			bindings = (DisplayBindingCodon[]) Runtime.AddInService.GetTreeItems (displayBindingPath, typeof(DisplayBindingCodon));
 		}
 	}
 }
