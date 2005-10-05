@@ -55,33 +55,43 @@ namespace MonoDevelop.Core.AddIns
 			ArrayList list = new ArrayList ();
 			
 			foreach (string addInFile in addInFiles) {
-				
-				AddIn addIn = new AddIn();
-				try {
-					addIn.Initialize (addInFile);
-					addInTree.InsertAddIn (addIn);
-				} catch (CodonNotFoundException ex) {
+				AddinError error = InsertAddIn (addInFile);
+				if (error != null) {
 					retryList.Add (addInFile);
-					list.Add (new AddinError (addInFile, ex, false));
-				} catch (ConditionNotFoundException ex) {
-					retryList.Add (addInFile);
-					list.Add (new AddinError (addInFile, ex, false));
-				} catch (MissingDependencyException ex) {
-					// Try to load the addin later. Maybe it depends on an
-					// addin that has not yet been loaded.
-					retryList.Add(addInFile);
-					list.Add (new AddinError (addInFile, ex, false));
-				} catch (InvalidAssemblyVersionException ex) {
-					retryList.Add (addInFile);
-					list.Add (new AddinError (addInFile, ex, false));
-				} catch (Exception ex) {
-					retryList.Add (addInFile);
-					list.Add (new AddinError (addInFile, ex, false));
+					list.Add (error);
 				} 
 			}
 			
 			errors = (AddinError[]) list.ToArray (typeof(AddinError));
 			return retryList;
+		}
+		
+		internal static AddinError InsertAddIn (string addInFile)
+		{
+			AddIn addIn = new AddIn();
+			try {
+				addIn.Initialize (addInFile);
+				addInTree.InsertAddIn (addIn);
+			} catch (CodonNotFoundException ex) {
+				return new AddinError (addInFile, ex, false);
+			} catch (ConditionNotFoundException ex) {
+				return new AddinError (addInFile, ex, false);
+			} catch (MissingDependencyException ex) {
+				// Try to load the addin later. Maybe it depends on an
+				// addin that has not yet been loaded.
+				return new AddinError (addInFile, ex, false);
+			} catch (InvalidAssemblyVersionException ex) {
+				return new AddinError (addInFile, ex, false);
+			} catch (Exception ex) {
+				return new AddinError (addInFile, ex, false);
+			}
+			return null;
+		}
+		
+		public static void Initialize ()
+		{
+			AssemblyLoader loader = new AssemblyLoader();
+			addInTree = new DefaultAddInTree (loader);
 		}
 		
 		public static AddinError[] InitializeAddins ()

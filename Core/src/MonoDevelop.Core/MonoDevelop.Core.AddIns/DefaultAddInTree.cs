@@ -67,8 +67,6 @@ namespace MonoDevelop.Core.AddIns
 		internal DefaultAddInTree (AssemblyLoader loader)
 		{
 			this.loader = loader;
-			// load codons and conditions from the current assembly.
-			LoadCodonsAndConditions(Assembly.GetExecutingAssembly());
 		}
 		
 		void ShowCodonTree(IAddInTreeNode node, string ident)
@@ -157,6 +155,7 @@ namespace MonoDevelop.Core.AddIns
 			if (path == null || path.Length == 0) {
 				return root;
 			}
+			
 			string[] splittedPath = path.Split(new char[] {'/'});
 			DefaultAddInTreeNode curPath = root;
 			int i = 0;

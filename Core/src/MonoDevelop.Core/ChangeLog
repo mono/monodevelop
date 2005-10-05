@@ -1,3 +1,20 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns/AddInTreeSingleton.cs: Created method
+	InsertAddIn.
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs: The Core addin is now
+	loaded like any other addin, so there is no need to load default
+	codons and conditions here.
+	* MonoDevelop.Core.Execution/ProcessService.cs: Lazily get ExecutionHandler
+	information.
+	* Makefile.am: Added files.
+	* MonoDevelop.Core.addin.xml: Added application extension point.
+	* MonoDevelop.Core/ServiceManager.cs: Added method for initializing
+	the services for a given addin.
+	* MonoDevelop.Core/Runtime.cs: Added AddInService and SetupService.
+	
+	* MonoDevelop.Core.Setup/*: New API for managing addins.
+
 2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Changed internal organization of files and namespaces.

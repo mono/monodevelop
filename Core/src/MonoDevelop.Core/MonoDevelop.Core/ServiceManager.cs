@@ -60,7 +60,9 @@ namespace MonoDevelop.Core
 	{
 		ArrayList serviceList       = new ArrayList();
 		Hashtable servicesHashtable = new Hashtable();
+		Hashtable initializedServices = new Hashtable ();
 		
+		static Queue serviceAddinQueue = new Queue ();
 		static ServiceManager      defaultServiceManager = new ServiceManager();
 		static ServiceLoadCallback serviceLoadCallback   = null;
 
@@ -107,6 +109,32 @@ namespace MonoDevelop.Core
 				SendCallback (service, ServiceLoadType.LoadStarted, totalServices);
 				service.InitializeService();
 				SendCallback (service, ServiceLoadType.LoadCompleted, totalServices);
+			}
+		}
+		
+		public static void InitializeServices (string servicesPath, AddIn addin)
+		{
+			if (serviceAddinQueue.Count != 0) {
+				serviceAddinQueue.Enqueue (addin);
+				return;
+			}
+			
+			serviceAddinQueue.Enqueue (addin);
+			
+			while (serviceAddinQueue.Count > 0) {
+				AddIn qaddin = (AddIn) serviceAddinQueue.Peek ();
+				IAddInTreeNode rootNode = AddInTreeSingleton.AddInTree.GetTreeNode (servicesPath);
+				Hashtable services = (Hashtable) rootNode.ChildNodes.Clone ();
+				foreach (DictionaryEntry de in services) {
+					IAddInTreeNode node = (IAddInTreeNode) de.Value;
+					if (node.Codon.AddIn == qaddin) {
+						IService service = (IService) rootNode.BuildChildItem ((string)de.Key, defaultServiceManager);
+//						service.InitializeService();
+//						Console.WriteLine ("     Added service " + service.GetType ());
+						AddService (service);
+					}
+				}
+				serviceAddinQueue.Dequeue ();
 			}
 		}
 		
@@ -175,6 +203,11 @@ namespace MonoDevelop.Core
 			foreach (IService service in serviceList) {
 				if (IsInstanceOfType(serviceType, service)) {
 					servicesHashtable[serviceType] = service;
+					if (!initializedServices.Contains (service)) {
+						Runtime.LoggingService.Info ("Initializing service: " + serviceType);
+						service.InitializeService();
+						initializedServices [service] = service;
+					}
 					return service;
 				}
 			}

@@ -3,7 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
        description = "MonoDevelop core module"
-       version     = "1.0.0">
+       version     = "0.9.0">
 
 	<Runtime>
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
@@ -14,6 +14,9 @@
 		       class = "MonoDevelop.Core.SystemAssemblyService"/>
 		<Class id    = "ProcessService"
 		       class = "MonoDevelop.Core.Execution.ProcessService"/>
+	</Extension>
+	
+	<Extension path = "/Workspace/Applications">
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">

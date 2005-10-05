@@ -17,7 +17,6 @@ namespace MonoDevelop.Core.Execution
 		
 		public override void InitializeService ()
 		{
-			executionHandlers = (ExecutionHandlerCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/ExecutionHandlers").BuildChildItems(null)).ToArray(typeof(ExecutionHandlerCodon));
 		}
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, EventHandler exited) 
@@ -107,6 +106,9 @@ namespace MonoDevelop.Core.Execution
 		
 		public IExecutionHandler GetDefaultExecutionHandler (string platformId)
 		{
+			if (executionHandlers == null)
+				executionHandlers = (ExecutionHandlerCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ExecutionHandlers", typeof(ExecutionHandlerCodon));
+			
 			foreach (ExecutionHandlerCodon codon in executionHandlers)
 				if (codon.Platform == platformId) return codon.ExecutionHandler;
 			return null;
