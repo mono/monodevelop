@@ -9,6 +9,10 @@
     <Import assembly = "ILAsmBinding.dll"/>
   </Runtime>
 
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
   <Extension path = "/MonoDevelop/ProjectTemplates">
     <ProjectTemplate id = "ILAsmConsoleProject"
                      resource = "ILAsmConsoleProject.xpt.xml"/>
