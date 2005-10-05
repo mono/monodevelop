@@ -12,6 +12,10 @@
            <Import assembly="VersionControlAddIn.dll"/>
    </Runtime>
  
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "VersionControlPlugin.VersionControlNodeExtension"/>
