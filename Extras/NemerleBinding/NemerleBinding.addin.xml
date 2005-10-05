@@ -9,6 +9,10 @@
     <Import assembly = "NemerleBinding.dll"/>
   </Runtime>
 
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
     <FileFilter id = "Nemerle"
                 insertbefore = "AllFiles"
