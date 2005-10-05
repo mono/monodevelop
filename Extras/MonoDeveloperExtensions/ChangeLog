@@ -1,3 +1,7 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.addin.xml: Added addin dependencies.
+
 2005-09-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	 * MonoProject.cs: Use the new regex for parsing error messages.

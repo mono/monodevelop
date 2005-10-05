@@ -10,7 +10,8 @@
     </Runtime>
 	
 	<Dependencies>
-		<AddIn name="MonoDevelop NUnit" />
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn name="MonoDevelop.NUnit" version="0.9.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
