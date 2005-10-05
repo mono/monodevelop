@@ -28,7 +28,7 @@ namespace MonoDevelop.Projects.Gui
 		public override void InitializeService()
 		{
 			base.InitializeService();
-			InitializeIcons(AddInTreeSingleton.AddInTree.GetTreeNode("/Workspace/Icons"));
+			InitializeIcons (Runtime.AddInService.GetTreeNode ("/Workspace/Icons"));
 		}
 		
 		public string GetImageForProjectType (string projectType)
