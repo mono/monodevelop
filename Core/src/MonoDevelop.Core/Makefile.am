@@ -21,7 +21,6 @@ MonoDevelop.Core.AddIns/AddInSignatureException.cs \
 MonoDevelop.Core.AddIns/AddInTreeFormatException.cs \
 MonoDevelop.Core.AddIns/AddInTreeSingleton.cs \
 MonoDevelop.Core.AddIns/AddInService.cs \
-MonoDevelop.Core.AddIns/ApplicationCodon.cs \
 MonoDevelop.Core.AddIns/DefaultAddInTree.cs \
 MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs \
 MonoDevelop.Core.AddIns/IAddInTree.cs \
