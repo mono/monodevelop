@@ -9,6 +9,10 @@
 		<Import assembly="MonoDevelop.Debugger.dll"/>
 	</Runtime>
 
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
 	<Extension path="/Workspace/Services">
 		<Class id = "DebuggingService"
 		    class = "MonoDevelop.Debugger.DebuggingService"/>
