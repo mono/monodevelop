@@ -5,11 +5,9 @@ FILES= \
 MonoDevelop.Startup/MonoDevelopMain.cs \
 MonoDevelop.Startup/MonoDevelopOptions.cs \
 MonoDevelop.Startup/AddInTreeSettingsHandler.cs \
-MonoDevelop.Startup/ExceptionBox.cs \
-MonoDevelop.Startup/AddinLoadErrorDialog.cs
+MonoDevelop.Startup/ExceptionBox.cs
 
 RES= \
-SplashScreen.png \
 MonoDevelop.Startup.glade
 
 GENERATED_FILES = \

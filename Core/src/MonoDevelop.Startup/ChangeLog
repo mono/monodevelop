@@ -1,3 +1,9 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup/AddinLoadErrorDialog.cs:
+	* MonoDevelop.Startup/MonoDevelopMain.cs: Moved most of code to
+	MonoDevelop.Ide.
+
 2005-08-29  John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Startup.glade: fix typo, bug #75914
