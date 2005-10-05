@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void LoadCommands (string addinPath)
 		{
-			ArrayList commandCodons = AddInTreeSingleton.AddInTree.GetTreeNode (addinPath).BuildChildItems (null);
+			object[] commandCodons = Runtime.AddInService.GetTreeItems (addinPath);
 			foreach (Command cmd in commandCodons)
 				manager.RegisterCommand (cmd, null);
 		}
@@ -131,7 +131,7 @@ namespace MonoDevelop.Core.Gui
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();
-			ArrayList items = AddInTreeSingleton.AddInTree.GetTreeNode (addinPath).BuildChildItems (null);
+			object[] items = Runtime.AddInService.GetTreeItems (addinPath);
 			foreach (CommandEntry e in items)
 				cset.Add (e);
 			return cset;

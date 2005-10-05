@@ -43,27 +43,25 @@ namespace MonoDevelop.Core.Gui
 {
 	public class ResourceService : AbstractService
 	{
-		static Gtk.IconFactory iconFactory = null;
-		static Hashtable stockMappings = null;
+		Gtk.IconFactory iconFactory = null;
+		Hashtable stockMappings = null;
 		
-		static ArrayList addinIcons = new ArrayList ();
-		static ArrayList addins = new ArrayList ();
+		ArrayList addinIcons = new ArrayList ();
+		ArrayList addins = new ArrayList ();
+		static ResourceService instance;
 		
-		static ResourceService()
+		public override void InitializeService ()
 		{
+			base.InitializeService();
+			
 			iconFactory = new Gtk.IconFactory ();
 
 			// FIXME: remove this when all MonoDevelop is using Gtk+
 			// stock icons
 			stockMappings = new Hashtable ();
 			iconFactory.AddDefault ();
-		}
-		
-		public override void InitializeService ()
-		{
-			base.InitializeService();
 
-			StockIconCodon[] icons = (StockIconCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/StockIcons").BuildChildItems(null)).ToArray(typeof(StockIconCodon));
+			StockIconCodon[] icons = (StockIconCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/StockIcons", typeof(StockIconCodon));
 			foreach (StockIconCodon icon in icons) {
 				foreach (Assembly a in icon.AddIn.RuntimeLibraries.Values) {
 					try {
@@ -72,6 +70,14 @@ namespace MonoDevelop.Core.Gui
 						break;
 					} catch {}
 				}
+			}
+		}
+		
+		static ResourceService Instance {
+			get {
+				if (instance == null)
+					instance = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
+				return instance;
 			}
 		}
 		
@@ -213,9 +219,22 @@ namespace MonoDevelop.Core.Gui
 			return new Gtk.Image (GetBitmap (name));
 		}
 		
-		internal static void AddToIconFactory (string stockId,
-		                                       string filename,
-						       Gtk.IconSize iconSize)
+		public static string GetStockIdFromResource (AddIn addin, string id)
+		{
+			return Instance.InternalGetStockIdFromResource (addin, id);
+		}
+
+		public static string GetStockId (string filename)
+		{
+			return Instance.InternalGetStockId (filename);
+		}
+
+		public static string GetStockId (AddIn addin, string filename)
+		{
+			return Instance.InternalGetStockId (addin, filename);
+		}
+
+		internal void AddToIconFactory (string stockId, string filename, Gtk.IconSize iconSize)
 		{
 			try {
 				Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
@@ -241,9 +260,7 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
-		internal static void AddToIconFactory (string stockId,
-		                                       Gdk.Pixbuf pixbuf,
-						       Gtk.IconSize iconSize)
+		internal void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
 		{
 			Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
 			if (iconSet == null) {
@@ -257,7 +274,7 @@ namespace MonoDevelop.Core.Gui
 			iconSet.AddSource (source);
 		}
 		
-		static public string GetStockIdFromResource (AddIn addin, string id)
+		string InternalGetStockIdFromResource (AddIn addin, string id)
 		{
 			if (!id.StartsWith ("res:"))
 				return id;
@@ -286,25 +303,25 @@ namespace MonoDevelop.Core.Gui
 			return sid;
 		}
 
-		internal static void AddToIconFactory (string stockId, string filename)
+		internal void AddToIconFactory (string stockId, string filename)
 		{
 			AddToIconFactory (stockId, filename, Gtk.IconSize.Invalid);
 		}
 		
-		internal static void AddDefaultStockMapping (string stockFile, string nativeStock)
+		internal void AddDefaultStockMapping (string stockFile, string nativeStock)
 		{
 			stockMappings.Add (stockFile, nativeStock);
 		}
 
-		public static string GetStockId (string filename)
+		internal string InternalGetStockId (string filename)
 		{
-			return GetStockId (null, filename);
+			return InternalGetStockId (null, filename);
 		}
 		
-		public static string GetStockId (AddIn addin, string filename)
+		internal string InternalGetStockId (AddIn addin, string filename)
 		{
 			if (addin != null && filename.StartsWith ("res:"))
-				return GetStockIdFromResource (addin, filename);
+				return InternalGetStockIdFromResource (addin, filename);
 				
 			string s = (string) stockMappings [filename];
 			

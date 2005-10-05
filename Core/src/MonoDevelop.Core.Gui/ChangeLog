@@ -1,3 +1,15 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:
+	* MonoDevelop.Core.Gui/CommandService.cs: Use the new addin API.
+	
+	* MonoDevelop.Core.Gui.Dialogs/ResourceService.cs: Converted some static
+	methods to instance methods, since they need a properly initialized
+	service instance.
+	
+	* MonoDevelop.Core.Gui.addin.xml: Added addin dependencies.
+	Registered ResourceService as a service.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Install the assembly in the AddIns directory.

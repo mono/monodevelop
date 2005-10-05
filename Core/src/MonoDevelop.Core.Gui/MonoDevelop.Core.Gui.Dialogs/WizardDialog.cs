@@ -194,7 +194,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		public WizardDialog (string title, object customizer, string treePath)
 		{
-			IAddInTreeNode node = AddInTreeSingleton.AddInTree.GetTreeNode(treePath);
+			IAddInTreeNode node = Runtime.AddInService.GetTreeNode(treePath);
 			this.Title = title;
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
