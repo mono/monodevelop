@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects
 			formatManager.RegisterFileFormat (defaultProjectFormat);
 			formatManager.RegisterFileFormat (defaultCombineFormat);
 			
-			FileFormatCodon[] formatCodons = (FileFormatCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/ProjectFileFormats").BuildChildItems(null)).ToArray(typeof(FileFormatCodon));
+			FileFormatCodon[] formatCodons = (FileFormatCodon[]) Runtime.AddInService.GetTreeItems("/SharpDevelop/Workbench/ProjectFileFormats", typeof(FileFormatCodon));
 			foreach (FileFormatCodon codon in formatCodons)
 				formatManager.RegisterFileFormat (codon.FileFormat);
 			
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects
 			DataContext.IncludeType (typeof(Project));
 			DataContext.IncludeType (typeof(DotNetProject));
 						
-			projectBindings = (ProjectBindingCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/ProjectBindings").BuildChildItems(null)).ToArray(typeof(ProjectBindingCodon));
+			projectBindings = (ProjectBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectBindings", typeof(ProjectBindingCodon));
 		}
 	}
 }

@@ -195,6 +195,7 @@ MonoDevelop.Projects/CombineEntryCollection.cs \
 MonoDevelop.Projects/ConfigurationCollection.cs \
 MonoDevelop.Projects/ConfigurationEventHandler.cs \
 MonoDevelop.Projects/ExecutionContext.cs \
+MonoDevelop.Projects/BuildTool.cs \
 MonoDevelop.Projects/ProjectsServices.cs
 
 GENERATED_FILES = \

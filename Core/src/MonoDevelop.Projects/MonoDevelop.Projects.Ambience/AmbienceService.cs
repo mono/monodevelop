@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Ambience
 		public AmbienceReflectionDecorator CurrentAmbience {
 			get {
 				string language = Runtime.Properties.GetProperty(ambienceProperty, "CSharp");
-				return new AmbienceReflectionDecorator((IAmbience)AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, this));
+				return new AmbienceReflectionDecorator((IAmbience)Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, this));
 			}
 		}
 		

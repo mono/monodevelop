@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override void InitializeService()
 		{
-			parsers = (IParser[])(AddInTreeSingleton.AddInTree.GetTreeNode("/Workspace/Parser").BuildChildItems(this)).ToArray(typeof(IParser));
+			parsers = (IParser[]) Runtime.AddInService.GetTreeItems ("/Workspace/Parser", typeof(IParser));
 		}
 		
 		public IParserDatabase CreateParserDatabase ()

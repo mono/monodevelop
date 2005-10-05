@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 		public override void InitializeService ()
 		{
 			base.InitializeService ();
-			bindings = (LanguageBindingCodon[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/LanguageBindings").BuildChildItems(null)).ToArray(typeof(LanguageBindingCodon));
+			bindings = (LanguageBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/LanguageBindings", typeof(LanguageBindingCodon));
 		}
 	}
 }

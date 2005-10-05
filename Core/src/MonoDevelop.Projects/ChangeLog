@@ -1,3 +1,15 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	* MonoDevelop.Projects/LanguageBindingService.cs:
+	* MonoDevelop.Projects.Ambience/AmbienceService.cs:
+	* MonoDevelop.Projects/ProjectService.cs: Use new addin API.
+	
+	* MonoDevelop.Projects/BuildTool.cs: Added build tool class (still empty).
+	
+	* MonoDevelop.Projects.addin.xml: Added addin dependencies. Registered
+	build tool.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Install the assembly in the AddIns directory.
