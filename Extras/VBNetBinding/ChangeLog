@@ -1,3 +1,7 @@
+2005-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Fix reference to ICSharpCode.SharpRefactory.VB.dll.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Added addin dependencies.

@@ -12,7 +12,7 @@ DLLS = /r:System.Drawing.dll \
 	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
-	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.VB.dll \
+	/r:$(top_builddir)/build/AddIns/BackendBindings/ICSharpCode.SharpRefactory.VB.dll \
 	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpAssembly.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
