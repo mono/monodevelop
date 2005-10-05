@@ -1,3 +1,8 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Makefile.am: No need to set MONO_PATH any more.
+	* configure.in: Added mdrun tool.
+
 2005-09-23  Christian Hergert   <christian.hergert@gmail.com>
 
 	* configure.in: Check for vte-sharp-2.0

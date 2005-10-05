@@ -226,6 +226,7 @@ Core/src/MonoDevelop.Startup/Makefile
 Core/src/Tools/dbgen/Makefile
 Core/src/Tools/Makefile
 Core/src/Tools/mdhost/Makefile
+Core/src/Tools/mdrun/Makefile
 Core/src/Tools/SharpCoco/Makefile
 Extras/BooBinding/Makefile
 Extras/JavaBinding/Makefile
