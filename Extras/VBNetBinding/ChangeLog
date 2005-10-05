@@ -1,3 +1,8 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* VBNetBinding.addin.xml: Added addin dependencies.
+	* Makefile.am: Fix location of ICSharpCode.SharpRefactory.VB.dll.
+
 2005-08-20  John Luke  <john.luke@gmail.com>
 
 	* Parser/Resolver.cs:

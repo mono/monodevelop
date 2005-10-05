@@ -103,7 +103,7 @@ src/Parser/generated/Parser.cs
 
 build_sources = $(addprefix $(srcdir)/, $(FILES))
 
-DLL = $(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.VB.dll
+DLL = $(top_builddir)/build/AddIns/BackendBindings/ICSharpCode.SharpRefactory.VB.dll
 
 REFS = /r:System.Drawing.dll
 
@@ -118,7 +118,7 @@ test-parser.exe : $(DLL) src/Main.cs
 run : test-parser.exe
 	MONO_PATH=`dirname $(DLL)` $(RUNTIME) test-parser.exe $(TEST_SOURCE)
 
-assemblydir = $(MD_ASSEMBLY_DIR)
+assemblydir = $(MD_ADDIN_DIR)/BackendBindings
 assembly_DATA = $(DLL)
 
 CLEANFILES = $(DLL) $(DLL).mdb
