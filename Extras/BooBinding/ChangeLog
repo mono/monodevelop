@@ -1,3 +1,7 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* BooBinding.addin.xml: Added addin dependencies.
+
 2005-09-23  Peter Johanson  <latexer@gentoo.org> 
 
 	* Gui/BooShellModel.boo: Wrap all access to remote process object in
