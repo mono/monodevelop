@@ -9,6 +9,10 @@
 		<Import assembly="prj2make-sharp-lib.dll"/>
 	</Runtime>
 	
+	<Dependencies>
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.Prj2Make.Commands.ImportSolution"
 			_label = "_Import Visual Studio .NET Project"
