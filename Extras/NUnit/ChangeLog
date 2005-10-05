@@ -1,3 +1,8 @@
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml: Added addin dependencies.
+	* Gui/UnitTestOptionsDialog.cs: Use the new addin API.
+
 2005-09-22  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Services/NUnitService.cs:

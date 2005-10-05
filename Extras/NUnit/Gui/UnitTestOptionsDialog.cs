@@ -45,8 +45,8 @@ namespace MonoDevelop.NUnit {
 	
 		public UnitTestOptionsDialog (Gtk.Window parent, UnitTest test) : base (parent, null, null)
 		{
-			IAddInTreeNode node = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions");
-			configurationNode = AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties");
+			IAddInTreeNode node = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions");
+			configurationNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties");
 				
 			this.test = test;
 			this.Title = GettextCatalog.GetString ("Unit Test Options");

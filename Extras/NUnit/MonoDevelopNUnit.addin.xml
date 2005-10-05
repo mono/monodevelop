@@ -1,16 +1,16 @@
-<AddIn name	 = "MonoDevelop NUnit"
+<AddIn name	 = "MonoDevelop.NUnit"
        author	 = "John Luke"
        copyright = "GPL"
        url       = "http://monodevelop.com"
        description = "NUnit testing tool"
-       version   = "0.6">
+       version   = "0.9.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" />
+		<AddIn name="MonoDevelop.Ide" version="1.0.0"/>
 	</Dependencies>
 
 	<Extension path="/Workspace/Services">
