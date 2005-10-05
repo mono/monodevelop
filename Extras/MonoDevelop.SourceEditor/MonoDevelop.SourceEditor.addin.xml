@@ -3,7 +3,7 @@
        copyright   = ""
        url         = ""
        description = ""
-       version     = "1.0.0">
+       version     = "0.9.0">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor.dll"/>
@@ -12,9 +12,9 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" />
+		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
-
+	
 	<Extension path = "/Workspace/Services">
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
 	</Extension>
