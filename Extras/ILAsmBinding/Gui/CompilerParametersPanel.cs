@@ -19,7 +19,7 @@ namespace ILAsmBinding
 {
 	public class CompilerParametersPanel : AbstractOptionPanel
 	{
-		ILAsmCompilerParameters compilerParameters = null;
+		//ILAsmCompilerParameters compilerParameters = null;
 		DotNetProjectConfiguration configuration;
 		
 		Entry outputPath = new Entry ();
@@ -31,7 +31,7 @@ namespace ILAsmBinding
 		public override void LoadPanelContents()
 		{
 			configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
-			compilerParameters = (ILAsmCompilerParameters) configuration.CompilationParameters;
+			//compilerParameters = (ILAsmCompilerParameters) configuration.CompilationParameters;
 			
 			dllTarget = new RadioButton (exeTarget, "dll");
 			SetupUI ();

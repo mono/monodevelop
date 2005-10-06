@@ -26,8 +26,6 @@ namespace ILAsmBinding
 	/// </summary>
 	public class ILAsmCompilerManager
 	{
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-		
 		public bool CanCompile(string fileName)
 		{
 			return Path.GetExtension (fileName).ToLower () == ".il";

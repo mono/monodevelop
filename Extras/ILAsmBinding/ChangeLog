@@ -1,3 +1,9 @@
+2005-10-06  John Luke  <john.luke@gmail.com>
+
+	* ILAsmCompilerManager.cs: remove unused fileUtilityService
+	* Gui/CompilerParametersPanel.cs: comment out unused code that
+	caused a warning
+
 2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* ILAsmBinding.addin.xml:
