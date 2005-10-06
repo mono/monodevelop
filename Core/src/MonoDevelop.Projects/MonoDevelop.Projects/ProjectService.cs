@@ -121,9 +121,8 @@ namespace MonoDevelop.Projects
 			foreach (FileFormatCodon codon in formatCodons)
 				formatManager.RegisterFileFormat (codon.FileFormat);
 			
-			DataContext.IncludeType (typeof(Combine));
-			DataContext.IncludeType (typeof(Project));
-			DataContext.IncludeType (typeof(DotNetProject));
+			foreach (ClassCodon cls in Runtime.AddInService.GetTreeCodons ("/SharpDevelop/Workbench/SerializableClasses"))
+				DataContext.IncludeType (cls.Type);
 						
 			projectBindings = (ProjectBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectBindings", typeof(ProjectBindingCodon));
 		}

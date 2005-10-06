@@ -1,3 +1,9 @@
+2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Get serializable types from
+	the addin tree.
+	* MonoDevelop.Projects.addin.xml: Register serializable classes.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs:

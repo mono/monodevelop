@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
        description = "MonoDevelop.Projects module"
+	   category    = "MonoDevelop Core"
        version     = "0.9.0">
 
 	<Runtime>
@@ -27,7 +28,7 @@
 	</Extension>
 	
 	<Extension path = "/Workspace/Applications">
-		<Class id    = "mdbuild"
+		<Class id    = "build"
 		       class = "MonoDevelop.Projects.BuildTool"/>
 	</Extension>
 	
@@ -48,6 +49,11 @@
 		            class="MonoDevelop.Projects.CmbxFileFormat"/>
 	</Extension>
 	  
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "MonoDevelop.Projects.Combine" />
+		<Class class = "MonoDevelop.Projects.Project" />
+		<Class class = "MonoDevelop.Projects.DotNetProject" />
+	</Extension>
 
 
 </AddIn>
