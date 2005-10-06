@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "Nemerle Language Binding"
+	   category    = "Language bindings"
        version     = "0.6">
 
   <Runtime>
@@ -31,6 +32,10 @@
     <ProjectTemplate id = "NemerleGnomeSharpProject" resource = "NemerleGnomeSharpProject.xpt.xml"/>
   </Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "NemerleBinding.NemerleParameters" />
+	</Extension>
+	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
     <Conditional activelanguage = "Nemerle">
       <DialogPanel id = "NemerleCodeGenerationPanel"

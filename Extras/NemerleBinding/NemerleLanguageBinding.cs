@@ -20,11 +20,6 @@ namespace NemerleBinding
 		
 		NemerleBindingCompilerServices   compilerServices  = new NemerleBindingCompilerServices();
 		
-		public NemerleLanguageBinding ()
-		{
-			Services.ProjectService.DataContext.IncludeType (typeof(NemerleParameters));
-		}
-		
 		public string Language {
 			get { return LanguageName; }
 		}
