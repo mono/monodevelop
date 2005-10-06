@@ -236,8 +236,8 @@ namespace CSharpBinding
 					switch (finfo.BuildAction) {
 					case BuildAction.Compile:
 						string rel_path = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, Path.GetDirectoryName (finfo.Name));
-						if (CanCompile (finfo.Name));
-						compile_files.Add (Path.Combine (rel_path, Path.GetFileName (finfo.Name)));
+						if (CanCompile (finfo.Name))
+							compile_files.Add (Path.Combine (rel_path, Path.GetFileName (finfo.Name)));
 						break;
 						
 					case BuildAction.EmbedAsResource:

@@ -1,3 +1,8 @@
+2005-10-06  John Luke  <john.luke@gmail.com> 
+
+	* CSharpBindingCompilerManager (GenerateMakefile): fix mistaken
+	empty statement warning
+	
 2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml:
