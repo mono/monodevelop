@@ -1,3 +1,9 @@
+2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* BooBinding.addin.xml:
+	* BooLanguageBinding.cs: Register serializable types in the addin
+	configuration file.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* BooBinding.addin.xml: Added addin dependencies.

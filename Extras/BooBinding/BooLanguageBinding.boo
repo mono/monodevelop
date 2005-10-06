@@ -35,9 +35,6 @@ public class BooLanguageBinding(ILanguageBinding):
 	internal static LanguageName = "Boo"
 	compilerServices = BooBindingCompilerServices ()
 	
-	public def constructor():
-		MonoDevelop.Projects.Services.ProjectService.DataContext.IncludeType (typeof(BooCompilerParameters))
-	
 	public Language as string:
 		get:
 			return LanguageName

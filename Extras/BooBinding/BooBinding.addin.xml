@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://boo.codehaus.org"
        description = "Boo Language Binding"
+	   category    = "Language bindings"
        version     = "0.1">
 
   <Runtime>
@@ -31,6 +32,10 @@
     <ProjectTemplate id = "BooLibraryProject" resource = "BooLibraryProject.xpt.xml"/>
   </Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "BooBinding.BooCompilerParameters" />
+	</Extension>
+	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
     <Conditional activelanguage = "Boo">
       <DialogPanel id = "BooCodeGenerationPanel"
