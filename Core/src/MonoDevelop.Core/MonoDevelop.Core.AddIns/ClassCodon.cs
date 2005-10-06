@@ -18,6 +18,11 @@ namespace MonoDevelop.Core.AddIns
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
+		
+		public Type Type {
+			get { return AddIn.GetType (Class); }
+		}
+		
 		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
 		{
 			Debug.Assert(Class != null && Class.Length > 0);

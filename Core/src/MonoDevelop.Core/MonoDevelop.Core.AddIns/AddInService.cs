@@ -187,7 +187,7 @@ namespace MonoDevelop.Core.AddIns
 			
 			AddinSetupInfo iad = Runtime.SetupService.GetInstalledAddin (id, version);
 			if (iad == null)
-				throw new ArgumentException ("The addin '" + id + "' is not installed.");
+				throw new ArgumentException ("The addin '" + id + "' v" + version + " is not installed.");
 			
 			// If this addin has already been requested, bring it to the head
 			// of the list, so it is loaded earlier than before.
@@ -218,6 +218,18 @@ namespace MonoDevelop.Core.AddIns
 		{
 			PreloadAddins (null, path);
 			return AddInTreeSingleton.AddInTree.GetTreeNode (path).BuildChildItems(null).ToArray (itemType);
+		}
+		
+		public object[] GetTreeCodons (string path)
+		{
+			PreloadAddins (null, path);
+			IAddInTreeNode rootNode = AddInTreeSingleton.AddInTree.GetTreeNode (path);
+			ArrayList list = new ArrayList ();
+			foreach (DictionaryEntry de in rootNode.ChildNodes) {
+				IAddInTreeNode node = (IAddInTreeNode) de.Value;
+				list.Add (node.Codon);
+			}
+			return list.ToArray ();
 		}
 		
 		public IAddInTreeNode GetTreeNode (string path)
