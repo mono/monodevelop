@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "ILAsm Language Binding"
+	   category    = "Language bindings"
        version     = "0.6">
 
   <Runtime>
@@ -32,4 +33,8 @@
                      class = "ILAsmBinding.ILAsmLanguageBinding"/>
   </Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "ILAsmBinding.ILAsmCompilerParameters" />
+	</Extension>
+	
 </AddIn>

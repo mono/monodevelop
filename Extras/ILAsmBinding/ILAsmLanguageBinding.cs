@@ -27,11 +27,6 @@ namespace ILAsmBinding
 		
 		ILAsmCompilerManager  compilerManager  = new ILAsmCompilerManager();
 		
-		public ILAsmLanguageBinding ()
-		{
-			Services.ProjectService.DataContext.IncludeType (typeof(ILAsmCompilerParameters));
-		}
-		
 		public string Language {
 			get {
 				return LanguageName;
