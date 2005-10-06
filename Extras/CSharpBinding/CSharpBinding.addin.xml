@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
+	   category    = "Language bindings"
        version     = "0.6">
 	
 	<Runtime>
@@ -128,4 +129,8 @@
 		                 supportedextensions = ".cs"
 		                 class = "CSharpBinding.CSharpLanguageBinding" />
     </Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "CSharpBinding.CSharpCompilerParameters" />
+	</Extension>
 </AddIn>

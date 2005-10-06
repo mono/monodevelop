@@ -26,11 +26,6 @@ namespace CSharpBinding
 		
 		CSharpBindingCompilerManager   compilerManager  = new CSharpBindingCompilerManager();
 		
-		public CSharpLanguageBinding ()
-		{
-			Services.ProjectService.DataContext.IncludeType (typeof(CSharpCompilerParameters));
-		}
-		
 		public string Language {
 			get {
 				return LanguageName;
