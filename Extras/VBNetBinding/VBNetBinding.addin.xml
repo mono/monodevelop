@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
+	   category    = "Language bindings"
        version     = "0.1">
 
   <Runtime>
@@ -83,4 +84,8 @@
                      class = "VBBinding.VBLanguageBinding" />
   </Extension>
   
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "VBBinding.VBCompilerParameters" />
+	</Extension>
+	
 </AddIn>

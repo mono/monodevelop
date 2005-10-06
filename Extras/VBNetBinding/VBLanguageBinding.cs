@@ -28,11 +28,6 @@ namespace VBBinding
 			}
 		}
 		
-		public VBLanguageBinding ()
-		{
-			Services.ProjectService.DataContext.IncludeType (typeof(VBCompilerParameters));
-		}
-		
 		public bool CanCompile(string fileName)
 		{
 			Debug.Assert(compilerServices != null);
