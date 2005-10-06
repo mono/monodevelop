@@ -1,3 +1,9 @@
+2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* JavaBinding.addin.xml:
+	* JavaLanguageBinding.cs: Register serializable types in the addin
+	configuration file.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* JavaBinding.addin.xml: Added addin dependencies.

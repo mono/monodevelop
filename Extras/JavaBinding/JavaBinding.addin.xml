@@ -3,6 +3,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "Java Language Binding"
+	   category    = "Language bindings"
        version     = "0.6">
 
   <Runtime>
@@ -76,5 +77,9 @@
                      supportedextensions = ".java"
                      class = "JavaBinding.JavaLanguageBinding" />
   </Extension>
+  
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<Class class = "JavaBinding.JavaCompilerParameters" />
+	</Extension>
 
 </AddIn>

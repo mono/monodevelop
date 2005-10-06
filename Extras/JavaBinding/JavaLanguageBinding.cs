@@ -30,11 +30,6 @@ namespace JavaBinding
 		
 		static GlobalProperties props = new GlobalProperties ();
 		
-		public JavaLanguageBinding ()
-		{
-			MonoDevelop.Projects.Services.ProjectService.DataContext.IncludeType (typeof(JavaCompilerParameters));
-		}
-		
 		public static GlobalProperties Properties {
 			get { return props; }
 		}
