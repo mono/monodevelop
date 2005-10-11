@@ -1,3 +1,8 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Added addin dependencies.

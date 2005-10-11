@@ -1,16 +1,18 @@
-<AddIn name	 = "Solution Importer"
+<AddIn id = "MonoDevelop.Prj2Make"
+       name	 = "Visual Studio .NET Solution Importer"
        author	 = "Francisco 'Paco' Martinez"
        copyright = "GPL"
        url       = ""
-       description = "Generates combines from solutions files"
-       version   = "0.01">
+       description = "Generates MonoDevelop solutions from Visual Studio .NET solutions files"
+	   category    = "IDE extensions"
+       version   = "0.9">
 
 	<Runtime>
 		<Import assembly="prj2make-sharp-lib.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Commands">
