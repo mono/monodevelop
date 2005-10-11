@@ -54,6 +54,12 @@ MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs \
 MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
 MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
 MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs \
+MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/NewSiteDialog.cs \
 MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs \
 MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs \
 MonoDevelop.Core.Gui/ITextBufferStrategy.cs \
@@ -173,6 +179,10 @@ icons/Icons.32x32.XMLFileIcon \
 icons/Icons.AboutImage \
 icons/Icons.SharpDevelopIcon \
 icons/Icons.TipOfTheDayIcon \
+icons/package-x-generic_22.png \
+icons/package-x-generic.png \
+icons/system-software-update.png \
+icons/system-software-update_22.png \
 icons/gnome-fs-regular.png
 
 GENERATED_FILES = \

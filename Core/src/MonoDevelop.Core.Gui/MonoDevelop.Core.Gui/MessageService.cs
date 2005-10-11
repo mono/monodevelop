@@ -69,6 +69,11 @@ namespace MonoDevelop.Core.Gui
 
 		public void ShowError (Exception ex, string message, Window parent)
 		{
+			ShowError (ex, message, parent, false);
+		}
+		
+		public void ShowError (Exception ex, string message, Window parent, bool modal)
+		{
 			ErrorDialog dlg = new ErrorDialog (parent);
 			
 			if (message != null) {
@@ -83,8 +88,11 @@ namespace MonoDevelop.Core.Gui
 			} else {
 				dlg.AddDetails ("No more details available.", true);
 			}
-			
-			dlg.Show ();
+			if (modal) {
+				dlg.Run ();
+				dlg.Dispose ();
+			} else
+				dlg.Show ();
 		}
 
 		public void ShowWarning(string message)

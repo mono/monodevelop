@@ -1,3 +1,25 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Added parameter to showError
+	to display the dialog as a modal dialog.
+	
+	* MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs: 
+	* MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/NewSiteDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:
+	* Base.glade: Initial implementation of an add-in manager.
+	
+	* Makefile.am: Added new files.
+	
+	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:
+	Made some methods public. Implemented BeginStepTask.
+	
+	* MonoDevelop.Core.Gui.addin.xml:  Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+	Registered some stock icons, applications and services.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:

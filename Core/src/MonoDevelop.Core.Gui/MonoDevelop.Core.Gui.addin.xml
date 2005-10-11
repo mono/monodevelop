@@ -1,8 +1,10 @@
-<AddIn name        = "MonoDevelop.Core.Gui"
-       author      = "Mike Krueger"
+<AddIn id          = "MonoDevelop.Core.Gui"
+       name        = "MonoDevelop Gui Services"
+       author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
-       description = "MonoDevelop Gui module"
+       url         = "http://www.monodevelop.com"
+       description = "Provides basic GUI services"
+	   category    = "MonoDevelop Core"
        version     = "0.9.0">
 
 	<Runtime>
@@ -10,7 +12,7 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.Core" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.9.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Services">
@@ -20,6 +22,13 @@
 		       class = "MonoDevelop.Core.Gui.DefaultFileService"/>
 		<Class id    = "ResourceService"
 		       class = "MonoDevelop.Core.Gui.ResourceService"/>
+		<Class id    = "MessageService"
+		       class = "MonoDevelop.Core.Gui.MessageService"/>
+	</Extension>
+
+	<Extension path = "/Workspace/Applications">
+		<Class id    = "gsetup"
+		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
@@ -118,6 +127,10 @@
 		<StockIcon stockid = "md-web-search-icon" resource = "Icons.16x16.WebSearchIcon" />
 		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.16x16.XMLFileIcon" size = "Menu" />
 		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.32x32.XMLFileIcon" size = "Dnd" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" size = "Button" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
 	</Extension>
 	
 

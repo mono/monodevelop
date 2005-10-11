@@ -86,6 +86,13 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		}
 		
 		[AsyncDispatch]
+		public virtual void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			progressTracker.BeginStepTask (name, totalWork, stepSize);
+			OnProgressChanged ();
+		}
+		
+		[AsyncDispatch]
 		public virtual void EndTask ()
 		{
 			progressTracker.EndTask ();
@@ -136,6 +143,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		
 		[FreeDispatch]
 		public virtual bool IsCancelRequested {
+			[FreeDispatch]
 			get { return canceled; }
 		}
 		
@@ -225,19 +233,19 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			}
 		}		
 		
-		protected Exception ErrorException {
+		public Exception ErrorException {
 			get { return errorException; }
 		}
 		
-		protected StringCollection Errors {
+		public StringCollection Errors {
 			get { return errorsMessages; }
 		}
 		
-		protected StringCollection SuccessMessages {
+		public StringCollection SuccessMessages {
 			get { return successMessages; }
 		}
 		
-		protected StringCollection Warnings {
+		public StringCollection Warnings {
 			get { return warningMessages; }
 		}
 		
