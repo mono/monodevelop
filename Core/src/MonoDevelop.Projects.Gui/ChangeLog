@@ -1,3 +1,9 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Implemented BeginStepTask.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml: Added addin dependencies.
