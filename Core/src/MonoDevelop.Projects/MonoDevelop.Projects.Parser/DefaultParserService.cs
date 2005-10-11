@@ -451,7 +451,7 @@ namespace MonoDevelop.Projects.Parser
 				propertyService.SetProperty ("SharpDevelop.CodeCompletion.DataDirectory", path);
 				propertyService.SaveProperties ();
 			}
-			path = Path.Combine (Runtime.FileUtilityService.GetDirectoryNameWithSeparator(propertyService.ConfigDirectory), "CodeCompletionData2");
+			path = Path.Combine (Runtime.FileUtilityService.GetDirectoryNameWithSeparator(propertyService.ConfigDirectory), "CodeCompletionData");
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 
