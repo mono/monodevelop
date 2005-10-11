@@ -472,33 +472,11 @@ namespace MonoDevelop.Core.AddIns
 		/// </exception>
 		public object CreateObject(string className)
 		{
-			object newInstance;
-			foreach (DictionaryEntry library in runtimeLibraries) {
-				newInstance = ((Assembly)library.Value).CreateInstance(className);
-				if (newInstance != null) {
-					return newInstance;
-				}
-			}
-			newInstance = Assembly.GetExecutingAssembly().CreateInstance(className);
-			
-			if (newInstance == null) {
-				foreach (Assembly assembly in runtimeLibraries.Values) {
-					newInstance = assembly.CreateInstance(className);
-					if (newInstance != null) {
-						break;
-					}
-				}
-				
-				if (newInstance == null) {
-					newInstance = Assembly.GetCallingAssembly().CreateInstance(className);
-				}
-			}
-			
-			if (newInstance == null) {
-				//MessageBox.Show("Type not found: " + className + ". Please check : " + fileName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-			}
-			
-			return newInstance;
+			Type ct = GetType (className);
+			if (ct != null)
+				return Activator.CreateInstance (ct);
+			else
+				return null;
 		}
 		
 		/// <summary>
@@ -509,6 +487,14 @@ namespace MonoDevelop.Core.AddIns
 		/// </exception>
 		public Type GetType (string className)
 		{
+			Type ct = GetTypeInternal (className);
+			if (ct == null)
+				Runtime.LoggingService.Error ("Type '" + className + "' referenced from add-in '" + Id + "' not found.");
+			return ct;
+		}
+		
+		internal Type GetTypeInternal (string className)
+		{
 			foreach (DictionaryEntry library in runtimeLibraries) {
 				Type t = ((Assembly)library.Value).GetType (className);
 				if (t != null)
@@ -518,17 +504,11 @@ namespace MonoDevelop.Core.AddIns
 			// Look in dependencies
 			
 			foreach (AddIn dep in Dependencies) {
-				Type t = dep.GetType (className);
+				Type t = dep.GetTypeInternal (className);
 				if (t != null) return t;
 			}
 			
-			Type ct = Assembly.GetExecutingAssembly().GetType (className);
-			
-			if (ct == null) {
-				//MessageBox.Show("Type not found: " + className + ". Please check : " + fileName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
-			}
-			
-			return ct;
+			return Assembly.GetExecutingAssembly().GetType (className);
 		}		
 		/// <summary>
 		/// Definies an extension point (path in the tree) with its codons.
