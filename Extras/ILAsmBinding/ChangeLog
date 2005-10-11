@@ -1,3 +1,8 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* ILAsmBinding.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+
 2005-10-06  John Luke  <john.luke@gmail.com>
 
 	* ILAsmCompilerManager.cs: remove unused fileUtilityService
