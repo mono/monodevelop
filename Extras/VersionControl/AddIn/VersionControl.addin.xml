@@ -1,8 +1,10 @@
-<AddIn name      = "MonoDevelop Version Control Addin"
+<AddIn id        = "VersionControlPlugin"
+       name      = "MonoDevelop Version Control Addin"
        author    = "Joshua Tauberer"
        copyright = "GPL"
        url       = "http://taubz.for.net/code/diff"
        description = "A MonoDevelop addin for using version control systems like Subversion"
+	   category    = "IDE extensions"
        version   = "0.1">
  
    <Runtime>
@@ -13,7 +15,7 @@
    </Runtime>
  
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
