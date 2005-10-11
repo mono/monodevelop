@@ -50,7 +50,7 @@
                    class = "JavaBinding.ProjectConfigurationPropertyPanel"/>
 	  <DialogPanel id = "JavaOutputOptionsPanel"
 				 _label = "Output"
-				 class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+				 class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
     </Conditional>
   </Extension>
 
