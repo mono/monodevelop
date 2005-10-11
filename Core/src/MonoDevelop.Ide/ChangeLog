@@ -1,3 +1,10 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: MessageService is now registered
+	in the config file.
+
 2005-10-10  John Luke  <john.luke@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: remove call to

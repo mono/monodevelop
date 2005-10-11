@@ -1,20 +1,23 @@
-<AddIn name        = "MonoDevelop.Ide"
-       author      = "Mike Krueger"
+<AddIn id          = "MonoDevelop.Ide"
+       name        = "MonoDevelop Ide"
+       author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
-       description = "MonoDevelop.Ide module"
+       url         = "http://www.monodevelop.com"
+       description = "The MonoDevelop IDE application."
+	   category    = "Applications"
        version     = "0.9.0">
+
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.Core" version="0.9.0"/>
-		<AddIn name="MonoDevelop.Core.Gui" version="0.9.0"/>
-		<AddIn name="MonoDevelop.Projects" version="0.9.0"/>
-		<AddIn name="MonoDevelop.Projects.Gui" version="0.9.0"/>
-		<AddIn name="MonoDevelop.Documentation" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Documentation" version="0.9.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Applications">

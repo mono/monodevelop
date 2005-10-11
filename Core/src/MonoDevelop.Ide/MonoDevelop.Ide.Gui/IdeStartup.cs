@@ -88,8 +88,6 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				ServiceManager.AddService(new IconService());
 				
-				ServiceManager.AddService(new MessageService());
-				
 				Runtime.AddInService.PreloadAddins (monitor,
 					"/SharpDevelop/Workbench",
 					"/SharpDevelop/Views",

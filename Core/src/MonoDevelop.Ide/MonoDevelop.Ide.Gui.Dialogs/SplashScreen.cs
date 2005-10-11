@@ -71,6 +71,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			SetMessage (name);
 		}
 		
+		void IProgressMonitor.BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			tracker.BeginStepTask (name, totalWork, stepSize);
+			SetMessage (name);
+		}
+		
 		void IProgressMonitor.EndTask ()
 		{
 			tracker.EndTask ();
