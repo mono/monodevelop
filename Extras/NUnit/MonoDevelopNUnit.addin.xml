@@ -1,8 +1,10 @@
-<AddIn name	 = "MonoDevelop.NUnit"
-       author	 = "John Luke"
+<AddIn id	 = "MonoDevelop.NUnit"
+       name	 = "NUnit support"
+       author	 = "Lluis Sanchez, John Luke"
        copyright = "GPL"
        url       = "http://monodevelop.com"
-       description = "NUnit testing tool"
+       description = "Integrates NUnit into the MonoDevelop IDE."
+	   category    = "IDE extensions"
        version   = "0.9.0">
 
 	<Runtime>
@@ -10,7 +12,7 @@
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="1.0.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 
 	<Extension path="/Workspace/Services">
