@@ -1,3 +1,9 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Added mdrun tool.
+	* Makefile.am: Generate script for mdrun tool.
+	* mdrun.in: Added.
+
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Makefile.am: No need to set MONO_PATH any more.

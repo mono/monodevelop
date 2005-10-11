@@ -1,6 +1,6 @@
 SUBDIRS = contrib Core build po Extras
 
-bin_SCRIPTS = monodevelop
+bin_SCRIPTS = monodevelop mdrun
 
 all:
 

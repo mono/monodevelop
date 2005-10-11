@@ -1,0 +1,47 @@
+#!/bin/sh
+
+reWrite() {
+    ret=""
+    WD=`pwd`
+    for arg in $*
+    do
+	if [ -f ./$arg ]
+	then
+	    ret="$ret $WD/$arg"
+	else
+	    ret="$ret $arg"
+	fi
+   done
+
+    echo "$ret"
+}
+ 
+MD_BIN_PATH=@prefix@/lib/monodevelop/bin
+
+if [ -n $PKG_CONFIG_PATH ]; then
+	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:@gtksharp_prefix@/lib/pkgconfig/
+else
+	export PKG_CONFIG_PATH=@gtksharp_prefix@/lib/pkgconfig/
+fi
+
+ARGS=`reWrite "$@"`
+set -- $ARGS
+
+case x$1 in
+	x--profile)
+		exec @RUNTIME@ --profile $MD_BIN_PATH/mdrun.exe $@
+		exit 0
+		;;
+	x--debug)
+		export MONODEVELOP_DISPATCH_DEBUG=yes
+		exec @RUNTIME@ --debug $MD_BIN_PATH/mdrun.exe $@
+		exit 0
+		;;
+	x--trace)
+		exec @RUNTIME@ --trace $MD_BIN_PATH/mdrun.exe $@
+		exit 0;
+		;;
+esac
+
+exec @RUNTIME@ $MD_BIN_PATH/mdrun.exe $@
+

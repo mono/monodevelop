@@ -255,6 +255,7 @@ Extras/prj2make-sharp-lib/AssemblyInfo.cs
 Extras/prj2make-sharp-lib/Makefile
 Makefile
 monodevelop
+mdrun
 monodevelop.pc
 po/Makefile.in
 ])
