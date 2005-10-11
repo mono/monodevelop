@@ -17,7 +17,6 @@ namespace MonoDevelop.SourceEditor
 
 		public SourceViewService ()
 		{
-			slm = new SourceLanguagesManager ();
 		}
 
 		public SourceLanguage FindLanguage (string name)
@@ -39,6 +38,8 @@ namespace MonoDevelop.SourceEditor
 		public override void InitializeService ()
 		{
 			base.InitializeService ();
+			
+			slm = new SourceLanguagesManager ();
 			
 			if (!File.Exists (file))
 				return;
