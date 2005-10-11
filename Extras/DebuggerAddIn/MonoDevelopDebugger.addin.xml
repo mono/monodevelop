@@ -1,8 +1,10 @@
-<AddIn name	 = "MonoDevelop Debugger"
+<AddIn id = "MonoDevelop.Debugger"
+       name	= "MonoDevelop Debugger"
        author	 = "Todd Berman"
        copyright = "GPL"
        url       = ""
        description = ""
+	   category    = "IDE extensions"
        version   = "0.3">
 
 	<Runtime>
@@ -10,7 +12,7 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
 	<Extension path="/Workspace/Services">
