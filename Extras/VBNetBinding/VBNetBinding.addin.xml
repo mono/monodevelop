@@ -1,4 +1,5 @@
-<AddIn name        = "VB.NET Language Binding"
+<AddIn id          = "VBBinding"
+       name        = "VB.NET Language Binding"
        author      = "Levi Bard"
        copyright   = "GPL"
        url         = "http://bard.sytes.net/vbnetbinding"
@@ -12,7 +13,7 @@
   </Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
