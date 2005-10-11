@@ -28,18 +28,105 @@
 
 
 using System;
+using System.IO;
+using MonoDevelop.Projects;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
 	public class BuildTool : IApplication
 	{
+		bool help;
+		string file;
+		string project;
+		
 		public int Run (string[] arguments)
 		{
 			Console.WriteLine ("MonoDevelop Build Tool");
 			foreach (string s in arguments)
-				Console.WriteLine ("  " + s);
+				ReadArgument (s);
+			
+			if (file == null) {
+				string[] files = Directory.GetFiles (".", "*.mds");
+				if (files.Length == 0)
+					files = Directory.GetFiles (".", "*.mdp");
+				if (files.Length == 0) {
+					Console.WriteLine ("Project file not found.");
+					return 1;
+				}
+				file = files [0];
+			}
+			
+			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
+			
+			CombineEntry centry = Services.ProjectService.ReadFile (file, monitor);
+			
+			if (project != null) {
+				Combine combine = centry as Combine;
+				centry = null;
+				
+				if (combine != null) {
+					centry = combine.FindProject (project);
+				}
+				if (centry == null) {
+					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
+					return 1;
+				}
+			}
+			
+			ICompilerResult res = centry.Build (monitor);
+			
 			return 0;
+		}
+		
+		void ReadArgument (string argument)
+		{
+			string optionValuePair;
+			
+			if (argument.StartsWith("--")) {
+				optionValuePair = argument.Substring(2);
+			}
+			else if (argument.StartsWith("/") || argument.StartsWith("-")) {
+				optionValuePair = argument.Substring(1);
+			}
+			else {
+				return;
+			}
+			
+			string option;
+			string value;
+			
+			int indexOfEquals = optionValuePair.IndexOf(':');
+			if (indexOfEquals > 0) {
+				option = optionValuePair.Substring(0, indexOfEquals);
+				value = optionValuePair.Substring(indexOfEquals + 1);
+			}
+			else {
+				option = optionValuePair;
+				value = null;
+			}
+			
+			switch (option)
+			{
+				case "f":
+				case "buildfile":
+				    file = value;
+				    break;
+
+				case "help":
+				case "?":
+				    help = true;
+				    break;
+
+				case "p":
+				case "project":
+				    project = value;
+				    break;
+
+				default:
+				    throw new Exception("Unknown option '" + option + "'");
+			}
 		}
 	}
 }

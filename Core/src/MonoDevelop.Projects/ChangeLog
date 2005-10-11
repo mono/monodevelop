@@ -1,3 +1,9 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/BuildTool.cs: Basic implementation of build tool.
+	* MonoDevelop.Projects.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+
 2005-10-06  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs: Get serializable types from
