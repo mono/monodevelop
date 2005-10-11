@@ -1,3 +1,7 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* monodevelop.pc.in: Fix library paths.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Added mdrun tool.
