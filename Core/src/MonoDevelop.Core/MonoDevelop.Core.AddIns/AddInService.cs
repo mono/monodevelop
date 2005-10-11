@@ -154,12 +154,14 @@ namespace MonoDevelop.Core.AddIns
 						monitor.Step (1);
 						continue;
 					}
+
 					monitor.BeginTask ("Loading " + iad.Addin.Id + " add-in", 1);
 					try {
 						AddinError err = AddInTreeSingleton.InsertAddIn (iad.ConfigFile);
 						if (err != null) {
 							ReportLoadError (err);
-							Runtime.LoggingService.Error ("Add-in failed to load: " + iad.Addin.Id, err);
+							Runtime.LoggingService.Error ("Add-in failed to load: " + iad.Addin.Id);
+							Runtime.LoggingService.Error (err.Exception);
 						} else {
 							Runtime.LoggingService.Info ("Loaded add-in: " + iad.Addin.Id);
 							AddIn ad = AddInTreeSingleton.AddInTree.AddIns [iad.Addin.Id];

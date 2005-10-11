@@ -37,6 +37,7 @@ namespace MonoDevelop.Core
 	public interface IProgressMonitor: IDisposable
 	{
 		void BeginTask (string name, int totalWork);
+		void BeginStepTask (string name, int totalWork, int stepSize);
 		void EndTask ();
 		void Step (int work);
 		

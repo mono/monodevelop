@@ -39,6 +39,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 	{
 		XmlDocument configDoc;
 		public StringCollection LocalAssemblies = new StringCollection ();
+		public StringCollection DataFiles = new StringCollection ();
+		public StringCollection AllFiles = new StringCollection ();
 		
 		public XmlDocument Content {
 			get { return configDoc; }
@@ -77,8 +79,19 @@ namespace MonoDevelop.Core.AddIns.Setup
 					if (check && !File.Exists (asmFile))
 						throw new InstallException ("The file '" + asm + "' is referenced in the configuration file but it was not found in package.");
 					config.LocalAssemblies.Add (asm);
+					config.AllFiles.Add (asm);
+				} else {
+					string file = elem.GetAttribute ("file");
+					if (file != "") {
+						string filePath = Path.Combine (tempFolder, file);
+						if (check && !File.Exists (filePath))
+							throw new InstallException ("The file '" + file + "' is referenced in the configuration file but it was not found in package.");
+						config.DataFiles.Add (file);
+						config.AllFiles.Add (file);
+					}
 				}
 			}
+			
 			return config;
 		}
 	}

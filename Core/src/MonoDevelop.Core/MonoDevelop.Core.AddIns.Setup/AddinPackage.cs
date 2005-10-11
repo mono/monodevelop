@@ -51,12 +51,17 @@ namespace MonoDevelop.Core.AddIns.Setup
 		string tempFolder;
 		string configFile;
 		bool installed;
+		AddinSetupInfo iaddin;
 		
 		public AddinInfo Addin {
 			get { return info; }
 		}
 		
-		public static AddinPackage FromAddin (AddinRepositoryEntry repAddin)
+		public override string Name {
+			get { return info.Name + " v" + info.Version; }
+		}
+		
+		public static AddinPackage FromRepository (AddinRepositoryEntry repAddin)
 		{
 			AddinPackage pack = new AddinPackage ();
 			pack.info = repAddin.Addin;
@@ -69,6 +74,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 			AddinPackage pack = new AddinPackage ();
 			pack.info = ReadAddinInfo (file);
 			pack.packFile = file;
+			return pack;
+		}
+		
+		public static AddinPackage FromInstalledAddin (AddinSetupInfo sinfo)
+		{
+			AddinPackage pack = new AddinPackage ();
+			pack.info = sinfo.Addin;
 			return pack;
 		}
 		
@@ -85,6 +97,25 @@ namespace MonoDevelop.Core.AddIns.Setup
 			throw new InstallException ("Addin configuration file not found in package.");
 		}
 		
+		public override bool IsUpgradeOf (Package p)
+		{
+			AddinPackage ap = p as AddinPackage;
+			if (ap == null) return false;
+			return info.SupportsVersion (ap.info.Version);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			AddinPackage ap = ob as AddinPackage;
+			if (ap == null) return false;
+			return ap.info.Id == info.Id && ap.info.Version == info.Version;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return (info.Id + info.Version).GetHashCode ();
+		}
+		
 		public override void PrepareInstall (IProgressMonitor monitor, SetupService service)
 		{
 			if (service.GetInstalledAddin (info.Id, info.Version) != null)
@@ -93,11 +124,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (url != null)
 				packFile = service.DownloadFile (monitor, url);
 			
-			string bname = Path.Combine (Path.GetTempPath (), "mdtmp");
-			tempFolder = bname;
-			int n = 0;
-			while (Directory.Exists (tempFolder))
-				tempFolder = bname + (++n);
+			tempFolder = CreateTempFolder ();
 			
 			ZipDecompressor zip = new ZipDecompressor ();
 			using (FileStream fs = new FileStream (packFile, FileMode.Open, FileAccess.Read)) {
@@ -124,8 +151,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		public override void RollbackInstall (IProgressMonitor monitor, SetupService service)
 		{
-			if (installed)
-				service.UnregisterAddin (monitor, info);
+			if (installed) {
+				iaddin = service.GetInstalledAddin (info.Id);
+				if (iaddin != null)
+					CommitUninstall (monitor, service);
+			}
 		}
 		
 		public override void EndInstall (IProgressMonitor monitor, SetupService service)
@@ -136,12 +166,134 @@ namespace MonoDevelop.Core.AddIns.Setup
 				Directory.Delete (tempFolder, true);
 		}
 		
-		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection packages, PackageDependencyCollection unresolved)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection installedRequired, PackageDependencyCollection unresolved)
 		{
+			AddinSetupInfo ia = service.GetInstalledAddin (info.Id);
+			
+			if (ia != null) {
+				Package p = AddinPackage.FromInstalledAddin (ia);
+				if (!toUninstall.Contains (p))
+					toUninstall.Add (p);
+					
+				if (!info.SupportsVersion (ia.Addin.Version)) {
+				
+					// This addin breaks the api of the currently installed one,
+					// it has to be removed, together with all dependencies
+					
+					AddinSetupInfo[] ainfos = service.GetDependentAddins (info.Id, true);
+					foreach (AddinSetupInfo ainfo in ainfos) {
+						p = AddinPackage.FromInstalledAddin (ainfo);
+						if (!toUninstall.Contains (p))
+							toUninstall.Add (p);
+					}
+				}
+			}
+			
 			foreach (PackageDependency dep in info.Dependencies) {
-				if (!dep.Resolve (monitor, service, packages))
-					unresolved.Add (dep);
+				dep.Resolve (monitor, service, toInstall, toUninstall, installedRequired, unresolved);
 			}
 		}
+		
+		public override void PrepareUninstall (IProgressMonitor monitor, SetupService service)
+		{
+			string id = info.Id;
+			iaddin = service.GetInstalledAddin (id, info.Version);
+			if (iaddin == null)
+				throw new InstallException ("The addin '" + id + "' is not installed.");
+
+			AddinConfiguration conf = iaddin.GetConfiguration ();
+			string basePath = Path.GetDirectoryName (iaddin.ConfigFile);
+			
+			if ((File.GetAttributes (iaddin.ConfigFile) & FileAttributes.ReadOnly) != 0)
+				throw new InstallException ("The addin '" + id + " can't be uninstalled with the current user permissions.");
+
+			foreach (string relPath in conf.AllFiles) {
+				string path = Path.Combine (basePath, relPath);
+				if (!File.Exists (path))
+					continue;
+				if ((File.GetAttributes (path) & FileAttributes.ReadOnly) != 0)
+					throw new InstallException ("The addin '" + id + " can't be uninstalled with the current user permissions.");
+			}
+			
+			tempFolder = CreateTempFolder ();
+			CopyAddinFiles (monitor, conf, iaddin.ConfigFile, tempFolder);
+		}
+		
+		public override void CommitUninstall (IProgressMonitor monitor, SetupService service)
+		{
+			monitor.Log.WriteLine ("Uninstalling " + info.Id + " v" + info.Version);
+			
+			AddinConfiguration conf = iaddin.GetConfiguration ();
+			string basePath = Path.GetDirectoryName (iaddin.ConfigFile);
+			
+			foreach (string relPath in conf.AllFiles) {
+				string path = Path.Combine (basePath, relPath);
+				if (!File.Exists (path))
+					continue;
+				File.Delete (path);
+			}
+			
+			File.Delete (iaddin.ConfigFile);
+			
+			if (Directory.GetFiles (basePath).Length == 0) {
+				try {
+					Directory.Delete (basePath);
+				} catch (Exception ex) {
+					monitor.ReportWarning ("Directory " + basePath + " could not be deleted.");
+				}
+			}
+			
+			monitor.Log.WriteLine ("Done");
+		}
+		
+		public override void RollbackUninstall (IProgressMonitor monitor, SetupService service)
+		{
+			if (tempFolder != null) {
+				string configFile = Path.Combine (tempFolder, Path.GetFileName (iaddin.ConfigFile));
+				AddinConfiguration conf = AddinConfiguration.Read (configFile);
+				
+				string addinDir = service.GetAddinDirectory (iaddin.Addin);
+				CopyAddinFiles (monitor, conf, configFile, addinDir);
+			}
+		}
+		
+		public override void EndUninstall (IProgressMonitor monitor, SetupService service)
+		{
+			if (tempFolder != null)
+				Directory.Delete (tempFolder, true);
+			tempFolder = null;
+		}
+		
+		void CopyAddinFiles (IProgressMonitor monitor, AddinConfiguration conf, string configFile, string destPath)
+		{
+			if (!Directory.Exists (destPath))
+				Directory.CreateDirectory (destPath);
+			
+			string dfile = Path.Combine (destPath, Path.GetFileName (configFile));
+			if (File.Exists (dfile))
+				File.Delete (dfile);
+				
+			File.Copy (configFile, dfile);
+			
+			string basePath = Path.GetDirectoryName (configFile);
+			
+			foreach (string relPath in conf.AllFiles) {
+				string path = Path.Combine (basePath, relPath);
+				if (!File.Exists (path))
+					continue;
+				
+				string destf = Path.Combine (destPath, Path.GetDirectoryName (relPath));
+				if (!Directory.Exists (destf))
+					Directory.CreateDirectory (destf);
+					
+				dfile = Path.Combine (destPath, relPath);
+				if (File.Exists (dfile))
+					File.Delete (dfile);
+
+				File.Copy (path, dfile);
+			}
+		}
+		
+		
 	}
 }

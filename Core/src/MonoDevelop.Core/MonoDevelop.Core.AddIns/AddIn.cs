@@ -27,6 +27,7 @@ namespace MonoDevelop.Core.AddIns
 	/// </summary>
 	public class AddIn
 	{
+		string id          = null;
 		string name        = null;
 		string author      = null;
 		string copyright   = null;
@@ -59,6 +60,15 @@ namespace MonoDevelop.Core.AddIns
 		public string Name {
 			get {
 				return name;
+			}
+		}
+		
+		/// <summary>
+		/// returns the Name of the AddIn
+		/// </summary>
+		public string Id {
+			get {
+				return id;
 			}
 		}
 		
@@ -181,17 +191,17 @@ namespace MonoDevelop.Core.AddIns
 				Console.WriteLine (fileName + " was malformed, returning");
 				return;
 			}
-			
-			try {
-				name        = doc.DocumentElement.Attributes["name"].InnerText;
-				author      = doc.DocumentElement.Attributes["author"].InnerText;
-				copyright   = doc.DocumentElement.Attributes["copyright"].InnerText;
-				url         = doc.DocumentElement.Attributes["url"].InnerText;
-				description = doc.DocumentElement.Attributes["description"].InnerText;
-				version     = doc.DocumentElement.Attributes["version"].InnerText;
-			} catch (Exception) {
-				throw new AddInLoadException("No or malformed 'AddIn' node");
-			}
+
+			id = doc.DocumentElement.GetAttribute ("id");
+			if (id == "")
+				throw new AddInLoadException ("Missing id attribute");
+				
+			name = doc.DocumentElement.GetAttribute ("name");
+			author = doc.DocumentElement.GetAttribute ("author");
+			copyright = doc.DocumentElement.GetAttribute ("copyright");
+			url = doc.DocumentElement.GetAttribute ("url");
+			description = doc.DocumentElement.GetAttribute ("description");
+			version = doc.DocumentElement.GetAttribute ("version");
 			
 			XmlElement deps = doc.DocumentElement ["Dependencies"];
 			if (deps != null)
@@ -253,7 +263,7 @@ namespace MonoDevelop.Core.AddIns
 					if (dep == null) continue;
 					switch (dep.LocalName) {
 						case "AddIn": {
-							string aname = dep.GetAttribute ("name");
+							string aname = dep.GetAttribute ("id");
 							AddIn addin = AddInTreeSingleton.AddInTree.AddIns [aname];
 							if (addin == null)
 								throw new MissingDependencyException ("Addin: " + aname);

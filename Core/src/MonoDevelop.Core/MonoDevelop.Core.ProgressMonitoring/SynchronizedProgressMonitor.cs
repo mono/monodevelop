@@ -49,6 +49,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			}
 		}
 		
+		public void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			lock (monitor.SyncRoot) {
+				monitor.BeginStepTask (name, totalWork, stepSize);
+			}
+		}
+		
 		public void EndTask ()
 		{
 			lock (monitor.SyncRoot) {

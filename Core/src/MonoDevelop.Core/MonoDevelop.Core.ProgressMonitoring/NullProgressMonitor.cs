@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections;
 using System.Threading;
 using System.IO;
 
@@ -37,9 +38,39 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		bool done, canceled, error;
 		ManualResetEvent waitEvent;
+		ArrayList errors;
+		ArrayList warnings;
+		ArrayList messages;
 		
 		public object SyncRoot {
 			get { return this; }
+		}
+		
+		public string[] Messages {
+			get {
+				if (messages != null)
+					return (string[]) messages.ToArray (typeof(string));
+				else
+					return new string [0];
+			}
+		}
+		
+		public string[] Warnings {
+			get {
+				if (warnings != null)
+					return (string[]) warnings.ToArray (typeof(string));
+				else
+					return new string [0];
+			}
+		}
+		
+		public ProgressError[] Errors {
+			get {
+				if (errors != null)
+					return (ProgressError[]) errors.ToArray (typeof(ProgressError));
+				else
+					return new ProgressError [0];
+			}
 		}
 		
 		public virtual void BeginTask (string name, int totalWork)
@@ -47,6 +78,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		public virtual void EndTask ()
+		{
+		}
+		
+		public virtual void BeginStepTask (string name, int totalWork, int stepSize)
 		{
 		}
 		
@@ -60,14 +95,31 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public virtual void ReportSuccess (string message)
 		{
+			if (messages == null)
+				messages = new ArrayList ();
+			messages.Add (message);
 		}
 		
 		public virtual void ReportWarning (string message)
 		{
+			if (warnings == null)
+				warnings = new ArrayList ();
+			messages.Add (message);
 		}
 		
 		public virtual void ReportError (string message, Exception ex)
 		{
+			if (errors == null)
+				errors = new ArrayList ();
+				
+			if (message == null && ex != null)
+				message = ex.Message;
+			else if (message != null && ex != null) {
+				if (!message.EndsWith (".")) message += ".";
+				message += " " + ex.Message;
+			}
+			
+			errors.Add (new ProgressError (message, ex));
 			error = true;
 		}
 		
@@ -160,5 +212,25 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		event MonitorHandler cancelRequestedEvent;
 		event OperationHandler completedEvent;
+	}
+	
+	public class ProgressError
+	{
+		Exception ex;
+		string message;
+		
+		public ProgressError (string message, Exception ex)
+		{
+			this.ex = ex;
+			this.message = message;
+		}
+		
+		public string Message {
+			get { return message; }
+		}
+		
+		public Exception Exception {
+			get { return ex; }
+		}
 	}
 }

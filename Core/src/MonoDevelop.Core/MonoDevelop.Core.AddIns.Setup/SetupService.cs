@@ -39,6 +39,7 @@ using System.Net;
 using ICSharpCode.SharpZipLib.Zip;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Utils.DirectoryArchive;
 
 namespace MonoDevelop.Core.AddIns.Setup
@@ -86,31 +87,55 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return Path.Combine (UserConfigPath, "addins.config"); }
 		}
 		
-		public void Install (IProgressMonitor monitor, params string[] files)
+		public bool Install (IProgressMonitor monitor, params string[] files)
 		{
 			Package[] packages = new Package [files.Length];
 			for (int n=0; n<files.Length; n++)
 				packages [n] = AddinPackage.FromFile (files [n]);
-			Install (monitor, packages);
+			return Install (monitor, packages);
 		}
 		
-		public void Install (IProgressMonitor monitor, params AddinRepositoryEntry[] addins)
+		public bool Install (IProgressMonitor monitor, params AddinRepositoryEntry[] addins)
 		{
 			Package[] packages = new Package [addins.Length];
 			for (int n=0; n<addins.Length; n++)
-				packages [n] = AddinPackage.FromAddin (addins [n]);
-			Install (monitor, packages);
+				packages [n] = AddinPackage.FromRepository (addins [n]);
+			return Install (monitor, packages);
 		}
 		
-		public void Install (IProgressMonitor monitor, params Package[] packages)
+		public bool Install (IProgressMonitor monitor, params Package[] packages)
 		{
+			PackageCollection packs = new PackageCollection ();
+			packs.AddRange (packages);
+			return Install (monitor, packs);
+		}
+		
+		public bool Install (IProgressMonitor monitor, PackageCollection packs)
+		{
+			PackageCollection toUninstall;
+			PackageDependencyCollection unresolved;
+			if (!Runtime.SetupService.ResolveDependencies (monitor, packs, out toUninstall, out unresolved)) {
+				monitor.ReportError ("Not all dependencies could be resolved.", null);
+				return false;
+			}
+			
 			ArrayList prepared = new ArrayList ();
+			ArrayList uninstallPrepared = new ArrayList ();
 			bool rollback = false;
 			
-			foreach (Package mpack in packages) {
+			monitor.BeginTask (GettextCatalog.GetString ("Installing addins..."), 100);
+			
+			// Prepare install
+			
+			monitor.BeginStepTask (GettextCatalog.GetString ("Initializing installation"), toUninstall.Count + packs.Count + 1, 75);
+			
+			foreach (Package mpack in toUninstall) {
 				try {
-					mpack.PrepareInstall (monitor, this);
-					prepared.Add (mpack);
+					mpack.PrepareUninstall (monitor, this);
+					uninstallPrepared.Add (mpack);
+					if (monitor.IsCancelRequested)
+						throw new InstallException ("Installation cancelled.");
+					monitor.Step (1);
 				} catch (Exception ex) {
 					monitor.ReportError (null, ex);
 					rollback = true;
@@ -118,10 +143,35 @@ namespace MonoDevelop.Core.AddIns.Setup
 				}
 			}
 			
+			monitor.Step (1);
+
+			foreach (Package mpack in packs) {
+				try {
+					mpack.PrepareInstall (monitor, this);
+					if (monitor.IsCancelRequested)
+						throw new InstallException ("Installation cancelled.");
+					prepared.Add (mpack);
+					monitor.Step (1);
+				} catch (Exception ex) {
+					monitor.ReportError (null, ex);
+					rollback = true;
+					break;
+				}
+			}
+			
+			monitor.EndTask ();
+			
+			monitor.BeginStepTask (GettextCatalog.GetString ("Installing"), toUninstall.Count + packs.Count + 1, 20);
+			
+			// Commit install
+			
 			if (!rollback) {
-				foreach (Package mpack in packages) {
+				foreach (Package mpack in toUninstall) {
 					try {
-						mpack.CommitInstall (monitor, this);
+						mpack.CommitUninstall (monitor, this);
+						if (monitor.IsCancelRequested)
+							throw new InstallException ("Installation cancelled.");
+						monitor.Step (1);
 					} catch (Exception ex) {
 						monitor.ReportError (null, ex);
 						rollback = true;
@@ -130,94 +180,365 @@ namespace MonoDevelop.Core.AddIns.Setup
 				}
 			}
 			
-			if (rollback) {
-				foreach (Package mpack in prepared) {
+			monitor.Step (1);
+			
+			if (!rollback) {
+				foreach (Package mpack in packs) {
 					try {
-						mpack.RollbackInstall (monitor, this);
+						mpack.CommitInstall (monitor, this);
+						if (monitor.IsCancelRequested)
+							throw new InstallException ("Installation cancelled.");
+						monitor.Step (1);
 					} catch (Exception ex) {
 						monitor.ReportError (null, ex);
+						rollback = true;
+						break;
 					}
 				}
 			}
 			
+			monitor.EndTask ();
+			
+			// Rollback if failed
+			
+			if (monitor.IsCancelRequested)
+				monitor = new NullProgressMonitor ();
+			
+			if (rollback) {
+				monitor.BeginStepTask (GettextCatalog.GetString ("Finishing installation"), (prepared.Count + uninstallPrepared.Count)*2 + 1, 5);
+			
+				foreach (Package mpack in prepared) {
+					try {
+						mpack.RollbackInstall (monitor, this);
+						monitor.Step (1);
+					} catch (Exception ex) {
+						monitor.ReportError (null, ex);
+					}
+				}
+			
+				foreach (Package mpack in uninstallPrepared) {
+					try {
+						mpack.RollbackUninstall (monitor, this);
+						monitor.Step (1);
+					} catch (Exception ex) {
+						monitor.ReportError (null, ex);
+					}
+				}
+			} else
+				monitor.BeginStepTask (GettextCatalog.GetString ("Finishing installation"), prepared.Count + uninstallPrepared.Count + 1, 5);
+			
+			// Cleanup
+			
 			foreach (Package mpack in prepared) {
 				try {
 					mpack.EndInstall (monitor, this);
+					monitor.Step (1);
 				} catch (Exception ex) {
 					monitor.Log.WriteLine (ex);
 				}
 			}
 			
+			monitor.Step (1);
+
+			foreach (Package mpack in uninstallPrepared) {
+				try {
+					mpack.EndUninstall (monitor, this);
+					monitor.Step (1);
+				} catch (Exception ex) {
+					monitor.Log.WriteLine (ex);
+				}
+			}
+			
+			monitor.EndTask ();
+
+			monitor.EndTask ();
+			
 			SaveConfiguration ();
-		}
-		
-		public void Uninstall (IProgressMonitor monitor, string id, string version)
-		{
-			AddinSetupInfo ia = GetInstalledAddin (id, version);
-			if (ia == null)
-				throw new InstallException ("The addin '" + id + "' is not installed.");
-			Uninstall (monitor, ia.Addin);
+			ResetCachedData ();
+			
+			return !rollback;
 		}
 		
 		public void Uninstall (IProgressMonitor monitor, AddinInfo addin)
 		{
-			if (GetDependentAddins (addin, false).Length != 0)
-				throw new InstallException ("The addin '" + addin.Id + "' can't be uninstalled because other addins depend on it.");
-			UnregisterAddin (monitor, addin);
+			Uninstall (monitor, addin.Id);
 		}
 		
-		public AddinInfo[] GetDependentAddins (AddinInfo addin, bool recursive)
+		public void Uninstall (IProgressMonitor monitor, string id)
 		{
-			ArrayList list = new ArrayList ();
-			foreach (AddinSetupInfo iaddin in InternalGetInstalledAddins ()) {
-				foreach (PackageDependency dep in iaddin.Addin.Dependencies) {
-					AddinDependency adep = dep as AddinDependency;
-					if (adep != null && adep.AddinId == addin.Id && adep.Version == addin.Version)
-						list.Add (iaddin.Addin);
-					else if (recursive)
-						list.AddRange (GetDependentAddins (addin, true));
+			bool rollback = false;
+			ArrayList toUninstall = new ArrayList ();
+			ArrayList uninstallPrepared = new ArrayList ();
+			
+			AddinSetupInfo ia = GetInstalledAddin (id);
+			if (ia == null)
+				throw new InstallException ("The addin '" + id + "' is not installed.");
+
+			toUninstall.Add (AddinPackage.FromInstalledAddin (ia));
+
+			AddinSetupInfo[] deps = GetDependentAddins (id, true);
+			foreach (AddinSetupInfo dep in deps)
+				toUninstall.Add (AddinPackage.FromInstalledAddin (dep));
+			
+			monitor.BeginTask ("Uninstalling addins", toUninstall.Count*2 + uninstallPrepared.Count + 1);
+			
+			// Prepare install
+			
+			foreach (Package mpack in toUninstall) {
+				try {
+					mpack.PrepareUninstall (monitor, this);
+					monitor.Step (1);
+					uninstallPrepared.Add (mpack);
+				} catch (Exception ex) {
+					monitor.ReportError (null, ex);
+					rollback = true;
+					break;
 				}
 			}
-			return (AddinInfo[]) list.ToArray (typeof (AddinInfo));
+			
+			// Commit install
+			
+			if (!rollback) {
+				foreach (Package mpack in toUninstall) {
+					try {
+						mpack.CommitUninstall (monitor, this);
+						monitor.Step (1);
+					} catch (Exception ex) {
+						monitor.ReportError (null, ex);
+						rollback = true;
+						break;
+					}
+				}
+			}
+			
+			// Rollback if failed
+			
+			if (rollback) {
+				monitor.BeginTask ("Rolling back uninstall", uninstallPrepared.Count);
+				foreach (Package mpack in uninstallPrepared) {
+					try {
+						mpack.RollbackUninstall (monitor, this);
+					} catch (Exception ex) {
+						monitor.ReportError (null, ex);
+					}
+				}
+				monitor.EndTask ();
+			}
+			monitor.Step (1);
+
+			// Cleanup
+			
+			foreach (Package mpack in uninstallPrepared) {
+				try {
+					mpack.EndUninstall (monitor, this);
+					monitor.Step (1);
+				} catch (Exception ex) {
+					monitor.Log.WriteLine (ex);
+				}
+			}
+			
+			monitor.EndTask ();
+			
+			SaveConfiguration ();
+			ResetCachedData ();
 		}
 		
-		public bool ResolveDependencies (IProgressMonitor monitor, PackageCollection packages, PackageDependencyCollection unresolved)
+		public AddinSetupInfo[] GetDependentAddins (string id, bool recursive)
 		{
+			ArrayList list = new ArrayList ();
+			FindDependentAddins (list, id, recursive);
+			return (AddinSetupInfo[]) list.ToArray (typeof (AddinSetupInfo));
+		}
+		
+		void FindDependentAddins (ArrayList list, string id, bool recursive)
+		{
+			foreach (AddinSetupInfo iaddin in InternalGetInstalledAddins ()) {
+				if (list.Contains (iaddin))
+					continue;
+				foreach (PackageDependency dep in iaddin.Addin.Dependencies) {
+					AddinDependency adep = dep as AddinDependency;
+					if (adep != null && adep.AddinId == id) {
+						list.Add (iaddin);
+						if (recursive)
+							FindDependentAddins (list, iaddin.Addin.Id, true);
+					}
+				}
+			}
+		}
+		
+		public bool ResolveDependencies (IProgressMonitor monitor, PackageCollection packages, out PackageCollection toUninstall, out PackageDependencyCollection unresolved)
+		{
+			PackageCollection requested = new PackageCollection();
+			requested.AddRange (packages);
+			
+			unresolved = new PackageDependencyCollection ();
+			toUninstall = new PackageCollection ();
+			PackageCollection installedRequired = new PackageCollection ();
+			
 			for (int n=0; n<packages.Count; n++) {
 				Package p = packages [n];
-				p.Resolve (monitor, this, packages, unresolved);
+				p.Resolve (monitor, this, packages, toUninstall, installedRequired, unresolved);
 			}
-			return unresolved.Count == 0;
+			
+			if (unresolved.Count != 0) {
+				foreach (PackageDependency dep in unresolved) {
+					monitor.ReportError (string.Format (GettextCatalog.GetString ("The package '{0}' could not be found in any repository"), dep.Name), null);
+				}
+				return false;
+			}
+			
+			// Check that we are not uninstalling packages that are required
+			// by packages being installed.
+
+			foreach (Package p in installedRequired) {
+				if (toUninstall.Contains (p)) {
+					// Only accept to uninstall this package if we are
+					// going to install a newer version.
+					bool foundUpgrade = false;
+					foreach (Package tbi in packages)
+						if (tbi.Equals (p) || tbi.IsUpgradeOf (p)) {
+							foundUpgrade = true;
+							break;
+						}
+					if (!foundUpgrade)
+						return false;
+				}
+			}
+			
+			// Check that we are not installing two versions of the same addin
+			
+			PackageCollection resolved = new PackageCollection();
+			resolved.AddRange (packages);
+			
+			bool error = false;
+			
+			for (int n=0; n<packages.Count; n++) {
+				AddinPackage ap = packages [n] as AddinPackage;
+				if (ap == null) continue;
+				
+				for (int k=n+1; k<packages.Count; k++) {
+					AddinPackage otherap = packages [k] as AddinPackage;
+					if (otherap == null) continue;
+					
+					if (ap.Addin.Id == otherap.Addin.Id) {
+						if (ap.IsUpgradeOf (otherap)) {
+							if (requested.Contains (otherap)) {
+								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+								error = true;
+							} else {
+								packages.RemoveAt (k);
+							}
+						} else if (otherap.IsUpgradeOf (ap)) {
+							if (requested.Contains (ap)) {
+								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+								error = true;
+							} else {
+								packages.RemoveAt (n);
+								n--;
+							}
+						} else {
+							error = true;
+							monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+						}
+						break;
+					}
+				}
+			}
+			
+			return !error;
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableUpdates ()
+		{
+			return GetAvailableAddin (null, null, null, true);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableUpdates (string repositoryUrl)
+		{
+			return GetAvailableAddin (repositoryUrl, null, null, true);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableUpdates (string id, string version)
+		{
+			return GetAvailableAddin (null, id, version, true);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableUpdates (string repositoryUrl, string id, string version)
+		{
+			return GetAvailableAddin (repositoryUrl, id, version, true);
 		}
 		
 		public AddinRepositoryEntry[] GetAvailableAddins ()
 		{
-			return GetAvailableAddins (null, null);
+			return GetAvailableAddin (null, null, null, false);
 		}
 		
-		public AddinRepositoryEntry[] GetAvailableAddins (string id)
+		public AddinRepositoryEntry[] GetAvailableAddins (string repositoryUrl)
 		{
-			return GetAvailableAddins (id, null);
+			return GetAvailableAddin (repositoryUrl, null, null);
 		}
 		
-		public AddinRepositoryEntry[] GetAvailableAddins (string id, string version)
+		public AddinRepositoryEntry[] GetAvailableAddin (string id, string version)
+		{
+			return GetAvailableAddin (null, id, version);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableAddin (string repositoryUrl, string id, string version)
+		{
+			return GetAvailableAddin (repositoryUrl, id, version, false);
+		}
+		
+		AddinRepositoryEntry[] GetAvailableAddin (string repositoryUrl, string id, string version, bool updates)
 		{
 			ArrayList list = new ArrayList ();
-			foreach (RepositoryRecord rr in Configuration.Repositories) {
+			
+			IEnumerable ee;
+			if (repositoryUrl != null) {
+				ArrayList repos = new ArrayList ();
+				GetRepositoryTree (repositoryUrl, repos);
+				ee = repos;
+			} else
+				ee = Configuration.Repositories;
+			
+			foreach (RepositoryRecord rr in ee) {
 				foreach (AddinRepositoryEntry addin in rr.GetCachedRepository().Addins) {
-					if ((id == null || addin.Addin.Id == id) && (version == null || addin.Addin.Version == version))
+					if ((id == null || addin.Addin.Id == id) && (version == null || addin.Addin.Version == version)) {
+						if (updates) {
+							AddinSetupInfo ainfo = GetInstalledAddin (addin.Addin.Id);
+							if (ainfo == null || AddinInfo.CompareVersions (ainfo.Addin.Version, addin.Addin.Version) <= 0)
+								continue;
+						}
 						list.Add (addin);
+					}
 				}
 			}
 			return (AddinRepositoryEntry[]) list.ToArray (typeof(AddinRepositoryEntry));
 		}
 		
-		public AddinInfo[] GetInstalledAddins ()
+		void GetRepositoryTree (string url, ArrayList list)
 		{
-			ArrayList list = new ArrayList ();
-			foreach (AddinSetupInfo ia in InternalGetInstalledAddins ())
-				list.Add (ia.Addin);
-			return (AddinInfo[]) list.ToArray (typeof(AddinInfo));
+			RepositoryRecord rr = FindRepositoryRecord (url);
+			if (rr == null) return;
+			
+			if (list.Contains (rr))
+				return;
+				
+			list.Add (rr);
+			Repository rep = rr.GetCachedRepository ();
+			if (rep == null)
+				return;
+			
+			Uri absUri = new Uri (url);
+			foreach (ReferenceRepositoryEntry re in rep.Repositories) {
+				Uri refRepUri = new Uri (absUri, re.Url);
+				GetRepositoryTree (refRepUri.ToString (), list);
+			}
+		}
+		
+		public AddinSetupInfo[] GetInstalledAddins ()
+		{
+			ArrayList list = InternalGetInstalledAddins ();
+			return (AddinSetupInfo[]) list.ToArray (typeof(AddinSetupInfo));
 		}
 		
 		public AddinSetupInfo GetInstalledAddin (string id)
@@ -239,8 +560,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (addinSetupInfos != null)
 				return addinSetupInfos;
 
-			DateTime t = DateTime.Now;
-			
 			addinSetupInfos = new ArrayList ();
 			
 			foreach (string dir in AddinDirectories) {
@@ -248,7 +567,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 				foreach (string file in files)
 					addinSetupInfos.Add (new AddinSetupInfo (file));
 			}
-//			Console.WriteLine ("GOT IN " + (DateTime.Now - t).TotalMilliseconds);
 			return addinSetupInfos;
 		}
 		
@@ -258,8 +576,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 			
 			Hashtable hash = new Hashtable ();
 			ArrayList apps = new ArrayList ();
-			
-			DateTime t = DateTime.Now;
 			
 			foreach (AddinSetupInfo ia in InternalGetInstalledAddins ()) {
 				AddinConfiguration conf = ia.GetConfiguration ();
@@ -285,7 +601,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 			addinStatus.ExtensionRelations = rels;
 			addinStatus.Applications = (ApplicationRecord[]) apps.ToArray (typeof(ApplicationRecord));
-//			Console.WriteLine ("GOT IN " + (DateTime.Now - t).TotalMilliseconds);
 			
 			return addinStatus;
 		}
@@ -321,9 +636,32 @@ namespace MonoDevelop.Core.AddIns.Setup
 			return (RepositoryRecord[]) list.ToArray (typeof (RepositoryRecord));
 		}
 		
-		public void RegisterRepository (string url)
+		public bool IsRepositoryRegistered (string url)
 		{
+			return FindRepositoryRecord (url) != null;
+		}
+		
+		public RepositoryRecord RegisterRepository (IProgressMonitor monitor, string url)
+		{
+			if (!url.EndsWith (".mrep")) {
+				Uri uri = new Uri (new Uri (url), "main.mrep");
+				url = uri.ToString ();
+			}
+			
 			RegisterRepository (url, false);
+			try {
+				UpdateRepository (monitor, url);
+				RepositoryRecord rr = FindRepositoryRecord (url);
+				Repository rep = rr.GetCachedRepository ();
+				rr.Name = rep.Name;
+				SaveConfiguration ();
+				return rr;
+			} catch (Exception ex) {
+				monitor.ReportError ("The repository could not be registered", ex);
+				if (IsRepositoryRegistered (url))
+					UnregisterRepository (url);
+				return null;
+			}
 		}
 		
 		RepositoryRecord RegisterRepository (string url, bool isReference)
@@ -401,13 +739,16 @@ namespace MonoDevelop.Core.AddIns.Setup
 		public void UpdateRepository (IProgressMonitor monitor, string url)
 		{
 			monitor.BeginTask ("Updating repositories", Configuration.Repositories.Count);
-			int num = Configuration.Repositories.Count;
-			for (int n=0; n<num; n++) {
-				RepositoryRecord rr = (RepositoryRecord) Configuration.Repositories [n];
-				if ((url == null || rr.Url == url) && !rr.IsReference)
-					UpdateRepository (monitor, new Uri (rr.Url), rr);
+			try {
+				int num = Configuration.Repositories.Count;
+				for (int n=0; n<num; n++) {
+					RepositoryRecord rr = (RepositoryRecord) Configuration.Repositories [n];
+					if ((url == null || rr.Url == url) && !rr.IsReference)
+						UpdateRepository (monitor, new Uri (rr.Url), rr);
+				}
+			} finally {
+				monitor.EndTask ();
 			}
-			monitor.EndTask ();
 			SaveConfiguration ();
 		}
 
@@ -432,13 +773,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		public void BuildRepository (IProgressMonitor monitor, string path)
 		{
-			string mainPath = Path.Combine (path, "root.mrep");
+			string mainPath = Path.Combine (path, "main.mrep");
 			Repository rootrep = (Repository) ReadObject (mainPath, typeof(Repository));
 			if (rootrep == null) {
 				rootrep = new Repository ();
 			}
 			
-			BuildRepository (monitor, rootrep, path, "main.mrep");
+			BuildRepository (monitor, rootrep, path, "root.mrep");
 			monitor.Log.WriteLine ("Updated root.mrep");
 			WriteObject (mainPath, rootrep);
 		}
@@ -507,6 +848,51 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 		}
 		
+		public void BuildPackage (IProgressMonitor monitor, string filePath, string targetDirectory)
+		{
+			AddinConfiguration conf = AddinConfiguration.Read (filePath, true);
+			
+			string basePath = Path.GetDirectoryName (filePath);
+			
+			if (targetDirectory == null)
+				targetDirectory = basePath;
+			
+			AddinInfo info;
+			using (StreamReader sr = new StreamReader (filePath)) {
+				info = AddinInfo.ReadFromAddinFile (sr);
+			}
+			
+			string outFilePath = Path.Combine (basePath, info.Id + "_" + info.Version) + ".mpack";
+
+			ZipOutputStream s = new ZipOutputStream (File.Create (outFilePath));
+			s.SetLevel(5);
+			
+			ArrayList list = new ArrayList ();
+			list.Add (Path.GetFileName (filePath));
+			list.AddRange (conf.AllFiles);
+			
+			monitor.BeginTask ("Creating package " + Path.GetFileName (outFilePath), list.Count);
+			
+			foreach (string file in list) {
+				string fp = Path.Combine (basePath, file);
+				FileStream fs = File.OpenRead (fp);
+				
+				byte[] buffer = new byte [fs.Length];
+				fs.Read (buffer, 0, buffer.Length);
+				
+				ZipEntry entry = new ZipEntry (file);
+				s.PutNextEntry (entry);
+				s.Write (buffer, 0, buffer.Length);
+				monitor.Log.WriteLine ("Added " + file);
+				monitor.Step (1);
+			}
+			
+			monitor.EndTask ();
+			
+			s.Finish();
+			s.Close();			
+		}
+		
 		internal string GetAddinDirectory (AddinInfo info)
 		{
 			return Path.Combine (AddinRootPath, info.Id + "_" + info.Version);
@@ -519,14 +905,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (!Directory.Exists (addinDir))
 				Directory.CreateDirectory (addinDir);
 			CopyDirectory (sourceDir, addinDir);
-			
-			UninstallInfo uinfo = new UninstallInfo ();
-			uinfo.Paths.Add (addinDir);
-			
-			WriteObject (Path.Combine (addinDir, "uninstall-info.xml"), uinfo);
-			
-			monitor.Log.WriteLine ("Done");
-			
+
 			ResetCachedData ();
 		}
 
@@ -548,29 +927,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 	
 			foreach (string dir in Directory.GetDirectories (src))
 				CopyDirectory (dir, dest, Path.Combine (subdir, Path.GetFileName (dir)));
-		}
-		
-		internal void UnregisterAddin (IProgressMonitor monitor, AddinInfo info)
-		{
-			AddinSetupInfo iaddin = GetInstalledAddin (info.Id, info.Version);
-			if (iaddin == null)
-				throw new InstallException ("Addin not installed.");
-				
-			string ufile = Path.Combine (iaddin.Directory, "uninstall-info.xml");
-			if (!File.Exists (ufile))
-				throw new InstallException ("Unistall information is not available for the addin: " + info.Id);
-
-			UninstallInfo uinfo = (UninstallInfo) ReadObject (ufile, typeof(UninstallInfo));
-			monitor.Log.WriteLine ("Uninstalling " + info.Id + " v" + info.Version);
-			
-			foreach (string path in uinfo.Paths) {
-				if (File.Exists (path))
-					File.Delete (path);
-				else if (Directory.Exists (path))					
-					Directory.Delete (iaddin.Directory, true);
-			}
-			
-			monitor.Log.WriteLine ("Done");
 		}
 		
 		internal object DownloadObject (IProgressMonitor monitor, string url, Type type)
@@ -616,6 +972,14 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		internal string DownloadFile (IProgressMonitor monitor, string url)
 		{
+			if (url.StartsWith ("file://")) {
+				string tmpfile = Path.GetTempFileName ();
+				string path = url.Substring (7);
+				File.Delete (tmpfile);
+				File.Copy (path, tmpfile);
+				return tmpfile;
+			}
+
 			monitor.BeginTask ("Requesting " + url, 2);
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (url);
 			HttpWebResponse resp = (HttpWebResponse) req.GetResponse ();
@@ -635,6 +999,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 				while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
 					monitor.Step (n);
 					fs.Write (buffer, 0, n);
+					if (monitor.IsCancelRequested)
+						throw new InstallException ("Installation cancelled.");
 				}
 				fs.Close ();
 				s.Close ();
@@ -645,11 +1011,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 				if (s != null)
 					s.Close ();
 				File.Delete (file);
+				throw;
 			} finally {
 				monitor.EndTask ();
 				monitor.EndTask ();
 			}
-			return file;
 		}
 		
 		AddinSystemConfiguration Configuration {

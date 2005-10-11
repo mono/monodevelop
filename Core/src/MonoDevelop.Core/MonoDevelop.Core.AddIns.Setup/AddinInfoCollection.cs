@@ -1,5 +1,5 @@
 //
-// PackageDependency.cs
+// AddinInfoCollection.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,16 +27,19 @@
 //
 
 using System;
-using System.Xml.Serialization;
+using System.Collections;
 
 namespace MonoDevelop.Core.AddIns.Setup
 {
-	[XmlInclude (typeof(AddinDependency))]
-	[XmlInclude (typeof(NativeDependency))]
-	public abstract class PackageDependency
+	public class AddinInfoCollection: CollectionBase
 	{
-		public abstract string Name { get; }
-		public abstract bool CheckInstalled (SetupService service);
-		public abstract void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved);
+		public AddinInfo this [int n] {
+			get { return (AddinInfo) List [n]; }
+		}
+		
+		public void Add (AddinInfo p)
+		{
+			List.Add (p);
+		}
 	}
 }

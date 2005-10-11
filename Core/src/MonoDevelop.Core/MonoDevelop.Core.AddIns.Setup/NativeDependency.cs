@@ -36,12 +36,16 @@ namespace MonoDevelop.Core.AddIns.Setup
 	[XmlType ("NativeReference")]
 	public class NativeDependency: PackageDependency
 	{
+		public override string Name {
+			get { return "Native dependency"; }
+		}
+		
 		public override bool CheckInstalled (SetupService service)
 		{
 			return false;
 		}
 		
-		public override bool Resolve (IProgressMonitor monitor, SetupService service, PackageCollection packages)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved)
 		{
 			throw new InstallException ("Can't install native dependency");
 		}

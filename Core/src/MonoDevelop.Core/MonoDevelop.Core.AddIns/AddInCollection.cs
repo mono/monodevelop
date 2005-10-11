@@ -46,11 +46,11 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 		
-		public AddIn this [string name] 
+		public AddIn this [string id]
 		{
 			get {
 				foreach (AddIn addin in List)
-					if (addin.Name == name)
+					if (addin.Id == id)
 						return addin;
 				return null;
 			}

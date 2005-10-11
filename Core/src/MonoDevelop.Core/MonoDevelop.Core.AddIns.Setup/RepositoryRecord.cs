@@ -41,6 +41,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		bool isReference;
 		string file;
 		string url;
+		string name;
 		DateTime lastModified;
 		
 		[XmlAttribute ("id")]
@@ -64,6 +65,15 @@ namespace MonoDevelop.Core.AddIns.Setup
 			set { url = value; }
 		}
 		
+		public string Name {
+			get { return name; }
+			set { name = value; }
+		}
+		
+		public string Title {
+			get { return Name != null && Name != "" ? Name : Url; }
+		}
+				
 		public DateTime LastModified {
 			get { return lastModified; }
 			set { lastModified = value; }
@@ -80,7 +90,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				System.IO.File.Delete (File);
 		}
 		
-		public void UpdateCachedRepository (Repository newRep)
+		internal void UpdateCachedRepository (Repository newRep)
 		{
 			newRep.url = Url;
 			if (newRep.Name == null)

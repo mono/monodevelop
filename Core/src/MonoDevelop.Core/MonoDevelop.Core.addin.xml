@@ -1,8 +1,10 @@
-<AddIn name        = "MonoDevelop.Core"
-       author      = "Mike Krueger"
+<AddIn id          = "MonoDevelop.Core"
+       name        = "MonoDevelop Runtime"
+       author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
-       description = "MonoDevelop core module"
+       url         = "http://www.monodevelop.com"
+       description = "Provides the core services of the MonoDevelop platform"
+	   category    = "MonoDevelop Core"
        version     = "0.9.0">
 
 	<Runtime>
@@ -17,6 +19,8 @@
 	</Extension>
 	
 	<Extension path = "/Workspace/Applications">
+		<Class id    = "setup"
+		       class = "MonoDevelop.Core.AddIns.Setup.SetupTool"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">

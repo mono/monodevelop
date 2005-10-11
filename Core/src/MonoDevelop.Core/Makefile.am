@@ -58,6 +58,7 @@ MonoDevelop.Core.AddIns/AssemblyLoader.cs \
 MonoDevelop.Core.AddIns.Setup/AddinConfiguration.cs \
 MonoDevelop.Core.AddIns.Setup/AddinDependency.cs \
 MonoDevelop.Core.AddIns.Setup/AddinInfo.cs \
+MonoDevelop.Core.AddIns.Setup/AddinInfoCollection.cs \
 MonoDevelop.Core.AddIns.Setup/AddinPackage.cs \
 MonoDevelop.Core.AddIns.Setup/AddinRepositoryEntry.cs \
 MonoDevelop.Core.AddIns.Setup/AddinSetupInfo.cs \
@@ -75,6 +76,7 @@ MonoDevelop.Core.AddIns.Setup/RepositoryEntryCollection.cs \
 MonoDevelop.Core.AddIns.Setup/RepositoryEntry.cs \
 MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs \
 MonoDevelop.Core.AddIns.Setup/SetupService.cs \
+MonoDevelop.Core.AddIns.Setup/SetupTool.cs \
 MonoDevelop.Core.AddIns.Setup/UninstallInfo.cs \
 MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs \

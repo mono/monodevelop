@@ -35,12 +35,15 @@ namespace MonoDevelop.Core.AddIns.Setup
 {
 	public class AddinInfo
 	{
-		string id;
-		string version;
-		string author;
-		string copyright;
-		string url;
-		string description;
+		string id = "";
+		string name = "";
+		string version = "";
+		string baseVersion = "";
+		string author = "";
+		string copyright = "";
+		string url = "";
+		string description = "";
+		string category = "";
 		PackageDependencyCollection dependencies;
 		
 		public AddinInfo ()
@@ -53,9 +56,19 @@ namespace MonoDevelop.Core.AddIns.Setup
 			set { id = value; }
 		}
 		
+		public string Name {
+			get { return name.Length == 0 ? Id : name; }
+			set { name = value; }
+		}
+		
 		public string Version {
 			get { return version; }
 			set { version = value; }
+		}
+		
+		public string BaseVersion {
+			get { return baseVersion; }
+			set { baseVersion = value; }
 		}
 		
 		public string Author {
@@ -78,6 +91,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 			set { description = value; }
 		}
 		
+		public string Category {
+			get { return category; }
+			set { category = value; }
+		}
+		
 		public PackageDependencyCollection Dependencies {
 			get { return dependencies; }
 		}
@@ -89,16 +107,20 @@ namespace MonoDevelop.Core.AddIns.Setup
 			r.Close ();
 			
 			AddinInfo info = new AddinInfo ();
-			info.id = doc.DocumentElement.GetAttribute ("name");
+			info.id = doc.DocumentElement.GetAttribute ("id");
+			info.name = doc.DocumentElement.GetAttribute ("name");
+			if (info.id == "") info.id = info.name;
 			info.version = doc.DocumentElement.GetAttribute ("version");
 			info.author = doc.DocumentElement.GetAttribute ("author");
 			info.copyright = doc.DocumentElement.GetAttribute ("copyright");
 			info.url = doc.DocumentElement.GetAttribute ("url");
 			info.description = doc.DocumentElement.GetAttribute ("description");
+			info.category = doc.DocumentElement.GetAttribute ("category");
+			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
 			
 			foreach (XmlElement dep in doc.SelectNodes ("AddIn/Dependencies/AddIn")) {
 				AddinDependency adep = new AddinDependency ();
-				adep.AddinId = dep.GetAttribute ("name");
+				adep.AddinId = dep.GetAttribute ("id");
 				string v = dep.GetAttribute ("version");
 				if (v.Length != 0)
 					adep.Version = v;
@@ -106,6 +128,40 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 			
 			return info;
+		}
+		
+		public bool SupportsVersion (string version)
+		{
+			if (CompareVersions (Version, version) == 1)
+				return false;
+			if (baseVersion == "")
+				return true;
+			return CompareVersions (BaseVersion, version) >= 0;
+		}
+		
+		public static int CompareVersions (string v1, string v2)
+		{
+			string[] a1 = v1.Split ('.');
+			string[] a2 = v2.Split ('.');
+			
+			for (int n=0; n<a1.Length; n++) {
+				if (a1[n] == "") {
+					if (a2[n] != "")
+						return 1;
+					continue;
+				}
+				try {
+					int n1 = int.Parse (a1[n]);
+					int n2 = int.Parse (a2[n]);
+					if (n1 < n2)
+						return 1;
+					else if (n1 > n2)
+						return -1;
+				} catch {
+					return 1;
+				}
+			}
+			return 0;
 		}
 	}
 }

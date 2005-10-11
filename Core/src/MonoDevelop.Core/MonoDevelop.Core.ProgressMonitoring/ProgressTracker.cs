@@ -42,6 +42,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			public string Name;
 			public int TotalWork;
 			public int CurrentWork;
+			public int StepSize = 1;
+			public bool IsStep;
 			
 			public double GetWorkPercent (double part)
 			{
@@ -65,18 +67,33 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			tasks.Add (t);
 		}
 		
+		public void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			Task t = new Task (); 
+			t.StepSize = stepSize;
+			t.IsStep = true;
+			t.Name = name;
+			t.TotalWork = totalWork;
+			tasks.Add (t);
+		}
+		
 		public void EndTask ()
 		{
-			if (tasks.Count > 0)
+			if (tasks.Count > 0) {
+				Task t = LastTask;
 				tasks.RemoveAt (tasks.Count - 1);
+				if (t.IsStep)
+					Step (t.StepSize);
+			}
 		}
 		
 		public void Step (int work)
 		{
 			if (tasks.Count == 0) return;
 			Task t = LastTask;
-			if (t.CurrentWork < t.TotalWork)
-				t.CurrentWork++;
+			t.CurrentWork += work;
+			if (t.CurrentWork > t.TotalWork)
+				t.CurrentWork = t.TotalWork;
 		}
 		
 		Task LastTask {
@@ -111,7 +128,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				double work = 0;
 				for (int n = tasks.Count - 1; n >= 0; n--) {
 					Task t = (Task) tasks [n];
-					work = t.GetWorkPercent (work);
+					work = t.GetWorkPercent (work) * (double)t.StepSize;
 				}
 				return work;
 			}

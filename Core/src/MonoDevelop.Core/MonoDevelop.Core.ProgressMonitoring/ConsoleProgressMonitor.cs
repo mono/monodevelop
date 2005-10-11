@@ -38,6 +38,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		bool wrap = true;
 		int ilevel = 0;
 		int isize = 3;
+		int col = -1;
 		LogTextWriter logger;
 		
 		public ConsoleProgressMonitor ()
@@ -64,13 +65,17 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		public override void BeginTask (string name, int totalWork)
 		{
 			WriteText (name);
-			ilevel += isize;
+			Indent ();
+		}
+		
+		public override void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			BeginTask (name, totalWork);
 		}
 		
 		public override void EndTask ()
 		{
-			ilevel -= isize;
-			if (ilevel < 0) ilevel = 0;
+			Unindent ();
 		}
 		
 		void WriteLog (string text)
@@ -79,7 +84,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		public override TextWriter Log {
-			get { return Console.Out; }
+			get { return logger; }
 		}
 		
 		public override void ReportSuccess (string message)
@@ -103,29 +108,41 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		void WriteText (string text)
 		{
 			if (indent)
-				WriteText (text, ilevel, ilevel);
+				WriteText (text, ilevel);
 			else
-				WriteText (text, 0, 0);
+				WriteText (text, 0);
 		}
 		
-		void WriteText (string text, int initialLeftMargin, int leftMargin)
+		void WriteText (string text, int leftMargin)
 		{
-			int n = 0;
-			int margin = initialLeftMargin;
-			int maxCols = wrap ? columns : int.MaxValue;
-			
-			if (text == "") {
-				Console.WriteLine ();
+			if (text == null || text == "")
 				return;
-			}
-			
+
+			int n = 0;
+			int maxCols = wrap ? columns : int.MaxValue;
+
 			while (n < text.Length)
 			{
-				int col = margin;
+				if (col == -1) {
+					Console.Write (new String (' ', leftMargin));
+					col = leftMargin;
+				}
+				
 				int lastWhite = -1;
 				int sn = n;
+				bool eol = false;
+				
 				while (col < maxCols && n < text.Length) {
-					if (char.IsWhiteSpace (text[n]))
+					char c = text [n];
+					if (c == '\r') {
+						n++;
+						continue;
+					}
+					if (c == '\n') {
+						eol = true;
+						break;
+					}
+					if (char.IsWhiteSpace (c))
 						lastWhite = n;
 					col++;
 					n++;
@@ -136,8 +153,33 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				else if (col >= maxCols)
 					n = lastWhite + 1;
 				
-				Console.WriteLine (new String (' ', margin) + text.Substring (sn, lastWhite - sn));
-				margin = leftMargin;
+				Console.Write (text.Substring (sn, lastWhite - sn));
+				
+				if (eol || col >= maxCols) {
+					col = -1;
+					Console.WriteLine ();
+					if (eol) n++;
+				}
 			}
-		}	}
+		}
+		
+		void Indent ()
+		{
+			ilevel += isize;
+			if (col != -1) {
+				Console.WriteLine ();
+				col = -1;
+			}
+		}
+		
+		void Unindent ()
+		{
+			ilevel -= isize;
+			if (ilevel < 0) ilevel = 0;
+			if (col != -1) {
+				Console.WriteLine ();
+				col = -1;
+			}
+		}
+	}
 }

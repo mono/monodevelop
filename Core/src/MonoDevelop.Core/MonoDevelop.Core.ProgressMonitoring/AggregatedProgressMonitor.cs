@@ -93,6 +93,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					info.Monitor.BeginTask (name, totalWork);
 		}
 		
+		public void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.Tasks) != 0)
+					info.Monitor.BeginStepTask (name, totalWork, stepSize);
+		}
+		
 		public void EndTask ()
 		{
 			foreach (MonitorInfo info in monitors)

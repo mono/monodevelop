@@ -58,6 +58,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		public bool Enabled {
 			get { return enabled; }
+			set { enabled = value; }
 		}
 		
 		public string ConfigFile {

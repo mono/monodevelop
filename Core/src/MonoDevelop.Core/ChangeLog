@@ -1,3 +1,41 @@
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddInService.cs:
+	* MonoDevelop.Core.AddIns/AddInCollection.cs:
+	* MonoDevelop.Core.AddIns/AddIn.cs:
+	* MonoDevelop.Core.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+	
+	* MonoDevelop.Core/IProgressMonitor.cs:
+	* MonoDevelop.Core.ProgressMonitoring/ProgressTracker.cs:
+	* MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs:
+	* MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs:
+	Implemented BeginStepTask.
+	
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs:
+	Fixed indenting and wrapping of text.
+	
+	* MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs: Keep
+	a list of error messages.
+	
+	* MonoDevelop.Core.AddIns.Setup/SetupTool.cs: Initial implementation
+	of a command line setup tool.
+	
+	* Makefile.am: Added new files.
+	
+	* MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinDependency.cs:
+	* MonoDevelop.Core.AddIns.Setup/NativeDependency.cs:
+	* MonoDevelop.Core.AddIns.Setup/PackageDependency.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinInfo.cs:
+	* MonoDevelop.Core.AddIns.Setup/Package.cs:
+	* MonoDevelop.Core.AddIns.Setup/NativePackage.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinConfiguration.cs:
+	* MonoDevelop.Core.AddIns.Setup/PackageCollection.cs:
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Improved the process
+	of resolving dependencies and installing/uninstalling addins.
+	
 2005-10-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/ClassCodon.cs: Added Type property.

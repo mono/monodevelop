@@ -32,6 +32,10 @@ namespace MonoDevelop.Core.AddIns.Setup
 {
 	public class NativePackage: Package
 	{
+		public override string Name {
+			get { return "Native package"; }
+		}
+		
 		public override void PrepareInstall (IProgressMonitor monitor, SetupService service)
 		{
 		}
@@ -44,8 +48,25 @@ namespace MonoDevelop.Core.AddIns.Setup
 		{
 		}
 		
-		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection packages, PackageDependencyCollection unresolved)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved)
 		{
+		}
+		
+		public override void PrepareUninstall (IProgressMonitor monitor, SetupService service)
+		{
+		}
+		
+		public override void CommitUninstall (IProgressMonitor monitor, SetupService service)
+		{
+		}
+		
+		public override void RollbackUninstall (IProgressMonitor monitor, SetupService service)
+		{
+		}
+		
+		public override bool IsUpgradeOf (Package p)
+		{
+			return false;
 		}
 	}
 }

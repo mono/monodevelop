@@ -49,42 +49,49 @@ namespace MonoDevelop.Core.AddIns.Setup
 			set { version = value; }
 		}
 		
+		public override string Name {
+			get { return AddinId + " v" + version; }
+		}
+		
 		public override bool CheckInstalled (SetupService service)
 		{
-			AddinInfo[] addins = service.GetInstalledAddins ();
-			foreach (AddinInfo addin in addins) {
-				if (addin.Id == id && addin.Version == version) {
+			AddinSetupInfo[] addins = service.GetInstalledAddins ();
+			foreach (AddinSetupInfo addin in addins) {
+				if (addin.Addin.Id == id && addin.Addin.SupportsVersion (version)) {
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		public override bool Resolve (IProgressMonitor monitor, SetupService service, PackageCollection packages)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection installedRequired, PackageDependencyCollection unresolved)
 		{
-			foreach (Package p in packages) {
+			foreach (Package p in toInstall) {
 				AddinPackage ap = p as AddinPackage;
 				if (ap != null) {
-					if (ap.Addin.Id == id && ap.Addin.Version == version)
-						return true;
+					if (ap.Addin.Id == id && ap.Addin.SupportsVersion (version))
+						return;
 				} 
 			}
 			
-			AddinInfo[] addins = service.GetInstalledAddins ();
-			foreach (AddinInfo addin in addins) {
-				if (addin.Id == id && addin.Version == version) {
-					return true;
+			AddinSetupInfo[] addins = service.GetInstalledAddins ();
+			foreach (AddinSetupInfo addin in addins) {
+				if (addin.Addin.Id == id && addin.Addin.SupportsVersion (version)) {
+					Package p = AddinPackage.FromInstalledAddin (addin);
+					if (!installedRequired.Contains (p))
+						installedRequired.Add (p);
+					return;
 				}
 			}
 			
 			AddinRepositoryEntry[] avaddins = service.GetAvailableAddins ();
 			foreach (AddinRepositoryEntry avAddin in avaddins) {
-				if (avAddin.Addin.Id == id && avAddin.Addin.Version == version) {
-					packages.Add (AddinPackage.FromAddin (avAddin));
-					return true;
+				if (avAddin.Addin.Id == id && avAddin.Addin.SupportsVersion (version)) {
+					toInstall.Add (AddinPackage.FromRepository (avAddin));
+					return;
 				}
 			}
-			return false;
+			unresolved.Add (this);
 		}
 	}
 }

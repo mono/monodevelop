@@ -36,6 +36,15 @@ namespace MonoDevelop.Core.AddIns.Setup
 {
 	public class PackageCollection: CollectionBase
 	{
+		public PackageCollection ()
+		{
+		}
+		
+		public PackageCollection (ICollection col)
+		{
+			AddRange (col);
+		}
+		
 		public Package this [int n] {
 			get { return (Package) List [n]; }
 		}
@@ -43,6 +52,17 @@ namespace MonoDevelop.Core.AddIns.Setup
 		public void Add (Package p)
 		{
 			List.Add (p);
+		}
+		
+		public bool Contains (Package p)
+		{
+			return List.Contains (p);
+		}
+		
+		public void AddRange (ICollection col)
+		{
+			foreach (Package p in col)
+				Add (p);
 		}
 	}
 }
