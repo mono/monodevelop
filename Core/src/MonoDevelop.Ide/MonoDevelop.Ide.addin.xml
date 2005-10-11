@@ -37,7 +37,7 @@
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "Browser"
 		                supportedformats = "Web Pages"
-		                class = "MonoDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+		                class = "MonoDevelop.Ide.Gui.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
