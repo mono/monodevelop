@@ -1,18 +1,24 @@
 <Project name="BooShell" fileversion="2.0" language="Boo" ctype="DotNetProject">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/BackendBindings" assembly="BooShell" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
-      <CodeGeneration compiler="Booc" compilerpath="booc" genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
+      <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Release" assembly="BooShell" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
-      <CodeGeneration compiler="Booc" compilerpath="booc" genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
+      <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
   </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./BooShell.boo" subtype="Code" buildaction="Compile" />
+  </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/MonoDevelop.Base.dll" />
     <ProjectReference type="Gac" localcopy="False" refto="System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -20,10 +26,4 @@
     <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="False" refto="glib-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
-  <Contents>
-    <File name="./BooShell.boo" subtype="Code" buildaction="Compile" />
-  </Contents>
 </Project>

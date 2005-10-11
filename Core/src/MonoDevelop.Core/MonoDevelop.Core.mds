@@ -1,10 +1,10 @@
 <Combine name="MonoDevelop.Core" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.Core" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.Core" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Core" single="True">

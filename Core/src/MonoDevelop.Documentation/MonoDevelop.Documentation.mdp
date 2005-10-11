@@ -1,13 +1,13 @@
-<Project name="dbgen" fileversion="2.0" language="C#" ctype="DotNetProject">
+<Project name="MonoDevelop.Documentation" fileversion="2.0" language="C#" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Debug" assembly="dbgen" />
+      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Documentation" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Release" assembly="dbgen" />
+      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Documentation" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -17,12 +17,13 @@
     <excludeFiles />
   </DeploymentInformation>
   <Contents>
-    <File name="./src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/dbgen.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs.in" subtype="Code" buildaction="Nothing" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Documentation.addin.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Documentation/MonodocService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Documentation" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
   </References>
 </Project>

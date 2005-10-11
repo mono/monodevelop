@@ -1,0 +1,54 @@
+<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Projects.Gui" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Projects.Gui" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs.in" subtype="Code" buildaction="Nothing" />
+    <File name="./Base.glade" subtype="Code" buildaction="Nothing" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Projects.Gui.addin.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Projects.Gui/IconService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/ICompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/ListWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Completion/TextUtilities.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
+  </References>
+</Project>

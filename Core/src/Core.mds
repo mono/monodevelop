@@ -1,0 +1,52 @@
+<Combine name="Core" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core.Gui" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Components" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Documentation" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry configuration="" build="True" name="Tools" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Core.Gui" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Components" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Documentation" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry configuration="" build="True" name="Tools" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="MonoDevelop.Core" single="True">
+    <Execute type="None" entry="MonoDevelop.Core" />
+    <Execute type="None" entry="MonoDevelop.Core.Gui" />
+    <Execute type="None" entry="MonoDevelop.Components" />
+    <Execute type="None" entry="MonoDevelop.Dock" />
+    <Execute type="None" entry="MonoDevelop.Documentation" />
+    <Execute type="None" entry="MonoDevelop.Ide" />
+    <Execute type="None" entry="MonoDevelop.Projects" />
+    <Execute type="None" entry="MonoDevelop.Projects.Gui" />
+    <Execute type="None" entry="MonoDevelop.Startup" />
+    <Execute type="None" entry="Tools" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./MonoDevelop.Core/MonoDevelop.Core.mdp" />
+    <Entry filename="./MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.mdp" />
+    <Entry filename="./MonoDevelop.Components/MonoDevelop.Components.mdp" />
+    <Entry filename="./MonoDevelop.Dock/MonoDevelop.Dock.mdp" />
+    <Entry filename="./MonoDevelop.Documentation/MonoDevelop.Documentation.mdp" />
+    <Entry filename="./MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
+    <Entry filename="./MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
+    <Entry filename="./MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
+    <Entry filename="./MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
+    <Entry filename="./Tools/Tools.mds" />
+  </Entries>
+</Combine>

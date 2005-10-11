@@ -1,80 +1,11 @@
-<Combine name="MonoDevelop" fileversion="2.0" outputpath="./build/bin">
-  <Configurations active="Debug">
-    <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Gui.Widgets" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Gui.Utils" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Base" />
-      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpAssembly" />
-      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpRefactory" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
-      <Entry configuration="Debug" build="True" name="CSharpBinding" />
-      <Entry configuration="Debug" build="True" name="SourceEditor" />
-      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
-      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
-      <Entry configuration="Debug" build="True" name="mdhost" />
-      <Entry configuration="Debug" build="True" name="dbgen" />
-      <Entry configuration="Debug" build="True" name="JavaBinding" />
-      <Entry configuration="Debug" build="True" name="VersionControl" />
-    </Configuration>
-    <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="MonoDevelop.Core" />
-      <Entry configuration="Release" build="True" name="MonoDevelop.Dock" />
-      <Entry configuration="Release" build="True" name="MonoDevelop.Gui.Widgets" />
-      <Entry configuration="Release" build="True" name="MonoDevelop.Gui.Utils" />
-      <Entry configuration="Release" build="True" name="MonoDevelop.Base" />
-      <Entry configuration="Release" build="True" name="ICSharpCode.SharpAssembly" />
-      <Entry configuration="Release" build="True" name="ICSharpCode.SharpRefactory" />
-      <Entry configuration="Release" build="True" name="MonoDevelop.Startup" />
-      <Entry configuration="Release" build="True" name="CSharpBinding" />
-      <Entry configuration="Release" build="True" name="SourceEditor" />
-      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
-      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
-      <Entry configuration="Debug" build="True" name="mdhost" />
-      <Entry configuration="Debug" build="True" name="dbgen" />
-      <Entry configuration="Debug" build="True" name="JavaBinding" />
-      <Entry configuration="Debug" build="True" name="VersionControl" />
-    </Configuration>
-  </Configurations>
-  <StartMode startupentry="MonoDevelop.Startup" single="True">
-    <Execute type="None" entry="MonoDevelop.Core" />
-    <Execute type="None" entry="MonoDevelop.Dock" />
-    <Execute type="None" entry="MonoDevelop.Gui.Widgets" />
-    <Execute type="None" entry="MonoDevelop.Gui.Utils" />
-    <Execute type="None" entry="MonoDevelop.Base" />
-    <Execute type="None" entry="ICSharpCode.SharpAssembly" />
-    <Execute type="None" entry="ICSharpCode.SharpRefactory" />
-    <Execute type="None" entry="MonoDevelop.Startup" />
-    <Execute type="None" entry="CSharpBinding" />
-    <Execute type="None" entry="SourceEditor" />
-    <Execute type="None" entry="ILAsmBinding" />
-    <Execute type="None" entry="MonoDevelop.NUnit" />
-    <Execute type="None" entry="MonoDeveloperExtensions" />
-    <Execute type="None" entry="mdhost" />
-    <Execute type="None" entry="dbgen" />
-    <Execute type="None" entry="JavaBinding" />
-    <Execute type="None" entry="VersionControl" />
+<Combine name="MonoDevelop" fileversion="2.0">
+  <Configurations />
+  <StartMode startupentry="Core" single="True">
+    <Execute type="None" entry="Core" />
+    <Execute type="None" entry="Extras" />
   </StartMode>
   <Entries>
-    <Entry filename="./Core/src/MonoDevelop.Core/MonoDevelop.Core.mdp" />
-    <Entry filename="./Core/src/MonoDevelop.Dock/MonoDevelop.Dock.mdp" />
-    <Entry filename="./Core/src/MonoDevelop.Gui.Widgets/MonoDevelop.Gui.Widgets.mdp" />
-    <Entry filename="./Core/src/MonoDevelop.Gui.Utils/MonoDevelop.Gui.Utils.mdp" />
-    <Entry filename="./Core/src/MonoDevelop.Base/MonoDevelop.Base.mdp" />
-    <Entry filename="./Core/src/ICSharpCode.SharpAssembly/ICSharpCode.SharpAssembly.mdp" />
-    <Entry filename="./Core/src/ICSharpCode.SharpRefactory/ICSharpCode.SharpRefactory.mdp" />
-    <Entry filename="./Core/src/MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
-    <Entry filename="./Core/src/AddIns/BackendBindings/CSharpBinding/CSharpBinding.mdp" />
-    <Entry filename="./Core/src/AddIns/DisplayBindings/SourceEditor/SourceEditor.mdp" />
-    <Entry filename="./Core/src/AddIns/BackendBindings/ILAsmBinding/ILAsmBinding.mdp" />
-    <Entry filename="./Extras/NUnit/MonoDevelop.NUnit.mdp" />
-    <Entry filename="./Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.mdp" />
-    <Entry filename="./Core/src/Tools/mdhost/mdhost.mdp" />
-    <Entry filename="./Core/src/Tools/dbgen/dbgen.mdp" />
-    <Entry filename="./Extras/JavaBinding/JavaBinding.mdp" />
-    <Entry filename="./Extras/VersionControl/VersionControl.mds" />
+    <Entry filename="./Core/src/Core.mds" />
+    <Entry filename="./Extras/Extras.mds" />
   </Entries>
 </Combine>

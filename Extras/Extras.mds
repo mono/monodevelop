@@ -1,0 +1,60 @@
+<Combine name="Extras" fileversion="2.0">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
+      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
+      <Entry configuration="Debug" build="True" name="CSharpBinding" />
+      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
+      <Entry configuration="Debug" build="True" name="MonoQuery" />
+      <Entry configuration="Debug" build="True" name="BooBinding" />
+      <Entry configuration="Debug" build="True" name="VersionControl" />
+      <Entry configuration="Debug" build="True" name="JavaBinding" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
+      <Entry configuration="Debug" build="True" name="NemerleBinding" />
+      <Entry configuration="Debug" build="True" name="prj2make" />
+      <Entry configuration="Debug" build="True" name="VBNetBinding" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
+      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
+      <Entry configuration="Debug" build="True" name="CSharpBinding" />
+      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
+      <Entry configuration="Debug" build="True" name="MonoQuery" />
+      <Entry configuration="Debug" build="True" name="BooBinding" />
+      <Entry configuration="Debug" build="True" name="VersionControl" />
+      <Entry configuration="Debug" build="True" name="JavaBinding" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
+      <Entry configuration="Debug" build="True" name="NemerleBinding" />
+      <Entry configuration="Debug" build="True" name="prj2make" />
+      <Entry configuration="Debug" build="True" name="VBNetBinding" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="BooBinding" single="True">
+    <Execute type="None" entry="MonoDevelop.NUnit" />
+    <Execute type="None" entry="MonoDeveloperExtensions" />
+    <Execute type="None" entry="CSharpBinding" />
+    <Execute type="None" entry="ILAsmBinding" />
+    <Execute type="None" entry="MonoQuery" />
+    <Execute type="None" entry="BooBinding" />
+    <Execute type="None" entry="VersionControl" />
+    <Execute type="None" entry="JavaBinding" />
+    <Execute type="None" entry="MonoDevelop.SourceEditor" />
+    <Execute type="None" entry="NemerleBinding" />
+    <Execute type="None" entry="prj2make" />
+    <Execute type="None" entry="VBNetBinding" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
+    <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mdp" />
+    <Entry filename="./CSharpBinding/CSharpBinding.mdp" />
+    <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
+    <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
+    <Entry filename="./BooBinding/BooBinding.mds" />
+    <Entry filename="./VersionControl/VersionControl.mds" />
+    <Entry filename="./JavaBinding/JavaBinding.mdp" />
+    <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
+    <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
+    <Entry filename="./prj2make-sharp-lib/prj2make.mdp" />
+    <Entry filename="./VBNetBinding/VBNetBinding.mdp" />
+  </Entries>
+</Combine>
