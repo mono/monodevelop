@@ -14,6 +14,7 @@
 	<Dependencies>
 		<AddIn id="MonoDevelop.SourceEditor" version="0.9.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.9.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">
@@ -84,7 +85,7 @@
 			             class = "CSharpBinding.CodeGenerationPanel"/>
 			<DialogPanel id = "CSharpOutputOptionsPanel"
 			             _label = "Output"
-			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
 		</Conditional>
 	</Extension>
 		
