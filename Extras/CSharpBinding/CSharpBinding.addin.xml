@@ -1,4 +1,5 @@
-<AddIn name        = "CSharp Language Binding"
+<AddIn id          = "CSharpBinding"
+       name        = "CSharp Language Binding"
        author      = "Todd Berman"
        copyright   = "GPL"
        url         = "http://www.monodevelop.com/"
@@ -11,8 +12,8 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn name="MonoDevelop.SourceEditor" version="0.9.0"/>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">
