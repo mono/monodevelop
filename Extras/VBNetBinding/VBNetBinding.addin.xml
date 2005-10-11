@@ -51,7 +51,7 @@
     <Conditional activelanguage = "VBNet">
       <DialogPanel id = "VBNetOutputOptionsPanel"
                    _label = "Output Options"
-                   class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
+                   class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
     </Conditional>
   </Extension>
 
