@@ -1,8 +1,9 @@
-<AddIn name        = "MonoDeveloperExtensions"
+<AddIn id          = "MonoDeveloperExtensions"
+       name        = "IDE Extensions for developers of the Mono framework"
        author      = "Lluis Sanchez Gual"
        copyright   = "(c) 2005 Novell, Inc."
        url         = "http://www.monodevelop.com"
-       description = "MonoDevelop extensions for Mono developers"
+       description = "Provides some IDE extensions useful for developing and building the Mono class libraries."
        version     = "0.0.1">
     
     <Runtime>
@@ -10,8 +11,8 @@
     </Runtime>
 	
 	<Dependencies>
-		<AddIn name="MonoDevelop.Ide" version="0.9.0"/>
-		<AddIn name="MonoDevelop.NUnit" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.NUnit" version="0.9.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
