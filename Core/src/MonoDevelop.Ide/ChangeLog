@@ -1,3 +1,8 @@
+2005-10-10  John Luke  <john.luke@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: remove call to
+	Gdk.Threads.Init
+	
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:

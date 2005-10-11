@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.Gui
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			new Gnome.Program (name, version, Gnome.Modules.UI, remainingArgs);
-			Gdk.Threads.Init();
 
 			// Remoting check
 			try {
