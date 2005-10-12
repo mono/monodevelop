@@ -2,10 +2,9 @@
 DLL = $(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
 
 REFERENCES = \
-	/r:System.Drawing \
+	/r:System.Drawing.dll \
 	/r:Mono.Posix.dll \
 	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
-	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpAssembly.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	/r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll
 
@@ -114,15 +113,6 @@ MonoDevelop.Projects.Parser/ReflectionMethod.cs \
 MonoDevelop.Projects.Parser/ReflectionParameter.cs \
 MonoDevelop.Projects.Parser/ReflectionProperty.cs \
 MonoDevelop.Projects.Parser/ReflectionReturnType.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyClass.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyField.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyIndexer.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs \
-MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs \
 MonoDevelop.Projects/CmbxFileFormat.cs \
 MonoDevelop.Projects/IFileFormat.cs \
 MonoDevelop.Projects/MdpFileFormat.cs \

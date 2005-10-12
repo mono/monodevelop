@@ -5,4 +5,4 @@ libdir=${exec_prefix}/lib
 Name: MonoDevelop
 Description: Free .NET Development Environment
 Version: @VERSION@
-Libs: -r:${libdir}/monodevelop/bin/MonoDevelop.Core.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Core.Gui.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Projects.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Projects.Gui.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Ide.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Components.dll -r:${libdir}/monodevelop/bin/ICSharpCode.SharpRefactory.dll -r:${libdir}/monodevelop/bin/ICSharpCode.SharpAssembly.dll
+Libs: -r:${libdir}/monodevelop/bin/MonoDevelop.Core.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Core.Gui.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Projects.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Projects.Gui.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Ide.dll -r:${libdir}/monodevelop/AddIns/MonoDevelop.Components.dll -r:${libdir}/monodevelop/bin/ICSharpCode.SharpRefactory.dll

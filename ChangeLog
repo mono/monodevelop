@@ -1,3 +1,8 @@
+2005-10-11  John Luke  <john.luke@gmail.com>
+
+	* configure.in: remove ICSharpCode.SharpAssembly
+	* monodevelop.pc.in: remove ICSharpCode.SharpAssembly.dll
+	
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* monodevelop.pc.in: Fix library paths.

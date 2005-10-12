@@ -1,3 +1,8 @@
+2005-10-11  John Luke  <john.luke@gmail.com>
+
+	* Makefile.am: remove SharpAssembly reference
+	* VBAmbience.cs: comment out SharpAssembly stuff
+	
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBNetBinding.addin.xml: Fixed incorrect class name.

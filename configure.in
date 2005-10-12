@@ -203,7 +203,6 @@ build/data/resources/Makefile
 build/Makefile
 contrib/Makefile
 Core/Makefile
-Core/src/ICSharpCode.SharpAssembly/Makefile
 Core/src/ICSharpCode.SharpRefactory/Makefile
 Core/src/Makefile
 Core/src/MonoDevelop.Core/AssemblyInfo.cs

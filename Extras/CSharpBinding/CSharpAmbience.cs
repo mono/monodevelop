@@ -412,13 +412,13 @@ namespace CSharpBinding
 			bool linkSet = false;
 			
 			if (UseLinkArrayList) {
-				SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
-				if (ret != null) {
-					if (ret.UnderlyingClass != null) {
-						builder.Append("<a href='as://" + linkArrayList.Add(ret.UnderlyingClass) + "'>");
-						linkSet = true;
-					}
-				}
+				//SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
+				//if (ret != null) {
+				//	if (ret.UnderlyingClass != null) {
+				//		builder.Append("<a href='as://" + linkArrayList.Add(ret.UnderlyingClass) + "'>");
+				//		linkSet = true;
+				//	}
+				//}
 			}
 			
 			if (typeConversionTable[returnType.FullyQualifiedName] != null) {
