@@ -460,11 +460,11 @@ namespace MonoDevelop.SourceEditor.Gui
 					case '\r':
 						break;
 					case '\t':
-						buf.InsertAtCursor ('\t'.ToString ());
+						buf.InsertAtCursor ("\t");
 						newCaretOffset++;
 						break;
 					case '\n':
-						buf.InsertAtCursor ('\n'.ToString ());
+						buf.InsertAtCursor ("\n");
 						newCaretOffset++;
 						endLine++;
 						break;
@@ -602,7 +602,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			TextIter begin = Buffer.GetIterAtLine (ln);
 			TextIter end = begin;
-			end.ForwardToLineEnd ();
+			if (!end.EndsLine ())
+				end.ForwardToLineEnd ();
 			
 			return begin.GetText (end);
 		}

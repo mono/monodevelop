@@ -1,3 +1,9 @@
+2005-10-11 John Luke <john.luke@gmail.com> 
+
+	*  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (GetLineAsString):
+	don't go ForwardToLineEnd if we are already at EndsLine
+	fixes bug# 76208
+	
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Fixed addin header information.
