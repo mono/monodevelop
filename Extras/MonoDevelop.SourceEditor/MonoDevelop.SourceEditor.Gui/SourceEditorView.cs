@@ -308,8 +308,26 @@ namespace MonoDevelop.SourceEditor.Gui
 						return true;
 					break;
 				case Gdk.Key.Tab:
-					if (IndentSelection ())
+					if (IndentSelection ()) {
 						return true;
+					}
+					else {
+						if (AutoInsertTemplates)
+						{
+							string word = GetWordBeforeCaret ();
+							if (word != null) {
+								CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(ParentEditor.DisplayBinding.ContentName);
+								if (templateGroup != null) {
+									foreach (CodeTemplate template in templateGroup.Templates) {
+										if (template.Shortcut == word) {
+											InsertTemplate(template);
+											return true;
+										}
+									}
+								}
+							}
+						}
+					}
 					break;
 				case Gdk.Key.F1:
 				case Gdk.Key.KP_F1:
@@ -347,28 +365,12 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			switch ((char)key) {
 			case ' ':
-				if (AutoInsertTemplates)
-				{
-					string word = GetWordBeforeCaret ();
-					if (word != null) {
 						/*if (word.ToLower () == "new") {
 							if (EnableCodeCompletion) {
 								completionWindow = new CompletionWindow (this, ParentEditor.DisplayBinding.ContentName, new CodeCompletionDataProvider (true));
 								completionWindow.ShowCompletionWindow ((char)key, buf.GetIterAtMark (buf.InsertMark), true);
 							}
 						}*/
-						CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(ParentEditor.DisplayBinding.ContentName);
-					
-						if (templateGroup != null) {
-							foreach (CodeTemplate template in templateGroup.Templates) {
-								if (template.Shortcut == word) {
-									InsertTemplate(template);
-									return false;
-								}
-							}
-						}
-					}
-				}
 				goto case '.';
 				
 			case '.':

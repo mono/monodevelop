@@ -1,5 +1,11 @@
 2005-10-11 John Luke <john.luke@gmail.com> 
 
+	*  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	make tab activate templates instead of space
+	part of bug #55843
+	
+2005-10-11 John Luke <john.luke@gmail.com> 
+
 	*  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (GetLineAsString):
 	don't go ForwardToLineEnd if we are already at EndsLine
 	fixes bug# 76208
