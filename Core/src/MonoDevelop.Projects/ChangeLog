@@ -1,3 +1,8 @@
+2005-10-13 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Ambience/AmbienceService.cs:
+	Cache AmbienceReflectionDecorator objects created in CurrentAmbience.
+
 2005-10-11  John Luke  <john.luke@gmail.com> 
 
 	* Makefile.am: remove SharpAssembly stuff from build

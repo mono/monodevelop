@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -17,6 +18,8 @@ namespace MonoDevelop.Projects.Ambience
 	{
 		static readonly string ambienceProperty       = "SharpDevelop.UI.CurrentAmbience";
 		static readonly string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
+		
+		Hashtable ambiences = new Hashtable ();
 		
 		public IProperties CodeGenerationProperties {
 			get {
@@ -45,7 +48,12 @@ namespace MonoDevelop.Projects.Ambience
 		public AmbienceReflectionDecorator CurrentAmbience {
 			get {
 				string language = Runtime.Properties.GetProperty(ambienceProperty, "CSharp");
-				return new AmbienceReflectionDecorator((IAmbience)Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, this));
+				AmbienceReflectionDecorator ard = (AmbienceReflectionDecorator) ambiences [language];
+				if (ard == null) {
+					ard = new AmbienceReflectionDecorator((IAmbience)Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, this));
+					ambiences [language] = ard;
+				}
+				return ard;
 			}
 		}
 		
