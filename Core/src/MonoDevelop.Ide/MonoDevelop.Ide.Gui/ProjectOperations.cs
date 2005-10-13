@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.Gui
 		CombineEntry CreateCombineEntry (Combine parentCombine, bool createCombine)
 		{
 			CombineEntry res = null;
-			NewProjectDialog npdlg = new NewProjectDialog (createCombine);
+			NewProjectDialog npdlg = new NewProjectDialog (parentCombine == null);
 			if (npdlg.Run () == (int) Gtk.ResponseType.Ok) {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ();
 				try {

@@ -1,3 +1,8 @@
+2005-10-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: In CreateCombineEntry,
+	only open the combine if we are creating a root combine.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Fixed incorrect class name.
