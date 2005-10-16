@@ -1,3 +1,7 @@
+2005-10-16  Todd Berman  <tberman@off.net>
+	
+	* configure.in: bump versions to 0.8.99
+
 2005-10-11  John Luke  <john.luke@gmail.com>
 
 	* configure.in: remove ICSharpCode.SharpAssembly
