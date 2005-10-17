@@ -1,3 +1,10 @@
+2005-10-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs:
+	Properly escape whitespaces in directory names. Fixes bug #76418.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/AddIn.cs: In CreateObject(), use GetType(name)
@@ -120,7 +127,7 @@
 	* MonoDevelop.Core.mdp:
 	* MonoDevelop.Core.mds: add project files
 
-2005-06-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Services/IMessageService.cs: Added methods to ask a question
 	with a cancel option.

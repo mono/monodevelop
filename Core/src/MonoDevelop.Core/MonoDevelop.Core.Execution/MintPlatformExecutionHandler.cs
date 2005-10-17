@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Execution
 	{
 		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IConsole console)
 		{
-			string args = string.Format (@"--debug {0} {1}", command, arguments);
+			string args = string.Format (@"--debug {0} {1}", command.Replace (" ", "\\ "), arguments);
 			return base.Execute ("mint", args, workingDirectory, console);
 		}
 	}

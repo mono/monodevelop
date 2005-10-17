@@ -81,7 +81,7 @@ namespace MonoDevelop.Core.Execution
 				if (!console.CloseOnDispose)
 					additionalCommands = @"echo; read -p 'Press any key to continue...' -n1;";
 				ProcessStartInfo psi = new ProcessStartInfo("xterm",
-					String.Format (@"-e ""cd {3} ; '{0}' {1} ; {2}""", command, arguments, additionalCommands, workingDirectory));
+					String.Format (@"-e ""cd {3} ; '{0}' {1} ; {2}""", command, arguments, additionalCommands, workingDirectory.Replace (" ", "\\ ")));
 				psi.UseShellExecute = false;
 				
 				if (workingDirectory != null)
