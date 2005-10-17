@@ -1,3 +1,10 @@
+2005-10-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	When moving or copying a file that is open and modified in
+	the text editor, ask whether it should be saved or not.
+	Fixes bug #76209.
+
 2005-10-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: In CreateCombineEntry,
@@ -697,7 +704,7 @@
 	set up the ProcessStartInfo through the same function, set
 	the working directory to the project base path.
 
-2005-07-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-07-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Services/Tasks/Task.cs:
 	* Gui/Pads/OpenTaskView.cs:
@@ -760,7 +767,7 @@
 	* Gui/Dialogs/ReferenceDialog/GacReferencePanel.cs: add Reset method
 	to update the info for a new project
 	
-2005-06-10  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-10  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs: Make sure
 	that projects are correctly marked as selected.
@@ -784,7 +791,7 @@
 	* MonoDevelopCore.addin.xml: Added names to the toolbars. Added the
 	ToolbarList command.
 
-2005-06-07  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-07  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Core/src/MonoDevelop.Base/Internal/Project/Project/Project.cs:
 	* Core/src/MonoDevelop.Base/Internal/Project/Combine/CombineEntry.cs:
@@ -795,7 +802,7 @@
 	* MonoDevelopCore.addin.xml: remove workaround
 	for Shift|F8 as the dock handles it now
 
-2005-06-03  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-03  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Internal/Project/Combine/Combine.cs: Remove references
 	to a project when it is removed from a combine (57782)
@@ -803,7 +810,7 @@
 2005-06-02  John Luke  <john.luke@gmail.com>
 
 	* MonoDevelopCore.addin.xml: add Shift|F8 shortcut
-	for tip of the day from Øyvind Neuman (spam@agurk.com)
+	for tip of the day from yvind Neuman (spam@agurk.com)
 	workaround for bug 61113
 
 2005-06-02  John Luke  <john.luke@gmail.com>
@@ -832,14 +839,14 @@
 	* Gui/Pads/FileScout/FileListItem.cs: adjust to
 	FileIconLoader changes
 	
-2005-06-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Services/MessageService.cs: Added methods to ask a question
 	with a cancel option.
 	* Gui/Workbench/Layouts/SdiWorkspaceWindow.cs: Added a cancel
 	option when trying to close a modified file.
 
-2005-06-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-06-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/Dialogs/ReferenceDialog/SelectReferenceDialog.cs:
 	* Gui/Dialogs/ReferenceDialog/ProjectReferencePanel.cs:
@@ -869,11 +876,11 @@
 	don't forget to save the list file in the files to compile list,
 	remove some unneccessary code, fixes bug 75043
 	
-2005-05-19  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-05-19  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/Dialogs/WordCountDialog.cs: Fixed problem that numbers were not shown till moused over.
 
-2005-05-17  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-05-17  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/IWorkbenchLayout.cs:
 	* Gui/Workbench/Layouts/SdiWorkspaceLayout.cs:
@@ -895,7 +902,7 @@
 	refereces of referenced projects. They are not needed for compiling, but
 	they are for running. The Build method now also builds required references.
 
-2005-05-09 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-05-09 Jacob Ils Christensen  <jacobilsoe@gmail.com>
  
  	* Gui/Pads/OpenTaskView.cs: Fixed Gtk warnings by using Clipboard.Text
 

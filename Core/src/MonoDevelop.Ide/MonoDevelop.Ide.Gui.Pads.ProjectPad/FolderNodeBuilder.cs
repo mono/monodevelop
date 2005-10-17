@@ -173,6 +173,41 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return;
 			}
 			
+			ArrayList filesToSave = new ArrayList ();
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if (doc.IsDirty && (doc.FileName == source || doc.FileName.StartsWith (source + Path.DirectorySeparatorChar)))
+					filesToSave.Add (doc);
+			}
+			
+			if (filesToSave.Count > 0) {
+				StringBuilder sb = new StringBuilder ();
+				foreach (Document doc in filesToSave) {
+					if (sb.Length > 0) sb.Append (",\n");
+					sb.Append (Path.GetFileName (doc.FileName));
+				}
+				
+				string question;
+				if (filesToSave.Count == 1)
+					question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the {1} operation?"), sb.ToString (), how);
+				else
+					question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the {1} operation?\n\n{0}"), sb.ToString (), how);
+					
+				switch (Services.MessageService.AskQuestionWithCancel (question)) {
+					case QuestionResponse.Cancel:
+						return;
+					case QuestionResponse.Yes:
+						try {
+							foreach (Document doc in filesToSave) {
+								doc.Save ();
+							}
+						} catch (Exception ex) {
+							Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Save operation failed."));
+							return;
+						}
+						break;
+				}
+			}
+			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
