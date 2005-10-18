@@ -45,6 +45,9 @@ namespace MonoDevelop.Core.AddIns
 		AddInCollection AddIns {
 			get;
 		}
+
+		// whether a given tree node exists in the tree
+		bool TreeNodeExists (string path);
 		
 		/// <summary>
 		/// Returns a TreeNode corresponding to <paramref name="path"/>.

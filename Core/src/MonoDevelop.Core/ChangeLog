@@ -1,3 +1,9 @@
+2005-10-18  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Core.AddIns/IAddInTree.cs:
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:
+	add TreeNodeExists (path) method
+	
 2005-10-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs:

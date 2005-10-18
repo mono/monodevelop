@@ -51,6 +51,22 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 
+		public bool TreeNodeExists (string path)
+		{
+			if (path == null || path.Length == 0)
+				return false;
+			string[] splitPath = path.Split('/');
+			IAddInTreeNode curPath = root;
+			int i = 0;
+			while (i < splitPath.Length) {
+				if (!curPath.ChildNodes.ContainsKey(splitPath[i])) {
+					return false;
+				}
+				curPath = curPath.ChildNodes[splitPath[i]] as IAddInTreeNode;
+				i++;
+			}
+			return true;
+		}
 		
 		/// <summary>
 		/// Returns a collection of all loaded add ins.
