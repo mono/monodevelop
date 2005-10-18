@@ -547,12 +547,12 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void ICodeStyleOperations.IndentSelection ()
 		{
-			se.View.IndentSelection ();
+			se.View.IndentSelection (false);
 		}
 		
 		void ICodeStyleOperations.UnIndentSelection ()
 		{
-			se.View.UnIndentSelection ();
+			se.View.IndentSelection (true);
 		}
 #endregion 
 

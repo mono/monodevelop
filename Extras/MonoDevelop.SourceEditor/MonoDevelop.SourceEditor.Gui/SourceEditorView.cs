@@ -1,28 +1,28 @@
-using Gtk;
-using Gdk;
-using Global = Gtk.Global;
-
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Ide.CodeTemplates;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects;
+using Gtk;
+using Gdk;
+using Global = Gtk.Global;
+using GtkSourceView;
+
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.SourceEditor.Actions;
 using MonoDevelop.SourceEditor.InsightWindow;
 using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.SourceEditor.FormattingStrategy;
-using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.SourceEditor;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Commands;
-
-using GtkSourceView;
 
 namespace MonoDevelop.SourceEditor.Gui
 {
@@ -35,6 +35,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		bool codeCompleteEnabled;
 		bool autoHideCompletionWindow = true;
 		bool autoInsertTemplates;
+		EditActionCollection editactions = new EditActionCollection ();
 
 		public bool EnableCodeCompletion {
 			get { return codeCompleteEnabled; }
@@ -63,6 +64,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			GrabFocus ();
 			buf.MarkSet += new MarkSetHandler (BufferMarkSet);
 			buf.Changed += new EventHandler (BufferChanged);
+			LoadEditActions ();
 		}
 		
 		public new void Dispose ()
@@ -78,6 +80,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				if (autoHideCompletionWindow)
 					CompletionListWindow.HideWindow ();
 				buf.HideHighlightLine ();
+			}
+		}
+
+		void LoadEditActions ()
+		{
+			try {
+				IEditAction[] actions = (IEditAction[]) (AddInTreeSingleton.AddInTree.GetTreeNode ("/AddIns/DefaultTextEditor/EditActions").BuildChildItems (this)).ToArray (typeof(IEditAction));
+				foreach (IEditAction action in actions)
+					editactions.Add (action);
+			} catch (Exception e) {
+				Console.WriteLine (e.ToString ());
 			}
 		}
 		
@@ -155,9 +168,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			Global.PropagateEvent (this, evnt);
 		}
 
-		void DeleteLine ()
+		//remove the current line
+		internal void DeleteLine ()
 		{
-			//remove the current line
 			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
 			iter.LineOffset = 0;
 			TextIter end_iter = buf.GetIterAtLine (iter.Line);
@@ -166,7 +179,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				buf.Delete (ref iter, ref end_iter);
 		}
 
-		void TriggerCodeComplete ()
+		internal void ShowCodeCompletion (char key)
+		{
+			if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
+				PrepareCompletionDetails (buf.GetIterAtMark (buf.InsertMark));
+				CompletionListWindow.ShowWindow (key, GetCodeCompletionDataProvider (false), this);
+			}
+		}
+
+		// FIXME: this method is broken
+		// and will trigger at various incorrect spots
+		internal void TriggerCodeComplete ()
 		{
 			
 			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
@@ -218,7 +241,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			return new CodeCompletionDataProvider (ctx, file, ctrl);
 		}
 			
-		bool MonodocResolver ()
+		internal bool MonodocResolver ()
 		{
 			TextIter insertIter = buf.GetIterAtMark (buf.InsertMark);
 			TextIter triggerIter = TextIter.Zero;
@@ -258,7 +281,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 
-		void ScrollUp () {
+		internal void ScrollUp ()
+		{
 			ParentEditor.Vadjustment.Value -= (ParentEditor.Vadjustment.StepIncrement / 5);
 			if (ParentEditor.Vadjustment.Value < 0.0d)
 				ParentEditor.Vadjustment.Value = 0.0d;
@@ -266,7 +290,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			ParentEditor.Vadjustment.ChangeValue();
 		}
 
-		void ScrollDown () {
+		internal void ScrollDown ()
+		{
 			double maxvalue = ParentEditor.Vadjustment.Upper - ParentEditor.Vadjustment.PageSize;
 			double newvalue = ParentEditor.Vadjustment.Value + (ParentEditor.Vadjustment.StepIncrement / 5);
 
@@ -284,109 +309,35 @@ namespace MonoDevelop.SourceEditor.Gui
 				return true;
 			
 			autoHideCompletionWindow = false;
-			bool res = ProcessPressEvent (evnt);
+			bool res = false;
+			IEditAction action = editactions.GetAction (evnt.Key, evnt.State);
+			if (action != null) {
+				// check to pass on the event prior
+				if (action.PassToBase)
+					base.OnKeyPressEvent (evnt);
+				
+				action.Execute (this);
+				
+				// check to pass on the event after
+				if (action.PassToBase)
+					base.OnKeyPressEvent (evnt);
+
+				res = true;
+			} else {
+				res = base.OnKeyPressEvent (evnt);
+			}
 			autoHideCompletionWindow = true;
 			return res;
 		}
-		
-		bool ProcessPressEvent (Gdk.EventKey evnt)
-		{
-			Gdk.Key key = evnt.Key;
-			uint state = (uint)evnt.State;
-			state &= 1101u;
-			const uint Normal = 0, Shift = 1, Control = 4; /*, Alt = 8*/
-			
-			switch (state) {
-			case Normal:
-				switch (key) {
-				case Gdk.Key.End:
-					if (buf.GotoSelectionEnd ())
-						return true;
-					break;
-				case Gdk.Key.Home:
-					if (buf.GotoSelectionStart ())
-						return true;
-					break;
-				case Gdk.Key.Tab:
-					if (IndentSelection ())
-						return true;
-					else if (InsertTemplate ())
-						return true;
-					break;
-				case Gdk.Key.F1:
-				case Gdk.Key.KP_F1:
-					if (MonodocResolver ())
-						return true;
-					break;
-				}
-				break;
-			case Shift:
-				switch (key) {
-				case Gdk.Key.ISO_Left_Tab:
-					if (UnIndentSelection ())
-						return true;
-					break;
-				}
-				break;
-			case Control:
-				switch (key) {
-				case Gdk.Key.space:
-					TriggerCodeComplete ();
-					return true;
-				case Gdk.Key.k:
-				case Gdk.Key.l:
-					DeleteLine ();
-					return true;
-				case Gdk.Key.Up:
-					ScrollUp ();
-					return true;
-				case Gdk.Key.Down:
-					ScrollDown ();
-					return true;
-				}
-				break;
-			}
 
-			switch ((char)key) {
-			case ' ':
-						/*if (word.ToLower () == "new") {
-							if (EnableCodeCompletion) {
-								completionWindow = new CompletionWindow (this, ParentEditor.DisplayBinding.ContentName, new CodeCompletionDataProvider (true));
-								completionWindow.ShowCompletionWindow ((char)key, buf.GetIterAtMark (buf.InsertMark), true);
-							}
-						}*/
-				goto case '.';
-				
-			case '.':
-				bool retval = base.OnKeyPressEvent (evnt);
-				if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
-					PrepareCompletionDetails(buf.GetIterAtMark (buf.InsertMark));
-					CompletionListWindow.ShowWindow ((char)key, GetCodeCompletionDataProvider (false), this);
-				}
-				return retval;
-				/*case '(':
-				  try {
-				  InsightWindow insightWindow = new InsightWindow(this, ParentEditor.DisplayBinding.ContentName);
-				  
-				  insightWindow.AddInsightDataProvider(new MethodInsightDataProvider());
-				  insightWindow.ShowInsightWindow();
-				  } catch (Exception e) {
-				  Console.WriteLine("EXCEPTION: " + e);
-				  }
-				  break;
-				  case '[':
-				  try {
-				  InsightWindow insightWindow = new InsightWindow(this, ParentEditor.DisplayBinding.ContentName);
-				  
-				  insightWindow.AddInsightDataProvider(new IndexerInsightDataProvider());
-				  insightWindow.ShowInsightWindow();
-				  } catch (Exception e) {
-				  Console.WriteLine("EXCEPTION: " + e);
-				  }
-				  break;*/
-			}
-			
-			return base.OnKeyPressEvent (evnt);
+		internal bool GotoSelectionEnd ()
+		{
+			return buf.GotoSelectionEnd ();
+		}
+
+		internal bool GotoSelectionStart ()
+		{
+			return buf.GotoSelectionStart ();
 		}
 		
 		public int FindPrevWordStart (string doc, int offset)
@@ -491,10 +442,10 @@ namespace MonoDevelop.SourceEditor.Gui
 
 
 #region Indentation
-		public bool IndentSelection ()
+		public bool IndentSelection (bool unindent)
 		{
 			TextIter begin, end;
-			if (! buf.GetSelectionBounds (out begin, out end))
+			if (!buf.GetSelectionBounds (out begin, out end))
 				return false;
 			
 			int y0 = begin.Line, y1 = end.Line;
@@ -507,30 +458,10 @@ namespace MonoDevelop.SourceEditor.Gui
 				return false;
 			
 			using (AtomicUndo a = new AtomicUndo (buf)) {
-				IndentLines (y0, y1);
-				SelectLines (y0, y1);
-			}
-			
-			return true;
-		}
-		
-		public bool UnIndentSelection ()
-		{
-			TextIter begin, end;
-			if (! buf.GetSelectionBounds (out begin, out end))
-				return false;
-			
-			int y0 = begin.Line, y1 = end.Line;
-
-			// If last line isn't selected, it's illogical to indent it.
-			if (end.StartsLine())
-				y1--;
-
-			if (y0 == y1)
-				return false;
-			
-			using (AtomicUndo a = new AtomicUndo (buf)) {
-				UnIndentLines (y0, y1);
+				if (unindent)
+					UnIndentLines (y0, y1);
+				else
+					IndentLines (y0, y1);
 				SelectLines (y0, y1);
 			}
 			

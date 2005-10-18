@@ -1,3 +1,22 @@
+2005-10-18 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Codons/EditActionCodon.cs:
+	add all the current ModifierTypes in gdk 2.4
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	order using statements, remove ProcessPressEvent()
+	combine UnIndentSelection and IndentSelection
+	implement editactions instead of a bunch of switch
+	statements to control the editor, mark some methods
+	internal
+	* MonoDevelop.SourceEditor.Actions/IEditAction.cs:
+	add PassToBase property
+	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
+	move the default editing actions here as IEditActions
+	* MonoDevelop.SourceEditor.Actions/EditActionCollection.cs:
+	used to get unique IEditAction from a Gdk.Key and Gdk.ModifierType
+	* MonoDevelop.SourceEditor.addin.xml: add EditActions
+	* Makefile.am: add EditActionCollection and DefaultEditActions
+	
 2005-10-17 John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:

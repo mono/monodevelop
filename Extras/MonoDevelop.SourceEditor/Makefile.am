@@ -26,6 +26,8 @@ MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \
 MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs \
 MonoDevelop.SourceEditor/EditorCommands.cs \
 MonoDevelop.SourceEditor.Actions/IEditAction.cs \
+MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
+MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs \
 MonoDevelop.SourceEditor.Codons/EditActionCodon.cs \
 MonoDevelop.SourceEditor/Services.cs
 

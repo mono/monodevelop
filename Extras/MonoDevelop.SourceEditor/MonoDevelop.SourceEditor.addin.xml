@@ -307,12 +307,20 @@
 	</Extension>
 -->	
 	
-	<!-- Note : Most actions are put directly into the control, because 
-	            they're used for the standalone version too, only put keys in the
-	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
 	<Extension path = "/AddIns/DefaultTextEditor/EditActions">
-		<EditAction id = "InsertTemplate" class = "MonoDevelop.SourceEditor.Actions.InsertTemplate" keys = "Tab"/>
-		<EditAction id = "IndentSelection" class = "MonoDevelop.SourceEditor.Actions.IndentSelection"  keys = "Control|I"/>
+		<!-- these are the default editor actions -->
+		<EditAction id = "ControlSpace" class = "MonoDevelop.SourceEditor.Actions.ControlSpace" keys = "Control|KP_Space"/>
+		<EditAction id = "DeleteLine" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|k" />
+		<EditAction id = "DeleteLine2" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|l" />
+		<EditAction id = "Dot" class = "MonoDevelop.SourceEditor.Actions.Dot" keys = "period"/>
+		<EditAction id = "End" class = "MonoDevelop.SourceEditor.Actions.End" keys = "End"/>
+		<EditAction id = "F1" class = "MonoDevelop.SourceEditor.Actions.F1" keys = "F1"/>
+		<EditAction id = "Home" class = "MonoDevelop.SourceEditor.Actions.Home" keys = "Home"/>
+		<EditAction id = "ScrollUp" class = "MonoDevelop.SourceEditor.Actions.ScrollUp" keys = "Control|Up"/>
+		<EditAction id = "ScrollDown" class = "MonoDevelop.SourceEditor.Actions.ScrollDown" keys = "Control|Down"/>
+		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
+		<EditAction id = "Space" class = "MonoDevelop.SourceEditor.Actions.Space" keys = "KP_Space"/>
+		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">

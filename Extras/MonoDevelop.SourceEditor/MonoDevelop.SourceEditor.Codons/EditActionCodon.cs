@@ -54,9 +54,45 @@ namespace MonoDevelop.SourceEditor.Codons
 
 				// the rest, if any, are modifiers
 				for (int j = 0; j < keydescr.Length - 1; j++) {
+					// FIXME: newer gdk's have more values here
 					switch (keydescr[j]) {
+						// ignore the buttons
+						case "Button1":
+						case "Button2":
+						case "Button3":
+						case "Button4":
+						case "Button5":
+							break;
 						case "Control":
 							state |= Gdk.ModifierType.ControlMask;
+							break;
+						// Caps Lock or Shift Lock
+						case "Lock":
+							state |= Gdk.ModifierType.LockMask;
+							break;
+						// this is normally Alt
+						case "Alt":
+						case "Mod1":
+							state |= Gdk.ModifierType.Mod1Mask;
+							break;
+						case "Mod2":
+							state |= Gdk.ModifierType.Mod2Mask;
+							break;
+						case "Mod3":
+							state |= Gdk.ModifierType.Mod3Mask;
+							break;
+						case "Mod4":
+							state |= Gdk.ModifierType.Mod4Mask;
+							break;
+						case "Mod5":
+							state |= Gdk.ModifierType.Mod5Mask;
+							break;
+						// all the modifiers
+						case "Modifier":
+							state |= Gdk.ModifierType.ModifierMask;
+							break;
+						// ignore internal to GTK+
+						case "Release":
 							break;
 						case "Shift":
 							state |= Gdk.ModifierType.ShiftMask;

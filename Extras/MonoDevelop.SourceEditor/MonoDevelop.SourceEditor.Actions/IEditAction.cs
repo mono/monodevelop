@@ -17,6 +17,14 @@ namespace MonoDevelop.SourceEditor.Actions
 	public interface IEditAction
 	{
 		/// <value>
+		/// Whether to pass the event to the base type of the editor.
+		/// </value>
+		bool PassToBase {
+			get;
+			set;
+		}
+
+		/// <value>
 		/// An array of keys on which this edit action occurs.
 		/// </value>
 		Gdk.Key Key {
@@ -43,6 +51,17 @@ namespace MonoDevelop.SourceEditor.Actions
 	{
 		Gdk.ModifierType modifier = Gdk.ModifierType.None;
 		Gdk.Key key;
+		bool pass = false;
+
+		/// <value>
+		/// Whether to pass the event to the base type of the editor.
+		/// It is checked before and after executing the action and is
+		/// false by default.
+		/// </value>
+		public bool PassToBase {
+			get { return pass; }
+			set { pass = value; }
+		}
 		
 		/// <value>
 		/// An array of keys on which this edit action occurs.
