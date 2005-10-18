@@ -8,9 +8,9 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
 
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.SourceEditor.Actions;
 
@@ -21,14 +21,10 @@ namespace MonoDevelop.SourceEditor.Codons
 	{
 		[XmlMemberArrayAttribute("keys", IsRequired=true)]
 		string[] keys = null;
-		
+
 		public string[] Keys {
-			get {
-				return keys;
-			}
-			set {
-				keys = value;
-			}
+			get { return keys; }
+			set { keys = value; }
 		}
 		
 		/// <summary>
@@ -37,26 +33,42 @@ namespace MonoDevelop.SourceEditor.Codons
 		/// </summary>
 		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
 		{
-			//FIXME: This code is *not* fully ported yet
-			if (subItems.Count > 0) {
+			if (subItems.Count > 0)
 				throw new ApplicationException ("more than one level of edit actions don't make sense!");
-			}
 			
 			IEditAction editAction = (IEditAction) AddIn.CreateObject (Class);
+			if (editAction == null)
+				return null;
 							
-			Gdk.Key[] actionKeys = new Gdk.Key[keys.Length];
-			for (int j = 0; j < keys.Length; ++j) {
-				string[] keydescr = keys[j].Split (new char[] { '|' });
-				//Keys key = (Keys)((System.Windows.Forms.Keys.Space.GetType()).InvokeMember(keydescr[0], BindingFlags.GetField, null, System.Windows.Forms.Keys.Space, new object[0]));
-				//Console.Write (keydescr[0] + " -- ");
-				for (int k = 1; k < keydescr.Length; ++k) {
-					//key |= (Keys)((System.Windows.Forms.Keys.Space.GetType()).InvokeMember(keydescr[k], BindingFlags.GetField, null, System.Windows.Forms.Keys.Space, new object[0]));
-					//Console.Write (keydescr[k] + " -- ");
+			// basically, we want to take a string like:
+			// Control|J and turn it into the value to trigger the edit action
+			// in GTK+ lingo that is a Gdk.Key and Gdk.ModifierType
+			// we assume the order is Modifier|Modifier|Key
+			Gdk.Key key = Gdk.Key.VoidSymbol;
+			Gdk.ModifierType state = Gdk.ModifierType.None;
+			for (int i = 0; i < keys.Length; i++) {
+				string[] keydescr = keys[i].Split ('|');
+
+				// the last keydescr is the Gdk.Key
+				key = (Gdk.Key) Enum.Parse (typeof (Gdk.Key), keydescr[keydescr.Length - 1]);
+
+				// the rest, if any, are modifiers
+				for (int j = 0; j < keydescr.Length - 1; j++) {
+					switch (keydescr[j]) {
+						case "Control":
+							state |= Gdk.ModifierType.ControlMask;
+							break;
+						case "Shift":
+							state |= Gdk.ModifierType.ShiftMask;
+							break;
+						default:
+							break;
+					}
 				}
-				//actionKeys[j] = key;
 			}
 			
-			editAction.Keys = actionKeys;
+			editAction.Key = key;
+			editAction.State = state;
 			
 			return editAction;
 		}

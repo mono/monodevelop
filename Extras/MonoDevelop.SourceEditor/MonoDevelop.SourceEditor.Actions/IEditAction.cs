@@ -19,16 +19,20 @@ namespace MonoDevelop.SourceEditor.Actions
 		/// <value>
 		/// An array of keys on which this edit action occurs.
 		/// </value>
-		Gdk.Key[] Keys
-		{
+		Gdk.Key Key {
+			get;
+			set;
+		}
+
+		Gdk.ModifierType State {
 			get;
 			set;
 		}
 		
 		/// <remarks>
-		/// When the key which is defined per XML is pressed, this method will be launched.
+		/// When the key which is defined in the addin is pressed, this method will be invoked.
 		/// </remarks>
-		void Execute (SourceEditorView textArea);
+		void Execute (SourceEditorView sourceView);
 	}
 	
 	/// <summary>
@@ -37,24 +41,27 @@ namespace MonoDevelop.SourceEditor.Actions
 	/// </summary>
 	public abstract class AbstractEditAction : IEditAction
 	{
-		Gdk.Key[] keys = null;
+		Gdk.ModifierType modifier = Gdk.ModifierType.None;
+		Gdk.Key key;
 		
 		/// <value>
 		/// An array of keys on which this edit action occurs.
 		/// </value>
-		public Gdk.Key[] Keys
+		public Gdk.Key Key
 		{
-			get {
-				return keys;
-			}
-			set {
-				keys = value;
-			}
+			get { return key; }
+			set { key = value; }
+		}
+
+		public Gdk.ModifierType State {
+			get { return modifier; }
+			set { modifier = value; }
 		}
 		
 		/// <remarks>
-		/// When the key which is defined per XML is pressed, this method will be launched.
+		/// When the key which is defined in the addin is pressed, this method will be invoked.
 		/// </remarks>
-		public abstract void Execute (SourceEditorView textArea);
+		public abstract void Execute (SourceEditorView sourceView);
 	}		
 }
+

@@ -308,26 +308,10 @@ namespace MonoDevelop.SourceEditor.Gui
 						return true;
 					break;
 				case Gdk.Key.Tab:
-					if (IndentSelection ()) {
+					if (IndentSelection ())
 						return true;
-					}
-					else {
-						if (AutoInsertTemplates)
-						{
-							string word = GetWordBeforeCaret ();
-							if (word != null) {
-								CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(ParentEditor.DisplayBinding.ContentName);
-								if (templateGroup != null) {
-									foreach (CodeTemplate template in templateGroup.Templates) {
-										if (template.Shortcut == word) {
-											InsertTemplate(template);
-											return true;
-										}
-									}
-								}
-							}
-						}
-					}
+					else if (InsertTemplate ())
+						return true;
 					break;
 				case Gdk.Key.F1:
 				case Gdk.Key.KP_F1:
@@ -438,6 +422,27 @@ namespace MonoDevelop.SourceEditor.Gui
     				index++;
     			}
  	   		return index > 0 ? lineText.Substring (0, index) : "";
+		}
+
+		// handles the details of inserting a code template
+		// returns true if it was inserted
+		public bool InsertTemplate ()
+		{
+			if (AutoInsertTemplates) {
+				string word = GetWordBeforeCaret ();
+				if (word != null) {
+					CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename (ParentEditor.DisplayBinding.ContentName);
+					if (templateGroup != null) {
+						foreach (CodeTemplate template in templateGroup.Templates) {
+							if (template.Shortcut == word) {
+								InsertTemplate (template);
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return false;
 		}
 		
 		public void InsertTemplate (CodeTemplate template)

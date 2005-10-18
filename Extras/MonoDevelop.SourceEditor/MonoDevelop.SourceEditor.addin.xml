@@ -311,8 +311,8 @@
 	            they're used for the standalone version too, only put keys in the
 	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
 	<Extension path = "/AddIns/DefaultTextEditor/EditActions">
-		<EditAction id = "TemplateCompletion" class = "MonoDevelop.SourceEditor.Actions.TemplateCompletion"  keys = "Control|J"/>		
-		<EditAction id = "IndentSelection" class = "MonoDevelop.SourceEditor.Actions.IndentSelection"  keys = "Control|I"/>		
+		<EditAction id = "InsertTemplate" class = "MonoDevelop.SourceEditor.Actions.InsertTemplate" keys = "Tab"/>
+		<EditAction id = "IndentSelection" class = "MonoDevelop.SourceEditor.Actions.IndentSelection"  keys = "Control|I"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">

@@ -1,3 +1,13 @@
+2005-10-17 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	add InsertTemplate () method which handles the details for us
+	and move the relevant code to it
+	* MonoDevelop.SourceEditor.Codons/EditActionCodon.cs:
+	MonoDevelop.SourceEditor.Actions/IEditAction.cs: update and implement
+	for gdk key handling, they are still not used
+	* MonoDevelop.SourceEditor.addin.xml: change InsertTemplate key to Tab
+	
 2005-10-11 John Luke <john.luke@gmail.com> 
 
 	*  MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
