@@ -85,12 +85,13 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		void LoadEditActions ()
 		{
-			try {
-				IEditAction[] actions = (IEditAction[]) (AddInTreeSingleton.AddInTree.GetTreeNode ("/AddIns/DefaultTextEditor/EditActions").BuildChildItems (this)).ToArray (typeof(IEditAction));
+			string editactionsPath = "/AddIns/DefaultTextEditor/EditActions";
+			if (AddInTreeSingleton.AddInTree.TreeNodeExists (editactionsPath)) {
+				IEditAction[] actions = (IEditAction[]) (AddInTreeSingleton.AddInTree.GetTreeNode (editactionsPath).BuildChildItems (this)).ToArray (typeof(IEditAction));
 				foreach (IEditAction action in actions)
 					editactions.Add (action);
-			} catch (Exception e) {
-				Console.WriteLine (e.ToString ());
+			} else {
+				Console.WriteLine ("/AddIns/DefaultTextEditor/EditActions addin path not found");
 			}
 		}
 		

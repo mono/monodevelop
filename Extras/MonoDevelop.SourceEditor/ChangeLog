@@ -1,5 +1,11 @@
 2005-10-18 John Luke <john.luke@gmail.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	use new TreeNodeExists method instead of relying on an
+	exception
+	
+2005-10-18 John Luke <john.luke@gmail.com> 
+
 	* MonoDevelop.SourceEditor.Codons/EditActionCodon.cs:
 	add all the current ModifierTypes in gdk 2.4
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
