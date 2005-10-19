@@ -107,10 +107,15 @@ namespace MonoDeveloper
 				ProcessWrapper p = Runtime.ProcessService.StartProcess ("svn", "diff " + path, null, w, monitor.Log, null);
 				p.WaitForOutput ();
 				w.Close ();
-				IdeApp.Workbench.OpenDocument ("/tmp/tmp.diff");
+				MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new MessageHandler (OpenDiff));
 				monitor.Log.WriteLine ();
 				monitor.Log.WriteLine ("Done.");
 			}
+		}
+		
+		void OpenDiff ()
+		{
+			IdeApp.Workbench.OpenDocument ("/tmp/tmp.diff");
 		}
 		
 		[CommandHandler (Commands.SvnUpdate)]

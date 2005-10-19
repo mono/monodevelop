@@ -1,3 +1,7 @@
+2005-10-19  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Commands.cs: Always open documents in the GUI thread.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDeveloperExtensions.addin.xml: Fixed addin header information.
