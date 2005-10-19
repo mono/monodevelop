@@ -10,6 +10,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui.ErrorHandlers;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
@@ -90,6 +91,14 @@ namespace MonoDevelop.Ide.Gui
 		
 			commandService.EnableUpdate ();
 			monitor.EndTask ();
+			
+			foreach (CommandHandler handler in Runtime.AddInService.GetTreeItems ("/MonoDevelop/IDE/StartupHandlers", typeof(CommandHandler))) {
+				try {
+					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (handler, null);
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
+				}
+			}
 		}
 			
 		public static void Run ()

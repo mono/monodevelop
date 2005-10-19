@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 		public BackgroundProgressMonitor (string title, string iconName)
 		{
 			this.title = title;
-			Image img = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
+			Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
 			icon = Services.StatusBar.ShowStatusIcon (img);
 		}
 		
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 		public override void Dispose()
 		{
 			base.Dispose ();
-			Services.StatusBar.HideStatusIcon (icon);
+			icon.Dispose ();
 		}
 	}
 }

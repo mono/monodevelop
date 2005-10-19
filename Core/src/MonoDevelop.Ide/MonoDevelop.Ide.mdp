@@ -234,6 +234,7 @@
     <File name="./options/MonoDevelop-tools.xml" subtype="Code" buildaction="Nothing" />
     <File name="./options/MonoDevelopProperties.xml" subtype="Code" buildaction="Nothing" />
     <File name="./options/TipsOfTheDay.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Ide.Gui/AddinUpdateHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -243,5 +244,8 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Dock" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
 </Project>

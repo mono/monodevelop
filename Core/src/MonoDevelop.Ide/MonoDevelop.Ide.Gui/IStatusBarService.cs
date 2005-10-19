@@ -27,8 +27,7 @@ namespace MonoDevelop.Ide.Gui
 		void EndProgress ();
 		void Pulse ();
 		
-		IStatusIcon ShowStatusIcon (Gtk.Image image);
-		void HideStatusIcon (IStatusIcon icon);
+		IStatusIcon ShowStatusIcon (Gdk.Pixbuf image);
 		
 		void ShowErrorMessage(string message);
 		

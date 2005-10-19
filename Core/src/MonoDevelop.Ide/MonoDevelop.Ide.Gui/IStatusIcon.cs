@@ -31,10 +31,11 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public interface IStatusIcon
+	public interface IStatusIcon: IDisposable
 	{
 		string ToolTip { get; set; }
-		Image Image { get; set; }
+		Gdk.Pixbuf Image { get; set; }
 		EventBox EventBox { get; }
+		void SetAlertMode (int seconds);
 	}
 }

@@ -218,6 +218,7 @@ MonoDevelop.Ide.Gui/SdStatusBar.cs \
 MonoDevelop.Ide.Gui/StartupInfo.cs \
 MonoDevelop.Ide.Gui/ProgressMonitors.cs \
 MonoDevelop.Ide.Gui/IdeStartup.cs \
+MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 MonoDevelop.Ide/Services.cs \
 MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \

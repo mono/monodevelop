@@ -18,12 +18,29 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.ExternalTools;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Commands
 {
 	public enum ToolCommands
 	{
+		AddinManager,
 		ToolList
+	}
+	
+	internal class AddinManagerHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			AggregatedProgressMonitor monitor = AddinUpdateHandler.UpdateMonitor;
+			if (monitor != null && !monitor.IsCompleted) {
+				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));
+				monitor.AsyncOperation.WaitForCompleted ();
+			}
+			AddinUpdateHandler.HideAlert ();
+			Core.Gui.Services.RunAddinManager ();
+		}
 	}
 	
 	internal class ToolListHandler: CommandHandler

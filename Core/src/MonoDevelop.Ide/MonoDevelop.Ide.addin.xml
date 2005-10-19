@@ -45,6 +45,10 @@
 		       class = "MonoDevelop.Ide.Gui.Pads.ProjectBrowser.DefaultDotNetNodeBuilder"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Commands">
 	
 		<!-- EditCommands -->
@@ -328,6 +332,10 @@
 
 		<!-- ToolCommands -->
 		
+		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
+				defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
+				icon = "md-software-update"
+				_label = "Add-in Manager..." />
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 				defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 				type="array"
@@ -797,6 +805,8 @@
 		</ItemSet>
         
 		<ItemSet id = "Tools" _label = "Tools">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
+			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
         </ItemSet>
 	        

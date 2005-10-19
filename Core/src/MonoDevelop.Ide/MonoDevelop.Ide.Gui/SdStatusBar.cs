@@ -138,17 +138,17 @@ namespace MonoDevelop.Ide.Gui
 				statusLabel.Text = "";
 		}
 		
-		public IStatusIcon ShowStatusIcon (Gtk.Image image)
+		public IStatusIcon ShowStatusIcon (Gdk.Pixbuf image)
 		{
 			EventBox ebox = new EventBox ();
-			ebox.Child = image;
+			ebox.Child = new Gtk.Image (image);
 			statusBox.PackEnd (ebox, false, false, 2);
 			statusBox.ReorderChild (ebox, 0);
 			ebox.ShowAll ();
-			return new StatusIcon (ebox);
+			return new StatusIcon (this, ebox, image);
 		}
 		
-		public void HideStatusIcon (IStatusIcon icon)
+		internal void HideStatusIcon (IStatusIcon icon)
 		{
 			statusBox.Remove (((StatusIcon)icon).EventBox);
 		}
@@ -181,13 +181,26 @@ namespace MonoDevelop.Ide.Gui
 	
 	class StatusIcon: IStatusIcon
 	{
+		SdStatusBar statusBar;
 		internal EventBox box;
 		string tip;
 		Tooltips tips;
+		DateTime alertEnd;
+		Gdk.Pixbuf icon;
 		
-		public StatusIcon (EventBox box)
+		int astep;
+		Gtk.Image[] images;
+		
+		public StatusIcon (SdStatusBar statusBar, EventBox box, Gdk.Pixbuf icon)
 		{
+			this.statusBar = statusBar;
 			this.box = box;
+			this.icon = icon;
+		}
+		
+		public void Dispose ()
+		{
+			statusBar.HideStatusIcon (this);
 		}
 		
 		public string ToolTip {
@@ -208,9 +221,46 @@ namespace MonoDevelop.Ide.Gui
 			get { return box; }
 		}
 		
-		public Image Image {
-			get { return (Image) box.Child; }
-			set { box.Child = value; }
+		public Gdk.Pixbuf Image {
+			get { return icon; }
+			set {
+				icon = value;
+				box.Child = new Gtk.Image (icon);
+			}
+		}
+		
+		public void SetAlertMode (int seconds)
+		{
+			astep = 0;
+			alertEnd = DateTime.Now.AddSeconds (seconds);
+			
+			if (images == null)
+				GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
+			
+			images = new Gtk.Image [10];
+			for (int n=0; n<10; n++) {
+				images [n] = new Image (Services.Icons.MakeTransparent (icon, ((double)(9-n))/10.0));
+				images [n].Show ();
+			}
+		}
+		
+		public bool AnimateIcon ()
+		{
+			box.Remove (box.Child);
+			
+			if (DateTime.Now >= alertEnd && astep == 0) {
+				box.Child = new Gtk.Image (icon);
+				images = null;
+				box.Child.Show ();
+				return false;
+			}
+			if (astep < 10)
+				box.Child = images [astep];
+			else
+				box.Child = images [20 - astep - 1];
+				
+			astep = (astep + 1) % 20;
+			return true;
 		}
 	}
 }

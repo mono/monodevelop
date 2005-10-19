@@ -1,3 +1,26 @@
+2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+	
+	* MonoDevelop.Ide.Gui/Ide.cs: Execute auto-start commands.
+	
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Added command
+	for showing the Add-in manager.
+	
+	* Makefile.am:
+	* MonoDevelop.Ide/MonoDevelop.Ide.mdp: Added new files.
+	
+	* MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:
+	* MonoDevelop.Ide.Gui/IStatusBarService.cs:
+	* MonoDevelop.Ide.Gui/IStatusIcon.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui/SdStatusBar.cs:
+	Icons are now hiden by calling Dispose.
+	Added SetAlarmMode to make icons blink in the status bar.
+	Use Pixbuf insted of Image for icons.
+	
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs: New auto-start
+	handler that checks for add-in updates.
+
 2005-10-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:

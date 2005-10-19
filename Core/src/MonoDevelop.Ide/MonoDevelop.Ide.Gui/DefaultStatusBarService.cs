@@ -77,17 +77,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IStatusIcon ShowStatusIcon (Gtk.Image image)
+		public IStatusIcon ShowStatusIcon (Gdk.Pixbuf image)
 		{
 			return statusBar.ShowStatusIcon (image);
 		}
-		
-		public void HideStatusIcon (IStatusIcon icon)
-		{
-			statusBar.HideStatusIcon (icon);
-		}
-		
-		
+				
 		[AsyncDispatch]
 		public void SetCaretPosition (int ln, int col, int ch)
 		{
