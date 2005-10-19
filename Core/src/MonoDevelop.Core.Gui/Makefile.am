@@ -60,6 +60,7 @@ MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs \
 MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs \
 MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs \
 MonoDevelop.Core.Gui.Dialogs/NewSiteDialog.cs \
+MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs \
 MonoDevelop.Core.Gui.ErrorHandlers/GenericError.cs \
 MonoDevelop.Core.Gui/ITextBufferStrategy.cs \

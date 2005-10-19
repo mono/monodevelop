@@ -35,7 +35,7 @@ using MonoDevelop.Core.AddIns.Setup;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class AddinInfoDialog : IDisposable
+	class AddinInfoDialog : IDisposable
 	{
 		[Glade.Widget ("AddinInfoDialog")] Dialog dialog;
 		[Glade.Widget] Label infoLabel;

@@ -32,19 +32,92 @@ using System.IO;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Core.Gui.ProgressMonitoring
 {
 	// Progress monitor that reports errors and warnings in message dialogs.
 	
-	public class MessageDialogProgressMonitor: NullProgressMonitor
+	public class MessageDialogProgressMonitor: BaseProgressMonitor
 	{
 		StringCollection errorsMessages = new StringCollection ();
 		StringCollection warningMessages = new StringCollection ();
 		Exception errorException;
+		ProgressDialog dialog;
 		
+		public MessageDialogProgressMonitor (): this (false)
+		{
+		}
+		
+		public MessageDialogProgressMonitor (bool showProgress): this (showProgress, true, true)
+		{
+		}
+		
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel): this (showProgress, allowCancel, true)
+		{
+		}
+		
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails)
+		{
+			if (showProgress) {
+				dialog = new ProgressDialog (allowCancel, showDetails);
+				dialog.Message = "";
+				dialog.Show ();
+				dialog.AsyncOperation = AsyncOperation;
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+		
+		protected override void OnWriteLog (string text)
+		{
+			if (dialog != null) {
+				dialog.WriteText (text);
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+		
+		protected override void OnProgressChanged ()
+		{
+			if (dialog != null) {
+				dialog.Message = CurrentTask;
+				dialog.Progress = GlobalWork;
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+		
+		public override void BeginTask (string name, int totalWork)
+		{
+			base.BeginTask (name, totalWork);
+			if (dialog != null) {
+				dialog.BeginTask (name);
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+		
+		public override void BeginStepTask (string name, int totalWork, int stepSize)
+		{
+			base.BeginStepTask (name, totalWork, stepSize);
+			if (dialog != null) {
+				dialog.BeginTask (name);
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+		
+		public override void EndTask ()
+		{
+			base.EndTask ();
+			if (dialog != null) {
+				dialog.EndTask ();
+				Services.DispatchService.RunPendingEvents ();
+			}
+		}
+						
 		public override void ReportWarning (string message)
 		{
+			if (dialog != null) {
+				dialog.WriteText ("WARNING: " + message);
+				Services.DispatchService.RunPendingEvents ();
+			}
 			warningMessages.Add (message);
 		}
 		
@@ -62,11 +135,19 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				Runtime.LoggingService.Error (ex);
 				errorException = ex;
 			}
+			
+			if (dialog != null) {
+				dialog.WriteText ("ERROR: " + message);
+				Services.DispatchService.RunPendingEvents ();
+			}
 		}
 		
 		protected override void OnCompleted ()
 		{
-			Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			if (dialog != null) {
+				dialog.Dispose ();
+				Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			}
 			base.OnCompleted ();
 		}
 		

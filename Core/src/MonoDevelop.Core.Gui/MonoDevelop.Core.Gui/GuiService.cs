@@ -1,5 +1,6 @@
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Core.Gui
 {
@@ -30,6 +31,13 @@ namespace MonoDevelop.Core.Gui
 				if (dispatchService == null)
 					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
 				return dispatchService;
+			}
+		}
+		
+		public static void RunAddinManager ()
+		{
+			using (AddinManagerDialog dlg = new AddinManagerDialog (null)) {
+				dlg.Run ();
 			}
 		}
 	}

@@ -34,7 +34,7 @@ using MonoDevelop.Core.AddIns.Setup;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class AddinManagerDialog : IDisposable
+	class AddinManagerDialog : IDisposable
 	{
 		[Glade.Widget ("AddinManagerDialog")] Dialog dialog;
 		[Glade.Widget] Gtk.TreeView addinTree;

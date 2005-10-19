@@ -5,7 +5,7 @@ using Glade;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class NewSiteDialog : IDisposable
+	class NewSiteDialog : IDisposable
 	{
 		[Glade.Widget ("NewSiteDialog")] Dialog dialog;
 		[Glade.Widget] RadioButton btnOnlineRep;

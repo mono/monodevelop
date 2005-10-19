@@ -8,7 +8,7 @@ using MonoDevelop.Core.AddIns.Setup;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class ManageSitesDialog : IDisposable
+	class ManageSitesDialog : IDisposable
 	{
 		[Glade.Widget ("ManageSitesDialog")] Dialog dialog;
 		[Glade.Widget] Gtk.TreeView repoTree;
@@ -19,7 +19,9 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			new Glade.XML (null, "Base.glade", "ManageSitesDialog", null).Autoconnect (this);
 			treeStore = new Gtk.ListStore (typeof (string), typeof (string));
 			repoTree.Model = treeStore;
-			repoTree.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
+			repoTree.HeadersVisible = true;
+			repoTree.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 1);
+			repoTree.AppendColumn (GettextCatalog.GetString ("Url"), new Gtk.CellRendererText (), "text", 0);
 			
 			RepositoryRecord[] reps = Runtime.SetupService.GetRepositories ();
 			foreach (RepositoryRecord rep in reps) {

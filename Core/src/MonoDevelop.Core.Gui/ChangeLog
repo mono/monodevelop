@@ -1,3 +1,24 @@
+2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.mdp: Added new files:
+	
+	* MonoDevelop.Core.Gui.Dialogs/NewSiteDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs: Made internal.
+	
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs: Show a
+	progress dialog when updating from repository.
+	
+	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:
+	* Base.glade: Added progress dialog.
+	
+	* MonoDevelop.Core.Gui/GuiService.cs: Added method for
+	starting the addin manager.
+	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	This progress monitor now displays the progress in a dialog.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Added parameter to showError

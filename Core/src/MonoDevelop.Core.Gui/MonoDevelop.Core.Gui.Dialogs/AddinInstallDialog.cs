@@ -13,7 +13,7 @@ using MonoDevelop.Core.Gui.ProgressMonitoring;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class AddinInstallDialog : IDisposable
+	class AddinInstallDialog : IDisposable
 	{
 		[Glade.Widget ("AddinInstallDialog")] Dialog dialog;
 		[Glade.Widget ("wizardNotebook")] Notebook wizard;
@@ -183,11 +183,23 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
+		IProgressMonitor updateMonitor;
+		
 		protected void OnUpdateRepo (object sender, EventArgs e)
 		{
-			using (IProgressMonitor m = new MessageDialogProgressMonitor ()) {
-				Runtime.SetupService.UpdateRepositories (m);
-				LoadAddins ();
+			Thread t = new Thread (new ThreadStart (RunUpdate));
+			updateMonitor = new MessageDialogProgressMonitor (true, true, false);
+			t.Start ();
+			updateMonitor.AsyncOperation.WaitForCompleted ();
+			LoadAddins ();
+		}
+		
+		void RunUpdate ()
+		{
+			try {
+				Runtime.SetupService.UpdateRepositories (updateMonitor);
+			} finally {
+				updateMonitor.Dispose ();
 			}
 		}
 		
