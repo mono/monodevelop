@@ -309,7 +309,7 @@
 	
 	<Extension path = "/AddIns/DefaultTextEditor/EditActions">
 		<!-- these are the default editor actions -->
-		<EditAction id = "ControlSpace" class = "MonoDevelop.SourceEditor.Actions.ControlSpace" keys = "Control|KP_Space"/>
+		<EditAction id = "ControlSpace" class = "MonoDevelop.SourceEditor.Actions.ControlSpace" keys = "Control|space"/>
 		<EditAction id = "DeleteLine" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|k" />
 		<EditAction id = "DeleteLine2" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|l" />
 		<EditAction id = "Dot" class = "MonoDevelop.SourceEditor.Actions.Dot" keys = "period"/>
