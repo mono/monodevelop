@@ -1,3 +1,23 @@
+2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.mdp: Added references.
+	
+	* MonoDevelop.Core.Properties/IProperties.cs:
+	* MonoDevelop.Core.Properties/DefaultProperties.cs:
+	Added GetProperty overloads for DateTime and TimeSpan.
+
+	* MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs: Properly
+	set repo name when it has been updated.
+	
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Several fixes
+	in repository registration.
+	
+	* MonoDevelop.Core.AddIns.Setup/AddinInfo.cs: Generate better
+	names for addin reference elements.
+	
+	* MonoDevelop.Core.AddIns.Setup/SetupTool.cs: Improved build
+	package command.
+
 2005-10-18  John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Core.AddIns/IAddInTree.cs:

@@ -137,6 +137,10 @@ namespace MonoDevelop.Core.Properties
 		/// </param>
 		System.Enum GetProperty(string key, System.Enum defaultvalue);
 		
+		DateTime GetProperty (string key, DateTime defaultvalue);
+		
+		TimeSpan GetProperty (string key, TimeSpan defaultvalue);
+		
 		/// <summary>
 		/// Sets the property <code>key</code> to the value <code>val</code>.
 		/// If <code>val</code> is null, the property will be taken out from the

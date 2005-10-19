@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace MonoDevelop.Core.AddIns.Setup
 {
@@ -96,6 +97,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			set { category = value; }
 		}
 		
+		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
+		[XmlArrayItem ("NativeDependency", typeof(NativeDependency))]
 		public PackageDependencyCollection Dependencies {
 			get { return dependencies; }
 		}

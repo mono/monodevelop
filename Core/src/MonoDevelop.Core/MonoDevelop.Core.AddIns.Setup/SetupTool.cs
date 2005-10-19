@@ -38,6 +38,9 @@ namespace MonoDevelop.Core.AddIns.Setup
 {
 	class SetupTool: IApplication
 	{
+		Hashtable options = new Hashtable ();
+		string[] arguments;
+			
 		public int Run (string[] args)
 		{
 			Console.WriteLine ("MonoDevelop Setup Utility");
@@ -51,6 +54,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			Array.Copy (args, 1, parms, 0, args.Length - 1);
 			
 			try {
+				ReadOptions (parms);
 				return RunCommand (args [0], parms);
 			} catch (InstallException ex) {
 				Console.WriteLine (ex.Message);
@@ -273,7 +277,46 @@ namespace MonoDevelop.Core.AddIns.Setup
 		{
 			if (args.Length < 1)
 				throw new InstallException ("A file name is required.");
-			Runtime.SetupService.BuildPackage (new ConsoleProgressMonitor (), args[0], (args.Length > 1 ? args[1] : null));
+				
+			Runtime.SetupService.BuildPackage (new ConsoleProgressMonitor (), GetOption ("d", "."), GetArguments ());
+		}
+		
+		string[] GetArguments ()
+		{
+			return arguments;
+		}
+		
+		string GetOption (string key, string defValue)
+		{
+			object val = options [key];
+			if (val == null || val == (object) this)
+				return defValue;
+			else
+				return (string) val;
+		}
+		
+		bool HasOption (string key)
+		{
+			return options.Contains (key);
+		}
+		
+		void ReadOptions (string[] args)
+		{
+			options = new Hashtable ();
+			ArrayList list = new ArrayList ();
+			
+			foreach (string arg in args) {
+				if (arg.StartsWith ("-")) {
+					int i = arg.IndexOf (':');
+					if (i == -1)
+						options [arg.Substring (1)] = this;
+					else
+						options [arg.Substring (1, i-1)] = arg.Substring (i+1);
+				} else
+					list.Add (arg);
+			}
+			
+			arguments = (string[]) list.ToArray (typeof(string));
 		}
 		
 		void PrintHelp ()

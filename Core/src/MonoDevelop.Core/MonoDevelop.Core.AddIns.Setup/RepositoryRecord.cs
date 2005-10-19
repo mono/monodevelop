@@ -96,6 +96,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (newRep.Name == null)
 				newRep.Name = new Uri (Url).Host;
 			SetupService.WriteObject (File, newRep);
+			if (name == null)
+				name = newRep.Name;
 		}
 	}
 }

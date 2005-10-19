@@ -501,7 +501,9 @@ namespace MonoDevelop.Core.AddIns.Setup
 				ee = Configuration.Repositories;
 			
 			foreach (RepositoryRecord rr in ee) {
-				foreach (AddinRepositoryEntry addin in rr.GetCachedRepository().Addins) {
+				Repository rep = rr.GetCachedRepository();
+				if (rep == null) continue;
+				foreach (AddinRepositoryEntry addin in rep.Addins) {
 					if ((id == null || addin.Addin.Id == id) && (version == null || addin.Addin.Version == version)) {
 						if (updates) {
 							AddinSetupInfo ainfo = GetInstalledAddin (addin.Addin.Id);
@@ -643,10 +645,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		public RepositoryRecord RegisterRepository (IProgressMonitor monitor, string url)
 		{
-			if (!url.EndsWith (".mrep")) {
-				Uri uri = new Uri (new Uri (url), "main.mrep");
-				url = uri.ToString ();
-			}
+			if (!url.EndsWith (".mrep"))
+				url = url + "/main.mrep";
 			
 			RegisterRepository (url, false);
 			try {
@@ -745,6 +745,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 					RepositoryRecord rr = (RepositoryRecord) Configuration.Repositories [n];
 					if ((url == null || rr.Url == url) && !rr.IsReference)
 						UpdateRepository (monitor, new Uri (rr.Url), rr);
+					monitor.Step (1);
 				}
 			} finally {
 				monitor.EndTask ();
@@ -755,8 +756,16 @@ namespace MonoDevelop.Core.AddIns.Setup
 		void UpdateRepository (IProgressMonitor monitor, Uri baseUri, RepositoryRecord rr)
 		{
 			Uri absUri = new Uri (baseUri, rr.Url);
-			monitor.Log.WriteLine ("Updating from " + absUri.ToString ());
-			Repository newRep = (Repository) DownloadObject (monitor, absUri.ToString (), typeof(Repository));
+			monitor.BeginTask ("Updating from " + absUri.ToString (), 2);
+			Repository newRep;
+			try {
+				newRep = (Repository) DownloadObject (monitor, absUri.ToString (), typeof(Repository));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not get information from repository") + ": " + absUri.ToString (), ex);
+				return;
+			}
+			
+			monitor.Step (1);
 			
 			foreach (ReferenceRepositoryEntry re in newRep.Repositories) {
 				Uri refRepUri = new Uri (absUri, re.Url);
@@ -768,6 +777,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 					UpdateRepository (monitor, refRepUri, refRep);
 				}
 			}
+			monitor.EndTask ();
 			rr.UpdateCachedRepository (newRep);
 		}
 		
@@ -780,8 +790,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 			
 			BuildRepository (monitor, rootrep, path, "root.mrep");
-			monitor.Log.WriteLine ("Updated root.mrep");
 			WriteObject (mainPath, rootrep);
+			monitor.Log.WriteLine ("Updated main.mrep");
 		}
 		
 		void BuildRepository (IProgressMonitor monitor, Repository rootrep, string rootPath, string relFilePath)
@@ -848,7 +858,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 		}
 		
-		public void BuildPackage (IProgressMonitor monitor, string filePath, string targetDirectory)
+		public void BuildPackage (IProgressMonitor monitor, string targetDirectory, params string[] filePaths)
+		{
+			foreach (string file in filePaths)
+				BuildPackageInternal (monitor, targetDirectory, file);
+		}
+		
+		void BuildPackageInternal (IProgressMonitor monitor, string targetDirectory, string filePath)
 		{
 			AddinConfiguration conf = AddinConfiguration.Read (filePath, true);
 			
@@ -862,7 +878,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				info = AddinInfo.ReadFromAddinFile (sr);
 			}
 			
-			string outFilePath = Path.Combine (basePath, info.Id + "_" + info.Version) + ".mpack";
+			string outFilePath = Path.Combine (targetDirectory, info.Id + "_" + info.Version) + ".mpack";
 
 			ZipOutputStream s = new ZipOutputStream (File.Create (outFilePath));
 			s.SetLevel(5);
@@ -957,6 +973,9 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		internal static void WriteObject (string file, object obj)
 		{
+			string dir = Path.GetDirectoryName (file);
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
 			StreamWriter s = new StreamWriter (file);
 			try {
 				XmlSerializer ser = new XmlSerializer (obj.GetType());
@@ -982,6 +1001,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 
 			monitor.BeginTask ("Requesting " + url, 2);
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (url);
+			req.Headers ["Pragma"] = "no-cache";
 			HttpWebResponse resp = (HttpWebResponse) req.GetResponse ();
 			monitor.Step (1);
 			
@@ -1022,8 +1042,10 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get {
 				if (config == null) {
 					config = (AddinSystemConfiguration) ReadObject (RootConfigFile, typeof(AddinSystemConfiguration));
-					if (config == null)
+					if (config == null) {
 						config = new AddinSystemConfiguration ();
+						RegisterRepository ("http://go-mono.com/md/main.mrep", false);
+					}
 				}
 				return config;
 			}
