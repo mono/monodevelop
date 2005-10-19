@@ -106,6 +106,11 @@ namespace MonoDevelop.SourceEditor
 
 		public override void UnloadService ()
 		{
+			if (slm == null) {
+				base.UnloadService ();
+				return;
+			}
+
 			XmlTextWriter writer = new XmlTextWriter (file, Encoding.UTF8);
 			writer.Formatting = Formatting.Indented;
 			writer.WriteStartDocument ();
