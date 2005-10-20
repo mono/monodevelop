@@ -178,6 +178,8 @@ namespace MonoDevelop.Ide.Gui
 
 			TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
+			foreach (Gtk.Toolbar t in toolbars)
+				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
 		}
 				
 		public void CloseContent(IViewContent content)

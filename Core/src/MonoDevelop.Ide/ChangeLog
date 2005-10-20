@@ -1,3 +1,8 @@
+2005-10-20  Lluis Sanchez Gual  <lluis@novell.com>    
+	
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Use icons-only toolbars in
+	the IDE. There are too many buttons for icons-and-text.
+	
 2005-10-20  Lluis Sanchez Gual  <lluis@novell.com>  
 	
 	* MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs: Get the
