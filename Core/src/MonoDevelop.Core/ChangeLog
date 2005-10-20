@@ -1,5 +1,11 @@
 2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs: Don't
+	use DateTime.MinValue since the serializer may have trouble
+	with it in some timezones
+
+2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Gui.mdp: Added references.
 	
 	* MonoDevelop.Core.Properties/IProperties.cs:

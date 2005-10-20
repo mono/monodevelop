@@ -42,7 +42,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		string file;
 		string url;
 		string name;
-		DateTime lastModified;
+		DateTime lastModified = new DateTime (1900,1,1);
 		
 		[XmlAttribute ("id")]
 		public string Id {
