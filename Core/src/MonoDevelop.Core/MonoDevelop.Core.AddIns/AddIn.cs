@@ -233,9 +233,9 @@ namespace MonoDevelop.Core.AddIns
 				
 				XmlElement curEl = (XmlElement)o;
 				
-				if (curEl.Attributes["assembly"] == null) {
-					throw new AddInLoadException("One import node has no assembly attribute defined.");
-				}
+				if (curEl.Attributes["assembly"] == null)
+					continue;
+
 				string assemblyName = curEl.Attributes["assembly"].InnerText;
 				string pathName     = Path.IsPathRooted(assemblyName) ? assemblyName : fileUtilityService.GetDirectoryNameWithSeparator(path) + assemblyName;
 				Assembly asm = AddInTreeSingleton.AddInTree.LoadAssembly(pathName);
