@@ -31,7 +31,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr;
 		public SourceEditorBuffer buf;
-		int lineToMark = -1;
 		bool codeCompleteEnabled;
 		bool autoHideCompletionWindow = true;
 		bool autoInsertTemplates;

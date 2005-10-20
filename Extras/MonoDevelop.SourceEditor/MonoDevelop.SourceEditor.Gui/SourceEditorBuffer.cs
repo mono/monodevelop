@@ -76,8 +76,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		int highlightLine = -1;
 		bool underlineErrors = true;
 
-		IParserService ps = (IParserService)ServiceManager.GetService (typeof (IParserService));
-
 		public SourceEditorView View
 		{
 			get { return view; }
@@ -130,6 +128,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			base.Dispose ();
 		}
 
+		/*
 		void ParseChanged (object o, ParseInformationEventArgs e)
 		{
 			if (view != null && view.ParentEditor.DisplayBinding.ContentName == e.FileName)
@@ -172,7 +171,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				ApplyTag (compilation_error, start, end);
 			//else
 			//	Console.WriteLine ("something didn't work");
-		}		
+		}
+		*/		
 		
 		public void MarkupLine (int linenumber)
 		{

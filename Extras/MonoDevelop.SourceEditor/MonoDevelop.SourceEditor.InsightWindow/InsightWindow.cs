@@ -30,8 +30,6 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 		string fileName;
 		Project project;
 
-		StringParserService StringParserService = (StringParserService)ServiceManager.GetService (typeof (StringParserService)); 
-		
 		class InsightDataProviderStackElement 
 		{
 			public int                  currentData;

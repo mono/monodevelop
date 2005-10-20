@@ -40,15 +40,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	
 		class GeneralTextEditorPanelWidget : GladeWidgetExtract 
 		{	
-			StringParserService StringParserService = (
-				StringParserService)ServiceManager.GetService (typeof (StringParserService));
-// 			int encoding = Encoding.UTF8.CodePage;
-// 			int selectedIndex = 0;
-			
-			[Glade.Widget] Label genOptions, fontOptions;
-// 					encOptions, encVBox; // if you uncoment change to "," above 
 			[Glade.Widget] CheckButton enableCodeCompletionCheckBox, enableFoldingCheckBox;
-// 			[Glade.Widget] ComboBox textEncodingComboBox;
 			[Glade.Widget] FontButton fontNameDisplayTextBox;
 			[Glade.Widget] VBox encodingBox;
 			[Glade.Widget] RadioButton use_monospace, use_sans, use_cust;

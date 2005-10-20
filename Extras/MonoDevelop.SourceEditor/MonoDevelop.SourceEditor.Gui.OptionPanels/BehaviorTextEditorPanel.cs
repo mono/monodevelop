@@ -42,22 +42,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		
 		class BehaviorTextEditorPanelWidget : GladeWidgetExtract 
 		{
-			// Services
-			StringParserService StringParserService = (
-				StringParserService)ServiceManager.GetService (typeof (StringParserService));
-			
 			// GTK controls
-			[Glade.Widget] Label tabsGroupBoxLabel;
-			[Glade.Widget] Label behaviourGroupBoxLabel;
-			[Glade.Widget] Label tabSizeLabel;
-			[Glade.Widget] Label indentSizeLabel;
-			[Glade.Widget] Label indentLabel;
 			[Glade.Widget] CheckButton autoinsertCurlyBraceCheckBox;
 			[Glade.Widget] CheckButton autoInsertTemplatesCheckBox;
 			[Glade.Widget] CheckButton convertTabsToSpacesCheckBox;
 			[Glade.Widget] RadioButton noneIndentStyle;
 			[Glade.Widget] RadioButton automaticIndentStyle;
-			[Glade.Widget] RadioButton smartIndentStyle;
+			//[Glade.Widget] RadioButton smartIndentStyle;
 			[Glade.Widget] SpinButton indentAndTabSizeSpinButton;
 			
 			public BehaviorTextEditorPanelWidget (IProperties CustomizationObject) :  

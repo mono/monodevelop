@@ -41,17 +41,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 
 		class MarkersTextEditorPanelWidget : GladeWidgetExtract 
 		{
-			// Services
-			FileUtilityService FileUtilityService = (
-				FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-			StringParserService StringParserService = (
-				StringParserService)ServiceManager.GetService (typeof (StringParserService));
-			
 			// Gtk Controls
-			[Glade.Widget] Label markersLabel;
-			[Glade.Widget] Label characterMarkersLabel;
-			[Glade.Widget] Label rulersLabel;
-			[Glade.Widget] Label atColumnLabel;
 			[Glade.Widget] CheckButton showLineNumberCheckBox;
 			[Glade.Widget] CheckButton showBracketHighlighterCheckBox;
 			[Glade.Widget] CheckButton showErrorsCheckBox;
