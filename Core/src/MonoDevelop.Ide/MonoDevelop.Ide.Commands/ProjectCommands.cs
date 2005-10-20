@@ -48,7 +48,8 @@ namespace MonoDevelop.Ide.Commands
 		DebugApplication,
 		Stop,
 		Clean,
-		CleanSolution
+		CleanSolution,
+		LocalCopyReference
 	}
 	
 	internal class RunHandler: CommandHandler

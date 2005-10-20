@@ -211,6 +211,9 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
 				type="check"
 				_label = "Deploy" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
+				type="check"
+				_label = "Local Copy Reference" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop"
 				defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
 				icon = "gtk-stop"
@@ -473,8 +476,8 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceNode">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
-		<SeparatorItem id = "OpenSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
+		<SeparatorItem id = "CopySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>

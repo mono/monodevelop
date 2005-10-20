@@ -99,6 +99,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.SaveCombine ();
 		}
 		
+		[CommandHandler (ProjectCommands.LocalCopyReference)]
+		public void ChangeLocalReference ()
+		{
+			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
+			pref.LocalCopy = !pref.LocalCopy;
+			IdeApp.ProjectOperations.SaveCombine ();
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.LocalCopyReference)]
+		public void UpdateLocalReference (CommandInfo info)
+		{
+			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
+			if (pref.ReferenceType != ReferenceType.Gac)
+				info.Checked = pref.LocalCopy;
+			else {
+				info.Checked = false;
+				info.Enabled = false;
+			}
+		}
+		
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.Copy;
