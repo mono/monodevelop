@@ -1,3 +1,10 @@
+2005-10-20  Lluis Sanchez Gual  <lluis@novell.com>  
+	
+	* MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs: Get the
+	command name directly from the Gtk.Entry, since GNome.FileEntry
+	adds the default namespace to it. Also update the tool data when
+	the command changes. This fixes bug #75627.
+	
 2005-10-20  Lluis Sanchez Gual  <lluis@novell.com> 
 	
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs:

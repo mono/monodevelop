@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						 	 
 					lv.SetValue (selectedIter, 0, titleTextBox.Text);
 					selectedItem.MenuCommand = titleTextBox.Text;
-					selectedItem.Command = browseButton.Filename;
+					selectedItem.Command = browseButton.GtkEntry.Text;
 					selectedItem.Arguments = argumentTextBox.Text;
 					selectedItem.InitialDirectory = workingDirTextBox.Text;
 					selectedItem.PromptForArguments = promptArgsCheckBox.Active;
@@ -207,7 +207,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			void selectEvent (object sender, EventArgs e)
 			{
 				SetEnabledStatus (toolListBox.Selection.CountSelectedRows () > 0, removeButton);
-					 
+					
+				browseButton.Changed -= new EventHandler (setToolValues);
 				titleTextBox.Changed -= new EventHandler (setToolValues);
 				argumentTextBox.Changed -= new EventHandler (setToolValues);
 				workingDirTextBox.Changed -= new EventHandler (setToolValues);
@@ -225,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					 
 					SetEnabledStatus (true, dependendControls);
 					titleTextBox.Text = selectedItem.MenuCommand;
-					browseButton.Filename = selectedItem.Command;
+					browseButton.GtkEntry.Text = selectedItem.Command;
 					argumentTextBox.Text = selectedItem.Arguments;
 					workingDirTextBox.Text = selectedItem.InitialDirectory;
 					promptArgsCheckBox.Active = selectedItem.PromptForArguments;
@@ -240,6 +241,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					useOutputPadCheckBox.Active = false;
 				}
 				 
+				browseButton.Changed += new EventHandler (setToolValues);
 				titleTextBox.Changed += new EventHandler (setToolValues);
 				argumentTextBox.Changed += new EventHandler (setToolValues);
 				workingDirTextBox.Changed += new EventHandler (setToolValues);
