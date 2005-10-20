@@ -1,3 +1,8 @@
+2005-10-20  Lluis Sanchez Gual  <lluis@novell.com>
+	
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Create the solution
+	in the same folder as the project. Fixes bug #60314. 
+	
 2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 	
 	* MonoDevelop.Ide.Gui/Ide.cs: Execute auto-start commands.

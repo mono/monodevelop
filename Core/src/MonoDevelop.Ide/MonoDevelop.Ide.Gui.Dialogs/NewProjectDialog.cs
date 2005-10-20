@@ -248,7 +248,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				
 				ProjectCreateInformation cinfo = new ProjectCreateInformation ();
 				
-				cinfo.CombinePath     = ProjectLocation;
+				cinfo.CombinePath     = ProjectSolution;
 				cinfo.ProjectBasePath = ProjectSolution;
 //				cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
 				
