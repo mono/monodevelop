@@ -18,31 +18,26 @@ namespace VersionControlPlugin {
 		
 		Widget widget;
 		HBox commandbar;
-		VBox box, main;
+		VBox main;
 		Label status;
-		Table table;
 		Button showRemoteStatus;
 		Button buttonCommit;
 		
+		TreeView filelist;
+		TreeViewColumn colCommit, colRemote;
+		ListStore filestore;
+		
 		bool commitShown = false;
-		Hashtable checkCommit;
 		VBox boxCommit;
 		TextView textCommitMessage;
 		Button buttonCommitCancel;
 		Button buttonCommitCommit;
 		
 		Node[] statuses;
+		Hashtable markedCommit = new Hashtable();
 		
 		bool remoteStatus = false;
 		
-		Hashtable buttonsShowLog;
-		Hashtable buttonsShowDiff;
-		
-		private class RevItem {
-			public RevisionPtr BaseRev;
-			public string Path;
-		}
-	
 		public static bool Show(string path, bool test) {
 			foreach (VersionControlSystem vc in VersionControlService.Providers) {
 				if (vc.IsStatusAvailable(path)) {
@@ -62,7 +57,6 @@ namespace VersionControlPlugin {
 			
 			main = new VBox(false, 5);
 			widget = main;
-			main.Show();
 			
 			commandbar = new HBox(false, 5);
 			main.PackStart(commandbar, false, false, 5);
@@ -81,23 +75,48 @@ namespace VersionControlPlugin {
 			buttonCommitCancel = new Button("Cancel");
 			buttonCommitCommit = new Button("Commit");
 			textCommitMessage.Show();
+			textCommitMessage.HeightRequest = 100;
 			buttonCommitCancel.Show();
 			buttonCommitCommit.Show();
-			boxCommit.PackStart(textCommitMessage, true, true, 0);
 			boxCommit.PackStart(boxCommitButtons, false, false, 0);
+			boxCommit.PackStart(textCommitMessage, true, false, 0);
+			boxCommitButtons.PackStart(new Label("Select Files and Enter Commit Message..."), true, false, 0);
 			boxCommitButtons.PackEnd(buttonCommitCancel, false, false, 0);
 			boxCommitButtons.PackEnd(buttonCommitCommit, false, false, 0);
 			buttonCommitCancel.Clicked += new EventHandler(OnCommitCancelClicked);
 			buttonCommitCommit.Clicked += new EventHandler(OnCommitCommitClicked);
 			
+			status = new Label("");
+			main.PackStart(status, false, false, 0);
+			
 			ScrolledWindow scroller = new ScrolledWindow();
-			Viewport viewport = new Viewport(); 
-			box = new VBox(false, 5);
-			main.Add(scroller);
+			main.PackStart(scroller, true, true, 5);
+			filelist = new TreeView();
+			scroller.Add(filelist);
+			scroller.HscrollbarPolicy = PolicyType.Never;
+			scroller.VscrollbarPolicy = PolicyType.Always;
+
+			filelist.RowActivated += new RowActivatedHandler(OnRowActivated);
+			CellRendererToggle cellToggle = new CellRendererToggle();
+			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
+			TreeViewColumn colIcon = new TreeViewColumn("", new CellRendererPixbuf(), "pixbuf", 0);
+			colCommit = new TreeViewColumn("Commit", cellToggle, "active", 4);
+			TreeViewColumn colStatus = new TreeViewColumn("Status", new CellRendererText(), "text", 1);
+			TreeViewColumn colFile = new TreeViewColumn("File", new CellRendererText(), "text", 2);
+			colRemote = new TreeViewColumn("Remote Status", new CellRendererText(), "text", 3);
 			
-			viewport.Add(box);
-			scroller.Add(viewport);
+			filelist.AppendColumn(colIcon);
+			filelist.AppendColumn(colCommit);
+			filelist.AppendColumn(colStatus);
+			filelist.AppendColumn(colFile);
+			filelist.AppendColumn(colRemote);
 			
+			colCommit.Visible = false;
+			colRemote.Visible = false;
+
+			filestore = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool));
+			filelist.Model = filestore;
+
 			main.ShowAll();
 			
 			StartUpdate();
@@ -110,21 +129,13 @@ namespace VersionControlPlugin {
 		}
 		
 		private void StartUpdate() {
-			if (table != null) {
-				box.Remove(table);
-				table.Destroy();
-				table = null;
-			}
-			
-			if (status == null) {
-				status = new Label();
-				box.Add(status);
-				status.Show();
-			}
 			if (!remoteStatus)
 				status.Text = "Scanning for changes...";
 			else
 				status.Text = "Scanning for local and remote changes...";
+			
+			status.Visible = true;
+			filelist.Visible = false;
 			
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
@@ -132,118 +143,70 @@ namespace VersionControlPlugin {
 			new Worker(vc, filepath, remoteStatus, this).Start();
 		}
 		
-		private class HeaderLabel : Label {
-			public HeaderLabel(string text) : base() {
-				Markup = "<b>" + text + "</b>";
-				Show();
-			}
-		}
-	
 		private void Update() {
 			showRemoteStatus.Sensitive = !remoteStatus;
 			
 			if (statuses.Length == 0) {
 				if (!remoteStatus)
-					this.status.Text = "No files have local modifications.";
+					status.Text = "No files have local modifications.";
 				else
-					this.status.Text = "No files have local or remote modifications.";
+					status.Text = "No files have local or remote modifications.";
 				return;
 			}
 			
-			buttonsShowLog = new Hashtable();
-			buttonsShowDiff = new Hashtable();
-			
-			box.Remove(this.status);
-			this.status = null;
+			status.Visible = false;
+			filelist.Visible = true;
 			
 			if (vc.CanCommit(filepath))
 				buttonCommit.Sensitive = true;
-			checkCommit = new Hashtable();
 						
-			table = new Table((uint)statuses.Length+1, (uint)5 + (uint)(remoteStatus ? 2 : 0), false);
-			box.Add(table);
+			filestore.Clear();
 
-			uint row = 0;		
+			colCommit.Visible = commitShown;
+			colRemote.Visible = remoteStatus;
 		
-			table.Attach(new HeaderLabel("Status"), 0, 3, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-			table.Attach(new HeaderLabel("Path"), 3, 4, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-			
-			if (remoteStatus)
-				table.Attach(new HeaderLabel("Remote Status"), 4, 6, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-					
 			for (int i = 0; i < statuses.Length; i++) {
 				Node n = statuses[i];
 				
-				RevItem item = new RevItem();
-				item.Path = n.LocalPath;
-				item.BaseRev = n.BaseRevision;
-				
-				uint col = 0;
-				row++;
-				
-				CheckButton check = new CheckButton();
-				checkCommit[check] = item;
-				table.Attach(check, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-				check.Visible = false;
-					
 				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus(n.Status);
-				if (n.Status == NodeStatus.Modified) {
-					Button b = new Button();
-					if (statusicon != null) {
-						Image img = new Image(statusicon);
-						img.Show();
-						b.Add(img);
-					} else {
-						b.Label = "Diff";
-					}
-					
-					b.Relief = ReliefStyle.Half;
-					buttonsShowDiff[b] = item;
-					table.Attach(b, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-					b.Clicked += new EventHandler(OnShowDiffClicked);
-					b.Show();
-				} else if (statusicon != null) {
-					Image img = new Image(statusicon);
-					img.Show();
-					table.Attach(img, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Fill, 2, 2);
-				} else {
-					++col;
-				}
 				
-				Label status = new Label(n.Status.ToString());
-				status.Show();				
-				table.Attach(status, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-
-				Label name = new Label(); // I can't get this to left align!
-				name.Justify = Justification.Left;
-				name.Layout.Alignment = Pango.Alignment.Left;
-				name.Xalign = 0;
+				string lstatus = n.Status.ToString();
 				
 				string localpath = n.LocalPath.Substring(filepath.Length);
 				if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 				if (localpath == "") { localpath = "."; } // not sure if this happens
-				name.Text = localpath;
-				name.Show();
-				table.Attach(name, col, ++col, row, row+1, AttachOptions.Expand, AttachOptions.Shrink, 2, 2);
 				
-				if (remoteStatus) {
-					Label rstatus = new Label(n.RemoteStatus.ToString());
-					rstatus.Show();
+				string rstatus = n.RemoteStatus.ToString();
 				
-					table.Attach(rstatus, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-					
-					if (n.RemoteStatus == NodeStatus.Modified) {
-						Button b = new Button("View");
-						b.Relief = ReliefStyle.Half;
-						buttonsShowLog[b] = item;
-						table.Attach(b, col, ++col, row, row+1, AttachOptions.Shrink, AttachOptions.Shrink, 2, 2);
-						b.Clicked += new EventHandler(OnShowLogClicked);
-						b.Show();
-					}
-				}
+				bool commitStatus = markedCommit.ContainsKey(n.LocalPath);
+				
+				filestore.AppendValues(statusicon, lstatus, localpath, rstatus, commitStatus);
 			}
+			
+			buttonCommitCommit.Sensitive = (markedCommit.Count > 0);
+		}
+		
+		void OnRowActivated(object o, RowActivatedArgs args) {
+			int index = args.Path.Indices[0];
+			Node node = statuses[index];
+			DiffView.Show(node.LocalPath, false);
+		}
+		
+		void OnCommitToggledHandler(object o, ToggledArgs args) {
+			TreeIter pos;
+			if (!filestore.GetIterFromString(out pos, args.Path))
+				return;
 
-			table.Show();
+			int index = int.Parse(args.Path); // why is it a string?
+			string localpath = ((Node)statuses[index]).LocalPath;
+			
+			if (markedCommit.ContainsKey(localpath)) {
+				markedCommit.Remove(localpath);
+			} else {
+				markedCommit[localpath] = markedCommit;
+			}
+			filestore.SetValue(pos, 4, markedCommit.ContainsKey(localpath));
+			buttonCommitCommit.Sensitive = (markedCommit.Count > 0);
 		}
 		
 		private void OnShowRemoteStatusClicked(object src, EventArgs args) {
@@ -254,7 +217,7 @@ namespace VersionControlPlugin {
 			StartUpdate();
 		}
 		
-		private void OnShowLogClicked(object src, EventArgs args) {
+		/*private void OnShowLogClicked(object src, EventArgs args) {
 			RevItem file = (RevItem)buttonsShowLog[src];
 			LogView.Show(file.Path, false, file.BaseRev, false);
 		}
@@ -262,28 +225,20 @@ namespace VersionControlPlugin {
 		private void OnShowDiffClicked(object src, EventArgs args) {
 			RevItem file = (RevItem)buttonsShowDiff[src];
 			DiffView.Show(file.Path, false);
-		}
+		}*/
 		
 		private void OnCommitClicked(object src, EventArgs args) {
 			buttonCommit.Sensitive = false;
-			main.Add(boxCommit);
+			main.PackEnd(boxCommit, false, false, 5);
 			boxCommit.ShowAll();
 			commitShown = true;
-			foreach (CheckButton check in checkCommit.Keys)
-				check.Visible = true;
+			colCommit.Visible = true;
 		}
 		
 		private void OnCommitCommitClicked(object src, EventArgs args) {
-			ArrayList paths = new ArrayList();
-			foreach (CheckButton check in checkCommit.Keys) {
-				if (check.Active) {
-					RevItem file = (RevItem)checkCommit[check];
-					paths.Add(file.Path);
-				}
-			}
-			
+			ArrayList paths = new ArrayList(markedCommit.Keys);
 			if (paths.Count == 0)
-				return; // TODO: Show message.
+				return;
 			
 			new CommitWorker(
 				vc,
@@ -295,8 +250,7 @@ namespace VersionControlPlugin {
 		}
 		
 		private void OnCommitCancelClicked(object src, EventArgs args) {
-			foreach (CheckButton check in checkCommit.Keys)
-				check.Visible = false;
+			colCommit.Visible = false;
 			commitShown = false;
 			buttonCommit.Sensitive = true;
 			main.Remove(boxCommit);

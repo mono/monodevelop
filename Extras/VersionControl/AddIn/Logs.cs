@@ -19,11 +19,6 @@ namespace VersionControlPlugin {
 		TreeView loglist;
 		ListStore changedpathstore;
 		
-		private class RevItem {
-			public RevisionPtr Rev;
-			public RepositoryPath Path;
-		}
-	
 		public static bool Show(string filepath, bool isDirectory, RevisionPtr since, bool test) {
 			foreach (VersionControlSystem vc in VersionControlService.Providers) {
 				if (vc.IsHistoryAvailable(filepath)) {
