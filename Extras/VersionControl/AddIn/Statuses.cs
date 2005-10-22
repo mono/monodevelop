@@ -45,7 +45,7 @@ namespace VersionControlPlugin {
 	
 		public static bool Show(string path, bool test) {
 			foreach (VersionControlSystem vc in VersionControlService.Providers) {
-				if (vc.IsDirectoryStatusAvailable(path)) {
+				if (vc.IsStatusAvailable(path)) {
 					if (test) return true;
 					StatusView d = new StatusView(path, vc);
 					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);

@@ -32,25 +32,21 @@ namespace VersionControl {
 		
 		public override bool IsDiffAvailable(string sourcefile) {
 			return File.Exists(GetTextBase(sourcefile))
-				&& IsFileStatusAvailable(sourcefile)
-				&& GetFileStatus(sourcefile, false).Status == NodeStatus.Modified;			
+				&& IsStatusAvailable(sourcefile)
+				&& GetStatus(sourcefile, false).Status == NodeStatus.Modified;			
 		}
 		
 		public override bool IsHistoryAvailable(string sourcefile) {
-			return IsFileStatusAvailable(sourcefile) || IsDirectoryStatusAvailable(sourcefile);
+			return IsStatusAvailable(sourcefile);
 		}
 		
-		public override bool IsFileStatusAvailable(string sourcefile) {
-			return File.Exists(GetTextBase(sourcefile));
+		public override bool IsStatusAvailable(string sourcefile) {
+			return File.Exists(GetTextBase(sourcefile))
+				|| Directory.Exists(GetDirectoryDotSvn(sourcefile));
 		}
 
-		public override bool IsDirectoryStatusAvailable(string sourcepath) {
-			return Directory.Exists(GetDirectoryDotSvn(sourcepath));
-		}
-		
 		public override bool CanUpdate(string sourcepath) {
-			return IsFileStatusAvailable(sourcepath)
-				|| IsDirectoryStatusAvailable(sourcepath);
+			return IsStatusAvailable(sourcepath);
 		}
 		
 		public override bool CanCommit(string sourcepath) {
@@ -63,51 +59,95 @@ namespace VersionControl {
 		
 		public override RevisionDescription[] GetHistory(string sourcefile, RevisionPtr since) {
 			ArrayList revs = new ArrayList();
-			string curPath = Client.GetPathUrl(sourcefile);
-			if (curPath == null) return null;
+			
+			SvnClient.Rev startrev;
+			SvnRepoPath curPath;
 
+			// We need to know the URL and last committed revision of
+			// sourcefile.  We can GetStatus the sourcefile, unless
+			// this is the root directory of the repository, in which
+			// case GetStatus will throw an exception
+			try {
+				Node node = GetStatus(sourcefile, false);
+				startrev = ((SvnRevisionPtr)node.BaseRevision).ForApi();
+				curPath = (SvnRepoPath)node.RepositoryPath;
+			} catch (Exception e) {
+				startrev = SvnClient.Rev.Head;
+				curPath = new SvnRepoPath(Client.GetPathUrl(sourcefile));
+			} 
+			
 			SvnClient.Rev sincerev = SvnClient.Rev.First;
 			if (since != null)
 				sincerev = ((SvnRevisionPtr)since).ForApi();
-						
-			foreach (SvnClient.LogEnt log in Client.Log(sourcefile, SvnClient.Rev.Head, sincerev)) {
+
+			foreach (SvnClient.LogEnt log in Client.Log(sourcefile, startrev, sincerev)) {
+				ArrayList changedPaths = new ArrayList();
+				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
+					changedPaths.Add(chg.Path + " (" + chg.Action + ")");
+				}
+				
 				RevisionDescription d = new RevisionDescription();
 				d.Author = log.Author;
 				d.Message = log.Message;
 				d.Revision = new SvnRevisionPtr(log.Revision);
 				d.RepositoryPath = curPath;
 				d.Time = log.Time;
+				d.ChangedFiles = (string[])changedPaths.ToArray(typeof(string));
 				revs.Add(d);
 
-				// Be aware of the change in path resulting from a copy
+				// Be aware of the change in path resulting from a copy.
+				// Not sure if this works.
 				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
-					if (curPath.EndsWith(chg.Path) && chg.CopyFromPath != null) {
-						curPath = curPath.Substring(0, curPath.Length-chg.Path.Length) + chg.CopyFromPath;
+					if (curPath.Url.EndsWith(chg.Path) && chg.CopyFromPath != null) {
+						curPath = new SvnRepoPath(curPath.Url.Substring(0, curPath.Url.Length-chg.Path.Length) + chg.CopyFromPath);
+						break;
 					}
 				}
 			}
 			return (RevisionDescription[])revs.ToArray(typeof(RevisionDescription));
 		}
 		
-		public override string GetTextAtRevision(object repositoryPath, RevisionPtr revision) {
-			return Client.Cat(repositoryPath.ToString(), ((SvnRevisionPtr)revision).ForApi() );
+		public override string GetTextAtRevision(RepositoryPath repositoryPath, RevisionPtr revision) {
+			return Client.Cat(((SvnRepoPath)repositoryPath).Url, ((SvnRevisionPtr)revision).ForApi() );
 		}
 		
-		public override Node GetFileStatus(string sourcefile, bool getRemoteStatus) {
+		public override Node GetStatus(string sourcefile, bool getRemoteStatus) {
+			if (File.Exists(sourcefile))
+				return GetFileStatus(sourcefile, getRemoteStatus);
+			else if (Directory.Exists(sourcefile))
+				return GetDirStatus(sourcefile, getRemoteStatus);
+			else
+				throw new ArgumentException("Path does not exist.");
+		}
+		
+		private Node GetFileStatus(string sourcefile, bool getRemoteStatus) {
 			IList statuses = Client.Status(sourcefile, SvnClient.Rev.Head, false, false, getRemoteStatus);
+			if (statuses.Count == 0)
+				throw new ArgumentException("Path does not exist in the repository.");
+				
+			SvnClient.StatusEnt ent;
 			if (statuses.Count != 1)
-				throw new ArgumentException("Path does not refer to a file.");
-			SvnClient.StatusEnt ent = (SvnClient.StatusEnt)statuses[0];
+				throw new ArgumentException("Path does not refer to a file in the repository.");
+			ent = (SvnClient.StatusEnt)statuses[0];
 			if (ent.IsDirectory)
 				throw new ArgumentException("Path does not refer to a file.");
 			return CreateNode(ent);
 		}
 		
+		private Node GetDirStatus(string sourcefile, bool getRemoteStatus) {
+			string parent = Directory.GetParent(sourcefile).FullName;
+			IList statuses = Client.Status(parent, SvnClient.Rev.Head, false, false, getRemoteStatus);
+			foreach (SvnClient.StatusEnt ent in statuses) {
+				if (!ent.IsDirectory) continue;
+				if (ent.Name != Path.GetFileName(sourcefile)) continue;
+				return CreateNode(ent);
+			}
+			throw new ArgumentException("Path does not exist in the repository.");
+		}
+		
 		public override Node[] GetDirectoryStatus(string sourcepath, bool getRemoteStatus, bool recursive) {
-			ArrayList ret = new ArrayList();
-			foreach (SvnClient.StatusEnt ent in Client.Status(sourcepath, SvnClient.Rev.Head, recursive, true, getRemoteStatus))
-				ret.Add( CreateNode(ent) );
-			return (Node[])ret.ToArray(typeof(Node));
+			IList ents = Client.Status(sourcepath, SvnClient.Rev.Head, recursive, true, getRemoteStatus);
+			return CreateNodes(ents);
 		}
 		
 		public override void Update(string path, bool recurse, UpdateCallback callback) {
@@ -120,7 +160,7 @@ namespace VersionControl {
 		
 		private Node CreateNode(SvnClient.StatusEnt ent) {
 			Node ret = new Node();
-			ret.RepositoryPath = ent.Url;
+			ret.RepositoryPath = new SvnRepoPath(ent.Url);
 			ret.LocalPath = ent.LocalFilePath;
 			ret.IsDirectory = ent.IsDirectory;
 			ret.BaseRevision = new SvnRevisionPtr(ent.Revision);
@@ -129,13 +169,20 @@ namespace VersionControl {
 			if (ent.RemoteTextStatus != SvnClient.NodeStatus.EMPTY) {
 				ret.RemoteStatus = ConvertStatus(SvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
 				ret.RemoteUpdate = new RevisionDescription();
-				ret.RemoteUpdate.RepositoryPath = ent.Url;
+				ret.RemoteUpdate.RepositoryPath = new SvnRepoPath(ent.Url);
 				ret.RemoteUpdate.Revision = new SvnRevisionPtr(ent.LastCommitRevision);
 				ret.RemoteUpdate.Author = ent.LastCommitAuthor;
 				ret.RemoteUpdate.Message = "(unavailable)";
 				ret.RemoteUpdate.Time = ent.LastCommitDate;
 			}
 			
+			return ret;
+		}
+		
+		private Node[] CreateNodes(IList ent) {
+			Node[] ret = new Node[ent.Count];
+			for (int i = 0; i < ent.Count; i++)
+				ret[i] = CreateNode((SvnClient.StatusEnt)ent[i]);
 			return ret;
 		}
 		
@@ -157,13 +204,25 @@ namespace VersionControl {
 			}
 			return NodeStatus.Unknown;
 		}
+		
+		private class SvnRepoPath : RepositoryPath {
+			public readonly string Url;
+			
+			public SvnRepoPath(string url) {
+				Url = url;
+			}
+			
+			public override string ToString() {
+				return Url;
+			}
+		}
 
 		private class SvnRevisionPtr : RevisionPtr {
 			public readonly int Rev;
 			public SvnRevisionPtr(int rev) { Rev = rev; }
 			
 			public override string ToString() {
-				return "Rev " + Rev;
+				return Rev.ToString();
 			}
 		
 			public override RevisionPtr GetPrevious() {
@@ -333,7 +392,7 @@ namespace VersionControl {
 		}
 		
 		public string GetPathUrl(string path) {
-			if (path == null) throw new ArgumentException();
+			if (path == null) throw new ArgumentNullException();
 			
 			IntPtr ret = IntPtr.Zero;
 			CheckError(svn_client_url_from_path(ref ret, path, pool));
@@ -656,7 +715,7 @@ namespace VersionControl {
 				case 'A': Action = ActionType.Add; break;
 				case 'D': Action = ActionType.Delete; break;
 				case 'R': Action = ActionType.Replace; break;
-				default: Action = ActionType.Modify; break;
+				default: Action = ActionType.Modify; break; // should be an 'M'
 				}
 			}
 			

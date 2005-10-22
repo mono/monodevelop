@@ -96,8 +96,8 @@ namespace VersionControlPlugin {
 		
 		NodeStatus GetStatus(string filepath) {
 			foreach (VersionControlSystem vc in VersionControlService.Providers) {
-				if (vc.IsFileStatusAvailable(filepath)) {
-					Node node = vc.GetFileStatus(filepath, false);
+				if (vc.IsStatusAvailable(filepath)) {
+					Node node = vc.GetStatus(filepath, false);
 					return node.Status;
 				}
 			}

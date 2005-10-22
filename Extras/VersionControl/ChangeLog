@@ -1,3 +1,9 @@
+2005-10-22  Joshua Tauberer  <tauberer@for.net>
+
+	* Minor VersionControl API changes (use a RepositoryPath
+	  class to represent an abstract path in a repository).
+	* Improved the history/log view using the TreeView widget.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/VersionControl.addin.xml: Fixed addin header information.

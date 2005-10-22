@@ -12,13 +12,16 @@ namespace VersionControlPlugin {
 	public class LogView : BaseView {
 		string filepath;
 		Widget widget;
-		Hashtable buttons = new Hashtable();
+		RevisionDescription[] history;
 		VersionControlSystem vc;
 		RevisionPtr since;
 		
+		TreeView loglist;
+		ListStore changedpathstore;
+		
 		private class RevItem {
 			public RevisionPtr Rev;
-			public object Path;
+			public RepositoryPath Path;
 		}
 	
 		public static bool Show(string filepath, bool isDirectory, RevisionPtr since, bool test) {
@@ -64,61 +67,107 @@ namespace VersionControlPlugin {
 			: base(Path.GetFileName(filepath) + " Log") {
 			this.vc = vc;
 			this.filepath = filepath;
+			this.history = history;
+
+			// Widget setup
 			
-			ScrolledWindow scroller = new ScrolledWindow();
-			Viewport viewport = new Viewport(); 
 			VBox box = new VBox(false, 5);
 			
-			viewport.Add(box);
-			scroller.Add(viewport);
-			widget = scroller;
-			 
-			foreach (RevisionDescription d in history) {
-				RevItem revitem = new RevItem();
-				revitem.Path = d.RepositoryPath;
-				revitem.Rev = d.Revision;
-			
-				VBox item = new VBox(false, 1);
-				
-				HBox header_row = new HBox(false, 2);
-				item.PackStart(header_row, false, false, 0);
+			widget = box;
 
-				Label header = new Label(d.Revision + " -- " + d.Time + " -- " + d.Author);
-				header.Xalign = 0;
-				header_row.Add(header);
+			loglist = new TreeView();
+			loglist.Selection.Changed += new EventHandler(TreeSelectionChanged);
+			ScrolledWindow loglistscroll = new ScrolledWindow();
+			loglistscroll.Add(loglist);
+			loglistscroll.HscrollbarPolicy = PolicyType.Never;
+			loglistscroll.VscrollbarPolicy = PolicyType.Always;
+			box.PackStart(loglistscroll, true, true, 0);
+			
+			box.PackStart(new HSeparator(), false, false, 0);
+			
+			HBox commands = new HBox(false, 10);
+			box.PackStart(commands, false, false, 5);
+			if (!isDirectory) {
+				Button viewdiff = new Button("View Changes");
+				viewdiff.Clicked += new EventHandler(DiffButtonClicked);
+				commands.Add(viewdiff);
 				
-				if (!isDirectory) {
-					Button viewdiff = new Button("View Changes");
-					viewdiff.Clicked += new EventHandler(DiffButtonClicked);
-					header_row.Add(viewdiff);
-					buttons[viewdiff] = revitem;
-					
-					Button viewtext = new Button("View File");
-					viewtext.Clicked += new EventHandler(ViewTextButtonClicked);
-					header_row.Add(viewtext);
-					buttons[viewtext] = revitem;
-				}
-				
-				TextView message = new TextView();
-				message.Editable = false;
-				message.WrapMode = Gtk.WrapMode.WordChar;
-				message.Buffer.Text = d.Message == "" ? "No message." : d.Message;
-				item.PackStart(message, false, false, 0);
-				
-				box.PackStart(item, false, false, 0);
+				Button viewtext = new Button("View File");
+				viewtext.Clicked += new EventHandler(ViewTextButtonClicked);
+				commands.Add(viewtext);
+
+				box.PackStart(new HSeparator(), false, false, 0);
 			}
 			
+			TreeView changedPaths = new TreeView();
+			ScrolledWindow changedPathsScroll = new ScrolledWindow();
+			changedPathsScroll.HscrollbarPolicy = PolicyType.Never;
+			changedPathsScroll.VscrollbarPolicy = PolicyType.Always;
+			changedPathsScroll.Add(changedPaths);
+			box.PackStart(changedPathsScroll, true, true, 0);
+
 			widget.ShowAll();
+			
+			// Revision list setup
+			
+			CellRendererText textRenderer = new CellRendererText();
+			textRenderer.Yalign = 0;
+			
+			TreeViewColumn colRevNum = new TreeViewColumn("Rev", textRenderer, "text", 0);
+			TreeViewColumn colRevDate = new TreeViewColumn("Date", textRenderer, "text", 1);
+			TreeViewColumn colRevAuthor = new TreeViewColumn("Author", textRenderer, "text", 2);
+			TreeViewColumn colRevMessage = new TreeViewColumn("Message", textRenderer, "text", 3);
+			
+			loglist.AppendColumn(colRevNum);
+			loglist.AppendColumn(colRevDate);
+			loglist.AppendColumn(colRevAuthor);
+			loglist.AppendColumn(colRevMessage);
+			
+			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string));
+			loglist.Model = logstore;
+			 
+			foreach (RevisionDescription d in history) {
+				logstore.AppendValues(
+					d.Revision.ToString(),
+					d.Time.ToString(),
+					d.Author,
+					d.Message == "" ? "(No message.)" : d.Message);
+			}
+
+			// Changed paths list setup
+			
+			TreeViewColumn colChangedPath = new TreeViewColumn("Path", textRenderer, "text", 0);
+			changedPaths.AppendColumn(colChangedPath);
+			
+			changedpathstore = new ListStore (typeof (string));
+			changedPaths.Model = changedpathstore;
+		}
+		
+		RevisionDescription GetSelectedRev() {
+			TreePath path;
+			TreeViewColumn col;
+			loglist.GetCursor(out path, out col);
+			if (path == null) return null;
+			return history[ path.Indices[0] ];
+		}
+		
+		void TreeSelectionChanged(object o, EventArgs args) {
+			RevisionDescription d = GetSelectedRev();
+			changedpathstore.Clear();
+			foreach (string n in d.ChangedFiles)
+				changedpathstore.AppendValues(n);
 		}
 		
 		void DiffButtonClicked(object src, EventArgs args) {
-			RevItem item = (RevItem)buttons[src];
-			new DiffWorker(Path.GetFileName(filepath), vc, item.Path, item.Rev).Start();
+			RevisionDescription d = GetSelectedRev();
+			if (d == null) return;
+			new DiffWorker(Path.GetFileName(filepath), vc, d.RepositoryPath, d.Revision).Start();
 		}
 		
 		void ViewTextButtonClicked(object src, EventArgs args) {
-			RevItem item = (RevItem)buttons[src];
-			HistoricalFileView.Show(filepath, vc, item.Path, item.Rev);
+			RevisionDescription d = GetSelectedRev();
+			if (d == null) return;
+			HistoricalFileView.Show(filepath, vc, d.RepositoryPath, d.Revision);
 		}
 		
 		public override Gtk.Widget Control { 
@@ -130,11 +179,11 @@ namespace VersionControlPlugin {
 		internal class DiffWorker : Task {
 			VersionControlSystem vc;
 			string name;
-			object revPath;
+			RepositoryPath revPath;
 			RevisionPtr revision;
 			string text1, text2;
 						
-			public DiffWorker(string name, VersionControlSystem vc, object revPath, RevisionPtr revision) {
+			public DiffWorker(string name, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
 				this.name = name;
 				this.vc = vc;
 				this.revPath = revPath;
@@ -173,7 +222,7 @@ namespace VersionControlPlugin {
 			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 		}
 			
-		public static void Show(string file, VersionControlSystem vc, object revPath, RevisionPtr revision) {
+		public static void Show(string file, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
 			new Worker(Path.GetFileName(file) + " " + revision.ToString(),
 				file, vc, revPath, revision).Start();
 		}
@@ -198,11 +247,11 @@ namespace VersionControlPlugin {
 		internal class Worker : Task {
 			VersionControlSystem vc;
 			string name, file;
-			object revPath;
+			RepositoryPath revPath;
 			RevisionPtr revision;
 			string text;
 						
-			public Worker(string name, string file, VersionControlSystem vc, object revPath, RevisionPtr revision) {
+			public Worker(string name, string file, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
 				this.name = name;
 				this.file = file;
 				this.vc = vc;
