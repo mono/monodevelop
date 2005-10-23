@@ -23,9 +23,20 @@ namespace MonoDevelop.SourceEditor.Actions
 
 		public IEditAction GetAction (Gdk.Key key, Gdk.ModifierType state)
 		{
+			// an exact match
 			foreach (IEditAction action in actions)
 			{
 				if (action.State == state && action.Key == key)
+					return action;
+			}
+
+			// try an inexact match
+			// this is needed so LockMask, or some other
+			// wierd modifier in addition doesn't cause us to miss
+			// ex. cntrl+space = ControlMask | Mod2Mask + space
+			foreach (IEditAction action in actions)
+			{
+				if ((action.State | state) != 0 && action.Key == key)
 					return action;
 			}
 			return null;
