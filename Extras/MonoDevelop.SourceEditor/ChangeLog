@@ -1,11 +1,5 @@
 2005-10-23 John Luke <john.luke@gmail.com> 
 
-	* MonoDevelop.SourceEditor.Actions/EditActionCollection.cs:
-	try a fallback for editactions when extra modifiers are present
-	like LockMask, or Mod2Mask, etc.
-	
-2005-10-23 John Luke <john.luke@gmail.com> 
-
 	* MonoDevelop.SourceEditor.addin.xml: fix space
 	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
 	fix completion for space key presses
