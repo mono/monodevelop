@@ -23,9 +23,11 @@ namespace MonoDevelop.SourceEditor.Actions
 
 		public IEditAction GetAction (Gdk.Key key, Gdk.ModifierType state)
 		{
+			// some problematic ones have to be filtered
+			Gdk.ModifierType filteredState = state & ~(Gdk.ModifierType.LockMask | Gdk.ModifierType.Mod2Mask);
 			foreach (IEditAction action in actions)
 			{
-				if (action.State == state && action.Key == key)
+				if (action.State == filteredState && action.Key == key)
 					return action;
 			}
 

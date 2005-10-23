@@ -1,5 +1,10 @@
 2005-10-23 John Luke <john.luke@gmail.com> 
 
+	* MonoDevelop.SourceEditor.Actions/EditActionCollection.cs:
+	filter out problematic Masks, so far just LockMask and Mod2Mask
+
+2005-10-23 John Luke <john.luke@gmail.com> 
+
 	* MonoDevelop.SourceEditor.addin.xml: fix space
 	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
 	fix completion for space key presses
