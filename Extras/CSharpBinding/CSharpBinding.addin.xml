@@ -89,17 +89,9 @@
 		</Conditional>
 	</Extension>
 		
-<!--	<Extension path = "/AddIns/DefaultTextEditor/Formater">
-		<Conditional textcontent = "C#">
-			<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
-		</Conditional>
-		<Conditional textcontent = "VBNET">
-			<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class ="VBBinding.FormattingStrategy.VBFormattingStrategy"/>
-		</Conditional>
-		<Conditional textcontent = "Java">
-			<Class id ="JavaFormatter" insertbefore="DefaultFormatter" class = "JavaBinding.FormattingStrategy.JavaFormattingStrategy"/>
-		</Conditional>
-	</Extension> -->
+	<Extension path = "/AddIns/DefaultTextEditor/Formatter/C#">
+		<Class id ="CSharpFormattingStrategy" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />
+	</Extension>
 	
 	<Extension path = "/Workspace/Icons">
 		<!-- C# -->
