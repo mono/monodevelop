@@ -17,13 +17,13 @@ namespace MonoDevelop.SourceEditor.Actions
 	public interface IEditAction
 	{
 		/// <value>
-		/// Whether to pass the event to the base type of the editor.
-		/// </value>
+		/// Whether to pass the event to the base editor
+		/// <value>
 		bool PassToBase {
 			get;
 			set;
 		}
-
+		
 		/// <value>
 		/// An array of keys on which this edit action occurs.
 		/// </value>
@@ -41,6 +41,16 @@ namespace MonoDevelop.SourceEditor.Actions
 		/// When the key which is defined in the addin is pressed, this method will be invoked.
 		/// </remarks>
 		void Execute (SourceEditorView sourceView);
+
+		/// <remarks>
+		/// Invoked before the Execute method
+		/// <remarks>
+		void PreExecute (SourceEditorView sourceView);
+
+		/// <remarks>
+		/// Invoked after the Execute method
+		/// <remarks>
+		void PostExecute (SourceEditorView sourceView);
 	}
 	
 	/// <summary>
@@ -53,11 +63,7 @@ namespace MonoDevelop.SourceEditor.Actions
 		Gdk.Key key;
 		bool pass = false;
 
-		/// <value>
-		/// Whether to pass the event to the base type of the editor.
-		/// It is checked before and after executing the action and is
-		/// false by default.
-		/// </value>
+		// whether to pass the event to the base editor
 		public bool PassToBase {
 			get { return pass; }
 			set { pass = value; }
@@ -81,6 +87,24 @@ namespace MonoDevelop.SourceEditor.Actions
 		/// When the key which is defined in the addin is pressed, this method will be invoked.
 		/// </remarks>
 		public abstract void Execute (SourceEditorView sourceView);
+
+		/// <remarks>
+		/// When the key which is defined in the addin is pressed,
+		/// this method will be invoked before Execute ().
+		/// </remarks>
+		public virtual void PreExecute (SourceEditorView sourceView)
+		{
+		}
+		
+		/// <remarks>
+		/// When the key which is defined in the addin is pressed,
+		/// this method will be invoked after Execute ().
+		/// </remarks>
+		public virtual void PostExecute (SourceEditorView sourceView)
+		{
+			// reset the state
+			pass = false;
+		}
 	}		
 }
 

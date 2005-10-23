@@ -21,7 +21,7 @@ namespace MonoDevelop.SourceEditor.Actions
 
 	public class Dot : AbstractEditAction
 	{
-		public Dot ()
+		public override void PreExecute (SourceEditorView sourceView)
 		{
 			PassToBase = true;
 		}

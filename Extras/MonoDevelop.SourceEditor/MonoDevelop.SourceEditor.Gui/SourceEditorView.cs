@@ -312,16 +312,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			bool res = false;
 			IEditAction action = editactions.GetAction (evnt.Key, evnt.State);
 			if (action != null) {
-				// check to pass on the event prior
+				action.PreExecute (this);
 				if (action.PassToBase)
 					base.OnKeyPressEvent (evnt);
 				
 				action.Execute (this);
 				
-				// check to pass on the event after
 				if (action.PassToBase)
 					base.OnKeyPressEvent (evnt);
-
+				action.PostExecute (this);
+				
 				res = true;
 			} else {
 				res = base.OnKeyPressEvent (evnt);

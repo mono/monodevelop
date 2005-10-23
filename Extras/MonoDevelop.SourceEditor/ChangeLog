@@ -1,3 +1,13 @@
+2005-10-23 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Actions/IEditAction.cs:
+	add PreExecute and PostExecute methods
+	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
+	reset PassToBase to false after running the action
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	call PreExecute and PostExecute methods
+	fixes bug #76523
+
 2005-10-19 John Luke <john.luke@gmail.com> 
 
 	* *.cs: fix some warnings by removing unused fields
