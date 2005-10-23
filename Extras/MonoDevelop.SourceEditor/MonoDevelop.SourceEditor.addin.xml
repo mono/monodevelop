@@ -319,7 +319,7 @@
 		<EditAction id = "ScrollUp" class = "MonoDevelop.SourceEditor.Actions.ScrollUp" keys = "Control|Up"/>
 		<EditAction id = "ScrollDown" class = "MonoDevelop.SourceEditor.Actions.ScrollDown" keys = "Control|Down"/>
 		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
-		<EditAction id = "Space" class = "MonoDevelop.SourceEditor.Actions.Space" keys = "KP_Space"/>
+		<EditAction id = "Space" class = "MonoDevelop.SourceEditor.Actions.Space" keys = "space"/>
 		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
 	</Extension>
 

@@ -1,5 +1,11 @@
 2005-10-23 John Luke <john.luke@gmail.com> 
 
+	* MonoDevelop.SourceEditor.addin.xml: fix space
+	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
+	fix completion for space key presses
+
+2005-10-23 John Luke <john.luke@gmail.com> 
+
 	* MonoDevelop.SourceEditor.Actions/IEditAction.cs:
 	add PreExecute and PostExecute methods
 	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:

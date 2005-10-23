@@ -87,9 +87,15 @@ namespace MonoDevelop.SourceEditor.Actions
 
 	public class Space : AbstractEditAction
 	{
+		public override void PreExecute (SourceEditorView sourceView)
+		{
+			PassToBase = true;
+		}
+		
 		public override void Execute (SourceEditorView sourceView)
 		{
-			new Dot ().Execute (sourceView);
+			sourceView.ShowCodeCompletion (' ');
+			PassToBase = false;
 		}
 	}
 		
