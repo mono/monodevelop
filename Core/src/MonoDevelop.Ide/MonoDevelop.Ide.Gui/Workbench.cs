@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide.Gui
 				Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
 				
 				pads = null;	// Make sure we get an up to date pad list.
+				monitor.Step (1);
 			} finally {
 				monitor.EndTask ();
 			}
@@ -74,9 +75,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void Show (string workbenchMemento)
 		{
-			RootWindow.Show ();
+			RootWindow.Realize ();
 			workbench.SetMemento ((IXmlConvertable)Runtime.Properties.GetProperty (workbenchMemento, workbench.CreateMemento()));
 			RootWindow.Visible = true;
+			workbench.Context = WorkbenchContext.Edit;
 			workbench.RedrawAllComponents ();
 			RootWindow.Present ();
 		}

@@ -78,10 +78,8 @@ namespace MonoDevelop.Ide.Gui
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 
-			monitor.BeginTask ("Initializing MonoDevelop", 3);
+			monitor.BeginTask ("Initializing MonoDevelop", 2);
 			
-			monitor.Step (1);
-
 			Exception error = null;
 			int reportedFailures = 0;
 			
@@ -111,8 +109,9 @@ namespace MonoDevelop.Ide.Gui
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
 				IdeApp.Initialize (monitor);
-
 				monitor.Step (1);
+
+				monitor.EndTask ();
 			
 			} catch (Exception e) {
 				error = e;

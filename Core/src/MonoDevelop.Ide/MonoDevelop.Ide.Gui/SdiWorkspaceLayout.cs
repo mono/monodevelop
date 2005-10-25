@@ -115,7 +115,8 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Add (vbox);
 			
 			vbox.PackEnd (Services.StatusBar.Control, false, true, 0);
-			workbench.ShowAll ();
+			vbox.ShowAll ();
+			Services.StatusBar.Control.ShowAll ();
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
 				ShowView (content);
@@ -131,7 +132,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			CreateDefaultLayout();
-			wbWindow.Show ();
 
 			workbench.ContextChanged += contextChangedHandler;
 		}
@@ -311,8 +311,6 @@ namespace MonoDevelop.Ide.Gui
 			} else {
 				dockLayout.LoadFromFile ("../data/options/DefaultEditingLayout.xml");
 			}
-			
-			SwitchContext (workbench.Context);
 		}
 
 		public void Detach()

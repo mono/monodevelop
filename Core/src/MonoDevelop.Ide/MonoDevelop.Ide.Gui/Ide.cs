@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			monitor.BeginTask ("Loading Workbench", 5);
+			monitor.BeginTask ("Loading Workbench", 6);
 			
 			commandService.LoadCommands ("/SharpDevelop/Commands");
 			monitor.Step (1);
@@ -86,11 +86,11 @@ namespace MonoDevelop.Ide.Gui
 
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
+			Services.DispatchService.RunPendingEvents ();
 			
 			Services.MessageService.RootWindow = workbench.RootWindow;
 		
 			commandService.EnableUpdate ();
-			monitor.EndTask ();
 			
 			foreach (CommandHandler handler in Runtime.AddInService.GetTreeItems ("/MonoDevelop/IDE/StartupHandlers", typeof(CommandHandler))) {
 				try {
@@ -99,6 +99,7 @@ namespace MonoDevelop.Ide.Gui
 					Runtime.LoggingService.Error (ex);
 				}
 			}
+			monitor.EndTask ();
 		}
 			
 		public static void Run ()

@@ -1,3 +1,16 @@
+2005-10-25  Lluis Sanchez Gual  <lluis@novell.com>    
+	
+	* MonoDevelop.Ide.Gui/Workbench.cs: Don't show the main window until
+	all stored sizes have been restored.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Remove unnecessary progress steps.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: It is not the responsibility
+	of the layout to Show the workbench. Don't load the stored layout when
+	attaching, since the pads won't restore to the correct size if the
+	workbench does not already have the original size.
+	* MonoDevelop.Ide.Gui/Ide.cs: Minor progress monitoring fixes.
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Update the current task
+	name in IProgressMonitor.EndTask ().
+	
 2005-10-20  Lluis Sanchez Gual  <lluis@novell.com>    
 	
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Use icons-only toolbars in
