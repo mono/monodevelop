@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 
 using Gtk;
 
@@ -37,8 +38,12 @@ namespace MonoDevelop.Core.Gui.Utils
 			try {
 				if (filename == "Documentation")
 					icon = "gnome-fs-regular";
-				else
-					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, "", Gnome.IconLookupFlags.None, out result);
+				else {
+					if (File.Exists (filename) || Directory.Exists (filename))
+						icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, "", Gnome.IconLookupFlags.None, out result);
+					else
+						icon = "gnome-fs-regular";
+				}
 			} catch {
 				icon = "gnome-fs-regular";
 			}

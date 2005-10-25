@@ -1,3 +1,8 @@
+2005-10-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Avoid potential
+	crash of Gnome.Icon.LookupSync when the file does not exist.
+
 2005-10-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
