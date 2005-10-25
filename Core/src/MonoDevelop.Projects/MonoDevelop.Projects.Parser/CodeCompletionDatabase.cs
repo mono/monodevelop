@@ -399,10 +399,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		void ParseCallback (object ob, IProgressMonitor monitor)
 		{
-			lock (rwlock)
-			{
-				ParseFile ((string)ob, monitor);
-			}
+			ParseFile ((string)ob, monitor);
 		}
 		
 		protected virtual void ParseFile (string fileName, IProgressMonitor monitor)

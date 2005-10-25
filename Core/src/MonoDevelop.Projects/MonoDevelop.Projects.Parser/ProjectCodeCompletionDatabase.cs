@@ -161,8 +161,11 @@ namespace MonoDevelop.Projects.Parser
 			try {
 				IParseInformation parserInfo = parserDatabase.DoParseFile ((string)fileName, null);
 				if (parserInfo != null) {
-					ClassUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);
-					if (res != null) parserDatabase.NotifyParseInfoChange (fileName, res, project);
+					lock (rwlock) {
+						ClassUpdateInformation res = UpdateFromParseInfo (parserInfo, fileName);
+						if (res != null)
+							parserDatabase.NotifyParseInfoChange (fileName, res, project);
+					}
 				}
 			} finally {
 				if (monitor != null) monitor.EndTask ();
