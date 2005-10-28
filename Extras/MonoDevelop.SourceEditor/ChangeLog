@@ -1,5 +1,10 @@
 2005-10-28 John Luke <john.luke@gmail.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (DeleteLine):
+	rework to delete the whole line, not just erase its contents
+	
+2005-10-28 John Luke <john.luke@gmail.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (PeekCharIsWhitespace):
 	fix GTK+ assertion when the next char is a new line by
 	using Offset instead of LineOffset

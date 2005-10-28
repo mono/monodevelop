@@ -168,15 +168,18 @@ namespace MonoDevelop.SourceEditor.Gui
 			Global.PropagateEvent (this, evnt);
 		}
 
-		//remove the current line
+		// remove the current line, including the new line chars
 		internal void DeleteLine ()
 		{
-			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-			iter.LineOffset = 0;
-			TextIter end_iter = buf.GetIterAtLine (iter.Line);
-			end_iter.LineOffset = end_iter.CharsInLine;
+			TextIter start = buf.GetIterAtMark (buf.InsertMark);
+			start.LineOffset = 0;
+			TextIter end = start;
+			if (!end.EndsLine ())
+				end.ForwardToLineEnd ();
+			// delete the end of the line
+			end.Offset++;
 			using (AtomicUndo a = new AtomicUndo (buf)) 
-				buf.Delete (ref iter, ref end_iter);
+				buf.Delete (ref start, ref end);
 		}
 
 		internal void ShowCodeCompletion (char key)
