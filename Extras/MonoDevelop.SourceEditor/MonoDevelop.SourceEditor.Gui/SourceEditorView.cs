@@ -729,7 +729,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			TextIter start = buf.GetIterAtMark (buf.InsertMark);
 			TextIter end = buf.GetIterAtLine (start.Line);
-			end.LineOffset = start.LineOffset + 1;
+			end.Offset = start.Offset + 1;
 			string text = buf.GetText (start, end, true);
 			// if it is not whitespace or the start of a comment
 			// we disable completion except for by ctl+space
