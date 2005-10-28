@@ -39,7 +39,7 @@ namespace CSharpBinding.FormattingStrategy {
 				    (trimlineAboveText.EndsWith ("else") && trimcurLineText.StartsWith ("{")))      // after else
 				{
 					string indentation = GetIndentation (d, lineNr - 1);
-					d.ReplaceLine (lineNr, indentation + curLineText);
+					d.ReplaceLine (lineNr, indentation + trimcurLineText);
 					return indentation.Length;
 				}
 				
@@ -54,7 +54,7 @@ namespace CSharpBinding.FormattingStrategy {
 					
 					string indentation = GetIndentation (d, openLine);
 					
-					d.ReplaceLine (lineNr, indentation + curLineText);
+					d.ReplaceLine (lineNr, indentation + trimcurLineText);
 					return indentation.Length;
 				}
 				
@@ -78,7 +78,7 @@ namespace CSharpBinding.FormattingStrategy {
 					}
 					indentation += d.IndentString;
 					
-					d.ReplaceLine (lineNr, indentation + curLineText);
+					d.ReplaceLine (lineNr, indentation + trimcurLineText);
 					return indentation.Length;
 				}
 				
@@ -90,7 +90,7 @@ namespace CSharpBinding.FormattingStrategy {
 				     lineAboveText.StartsWith ("for"))) ||
 				     lineAboveText.EndsWith ("else")) {
 						string indentation = GetIndentation (d, lineNr - 1) + d.IndentString;
-						d.ReplaceLine (lineNr, indentation + curLineText);
+						d.ReplaceLine (lineNr, indentation + trimcurLineText);
 						return indentation.Length;
 				} else {
 					// try to indent linewrap
@@ -112,7 +112,7 @@ namespace CSharpBinding.FormattingStrategy {
 						for (int i = 0; i <= bracketIndex; ++i)
 							indentation += " ";
 						
-						d.ReplaceLine (lineNr, indentation + curLineText);
+						d.ReplaceLine (lineNr, indentation + trimcurLineText);
 						return indentation.Length;
 					}
 				}
@@ -126,6 +126,7 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			bool inString = false;
 			bool inChar   = false;
+			bool verbatim = false;
 			
 			bool lineComment  = false;
 			bool blockComment = false;
@@ -135,6 +136,8 @@ namespace CSharpBinding.FormattingStrategy {
 					case '\r':
 					case '\n':
 						lineComment = false;
+						inChar = false;
+						if (!verbatim) inString = false;
 						break;
 					case '/':
 						if (blockComment) {
@@ -153,8 +156,16 @@ namespace CSharpBinding.FormattingStrategy {
 						}
 						break;
 					case '"':
-						if (!(inChar || lineComment || blockComment))
+						if (!(inChar || lineComment || blockComment)) {
+							if (inString && verbatim) {
+								++i; // skip escaped quote
+								inString = false; // let the string go on
+							}
+							else if (!inString && i > 0 && text[i -1] == '@') {
+								verbatim = true;
+							}
 							inString = !inString;
+						}
 						
 						break;
 					case '\'':
@@ -267,60 +278,7 @@ namespace CSharpBinding.FormattingStrategy {
 					if (lineNr <= 0)
 						return IndentLine (d, lineNr);
 					
-					if (d.AutoInsertCurlyBracket) {
-						string oldLineText = d.GetLineAsString (lineNr - 1);
-						if (oldLineText.EndsWith ("{") && NeedCurlyBracket (d.TextContent)) {
-							d.Insert (cursorOffset, "\n}");
-							IndentLine (d, lineNr + 1);
-						}
-					}
-					
-					//string  lineAboveText = d.GetLineAsString (lineNr - 1);
-					
-
-#if NON_PORTABLE_CODE
-					if (lineAbove.HighlightSpanStack != null && lineAbove.HighlightSpanStack.Count > 0) {				
-						if (!((Span)lineAbove.HighlightSpanStack.Peek ()).StopEOL) {	// case for /* style comments
-							int index = lineAboveText.IndexOf ("/*");
-							
-							if (index > 0) {
-								string indentation = GetIndentation (d, lineNr - 1);
-								for (int i = indentation.Length; i < index; ++ i)
-									indentation += ' ';
-								
-								d.Replace (curLine.Offset, cursorOffset - curLine.Offset, indentation + " * ");
-								return indentation.Length + 3;
-							}
-							
-							index = lineAboveText.IndexOf ("*");
-							if (index > 0) {
-								string indentation = GetIndentation (d, lineNr - 1);
-								for (int i = indentation.Length; i < index; ++ i)
-									indentation += ' ';
-								
-								d.Replace (curLine.Offset, cursorOffset - curLine.Offset, indentation + "* ");
-								return indentation.Length + 2;
-							}
-						} else {
-							LineSegment nextLine = lineNr + 1 < d.TotalNumberOfLines ? d.GetLineSegment (lineNr + 1) : null;
-							string  nextLineText  = lineNr + 1 < d.TotalNumberOfLines ? d.GetText (nextLine.Offset, nextLine.Length) : "";
-							
-							// don't handle // lines, because they're only one lined comments
-							int indexAbove = lineAboveText.IndexOf ("///");
-							int indexNext  = nextLineText.IndexOf ("///");
-							
-							if (indexAbove > 0 && (indexNext != -1 || indexAbove + 4 < lineAbove.Length)) {
-								string indentation = GetIndentation (d, lineNr - 1);
-								for (int i = indentation.Length; i < indexAbove; ++ i)
-									indentation += ' ';
-								
-								d.Replace (curLine.Offset, cursorOffset - curLine.Offset, indentation + "/// ");
-								return indentation.Length + 4;
-							}
-						}
-					}
-#endif
-					return IndentLine (d, lineNr);
+					return IndentLine (d, lineNr - 1);
 			}
 			return 0;
 		}

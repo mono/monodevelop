@@ -70,7 +70,7 @@ namespace MonoDevelop.SourceEditor.Actions
 		
 		public override void Execute (SourceEditorView sourceView)
 		{
-			sourceView.IndentLine ();
+			sourceView.FormatLine ();
 			PassToBase = false;
 		}
 	}		

@@ -1,3 +1,10 @@
+2005-10-28  John Luke  <john.luke@gmail.com>
+
+	* FormattingStrategy/CSharpFormattingStrategy.cs:
+	improve indentLine slightly, we want the indention +
+	trimmed line, not the addional whitespace in front of it
+	remove some old disabled/unported code
+
 2005-10-23  John Luke  <john.luke@gmail.com>
 
 	* CSharpBinding.addin.xml: add FormattingStrategy

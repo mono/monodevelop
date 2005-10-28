@@ -1,5 +1,12 @@
 2005-10-28 John Luke <john.luke@gmail.com> 
 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	add FormatLine to give us better smart indenting
+	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
+	use FormatLine on enter instead of indentline
+	
+2005-10-28 John Luke <john.luke@gmail.com> 
+
 	* EditorBindings.glade: add smart indent radio button
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
 	indent through the formatter, instead of gtksourceview

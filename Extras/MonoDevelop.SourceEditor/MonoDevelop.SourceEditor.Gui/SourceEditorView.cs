@@ -471,22 +471,24 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 
-		// indent the next line base on the FormattingStrategy
-		public void IndentLine ()
+		public void FormatLine ()
 		{
-			TextIter cl = buf.GetIterAtMark (buf.GetMark ("insert"));
-			IndentLine (cl);
+			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
+			fmtr.FormatLine (this, iter.Line, iter.Offset, '\n');
+			IndentLine ();
 		}
 
-		public void IndentLine (TextIter iter)
+		public void IndentLine ()
 		{
+			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
+
 			// preserve offset in line
 			int offset = iter.LineOffset;
 			int chars = fmtr.IndentLine (this, iter.Line);
 			offset += chars;
-			
+
 			// restore the offset
-			TextIter nl = buf.GetIterAtMark (buf.GetMark ("insert"));
+			TextIter nl = buf.GetIterAtMark (buf.InsertMark);
 			if (offset <= nl.CharsInLine)
 				nl.LineOffset = offset;
 			buf.PlaceCursor (nl);
