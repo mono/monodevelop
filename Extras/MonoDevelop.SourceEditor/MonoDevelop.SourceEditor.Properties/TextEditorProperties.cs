@@ -74,6 +74,7 @@ namespace MonoDevelop.SourceEditor.Properties {
 		
 		public static IndentStyle IndentStyle {
 			get {
+				// FIXME: remember to change default to IndentStyle.Smart
 				return (IndentStyle)properties.GetProperty ("IndentStyle", IndentStyle.Auto);
 			}
 			set {

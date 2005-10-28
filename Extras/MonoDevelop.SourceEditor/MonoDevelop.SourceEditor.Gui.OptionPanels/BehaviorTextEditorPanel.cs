@@ -48,12 +48,15 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] CheckButton convertTabsToSpacesCheckBox;
 			[Glade.Widget] RadioButton noneIndentStyle;
 			[Glade.Widget] RadioButton automaticIndentStyle;
-			//[Glade.Widget] RadioButton smartIndentStyle;
+			[Glade.Widget] RadioButton smartIndentStyle;
 			[Glade.Widget] SpinButton indentAndTabSizeSpinButton;
 			
 			public BehaviorTextEditorPanelWidget (IProperties CustomizationObject) :  
 				base ("EditorBindings.glade", "BehaviorTextEditorPanel")
 			{
+				// FIXME: enable when it is implemented
+				autoinsertCurlyBraceCheckBox.Sensitive = false;
+					
 				// Set up Value
 				autoinsertCurlyBraceCheckBox.Active = ((IProperties)CustomizationObject).GetProperty(
 					"AutoInsertCurlyBracket", true);
@@ -66,27 +69,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				indentAndTabSizeSpinButton.Value = ((IProperties)CustomizationObject).GetProperty(
 					"TabIndent", 4);
 
-				if (IndentStyle.None.Equals(
-					    (IndentStyle) ((IProperties)CustomizationObject).GetProperty(
-						    "IndentStyle", IndentStyle.Smart))){
+				IndentStyle currentIndent = (IndentStyle)((IProperties) CustomizationObject).GetProperty ("IndentStyle", IndentStyle.Smart);
+				if (currentIndent == IndentStyle.None) 
 					noneIndentStyle.Active = true;
-				}
-				else if (IndentStyle.Auto.Equals(
-						 (IndentStyle) ((IProperties)CustomizationObject).GetProperty(
-							 "IndentStyle", IndentStyle.Smart))){
+				else if (currentIndent == IndentStyle.Auto) 
 					automaticIndentStyle.Active = true;
-				}
-				else if (IndentStyle.Smart.Equals(
-						 (IndentStyle) ((IProperties)CustomizationObject).GetProperty(
-							 "IndentStyle", IndentStyle.Smart))){
-					// FIXME: renable this when smart indent is back
-					//smartIndentStyle.Active = true;
-				}
-				
-				// FIXME: re-enable these when their options are implemented
-				autoinsertCurlyBraceCheckBox.Sensitive = false;
-   				// FIXME: renable this when smart indent is back
-				//smartIndentStyle.Sensitive = false;
+				else if (currentIndent == IndentStyle.Smart) 
+					smartIndentStyle.Active = true;
 			}
 
 			public void Store (IProperties CustomizationObject)
@@ -102,9 +91,8 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.None);
 				else if (automaticIndentStyle.Active)
 					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.Auto);
-				// FIXME: renable this when smart indent is back
-				//else if (smartIndentStyle.Active)
-				//	((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.Smart);
+				else if (smartIndentStyle.Active)
+					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.Smart);
 				
 				//FIXME: Only one of these should be selected to save the value
 				((IProperties)CustomizationObject).SetProperty("TabIndent", indentAndTabSizeSpinButton.Value);

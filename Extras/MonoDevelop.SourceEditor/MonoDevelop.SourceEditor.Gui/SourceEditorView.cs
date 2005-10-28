@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			this.ParentEditor = parent;
 			this.TabsWidth = 4;
 			Buffer = this.buf = buf;
-			AutoIndent = true;
+			AutoIndent = false;
 			SmartHomeEnd = true;
 			ShowLineNumbers = true;
 			ShowLineMarkers = true;
@@ -470,7 +470,28 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			return true;
 		}
-		
+
+		// indent the next line base on the FormattingStrategy
+		public void IndentLine ()
+		{
+			TextIter cl = buf.GetIterAtMark (buf.GetMark ("insert"));
+			IndentLine (cl);
+		}
+
+		public void IndentLine (TextIter iter)
+		{
+			// preserve offset in line
+			int offset = iter.LineOffset;
+			int chars = fmtr.IndentLine (this, iter.Line);
+			offset += chars;
+			
+			// restore the offset
+			TextIter nl = buf.GetIterAtMark (buf.GetMark ("insert"));
+			if (offset <= nl.CharsInLine)
+				nl.LineOffset = offset;
+			buf.PlaceCursor (nl);
+		}
+
 		void IndentLines (int y0, int y1)
 		{
 			IndentLines (y0, y1, InsertSpacesInsteadOfTabs ? new string (' ', (int) TabsWidth) : "\t");
@@ -562,7 +583,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			TextIter begin = Buffer.GetIterAtLine (ln);
 			TextIter end = begin;
-			end.ForwardToLineEnd ();
+			if (!end.EndsLine ())
+				end.ForwardToLineEnd ();
 			
 			Buffer.Delete (ref begin, ref end);
 			Buffer.Insert (ref begin, txt);

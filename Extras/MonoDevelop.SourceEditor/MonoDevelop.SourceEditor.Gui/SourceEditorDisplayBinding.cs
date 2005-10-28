@@ -388,13 +388,34 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void InitializeFormatter()
 		{
-			/*IFormattingStrategy[] formater = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode("/AddIns/DefaultTextEditor/Formater").BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
-			Console.WriteLine("SET FORMATTER : " + formater[0]);
-			if (formater != null && formater.Length > 0) {
-//					formater[0].Document = Document;
-				se.View.fmtr = formater[0];
-			}*/
-
+			string ext = Path.GetExtension (ContentName).ToUpper ();
+			string path;
+			
+			switch (ext) {
+				case ".CS":
+					path = "/AddIns/DefaultTextEditor/Formatter/C#";
+					break;
+				case ".VB":
+					path = "/AddIns/DefaultTextEditor/Formatter/VBNET";
+					break;
+				default:
+					// we fall back to the uppercase extension without the .
+					// ex. BOO, XML
+					path = String.Format ("/AddIns/DefaultTextEditor/Formatter/{0}", ext.Substring (1));
+					break;
+			}
+			
+			if (AddInTreeSingleton.AddInTree.TreeNodeExists (path)) {
+				IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode(path).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
+				if (formatter != null && formatter.Length > 0) {
+					se.View.fmtr = formatter[0];
+					Console.WriteLine ("set formatter to {0}", formatter[0]);
+				}
+			} else {
+				// if the above specific formatter is not found
+				// we fall back to the default formatter
+				se.View.fmtr = new DefaultFormattingStrategy ();
+			}
 		}
 		
 		public void InsertAtCursor (string s)

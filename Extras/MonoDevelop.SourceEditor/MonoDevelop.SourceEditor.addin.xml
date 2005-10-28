@@ -20,7 +20,7 @@
 	<Extension path = "/Workspace/Services">
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
 	</Extension>
-	
+
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<DialogPanel id = "CodeTemplates"
 		             _label = "Code Templates"
@@ -321,6 +321,7 @@
 		<EditAction id = "ShiftTab" class = "MonoDevelop.SourceEditor.Actions.ShiftTab" keys = "Shift|ISO_Left_Tab"/>
 		<EditAction id = "Space" class = "MonoDevelop.SourceEditor.Actions.Space" keys = "space"/>
 		<EditAction id = "Tab" class = "MonoDevelop.SourceEditor.Actions.Tab" keys = "Tab"/>
+		<EditAction id = "Return" class = "MonoDevelop.SourceEditor.Actions.Return" keys = "Return"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">

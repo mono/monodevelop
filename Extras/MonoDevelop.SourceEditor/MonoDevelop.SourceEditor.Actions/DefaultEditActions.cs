@@ -60,6 +60,21 @@ namespace MonoDevelop.SourceEditor.Actions
 		}
 	}
 
+	// indents the next line using the FormattingStrategy
+	public class Return : AbstractEditAction
+	{
+		public override void PreExecute (SourceEditorView sourceView)
+		{
+			PassToBase = true;
+		}
+		
+		public override void Execute (SourceEditorView sourceView)
+		{
+			sourceView.IndentLine ();
+			PassToBase = false;
+		}
+	}		
+
 	public class ScrollUp : AbstractEditAction
 	{
 		public override void Execute (SourceEditorView sourceView)

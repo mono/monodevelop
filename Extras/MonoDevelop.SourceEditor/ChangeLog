@@ -1,5 +1,20 @@
 2005-10-28 John Luke <john.luke@gmail.com> 
 
+	* EditorBindings.glade: add smart indent radio button
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	indent through the formatter, instead of gtksourceview
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	load the formatters from the addin file per language
+	* MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs:
+	add a FIXME comment
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs:
+	load/store smart indent settings
+	* MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs:
+	add return for indentation handling
+	* MonoDevelop.SourceEditor.addin.xml: add Return EditAction
+	
+2005-10-28 John Luke <john.luke@gmail.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (DeleteLine):
 	rework to delete the whole line, not just erase its contents
 	
