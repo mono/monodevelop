@@ -1,3 +1,10 @@
+2005-10-28  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AssemblyLoader.cs: Simplified the
+	assembly loader check. The only conflictive situation is when
+	trying to load two versions of gtk#. This can't happen with
+	gtk# 2.4 and 2.6 since they are not side-by-side installable.
+
 2005-10-20  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddIn.cs: the Import element may

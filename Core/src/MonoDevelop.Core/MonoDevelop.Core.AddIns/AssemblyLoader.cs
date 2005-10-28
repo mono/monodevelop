@@ -73,22 +73,28 @@ namespace MonoDevelop.Core.AddIns
 		
 		void CheckAssemblyVersion (string aname, IAssemblyDefinition asm, string baseDirectory)
 		{
+			if (assemblies.Contains (aname))
+				return;
+
 			int i = aname.IndexOf (",");
 			if (i == -1) return;
 			
 			string name = aname.Substring (0, i).Trim ();
 			if (IsSystemAssembly (name))
 				return;
-				
-			string loadedVersion = (string) assemblies [name];
+			
+			if (name == "gtk-sharp" || name == "gnome-sharp" || name == "gdk-sharp" || name == "glib-sharp") {
+				string ver = aname.Substring (i+1).Trim ();
+				i = ver.IndexOf (",");
+				if (i != -1)
+					ver = ver.Substring (0, i).Trim ();
 
-			if (loadedVersion != null) {
-				if (loadedVersion != aname)
-					throw new InvalidAssemblyVersionException (loadedVersion, aname);
+				if (Setup.AddinInfo.CompareVersions ("2.4.0.0", ver) == -1)
+					throw new InvalidAssemblyVersionException ("2.4.0.0", aname);
 				return;
 			}
 			
-			assemblies [name] = aname;
+			assemblies [aname] = aname;
 			
 			if (asm == null) {
 				string file = FindAssembly (aname, baseDirectory);
@@ -108,7 +114,7 @@ namespace MonoDevelop.Core.AddIns
 					CheckAssemblyVersion (ar.FullName, null, baseDirectory);
 				}
 			} catch {
-				assemblies.Remove (name);
+				assemblies.Remove (aname);
 				throw;
 			}
 		}
