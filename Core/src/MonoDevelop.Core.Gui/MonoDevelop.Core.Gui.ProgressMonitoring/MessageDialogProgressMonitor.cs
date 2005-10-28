@@ -146,8 +146,8 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.Dispose ();
-				Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			}
+			Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
 		

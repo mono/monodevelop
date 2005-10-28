@@ -1,3 +1,10 @@
+2005-10-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	Show the error dialog even when the progress dialog is not visible.
+	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:
+	Avoid dispatching through the GUI thread some property getters and setters. 
+
 2005-10-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Avoid potential

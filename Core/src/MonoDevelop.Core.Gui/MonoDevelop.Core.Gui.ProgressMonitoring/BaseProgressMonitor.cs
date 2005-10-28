@@ -72,6 +72,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		
 		[FreeDispatch]
 		public object SyncRoot {
+			[FreeDispatch]
 			get {
 				// Dont return 'this'. Locking on proxies doesn't look like a good idea.
 				return progressTracker;
@@ -161,6 +162,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		[FreeDispatch]
 		public IAsyncOperation AsyncOperation
 		{
+			[FreeDispatch]
 			get { return this; }
 		}
 		
@@ -192,12 +194,12 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		
 		[FreeDispatch]
 		bool IAsyncOperation.Success {
+			[FreeDispatch]
 			get { return errorsMessages.Count == 0; }
 		}
 		
-		[FreeDispatch]
-		public bool IsCompleted
-		{
+		public bool IsCompleted {
+			[FreeDispatch]
 			get { return !progressTracker.InProgress; }
 		}
 		
@@ -218,6 +220,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		}
 		
 		public event MonitorHandler CancelRequested {
+			[FreeDispatch]
 			add {
 				bool alreadyCanceled = false;
 				lock (progressTracker) {
@@ -226,6 +229,7 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				}
 				if (alreadyCanceled) value (this);
 			}
+			[FreeDispatch]
 			remove {
 				lock (progressTracker) {
 					c.cancelRequestedEvent -= value;
