@@ -13,6 +13,7 @@
 
   <Dependencies>
     <AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+    <AddIn id="MonoDevelop.SourceEditor" version="0.9.0"/>
   </Dependencies>
 
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
@@ -43,6 +44,10 @@
                    _label = "Code Generation"
                    class = "BooBinding.Gui.OptionPanels.CodeGenerationPanel"/>
     </Conditional>
+  </Extension>
+
+  <Extension path = "/AddIns/DefaultTextEditor/Formatter/BOO">
+    <Class id ="BooFormattingStrategy" class = "BooBinding.FormattingStrategy.BooFormattingStrategy" />
   </Extension>
 
   <Extension path = "/Workspace/Icons">

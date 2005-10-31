@@ -13,6 +13,7 @@ DLLS = -r:System.Drawing \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	-r:$(BOOSHELL_LIB) \
 	$(BOO_LIBS) \
@@ -26,6 +27,7 @@ BOOSHELL_DLLS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 		$(BOO_LIBS)
 
 FILES = \
+FormattingStrategy/BooFormattingStrategy.boo \
 Gui/ShellTextView.boo \
 Gui/IShellModel.boo \
 Gui/BooShellModel.boo \

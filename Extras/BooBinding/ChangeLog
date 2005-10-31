@@ -1,3 +1,9 @@
+2005-10-30  Peter Johanson  <latexer@gentoo.org> 
+
+	* FormattingStrategy/*:
+	* BooBinding.addin.xml:
+	* Makefile.am: Initial smart formatting support. Still *very* basic.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* BooBinding.addin.xml: Fixed addin header information.
