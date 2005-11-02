@@ -1,3 +1,9 @@
+2005-11-01  Peter Johanson  <latexer@gentoo.org> 
+
+	* BooShell/BooShell.boo: Actually handle exceptions thrown during
+	excecution of user input, and toss back a sanitized string of the
+	exception.
+
 2005-10-30  Peter Johanson  <latexer@gentoo.org> 
 
 	* FormattingStrategy/*:

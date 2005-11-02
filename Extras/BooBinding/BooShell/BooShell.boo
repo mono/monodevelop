@@ -23,6 +23,7 @@ import System
 import System.Collections
 import System.IO
 import System.Threading
+import System.Text.RegularExpressions
 import Boo.Lang.Interpreter
 import Boo.Lang.Compiler
 
@@ -106,7 +107,23 @@ class BooShell (RemoteProcessObject):
 			Monitor.Enter(_interpreter)
 			if com.Type == ShellCommandType.Eval:
 				if com.Data is not null:
-					_interpreter.LoopEval(com.Data)
+					try:
+						_interpreter.LoopEval(com.Data)
+					except e:
+						// Sanitize stack trace to not show method calls
+						// from the boo interpreter
+						exception = e.InnerException
+						message = exception.ToString ()
+						reg = Regex ('((.*\\n)*).*Input\\dModule.*', RegexOptions.Multiline)
+						match = reg.Match (exception.StackTrace)
+						if match is not null:
+							if match.Groups.Count >= 3:
+								// the [0:-1] is to trim the extra \n hiding on the end of the match
+								message = String.Format ("{0}: {1}\n{2}", exception.GetType (),
+													  exception.Message,
+													  match.Groups[1].Value[0:-1])
+						self.print (message)
+
 			elif com.Type == ShellCommandType.Reset:
 				_interpreter.Reset()
 			elif com.Type == ShellCommandType.Load:
@@ -138,7 +155,7 @@ class BooShell (RemoteProcessObject):
 	
 	private def print(obj):
 		Monitor.Enter (_outputQueue)
-		_outputQueue.Enqueue(obj)
+		_outputQueue.Enqueue(obj.ToString ())
 		Monitor.Exit (_outputQueue)
 	
 	private def EnqueueCommand (command as ShellCommand):
