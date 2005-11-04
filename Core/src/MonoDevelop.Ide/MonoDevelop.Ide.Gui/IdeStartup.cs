@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-using Mono.Posix;
+using Mono.Unix;
 using Mono.GetOptions;
 
 using MonoDevelop.Core.Properties;

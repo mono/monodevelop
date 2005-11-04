@@ -215,7 +215,10 @@ namespace MonoDevelop.Ide.Gui
 			if (!pm.AsyncOperation.Success)
 				return null;
 			
-			return WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+			if (openFileInfo.NewContent != null)
+				return WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+			else
+				return null;
 		}
 		
 		public Document OpenDocument (IViewContent content, bool bringToFront)

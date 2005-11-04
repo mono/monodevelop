@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		object CursorPosition { get; set; }
 		object GetPositionFromOffset (int offset);
+		object GetPositionFromLineColumn (int line, int column);
 		int GetOffsetFromPosition (object position);
 
 		object SelectionStartPosition { get; }

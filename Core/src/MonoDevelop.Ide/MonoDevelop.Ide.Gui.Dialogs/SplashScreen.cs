@@ -110,7 +110,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			get { return false; }
 		}
 		
-		public event MonitorHandler CancelRequested;
+		public event MonitorHandler CancelRequested {
+			add { }
+			remove { }
+		}
 		
 		// The returned IAsyncOperation object must be thread safe
 		IAsyncOperation IProgressMonitor.AsyncOperation {

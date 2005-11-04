@@ -96,9 +96,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
  			[Glade.Widget] Button addButton; 
 			[Glade.Widget] Button removeButton;
 			
-			MenuButtonEntry argumentMbe;
-			MenuButtonEntry workingDirMbe;
-			 
 			// these are the control names which are enabled/disabled depending if tool is selected
 			Widget[] dependendControls;
 			 
@@ -129,8 +126,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					 
 				toolListBox.AppendColumn (GettextCatalog.GetString ("_Tools"), new CellRendererText (), "text", 0);
 
-				argumentMbe = new MenuButtonEntry (argumentTextBox, argumentQuickInsertButton, argumentQuickInsertMenu);
-				workingDirMbe = new MenuButtonEntry (workingDirTextBox, workingDirQuickInsertButton, workingDirInsertMenu);
+				new MenuButtonEntry (argumentTextBox, argumentQuickInsertButton, argumentQuickInsertMenu);
+				new MenuButtonEntry (workingDirTextBox, workingDirQuickInsertButton, workingDirInsertMenu);
 
 				toolListBox.Selection.Changed += new EventHandler (selectEvent);
 				removeButton.Clicked += new EventHandler (removeEvent);

@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeIter  iter;
 			if (catView.Selection.GetSelected (out mdl, out iter)) {
 				//templateStore.Clear ();
-                                TemplateView.Clear ();
+				TemplateView.Clear ();
 				foreach (TemplateItem item in (ArrayList)((Gtk.TreeStore)mdl).GetValue (iter, 2)) {
 					//templateStore.AppendValues (item.Name, item.Template);
 					
