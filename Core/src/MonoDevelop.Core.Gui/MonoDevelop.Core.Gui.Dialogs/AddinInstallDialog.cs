@@ -230,7 +230,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
-		void OnGotoWeb (object sender, EventArgs e)
+		protected void OnGotoWeb (object sender, EventArgs e)
 		{
 			AddinInfo info = tree.ActiveAddin;
 			if (info == null)

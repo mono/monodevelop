@@ -110,7 +110,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowContextMenu (Gtk.Menu menu)
 		{
-			menu.Popup (null, null, null, IntPtr.Zero, 0, Gtk.Global.CurrentEventTime);
+			menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
 		}
 		
 		public Gtk.Menu CreateMenu (CommandEntrySet cset)

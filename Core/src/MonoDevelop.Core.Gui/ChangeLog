@@ -1,3 +1,8 @@
+2005-11-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/CommandService.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs: Fix warning.
+
 2005-10-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
