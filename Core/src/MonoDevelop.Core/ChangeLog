@@ -1,3 +1,7 @@
+2005-11-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns.Setup/SetupTool.cs: Fix warning.
+
 2005-10-28  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AssemblyLoader.cs: Simplified the

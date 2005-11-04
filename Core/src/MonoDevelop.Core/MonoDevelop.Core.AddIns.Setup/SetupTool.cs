@@ -295,11 +295,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 				return (string) val;
 		}
 		
-		bool HasOption (string key)
-		{
-			return options.Contains (key);
-		}
-		
 		void ReadOptions (string[] args)
 		{
 			options = new Hashtable ();
