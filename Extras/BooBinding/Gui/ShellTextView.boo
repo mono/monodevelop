@@ -78,7 +78,11 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_parserService = IdeApp.ProjectOperations.ParserDatabase
 
 		manager = SourceLanguagesManager()
-		buf = SourceBuffer(manager.GetLanguageFromMimeType(model.MimeType))
+		lang = manager.GetLanguageFromMimeType(model.MimeType)
+		if lang != null:
+			buf = SourceBuffer(lang)
+		else:
+			buf = SourceBuffer(GtkSourceView.SourceTagTable())
 
 		// This freaks out booc for some reason.
 		//super(buf, Highlight: true)
