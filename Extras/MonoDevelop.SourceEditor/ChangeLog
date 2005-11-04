@@ -1,3 +1,8 @@
+2005-11-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	Implement some new methods defined in ITextBuffer and IEditor.
+
 2005-10-28 John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
@@ -223,13 +228,13 @@
 	* Gui/SourceEditorDisplayBinding.cs: The editor is now responsible
 	of showing its own widgets.
 	
-2005-07-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-07-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/Dialogs/GotoLineNumberDialog.cs:
 	* Gui/SourceEditorDisplayBinding.cs:
 	Make lines and columns 1-based.
 	
-2005-07-01  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-07-01  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* CodeCompletion/ListWindow.cs: Make sure the list
 	window is no larger than necessary.
@@ -283,11 +288,11 @@
 	* Search/SearchReplaceInFilesManager.cs:
 	Fix #74966 and display a meaningful error message.
 
-2005-05-20  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-05-20  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/SourceEditorView.cs: Fixed problem with monodoc on words followed by a newline.
 
-2005-05-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2005-05-16  Jacob Ils Christensen  <jacobilsoe@gmail.com>
 
 	* Gui/SourceEditorView.cs: Added support to ctrl+tab/shift+ctrl+tab through open files.
 

@@ -488,6 +488,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
+		public object GetPositionFromLineColumn (int line, int column)
+		{
+			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
+			itr.LineOffset = column - 1 > itr.CharsInLine ? itr.CharsInLine - 1 : column - 1;
+			return itr;
+		}
+		
+		public void InsertText (object position, string text)
+		{
+			TextIter it = (TextIter) position;
+			se.Buffer.Insert (it.Offset, text);
+		}
+		
 		public event EventHandler TextChanged {
 			add { se.Buffer.Changed += value; }
 			remove { se.Buffer.Changed -= value; }
