@@ -9,16 +9,18 @@ namespace MonoDevelop.Components
 
 	public class DragNotebook : Notebook
     {
-
-		public event TabsReorderedHandler TabsReordered;
-
-		bool DragInProgress;
-
 		public DragNotebook () {
 			//ButtonPressEvent += new ButtonPressEventHandler (OnButtonPress);
 			//ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
 			//AddEvents ((Int32) (EventMask.AllEventsMask));
 		}
+
+		public event TabsReorderedHandler TabsReordered {
+			add {}
+			remove {}
+		}
+/*
+		bool DragInProgress;
 
 		int FindTabAtPosition (double cursorX, double cursorY) {
 
@@ -85,6 +87,7 @@ namespace MonoDevelop.Components
 			DragInProgress = false;
 		}
 
+
 		[GLib.ConnectBefore]
 		void OnMotionNotify (object obj, MotionNotifyEventArgs args) {
 
@@ -98,5 +101,6 @@ namespace MonoDevelop.Components
 
 			MoveTab (FindTabAtPosition (args.Event.XRoot, args.Event.YRoot));
 		}
+*/
 	}
 }

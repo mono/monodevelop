@@ -1,3 +1,7 @@
+2005-11-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/DragNotebook.cs: Fix warnings.
+
 2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Renamed to from MonoDevelop.Gui.Widgets to MonoDevelop.Components.
