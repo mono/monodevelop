@@ -47,6 +47,14 @@ namespace MonoDevelop.Projects
 			foreach (string s in arguments)
 				ReadArgument (s);
 			
+			if (help) {
+				Console.WriteLine ("build [options] [project-file]");
+				Console.WriteLine ("--f --buildfile:FILE   Project or solution file to build.");
+				Console.WriteLine ("--p --project:PROJECT  Name of the project to build.");
+				Console.WriteLine ();
+				return 0;
+			}
+			
 			if (file == null) {
 				string[] files = Directory.GetFiles (".", "*.mds");
 				if (files.Length == 0)
@@ -77,7 +85,7 @@ namespace MonoDevelop.Projects
 			
 			ICompilerResult res = centry.Build (monitor);
 			
-			return 0;
+			return (res.ErrorCount == 0) ? 0 : 1;
 		}
 		
 		void ReadArgument (string argument)

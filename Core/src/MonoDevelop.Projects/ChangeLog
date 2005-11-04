@@ -1,3 +1,8 @@
+2005-11-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Combine.cs: Fix a warning and a NRE.
+	* MonoDevelop.Projects/BuildTool.cs: Added some minimal help.
+
 2005-10-25 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs:
