@@ -57,7 +57,12 @@ namespace MonoQuery
 			sw = new Gtk.ScrolledWindow ();
 			frame.Add (sw);
 			SourceLanguagesManager lm = new SourceLanguagesManager ();
-			textBuffer = new SourceBuffer(lm.GetLanguageFromMimeType("text/x-sql"));
+			GtkSourceView.SourceLanguage lang = lm.GetLanguageFromMimeType("text/x-sql");
+			if (lang != null)
+				textBuffer = new SourceBuffer (lang);
+			else
+				textBuffer = new SourceBuffer (new GtkSourceView.SourceTagTable ());
+				
 			textBuffer.Highlight = true;
 			textView = new SourceView (textBuffer);
 			textView.ShowLineNumbers = false;

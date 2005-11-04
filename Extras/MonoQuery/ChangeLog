@@ -1,3 +1,7 @@
+2005-11-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoQuery/Gui/SqlDefinitionPad.cs: Fix gtksourceview warning.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.addin.xml: Fixed addin header information.
