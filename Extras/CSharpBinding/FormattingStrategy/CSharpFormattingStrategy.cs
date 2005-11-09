@@ -82,13 +82,13 @@ namespace CSharpBinding.FormattingStrategy {
 					return indentation.Length;
 				}
 				
-				if (lineAboveText.EndsWith ("{") || // indent opening bracket.
-				    lineAboveText.EndsWith (":") || // indent case xyz:
-				    (lineAboveText.EndsWith (")") &&  // indent single line if, for ... etc
-				    (lineAboveText.StartsWith ("if") ||
-				     lineAboveText.StartsWith ("while") ||
-				     lineAboveText.StartsWith ("for"))) ||
-				     lineAboveText.EndsWith ("else")) {
+				if (trimlineAboveText.EndsWith ("{") || // indent opening bracket.
+				    trimlineAboveText.EndsWith (":") || // indent case xyz:
+				    (trimlineAboveText.EndsWith (")") &&  // indent single line if, for ... etc
+				    (trimlineAboveText.StartsWith ("if") ||
+				     trimlineAboveText.StartsWith ("while") ||
+				     trimlineAboveText.StartsWith ("for"))) ||
+				     trimlineAboveText.EndsWith ("else")) {
 						string indentation = GetIndentation (d, lineNr - 1) + d.IndentString;
 						d.ReplaceLine (lineNr, indentation + trimcurLineText);
 						return indentation.Length;

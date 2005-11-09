@@ -1,3 +1,10 @@
+2005-11-09  John Luke  <john.luke@gmail.com>
+
+	* FormattingStrategy/CSharpFormattingStrategy.cs:
+	use trimlineAboveText to decide whether to indent things
+	like single line if, else, for, etc.
+	second half of fix for bug # 76652
+	
 2005-10-28  John Luke  <john.luke@gmail.com>
 
 	* FormattingStrategy/CSharpFormattingStrategy.cs:
