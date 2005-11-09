@@ -389,33 +389,36 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void InitializeFormatter()
 		{
 			string ext = Path.GetExtension (ContentName).ToUpper ();
-			string path;
-			
-			switch (ext) {
-				case ".CS":
-					path = "/AddIns/DefaultTextEditor/Formatter/C#";
-					break;
-				case ".VB":
-					path = "/AddIns/DefaultTextEditor/Formatter/VBNET";
-					break;
-				default:
-					// we fall back to the uppercase extension without the .
-					// ex. BOO, XML
-					path = String.Format ("/AddIns/DefaultTextEditor/Formatter/{0}", ext.Substring (1));
-					break;
-			}
-			
-			if (AddInTreeSingleton.AddInTree.TreeNodeExists (path)) {
-				IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode(path).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
-				if (formatter != null && formatter.Length > 0) {
-					se.View.fmtr = formatter[0];
-					Console.WriteLine ("set formatter to {0}", formatter[0]);
+
+			if (ext.Length > 0) {
+				string path;
+				switch (ext) {
+					case ".CS":
+						path = "/AddIns/DefaultTextEditor/Formatter/C#";
+						break;
+					case ".VB":
+						path = "/AddIns/DefaultTextEditor/Formatter/VBNET";
+						break;
+					default:
+						// we fall back to the uppercase extension without the .
+						// ex. BOO, XML
+						path = String.Format ("/AddIns/DefaultTextEditor/Formatter/{0}", ext.Substring (1));
+						break;
 				}
-			} else {
-				// if the above specific formatter is not found
-				// we fall back to the default formatter
-				se.View.fmtr = new DefaultFormattingStrategy ();
+				
+				if (AddInTreeSingleton.AddInTree.TreeNodeExists (path)) {
+					IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode(path).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
+					if (formatter != null && formatter.Length > 0) {
+						se.View.fmtr = formatter[0];
+						Console.WriteLine ("set formatter to {0}", formatter[0]);
+						return;
+					}
+				}
 			}
+			
+			// if the above specific formatter is not found
+			// we fall back to the default formatter
+			se.View.fmtr = new DefaultFormattingStrategy ();
 		}
 		
 		public void InsertAtCursor (string s)
@@ -499,6 +502,12 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			TextIter it = (TextIter) position;
 			se.Buffer.Insert (it.Offset, text);
+		}
+		
+		public void DeleteText (object position, int length)
+		{
+			int pos = ((TextIter)position).Offset;
+			se.Buffer.Delete (pos, pos + length);
 		}
 		
 		public event EventHandler TextChanged {
@@ -632,6 +641,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		public void ShowPosition (object position)
 		{
 			se.View.ScrollToIter ((TextIter)position, 0.3, false, 0, 0);
+		}
+		
+		public string GetText (object startPosition, object endPosition)
+		{
+			return se.Buffer.GetText ((TextIter)startPosition, (TextIter)endPosition, true);
 		}
 
 		public void SetBookmarked (object position, bool mark)
