@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			return false;
 		}
 		
-		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, AddinPackage parentPackage, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved)
 		{
 			throw new InstallException ("Can't install native dependency");
 		}

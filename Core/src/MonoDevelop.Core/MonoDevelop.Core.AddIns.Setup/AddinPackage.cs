@@ -52,6 +52,12 @@ namespace MonoDevelop.Core.AddIns.Setup
 		string configFile;
 		bool installed;
 		AddinSetupInfo iaddin;
+		bool rootInstall = true;
+		
+		public bool RootInstall {
+			get { return rootInstall; }
+			set { rootInstall = value; }
+		}
 		
 		public AddinInfo Addin {
 			get { return info; }
@@ -81,6 +87,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		{
 			AddinPackage pack = new AddinPackage ();
 			pack.info = sinfo.Addin;
+			pack.rootInstall = !sinfo.IsUserAddin;
 			return pack;
 		}
 		
@@ -145,7 +152,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		public override void CommitInstall (IProgressMonitor monitor, SetupService service)
 		{
-			service.RegisterAddin (monitor, info, tempFolder);
+			service.RegisterAddin (monitor, info, tempFolder, !rootInstall);
 			installed = true;
 		}
 		
@@ -190,7 +197,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 			
 			foreach (PackageDependency dep in info.Dependencies) {
-				dep.Resolve (monitor, service, toInstall, toUninstall, installedRequired, unresolved);
+				dep.Resolve (monitor, service, this, toInstall, toUninstall, installedRequired, unresolved);
 			}
 		}
 		
@@ -199,20 +206,20 @@ namespace MonoDevelop.Core.AddIns.Setup
 			string id = info.Id;
 			iaddin = service.GetInstalledAddin (id, info.Version);
 			if (iaddin == null)
-				throw new InstallException ("The addin '" + id + "' is not installed.");
+				throw new InstallException (string.Format (GettextCatalog.GetString ("The addin '{0}' is not installed."), id));
 
 			AddinConfiguration conf = iaddin.GetConfiguration ();
 			string basePath = Path.GetDirectoryName (iaddin.ConfigFile);
 			
-			if ((File.GetAttributes (iaddin.ConfigFile) & FileAttributes.ReadOnly) != 0)
-				throw new InstallException ("The addin '" + id + " can't be uninstalled with the current user permissions.");
+			if (!service.HasWriteAccess (iaddin.ConfigFile))
+				throw new InstallException (SetupService.GetUninstallErrorNoRoot (info));
 
 			foreach (string relPath in conf.AllFiles) {
 				string path = Path.Combine (basePath, relPath);
 				if (!File.Exists (path))
 					continue;
-				if ((File.GetAttributes (path) & FileAttributes.ReadOnly) != 0)
-					throw new InstallException ("The addin '" + id + " can't be uninstalled with the current user permissions.");
+				if (!service.HasWriteAccess (path))
+					throw new InstallException (SetupService.GetUninstallErrorNoRoot (info));
 			}
 			
 			tempFolder = CreateTempFolder ();
@@ -252,7 +259,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				string configFile = Path.Combine (tempFolder, Path.GetFileName (iaddin.ConfigFile));
 				AddinConfiguration conf = AddinConfiguration.Read (configFile);
 				
-				string addinDir = service.GetAddinDirectory (iaddin.Addin);
+				string addinDir = Path.GetDirectoryName (iaddin.ConfigFile);
 				CopyAddinFiles (monitor, conf, configFile, addinDir);
 			}
 		}

@@ -60,10 +60,10 @@ namespace MonoDevelop.Core.AddIns.Setup
 				this.addInDirs = addInDirs;
 			else if (addInDirs != null) {
 				this.addInDirs = new string [addInDirs.Length + 1];
-				this.addInDirs [0] = AddinRootPath;
+				this.addInDirs [0] = RootAddinPath;
 				addInDirs.CopyTo (this.addInDirs, 1);
 			} else {
-				this.addInDirs = new string [] { AddinRootPath };
+				this.addInDirs = new string [] { RootAddinPath, UserAddinPath };
 			}
 		}
 		
@@ -79,12 +79,16 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return Runtime.Properties.ConfigDirectory; }
 		}
 		
-		string AddinRootPath {
+		string RootAddinPath {
 			get { return Path.Combine (BinPath, "../AddIns"); }
 		}
 		
 		string RootConfigFile {
 			get { return Path.Combine (UserConfigPath, "addins.config"); }
+		}
+		
+		string UserAddinPath {
+			get { return Path.Combine (UserConfigPath, "addins"); }
 		}
 		
 		public bool Install (IProgressMonitor monitor, params string[] files)
@@ -405,6 +409,30 @@ namespace MonoDevelop.Core.AddIns.Setup
 				}
 			}
 			
+			// Check that we are not trying to uninstall from a directory from
+			// which we don't have write permissions
+			
+			foreach (Package p in toUninstall) {
+				AddinPackage ap = p as AddinPackage;
+				if (ap != null) {
+					AddinSetupInfo ia = GetInstalledAddin (ap.Addin.Id);
+					if (!HasWriteAccess (ia.ConfigFile)) {
+						monitor.ReportError (GetUninstallErrorNoRoot (ap.Addin), null);
+						return false;
+					}
+				}
+			}
+			
+			// Don't try to install in the shared dir if we don't have permissions
+			
+			if (!HasWriteAccess (RootAddinPath)) {
+				foreach (Package p in packages) {
+					AddinPackage ap = p as AddinPackage;
+					if (ap != null && ap.RootInstall)
+						ap.RootInstall = false;
+				}
+			}
+			
 			// Check that we are not installing two versions of the same addin
 			
 			PackageCollection resolved = new PackageCollection();
@@ -565,6 +593,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			addinSetupInfos = new ArrayList ();
 			
 			foreach (string dir in AddinDirectories) {
+				if (!Directory.Exists (dir))
+					continue;
 				StringCollection files = fileUtilityService.SearchDirectory (dir, "*.addin.xml");
 				foreach (string file in files)
 					addinSetupInfos.Add (new AddinSetupInfo (file));
@@ -909,15 +939,18 @@ namespace MonoDevelop.Core.AddIns.Setup
 			s.Close();			
 		}
 		
-		internal string GetAddinDirectory (AddinInfo info)
+		internal string GetAddinDirectory (AddinInfo info, bool userAddin)
 		{
-			return Path.Combine (AddinRootPath, info.Id + "_" + info.Version);
+			if (userAddin)
+				return Path.Combine (UserAddinPath, info.Id + "_" + info.Version);
+			else
+				return Path.Combine (RootAddinPath, info.Id + "_" + info.Version);
 		}
 		
-		internal void RegisterAddin (IProgressMonitor monitor, AddinInfo info, string sourceDir)
+		internal void RegisterAddin (IProgressMonitor monitor, AddinInfo info, string sourceDir, bool userAddin)
 		{
 			monitor.Log.WriteLine ("Installing " + info.Id + " v" + info.Version);
-			string addinDir = GetAddinDirectory (info);
+			string addinDir = GetAddinDirectory (info, userAddin);
 			if (!Directory.Exists (addinDir))
 				Directory.CreateDirectory (addinDir);
 			CopyDirectory (sourceDir, addinDir);
@@ -1037,6 +1070,31 @@ namespace MonoDevelop.Core.AddIns.Setup
 				monitor.EndTask ();
 			}
 		}
+			
+		internal bool HasWriteAccess (string file)
+		{
+			if (File.Exists (file)) {
+				try {
+					File.OpenWrite (file).Close ();
+					return true;
+				} catch {
+					return false;
+				}
+			}
+			else if (Directory.Exists (file)) {
+				string tpath = Path.Combine (file, ".test");
+				int n = 0;
+				while (Directory.Exists (tpath + n)) n++;
+				try {
+					Directory.CreateDirectory (tpath + n);
+					Directory.Delete (tpath + n);
+					return true;
+				} catch {
+					return false;
+				}
+			} else
+				return false;
+		}
 		
 		AddinSystemConfiguration Configuration {
 			get {
@@ -1056,6 +1114,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (config != null) {
 				WriteObject (RootConfigFile, config); 
 			}
+		}
+		
+		internal static string GetUninstallErrorNoRoot (AddinInfo ainfo)
+		{
+			return string.Format (GettextCatalog.GetString ("The addin '{0} v{1}' can't be uninstalled with the current user permissions."), ainfo.Id, ainfo.Version);
 		}
 	}
 	

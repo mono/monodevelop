@@ -37,6 +37,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 	{
 		public abstract string Name { get; }
 		public abstract bool CheckInstalled (SetupService service);
-		public abstract void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved);
+		public abstract void Resolve (IProgressMonitor monitor, SetupService service, AddinPackage parentPackage, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection required, PackageDependencyCollection unresolved);
 	}
 }

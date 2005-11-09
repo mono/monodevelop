@@ -64,22 +64,27 @@ namespace MonoDevelop.Core.AddIns.Setup
 			return false;
 		}
 		
-		public override void Resolve (IProgressMonitor monitor, SetupService service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection installedRequired, PackageDependencyCollection unresolved)
+		public override void Resolve (IProgressMonitor monitor, SetupService service, AddinPackage parentPackage, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection installedRequired, PackageDependencyCollection unresolved)
 		{
 			foreach (Package p in toInstall) {
 				AddinPackage ap = p as AddinPackage;
 				if (ap != null) {
-					if (ap.Addin.Id == id && ap.Addin.SupportsVersion (version))
+					if (ap.Addin.Id == id && ap.Addin.SupportsVersion (version)) {
+						if (!ap.RootInstall)
+							parentPackage.RootInstall = false;
 						return;
+					}
 				} 
 			}
 			
 			AddinSetupInfo[] addins = service.GetInstalledAddins ();
 			foreach (AddinSetupInfo addin in addins) {
 				if (addin.Addin.Id == id && addin.Addin.SupportsVersion (version)) {
-					Package p = AddinPackage.FromInstalledAddin (addin);
+					AddinPackage p = AddinPackage.FromInstalledAddin (addin);
 					if (!installedRequired.Contains (p))
 						installedRequired.Add (p);
+					if (!p.RootInstall)
+						parentPackage.RootInstall = false;
 					return;
 				}
 			}
