@@ -110,10 +110,16 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		public void Clear ()
 		{
 			addinData.Clear ();
+			selected.Clear ();
 			treeStore.Clear ();
 		}
 		
 		public TreeIter AddAddin (AddinInfo info, object dataItem, bool enabled)
+		{
+			return AddAddin (info, dataItem, enabled, "md-package");
+		}
+		
+		public TreeIter AddAddin (AddinInfo info, object dataItem, bool enabled, string icon)
 		{
 			addinData [info] = dataItem;
 			TreeIter piter = TreeIter.Zero;
@@ -125,11 +131,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 			
 			TreeIter iter = treeStore.AppendNode (piter);
-			UpdateRow (iter, info, dataItem, enabled);
+			UpdateRow (iter, info, dataItem, enabled, icon);
 			return iter;
 		}
 		
-		protected virtual void UpdateRow (TreeIter iter, AddinInfo info, object dataItem, bool enabled)
+		protected virtual void UpdateRow (TreeIter iter, AddinInfo info, object dataItem, bool enabled, string icon)
 		{
 			bool sel = selected.Contains (info);
 			
@@ -147,7 +153,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				treeStore.SetValue (iter, ColAllowSelection, false);
 			}
 			
-			treeStore.SetValue (iter, ColImage, Services.Resources.GetIcon ("md-package"));
+			treeStore.SetValue (iter, ColImage, Services.Resources.GetIcon (icon));
 			treeStore.SetValue (iter, ColShowImage, true);
 			
 			treeStore.SetValue (iter, ColSelected, sel);

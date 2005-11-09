@@ -141,6 +141,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		void OnAddinSelectionChanged (object o, EventArgs e)
 		{
+			UpdateAddinSelection ();
+		}
+			
+		void UpdateAddinSelection ()
+		{
 			btnNext.Sensitive = (tree.GetSelectedAddins().Length != 0);
 		}
 		
@@ -254,6 +259,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		protected void OnShowUpdates (object sender, EventArgs e)
 		{
 			LoadAddins ();
+			UpdateAddinSelection ();
 		}
 		
 		protected void OnSelectAll (object sender, EventArgs e)
@@ -367,7 +373,10 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			
 			sb.Append (GettextCatalog.GetString ("<b>The following packages will be installed:</b>\n\n"));
 			foreach (Package p in packs) {
-				sb.Append (p.Name + "\n");
+				sb.Append (p.Name);
+				if (p is AddinPackage && !((AddinPackage)p).RootInstall)
+					sb.Append (GettextCatalog.GetString (" (in user directory)"));
+				sb.Append ("\n");
 			}
 			sb.Append ("\n");
 			
@@ -452,7 +461,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		void RunUninstall ()
 		{
 			try {
-				Runtime.SetupService.Uninstall (new ConsoleProgressMonitor (), uninstallId);
+				Runtime.SetupService.Uninstall (installMonitor, uninstallId);
 			} catch (Exception ex) {
 				// Nothing
 			} finally {
@@ -512,9 +521,9 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			treeView.AppendColumn (col);
 		}
 		
-		protected override void UpdateRow (TreeIter iter, AddinInfo info, object dataItem, bool enabled)
+		protected override void UpdateRow (TreeIter iter, AddinInfo info, object dataItem, bool enabled, string icon)
 		{
-			base.UpdateRow (iter, info, dataItem, enabled);
+			base.UpdateRow (iter, info, dataItem, enabled, icon);
 			AddinRepositoryEntry arep = (AddinRepositoryEntry) dataItem;
 			treeStore.SetValue (iter, ncol, arep.Repository.Name);
 		}

@@ -1,3 +1,13 @@
+2005-11-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:
+	Added support for installing addins in the home directory.
+	
+	* Makefile.am: 
+	* MonoDevelop.Core.Gui.addin.xml: Added new icon.
+	
 2005-11-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/CommandService.cs:

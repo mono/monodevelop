@@ -143,10 +143,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			
 			tree.Clear ();
 			foreach (AddinSetupInfo ainfo in Runtime.SetupService.GetInstalledAddins ()) {
-				tree.AddAddin (ainfo.Addin, ainfo, ainfo.Enabled);
+				string icon = ainfo.IsUserAddin ? "md-user-package" : "md-package";
+				tree.AddAddin (ainfo.Addin, ainfo, ainfo.Enabled, icon);
 			}
 			
 			tree.RestoreStatus (s);
+			UpdateButtons ();
 		}
 		
 		void UpdateButtons ()
