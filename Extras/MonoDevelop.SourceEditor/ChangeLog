@@ -1,3 +1,9 @@
+2005-11-09 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	only FormatLine when IndentStyle is Smart
+	part of bug #76652
+	
 2005-11-09  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:

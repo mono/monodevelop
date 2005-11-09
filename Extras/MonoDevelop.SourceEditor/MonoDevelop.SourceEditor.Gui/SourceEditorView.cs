@@ -473,8 +473,10 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public void FormatLine ()
 		{
-			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-			fmtr.FormatLine (this, iter.Line, iter.Offset, '\n');
+			if (((IFormattableDocument)this).IndentStyle == IndentStyle.Smart) {
+				TextIter iter = buf.GetIterAtMark (buf.InsertMark);
+				fmtr.FormatLine (this, iter.Line, iter.Offset, '\n');
+			}
 			IndentLine ();
 		}
 
@@ -487,9 +489,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			int chars = fmtr.IndentLine (this, iter.Line);
 			offset += chars;
 
+			// FIXME: not quite right yet
 			// restore the offset
 			TextIter nl = buf.GetIterAtMark (buf.InsertMark);
-			if (offset <= nl.CharsInLine)
+			if (offset < nl.CharsInLine)
 				nl.LineOffset = offset;
 			buf.PlaceCursor (nl);
 		}
