@@ -44,6 +44,8 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		StringCollection warningMessages = new StringCollection ();
 		Exception errorException;
 		ProgressDialog dialog;
+		bool hideWhenDone;
+		bool showDetails;
 		
 		public MessageDialogProgressMonitor (): this (false)
 		{
@@ -58,6 +60,11 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		}
 		
 		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails)
+		: this (showProgress, allowCancel, showDetails, true)
+		{
+		}
+		
+		public MessageDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, bool hideWhenDone)
 		{
 			if (showProgress) {
 				dialog = new ProgressDialog (allowCancel, showDetails);
@@ -65,6 +72,8 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				dialog.Show ();
 				dialog.AsyncOperation = AsyncOperation;
 				Services.DispatchService.RunPendingEvents ();
+				this.hideWhenDone = hideWhenDone;
+				this.showDetails = showDetails;
 			}
 		}
 		
@@ -87,35 +96,33 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		
 		public override void BeginTask (string name, int totalWork)
 		{
-			base.BeginTask (name, totalWork);
 			if (dialog != null) {
 				dialog.BeginTask (name);
-				Services.DispatchService.RunPendingEvents ();
 			}
+			base.BeginTask (name, totalWork);
 		}
 		
 		public override void BeginStepTask (string name, int totalWork, int stepSize)
 		{
-			base.BeginStepTask (name, totalWork, stepSize);
 			if (dialog != null) {
 				dialog.BeginTask (name);
-				Services.DispatchService.RunPendingEvents ();
 			}
+			base.BeginStepTask (name, totalWork, stepSize);
 		}
 		
 		public override void EndTask ()
 		{
-			base.EndTask ();
 			if (dialog != null) {
 				dialog.EndTask ();
-				Services.DispatchService.RunPendingEvents ();
 			}
+			base.EndTask ();
+			Services.DispatchService.RunPendingEvents ();
 		}
 						
 		public override void ReportWarning (string message)
 		{
 			if (dialog != null) {
-				dialog.WriteText ("WARNING: " + message);
+				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
 				Services.DispatchService.RunPendingEvents ();
 			}
 			warningMessages.Add (message);
@@ -137,22 +144,29 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 			}
 			
 			if (dialog != null) {
-				dialog.WriteText ("ERROR: " + message);
+				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + message + "\n");
 				Services.DispatchService.RunPendingEvents ();
 			}
 		}
 		
 		protected override void OnCompleted ()
 		{
-			if (dialog != null) {
-				dialog.Dispose ();
-			}
 			Services.DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
 		
 		void ShowDialogs ()
 		{
+			if (dialog != null) {
+				if (hideWhenDone)
+					dialog.Dispose ();
+				else
+					dialog.ShowDone (warningMessages.Count > 0, errorsMessages.Count > 0);
+			}
+			
+			if (showDetails)
+				return;
+			
 			if (errorsMessages.Count > 0) {
 				string s = "";
 				foreach (string m in errorsMessages)

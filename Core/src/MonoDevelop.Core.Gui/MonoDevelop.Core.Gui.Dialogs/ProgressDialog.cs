@@ -37,6 +37,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 	{
 		[Glade.Widget ("ProgressDialog")] Dialog dialog;
 		[Glade.Widget] Button btnCancel;
+		[Glade.Widget] Button btnClose;
 		[Glade.Widget] Label label;
 		[Glade.Widget] Gtk.TextView detailsTextView;
 		[Glade.Widget] Gtk.Expander expander;
@@ -63,6 +64,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			btnCancel.Clicked += new EventHandler (OnCancel);
 			btnCancel.Visible = allowCancel;
 
+			btnClose.Clicked += new EventHandler (OnClose);
+			
 			expander.Activated += new EventHandler (OnExpanded);
 			expander.Visible = showDetails;
 			
@@ -99,6 +102,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (name != null && name.Length > 0) {
 				Indent ();
 				indents.Push (name);
+				Message = name;
 			} else
 				indents.Push (null);
 
@@ -106,13 +110,19 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				TextIter it = buffer.EndIter;
 				string txt = name + "\n";
 				buffer.InsertWithTags (ref it, txt, tag, bold);
+				detailsTextView.ScrollMarkOnscreen (buffer.InsertMark);
 			}
 		}
 		
 		public void EndTask ()
 		{
-			if (indents.Count > 0 && indents.Pop () != null)
-				Unindent ();
+			if (indents.Count > 0) {
+				string msg = (string) indents.Pop ();
+				if (msg != null) {
+					Unindent ();
+					Message = msg;
+				}
+			}
 		}
 		
 		public void WriteText (string text)
@@ -166,10 +176,28 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			dialog.Dispose ();
 		}
 		
+		public void ShowDone (bool warnings, bool errors)
+		{
+			btnCancel.Hide ();
+			btnClose.Show ();
+
+			if (errors)
+				label.Text = GettextCatalog.GetString ("Operation completed with errors.");
+			else if (warnings)
+				label.Text = GettextCatalog.GetString ("Operation completed with warnings.");
+			else
+				label.Text = GettextCatalog.GetString ("Operation successfully completed.");
+		}
+		
 		void OnCancel (object sender, EventArgs args)
 		{
 			if (asyncOperation != null)
 				asyncOperation.Cancel ();
+		}
+		
+		void OnClose (object sender, EventArgs args)
+		{
+			Dispose ();
 		}
 		
 		void OnExpanded (object sender, EventArgs args)

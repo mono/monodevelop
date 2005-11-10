@@ -30,7 +30,10 @@ namespace MonoDevelop.Core.Gui
 			if (dispatcher == null)
 				dispatcher = Services.DispatchService;
 				
-			dispatcher.GuiDispatch (cb, ob);
+			if (dispatcher.IsGuiThread)
+				cb (ob);
+			else
+				dispatcher.GuiDispatch (cb, ob);
 		}
 	}
 }

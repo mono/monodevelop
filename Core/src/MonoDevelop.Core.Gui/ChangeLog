@@ -1,3 +1,13 @@
+2005-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Base.glade:
+	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs: Added close
+	button which is used when HideWhenDone is set to false.
+	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	Added option for keeping open the progress dialog when done.
+	* MonoDevelop.Core.Gui/GuiSyncContext.cs: always dispatch synchronously
+	if already running in the gui thread.
+	
 2005-11-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:

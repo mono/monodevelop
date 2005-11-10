@@ -2494,6 +2494,7 @@ sdfsf</property>
 	  <child>
 	    <widget class="GtkLabel" id="label">
 	      <property name="visible">True</property>
+	      <property name="width_request">600</property>
 	      <property name="label" translatable="yes">Loading...</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -2539,6 +2540,20 @@ sdfsf</property>
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="label">gtk-cancel</property>
+		  <property name="use_stock">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		</widget>
+		<packing>
+		  <property name="padding">0</property>
+		  <property name="expand">False</property>
+		  <property name="fill">False</property>
+		</packing>
+	      </child>
+	      <child>
+		<widget class="GtkButton" id="btnClose">
+		  <property name="can_focus">True</property>
+		  <property name="label">gtk-close</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
