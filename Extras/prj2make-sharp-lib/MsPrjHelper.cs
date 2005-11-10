@@ -5,8 +5,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+
 using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+
+using CSharpBinding;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -150,6 +155,8 @@ namespace MonoDevelop.Prj2Make
     
 					if (csprojPath.EndsWith (".csproj") && !csprojPath.StartsWith("http://"))
 					{
+						csprojPath = MapPath (Path.GetDirectoryName (fname), csprojPath);
+						
 						CsprojInfo pi = new CsprojInfo (m_bIsUnix, m_bIsMcs, projectName, projectGuid, csprojPath);
     
 						projNameInfo[projectName] = pi;
@@ -439,525 +446,382 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 		
-		public void CreatePrjxFromCsproj(string csprojFileName)
+		public string CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
 		{
-			int nCnt = 0;
-			FileStream fsIn = null;
-			XmlSerializer xmlDeSer = null;
-			FileStream fsOut = null;
-			XmlSerializer xmlSer = null;
-			MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
-			MonoDevelop.Prj2Make.Schema.Prjx.Project prjxObj = new MonoDevelop.Prj2Make.Schema.Prjx.Project();
-			prjxFileName = String.Format ("{0}.prjx",
-				Path.Combine(Path.GetDirectoryName(csprojFileName),
-				Path.GetFileNameWithoutExtension(csprojFileName))
-				);
-			
-			// convert backslashes to slashes    		
-			csprojFileName = csprojFileName.Replace("\\", "/");			
-			Console.WriteLine(String.Format("Will create project filename:{0}", PrjxFileName));
-
-			// Load the csproj
-			fsIn = new FileStream (csprojFileName, FileMode.Open);	    
-			xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
-			csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);	    
-			fsIn.Close();
-
-			// Begin prjxObj population
-			prjxObj.name = Path.GetFileNameWithoutExtension(csprojFileName);
-			prjxObj.description = "";
-			prjxObj.newfilesearch = "None";
-			prjxObj.enableviewstate = "True";
-			prjxObj.version = (decimal)1.1;
-			prjxObj.projecttype = "C#";
-
-			prjxObj.Contents = GetContents (csprojObj.CSHARP.Files.Include);
-			prjxObj.References = GetReferences(csprojObj.CSHARP.Build.References);
-			prjxObj.DeploymentInformation = new MonoDevelop.Prj2Make.Schema.Prjx.DeploymentInformation();
-			prjxObj.DeploymentInformation.target = "";
-			prjxObj.DeploymentInformation.script = "";
-			prjxObj.DeploymentInformation.strategy = "File";
-
-			nCnt = csprojObj.CSHARP.Build.Settings.Config.Length;
-			prjxObj.Configurations = new Configurations();
-			prjxObj.Configurations.Configuration = new Configuration[nCnt];
-			for(int i = 0; i < nCnt; i++)
-			{
-				prjxObj.Configurations.Configuration[i] = CreateConfigurationBlock(
-					csprojObj.CSHARP.Build.Settings.Config[i],
-					csprojObj.CSHARP.Build.Settings.AssemblyName,
-					csprojObj.CSHARP.Build.Settings.OutputType
+			try {
+				FileStream fsIn = null;
+				XmlSerializer xmlDeSer = null;
+				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
+				
+				monitor.BeginTask (GettextCatalog.GetString ("Importing project: ") + csprojFileName, 5);
+				
+				DotNetProject prjxObj = new DotNetProject ("C#", null, null);
+				
+				prjxFileName = String.Format ("{0}.mdp",
+					Path.Combine (Path.GetDirectoryName (csprojFileName),
+					Path.GetFileNameWithoutExtension (csprojFileName))
 					);
+				
+				prjxObj.FileName = prjxFileName;
+
+				// Load the csproj
+				fsIn = new FileStream (csprojFileName, FileMode.Open);	    
+				xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
+				csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);	    
+				fsIn.Close();
+				
+				monitor.Step (1);
+
+				// Begin prjxObj population
+				prjxObj.Name = Path.GetFileNameWithoutExtension(csprojFileName);
+				prjxObj.Description = "";
+				prjxObj.NewFileSearch = NewFileSearch.None;
+				prjxObj.EnableViewState = true;
+
+				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.ProjectFiles, monitor);
+				monitor.Step (1);
+				
+				GetReferences (csprojObj.CSHARP.Build.References, prjxObj.ProjectReferences, monitor);
+				monitor.Step (1);
+				
+				prjxObj.Configurations.Clear ();
+				foreach (Config cblock in csprojObj.CSHARP.Build.Settings.Config)
+				{
+					prjxObj.Configurations.Add (CreateConfigurationBlock (
+						prjxObj,
+						cblock,
+						csprojObj.CSHARP.Build.Settings.AssemblyName,
+						csprojObj.CSHARP.Build.Settings.OutputType,
+						monitor
+						));
+				}
+				monitor.Step (1);
+				prjxObj.Save (monitor);
+				monitor.Step (1);
+				return prjxFileName;
+
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not import project:") + csprojFileName, ex);
+				return null;
+			} finally {
+				monitor.EndTask ();
 			}
-			prjxObj.Configurations.active = prjxObj.Configurations.Configuration[0].name;
-
-			prjxObj.Configuration = prjxObj.Configurations.Configuration[0];
-
-			// Serialize
-			fsOut = new FileStream (prjxFileName, FileMode.Create);	    
-			xmlSer = new XmlSerializer (typeof(Project));
-			xmlSer.Serialize(fsOut, prjxObj);
-			fsOut.Close();
-
-			return;
 		}
 
-		public void MsSlnToCmbxHelper(string slnFileName)
+		public string MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor)
 		{
-			int i = 0;
-			FileStream fsOut = null;
-			XmlSerializer xmlSer = null;
-			//StringBuilder MakefileBuilder = new StringBuilder();
-			MonoDevelop.Prj2Make.Schema.Cmbx.Combine cmbxObj = new MonoDevelop.Prj2Make.Schema.Cmbx.Combine();
-			cmbxFileName = String.Format ("{0}.cmbx",
+			Combine cmbxObj = new Combine();
+			cmbxFileName = String.Format ("{0}.mds",
 				Path.Combine(Path.GetDirectoryName(slnFileName),
 				Path.GetFileNameWithoutExtension(slnFileName))
 				);
 			
-			Console.WriteLine(String.Format("Will create combine filename:{0}", cmbxFileName));
-
-			string origDir = Directory.GetCurrentDirectory();
+			monitor.BeginTask (GettextCatalog.GetString ("Importing solution"), 2);
 			try
 			{
-				string d = Path.GetDirectoryName(slnFileName);
-				if (d != "")
-					Directory.SetCurrentDirectory(d);
-
 				// We invoke the ParseSolution 
 				// by passing the file obtained
 				ParseSolution (slnFileName);
 
 				// Create all of the prjx files form the csproj files
-				foreach (CsprojInfo pi in projNameInfo.Values)
-				{
-					CreatePrjxFromCsproj(pi.csprojpath);
-				}
-
-				// Begin prjxObj population
-				cmbxObj.name = Path.GetFileNameWithoutExtension(slnFileName);
-				cmbxObj.description = "";
-				cmbxObj.fileversion = (decimal)1.0;
-
-				// Create and attach the StartMode element
-				MonoDevelop.Prj2Make.Schema.Cmbx.StartMode startModeElem = new MonoDevelop.Prj2Make.Schema.Cmbx.StartMode();
-
-				// Create the array of Execute objects
-				MonoDevelop.Prj2Make.Schema.Cmbx.Execute[] executeElem = new MonoDevelop.Prj2Make.Schema.Cmbx.Execute[projNameInfo.Count];
-
-				// Populate the Element objects instances
-				i = 0;
-				foreach (CsprojInfo pi in projNameInfo.Values)
-				{
-					MonoDevelop.Prj2Make.Schema.Cmbx.Execute execElem = new MonoDevelop.Prj2Make.Schema.Cmbx.Execute();
-					execElem.entry = pi.name;
-					execElem.type = "None";
-
-                    executeElem[i++] = execElem;
-				}
-
-				startModeElem.startupentry = executeElem[0].entry;
-				startModeElem.single = "True";
-				startModeElem.Execute = executeElem;
-
-				// Attach the StartMode Object to the
-				// Combine object
-				cmbxObj.StartMode = startModeElem;
-
-				// Gnerate the entries array
-				MonoDevelop.Prj2Make.Schema.Cmbx.Entry[] entriesObj = new MonoDevelop.Prj2Make.Schema.Cmbx.Entry[projNameInfo.Count];
-				// Populate the Entry objects instances
-				i = 0;
-				foreach (CsprojInfo pi in projNameInfo.Values)
-				{
-					MonoDevelop.Prj2Make.Schema.Cmbx.Entry entryObj = new MonoDevelop.Prj2Make.Schema.Cmbx.Entry();
-					string PrjxFileName = String.Format (".{0}{1}.prjx",
-						Path.DirectorySeparatorChar,
-						Path.Combine(Path.GetDirectoryName(pi.csprojpath),
-						Path.GetFileNameWithoutExtension(pi.csprojpath))
-						);
-
-					entryObj.filename = PrjxFileName; 
-
-					entriesObj[i++] = entryObj;
-				}
-
-				// Attach the Entries Object to the
-				// Combine object
-				cmbxObj.Entries = entriesObj;
-
-				MonoDevelop.Prj2Make.Schema.Cmbx.Configurations configurationsObj = new MonoDevelop.Prj2Make.Schema.Cmbx.Configurations();
+				monitor.BeginTask (null, projNameInfo.Values.Count * 2);
 				
-				// Hack hardcoded configuration value must get the one
-				// from analyzing the different configuration entries
-				configurationsObj.active = "Debug";
+				foreach (CsprojInfo pi in projNameInfo.Values) {
+					string mappedPath = MapPath (Path.GetDirectoryName (slnFileName), pi.csprojpath);
+					if (mappedPath == null) {
+						monitor.Step (2);
+						monitor.ReportWarning (GettextCatalog.GetString ("Project file not found: ") + pi.csprojpath);
+						continue;
+					}
+					string prjName = CreatePrjxFromCsproj (mappedPath, monitor);
+					monitor.Step (1);
+					if (prjName != null)
+						cmbxObj.AddEntry (prjName, monitor);
+					else
+						return null;
+					monitor.Step (1);
+				}
+				
+				monitor.EndTask ();
+				monitor.Step (1);
 
-				// Hack hardcoded number of configuration object
-				// assuming 2 for Debug and Release
-				configurationsObj.Configuration = new MonoDevelop.Prj2Make.Schema.Cmbx.Configuration[2];
-				MonoDevelop.Prj2Make.Schema.Cmbx.Configuration confObj1 = new MonoDevelop.Prj2Make.Schema.Cmbx.Configuration();
-				configurationsObj.Configuration[0] = confObj1;
-				MonoDevelop.Prj2Make.Schema.Cmbx.Configuration confObj2 = new MonoDevelop.Prj2Make.Schema.Cmbx.Configuration();
-				configurationsObj.Configuration[1] = confObj2;
-
-				configurationsObj.Configuration[0].name = "Release";
-				configurationsObj.Configuration[0].Entry = CreateArrayOfConfEntries();
-				configurationsObj.Configuration[1].name = "Debug";
-				configurationsObj.Configuration[1].Entry = CreateArrayOfConfEntries();
-
-				// Attach the Configurations object to the 
-				// Combine Object
-				cmbxObj.Configurations = configurationsObj;
-
-				// Serialize
-				fsOut = new FileStream (cmbxFileName, FileMode.Create);	    
-				xmlSer = new XmlSerializer (typeof(MonoDevelop.Prj2Make.Schema.Cmbx.Combine));
-				xmlSer.Serialize(fsOut, cmbxObj);
-				fsOut.Close();
-
-				return;
+				cmbxObj.Save (cmbxFileName, monitor);
+				monitor.Step (1);
+				return cmbxFileName;
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("EXCEPTION: {0}\n", e);
-				return;
+				monitor.ReportError (GettextCatalog.GetString ("The solution could not be imported."), e);
+				return null;
 			}
 			finally
 			{
-				Directory.SetCurrentDirectory(origDir);
+				monitor.EndTask ();
 			}
 		}
 
-		protected MonoDevelop.Prj2Make.Schema.Prjx.Reference[] GetReferences(MonoDevelop.Prj2Make.Schema.Csproj.Reference[] References)
+		protected void GetReferences (MonoDevelop.Prj2Make.Schema.Csproj.Reference[] References, ProjectReferenceCollection references, IProgressMonitor monitor)
 		{
-			MonoDevelop.Prj2Make.Schema.Prjx.Reference[] theReferences = null;
-			int i = 0;
+			if (References == null || References.Length == 0)
+				return;
+			
+			monitor.BeginTask (null, 5 + References.Length);
+			                      
+			try {
+				// Get the GAC path
+				string strBasePathMono1_0 = Path.Combine(
+						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
+						"mono/1.0");
+				
+				monitor.Step (1);
 
-			// Get the GAC path
-			string strBasePathMono1_0 = Path.Combine(
-					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
-					"mono/1.0");
+	//			string strBasePathMono2_0 = Path.Combine(
+	//					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
+	//					"mono/2.0");
+	//
+				string strBasePathGtkSharp = Path.Combine(
+						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp", "libdir").TrimEnd(),
+						"mono/gtk-sharp");
+				
+				monitor.Step (1);
 
-//			string strBasePathMono2_0 = Path.Combine(
-//					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
-//					"mono/2.0");
-//
-			string strBasePathGtkSharp = Path.Combine(
-					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp", "libdir").TrimEnd(),
-					"mono/gtk-sharp");
+				string strBasePathGtkSharp2_0 = Path.Combine(
+						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp-2.0", "libdir").TrimEnd(),
+						"mono/gtk-sharp-2.0");
+				
+				monitor.Step (1);
 
-			string strBasePathGtkSharp2_0 = Path.Combine(
-					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp-2.0", "libdir").TrimEnd(),
-					"mono/gtk-sharp-2.0");
+				string strBasePathGeckoSharp = Path.Combine(
+						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp", "libdir").TrimEnd(),
+						"mono/gecko-sharp");
+				
+				monitor.Step (1);
 
-			string strBasePathGeckoSharp = Path.Combine(
-					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp", "libdir").TrimEnd(),
-					"mono/gecko-sharp");
+				string strBasePathGeckoSharp2_0 = Path.Combine(
+						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp-2.0", "libdir").TrimEnd(),
+						"mono/gecko-sharp-2.0");
+				
+				string[] monoLibs = new string [] {
+					strBasePathMono1_0,
+					strBasePathGtkSharp2_0,
+					strBasePathGtkSharp,
+					strBasePathGeckoSharp2_0,
+					strBasePathGeckoSharp
+				};
 
-			string strBasePathGeckoSharp2_0 = Path.Combine(
-					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp-2.0", "libdir").TrimEnd(),
-					"mono/gecko-sharp-2.0");
-
-			if(References != null && References.Length > 0)
-			{
-				theReferences = new MonoDevelop.Prj2Make.Schema.Prjx.Reference[References.Length];
-			}
-			else
-			{
-				return null;
-			}
-
-			// Iterate through the reference collection of the csproj file
-			foreach(MonoDevelop.Prj2Make.Schema.Csproj.Reference rf in References)
-			{
-				MonoDevelop.Prj2Make.Schema.Prjx.Reference rfOut = new MonoDevelop.Prj2Make.Schema.Prjx.Reference();
-				string strRefFileName;
-
-				if(rf.Package == null || rf.Package.Length == 0)
+				// Iterate through the reference collection of the csproj file
+				foreach (MonoDevelop.Prj2Make.Schema.Csproj.Reference rf in References)
 				{
-					bool bIsWhereExpected = false;
-
-					// HACK - under Unix filenames are case sensitive
-					// Under Windows there's no agreement on Xml vs XML ;-)    					
-					if(Path.GetFileName(rf.HintPath).CompareTo("System.XML.dll") == 0)
+					monitor.Step (1);
+					
+					ProjectReference rfOut = null;
+					
+					if (rf.Package != null && rf.Package.Length != 0)
 					{
-						strRefFileName = Path.Combine (strBasePathMono1_0, Path.GetFileName("System.Xml.dll"));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
-					} else {					
-						//////////////////////////
-						// Check on Mono 1.0
-						strRefFileName = Path.Combine (strBasePathMono1_0, Path.GetFileName(rf.HintPath));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
-
-						//////////////////////////
-						// Check on Gtk# 2.0
-						strRefFileName = Path.Combine (strBasePathGtkSharp2_0, Path.GetFileName(rf.HintPath));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
-
-						//////////////////////////
-						// Check on Gtk# 1.0
-						strRefFileName = Path.Combine (strBasePathGtkSharp, Path.GetFileName(rf.HintPath));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
+						rfOut = new ProjectReference ();
+						rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Project;
 						
-						//////////////////////////
-						// Check on Gecko# 2.0
-						strRefFileName = Path.Combine (strBasePathGeckoSharp2_0, Path.GetFileName(rf.HintPath));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
-
-						//////////////////////////
-						// Check on Gecko# 1.0
-						strRefFileName = Path.Combine (strBasePathGeckoSharp, Path.GetFileName(rf.HintPath));
-
-						// Test to see if file exist in GAC location
-						if(System.IO.File.Exists(strRefFileName) == true) {
-							try {
-								rfOut.refto = System.Reflection.Assembly.LoadFrom(strRefFileName).FullName;
-								rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-								rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-								bIsWhereExpected = true;
-								// increment the iterator value
-								theReferences[i++] = rfOut;
-								continue;
-							} catch (Exception exc) {
-								Console.WriteLine ("Error doing Assembly.LoadFrom with File: {0}\nErr Msg: {1}",
-									strRefFileName,
-									exc.Message );
-							}
-						}
+						rfOut.Reference = Path.GetFileName (rf.Name);
+						rfOut.LocalCopy = true;
+						references.Add (rfOut);
+					}
+					else if (rf.AssemblyName != null)
+					{
+						string rname = rf.AssemblyName;
+						if (rname == "System.XML")
+							rname = "System.Xml";
 						
-						if(bIsWhereExpected == false)
-						{
-							rfOut.refto = Path.GetFileName(rf.HintPath);
-							rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Gac;
-							rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-							// increment the iterator value
-							theReferences[i++] = rfOut;
+						rfOut = new ProjectReference ();
+						rfOut.Reference = Runtime.SystemAssemblyService.GetAssemblyFullName (rname);
+						if (rfOut.Reference == null) {
+							monitor.ReportWarning (GettextCatalog.GetString ("Assembly reference could not be imported: ") + rf.AssemblyName);
 							continue;
 						}
+						rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+						rfOut.LocalCopy = true;
+						references.Add (rfOut);
+					}
+					else if (rf.HintPath != null)
+					{
+						// HACK - under Unix filenames are case sensitive
+						// Under Windows there's no agreement on Xml vs XML ;-)    					
+						if (Path.GetFileName (rf.HintPath) == "System.XML.dll")
+						{
+							ProjectReference pref = GetMonoReferece (strBasePathMono1_0, "System.Xml.dll");
+							if (pref != null) {
+								references.Add (pref);
+								continue;
+							}
+						} else {
+							foreach (string libDir in monoLibs) {
+								if (rf.HintPath == null)
+									continue;
+								rfOut = GetMonoReferece (libDir, rf.HintPath);
+								if (rfOut != null)
+									break;
+							}
+							
+							if (rfOut == null) {
+								rfOut = new ProjectReference ();
+								rfOut.Reference = Path.GetFileName (rf.HintPath);
+								rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+								rfOut.LocalCopy = true;
+							}
+							references.Add (rfOut);
+						}
+					}
+					else {
+						monitor.ReportWarning (GettextCatalog.GetString ("Assembly reference could not be imported: ") + rf.Name);
 					}
 				}
-				else
-				{
-					rfOut.type = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceType.Project;
-					
-					rfOut.refto = Path.GetFileName(rf.Name);
-					rfOut.localcopy = MonoDevelop.Prj2Make.Schema.Prjx.ReferenceLocalcopy.True;
-					// increment the iterator value
-					theReferences[i++] = rfOut;
-				}
+			} finally {
+				monitor.EndTask ();
 			}
-
-			return theReferences;
 		}
 		
-		protected MonoDevelop.Prj2Make.Schema.Prjx.File[] GetContents(MonoDevelop.Prj2Make.Schema.Csproj.File[] Include)
+		ProjectReference GetMonoReferece (string libPath, string reference)
 		{
-			MonoDevelop.Prj2Make.Schema.Prjx.File[] theFiles = null;
-			int i = 0;
+			string strRefFileName = Path.Combine (libPath, Path.GetFileName (reference));
 
-			if(Include != null && Include.Length > 0)
-			{
-				theFiles = new MonoDevelop.Prj2Make.Schema.Prjx.File[Include.Length];
+			// Test to see if file exist in GAC location
+			if (System.IO.File.Exists (strRefFileName)) {
+				ProjectReference rfOut = new ProjectReference ();
+				rfOut.Reference = Runtime.SystemAssemblyService.GetAssemblyFullName (strRefFileName);
+				rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+				rfOut.LocalCopy = true;
+				return rfOut;
 			}
-			else
-			{
-				return null;
-			}
+			return null;
+		}
+		
+		protected void GetContents (MonoDevelop.Projects.Project project, MonoDevelop.Prj2Make.Schema.Csproj.File[] Include, ProjectFileCollection files, IProgressMonitor monitor)
+		{
+			if (Include == null || Include.Length == 0)
+				return;
 
 			// Iterate through the file collection of the csproj file
 			foreach(MonoDevelop.Prj2Make.Schema.Csproj.File fl in Include)
 			{
-				MonoDevelop.Prj2Make.Schema.Prjx.File flOut = new MonoDevelop.Prj2Make.Schema.Prjx.File();
-				flOut.name = String.Format(".{0}{1}", Path.DirectorySeparatorChar, fl.RelPath);
+				ProjectFile flOut = new ProjectFile ();
 				
-				switch(fl.SubType)
+				string name;
+				if ((fl.Link == null) || (fl.Link.Length == 0)) {
+					name = MapPath (project.BaseDirectory, fl.RelPath);
+				} else {
+					name = MapPath (null, fl.Link);
+				}
+				
+				if (name == null) {
+					monitor.ReportWarning (GettextCatalog.GetString ("Can't import file: ") + fl.RelPath);
+					continue;
+				}
+				flOut.Name = name;
+				
+				switch (fl.SubType)
 				{
 					case "Code":
-						flOut.subtype = MonoDevelop.Prj2Make.Schema.Prjx.FileSubtype.Code;
+						flOut.Subtype = Subtype.Code;
 						break;
 				}
 
-				switch(fl.BuildAction)
+				switch (fl.BuildAction)
 				{
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.Compile:
-						flOut.buildaction = MonoDevelop.Prj2Make.Schema.Prjx.FileBuildaction.Compile;
+						flOut.BuildAction = BuildAction.Compile;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.Content:
-						flOut.buildaction = MonoDevelop.Prj2Make.Schema.Prjx.FileBuildaction.Exclude;
+						flOut.BuildAction = BuildAction.Exclude;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
-						flOut.buildaction = MonoDevelop.Prj2Make.Schema.Prjx.FileBuildaction.EmbedAsResource;
+						flOut.BuildAction = BuildAction.EmbedAsResource;
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.None:
-						flOut.buildaction = MonoDevelop.Prj2Make.Schema.Prjx.FileBuildaction.Exclude;
+						flOut.BuildAction = BuildAction.Nothing;
 						break;				
 				}
-				flOut.dependson = fl.DependentUpon;
-				flOut.data = "";
-
-				// increment the iterator value
-				theFiles[i++ ] = flOut;
+				flOut.DependsOn = fl.DependentUpon;
+				flOut.Data = "";
+				
+				files.Add (flOut);
 			}
-
-			return theFiles;
 		}
 
-		protected Configuration CreateConfigurationBlock(Config ConfigBlock, string AssemblyName, string OuputType)
+		protected IConfiguration CreateConfigurationBlock (MonoDevelop.Projects.Project project, Config ConfigBlock, string AssemblyName, string OuputType, IProgressMonitor monitor)
 		{
-			Configuration ConfObj = new Configuration();
-			CodeGeneration CodeGenObj = new CodeGeneration();
-			Execution ExecutionObj = new Execution();
-			Output OutputObj = new Output();
+			DotNetProjectConfiguration confObj = project.CreateConfiguration (ConfigBlock.Name) as DotNetProjectConfiguration;
 
-			ConfObj.runwithwarnings = "False";
-			ConfObj.name = ConfigBlock.Name;
-
-			// CodeGenObj member population
-			CodeGenObj.runtime = "MsNet";
-			CodeGenObj.compiler = "Csc";
-			CodeGenObj.warninglevel = ConfigBlock.WarningLevel;
-			CodeGenObj.nowarn = "";
-			CodeGenObj.includedebuginformation = (ConfigBlock.DebugSymbols == true) ? 
-				CodeGenerationIncludedebuginformation.True : 
-				CodeGenerationIncludedebuginformation.False;
+			confObj.RunWithWarnings = false;
+			confObj.NetRuntime = NetRuntime.MsNet;
+			confObj.DebugMode = ConfigBlock.DebugSymbols;
+			confObj.CompileTarget = (CompileTarget) Enum.Parse (typeof(CompileTarget), OuputType, true);
 			
-			CodeGenObj.optimize = (ConfigBlock.Optimize == true) ? "True" : "False";
-
-			if (ConfigBlock.AllowUnsafeBlocks == true)
-			{
-				CodeGenObj.unsafecodeallowed = CodeGenerationUnsafecodeallowed.True;
+			string dir = MapPath (project.BaseDirectory, ConfigBlock.OutputPath);
+			if (dir == null) {
+				dir = "bin/" + ConfigBlock.Name;
+				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("Output directory '{0}' can't be mapped to a local directory. The directory '{1}' will be used instead"), ConfigBlock.OutputPath, dir));
 			}
-			else
-			{
-				CodeGenObj.unsafecodeallowed = CodeGenerationUnsafecodeallowed.False;
-			}
-			if (ConfigBlock.CheckForOverflowUnderflow == true)
-			{
-				CodeGenObj.generateoverflowchecks = "True";
-			}
-			else
-			{
-				CodeGenObj.generateoverflowchecks = "False";
-			}
+			confObj.OutputDirectory = dir;
+			confObj.OutputAssembly = AssemblyName;
 			
-			CodeGenObj.mainclass = "";
-			CodeGenObj.target = OuputType;
-			CodeGenObj.generatexmldocumentation = "False";
-			CodeGenObj.win32Icon = "";
-
-			// ExecutionObj member population
-			ExecutionObj.commandlineparameters = "";
-			ExecutionObj.consolepause = "True";
-
-			// OutputObj member population
-			OutputObj.directory = ConfigBlock.OutputPath.Replace("\\", "/");
-			OutputObj.assembly = AssemblyName;
-			OutputObj.executeScript = "";
-			OutputObj.executeBeforeBuild = "";
-			OutputObj.executeAfterBuild = "";
-
-			ConfObj.CodeGeneration = CodeGenObj;
-			ConfObj.Execution = ExecutionObj;
-			ConfObj.Output = OutputObj;
-
-			return ConfObj;
+			CSharpCompilerParameters compilerParams = new CSharpCompilerParameters ();
+			compilerParams.CsharpCompiler = CsharpCompiler.Mcs;
+			compilerParams.WarningLevel = ConfigBlock.WarningLevel;
+			compilerParams.NoWarnings = "";
+			compilerParams.Optimize = ConfigBlock.Optimize;
+			compilerParams.DefineSymbols = ConfigBlock.DefineConstants;
+			compilerParams.UnsafeCode = ConfigBlock.AllowUnsafeBlocks; 
+			compilerParams.GenerateOverflowChecks = ConfigBlock.CheckForOverflowUnderflow;
+			compilerParams.MainClass = "";
+			
+			return confObj;
 		}
 		
-		protected MonoDevelop.Prj2Make.Schema.Cmbx.Entry[] CreateArrayOfConfEntries()
+		string MapPath (string basePath, string relPath)
 		{
-			MonoDevelop.Prj2Make.Schema.Cmbx.Entry[] confEntry = new MonoDevelop.Prj2Make.Schema.Cmbx.Entry[projNameInfo.Count];
-			// Populate the Entry objects instances
-			int i = 0;
-			foreach (CsprojInfo pi in projNameInfo.Values)
-			{
-				MonoDevelop.Prj2Make.Schema.Cmbx.Entry entryObj = new MonoDevelop.Prj2Make.Schema.Cmbx.Entry();
-				entryObj.name = pi.name;
-				entryObj.configurationname = "Debug";
-				entryObj.build = "False";
-
-				confEntry[i++] = entryObj;
-			}
-
-			return confEntry;
+			if (relPath == null || relPath.Length == 0)
+				return null;
+			
+			string path = relPath.Replace ("\\", "/");
+			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':')
+				return null;
+			
+			if (basePath != null)
+				path = Path.Combine (basePath, path);
+				
+			if (Path.IsPathRooted (path)) {
+					
+				// Windows paths are case-insensitive. When mapping an absolute path
+				// we can try to find the correct case for the path.
+				
+				string[] names = path.Substring (1).Split ('/');
+				string part = "/";
+				
+				for (int n=0; n<names.Length; n++) {
+					string[] entries;
+					if (n < names.Length - 1)
+						entries = Directory.GetDirectories (part);
+					else
+						entries = Directory.GetFiles (part);
+					
+					string fpath = null;
+					foreach (string e in entries) {
+						if (string.Compare (Path.GetFileName (e), names[n], true) == 0) {
+							fpath = e;
+							break;
+						}
+					}
+					if (fpath == null) {
+						// Part of the path does not exist. Can't do any more checking.
+						for (; n < names.Length; n++)
+							part += "/" + names[n];
+						return part;
+					}
+					
+					part = fpath;
+				}
+				return part;
+			} else
+				return path;
 		}
 	}   
 }

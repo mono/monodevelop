@@ -5,8 +5,10 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -41,22 +43,22 @@ namespace MonoDevelop.Prj2Make
 			return TypeOfFile.unknown;
 		}
 
-		public bool CreateCombineFromSln(string slnFileName)
+		public bool CreateCombineFromSln(string slnFileName, IProgressMonitor monitor)
 		{
 			SlnMaker slnMkObj = new SlnMaker();
 
 			// Load the sln and parse it
-			slnMkObj.MsSlnToCmbxHelper(slnFileName);
+			slnMkObj.MsSlnToCmbxHelper (slnFileName, monitor);
 
 			return false;
 		}
      
-		public bool CreatePrjxFromCsproj(string csprojFileName)
+		public bool CreatePrjxFromCsproj(string csprojFileName, IProgressMonitor monitor)
 		{
 			SlnMaker slnMkObj = new SlnMaker();
 
 			// Load the csproj and parse it
-			slnMkObj.CreatePrjxFromCsproj(csprojFileName);
+			slnMkObj.CreatePrjxFromCsproj (csprojFileName, monitor);
 
 			return false;
 		}

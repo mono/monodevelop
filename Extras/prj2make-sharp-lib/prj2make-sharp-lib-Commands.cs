@@ -2,7 +2,6 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Prj2Make;
 using MonoDevelop.Prj2Make.Schema.Prjx;
@@ -23,7 +22,7 @@ namespace MonoDevelop.Prj2Make
 		protected override void Run()
 		{
 			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"))) {
-				bool conversionSuccessfull = false;
+				string projectFile = null;
 				SlnMaker slnMkObj = null;
 				int response = fs.Run ();
 				string name = fs.Filename;
@@ -34,15 +33,18 @@ namespace MonoDevelop.Prj2Make
 						case ".SLN": 
 							slnMkObj = new SlnMaker();
 							// Load the sln and parse it
-							slnMkObj.MsSlnToCmbxHelper(name);
-							conversionSuccessfull = true;
+							//IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Importing solution", "gtk-open", true)
+							using (IProgressMonitor m = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true, false, true, false)) {
+								projectFile = slnMkObj.MsSlnToCmbxHelper (name, m);
+							}
 							name = slnMkObj.CmbxFileName;
 							break;
 						case ".CSPROJ":
 							slnMkObj = new SlnMaker();
 							// Load the csproj and parse it
-							slnMkObj.CreatePrjxFromCsproj(name);
-							conversionSuccessfull = true;
+							using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Importing solution", "gtk-open", true)) {
+								projectFile = slnMkObj.CreatePrjxFromCsproj (name, m);
+							}
 							name = slnMkObj.PrjxFileName;
 							break;
 						default:
@@ -50,12 +52,8 @@ namespace MonoDevelop.Prj2Make
 							messageService.ShowError(String.Format (GettextCatalog.GetString ("Can't open file {0} as project"), name));
 							break;
 					}
-					if (conversionSuccessfull == true) {
-						try {
-							IdeApp.ProjectOperations.OpenCombine (name);
-						} catch (Exception ex) {
-							Console.WriteLine(ex.Message);
-						}
+					if (projectFile != null) {
+						IdeApp.ProjectOperations.OpenCombine (projectFile);
 					}
 				}
 			}

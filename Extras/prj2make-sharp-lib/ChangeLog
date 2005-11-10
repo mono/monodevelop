@@ -1,4 +1,15 @@
-2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+2005-11-10  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* csproj_ver2003.cs: Fixed some fields (patch by Jim Albert).
+	* PrjHelper.cs:	
+	* prj2make-sharp-lib-Commands.cs: Show a progress monitor while importing.
+	Other minor fixes.
+	* MsPrjHelper.cs: Use the MonoDevelop.Projects api to generate the projects.
+	Many other bug fixes.
+	* prj2make-sharp-lib.addin.xml: Added new dependency.
+	* Makefile.am: Added new assembly references.
+
+2005-10-10  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Fixed addin header information.
 	Use "id" attribuet instead of "name" to identify addins.

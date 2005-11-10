@@ -93,7 +93,7 @@ namespace MonoDevelop.Prj2Make.Schema.Csproj {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int BaseAddress;
+        public long BaseAddress;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -225,6 +225,9 @@ namespace MonoDevelop.Prj2Make.Schema.Csproj {
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string RelPath;
         
+		[System.Xml.Serialization.XmlAttributeAttribute()]
+		public string Link;
+    	
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public FileBuildAction BuildAction;
