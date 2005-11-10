@@ -49,6 +49,14 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		public string GetAssemblyFullName (string assemblyName)
+		{
+			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
+			using (locator) {
+				return locator.GetFullName (assemblyName);
+			}
+		}
+		
 		new void Initialize ()
 		{
 			initialized = true;
@@ -219,6 +227,21 @@ namespace MonoDevelop.Core
 				return null;
 			
 			return asm.Location;
+		}
+		
+		public string GetFullName (string assemblyName)
+		{
+			Assembly asm;
+			try {
+				asm = Assembly.Load (assemblyName);
+			}
+			catch {
+				asm = Assembly.LoadWithPartialName (assemblyName);
+			}
+			if (asm == null)
+				return null;
+			
+			return asm.FullName;
 		}
 	}
 }
