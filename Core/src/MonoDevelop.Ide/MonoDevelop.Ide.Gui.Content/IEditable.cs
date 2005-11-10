@@ -26,6 +26,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		new string SelectedText { get; set; }
 		
 		void InsertText (object position, string text);
+		void DeleteText (object position, int length);
 		
 		event EventHandler TextChanged;
 	}

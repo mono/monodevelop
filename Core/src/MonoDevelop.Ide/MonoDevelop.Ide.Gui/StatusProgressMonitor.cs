@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui
 			Services.StatusBar.SetMessage (icon, CurrentTask);
 			if (!UnknownWork)
 				Services.StatusBar.SetProgressFraction (GlobalWork);
+			Services.DispatchService.RunPendingEvents ();
 		}
 		
 		protected override void OnCompleted ()

@@ -43,5 +43,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		void Select (object startPosition, object endPosition);
 		void ShowPosition (object position);
+		string GetText (object startPosition, object endPosition);
 	}
 }

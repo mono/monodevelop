@@ -28,6 +28,7 @@ namespace MonoDevelop.Ide.Gui
 		internal Document (IWorkbenchWindow window)
 		{
 			this.window = window;
+			window.Closed += new EventHandler (OnClosed);
 		}
 		
 		public string FileName {
@@ -37,6 +38,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool IsDirty {
 			get { return Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty; }
+			set { Window.ViewContent.IsDirty = value; }
 		}
 		
 		public bool HasProject {
@@ -83,6 +85,7 @@ namespace MonoDevelop.Ide.Gui
 						Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), fileName + "~");
 					}
 					Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), fileName);
+					OnSaved (EventArgs.Empty);
 				}
 			}
 		}
@@ -129,6 +132,8 @@ namespace MonoDevelop.Ide.Gui
 			if (Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), filename) == FileOperationResult.OK) {
 				IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
 			}
+			
+			OnSaved (EventArgs.Empty);
 		}
 		
 		
@@ -160,6 +165,26 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Window.CloseWindow (false, true, 0);
 		}
+		
+		protected virtual void OnSaved (EventArgs args)
+		{
+			if (Saved != null)
+				Saved (this, args);
+		}
+		
+		void OnClosed (object s, EventArgs a)
+		{
+			OnClosed (a);
+		}
+		
+		protected virtual void OnClosed (EventArgs args)
+		{
+			if (Closed != null)
+				Closed (this, args);
+		}
+		
+		public event EventHandler Closed;
+		public event EventHandler Saved;
 	}
 }
 

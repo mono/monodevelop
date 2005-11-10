@@ -691,6 +691,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
+			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />

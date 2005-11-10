@@ -1,3 +1,14 @@
+2005-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/IEditable.cs:
+	* MonoDevelop.Ide.Gui.Content/ITextBuffer.cs: Added some new methods.
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs: Don't crash if
+	a project is not found.
+	* MonoDevelop.Ide.addin.xml: Added undo/redo to the toolbar.
+	* MonoDevelop.Ide.Gui/Document.cs: Added Closed and Saved events.
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Make sure the status
+	bar is updated.
+	
 2005-11-04  Lluis Sanchez Gual  <lluis@novell.com>    
 	
 	* MonoDevelop.Ide.Gui.Content/IEditable.cs: Added InsertText method.
