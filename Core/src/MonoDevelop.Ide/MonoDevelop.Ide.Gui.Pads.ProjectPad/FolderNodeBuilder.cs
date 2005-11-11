@@ -39,6 +39,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -348,6 +349,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			project.ProjectFiles.Add (newFolder);
 
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));
+		}
+		
+		[CommandHandler (SearchCommands.FindInFiles)]
+		public void OnFindInFiles ()
+		{
+			string path = GetFolderPath (CurrentNode.DataItem);
+			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = path;
+			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 	}	
 }

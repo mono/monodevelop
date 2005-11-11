@@ -32,35 +32,9 @@ namespace MonoDevelop.Ide.Commands
 
 	internal class FindInFilesHandler : CommandHandler
 	{
-		public static void SetSearchPattern ()
-		{
-			if (IdeApp.Workbench.ActiveDocument != null) {
-				IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
-				if (window != null && window.ViewContent is ITextBuffer)
-				{
-					string selectedText = ((ITextBuffer)window.ViewContent).SelectedText;
-					if (selectedText != null && selectedText.Length > 0)
-						SearchReplaceInFilesManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
-				}
-			}
-		}
-
 		protected override void Run ()
 		{
-			SetSearchPattern ();
-			if (SearchReplaceInFilesManager.ReplaceDialog != null) {
-				if (SearchReplaceInFilesManager.ReplaceDialog.replaceMode == false) {
-					SearchReplaceInFilesManager.ReplaceDialog.SetSearchPattern(SearchReplaceInFilesManager.SearchOptions.SearchPattern);
-					SearchReplaceInFilesManager.ReplaceDialog.Present ();
-				} else {
-					SearchReplaceInFilesManager.ReplaceDialog.Destroy ();
-					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (false);
-					rd.ShowAll ();
-				}
-			} else {
-				ReplaceInFilesDialog rd = new ReplaceInFilesDialog(false);
-				rd.ShowAll();
-			}
+			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 	}
 	
@@ -68,21 +42,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			FindInFilesHandler.SetSearchPattern ();
-			
-			if (SearchReplaceInFilesManager.ReplaceDialog != null) {
-				if (SearchReplaceInFilesManager.ReplaceDialog.replaceMode == true) {
-					SearchReplaceInFilesManager.ReplaceDialog.SetSearchPattern(SearchReplaceInFilesManager.SearchOptions.SearchPattern);
-					SearchReplaceInFilesManager.ReplaceDialog.Present ();
-				} else {
-					SearchReplaceInFilesManager.ReplaceDialog.Destroy ();
-					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
-					rd.ShowAll ();
-				}
-			} else {
-				ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
-				rd.ShowAll ();
-			}
+			SearchReplaceInFilesManager.ShowReplaceDialog ();
 		}
 	}
 	

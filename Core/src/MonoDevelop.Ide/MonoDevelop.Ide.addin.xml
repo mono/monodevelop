@@ -462,6 +462,8 @@
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<SeparatorItem id = "FindInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<SeparatorItem id = "CombineOptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
@@ -538,6 +540,8 @@
 		<SeparatorItem id = "CutSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<SeparatorItem id = "FindInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
@@ -565,7 +569,8 @@
 		
 		<SeparatorItem id = "SetAsStartupProjectSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
-		
+		<SeparatorItem id = "FindInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<SeparatorItem id = "OptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>

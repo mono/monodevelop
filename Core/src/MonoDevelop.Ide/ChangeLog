@@ -1,3 +1,18 @@
+2005-11-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	* MonoDevelop.Ide.Commands/SearchCommands.cs: Factorized some code
+	into SearchReplaceInFilesManager.
+	
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: Created method
+	for loading search options in the dialog.
+	
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:
+	Added Find In Files option in the context menu of the project pad,
+	which takes the selected folder as search directory.
+
 2005-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/IEditable.cs:

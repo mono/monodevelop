@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Search;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -247,6 +248,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnCombineOptions ()
 		{
 			IdeApp.ProjectOperations.ShowOptions ((Combine) CurrentNode.DataItem);
+		}
+		
+		[CommandHandler (SearchCommands.FindInFiles)]
+		public void OnFindInFiles ()
+		{
+			Combine combine = (Combine) CurrentNode.DataItem;
+			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = combine.BaseDirectory;
+			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 	}
 }

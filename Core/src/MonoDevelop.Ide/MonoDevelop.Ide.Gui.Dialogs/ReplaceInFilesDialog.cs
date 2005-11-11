@@ -167,6 +167,40 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			specialSearchStrategyComboBox.PackStart (cr, true);
 			specialSearchStrategyComboBox.AddAttribute (cr, "text", 0);
 			
+			specialSearchStrategyComboBox.Changed += new EventHandler (OnSpecialSearchStrategyChanged);
+			
+			store = new ListStore (typeof (string));
+			store.AppendValues (GettextCatalog.GetString ("Directories"));
+			store.AppendValues (GettextCatalog.GetString ("All open files"));
+			store.AppendValues (GettextCatalog.GetString ("Whole project"));
+			searchLocationComboBox.Model = store;
+			searchLocationComboBox.PackStart (cr, true);
+			searchLocationComboBox.AddAttribute (cr, "text", 0);
+			
+			LoadOptions ();
+
+			searchLocationComboBox.Changed += new EventHandler(SearchLocationCheckBoxChangedEvent);
+			useSpecialSearchStrategyCheckBox.Toggled += new EventHandler(SpecialSearchStrategyCheckBoxChangedEvent);
+			
+			browseButton.Clicked += new EventHandler(BrowseDirectoryEvent);
+			findButton.Clicked += new EventHandler(FindEvent);
+
+			stopButton.Clicked += new EventHandler(StopEvent);
+			
+			if (replaceMode) {
+				replaceAllButton.Clicked += new EventHandler(ReplaceEvent);
+			}
+			
+			ReplaceDialogPointer.Close += new EventHandler (CloseDialogEvent);
+			closeButton.Clicked += new EventHandler (CloseDialogEvent);
+			ReplaceDialogPointer.DeleteEvent += new DeleteEventHandler (OnDeleted);
+			
+			SearchLocationCheckBoxChangedEvent (null, null);
+			SpecialSearchStrategyCheckBoxChangedEvent (null, null);
+		}
+		
+		public void LoadOptions ()
+		{
 			int index = 0;
 			switch (SearchReplaceManager.SearchOptions.SearchStrategyType) {
 				case SearchStrategyType.Normal:
@@ -177,17 +211,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					index = 1;
 					break;
 			}
-	 		specialSearchStrategyComboBox.Active = index;
-			specialSearchStrategyComboBox.Changed += new EventHandler (OnSpecialSearchStrategyChanged);
+			specialSearchStrategyComboBox.Active = index;
 			
-			store = new ListStore (typeof (string));
-			store.AppendValues (GettextCatalog.GetString ("Directories"));
-			store.AppendValues (GettextCatalog.GetString ("All open files"));
-			store.AppendValues (GettextCatalog.GetString ("Whole project"));
-			searchLocationComboBox.Model = store;
-			searchLocationComboBox.PackStart (cr, true);
-			searchLocationComboBox.AddAttribute (cr, "text", 0);
-						
 			index = 0;
 			switch (SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType) {
 				case DocumentIteratorType.AllOpenFiles:
@@ -199,31 +224,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			searchLocationComboBox.Active = index;
-			searchLocationComboBox.Changed += new EventHandler(SearchLocationCheckBoxChangedEvent);
-			useSpecialSearchStrategyCheckBox.Toggled += new EventHandler(SpecialSearchStrategyCheckBoxChangedEvent);
 			
 			directoryTextBox.Text = SearchReplaceInFilesManager.SearchOptions.SearchDirectory;
 			fileMaskTextBox.Text = SearchReplaceInFilesManager.SearchOptions.FileMask;
 			includeSubdirectoriesCheckBox.Active = SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories;
-			
-			browseButton.Clicked += new EventHandler(BrowseDirectoryEvent);
-			findButton.Clicked += new EventHandler(FindEvent);
-
-			stopButton.Clicked += new EventHandler(StopEvent);
-			
 			searchPatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.SearchPattern;
-			
-			if (replaceMode) {
-				replaceAllButton.Clicked += new EventHandler(ReplaceEvent);
+			if (replacePatternEntry != null)
 				replacePatternEntry.Text = SearchReplaceInFilesManager.SearchOptions.ReplacePattern;
-			}
-			
-			ReplaceDialogPointer.Close += new EventHandler (CloseDialogEvent);
-			closeButton.Clicked += new EventHandler (CloseDialogEvent);
-			ReplaceDialogPointer.DeleteEvent += new DeleteEventHandler (OnDeleted);
-			
-			SearchLocationCheckBoxChangedEvent (null, null);
-			SpecialSearchStrategyCheckBoxChangedEvent (null, null);
 		}
 		
 		void FindEvent (object sender, EventArgs e)

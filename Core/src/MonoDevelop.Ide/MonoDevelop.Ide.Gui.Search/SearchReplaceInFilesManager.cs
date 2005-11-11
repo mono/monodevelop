@@ -226,5 +226,53 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 		}
 		
+		static void SetSearchPattern ()
+		{
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				ITextBuffer view = IdeApp.Workbench.ActiveDocument.Content as ITextBuffer; 
+				if (view != null) {
+					string selectedText = view.SelectedText;
+					if (selectedText != null && selectedText.Length > 0)
+						SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+				}
+			}
+		}
+
+		public static void ShowFindDialog ()
+		{
+			SetSearchPattern ();
+			if (ReplaceDialog != null) {
+				if (ReplaceDialog.replaceMode == false) {
+					ReplaceDialog.LoadOptions ();
+					ReplaceDialog.Present ();
+				} else {
+					ReplaceDialog.Destroy ();
+					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (false);
+					rd.ShowAll ();
+				}
+			} else {
+				ReplaceInFilesDialog rd = new ReplaceInFilesDialog(false);
+				rd.ShowAll();
+			}
+		}
+		
+		public static void ShowReplaceDialog ()
+		{
+			SetSearchPattern ();
+			
+			if (ReplaceDialog != null) {
+				if (ReplaceDialog.replaceMode == true) {
+					ReplaceDialog.LoadOptions ();
+					ReplaceDialog.Present ();
+				} else {
+					ReplaceDialog.Destroy ();
+					ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
+					rd.ShowAll ();
+				}
+			} else {
+				ReplaceInFilesDialog rd = new ReplaceInFilesDialog (true);
+				rd.ShowAll ();
+			}
+		}
 	}
 }
