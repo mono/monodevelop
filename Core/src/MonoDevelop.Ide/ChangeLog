@@ -1,3 +1,8 @@
+2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Catch and show
+	errors raised while creating the project.
+
 2005-11-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:

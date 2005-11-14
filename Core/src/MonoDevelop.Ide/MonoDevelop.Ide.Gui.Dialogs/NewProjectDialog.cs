@@ -255,7 +255,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				cinfo.ProjectName     = name;
 //				cinfo.ProjectTemplate = item.Template;
 				
-				NewCombineLocation = item.CreateProject (cinfo);
+				try {
+					NewCombineLocation = item.CreateProject (cinfo);
+				} catch (Exception ex) {
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"));
+				}
+				
 				if (NewCombineLocation == null || NewCombineLocation.Length == 0)
 					return;
 				
