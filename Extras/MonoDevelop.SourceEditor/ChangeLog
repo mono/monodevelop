@@ -1,3 +1,10 @@
+2005-11-14  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Increased undo
+	limit.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Scroll
+	to cursor after undoing or redoing.
+
 2005-11-09 John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:

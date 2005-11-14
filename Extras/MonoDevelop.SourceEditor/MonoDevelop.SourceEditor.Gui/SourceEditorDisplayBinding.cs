@@ -206,7 +206,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 			mainBox.ShowAll ();
 		}
-
+		
 		public void JumpTo (int line, int column)
 		{
 			// NOTE: 1 based!			
@@ -470,12 +470,22 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void Undo ()
 		{
-			se.Buffer.Undo ();
+			if (((SourceBuffer)se.Buffer).CanUndo ()) {
+				se.Buffer.Undo ();
+				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
+				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
+					se.View.ScrollToMark (se.Buffer.InsertMark, 0.1, false, 0, 0);
+			}
 		}
 		
 		public void Redo ()
 		{
-			se.Buffer.Redo ();
+			if (((SourceBuffer)se.Buffer).CanRedo ()) {
+				se.Buffer.Redo ();
+				TextIter iter = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
+				if (!se.View.VisibleRect.Contains (se.View.GetIterLocation (iter)))
+					se.View.ScrollToMark (se.Buffer.InsertMark, 0.1, false, 0, 0);
+			}
 		}
 		
 		public string SelectedText {

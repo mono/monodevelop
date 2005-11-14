@@ -120,6 +120,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			highlightLineTag = new TextTag ("highlightLine");
 			highlightLineTag.Background = "lightgrey";
 			TagTable.Add (highlightLineTag);
+			
+			MaxUndoLevels = 1000;
 		}
 		
 		public override void Dispose ()
