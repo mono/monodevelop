@@ -24,7 +24,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "Class" PauseConsoleOutput = "False" ClassPath = "" MainClass ="application" />
+			<Options Target = "Exe" PauseConsoleOutput = "False" ClassPath = "" MainClass ="application" />
 	
 			<Files>
 				<File name = "application.java">

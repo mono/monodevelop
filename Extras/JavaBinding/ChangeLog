@@ -1,3 +1,9 @@
+2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/JavaConsoleApplicationProject.xpt.xml:
+	* templates/JavaApplicationProject.xpt.xml: "Class" is not a valid
+	project target. Changed to Exe.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBinding.addin.xml: Fixed incorrect class name.
