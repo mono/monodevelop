@@ -33,13 +33,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			AggregatedProgressMonitor monitor = AddinUpdateHandler.UpdateMonitor;
-			if (monitor != null && !monitor.IsCompleted) {
-				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));
-				monitor.AsyncOperation.WaitForCompleted ();
-			}
-			AddinUpdateHandler.HideAlert ();
-			Core.Gui.Services.RunAddinManager ();
+			AddinUpdateHandler.ShowManager ();
 		}
 	}
 	

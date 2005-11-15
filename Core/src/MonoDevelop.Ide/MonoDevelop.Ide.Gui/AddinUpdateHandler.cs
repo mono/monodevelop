@@ -38,6 +38,7 @@ using MonoDevelop.Core.AddIns.Setup;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -57,20 +58,39 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void Run ()
 		{
-			DateTime lastUpdate = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.LastUpdateCheck", DateTime.MinValue);
-			TimeSpan updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpan", TimeSpan.FromDays (1));
+			bool checkForUpdates = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
+			if (!checkForUpdates)
+				return;
 			
-			if (lastUpdate + updateSpan <= DateTime.Now) {
+			DateTime lastUpdate = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.MinValue);
+			int updateSpan = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
+			string unit = Runtime.Properties.GetProperty ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", "D");
+			
+			bool check = false;
+			if (unit == "D") {
+				lastUpdate = lastUpdate.Date;
+				check = (DateTime.Now - lastUpdate).TotalDays >= updateSpan;
+			} else if (unit == "M") {
+				lastUpdate = new DateTime (lastUpdate.Year, lastUpdate.Month, 1, 0, 0, 0);
+				check = DateTime.Now >= lastUpdate.AddMonths (updateSpan);
+			}
+				
+			if (check) {
 				IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for add-in updates", "md-software-update"); 
 				UpdateMonitor = new AggregatedProgressMonitor (mon);
 
 				Thread t = new Thread (new ThreadStart (UpdateAddins));
 				t.Start ();
+			} else {
+				updates = Runtime.SetupService.GetAvailableUpdates ();
+				if (updates.Length > 0)
+					WarnAvailableUpdates ();
 			}
 		}
 		
 		void UpdateAddins ()
 		{
+			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			using (UpdateMonitor) {
 				Runtime.SetupService.UpdateRepositories (UpdateMonitor);
 				updates = Runtime.SetupService.GetAvailableUpdates ();
@@ -100,6 +120,17 @@ namespace MonoDevelop.Ide.Gui
 				HideAlert ();
 				MonoDevelop.Core.Gui.Services.RunAddinManager ();
 			}
+		}
+		
+		public static void ShowManager ()
+		{
+			AggregatedProgressMonitor monitor = UpdateMonitor;
+			if (monitor != null && !monitor.IsCompleted) {
+				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));
+				monitor.AsyncOperation.WaitForCompleted ();
+			}
+			HideAlert ();
+			Core.Gui.Services.RunAddinManager ();
 		}
 	}
 }

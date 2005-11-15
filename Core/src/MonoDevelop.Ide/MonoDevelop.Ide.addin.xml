@@ -656,6 +656,9 @@
 			<DialogPanel id = "Build"
 			             _label = "Build"
 			             class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel"/>
+			<DialogPanel id = "AddIns"
+			             _label = "Add-ins"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel"/>
 		</DialogPanel>
 		<DialogPanel id    = "CodingOptions"
 		             _label = "Coding">

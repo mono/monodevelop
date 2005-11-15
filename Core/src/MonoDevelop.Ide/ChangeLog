@@ -1,3 +1,30 @@
+2005-11-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* AddInsOptionsPanel.cs:
+	* Base.glade: Added options dialog for the add-in manager.
+	
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Moved some code to
+	AddinUpdateHandler.
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs: Take into account the
+	update check periodicity configured by the user.
+	
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Added new file.
+	
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/PadCollection.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/DocumentCollection.cs:
+	* MonoDevelop.Ide.Gui/HelpOperations.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/Pad.cs: Added some missing license headers.
+
 2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Catch and show

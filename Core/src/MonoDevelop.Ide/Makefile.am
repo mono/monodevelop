@@ -107,6 +107,7 @@ MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs \
+MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
