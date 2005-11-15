@@ -1,3 +1,8 @@
+2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* AddIn/Addin.cs: It should also work for Project, not only DotNetProject.
+	* VersionControl/Subversion.cs: Fix build.
+
 2005-10-22  Joshua Tauberer  <tauberer@for.net>
 
 	* Minor VersionControl API changes (use a RepositoryPath

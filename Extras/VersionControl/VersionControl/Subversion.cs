@@ -533,7 +533,7 @@ namespace VersionControl {
 			ArrayList statuses;
 			public StatusCollector(ArrayList statuses) { this.statuses = statuses; }
 			public void Func(IntPtr baton, IntPtr path, ref svn_wc_status_t status) {
-				if (status.to__svn_wc_entry_t == IntPtr.Zero)
+				if (status.to_svn_wc_entry_t == IntPtr.Zero)
 					return;				
 				string pathstr = Marshal.PtrToStringAnsi(path);
 				statuses.Add(new StatusEnt(status, pathstr));
@@ -645,18 +645,18 @@ namespace VersionControl {
 
 			internal StatusEnt(svn_wc_status_t status, string localpath) {
 				LocalFilePath = localpath;
-				TextStatus = (NodeStatus)status.svn_wc_status_kind__text;
-				PropsStatus = (NodeStatus)status.svn_wc_status_kind__props;
+				TextStatus = (NodeStatus)status.svn_wc_status_kind_text;
+				PropsStatus = (NodeStatus)status.svn_wc_status_kind_props;
 				Locked = status.locked != 0;
 				Copied = status.copied != 0;
 				Switched = status.switched != 0;
-				RemoteTextStatus = (NodeStatus)status.svn_wc_status_kind__text__repo;
-				RemotePropsStatus = (NodeStatus)status.svn_wc_status_kind__props__repo;
+				RemoteTextStatus = (NodeStatus)status.svn_wc_status_kind_text_repo;
+				RemotePropsStatus = (NodeStatus)status.svn_wc_status_kind_props_repo;
 				
-				if (status.to__svn_wc_entry_t == IntPtr.Zero)
+				if (status.to_svn_wc_entry_t == IntPtr.Zero)
 					return;
 					
-				svn_wc_entry_t ent = (svn_wc_entry_t)Marshal.PtrToStructure(status.to__svn_wc_entry_t, typeof(svn_wc_entry_t));
+				svn_wc_entry_t ent = (svn_wc_entry_t)Marshal.PtrToStructure(status.to_svn_wc_entry_t, typeof(svn_wc_entry_t));
 				Name = ent.name;
 				Revision = ent.revision;
 	  			Url = ent.url;
@@ -754,7 +754,7 @@ namespace VersionControl {
 		private struct svn_error_t {
 			public int apr_err;
 			public string message;
-			public IntPtr svn_error_t__child;
+			public IntPtr svn_error_t_child;
 			public IntPtr pool;
 		}
 		
@@ -833,14 +833,14 @@ namespace VersionControl {
   		}
   				
 		internal struct svn_wc_status_t {
-			public IntPtr to__svn_wc_entry_t;
-			public int svn_wc_status_kind__text;
-			public int svn_wc_status_kind__props;
+			public IntPtr to_svn_wc_entry_t;
+			public int svn_wc_status_kind_text;
+			public int svn_wc_status_kind_props;
 			public int locked;
 			public int copied;
 			public int switched;
-			public int svn_wc_status_kind__text__repo;
-			public int svn_wc_status_kind__props__repo;
+			public int svn_wc_status_kind_text_repo;
+			public int svn_wc_status_kind_props_repo;
 		}
 		
 		public struct Rev {
@@ -936,7 +936,7 @@ namespace VersionControl {
 			IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_log (
-			IntPtr apr_array_header_t__targets,
+			IntPtr apr_array_header_t_targets,
 			ref Rev rev_start, ref Rev rev_end,
 			int discover_changed_paths,
             int strict_node_history,
@@ -970,8 +970,8 @@ namespace VersionControl {
 			int recurse, IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_commit (
-			ref IntPtr svn_client_commit_info_t__commit_info,
-			IntPtr apr_array_header_t__targets, int nonrecursive,
+			ref IntPtr svn_client_commit_info_t_commit_info,
+			IntPtr apr_array_header_t_targets, int nonrecursive,
 			IntPtr ctx, IntPtr pool);
 	}
 

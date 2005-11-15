@@ -49,7 +49,7 @@ namespace VersionControlPlugin {
 		public override bool CanBuildNode (Type dataType) {
 			//Console.Error.WriteLine(dataType);
 			return typeof(ProjectFile).IsAssignableFrom (dataType)
-				|| typeof(DotNetProject).IsAssignableFrom (dataType)
+				|| typeof(Project).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
 				|| typeof(Combine).IsAssignableFrom (dataType);
 		}		
@@ -203,8 +203,8 @@ namespace VersionControlPlugin {
 				ProjectFile file = (ProjectFile)CurrentNode.DataItem;
 				path = file.FilePath;
 				isDir = false;
-			} else if (CurrentNode.DataItem is DotNetProject) {
-				DotNetProject project = (DotNetProject)CurrentNode.DataItem;
+			} else if (CurrentNode.DataItem is Project) {
+				Project project = (Project)CurrentNode.DataItem;
 				path = project.BaseDirectory;
 				isDir = true;
 			} else if (CurrentNode.DataItem is ProjectFolder) {
