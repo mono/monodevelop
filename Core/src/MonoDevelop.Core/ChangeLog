@@ -1,3 +1,11 @@
+2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessHostController.cs: 
+	Always stop the process asyncrhonously, so the remote object has time
+	to end the dispose call.
+	* Makefile.am: Fixed the location of GettextCatalog.
+	* MonoDevelop.Core/GettextCatalog.cs.in: Added GetString overload.
+
 2005-11-14  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Properties/DefaultProperties.cs: Properly store

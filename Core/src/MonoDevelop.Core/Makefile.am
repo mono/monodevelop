@@ -155,6 +155,6 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(DLL)
 
 CLEANFILES = $(DLL) $(DLL).mdb
-DISTCLEANFILES = Services/GettextCatalog.cs
+DISTCLEANFILES = MonoDevelop.Core/GettextCatalog.cs
 
-EXTRA_DIST = $(FILES) $(ADDIN) Services/GettextCatalog.cs.in
+EXTRA_DIST = $(FILES) $(ADDIN) MonoDevelop.Core/GettextCatalog.cs.in

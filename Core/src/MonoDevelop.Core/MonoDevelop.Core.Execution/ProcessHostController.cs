@@ -166,9 +166,12 @@ namespace MonoDevelop.Core.Execution
 					lastReleaseTime = DateTime.Now;
 					if (!stopping) {
 						stopping = true;
-						if (stopDelay == 0)
-							WaitTimeout (null, null);
-						else {
+						if (stopDelay == 0) {
+							// Always stop asyncrhonously, so the remote object
+							// has time to end the dispose call.
+							timer.Interval = 1000;
+							timer.Enabled = true;
+						} else {
 							timer.Interval = stopDelay;
 							timer.Enabled = true;
 						}
