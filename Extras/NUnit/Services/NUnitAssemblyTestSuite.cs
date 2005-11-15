@@ -249,21 +249,25 @@ namespace MonoDevelop.NUnit
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return RunUnitTest (this, "", testContext);
+			return RunUnitTest (this, "", null, testContext);
 		}
 		
-		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, TestContext testContext)
+		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string testName, TestContext testContext)
 		{
 			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
-			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName);
+			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 			
 			IFilter filter = null;
 			
-			NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
-			if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
-				string[] cats = new string [categoryOptions.Categories.Count];
-				categoryOptions.Categories.CopyTo (cats, 0);
-				filter = new CategoryFilter (cats, categoryOptions.Exclude);
+			if (testName != null) {
+				filter = new TestNameFilter (testName);
+			} else {
+				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
+				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
+					string[] cats = new string [categoryOptions.Categories.Count];
+					categoryOptions.Categories.CopyTo (cats, 0);
+					filter = new CategoryFilter (cats, categoryOptions.Exclude);
+				}
 			}
 			
 			RunData rd = new RunData ();
@@ -274,8 +278,11 @@ namespace MonoDevelop.NUnit
 			UnitTestResult result;
 			
 			try {
-				TestResult res = runner.Run (localMonitor, filter, AssemblyPath, suiteName, null);
-				result = localMonitor.GetLocalTestResult (res);
+				TestResult res = runner.Run (localMonitor, filter, AssemblyPath, suiteName);
+				if (testName != null)
+					result = localMonitor.SingleTestResult;
+				else
+					result = localMonitor.GetLocalTestResult (res);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				if (localMonitor.RunningTest != null) {
@@ -403,6 +410,27 @@ namespace MonoDevelop.NUnit
 		{
 			public DateTime LastWriteTime;
 			public TestInfo Info;
+		}
+		
+		[Serializable]
+		public class TestNameFilter: IFilter
+		{
+			string name;
+			
+			public TestNameFilter (string name)
+			{
+				this.name = name;
+			}
+			
+			public bool Pass (TestSuite suite)
+			{
+				return true;
+			}
+			
+			public bool Pass (TestCase test)
+			{
+				return test.Name == name;
+			}
 		}
 	}
 }

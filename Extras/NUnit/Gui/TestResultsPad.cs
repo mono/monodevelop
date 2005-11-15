@@ -428,6 +428,7 @@ namespace MonoDevelop.NUnit
 		void RefreshList ()
 		{
 			failuresStore.Clear ();
+			outputView.Buffer.Clear ();
 			AddStartMessage ();
 				
 			foreach (ResultRecord res in results) {

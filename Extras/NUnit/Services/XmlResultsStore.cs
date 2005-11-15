@@ -199,6 +199,7 @@ namespace MonoDevelop.NUnit
 				} finally {
 					writer.Close ();
 				}
+				record.Modified = false;
 			}
 			cachedRootList.Clear ();
 		}

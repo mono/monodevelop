@@ -355,8 +355,9 @@ namespace MonoDevelop.NUnit
 		
 		public virtual void SaveResults ()
 		{
-			if (resultsStore != null)
-				resultsStore.Save ();
+			IResultsStore store = GetResultsStore ();
+			if (store != null)
+				store.Save ();
 		}
 		
 		internal virtual void FindRegressions (UnitTestCollection list, DateTime fromDate, DateTime toDate)

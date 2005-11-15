@@ -45,9 +45,11 @@ namespace MonoDevelop.NUnit
 		StringWriter stdout = new StringWriter ();
 		StringWriter stderr = new StringWriter ();
 		
-		public TestResult Run (EventListener listener, IFilter filter, string path, string suiteName, string testName)
+		public TestResult Run (EventListener listener, IFilter filter, string path, string suiteName)
 		{
 			TestSuite rootTS = LoadTestSuite (path, suiteName);
+			if (rootTS == null)
+				throw new Exception ("Test suite '" + suiteName + "' not found.");
 
 			TextWriter origStdout = Console.Out;
 			TextWriter origStderr = Console.Error;
@@ -56,22 +58,9 @@ namespace MonoDevelop.NUnit
 			
 			string cdir = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (path);
-		
+			
 			try {
-				Test nt = null;
-				if (testName != null) {
-					foreach (Test t in rootTS.Tests)
-						if (t.Name == testName) {
-							nt = t;
-							break;
-						}
-				} else
-					nt = rootTS;
-					
-				if (nt == null)
-					throw new Exception ("Test " + suiteName + "." + testName + " not found.");
-					
-				return nt.Run (listener, filter);
+				return rootTS.Run (listener, filter);
 			} finally {
 				Environment.CurrentDirectory = cdir;
 				Console.SetOut (origStdout);
@@ -162,13 +151,19 @@ namespace MonoDevelop.NUnit
 		string rootFullName;
 		ExternalTestRunner runner;
 		UnitTest runningTest;
+		bool singleTestRun;
+		Hashtable outputText = new Hashtable ();
+		Hashtable errorText = new Hashtable ();
 		
-		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName)
+		internal UnitTestResult SingleTestResult;
+		
+		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
 			this.runner = runner;
 			this.rootFullName = rootFullName;
 			this.rootTest = rootTest;
 			this.context = context;
+			this.singleTestRun = singleTestRun;
 		}
 		
 		public UnitTest RunningTest {
@@ -193,7 +188,13 @@ namespace MonoDevelop.NUnit
 
 		void EventListener.TestStarted (TestCase testCase)
 		{
+			if (singleTestRun)
+				return;
+			
 			UnitTest t = GetLocalTest (testCase);
+			if (t == null)
+				return;
+			
 			runningTest = t;
 			context.Monitor.BeginTest (t);
 			t.Status = TestStatus.Running;
@@ -201,10 +202,22 @@ namespace MonoDevelop.NUnit
 			
 		void EventListener.TestFinished (TestCaseResult result)
 		{
+			outputText [result] = runner.ResetTestConsoleOutput ();
+			errorText [result] = runner.ResetTestConsoleError ();
+			
+			if (singleTestRun) {
+				SingleTestResult = GetLocalTestResult (result);
+				return;
+			}
+			
 			UnitTest t = GetLocalTest ((Test) result.Test);
+			if (t == null)
+				return;
+			
 			UnitTestResult res = GetLocalTestResult (result);
-			res.ConsoleOutput = runner.ResetTestConsoleOutput ();
-			res.ConsoleError = runner.ResetTestConsoleError ();
+			if (res == null)
+				return;
+			
 			t.RegisterResult (context, res);
 			context.Monitor.EndTest (t, res);
 			t.Status = TestStatus.Ready;
@@ -213,14 +226,26 @@ namespace MonoDevelop.NUnit
 
 		void EventListener.SuiteStarted (TestSuite suite)
 		{
+			if (singleTestRun)
+				return;
+			
 			UnitTest t = GetLocalTest (suite);
+			if (t == null)
+				return;
+			
 			t.Status = TestStatus.Running;
 			context.Monitor.BeginTest (t);
 		}
 
 		void EventListener.SuiteFinished (TestSuiteResult result)
 		{
+			if (singleTestRun)
+				return;
+			
 			UnitTest t = GetLocalTest ((Test) result.Test);
+			if (t == null)
+				return;
+			
 			UnitTestResult res = GetLocalTestResult (result);
 			t.RegisterResult (context, res);
 			t.Status = TestStatus.Ready;
@@ -291,6 +316,9 @@ namespace MonoDevelop.NUnit
 			res.Message = t.Message;
 			res.StackTrace = t.StackTrace;
 			res.Time = TimeSpan.FromSeconds (t.Time);
+			res.ConsoleOutput = (string) outputText [t];
+			res.ConsoleError = (string) errorText [t];
+			
 			return res;
 		}
 		

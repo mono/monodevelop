@@ -1,3 +1,18 @@
+2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Services/NUnitTestCase.cs:
+	* Services/NUnitTestSuite.cs:
+	* Services/NUnitAssemblyTestSuite.cs:
+	* Services/ExternalTestRunner.cs: Properly handle the case when it's
+	running a single test case.
+	
+	* Services/UnitTest.cs: Save the inherited store if needed.
+	* Services/XmlResultsStore.cs: Reset the modified flag once the
+	store is saved.
+	* Gui/TestResultsPad.cs: Clear the output buffer when refreshing the
+	results list.
+	* MonoDevelopNUnit.addin.xml: Added dependency.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Fixed addin header information.

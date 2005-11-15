@@ -38,13 +38,11 @@ namespace MonoDevelop.NUnit
 	class NUnitTestCase: UnitTest
 	{
 		NUnitAssemblyTestSuite rootSuite;
-		string fullName;
 		string className;
 		
 		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, TestInfo tinfo): base (tinfo.Name)
 		{
 			className = tinfo.PathName;
-			fullName = tinfo.PathName + "." + tinfo.Name;
 			this.rootSuite = rootSuite;
 		}
 		
@@ -54,7 +52,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return rootSuite.RunUnitTest (this, fullName, testContext);
+			return rootSuite.RunUnitTest (this, className, Name, testContext);
 		}
 		
 		public override SourceCodeLocation SourceCodeLocation {

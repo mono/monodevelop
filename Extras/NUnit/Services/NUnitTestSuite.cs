@@ -54,7 +54,7 @@ namespace MonoDevelop.NUnit
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
-			return rootSuite.RunUnitTest (this, fullName, testContext);
+			return rootSuite.RunUnitTest (this, fullName, null, testContext);
 		}
 		
 		protected override void OnCreateTests ()
