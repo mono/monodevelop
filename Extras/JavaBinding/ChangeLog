@@ -1,3 +1,8 @@
+2005-11-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBindingCompilerServices.cs: Look for ikvmc.exe in the configured
+	directory and in the bin subdirectory. Fixes bug #76700.
+
 2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/JavaConsoleApplicationProject.xpt.xml:

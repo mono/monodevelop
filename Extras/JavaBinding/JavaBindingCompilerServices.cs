@@ -21,6 +21,8 @@ namespace JavaBinding
 {
 	public class JavaBindingCompilerServices
 	{
+		string ikvmPath;
+		
 		public bool CanCompile (string fileName)
 		{
 			return Path.GetExtension(fileName) == ".java";
@@ -28,7 +30,14 @@ namespace JavaBinding
 		
 		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
 		{
-			if (JavaLanguageBinding.Properties.IkvmPath == "") {
+			ikvmPath = JavaLanguageBinding.Properties.IkvmPath;
+			if (ikvmPath != "" && !File.Exists (Path.Combine (ikvmPath, "ikvmc.exe"))) {
+				ikvmPath = Path.Combine (ikvmPath, "bin");
+				if (!File.Exists (Path.Combine (ikvmPath, "ikvmc.exe")))
+					ikvmPath = "";
+			}
+			
+			if (ikvmPath == "") {
 				monitor.Log.WriteLine ("The Java addin has not been properly configured.");
 				monitor.Log.WriteLine ("Please set the location of IKVM in the Java configuration section of MonoDevelop preferences.");
 				CompilerResults cre = new CompilerResults (new TempFileCollection ());
@@ -119,7 +128,7 @@ namespace JavaBinding
 			monitor.Log.WriteLine ("Generating reference stubs ...");
 			
 			// Create stubs for referenced assemblies
-			string ikvmstub = Path.Combine (Path.Combine (JavaLanguageBinding.Properties.IkvmPath, "bin"), "ikvmstub.exe");
+			string ikvmstub = Path.Combine (ikvmPath, "ikvmstub.exe");
 			
 			string classpath = "";
 			
@@ -194,7 +203,7 @@ namespace JavaBinding
 					opts += " -r:" + lib.GetReferencedFileName ();
 			}
 			
-			string ikvmc = Path.Combine (Path.Combine (JavaLanguageBinding.Properties.IkvmPath, "bin"), "ikvmc.exe");
+			string ikvmc = Path.Combine (ikvmPath, "ikvmc.exe");
 		
 			string args = String.Format ("-c \"mono {0} {1} {2}\"", ikvmc, "*.class", opts);
 			Process p = Runtime.ProcessService.StartProcess ("/bin/sh", args, configuration.OutputDirectory, chainedOutput, chainedError, null);
