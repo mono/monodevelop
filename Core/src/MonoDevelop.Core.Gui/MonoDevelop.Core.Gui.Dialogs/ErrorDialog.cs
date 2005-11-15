@@ -58,6 +58,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			tagWrap = new TextTag ("wrap");
 			tagWrap.WrapMode = WrapMode.Word;
 			detailsTextView.Buffer.TagTable.Add (tagWrap);
+			
+			expander.Visible = false;
 		}
 		
 		public string Message {
@@ -78,16 +80,17 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				detailsTextView.Buffer.InsertWithTags (ref it, text, tagWrap);
 			else
 				detailsTextView.Buffer.InsertWithTags (ref it, text, tagNoWrap);
+			expander.Visible = true;
 		}
 		
 		public void Show ()
 		{
-			dialog.ShowAll ();
+			dialog.Show ();
 		}
 		
 		public void Run ()
 		{
-			dialog.ShowAll ();
+			dialog.Show ();
 			dialog.Run ();
 		}
 		

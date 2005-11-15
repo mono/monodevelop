@@ -164,41 +164,50 @@ namespace MonoDevelop.Core.Gui.Components
 				goUp.Sensitive = true;
 
 			DirectoryInfo di = new DirectoryInfo (CurrentDir);
-			DirectoryInfo[] dirs = di.GetDirectories ();
 			
-			foreach (DirectoryInfo d in dirs)
-			{
-				if (ignoreHidden)
+			try {
+				DirectoryInfo[] dirs = di.GetDirectories ();
+				
+				foreach (DirectoryInfo d in dirs)
 				{
-					if (!d.Name.StartsWith (".") && NotHidden (d.Name))
+					if (ignoreHidden)
+					{
+						if (!d.Name.StartsWith (".") && NotHidden (d.Name))
+							store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 24), d.Name);
+					}
+					else
+					{
 						store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 24), d.Name);
+					}
 				}
-				else
+
+				if (init == true)
+					tv.Selection.SelectPath (new Gtk.TreePath ("0"));
+
+				entry.Text = CurrentDir;
+				string[] filesaux = Directory.GetFiles (CurrentDir);
+
+				files.Clear ();
+				for (int cont = 0; cont < filesaux.Length; cont++)
 				{
-					store.AppendValues (FileIconLoader.GetPixbufForFile (System.IO.Path.Combine (CurrentDir, d.Name), 24), d.Name);
-				}
-			}
-
-			if (init == true)
-				tv.Selection.SelectPath (new Gtk.TreePath ("0"));
-
-			entry.Text = CurrentDir;
-			string[] filesaux = Directory.GetFiles (CurrentDir);
-
-			files.Clear ();
-			for (int cont = 0; cont < filesaux.Length; cont++)
-			{
-				if (ignoreHidden)
-				{
-					if (NotHidden (System.IO.Path.GetFileName (filesaux[cont])))
+					if (ignoreHidden)
+					{
+						if (NotHidden (System.IO.Path.GetFileName (filesaux[cont])))
+						{
+							files.Add (filesaux[cont]);
+						}
+					}
+					else
 					{
 						files.Add (filesaux[cont]);
 					}
 				}
-				else
-				{
-					files.Add (filesaux[cont]);
-				}
+			} catch (System.UnauthorizedAccessException) {
+				files.Clear ();
+				store.Clear ();
+				store.AppendValues (null, GettextCatalog.GetString ("Access denied"));
+			} catch (Exception ex) {
+				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Could not access to directory: ") + CurrentDir); 
 			}
 		}
 
@@ -208,8 +217,10 @@ namespace MonoDevelop.Core.Gui.Components
 			if (store.GetIter (out iter, args.Path))
 			{
 				string newDir = System.IO.Path.Combine (currentDir, (string) store.GetValue (iter, 1));
-				if (Directory.Exists (newDir))
-					CurrentDir = newDir;
+				try {
+					if (Directory.Exists (newDir))
+						CurrentDir = newDir;
+				} catch {}
 			}
 		}
 		
@@ -299,10 +310,16 @@ namespace MonoDevelop.Core.Gui.Components
 
 		private void OnEntryActivated (object sender, EventArgs args)
 		{
-			if (Directory.Exists (entry.Text.Trim ()))
-				CurrentDir = entry.Text.Trim ();
-			else
-    			messageService.ShowError (null, String.Format (GettextCatalog.GetString ("Cannot enter '{0}' folder"), entry.Text));
+			Exception error = null;
+			try {
+				if (Directory.Exists (entry.Text.Trim ())) {
+					CurrentDir = entry.Text.Trim ();
+					return;
+				}
+			} catch (Exception ex) {
+				error = ex;
+			}
+   			messageService.ShowError (error, String.Format (GettextCatalog.GetString ("Cannot enter '{0}' folder"), entry.Text));
 		}
 
 		private void OnDirRename (object o, EventArgs args)

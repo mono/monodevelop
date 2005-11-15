@@ -85,8 +85,6 @@ namespace MonoDevelop.Core.Gui
 					dlg.Message = ex.Message;
 				dlg.AddDetails ("Exception occurred: " + ex.Message + "\n\n", true);
 				dlg.AddDetails (ex.ToString (), false);
-			} else {
-				dlg.AddDetails ("No more details available.", true);
 			}
 			if (modal) {
 				dlg.Run ();

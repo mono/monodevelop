@@ -1,3 +1,11 @@
+2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs:
+	* MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs: Don't show the details
+	text view if there are no details to show.
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Catch some access
+	errors.
+
 2005-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Base.glade:
