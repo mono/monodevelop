@@ -1,3 +1,8 @@
+2005-11-14  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Properties/DefaultProperties.cs: Properly store
+	DateTime properties.
+
 2005-11-10  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Added method

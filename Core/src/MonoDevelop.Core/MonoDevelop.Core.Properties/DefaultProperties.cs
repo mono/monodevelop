@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Xml;
 using System.Reflection;
+using System.Globalization;
 
 namespace MonoDevelop.Core.Properties
 {
@@ -175,7 +176,7 @@ namespace MonoDevelop.Core.Properties
 			if (ob == null)
 				return defaultvalue;
 			else
-				return Convert.ToDateTime ((string)ob);
+				return DateTime.ParseExact ((string)ob, "s", CultureInfo.InvariantCulture);
 		}
 		
 		public TimeSpan GetProperty (string key, TimeSpan defaultvalue)
@@ -202,6 +203,8 @@ namespace MonoDevelop.Core.Properties
 		{
 			object oldValue = properties[key];
 			if (!val.Equals(oldValue)) {
+				if (val is DateTime)
+					val = ((DateTime)val).ToString ("s", CultureInfo.InvariantCulture);
 				properties[key] = val;
 				OnPropertyChanged(new PropertyEventArgs(this, key, oldValue, val));
 			}
