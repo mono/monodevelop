@@ -43,7 +43,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			
 		public int Run (string[] args)
 		{
-			Console.WriteLine ("MonoDevelop Setup Utility");
+			Console.WriteLine ("MonoDevelop Add-In Setup Utility");
 			
 			if (args.Length == 0) {
 				PrintHelp ();
@@ -70,14 +70,14 @@ namespace MonoDevelop.Core.AddIns.Setup
 					Install (parms);
 					break;
 					
-				case "rinstall":
-				case "ri":
-					RemoteInstall (parms);
-					break;
-					
 				case "uninstall":
 				case "u":
 					Uninstall (parms);
+					break;
+					
+				case "update":
+				case "up":
+					Update (parms);
 					break;
 					
 				case "list":
@@ -88,6 +88,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 				case "list-av":
 				case "la":
 					ListAvailable (parms);
+					break;
+					
+				case "list-update":
+				case "lu":
+					ListUpdates (parms);
 					break;
 					
 				case "rep-add":
@@ -117,8 +122,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 					break;
 					
 				case "pack":
-				case "pb":
+				case "p":
 					BuildPackage (parms);
+					break;
+				
+				case "help":
+				case "h":
+					PrintHelp (parms);
 					break;
 					
 				default:
@@ -131,10 +141,33 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		void Install (string[] args)
 		{
+			if (args.Length < 1) {
+				PrintHelp ("install");
+				return;
+			}
+			
 			PackageCollection packs = new PackageCollection ();
-			for (int n=0; n<args.Length; n++)
-				packs.Add (AddinPackage.FromFile (args [n]));
-		
+			for (int n=0; n<args.Length; n++) {
+				if (File.Exists (args [n])) { 
+					packs.Add (AddinPackage.FromFile (args [n]));
+				} else {
+					string[] aname = args[n].Split ('/');
+					AddinRepositoryEntry[] ads = Runtime.SetupService.GetAvailableAddin (aname[0], null);
+					if (ads.Length == 0)
+						throw new InstallException ("The addin '" + args[n] + "' is not available for install.");
+					if (ads.Length > 1) {
+						if (aname.Length < 2) {
+							Console.WriteLine (args[n] + ": the addin version is required because there are several versions of the same addin available.");
+							return;
+						}
+						ads = Runtime.SetupService.GetAvailableAddin (aname[0], aname[1]);
+						if (ads.Length == 0)
+							throw new InstallException ("The addin " + aname[0] + " v" + aname[1] + " is not available.");
+					}
+				
+					packs.Add (AddinPackage.FromRepository (ads[0]));
+				}
+			}
 			Install (packs);
 		}
 		
@@ -174,29 +207,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 		}
 		
-		void RemoteInstall (string[] args)
-		{
-			if (args.Length < 1)
-				throw new InstallException ("The addin id is required.");
-			
-			AddinRepositoryEntry[] ads = Runtime.SetupService.GetAvailableAddin (args[0], null);
-			if (ads.Length == 0)
-				throw new InstallException ("The addin '" + args[0] + "' is not available.");
-			if (ads.Length > 1) {
-				if (args.Length < 2) {
-					Console.WriteLine ("The addin version is required because there are several versions of the same addin available.");
-					return;
-				}
-				ads = Runtime.SetupService.GetAvailableAddin (args[0], args[1]);
-				if (ads.Length == 0)
-					throw new InstallException ("The addin " + args[0] + " v" + args[1] + " is not available.");
-			}
-		
-			PackageCollection packs = new PackageCollection ();
-			packs.Add (AddinPackage.FromRepository (ads[0]));
-			Install (packs);
-		}
-		
 		void Uninstall (string[] args)
 		{
 			if (args.Length < 1)
@@ -220,7 +230,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		void ListInstalled (string[] args)
 		{
-			Console.WriteLine ("Installed addins:");
+			Console.WriteLine ("Installed add-ins:");
 			AddinSetupInfo[] addins = Runtime.SetupService.GetInstalledAddins ();
 			foreach (AddinSetupInfo addin in addins) {
 				Console.WriteLine (" - " + addin.Addin.Id + " " + addin.Addin.Version);
@@ -229,11 +239,47 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		void ListAvailable (string[] args)
 		{
-			Console.WriteLine ("Available addins:");
+			Console.WriteLine ("Available add-ins:");
 			AddinRepositoryEntry[] addins = Runtime.SetupService.GetAvailableAddins ();
 			foreach (AddinRepositoryEntry addin in addins) {
 				Console.WriteLine (" - " + addin.Addin.Id + " " + addin.Addin.Version + " (" + addin.Repository.Name + ")");
 			}
+		}
+		
+		void ListUpdates (string[] args)
+		{
+			Console.WriteLine ("Looking for updates...");
+			Runtime.SetupService.UpdateRepositories (new NullProgressMonitor ());
+			Console.WriteLine ("Available add-in updates:");
+			AddinRepositoryEntry[] addins = Runtime.SetupService.GetAvailableAddins ();
+			bool found = false;
+			foreach (AddinRepositoryEntry addin in addins) {
+				AddinSetupInfo sinfo = Runtime.SetupService.GetInstalledAddin (addin.Addin.Id);
+				if (sinfo != null && AddinInfo.CompareVersions (sinfo.Addin.Version, addin.Addin.Version) == 1) {
+					Console.WriteLine (" - " + addin.Addin.Id + " " + addin.Addin.Version + " (" + addin.Repository.Name + ")");
+					found = true;
+				}
+			}
+			if (!found)
+				Console.WriteLine ("No updates found.");
+		}
+		
+		void Update (string [] args)
+		{
+			Console.WriteLine ("Looking for updates...");
+			Runtime.SetupService.UpdateRepositories (new NullProgressMonitor ());
+			
+			PackageCollection packs = new PackageCollection ();
+			AddinRepositoryEntry[] addins = Runtime.SetupService.GetAvailableAddins ();
+			foreach (AddinRepositoryEntry addin in addins) {
+				AddinSetupInfo sinfo = Runtime.SetupService.GetInstalledAddin (addin.Addin.Id);
+				if (sinfo != null && AddinInfo.CompareVersions (sinfo.Addin.Version, addin.Addin.Version) == 1)
+					packs.Add (AddinPackage.FromRepository (addin));
+			}
+			if (packs.Count > 0)
+				Install (packs);
+			else
+				Console.WriteLine ("No updates found.");
 		}
 		
 		void UpdateAvailableAddins (string[] args)
@@ -314,19 +360,168 @@ namespace MonoDevelop.Core.AddIns.Setup
 			arguments = (string[]) list.ToArray (typeof(string));
 		}
 		
-		void PrintHelp ()
+		void PrintHelp (params string[] parms)
 		{
-			Console.WriteLine ("install (i)      Installs addins");
-			Console.WriteLine ("uninstall (u)    Unistalls addins");
-			Console.WriteLine ("list (l)         Lists installed addins");
-			Console.WriteLine ("rinstall (ri)    Installs addins from a remote repository");
-			Console.WriteLine ("list-av (la)     Lists addins available in registered repositories");
-			Console.WriteLine ("rep-add (ra)     Registers repositories");
-			Console.WriteLine ("rep-remove (rr)  Unregisters repositories");
-			Console.WriteLine ("rep-list (rl)    Lists registered repositories");
-			Console.WriteLine ("rep-update (ru)  Updates the lists of addins available in repositories");
-			Console.WriteLine ("rep-build (rb)   Creates a repository index file for a directory structure");
-			Console.WriteLine ("pack (pb)        Creates a package from an add-in configuration file");
+			if (parms.Length == 0) {
+				Console.WriteLine ();
+				Console.WriteLine ("Add-in Commands:");
+				Console.WriteLine ("  install (i)      Installs add-ins");
+				Console.WriteLine ("  uninstall (u)    Unistalls add-ins");
+				Console.WriteLine ("  update (up)      Updates installed add-ins");
+				Console.WriteLine ("  list (l)         Lists installed add-ins");
+				Console.WriteLine ("  list-av (la)     Lists add-ins available in registered repositories");
+				Console.WriteLine ("  list-update (lu) Lists available add-in updates in registered repositories");
+				Console.WriteLine ();
+				Console.WriteLine ("Repository Commands:");
+				Console.WriteLine ("  rep-add (ra)     Registers repositories");
+				Console.WriteLine ("  rep-remove (rr)  Unregisters repositories");
+				Console.WriteLine ("  rep-list (rl)    Lists registered repositories");
+				Console.WriteLine ("  rep-update (ru)  Updates the lists of addins available in repositories");
+				Console.WriteLine ();
+				Console.WriteLine ("Packaging Commands:");
+				Console.WriteLine ("  rep-build (rb)   Creates a repository index file for a directory structure");
+				Console.WriteLine ("  pack (p)         Creates a package from an add-in configuration file");
+				Console.WriteLine ();
+				Console.WriteLine ("Run 'setup help <command>' to get help about a specific command.");
+				Console.WriteLine ();
+				return;
+			}
+			
+			Console.WriteLine ();
+			switch (parms[0]) {
+				case "install":
+				case "i":
+					Console.WriteLine ("install (i): Installs add-ins.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup install [package-name|package-file] ...");
+					Console.WriteLine ();
+					Console.WriteLine ("Installs an add-in or set of addins. The command argument is a list");
+					Console.WriteLine ("of files and/or package names. If a package name is provided");
+					Console.WriteLine ("the package will be looked out in the registered repositories.");
+					Console.WriteLine ("A specific add-in version can be specified by appending it to.");
+					Console.WriteLine ("the package name using '/' as a separator, like in this example:");
+					Console.WriteLine ("MonoDevelop.SourceEditor/0.9.1");
+					break;
+					
+				case "uninstall":
+				case "u":
+					Console.WriteLine ("uninstall (u): Uninstalls add-ins.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup uninstall <package-name>");
+					Console.WriteLine ();
+					Console.WriteLine ("Uninstalls an add-in. The command argument is the name");
+					Console.WriteLine ("of the add-in to uninstall.");
+					break;
+					
+				case "update":
+				case "up":
+					Console.WriteLine ("update (up): Updates installed add-ins.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup update");
+					Console.WriteLine ();
+					Console.WriteLine ("Downloads and installs available updates for installed add-ins.");
+					break;
+				
+				case "list":
+				case "l":
+					Console.WriteLine ("list (l): Lists installed add-ins.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup list");
+					Console.WriteLine ();
+					Console.WriteLine ("Prints a list of all installed add-ins.");
+					break;
+	
+				case "list-av":
+				case "la":
+					Console.WriteLine ("list-av (la): Lists add-ins available in registered repositories.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup list-av");
+					Console.WriteLine ();
+					Console.WriteLine ("Prints a list of add-ins available to install in the");
+					Console.WriteLine ("registered repositories.");
+					break;
+					
+				case "list-update":
+				case "lu":
+					Console.WriteLine ("list-update (lu): Lists available add-in updates.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup list-lu");
+					Console.WriteLine ();
+					Console.WriteLine ("Prints a list of available add-in updates in the registered repositories.");
+					break;
+					
+				case "rep-add":
+				case "ra":
+					Console.WriteLine ("rep-add (ra): Registers repositories.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup rep-add <url> ...");
+					Console.WriteLine ();
+					Console.WriteLine ("Registers an add-in repository. Several URLs can be provided.");
+					break;
+					
+				case "rep-remove":
+				case "rr":
+					Console.WriteLine ("rep-remove (rr): Unregisters repositories.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup rep-remove <url> ...");
+					Console.WriteLine ();
+					Console.WriteLine ("Unregisters an add-in repository. Several URLs can be provided.");
+					break;
+	
+				case "rep-update":
+				case "ru":
+					Console.WriteLine ("rep-update (ru): Updates the lists of available addins.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup rep-update");
+					Console.WriteLine ();
+					Console.WriteLine ("Updates the lists of addins available in all registered repositories.");
+					break;
+	
+				case "rep-list":
+				case "rl":
+					Console.WriteLine ("rep-list (ru): Lists registered repositories.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup rep-list");
+					Console.WriteLine ();
+					Console.WriteLine ("Shows a list of all registered repositories.");
+					break;
+	
+				case "rep-build":
+				case "rb":
+					Console.WriteLine ("rep-build (rb): Creates a repository index file for a directory structure.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup rep-build <path>");
+					Console.WriteLine ();
+					Console.WriteLine ("Scans the provided directory and generates a set of index files with entries");
+					Console.WriteLine ("for all add-in packages found in the directory tree. The resulting file");
+					Console.WriteLine ("structure is an add-in repository that can be published in a web site or a");
+					Console.WriteLine ("shared directory.");
+					break;
+					
+				case "pack":
+				case "p":
+					Console.WriteLine ("pack (p): Creates a package from an add-in configuration file.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup pack <file-path>");
+					Console.WriteLine ();
+					Console.WriteLine ("Creates an add-in package (.mpack file) which includes all files ");
+					Console.WriteLine ("needed to deploy an add-in. The command parameter is the path to");
+					Console.WriteLine ("the add-in's configuration file.");
+					break;
+				
+				case "help":
+				case "h":
+					Console.WriteLine ("help: Shows help about a command.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup help <command>");
+					Console.WriteLine ();
+					break;
+					
+				default:
+					Console.WriteLine ("Unknown command: " + parms[0]);
+					break;
+			}
+			Console.WriteLine ();
 		} 
 	}
 }

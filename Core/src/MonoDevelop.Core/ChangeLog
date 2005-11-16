@@ -1,3 +1,8 @@
+2005-11-16  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns.Setup/SetupTool.cs: Unified install and rinstall
+	commands. Added update and list-update. Added per command help.
+
 2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessHostController.cs: 
