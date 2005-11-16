@@ -252,6 +252,7 @@ Extras/MonoDevelop.SourceEditor/Makefile
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.dll.config
 Extras/prj2make-sharp-lib/AssemblyInfo.cs
 Extras/prj2make-sharp-lib/Makefile
+Extras/WelcomePage/Makefile
 Makefile
 monodevelop
 mdrun
