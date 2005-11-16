@@ -1,3 +1,3 @@
 
-SUBDIRS = MonoDevelop.SourceEditor CSharpBinding DebuggerAddIn ILAsmBinding MonoQuery JavaBinding BooBinding NemerleBinding NUnit MonoDeveloperExtensions VersionControl prj2make-sharp-lib VBNetBinding
+SUBDIRS = MonoDevelop.SourceEditor CSharpBinding DebuggerAddIn ILAsmBinding MonoQuery JavaBinding BooBinding NemerleBinding NUnit MonoDeveloperExtensions VersionControl prj2make-sharp-lib VBNetBinding WelcomePage
 
