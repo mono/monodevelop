@@ -178,6 +178,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		if output is not null:
 			for line as string in output:
 				processOutput (line )
+				
 		prompt (true)
 		for assembly in Model.References:
 			_fakeProject.AddReference(assembly)
@@ -420,13 +421,12 @@ class ShellTextView (SourceView, ICompletionWidget):
 		prompt (newLine, false)
 
 	private def prompt (newLine as bool, multiline as bool):
-		end = Buffer.EndIter
 		if newLine:
-			Buffer.Insert (end , "\n")
+			Buffer.Insert (Buffer.EndIter , "\n")
 		if multiline:
-			Buffer.Insert (end , "${_promptMultiline}")
+			Buffer.Insert (Buffer.EndIter , "${_promptMultiline}")
 		else:
-			Buffer.Insert (end , "${_promptRegular}")
+			Buffer.Insert (Buffer.EndIter , "${_promptRegular}")
 
 		Buffer.PlaceCursor (Buffer.EndIter)
 		ScrollMarkOnscreen(Buffer.InsertMark)
