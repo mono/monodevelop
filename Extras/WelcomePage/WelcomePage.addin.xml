@@ -1,0 +1,48 @@
+<AddIn id          = "MonoDevelop.WelcomePage"
+	   name        = "MonoDevelop Welcome Page"
+       author      = "Scott Ellington"
+	   copyright   = "MIT X11"
+	   url         = "http://salmonsalvo.net/"
+	   description = "Welcome Page for MonoDevelop"
+	   category    = "IDE extensions"	   
+       version     = "0.1.2">
+	
+	<Runtime>
+		<Import assembly="WelcomePage.dll"/>
+		<Import file="WelcomePage.css"/>		
+		<Import file="WelcomePage.xsl"/>		
+		<Import file="mono-bg.png"/>		
+		<Import file="mono-logo.png"/>		
+	</Runtime>
+
+	<Dependencies>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.WelcomePage.WelcomePageCommands.ShowWelcomePage"
+			defaultHandler = "MonoDevelop.WelcomePage.ShowWelcomePageHandler"
+			_label = "Welcome Page" 
+			icon = "gtk-home"/>
+	</Extension>
+
+	<Extension path="/SharpDevelop/Workbench/MainMenu/View">
+		<CommandItem id="MonoDevelop.WelcomePage.WelcomePageCommands.ShowWelcomePage" 
+			insertafter="ViewItemsSeparator2"
+			insertbefore="MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+		<Class class="MonoDevelop.WelcomePage.ShowWelcomePageOnStartUpHandler" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "WelcomPageOptions"
+			insertafter = "ToolsOptions"
+			_label = "Welcome Page">
+			<DialogPanel    id = "General"
+				_label = "General"
+				class = "MonoDevelop.WelcomePage.WelcomePageOptionPanel" />
+		</DialogPanel>
+	</Extension>
+</AddIn>
