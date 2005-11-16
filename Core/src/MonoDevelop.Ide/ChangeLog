@@ -1,3 +1,7 @@
+2005-11-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* options/DefaultEditingLayout.xml: Updated with the new pad names.
+
 2005-11-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
