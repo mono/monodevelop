@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (string.Format (GettextCatalog.GetString ("Opening {0}"), fileName), Stock.OpenFileIcon, false);
+			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (string.Format (GettextCatalog.GetString ("Opening {0}"), fileName), Stock.OpenFileIcon, true);
 			FileInformation openFileInfo = new FileInformation();
 			openFileInfo.ProgressMonitor = pm;
 			openFileInfo.FileName = fileName;
@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 						
 					} else {
-						Runtime.FileUtilityService.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.ContentName , FileErrorPolicy.ProvideAlternative);
+						window.ViewContent.Save (window.ViewContent.ContentName);
 					}
 				}
 			}
@@ -376,7 +376,7 @@ namespace MonoDevelop.Ide.Gui
 								return;
 							}
 						}
-					} else 
+					}
 					if (!File.Exists (fileName)) {
 						monitor.ReportError (string.Format (GettextCatalog.GetString ("File not found: {0}"), fileName), null);
 						return;
@@ -405,15 +405,15 @@ namespace MonoDevelop.Ide.Gui
 					
 					if (combine != null && project != null)
 					{
-						if (Runtime.FileUtilityService.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper (workbench, binding, project, oFileInfo).Invoke), fileName) == FileOperationResult.OK) {
-							RecentOpen.AddLastFile (fileName, project.Name);
-						}
+						LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
+						fw.Invoke (fileName);
+						RecentOpen.AddLastFile (fileName, project.Name);
 					}
 					else
 					{
-						if (Runtime.FileUtilityService.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper (workbench, binding, null, oFileInfo).Invoke), fileName) == FileOperationResult.OK) {
-							RecentOpen.AddLastFile (fileName, null);
-						}
+						LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, null, oFileInfo);
+						fw.Invoke (fileName);
+						RecentOpen.AddLastFile (fileName, null);
 					}
 				} else {
 					try {
@@ -425,9 +425,9 @@ namespace MonoDevelop.Ide.Gui
 							Gnome.Url.Show ("file://" + fileName);
 						//}
 					} catch {
-						if (Runtime.FileUtilityService.ObservedLoad(new NamedFileOperationDelegate (new LoadFileWrapper (workbench, Services.DisplayBindings.LastBinding, null, oFileInfo).Invoke), fileName) == FileOperationResult.OK) {
-							RecentOpen.AddLastFile (fileName, null);
-						}
+						LoadFileWrapper fw = new LoadFileWrapper (workbench, Services.DisplayBindings.LastBinding, null, oFileInfo);
+						fw.Invoke (fileName);
+						RecentOpen.AddLastFile (fileName, null);
 					}
 				}
 			}

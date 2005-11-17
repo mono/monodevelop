@@ -110,9 +110,9 @@ namespace MonoDevelop.Ide.Gui
 					string fileName = Window.ViewContent.ContentName;
 					// save backup first						
 					if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
-						Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), fileName + "~");
+						Window.ViewContent.Save (fileName + "~");
 					}
-					Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), fileName);
+					Window.ViewContent.Save (fileName);
 					OnSaved (EventArgs.Empty);
 				}
 			}
@@ -153,13 +153,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			// save backup first
 			if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
-				Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), filename + "~");
+				Window.ViewContent.Save (filename + "~");
 			}
 			
 			// do actual save
-			if (Runtime.FileUtilityService.ObservedSave (new NamedFileOperationDelegate(Window.ViewContent.Save), filename) == FileOperationResult.OK) {
-				IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
-			}
+			Window.ViewContent.Save (filename);
+			IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
 			
 			OnSaved (EventArgs.Empty);
 		}

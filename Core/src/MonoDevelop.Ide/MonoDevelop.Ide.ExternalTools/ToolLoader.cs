@@ -65,8 +65,8 @@ namespace MonoDevelop.Ide.ExternalTools
 			foreach (ExternalTool et in tool) {
 				doc.DocumentElement.AppendChild(et.ToXmlElement(doc));
 			}
-			
-			Runtime.FileUtilityService.ObservedSave(new NamedFileOperationDelegate(doc.Save), fileName, FileErrorPolicy.ProvideAlternative);
+
+			doc.Save (fileName);
 		}
 		
 		/// <summary>

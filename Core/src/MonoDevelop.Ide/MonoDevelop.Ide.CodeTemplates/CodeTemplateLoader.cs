@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				doc.DocumentElement.AppendChild(codeTemplateGroup.ToXmlElement(doc));
 			}
 			
-			Runtime.FileUtilityService.ObservedSave(new NamedFileOperationDelegate(doc.Save), fileName, FileErrorPolicy.ProvideAlternative);
+			doc.Save (fileName);
 		}
 		
 		/// <summary>

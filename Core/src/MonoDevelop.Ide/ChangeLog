@@ -1,3 +1,17 @@
+2005-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs:
+	* MonoDevelop.Ide.ExternalTools/ToolLoader.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: 
+	  Removed useless Observed* calls.
+	
+	* MonoDevelop.Ide.Gui.Search/ForwardTextIterator.cs: Place the position
+	after the replaced text. Fixes bug #76728.
+
 2005-11-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* options/DefaultEditingLayout.xml: Updated with the new pad names.

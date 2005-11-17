@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			tsFiles.Foreach (new TreeModelForeachFunc (CollectWorkbenches));
 			foreach (SdiWorkspaceWindow window in arrSaveWorkbenches) {
-				Runtime.FileUtilityService.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.ContentName , FileErrorPolicy.ProvideAlternative);
+				window.ViewContent.Save (window.ViewContent.ContentName);
 			}
 
 			Respond (Gtk.ResponseType.Ok);

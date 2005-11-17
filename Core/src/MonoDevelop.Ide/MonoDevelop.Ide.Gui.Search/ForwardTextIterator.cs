@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				endOffset = endOffset - length + pattern.Length;
 			}
 			
-			currentOffset = currentOffset - length + pattern.Length;
+			currentOffset += pattern.Length;
 		}
 		
 		public virtual bool SupportsSearch (SearchOptions options, bool reverse)

@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.Gui
 			// check the file name length because it could be more than the maximum length of a file name
 			string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
 			if (Runtime.FileUtilityService.IsValidFileName(fullFileName)) {
-				Runtime.FileUtilityService.ObservedSave(new NamedFileOperationDelegate(doc.Save), fullFileName, FileErrorPolicy.ProvideAlternative);
+				doc.Save (fullFileName);
 			}
 		}
 		

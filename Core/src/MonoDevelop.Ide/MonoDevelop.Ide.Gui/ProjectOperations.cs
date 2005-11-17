@@ -627,7 +627,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			propertynode.AppendChild(properties.ToXmlElement(doc));
 			
-			Runtime.FileUtilityService.ObservedSave(new NamedFileOperationDelegate(doc.Save), directory + Path.DirectorySeparatorChar + combine.Name + ".xml", FileErrorPolicy.ProvideAlternative);
+			doc.Save (directory + Path.DirectorySeparatorChar + combine.Name + ".xml");
 		}
 
 		public IAsyncOperation Execute (CombineEntry entry)
