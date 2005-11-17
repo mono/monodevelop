@@ -81,9 +81,7 @@ namespace MonoDevelop.Core
 			doc.LoadXml("<?xml version=\"1.0\"?>\n<" + propertyXmlRootNodeName + " fileversion = \"" + propertyFileVersion + "\" />");
 			
 			doc.DocumentElement.AppendChild(ToXmlElement(doc));
-			
-			FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-			fileUtilityService.ObservedSave(new NamedFileOperationDelegate(doc.Save), fileName, FileErrorPolicy.ProvideAlternative);
+			doc.Save (fileName);
 		}
 		
 		bool LoadPropertiesFromStream(string filename)

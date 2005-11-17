@@ -1,3 +1,8 @@
+2005-11-17  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core/PropertyService.cs:
+	* MonoDevelop.Core/FileUtilityService.cs: Removed unused code.
+
 2005-11-16  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns.Setup/SetupTool.cs: Unified install and rinstall
