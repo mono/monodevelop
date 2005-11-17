@@ -1,3 +1,17 @@
+2005-11-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/GtkSharpProject.xpt.xml:
+	* templates/GnomeSharp2Project.xpt.xml:
+	* templates/GladeSharp2Project.xpt.xml:
+	* templates/ConsoleProject.xpt.xml:
+	* templates/GnomeSharpProject.xpt.xml:
+	* templates/GtkSharp2Project.xpt.xml:
+	* templates/GladeSharpProject.xpt.xml:
+	* templates/Library.xpt.xml: Added a reference to the System assembly
+	in all project templates.
+	
+	* Makefile.am: Rebuild the assembly when resources are modified. 
+
 2005-11-09  John Luke  <john.luke@gmail.com>
 
 	* FormattingStrategy/CSharpFormattingStrategy.cs:
