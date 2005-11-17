@@ -163,7 +163,6 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
-Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TerminalPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs
