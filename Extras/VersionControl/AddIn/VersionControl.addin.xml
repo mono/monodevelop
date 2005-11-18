@@ -39,23 +39,35 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
-		<CommandItem id = "VersionControlPlugin.Commands.Diff"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeSeparator">
+			<CommandItem id = "VersionControlPlugin.Commands.Diff"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		</ItemSet>
+		<SeparatorItem />
 	</Extension>
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode">
-		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+			<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		</ItemSet>
+		<SeparatorItem />
 	</Extension>
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
-		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+			<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		</ItemSet>
+		<SeparatorItem />
 	</Extension>
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
-		<CommandItem id = "VersionControlPlugin.Commands.Update"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Status"/>
-		<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
+			<CommandItem id = "VersionControlPlugin.Commands.Update"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Status"/>
+			<CommandItem id = "VersionControlPlugin.Commands.Log"/>
+		</ItemSet>
+		<SeparatorItem />
 	</Extension>
 </AddIn>
 	

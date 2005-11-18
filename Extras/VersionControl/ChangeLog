@@ -1,3 +1,8 @@
+2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* AddIn/VersionControl.addin.xml: Moved version control commands to
+	its own submenu.
+
 2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/Addin.cs: It should also work for Project, not only DotNetProject.
