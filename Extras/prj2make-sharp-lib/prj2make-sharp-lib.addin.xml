@@ -24,10 +24,7 @@
 	</Extension>
 	
 	<Extension path="/SharpDevelop/Workbench/MainMenu/File">
-		<SeparatorItem id = "ImportSeparator" insertafter="MonoDevelop.Commands.FileCommands.ReloadFile" />
-		<CommandItem id = "MonoDevelop.Prj2Make.Commands.ImportSolution"
-			 insertafter="ImportSeparator"
-			 insertbefore="RecentSeparator" />
+		<CommandItem id = "MonoDevelop.Prj2Make.Commands.ImportSolution" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 	</Extension>
 </AddIn>
 

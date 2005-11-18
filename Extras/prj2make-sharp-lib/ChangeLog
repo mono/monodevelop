@@ -1,3 +1,7 @@
+2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Fixed command placement in menu.
+
 2005-11-10  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* csproj_ver2003.cs: Fixed some fields (patch by Jim Albert).
