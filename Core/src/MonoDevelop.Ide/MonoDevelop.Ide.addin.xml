@@ -460,6 +460,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddCombine" />
 		</ItemSet>
+		<SeparatorItem id = "AddSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 		<SeparatorItem id = "FindInFilesSeparator" />
