@@ -1,3 +1,10 @@
+2005-11-17 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:
+	initialize the formatter to the default, so that unsaved
+	files will have a fmtr and not crash on a keypress
+	bug #76729
+	
 2005-11-14  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Increased undo

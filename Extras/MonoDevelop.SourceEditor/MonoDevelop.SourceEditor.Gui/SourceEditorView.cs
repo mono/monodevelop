@@ -19,6 +19,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.SourceEditor.Actions;
+using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.InsightWindow;
 using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.SourceEditor.FormattingStrategy;
@@ -29,7 +30,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	public class SourceEditorView : SourceView, IFormattableDocument, ICompletionWidget
 	{	
 		public readonly SourceEditor ParentEditor;
-		internal IFormattingStrategy fmtr;
+		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
 		public SourceEditorBuffer buf;
 		bool codeCompleteEnabled;
 		bool autoHideCompletionWindow = true;
