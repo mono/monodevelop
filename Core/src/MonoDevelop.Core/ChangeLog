@@ -1,3 +1,12 @@
+2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddIn.cs: 
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs: Make sure that child
+	nodes are added in the same order as in the xml file. In this way
+	the topological sort used to merge the nodes is not needed, and the
+	resulting order makes more sense.
+
 2005-11-17  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core/PropertyService.cs:

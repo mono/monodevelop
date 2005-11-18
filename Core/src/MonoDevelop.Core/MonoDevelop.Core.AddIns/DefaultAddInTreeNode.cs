@@ -20,6 +20,8 @@ namespace MonoDevelop.Core.AddIns
 	public class DefaultAddInTreeNode : IAddInTreeNode
 	{
 		Hashtable childNodes = new Hashtable();
+		ArrayList sortedNodes = new ArrayList ();
+		bool needsResort;
 		ICodon    codon      = null;
 		ConditionCollection conditionCollection = null;
 		
@@ -58,6 +60,14 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 		
+		internal void AddNode (string id, DefaultAddInTreeNode child)
+		{
+			ChildNodes [id] = child;
+			sortedNodes.Add (child);
+			needsResort = true;
+		}
+
+		
 		/// <value>
 		/// The current ConditionFailedAction of this node.
 		/// </value>
@@ -82,58 +92,38 @@ namespace MonoDevelop.Core.AddIns
 		/// </returns>
 		IAddInTreeNode[] GetSubnodesAsSortedArray()
 		{
-			IAddInTreeNode node = this;
-			int index = node.ChildNodes.Count;
-			IAddInTreeNode[] sortedNodes = new IAddInTreeNode[index];
-			Hashtable  visited   = new Hashtable(index);
-			Hashtable  anchestor = new Hashtable(index);
+			if (!needsResort)
+				return (IAddInTreeNode[]) sortedNodes.ToArray (typeof(IAddInTreeNode));
 			
-			foreach(string key in node.ChildNodes.Keys) {
-				visited[key] = false;
-				anchestor[key] = new ArrayList();
-			}
+			needsResort = false;
 			
-			foreach(DictionaryEntry child in node.ChildNodes){
-				if(((IAddInTreeNode)child.Value).Codon.InsertAfter != null){
-					for(int i = 0; i < ((IAddInTreeNode)child.Value).Codon.InsertAfter.Length; ++i){
-//						Console.WriteLine(((IAddInTreeNode)child.Value).Codon.ID + " " + ((IAddInTreeNode)child.Value).Codon.InsertAfter[i].ToString());
-						if(anchestor.Contains(((IAddInTreeNode)child.Value).Codon.InsertAfter[i].ToString())){
-							((ArrayList)anchestor[((IAddInTreeNode)child.Value).Codon.InsertAfter[i].ToString()]).Add(child.Key);
-						}
-					}
+			ArrayList sorted = new ArrayList ();
+			foreach (IAddInTreeNode tnode in sortedNodes) {
+				string[] insertAfters = tnode.Codon.InsertAfter;
+				
+				if (insertAfters == null || insertAfters.Length == 0) {
+					sorted.Add (tnode);
+					continue;
 				}
 				
-				if(((IAddInTreeNode)child.Value).Codon.InsertBefore != null){
-					for(int i = 0; i < ((IAddInTreeNode)child.Value).Codon.InsertBefore.Length; ++i){
-						if(anchestor.Contains(child.Key)){
-							((ArrayList)anchestor[child.Key]).Add(((IAddInTreeNode)child.Value).Codon.InsertBefore[i]);
-						}
+				int numAfters = insertAfters.Length;
+				int n;
+				
+				for (n=0; n<sorted.Count; n++) {
+					IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
+					for (int i=0; i<insertAfters.Length; i++) {
+						if (snode.Codon.ID == insertAfters [i])
+							numAfters--;
+					}
+					if (numAfters == 0) {
+						n++;
+						break;
 					}
 				}
+				sorted.Insert (n, tnode);
 			}
-			
-			string[] keyarray = new string[visited.Keys.Count];
-			visited.Keys.CopyTo(keyarray, 0);
-			
-			for (int i = 0; i < keyarray.Length; ++i) {
-				if((bool)visited[keyarray[i]] == false){
-					index = Visit(keyarray[i], node.ChildNodes, sortedNodes, visited, anchestor, index);
-				}
-			}
-			return sortedNodes;
-		}
-		
-		int Visit(string key, Hashtable nodes, IAddInTreeNode[] sortedNodes, Hashtable visited, Hashtable anchestor, int index)
-		{
-			visited[key] = true;
-			foreach (string anch in (ArrayList)anchestor[key]) {
-				if ((bool)visited[anch] == false) {
-					index = Visit(anch, nodes, sortedNodes, visited, anchestor, index);
-				}
-			}
-			
-			sortedNodes[--index] = (IAddInTreeNode)nodes[key];
-			return index;
+			sortedNodes = sorted;
+			return (IAddInTreeNode[]) sorted.ToArray (typeof(IAddInTreeNode));
 		}
 		
 		/// <summary>

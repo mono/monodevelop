@@ -147,7 +147,8 @@ namespace MonoDevelop.Core.AddIns
 			while (i < splittedPath.Length) {
 				DefaultAddInTreeNode nextPath = (DefaultAddInTreeNode)curPath.ChildNodes[splittedPath[i]];
 				if (nextPath == null) {
-					curPath.ChildNodes[splittedPath[i]] = nextPath = new DefaultAddInTreeNode();
+					nextPath = new DefaultAddInTreeNode();
+					curPath.AddNode (splittedPath[i], nextPath);
 				}
 				curPath = nextPath;
 				++i;

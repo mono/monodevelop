@@ -249,8 +249,8 @@ namespace MonoDevelop.Core.AddIns
 				throw new AddInLoadException("One extension node has no path attribute defined.");
 			}			
 			Extension e = new Extension(el.Attributes["path"].InnerText);
-			AddCodonsToExtension(e, el, new ConditionCollection());
 			extensions.Add(e);
+			AddCodonsToExtension(e, el, new ConditionCollection());
 		}
 		
 		void CheckDependencies (XmlElement deps)
@@ -456,8 +456,8 @@ namespace MonoDevelop.Core.AddIns
 						e.CodonCollection.Add(codon);
 						if (curEl.ChildNodes.Count > 0) {
 							Extension newExtension = new Extension(e.Path + '/' + codon.ID);
-							AddCodonsToExtension(newExtension, curEl, conditions);
 							extensions.Add(newExtension);
+							AddCodonsToExtension(newExtension, curEl, conditions);
 						}
 						break;
 				}
