@@ -180,9 +180,9 @@ namespace MonoDevelop.Projects.Parser
 			
 			PersistentHelper.WriteString (reg.FileName, writer, nameTable);
 			writer.Write (reg.BeginLine);
+			writer.Write (reg.EndLine);
 			writer.Write (reg.BeginColumn);
 			writer.Write (reg.EndColumn);
-			writer.Write (reg.EndLine);
 		}
 	}
 	

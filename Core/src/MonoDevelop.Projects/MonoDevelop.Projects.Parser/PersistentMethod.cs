@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.Parser
 				met.parameters.Add (PersistentParameter.Read (reader, nameTable));
 			}
 			met.region = PersistentRegion.Read (reader, nameTable);
+			met.bodyRegion = PersistentRegion.Read (reader, nameTable);
 			return met;
 		}
 		
@@ -60,6 +61,7 @@ namespace MonoDevelop.Projects.Parser
 				PersistentParameter.WriteTo (p, writer, nameTable);
 			}
 			PersistentRegion.WriteTo (met.Region, writer, nameTable);
+			PersistentRegion.WriteTo (met.BodyRegion, writer, nameTable);
 		}
 	}
 }

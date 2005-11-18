@@ -1,3 +1,10 @@
+2005-11-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/PersistentClass.cs: Fix write order.
+	* MonoDevelop.Projects.Parser/PersistentMethod.cs: Serialize the body
+	region.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump db version.
+
 2005-11-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Fix a warning and a NRE.
