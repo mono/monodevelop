@@ -93,13 +93,17 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 		}
 		
-		// TODO: Transform Replace Pattern
 		public static void Replace()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				IEditable editable = IdeApp.Workbench.ActiveDocument.Content as IEditable;
-				if (editable.SelectedText == SearchOptions.SearchPattern.ToLower ()) {
-					editable.SelectedText = SearchOptions.ReplacePattern;
+				if (editable == null) return;
+					
+				if (lastResult != null && find.DocumentIterator.CurrentFileName == lastResult.FileName) {
+					int s1 = editable.GetOffsetFromPosition (editable.SelectionStartPosition);
+					int s2 = editable.GetOffsetFromPosition (editable.SelectionEndPosition);
+					if (lastResult.DocumentOffset == s1 && lastResult.DocumentOffset + lastResult.Length == s2)
+						editable.SelectedText = SearchOptions.ReplacePattern;
 				}
 			}
 			FindNext();

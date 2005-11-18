@@ -1,3 +1,9 @@
+2005-11-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Save the
+	project after including a file.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Fixed bug in Replace.
+
 2005-11-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs:
