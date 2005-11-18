@@ -1,3 +1,9 @@
+2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Updated required versions of mono and gtk#.
+	Enabled monoextensions and nunit by default. Disabled the debugger.
+	* mdrun: renamed to mdtool.
+	
 2005-11-16  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Added WelcomePage dir.
