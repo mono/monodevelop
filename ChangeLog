@@ -1,3 +1,8 @@
+2005-11-21  Lluis Sanchez Gual  <lluis@novell.com>  
+
+	* configure.in: Updated versions. Properly handle enabling of
+	nunit and mono developer extensions.
+
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Makefile.am: Rename mdrun to mdtool.
