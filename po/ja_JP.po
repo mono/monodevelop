@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 01:52+0900\n"
+"POT-Creation-Date: 2005-11-22 03:56+0900\n"
 "PO-Revision-Date: 2004-07-12 10:51+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -233,6 +233,7 @@ msgstr "Monoプロジェクト"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:41
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
 
@@ -2096,6 +2097,7 @@ msgstr "アドインの依存関係:"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:23
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:52
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:6
 msgid "Name"
 msgstr "名前"
 
@@ -2131,7 +2133,8 @@ msgstr "本当にインストールを中断しますか?"
 msgid ""
 "<b>The following packages will be uninstalled:</b>\n"
 "\n"
-msgstr "<b>以下のパッケージがアンインストールされます:</b>\n"
+msgstr ""
+"<b>以下のパッケージがアンインストールされます:</b>\n"
 "\n"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:289
@@ -2140,15 +2143,16 @@ msgid ""
 "be uninstalled:</b>\n"
 "\n"
 msgstr ""
-"<b>以上のアドインに加えて、これらに依存するものもアンインストールされます:</b>"
-"\n"
+"<b>以上のアドインに加えて、これらに依存するものもアンインストールされます:</"
+"b>\n"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:360
 msgid ""
 "<b><span foreground=\"red\">The selected add-ins can't be installed because "
 "there are dependency conflicts.</span></b>\n"
 msgstr ""
-"<b><span foreground=\"red\">選択されたアドインは、依存関係の衝突のため、インストールできません。</span></b>\n"
+"<b><span foreground=\"red\">選択されたアドインは、依存関係の衝突のため、イン"
+"ストールできません。</span></b>\n"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:362
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:369
@@ -2236,6 +2240,7 @@ msgid "Version"
 msgstr "バージョン"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:127
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:7
 msgid "Other"
 msgstr "その他"
 
@@ -2355,17 +2360,20 @@ msgstr "アドレスの読み込み"
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
+#, csharp-format
 msgid "Saving project: {0}"
 msgstr "プロジェクトを保存しています: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
+#, csharp-format
 msgid "Could not save project: {0}"
 msgstr "プロジェクトを保存できませんでした: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:113
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
+#, csharp-format
 msgid ""
 "The file '{0}' is using an old project file format. It will be automatically "
 "converted to the current format."
@@ -2376,12 +2384,14 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:116
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
+#, csharp-format
 msgid "Loading project: {0}"
 msgstr "プロジェクトを読み込み中: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:122
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
+#, csharp-format
 msgid "Could not load project: {0}"
 msgstr "プロジェクトを読み込めませんでした: {0}"
 
@@ -2399,6 +2409,7 @@ msgstr "コンバインを保存できませんでした: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
+#, csharp-format
 msgid ""
 "The file '{0}' is using an old combine file format. It will be automatically "
 "converted to the current format."
@@ -3709,6 +3720,8 @@ msgid ""
 "Output directory '{0}' can't be mapped to a local directory. The directory "
 "'{1}' will be used instead"
 msgstr ""
+"出力ディレクトリ '{0}' はローカルディレクトリにマップできませんでした。ディレ"
+"クトリ '{1}' が代わりに使用されます"
 
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:52
 #, csharp-format
@@ -3743,6 +3756,42 @@ msgstr "起動時にwelcomeページを表示"
 #, csharp-format
 msgid "{0} could not be found or is invalid."
 msgstr "{0} が見つからないか、または無効です"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:1
+msgid "<b>Advanced</b>"
+msgstr "<b>上級者向け</b>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:2
+msgid ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new "
+"connection</span></span>"
+msgstr ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">新しい接続の作成"
+"</span></span>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:3
+msgid "Connection String"
+msgstr "接続文字列"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:4
+msgid "Database"
+msgstr "データベース"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:8
+msgid "Password"
+msgstr "パスワード"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:9
+msgid "Provider"
+msgstr "プロバイダ"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:10
+msgid "Server"
+msgstr "サーバ"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:11
+msgid "User ID"
+msgstr "ユーザーID"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:52
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:57

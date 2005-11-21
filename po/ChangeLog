@@ -1,5 +1,10 @@
 2005-11-21  Atsushi Enomoto  <atsushi@ximian.com>
 
+	* POTFILES.in : added monoquery.glade.
+	* ja_JP.po : updated for monoquery.
+
+2005-11-21  Atsushi Enomoto  <atsushi@ximian.com>
+
 	* ja_JP.po : updated.
 
 2005-11-17  Lluis Sanchez Gual  <lluis@novell.com>

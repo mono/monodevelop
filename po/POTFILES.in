@@ -189,6 +189,7 @@ Extras/WelcomePage/WelcomePageOptionPanel.cs
 Extras/WelcomePage/WelcomePageView.cs
 Extras/CSharpBinding/Gui/CodeGenerationPanel.cs
 Extras/CSharpBinding/CSharpBindingCompilerManager.cs
+Extras/MonoQuery/MonoQuery/monoquery.glade
 Extras/MonoQuery/Mono.Data.Sql/Providers/NpgsqlDbProvider.cs
 Extras/MonoQuery/Mono.Data.Sql/Providers/OracleDbProvider.cs
 Extras/MonoQuery/Mono.Data.Sql/Providers/MySqlDbProvider.cs
