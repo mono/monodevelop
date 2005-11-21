@@ -1,8 +1,12 @@
+2005-11-21  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Really fix.
+
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Escape some reserved
 	characters that cause a crash in gnome_icon_lookup_sync. Based on a
-	patch by Dean Brettle. Fixes bug #76776.
+	patch by Dean Brettle. Fixes bug #76776. 
 
 2005-11-14  Lluis Sanchez Gual  <lluis@novell.com>
 
