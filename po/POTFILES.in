@@ -57,6 +57,8 @@ Extras/JavaBinding/templates/JavaDialog.xft.xml
 Extras/JavaBinding/templates/JavaFrame.xft.xml
 Extras/JavaBinding/templates/JavaOKDialog.xft.xml
 Extras/JavaBinding/templates/JavaPanel.xft.xml
+Extras/NUnit/nunit.glade
+Extras/NUnit/MonoDevelopNUnit.addin.xml
 Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
