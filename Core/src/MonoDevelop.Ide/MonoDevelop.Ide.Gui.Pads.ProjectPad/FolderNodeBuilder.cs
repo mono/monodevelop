@@ -139,38 +139,43 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			string targetPath = GetFolderPath (CurrentNode.DataItem);
-			string what, source, where, how;
+			string what, source;
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
 			
 			bool ask;
-			if (operation == DragOperation.Move)
-				how = GettextCatalog.GetString ("move");
-			else
-				how = GettextCatalog.GetString ("copy");
 			
 			if (dataObject is ProjectFolder) {
 				source = ((ProjectFolder) dataObject).Path;
 				sourceProject = ((ProjectFolder) dataObject).Project;
-				what = string.Format (GettextCatalog.GetString ("the folder '{0}'"), Path.GetFileName(source));
+				what = Path.GetFileName (source);
 				ask = true;
 			}
 			else if (dataObject is ProjectFile) {
 				source = ((ProjectFile)dataObject).Name;
 				sourceProject = ((ProjectFile) dataObject).Project;
-				what = string.Format (GettextCatalog.GetString ("the file '{0}'"), Path.GetFileName(source));
+				what = null;
 				ask = false;
 			} else {
 				return;
 			}
 			
-			if (targetPath == targetProject.BaseDirectory)
-				where = string.Format (GettextCatalog.GetString ("root folder of project '{0}'"), targetProject.Name);
-			else
-				where = string.Format (GettextCatalog.GetString ("folder '{0}'"), Path.GetFileName (targetPath));
-			
 			if (ask) {
-				if (!Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to {0} {1} to {2}?"), how, what, where)))
+				string q;
+				if (operation == DragOperation.Move) {
+					if (targetPath == targetProject.BaseDirectory)
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
+					else
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+				}
+				else {
+					if (targetPath == targetProject.BaseDirectory)
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
+					else
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, Path.GetFileName (targetPath));
+				}
+
+				if (!Services.MessageService.AskQuestion (q))
 					return;
 			}
 			
@@ -188,11 +193,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				
 				string question;
-				if (filesToSave.Count == 1)
-					question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the {1} operation?"), sb.ToString (), how);
-				else
-					question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the {1} operation?\n\n{0}"), sb.ToString (), how);
-					
+				
+				if (operation == DragOperation.Move) {
+					if (filesToSave.Count == 1)
+						question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the move operation?"), sb.ToString ());
+					else
+						question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the move operation?\n\n{0}"), sb.ToString ());
+				} else {
+					if (filesToSave.Count == 1)
+						question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the copy operation?"), sb.ToString ());
+					else
+						question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the copy operation?\n\n{0}"), sb.ToString ());
+				}
+				
 				switch (Services.MessageService.AskQuestionWithCancel (question)) {
 					case QuestionResponse.Cancel:
 						return;
