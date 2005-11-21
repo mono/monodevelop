@@ -39,8 +39,12 @@ namespace MonoDevelop.Core.Gui.Utils
 				if (filename == "Documentation")
 					icon = "gnome-fs-regular";
 				else {
-					if (File.Exists (filename) || Directory.Exists (filename))
+					if (File.Exists (filename) || Directory.Exists (filename)) {
+						filename = filename.Replace ("#", "%23");
+						filename = filename.Replace ("%", "%25");
+						filename = filename.Replace ("?", "%3F");
 						icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, "", Gnome.IconLookupFlags.None, out result);
+					}
 					else
 						icon = "gnome-fs-regular";
 				}
