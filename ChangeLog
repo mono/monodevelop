@@ -1,3 +1,7 @@
+2005-11-21  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Makefile.am: Rename mdrun to mdtool.
+
 2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Updated required versions of mono and gtk#.
