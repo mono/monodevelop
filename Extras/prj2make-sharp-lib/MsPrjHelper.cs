@@ -559,7 +559,7 @@ namespace MonoDevelop.Prj2Make
 				monitor.EndTask ();
 			}
 		}
-
+		
 		protected void GetReferences (MonoDevelop.Prj2Make.Schema.Csproj.Reference[] References, ProjectReferenceCollection references, IProgressMonitor monitor)
 		{
 			if (References == null || References.Length == 0)
@@ -569,37 +569,23 @@ namespace MonoDevelop.Prj2Make
 			                      
 			try {
 				// Get the GAC path
-				string strBasePathMono1_0 = Path.Combine(
-						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
-						"mono/1.0");
+				string strBasePathMono1_0 = GetPackageDirectory ("mono", "mono/1.0");
 				
 				monitor.Step (1);
 
-	//			string strBasePathMono2_0 = Path.Combine(
-	//					MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("mono", "libdir").TrimEnd(),
-	//					"mono/2.0");
-	//
-				string strBasePathGtkSharp = Path.Combine(
-						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp", "libdir").TrimEnd(),
-						"mono/gtk-sharp");
+				string strBasePathGtkSharp = GetPackageDirectory ("gtk-sharp", "mono/gtk-sharp");
 				
 				monitor.Step (1);
 
-				string strBasePathGtkSharp2_0 = Path.Combine(
-						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gtk-sharp-2.0", "libdir").TrimEnd(),
-						"mono/gtk-sharp-2.0");
+				string strBasePathGtkSharp2_0 = GetPackageDirectory ("gtk-sharp-2.0", "mono/gtk-sharp-2.0");
 				
 				monitor.Step (1);
 
-				string strBasePathGeckoSharp = Path.Combine(
-						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp", "libdir").TrimEnd(),
-						"mono/gecko-sharp");
+				string strBasePathGeckoSharp = GetPackageDirectory ("gecko-sharp", "mono/gecko-sharp");
 				
 				monitor.Step (1);
 
-				string strBasePathGeckoSharp2_0 = Path.Combine(
-						MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue("gecko-sharp-2.0", "libdir").TrimEnd(),
-						"mono/gecko-sharp-2.0");
+				string strBasePathGeckoSharp2_0 = GetPackageDirectory ("gecko-sharp-2.0", "mono/gecko-sharp-2.0");
 				
 				string[] monoLibs = new string [] {
 					strBasePathMono1_0,
@@ -654,6 +640,7 @@ namespace MonoDevelop.Prj2Make
 							}
 						} else {
 							foreach (string libDir in monoLibs) {
+								if (libDir == null) continue;
 								if (rf.HintPath == null)
 									continue;
 								rfOut = GetMonoReferece (libDir, rf.HintPath);
@@ -679,6 +666,12 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 		
+		string GetPackageDirectory (string package, string subdir)
+		{
+			string dir = MonoDevelop.Prj2Make.PkgConfigInvoker.GetPkgVariableValue (package, "libdir");
+			return dir != null ? Path.Combine (dir.TrimEnd(), subdir) : null;
+		}
+
 		ProjectReference GetMonoReferece (string libPath, string reference)
 		{
 			string strRefFileName = Path.Combine (libPath, Path.GetFileName (reference));

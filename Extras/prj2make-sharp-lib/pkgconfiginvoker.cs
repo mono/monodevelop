@@ -1,6 +1,7 @@
 // created on 6/8/2004 at 5:44 AM
 using System;
 using System.Diagnostics;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -72,15 +73,15 @@ namespace MonoDevelop.Prj2Make
 
 			if (p.StandardOutput == null)
 			{
-				Console.WriteLine("Specified package did not return any information");
+				Runtime.LoggingService.Debug ("Specified package did not return any information");
 			}
 			
 			pkgout = p.StandardOutput.ReadToEnd ();		
 			p.WaitForExit ();
 			if (p.ExitCode != 0) 
 			{
-				Console.WriteLine("Error running pkg-config. Check the above output.");
-				Environment.Exit (1);
+				Runtime.LoggingService.Debug ("pkg-config command failed: pkg-config " + strArgLine);
+				return null;
 			}
 
 			if (pkgout != null)
