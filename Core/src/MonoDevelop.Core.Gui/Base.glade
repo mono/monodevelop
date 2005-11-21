@@ -871,7 +871,6 @@
 
 		      <child>
 			<widget class="GtkButton" id="btnEnable">
-			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
@@ -946,7 +945,6 @@
 
 		      <child>
 			<widget class="GtkButton" id="btnDisable">
-			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
@@ -1608,7 +1606,7 @@ asd
 		  <property name="visible">True</property>
 		  <property name="orientation">GTK_PROGRESS_LEFT_TO_RIGHT</property>
 		  <property name="fraction">0</property>
-		  <property name="pulse_step">0.1</property>
+		  <property name="pulse_step">0.10000000149</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -1664,7 +1662,7 @@ asd
 		  <property name="visible">True</property>
 		  <property name="orientation">GTK_PROGRESS_LEFT_TO_RIGHT</property>
 		  <property name="fraction">0</property>
-		  <property name="pulse_step">0.1</property>
+		  <property name="pulse_step">0.10000000149</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -2176,7 +2174,7 @@ sdfsf</property>
 		  <property name="max_length">0</property>
 		  <property name="text" translatable="yes"></property>
 		  <property name="has_frame">True</property>
-		  <property name="invisible_char" translatable="yes">*</property>
+		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
 		  <signal name="changed" handler="OnTextChanged" last_modification_time="Wed, 05 Oct 2005 20:56:26 GMT"/>
 		</widget>
@@ -2272,6 +2270,7 @@ sdfsf</property>
 		  <property name="directory_entry">False</property>
 		  <property name="modal">True</property>
 		  <property name="use_filechooser">True</property>
+		  <property name="filechooser_action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
 
 		  <child internal-child="entry">
 		    <widget class="GtkEntry" id="pathText">
@@ -2282,7 +2281,7 @@ sdfsf</property>
 		      <property name="max_length">0</property>
 		      <property name="text" translatable="yes"></property>
 		      <property name="has_frame">True</property>
-		      <property name="invisible_char" translatable="yes">*</property>
+		      <property name="invisible_char">*</property>
 		      <property name="activates_default">False</property>
 		      <signal name="changed" handler="OnTextChanged" last_modification_time="Wed, 05 Oct 2005 20:56:35 GMT"/>
 		    </widget>
@@ -2493,8 +2492,8 @@ sdfsf</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="label">
-	      <property name="visible">True</property>
 	      <property name="width_request">600</property>
+	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Loading...</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -2525,7 +2524,7 @@ sdfsf</property>
 		  <property name="visible">True</property>
 		  <property name="orientation">GTK_PROGRESS_LEFT_TO_RIGHT</property>
 		  <property name="fraction">0</property>
-		  <property name="pulse_step">0.1</property>
+		  <property name="pulse_step">0.10000000149</property>
 		  <property name="text" translatable="yes"></property>
 		</widget>
 		<packing>
@@ -2550,6 +2549,7 @@ sdfsf</property>
 		  <property name="fill">False</property>
 		</packing>
 	      </child>
+
 	      <child>
 		<widget class="GtkButton" id="btnClose">
 		  <property name="can_focus">True</property>

@@ -1,3 +1,9 @@
+2005-11-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Base.glade: Hide the enable/disable buttons in the add-in manager,
+	since this feature is not yet implemented.
+	* MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs: ShowAll is bad.
+
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Really fix.

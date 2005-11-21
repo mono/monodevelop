@@ -59,12 +59,12 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		public void Show ()
 		{
-			dialog.ShowAll ();
+			dialog.Show ();
 		}
 		
 		public void Run ()
 		{
-			dialog.ShowAll ();
+			dialog.Show ();
 			dialog.Run ();
 		}
 		
