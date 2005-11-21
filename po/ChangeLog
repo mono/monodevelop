@@ -1,3 +1,7 @@
+2005-11-21  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* ja_JP.po : updated for nunit addin.
+
 2005-11-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* POTFILES.in: Added missing files.

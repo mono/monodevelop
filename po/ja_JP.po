@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 03:56+0900\n"
+"POT-Creation-Date: 2005-11-22 07:43+0900\n"
 "PO-Revision-Date: 2004-07-12 10:51+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -254,7 +254,7 @@ msgid "New File"
 msgstr "新しいファイル"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:334
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:347
 msgid "New Folder"
 msgstr "新しいフォルダ"
 
@@ -395,7 +395,7 @@ msgstr "ツールバー"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
 msgid "Tools"
-msgstr "ツール (_T)"
+msgstr "ツール"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
 msgid "Use Existing File"
@@ -580,6 +580,7 @@ msgstr "コンパイル"
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
 msgid "Configurations"
 msgstr "コンフィグレーション"
 
@@ -1330,7 +1331,7 @@ msgstr "単一のスタートアップ プロジェクト (_S)"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:51
 msgid "cmbBuildOptions"
-msgstr ""
+msgstr "cmbBuildOptions"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:1
 msgid "-"
@@ -1847,7 +1848,7 @@ msgid ""
 "Executable\n"
 "Library"
 msgstr ""
-"実行可能\n"
+"実行可能形式\n"
 "ライブラリ"
 
 #: ../Extras/NemerleBinding/Nemerle.glade.h:11
@@ -2827,83 +2828,92 @@ msgstr ""
 msgid "References"
 msgstr "参照"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:148
-msgid "move"
-msgstr "移動"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:150
-msgid "copy"
-msgstr "コピー"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:167
 #, csharp-format
-msgid "the folder '{0}'"
-msgstr "フォルダ '{0}'"
+msgid ""
+"Do you really want to move the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr "本当にフォルダ '{0}' をプロジェクト '{1}' から削除しますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:169
 #, csharp-format
-msgid "the file '{0}'"
-msgstr "ファイル '{0}'"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:168
-#, csharp-format
-msgid "root folder of project '{0}'"
-msgstr "プロジェクト {0} のルート フォルダ"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:170
-#, csharp-format
-msgid "folder '{0}'"
-msgstr "フォルダ '{0}'"
+msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
+msgstr "本当にフォルダ {0} を フォルダ {1} に移動しますか?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:173
 #, csharp-format
-msgid "Do you really want to {0} {1} to {2}?"
-msgstr "本当に {1} を {2} から{0}しますか?"
+msgid ""
+"Do you really want to copy the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr ""
+"本当にフォルダ '{0}' をこのプロジェクトのルート フォルダ '{1}' にコピーします"
+"か?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:192
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:175
 #, csharp-format
-msgid "Do you want to save the file '{0}' before the {1} operation?"
-msgstr "フォルダ {0} をプロジェクト {1} から削除しますか?"
+msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
+msgstr "本当にフォルダ '{0}' をフォルダ '{1}' にコピーしますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:194
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:199
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the move operation?"
+msgstr "ファイル {0} を移動する前に保存しますか?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:201
 #, csharp-format
 msgid ""
-"Do you want to save the following files before the {1} operation?\n"
+"Do you want to save the following files before the move operation?\n"
 "\n"
 "{0}"
 msgstr ""
-"以下のファイルを {1} の実行前に保存しますか?\n"
+"以下のファイルを移動する前に保存しますか?\n"
 "\n"
 "{0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:205
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the copy operation?"
+msgstr "ファイル '{0}' をコピーの実行前に保存しますか?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
+#, csharp-format
+msgid ""
+"Do you want to save the following files before the copy operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"以下のファイルを {0} コピーの実行前に保存しますか?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:218
 msgid "Save operation failed."
 msgstr "保存に失敗しました。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:212
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:335
 msgid "Copying files ..."
 msgstr "ファイルをコピーしています..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
 #: ../Extras/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:117
 msgid "Add files"
 msgstr "ファイルを追加"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:242
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:255
 #, csharp-format
 msgid "{0} is outside the project directory, what should I do?"
 msgstr "{0} はプロジェクト ディレクトリの外側にあります。どうしますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:246
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:259
 msgid "Use the same action for all selected files."
 msgstr "選択されたファイルの全てについて同じ動作を適用"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:250
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:263
 msgid "_Move"
 msgstr "移動 (_M)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:268
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:281
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
@@ -2911,7 +2921,7 @@ msgstr ""
 "ファイルの移動またはコピー中にエラーが発生しました。ファイルの許可属性を"
 "チェックして下さい。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:292
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
 #, csharp-format
 msgid "The file '{0}' already exists. Do you want to replace it?"
 msgstr "ファイル {0} は既に存在します。上書きしますか?"
@@ -3194,6 +3204,10 @@ msgstr "INS"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
 msgid "OVR"
 msgstr "OVR"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:75
+msgid "Loading Workbench"
+msgstr "ワークベンチをロードしています"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:100
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:105
@@ -3668,6 +3682,102 @@ msgstr "Javac"
 msgid "Gcj"
 msgstr "Gcj"
 
+#: ../Extras/NUnit/nunit.glade.h:1
+msgid "Categories:"
+msgstr "カテゴリ:"
+
+#: ../Extras/NUnit/nunit.glade.h:2
+msgid "Don't apply any filter"
+msgstr "フィルタを適用しない"
+
+#: ../Extras/NUnit/nunit.glade.h:3
+msgid "Exclude the following categories"
+msgstr "以下のカテゴリを除外"
+
+#: ../Extras/NUnit/nunit.glade.h:4
+msgid "Include the following categories"
+msgstr "以下のカテゴリが対象"
+
+#: ../Extras/NUnit/nunit.glade.h:5
+msgid "NUnit Options"
+msgstr "NUnit オプション"
+
+#: ../Extras/NUnit/nunit.glade.h:6
+msgid "The following filter will be applied when running the tests:"
+msgstr "以下のフィルタがテスト実行時に適用されます"
+
+#: ../Extras/NUnit/nunit.glade.h:7
+msgid "Use parent test settings"
+msgstr "親テスト設定を使用する"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
+msgid "Add assembly ..."
+msgstr "アセンブリの追加 ..."
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
+msgid "NUnit Categories"
+msgstr "NUnitカテゴリ"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
+msgid "NUnit options"
+msgstr "NUnit オプション"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
+msgid "Proportional time scale"
+msgstr "プロポーショナルな時間軸"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
+msgid "Results chart"
+msgstr "結果チャート"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
+msgid "Run Test"
+msgstr "テストを実行"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
+msgid "Select test in tree"
+msgstr "ツリー中のテストを選択"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
+msgid "Show Test Counters"
+msgstr "テストカウンタを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
+msgid "Show Test Time"
+msgstr "テスト時間を表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
+msgid "Show failed tests"
+msgstr "失敗したテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
+msgid "Show ignored tests"
+msgstr "無視されたテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
+msgid "Show one result per day"
+msgstr "1日につき1件を表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
+msgid "Show results pad"
+msgstr "結果パッドを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
+msgid "Show successful tests"
+msgstr "成功したテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
+msgid "Show test source code"
+msgstr "テストのソースコードを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
+msgid "Time chart"
+msgstr "タイムチャート"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
+msgid "Unit Tests"
+msgstr "単体テスト"
+
 #: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
 msgid "Unit Test Options"
 msgstr "単体テスト オプション"
@@ -3911,6 +4021,10 @@ msgstr "制約"
 msgid "Procedure"
 msgstr "プロシージャ"
 
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlDefinitionPad.cs:54
+msgid "SQL Definition"
+msgstr "SQL 定義"
+
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:222
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:259
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:469
@@ -3982,3 +4096,24 @@ msgstr "WinEXE"
 #: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:151
 msgid "Module"
 msgstr "モジュール"
+
+#~ msgid "move"
+#~ msgstr "移動"
+
+#~ msgid "copy"
+#~ msgstr "コピー"
+
+#~ msgid "the folder '{0}'"
+#~ msgstr "フォルダ '{0}'"
+
+#~ msgid "the file '{0}'"
+#~ msgstr "ファイル '{0}'"
+
+#~ msgid "root folder of project '{0}'"
+#~ msgstr "プロジェクト {0} のルート フォルダ"
+
+#~ msgid "folder '{0}'"
+#~ msgstr "フォルダ '{0}'"
+
+#~ msgid "Do you really want to {0} {1} to {2}?"
+#~ msgstr "本当に {1} を {2} から{0}しますか?"
