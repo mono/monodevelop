@@ -50,7 +50,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public DisplayBindingCodon GetCodonPerFileName(string filename)
 		{
-			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (filename);
+			string vfsname = filename;
+			vfsname = vfsname.Replace ("%", "%25");
+			vfsname = vfsname.Replace ("#", "%23");
+			vfsname = vfsname.Replace ("?", "%3F");
+			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname);
+
 			if (!filename.StartsWith ("http")) {
 				foreach (DisplayBindingCodon binding in bindings) {
 					if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimetype)) {

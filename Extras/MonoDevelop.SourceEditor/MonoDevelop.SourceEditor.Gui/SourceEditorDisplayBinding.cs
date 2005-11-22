@@ -294,7 +294,11 @@ namespace MonoDevelop.SourceEditor.Gui
 				editorBar.Remove (reloadBar);
 				WorkbenchWindow.ShowNotification = false;
 			}
-			se.Buffer.LoadFile (fileName, Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName));
+			string vfsname = fileName;
+			vfsname = vfsname.Replace ("%", "%25");
+			vfsname = vfsname.Replace ("#", "%23");
+			vfsname = vfsname.Replace ("?", "%3F");
+			se.Buffer.LoadFile (fileName, Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname));
 			ContentName = fileName;
 			InitializeFormatter ();
 			

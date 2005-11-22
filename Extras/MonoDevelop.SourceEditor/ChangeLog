@@ -1,3 +1,9 @@
+2005-11-22 John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	percent escape files before passing them to vfs to get the
+	mimetype, fixes bug #75256
+	
 2005-11-17 John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:

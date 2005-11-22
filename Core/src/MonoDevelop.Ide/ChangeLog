@@ -1,3 +1,9 @@
+2005-11-22  John Luke <john.luke@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	percent escape files before getting the mimetype,
+	fixes bug #75256
+	
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: Make some
