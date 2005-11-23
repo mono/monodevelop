@@ -212,6 +212,7 @@ Core/src/ICSharpCode.SharpRefactory/Makefile
 Core/src/Makefile
 Core/src/MonoDevelop.Core/AssemblyInfo.cs
 Core/src/MonoDevelop.Core/Makefile
+Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
 Core/src/MonoDevelop.Core.Gui/AssemblyInfo.cs
 Core/src/MonoDevelop.Core.Gui/Makefile
 Core/src/MonoDevelop.Projects/AssemblyInfo.cs

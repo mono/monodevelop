@@ -1,5 +1,9 @@
+2005-11-23 Wade Berrier  <wberrier@novell.com>
+
+	* configure.in: Add GettextCatalog.cs to AC_OUTPUT
+
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com>
-  
+
 	* configure.in: Added italian translation.
 
 2005-11-21  Lluis Sanchez Gual  <lluis@novell.com>  
