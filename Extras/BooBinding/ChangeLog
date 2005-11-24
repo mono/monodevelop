@@ -1,4 +1,10 @@
+2005-11-16  Peter Johanson  <latexer@gentoo.org>
+
+	* Parser/Resolver.boo: Remove some unneeded code, and properly resolve
+	'self' and 'super' when inside a static context.
+
 2005-11-16  Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
 	* Gui/ShellTextView.boo: fix EndIter error that caused prompt not to
 	be displayed
 	

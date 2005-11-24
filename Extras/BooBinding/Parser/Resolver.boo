@@ -111,7 +111,6 @@ class Resolver:
 	
 	def InnerGetTypeFromLocal(name as string) as IReturnType:
 		member = self.CurrentMember
-		//Print("member", member)
 		if member isa BooAbstractMethod:
 			method as BooAbstractMethod = member
 			for para as IParameter in method.Parameters:
@@ -190,7 +189,6 @@ class Resolver:
 					for alias as string in u.Aliases.Keys:
 						result.Add(alias)
 			member = self.CurrentMember
-			//Print("member", member)
 			if member != null:
 				varList as Hashtable = null
 				if member isa BooAbstractMethod:
@@ -266,6 +264,7 @@ class Resolver:
 		return true
 	
 	def Resolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as ResolveResult:
+		Log ("Resolving |${expression}|")
 		if expression == null or expression == '':
 			return null
 		
@@ -274,15 +273,20 @@ class Resolver:
 			if _parserContext.NamespaceExists(expression):
 				return ResolveResult(_parserContext.GetNamespaceList(expression, true, true))
 			return null
+		elif expression == "import":
+			return ResolveResult (_parserContext.GetNamespaceList(String.Empty, true, true))
 		
 		if not Initialize(_parserContext, caretLine, caretColumn, fileName):
 			return null
 		callingClass = _callingClass
 		returnClass as IClass = null
+		_showStatic = false
 		if expression == "self":
 			returnClass = callingClass
+			_showStatic = self.CurrentMember != null and self.CurrentMember.IsStatic
 		elif expression == "super":
 			returnClass = BaseClass(callingClass)
+			_showStatic = self.CurrentMember != null and self.CurrentMember.IsStatic
 			//returnClass = self.ParentClass
 		else:
 			// try looking if the expression is the name of a class
@@ -310,15 +314,7 @@ class Resolver:
 					returnClass = self.SearchType(retType.FullyQualifiedName)
 		
 		return null if returnClass == null
-		return ResolveResult(returnClass, ListMembers(ArrayList(), returnClass))
-	
-	private def Print(name as string, obj):
-		Console.Write(name)
-		Console.Write(' = ')
-		if obj == null:
-			print('null')
-		else:
-			print("${obj} (${obj.GetType().FullName})")
+		return ResolveResult(returnClass, ListMembers(ArrayList(), returnClass, _showStatic))
 	#endregion
 
 	#region Code converted from CSharpBinding/Parser/Resolver.cs
