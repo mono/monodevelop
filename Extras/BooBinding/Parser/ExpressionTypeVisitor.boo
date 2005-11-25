@@ -166,7 +166,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 		Debug(node)
 		CombineTypes(node.Left, node.Right)
 	
-	override def OnTernaryExpression(node as TernaryExpression):
+	override def OnConditionalExpression(node as ConditionalExpression):
 		Debug(node)
 		CombineTypes(node.TrueValue, node.FalseValue)
 	
@@ -263,7 +263,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 	override def OnArrayLiteralExpression(node as ArrayLiteralExpression):
 		CreateReturnType("System.Array")
 	
-	override def OnAsExpression(node as AsExpression):
+	override def OnTryCastExpression(node as TryCastExpression):
 		CreateReturnType(node.Type)
 	
 	override def OnCastExpression(node as CastExpression):

@@ -1,3 +1,9 @@
+2005-11-25  Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
+	* Gui/ShellTextView.boo: 'in' operator now requires a proper array argument
+	* Parser/ExpressionTypeVisitor.boo: AsExpression -> TryCastExpression,
+	TernaryExpression -> ConditionalExpression
+
 2005-11-16  Peter Johanson  <latexer@gentoo.org>
 
 	* Parser/Resolver.boo: Remove some unneeded code, and properly resolve

@@ -183,7 +183,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 		for assembly in Model.References:
 			_fakeProject.AddReference(assembly)
 
-		GLib.Idle.Add( { _parserContext.ParseFile (_fakeFileName, _scriptLines) } )
+		GLib.Idle.Add () do:
+			_parserContext.ParseFile (_fakeFileName, _scriptLines)
 		return false
 			
 	override def Dispose():
@@ -242,7 +243,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		
 		// Short circuit to avoid getting moved back to the input line
 		// when paging up and down in the shell output
-		if ev.Key in Gdk.Key.Page_Up, Gdk.Key.Page_Down:
+		if ev.Key in (Gdk.Key.Page_Up, Gdk.Key.Page_Down):
 			return super (ev)
 		
 		// Needed so people can copy and paste, but always end up
@@ -340,7 +341,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 
 		// Short circuit to avoid getting moved back to the input line
 		// when paging up and down in the shell output
-		elif ev.Key in Gdk.Key.Page_Up, Gdk.Key.Page_Down:
+		elif ev.Key in (Gdk.Key.Page_Up, Gdk.Key.Page_Down):
 			return super (ev)
 		
 		return super (ev)

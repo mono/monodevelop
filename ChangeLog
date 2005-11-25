@@ -1,3 +1,7 @@
+2005-11-25 Rodrigo B. de Oliveira  <rodrigobamboo@gmail.com>
+
+	* configure.in: BOO_REQUIRED_VERSION bumped to 0.7.5.2013.
+
 2005-11-23 Wade Berrier  <wberrier@novell.com>
 
 	* configure.in: Add GettextCatalog.cs to AC_OUTPUT
