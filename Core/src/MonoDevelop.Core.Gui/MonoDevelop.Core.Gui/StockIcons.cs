@@ -83,7 +83,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string PrivateMethod = "md-private-method";
 		public static readonly string PrivateProperty = "md-private-property";
 		public static readonly string PrivateStruct = "md-private-struct";
-		public static readonly string ProjectScoutIcon = "md-project-scout-icon";
 		public static readonly string PropertiesIcon = "md-properties-icon";
 		public static readonly string Property = "md-property";
 		public static readonly string ProtectedClass = "md-protected-class";

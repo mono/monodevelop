@@ -96,7 +96,6 @@
 		<StockIcon stockid = "md-private-method" resource = "Icons.16x16.PrivateMethod" />
 		<StockIcon stockid = "md-private-property" resource = "Icons.16x16.PrivateProperty" />
 		<StockIcon stockid = "md-private-struct" resource = "Icons.16x16.PrivateStruct" />
-		<StockIcon stockid = "md-project-scout-icon" resource = "Icons.ProjectScoutIcon" />
 		<StockIcon stockid = "md-properties-icon" resource = "Icons.16x16.PropertiesIcon" />
 		<StockIcon stockid = "md-property" resource = "Icons.16x16.Property" />
 		<StockIcon stockid = "md-protected-class" resource = "Icons.16x16.ProtectedClass" />
