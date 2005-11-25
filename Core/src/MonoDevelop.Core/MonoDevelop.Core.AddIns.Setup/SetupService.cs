@@ -814,17 +814,20 @@ namespace MonoDevelop.Core.AddIns.Setup
 		public void BuildRepository (IProgressMonitor monitor, string path)
 		{
 			string mainPath = Path.Combine (path, "main.mrep");
+			ArrayList allAddins = new ArrayList ();
+			
 			Repository rootrep = (Repository) ReadObject (mainPath, typeof(Repository));
 			if (rootrep == null) {
 				rootrep = new Repository ();
 			}
 			
-			BuildRepository (monitor, rootrep, path, "root.mrep");
+			BuildRepository (monitor, rootrep, path, "root.mrep", allAddins);
 			WriteObject (mainPath, rootrep);
+			GenerateIndexPage (rootrep, allAddins, path);
 			monitor.Log.WriteLine ("Updated main.mrep");
 		}
 		
-		void BuildRepository (IProgressMonitor monitor, Repository rootrep, string rootPath, string relFilePath)
+		void BuildRepository (IProgressMonitor monitor, Repository rootrep, string rootPath, string relFilePath, ArrayList allAddins)
 		{
 			DateTime lastModified = DateTime.MinValue;
 			
@@ -852,6 +855,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 					modified = true;
 					monitor.Log.WriteLine ("Added addin: " + fname);
 				}
+				allAddins.Add (entry);
 				
 				DateTime date = File.GetLastWriteTime (file);
 				if (date > lastModified)
@@ -884,8 +888,31 @@ namespace MonoDevelop.Core.AddIns.Setup
 			
 			foreach (string dir in Directory.GetDirectories (mainPath)) {
 				string based = dir.Substring (rootPath.Length + 1);
-				BuildRepository (monitor, rootrep, rootPath, Path.Combine (based, "main.mrep"));
+				BuildRepository (monitor, rootrep, rootPath, Path.Combine (based, "main.mrep"), allAddins);
 			}
+		}
+		
+		void GenerateIndexPage (Repository rep, ArrayList addins, string basePath)
+		{
+			StreamWriter sw = new StreamWriter (Path.Combine (basePath, "index.html"));
+			sw.WriteLine ("<html><body><head>");
+			sw.WriteLine ("<html><body>");
+			sw.WriteLine ("<link type='text/css' rel='stylesheet' href='md.css' />");
+			sw.WriteLine ("</head>");
+			sw.WriteLine ("<h1>MonoDevelop Add-in Repository</h1>");
+			if (rep.Name != null && rep.Name != "")
+				sw.WriteLine ("<h2>" + rep.Name + "</h2>");
+			sw.WriteLine ("<p>This is a list of add-ins available in this repository. ");
+			sw.WriteLine ("If you need information about how to install add-ins, please read <a href='http://www.monodevelop.com/Installing_Add-ins'>this</a>.</p>");
+			sw.WriteLine ("<table border=1><thead><tr><th>Add-in</th><th>Version</th><th>Description</th></tr></thead>");
+			
+			foreach (AddinRepositoryEntry entry in addins) {
+				sw.WriteLine ("<tr><td>" + entry.Addin.Id + "</td><td>" + entry.Addin.Version + "</td><td>" + entry.Addin.Description + "</td></tr>");
+			}
+			
+			sw.WriteLine ("</table>");
+			sw.WriteLine ("</body></html>");
+			sw.Close ();
 		}
 		
 		public void BuildPackage (IProgressMonitor monitor, string targetDirectory, params string[] filePaths)

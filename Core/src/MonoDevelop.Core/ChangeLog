@@ -1,3 +1,21 @@
+2005-11-25  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddIn.cs: Add support for "Assembly"
+	dependencies. Removed unneeded error log message.
+	
+	* MonoDevelop.Core.AddIns.Setup/AddinInfo.cs:
+	* MonoDevelop.Core.AddIns/AddInService.cs: Add support for "Assembly"
+	dependencies.
+	
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs:
+	Improved formatting.
+	
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Generate an index page
+	when building a repository.
+	
+	* Makefile.am:
+	* MonoDevelop.Core.mdp: Added new files.
+
 2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddIn.cs: 

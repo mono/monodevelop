@@ -196,8 +196,11 @@ namespace MonoDevelop.Core.AddIns
 			addins.Remove (iad);
 			addins.Add (iad);
 			
-			foreach (AddinDependency dep in iad.Addin.Dependencies)
-				ResolveLoadDependencies (addins, depCheck, dep.AddinId, dep.Version);
+			foreach (PackageDependency dep in iad.Addin.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep != null)
+					ResolveLoadDependencies (addins, depCheck, adep.AddinId, adep.Version);
+			}
 				
 			depCheck.Pop ();
 		}

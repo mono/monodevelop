@@ -266,8 +266,14 @@ namespace MonoDevelop.Core.AddIns
 							string aname = dep.GetAttribute ("id");
 							AddIn addin = AddInTreeSingleton.AddInTree.AddIns [aname];
 							if (addin == null)
-								throw new MissingDependencyException ("Addin: " + aname);
+								throw new MissingDependencyException ("Required add-in not found: " + aname);
 							list.Add (addin);
+							break;
+						}
+						case "Assembly": {
+							string aname = dep.GetAttribute ("name");
+							if (Runtime.SystemAssemblyService.GetAssemblyLocation (aname) == null)
+								throw new MissingDependencyException ("Required assembly not found: " + aname);
 							break;
 						}
 					}
@@ -482,18 +488,7 @@ namespace MonoDevelop.Core.AddIns
 		/// <summary>
 		/// Returns a type which is related to this Add-In.
 		/// </summary>
-		/// <exception cref="TypeNotFoundException">
-		/// If className could not be found
-		/// </exception>
 		public Type GetType (string className)
-		{
-			Type ct = GetTypeInternal (className);
-			if (ct == null)
-				Runtime.LoggingService.Error ("Type '" + className + "' referenced from add-in '" + Id + "' not found.");
-			return ct;
-		}
-		
-		internal Type GetTypeInternal (string className)
 		{
 			foreach (DictionaryEntry library in runtimeLibraries) {
 				Type t = ((Assembly)library.Value).GetType (className);
@@ -504,7 +499,7 @@ namespace MonoDevelop.Core.AddIns
 			// Look in dependencies
 			
 			foreach (AddIn dep in Dependencies) {
-				Type t = dep.GetTypeInternal (className);
+				Type t = dep.GetType (className);
 				if (t != null) return t;
 			}
 			

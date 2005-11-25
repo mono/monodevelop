@@ -99,6 +99,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
 		[XmlArrayItem ("NativeDependency", typeof(NativeDependency))]
+		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
 		public PackageDependencyCollection Dependencies {
 			get { return dependencies; }
 		}
@@ -127,6 +128,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 				string v = dep.GetAttribute ("version");
 				if (v.Length != 0)
 					adep.Version = v;
+				info.Dependencies.Add (adep);
+			}
+			
+			foreach (XmlElement dep in doc.SelectNodes ("AddIn/Dependencies/Assembly")) {
+				AssemblyDependency adep = new AssemblyDependency ();
+				adep.FullName = dep.GetAttribute ("name");
+				adep.Package = dep.GetAttribute ("package");
 				info.Dependencies.Add (adep);
 			}
 			

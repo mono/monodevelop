@@ -63,6 +63,7 @@ MonoDevelop.Core.AddIns.Setup/AddinPackage.cs \
 MonoDevelop.Core.AddIns.Setup/AddinRepositoryEntry.cs \
 MonoDevelop.Core.AddIns.Setup/AddinSetupInfo.cs \
 MonoDevelop.Core.AddIns.Setup/AddinSystemConfiguration.cs \
+MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs \
 MonoDevelop.Core.AddIns.Setup/InstallException.cs \
 MonoDevelop.Core.AddIns.Setup/NativeDependency.cs \
 MonoDevelop.Core.AddIns.Setup/NativePackage.cs \

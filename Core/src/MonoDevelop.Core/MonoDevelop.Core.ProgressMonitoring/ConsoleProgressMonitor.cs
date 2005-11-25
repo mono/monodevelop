@@ -94,15 +94,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public override void ReportWarning (string message)
 		{
-			WriteText ("WARNING: " + message);
+			WriteText ("WARNING: " + message + "\n");
 		}
 		
 		public override void ReportError (string message, Exception ex)
 		{
 			if (message != null)
-				WriteText ("ERROR: " + message);
+				WriteText ("ERROR: " + message + "\n");
 			else if (ex != null)
-				WriteText ("ERROR: " + ex.Message);
+				WriteText ("ERROR: " + ex.Message + "\n");
 		}
 		
 		void WriteText (string text)
