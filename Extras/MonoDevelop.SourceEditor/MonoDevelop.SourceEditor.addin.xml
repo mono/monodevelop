@@ -117,7 +117,7 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/ToolBar">
-		<ItemSet id = "Search" insertafter = "Standard" insertbefore = "Build">
+		<ItemSet id = "Search" insertafter = "Standard" insertbefore = "Build" _label="Search">
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />

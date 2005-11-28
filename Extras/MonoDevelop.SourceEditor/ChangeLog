@@ -1,3 +1,7 @@
+2005-11-28  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.addin.xml: Added missing label to toolbar.
+
 2005-11-22 John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
