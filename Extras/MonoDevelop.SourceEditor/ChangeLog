@@ -1,3 +1,9 @@
+2005-11-28  Peter Johanson  <latexer@gentoo.org> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Set the
+	mime type for boo files for initial creation as well. Makes newly
+	created boo files get syntax highlighting/completion.
+
 2005-11-28  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Added missing label to toolbar.
