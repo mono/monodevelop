@@ -13,6 +13,8 @@ Extras/CSharpBinding/CSharpBinding.addin.xml
 Extras/DebuggerAddIn/MonoDevelopDebugger.addin.xml
 Extras/MonoDevelop.SourceEditor/EditorBindings.glade
 Extras/MonoDevelop.SourceEditor/texteditoraddin.glade
+Extras/JavaBinding/Java.glade
+Extras/WelcomePage/WelcomePage.addin.xml
 Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml
 Extras/CSharpBinding/templates/BlankCombine.xpt.xml
 Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
