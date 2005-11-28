@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		string CreditText {
 			get {
 				StringBuilder sb = new StringBuilder ();
-				sb.Append ("<b>Ported and developed by:</b>\n");
+				sb.Append (GettextCatalog.GetString ("<b>Ported and developed by:</b>\n"));
 
 				foreach (string s in authors)
 				{
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string trans = GettextCatalog.GetString ("translator-credits");
 				if (trans != "translator-credits")
 				{
-					sb.Append ("\n\n<b>Translated by:</b>\n");
+					sb.Append (GettextCatalog.GetString ("\n\n<b>Translated by:</b>\n"));
 					sb.Append (trans);
 				}
 				return sb.ToString ();

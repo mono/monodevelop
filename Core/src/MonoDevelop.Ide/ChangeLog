@@ -1,3 +1,9 @@
+2005-11-28  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Make some strings
+	translatable. Patch by David Makovský.
+
 2005-11-22  John Luke <john.luke@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:

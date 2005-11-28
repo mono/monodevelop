@@ -29,11 +29,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			hboxVersion.PackStart (versionLabel, false, false, 5);
 			
 			HBox hboxLicense = new HBox ();
-			licenseLabel.Markup = String.Format ("<b>License</b>\n    {0}", GettextCatalog.GetString ("Released under the GNU General Public license."));
+			licenseLabel.Markup = String.Format (GettextCatalog.GetString ("<b>License</b>\n    {0}"), GettextCatalog.GetString ("Released under the GNU General Public license."));
 			hboxLicense.PackStart (licenseLabel, false, false, 5);
 
 			HBox hboxCopyright = new HBox ();
-			copyrightLabel.Markup = "<b>Copyright</b>\n    (c) 2000-2003 by icsharpcode.net\n    (c) 2004-2005 by MonoDevelop contributors";
+			copyrightLabel.Markup = GettextCatalog.GetString ("<b>Copyright</b>\n    (c) 2000-2003 by icsharpcode.net\n    (c) 2004-2005 by MonoDevelop contributors");
 			hboxCopyright.PackStart (copyrightLabel, false, false, 5);
 
 			this.PackStart (hboxVersion, false, true, 0);
