@@ -32,11 +32,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			image.Show ();
 
 			HBox hbox = new HBox();
-			Alignment align = new Alignment (0.5f, 1.0f, 0.90f, 1.0f);
 			progress = new ProgressBar();
 			progress.Fraction = 0.00;
-			align.Add (progress);
-			hbox.PackStart (align, true, true, 0);
+			hbox.PackStart (progress, true, true, 5);
 			hbox.ShowAll();
 
 			vbox = new VBox();
