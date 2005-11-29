@@ -1,3 +1,8 @@
+2005-11-29  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* WelcomePage.xsl:
+	Added tooltips for recent projects.
+
 2005-11-16  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	Added WelcomePage addin, by Scott Ellington.

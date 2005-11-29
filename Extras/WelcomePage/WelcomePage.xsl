@@ -75,13 +75,13 @@
 														<xsl:choose>
 															<xsl:when test="position() mod 2 = 0">
 																<tr class="evenrow">
-																	<td><a href="project://{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
+																	<td><a href="project://{Uri}" title="{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
 																	<td class="proj_mod_col"><xsl:value-of select="DateModified" /></td>
 																</tr>
 															</xsl:when>
 															<xsl:otherwise>
 																<tr >
-																	<td><a href="project://{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
+																	<td><a href="project://{Uri}" title="{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
 																	<td class="proj_mod_col"><xsl:value-of select="DateModified" /></td>
 																</tr>
 															</xsl:otherwise>
