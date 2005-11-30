@@ -798,10 +798,14 @@ namespace MonoDevelop.SourceEditor.Gui
 	class SourceViewTextIterator: ForwardTextIterator
 	{
 		bool initialBackwardsPosition;
+		bool hasWrapped;
 		
 		public SourceViewTextIterator (IDocumentInformation docInfo, Gtk.TextView document, int endOffset)
 		: base (docInfo, document, endOffset)
 		{
+			// Make sure the iterator is ready for use
+			this.MoveAhead(1);
+			this.hasWrapped = false;
 		}
 		
 		public override bool SupportsSearch (SearchOptions options, bool reverse)
@@ -825,53 +829,46 @@ namespace MonoDevelop.SourceEditor.Gui
 				Position++;
 				initialBackwardsPosition = false;
 			}
-			
-			TextIter it = Buffer.GetIterAtOffset (DocumentOffset);
-			
-			int limitOffset = EndOffset;
-			if (reverse)
-				limitOffset = (limitOffset + text.Length - 1) % BufferLength;
-			else
-				limitOffset = (limitOffset + 1) % BufferLength;
-
+							
 			// Use special search flags that work for both the old and new API
 			// of gtksourceview (the enum values where changed in the API).
 			// See bug #75770
 			SourceSearchFlags flags = options.IgnoreCase ? (SourceSearchFlags)7 : (SourceSearchFlags)1;
 			
-			Gtk.TextIter matchStart, matchEnd;
-			bool res;
-			
-			Gtk.TextIter limit;
+			Gtk.TextIter matchStart, matchEnd, limit;
+								
 			
 			if (reverse) {
-				if (DocumentOffset <= EndOffset)
+				if (!hasWrapped)
 					limit = Buffer.StartIter;
 				else
-					limit = Buffer.GetIterAtOffset (limitOffset);
+					limit = Buffer.GetIterAtOffset (EndOffset);
 			} else {
-				if (DocumentOffset >= EndOffset)
+				if (!hasWrapped)
 					limit = Buffer.EndIter;
 				else
-					limit = Buffer.GetIterAtOffset (limitOffset);
+					limit = Buffer.GetIterAtOffset (EndOffset + text.Length);
 			}
 			
 			// machEnd is the position of the last matched char + 1
 			// When searching forward, the limit check is: matchEnd < limit
 			// When searching backwards, the limit check is: matchEnd > limit
 			
-			res = Find (reverse, it, text, flags, out matchStart, out matchEnd, limit);
+			TextIter iterator = Buffer.GetIterAtOffset (DocumentOffset);
+			bool res = Find (reverse, iterator, text, flags, out matchStart, out matchEnd, limit);
 			
-			if (!res) {
-				// Not found in the first half of the document, try not the other half
-				if (reverse && DocumentOffset <= EndOffset) {
-					it = Buffer.EndIter;
-					limit = Buffer.GetIterAtOffset (limitOffset);
-					res = Find (true, it, text, flags, out matchStart, out matchEnd, limit);
-				} else if (!reverse && DocumentOffset >= EndOffset) {
-					it = Buffer.StartIter;
-					limit = Buffer.GetIterAtOffset (limitOffset);
-					res = Find (false, it, text, flags, out matchStart, out matchEnd, limit);
+			if (!res && !hasWrapped) {
+				
+				hasWrapped = true;																
+								
+				// Not found in the first half of the document, try the other half
+				if (reverse && DocumentOffset <= EndOffset) {					
+					limit = Buffer.GetIterAtOffset (EndOffset);
+					res = Find (true, Buffer.EndIter, text, flags, out matchStart, out matchEnd, limit);
+				// Not found in the second half of the document, try the other half
+				} else if (!reverse && DocumentOffset >= EndOffset) {										
+					limit = Buffer.GetIterAtOffset (EndOffset + text.Length);									
+					res = Find (false, Buffer.StartIter, text, flags, out matchStart, out matchEnd, limit);
 				}
 			}
 			
