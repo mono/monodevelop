@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
-using Mono.Posix;
+using Mono.Unix;
 
 namespace MonoDevelop.Core
 {

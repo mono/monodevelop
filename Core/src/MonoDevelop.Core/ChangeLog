@@ -1,3 +1,9 @@
+2005-11-29  David Makovský <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
+	* MonoDevelop.Core/ServiceManager.cs: Make some strings translatable.
+	* Monodevelop.Core/GettextCatalog.cs.in: use Mono.Unix instead of Mono.Posix which is depreceated
+
 2005-11-25  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddIn.cs: Add support for "Assembly"

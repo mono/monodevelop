@@ -119,7 +119,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			PackageCollection toUninstall;
 			PackageDependencyCollection unresolved;
 			if (!Runtime.SetupService.ResolveDependencies (monitor, packs, out toUninstall, out unresolved)) {
-				monitor.ReportError ("Not all dependencies could be resolved.", null);
+				monitor.ReportError (GettextCatalog.GetString ("Not all dependencies could be resolved."), null);
 				return false;
 			}
 			
@@ -451,14 +451,14 @@ namespace MonoDevelop.Core.AddIns.Setup
 					if (ap.Addin.Id == otherap.Addin.Id) {
 						if (ap.IsUpgradeOf (otherap)) {
 							if (requested.Contains (otherap)) {
-								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+								monitor.ReportError (GettextCatalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
 								error = true;
 							} else {
 								packages.RemoveAt (k);
 							}
 						} else if (otherap.IsUpgradeOf (ap)) {
 							if (requested.Contains (ap)) {
-								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+								monitor.ReportError (GettextCatalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
 								error = true;
 							} else {
 								packages.RemoveAt (n);
@@ -466,7 +466,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 							}
 						} else {
 							error = true;
-							monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
+							monitor.ReportError (GettextCatalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
 						}
 						break;
 					}
@@ -687,7 +687,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				SaveConfiguration ();
 				return rr;
 			} catch (Exception ex) {
-				monitor.ReportError ("The repository could not be registered", ex);
+				monitor.ReportError (GettextCatalog.GetString ("The repository could not be registered"), ex);
 				if (IsRepositoryRegistered (url))
 					UnregisterRepository (url);
 				return null;
@@ -1059,13 +1059,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 				return tmpfile;
 			}
 
-			monitor.BeginTask ("Requesting " + url, 2);
+			monitor.BeginTask (GettextCatalog.GetString ("Requesting ") + url, 2);
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (url);
 			req.Headers ["Pragma"] = "no-cache";
 			HttpWebResponse resp = (HttpWebResponse) req.GetResponse ();
 			monitor.Step (1);
 			
-			monitor.BeginTask ("Downloading " + url, (int) resp.ContentLength);
+			monitor.BeginTask (GettextCatalog.GetString ("Downloading ") + url, (int) resp.ContentLength);
 			
 			string file = Path.GetTempFileName ();
 			FileStream fs = null;
