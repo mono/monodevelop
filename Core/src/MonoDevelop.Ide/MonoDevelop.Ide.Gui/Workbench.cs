@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void Initialize (IProgressMonitor monitor)
 		{
-			monitor.BeginTask ("Initializing Main Window", 4);
+			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 4);
 			try {
 				workbench = new DefaultWorkbench ();
 				monitor.Step (1);

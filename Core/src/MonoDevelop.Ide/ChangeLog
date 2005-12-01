@@ -1,3 +1,8 @@
+2005-11-30  David Makovský <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs: Make some strings translatable.
+
 2005-11-28  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs:

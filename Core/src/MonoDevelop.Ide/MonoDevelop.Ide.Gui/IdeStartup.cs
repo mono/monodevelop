@@ -91,8 +91,8 @@ namespace MonoDevelop.Ide.Gui
 				Dns.GetHostByName (Dns.GetHostName ());
 			} catch {
 				using (ErrorDialog dialog = new ErrorDialog (null)) {
-					dialog.Message = "MonoDevelop failed to start. Local hostname cannot be resolved.";
-					dialog.AddDetails ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file.", true);
+					dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
+					dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
 					dialog.Run ();
 				}
 				return 1;
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 
-			monitor.BeginTask ("Initializing MonoDevelop", 2);
+			monitor.BeginTask (GettextCatalog.GetString ("Initializing MonoDevelop"), 2);
 			
 			Exception error = null;
 			int reportedFailures = 0;
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (error != null) {
 				ErrorDialog dialog = new ErrorDialog (null);
-				dialog.Message = "MonoDevelop failed to start. The following error has been reported: " + error.Message;
+				dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message;
 				dialog.AddDetails (error.ToString (), false);
 				dialog.Run ();
 				return 1;
