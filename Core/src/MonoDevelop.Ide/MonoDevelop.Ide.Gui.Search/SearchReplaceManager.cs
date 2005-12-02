@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui.Search
 			lastResult = result;
 			
 			if (result == null) {
-				Services.MessageService.ShowMessage(GettextCatalog.GetString ("Search string not Found:") + "\n" + SearchOptions.SearchPattern, DialogPointer ); 
+				Services.MessageService.ShowMessage(GettextCatalog.GetString ("Search string not found:") + "\n" + SearchOptions.SearchPattern, DialogPointer ); 
 				find.Reset();
 			} else {
 				ITextBuffer textArea = OpenView (result.FileName) as ITextBuffer;
