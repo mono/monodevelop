@@ -1,10 +1,10 @@
 <AddIn id          = "MonoDevelop.SourceEditor"
        name        = "MonoDevelop Text Editor"
-       author      = "Ben Maurer, Lluis Sanchez"
+       author      = "Ben Maurer, Lluis Sanchez, Todd Berman"
        copyright   = ""
        url         = ""
        description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView"
-	   category    = "IDE extensions"
+       category    = "IDE extensions"
        version     = "0.9.0">
 	
 	<Runtime>
