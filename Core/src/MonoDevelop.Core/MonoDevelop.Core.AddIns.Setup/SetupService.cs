@@ -1026,6 +1026,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			try {
 				XmlSerializer ser = new XmlSerializer (type);
 				return ser.Deserialize (r);
+			} catch {
+				return null;
 			} finally {
 				r.Close ();
 			}

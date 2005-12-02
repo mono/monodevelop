@@ -1,3 +1,9 @@
+2005-12-01  Todd Berman  <tberman@off.net>
+
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Make ReadObject
+	return null if it encounters an error. This happens with 0 length
+	files.
+
 2005-11-29  David Makovský <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
