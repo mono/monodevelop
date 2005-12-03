@@ -1,3 +1,7 @@
+2005-12-03  John Luke <john.luke@gmail.com> 
+
+	* AssemblyInfo.cs.in: add back --help output with Mono.GetOptions
+	
 2005-12-02  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:
