@@ -1,3 +1,12 @@
+2005-12-03  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Startup/AddinLoadErrorDialog.cs:
+	* MonoDevelop.Startup/ExceptionBox.cs:
+	* MonoDevelop.Startup/MonoDevelopOptions.cs: remove
+	this stuff was all moved to MonoDevelop.IDE
+	* Makefile.am: 
+	* AssemblyInfo.cs.in: update
+	
 2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Startup/AddinLoadErrorDialog.cs:

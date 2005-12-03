@@ -2,10 +2,7 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.exe
 
 FILES= \
-MonoDevelop.Startup/MonoDevelopMain.cs \
-MonoDevelop.Startup/MonoDevelopOptions.cs \
-MonoDevelop.Startup/AddInTreeSettingsHandler.cs \
-MonoDevelop.Startup/ExceptionBox.cs
+MonoDevelop.Startup/MonoDevelopMain.cs
 
 RES= \
 MonoDevelop.Startup.glade
@@ -16,17 +13,7 @@ AssemblyInfo.cs
 all: $(ASSEMBLY $(ASSEMBLY).config
 
 REFS = \
-	/r:System.Drawing \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:Mono.Posix.dll \
-	/r:Mono.GetOptions.dll \
-	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS)
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 $(ASSEMBLY): $(build_sources) $(RES)
 	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(RES:%=/resource:%) $(build_sources)
