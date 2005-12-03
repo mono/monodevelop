@@ -80,14 +80,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				case "JAVA":
 					language = "text/x-java";
 					break;
-				//case language "VBNET":
-				//	language = "text/x-vbnet";
-				//	break;
+				case "VBNET":
+					language = "text/x-vbnet";
+					break;
 				case "BOO":
 					language = "text/x-boo";
 					break;
 				case "NEMERLE":
 					language = "text/x-nemerle";
+					break;
+				case "XML":
+					language = "text/xml";
 					break;
 				default:
 					language = "text/plain";

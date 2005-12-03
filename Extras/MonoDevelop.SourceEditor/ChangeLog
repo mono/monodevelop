@@ -1,3 +1,11 @@
+2005-12-02 Itamar Rogel  <chastamar@yahoo.com>
+
+	* Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	Added XML and VBNET to the switch statement so new xml files that
+	are added to a project would be identified as
+	such and so would have proper syntax highlighting.
+	bug #76882
+	
 2005-11-30  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
