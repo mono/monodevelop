@@ -20,7 +20,11 @@ RES = -resource:$(srcdir)/overlay_added.png,overlay_added.png \
 	  -resource:$(srcdir)/overlay_modified.png,overlay_modified.png \
 	  -resource:$(srcdir)/overlay_conflicted.png,overlay_conflicted.png \
 	  -resource:$(srcdir)/overlay_normal.png,overlay_normal.png \
-	  -resource:$(srcdir)/overlay_locked.png,overlay_locked.png
+	  -resource:$(srcdir)/overlay_locked.png,overlay_locked.png \
+	  -resource:$(srcdir)/menu_log.png,menu_log.png \
+	  -resource:$(srcdir)/menu_diff.png,menu_diff.png \
+	  -resource:$(srcdir)/menu_update.png,menu_update.png \
+	  -resource:$(srcdir)/menu_status.png,menu_status.png
 
 ADDIN = VersionControl.addin.xml
 

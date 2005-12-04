@@ -29,6 +29,10 @@
     <File name="./overlay_locked.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./overlay_modified.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./overlay_normal.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./menu_diff.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./menu_log.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./menu_status.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./menu_update.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="VersionControl" />

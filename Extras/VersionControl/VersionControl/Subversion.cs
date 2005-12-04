@@ -31,9 +31,14 @@ namespace VersionControl {
 		}
 		
 		public override bool IsDiffAvailable(string sourcefile) {
-			return File.Exists(GetTextBase(sourcefile))
-				&& IsStatusAvailable(sourcefile)
-				&& GetStatus(sourcefile, false).Status == NodeStatus.Modified;			
+			try {
+				return File.Exists(GetTextBase(sourcefile))
+					&& IsStatusAvailable(sourcefile)
+					&& GetStatus(sourcefile, false).Status == NodeStatus.Modified;
+			} catch (Exception e) {
+				// GetStatus may throw an exception
+				return false;
+			}			
 		}
 		
 		public override bool IsHistoryAvailable(string sourcefile) {

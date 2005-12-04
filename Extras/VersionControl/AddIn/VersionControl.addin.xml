@@ -7,13 +7,13 @@
 	   category    = "IDE extensions"
        version   = "0.1">
  
-   <Runtime>
-           <Import assembly="Diff.dll"/>
-           <Import assembly="DiffWidget.dll"/>
-           <Import assembly="VersionControl.dll"/>
-           <Import assembly="VersionControlAddIn.dll"/>
-   </Runtime>
- 
+	<Runtime>
+		<Import assembly="Diff.dll"/>
+		<Import assembly="DiffWidget.dll"/>
+		<Import assembly="VersionControl.dll"/>
+		<Import assembly="VersionControlAddIn.dll"/>
+	</Runtime>
+
 	<Dependencies>
 		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
@@ -22,19 +22,30 @@
 		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "VersionControlPlugin.VersionControlNodeExtension"/>
 	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "vc-diff" resource = "menu_diff.png" />
+		<StockIcon stockid = "vc-log" resource = "menu_log.png" />
+		<StockIcon stockid = "vc-status" resource = "menu_status.png" />
+		<StockIcon stockid = "vc-update" resource = "menu_update.png" />
+	</Extension>
         
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "VersionControlPlugin.Commands.Diff" 
 			_label = "Diff"
+			icon = "vc-diff"
 			description = "Show the changes made to the local copy since the last update."/>
 		<Command id = "VersionControlPlugin.Commands.Log" 
 			_label = "Log"
+			icon = "vc-log"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "VersionControlPlugin.Commands.Status" 
-			_label = "Status"
+			_label = "Status/Commit..."
+			icon = "vc-status"
 			description = "Shows the status of files in the folder."/>
 		<Command id = "VersionControlPlugin.Commands.Update" 
 			_label = "Update"
+			icon = "vc-update"
 			description = "Updates the local copy with remote changes."/>
 	</Extension>
 	

@@ -1,3 +1,9 @@
+2005-12-04  Joshua Tauberer  <tauberer@for.net>
+
+	* AddIn: Added icons to menus.  The icons again come
+	  from the TortoiseSVN project (with a presumption of
+	  license compatibility).
+
 2005-11-18  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/VersionControl.addin.xml: Moved version control commands to
