@@ -241,8 +241,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void StopEvent (object sender, EventArgs e)
 		{
-			if (SetupSearchReplaceInFilesManager ())
-				SearchReplaceInFilesManager.CancelSearch();
+			SearchReplaceInFilesManager.CancelSearch();
 		}
 
 		void OnSpecialSearchStrategyChanged (object o, EventArgs e)
@@ -316,12 +315,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			string directoryName = directoryTextBox.Text;
 			string fileMask      = fileMaskTextBox.Text;
+			string searchPattern = searchPatternEntry.Text;
+
 			if (fileMask == null || fileMask.Length == 0) {
 				fileMask = "*";
+			}
+
+			if (searchPattern == string.Empty) {
+				messageService.ShowError(GettextCatalog.GetString ("Empty search pattern"));
+				return false;
 			}
 			
 			if (SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType == DocumentIteratorType.Directory) {
 				
+				if (directoryName == string.Empty) {
+					messageService.ShowError(GettextCatalog.GetString ("Empty directory name"));
+					return false;
+				}
+
 				if (!fileUtilityService.IsValidFileName(directoryName)) {
 					messageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
 					return false;
@@ -337,15 +348,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 			}
-			if (fileMask == null || fileMask.Length == 0) {
-				SearchReplaceInFilesManager.SearchOptions.FileMask = "*";
-			} else {
-				SearchReplaceInFilesManager.SearchOptions.FileMask        = fileMask;
-			}
+
+			SearchReplaceInFilesManager.SearchOptions.FileMask        = fileMask;
 			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = directoryName;
 			SearchReplaceInFilesManager.SearchOptions.SearchSubdirectories = includeSubdirectoriesCheckBox.Active;
 			
-			SearchReplaceInFilesManager.SearchOptions.SearchPattern  = searchPatternEntry.Text;
+			SearchReplaceInFilesManager.SearchOptions.SearchPattern  = searchPattern;
 			if (replaceMode)
 				SearchReplaceInFilesManager.SearchOptions.ReplacePattern = replacePatternEntry.Text;
 			

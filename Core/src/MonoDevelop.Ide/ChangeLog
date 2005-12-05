@@ -1,3 +1,10 @@
+2005-12-05  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
+	Handle empty directories and empty search patterns appropriately.
+	Removed redundant fileMask check.
+	Do not call SetupSearchReplaceInFilesManager when stopping a search.
+
 2005-12-03  John Luke <john.luke@gmail.com> 
 
 	* AssemblyInfo.cs.in: add back --help output with Mono.GetOptions
