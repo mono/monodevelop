@@ -1,3 +1,8 @@
+2005-12-11  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:
+	Only enable the delete button when something is selected.
+
 2005-11-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/StockIcons.cs:

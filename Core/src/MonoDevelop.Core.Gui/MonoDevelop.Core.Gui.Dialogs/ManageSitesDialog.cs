@@ -12,6 +12,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 	{
 		[Glade.Widget ("ManageSitesDialog")] Dialog dialog;
 		[Glade.Widget] Gtk.TreeView repoTree;
+		[Glade.Widget] Gtk.Button btnRemove;
 		ListStore treeStore;
 		
 		public ManageSitesDialog ()
@@ -22,11 +23,14 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			repoTree.HeadersVisible = true;
 			repoTree.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 1);
 			repoTree.AppendColumn (GettextCatalog.GetString ("Url"), new Gtk.CellRendererText (), "text", 0);
+			repoTree.Selection.Changed += new EventHandler(OnSelect);
 			
 			RepositoryRecord[] reps = Runtime.SetupService.GetRepositories ();
 			foreach (RepositoryRecord rep in reps) {
 				treeStore.AppendValues (rep.Url, rep.Title);
 			}
+
+			btnRemove.Sensitive = false;
 		}
 		
 		public void Show ()
@@ -86,6 +90,11 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			Runtime.SetupService.UnregisterRepository (rep);
 			
 			treeStore.Remove (ref iter);
+		}
+
+		protected void OnSelect(object sender, EventArgs e)
+		{
+			btnRemove.Sensitive = repoTree.Selection.CountSelectedRows() > 0;
 		}
 	}
 }
