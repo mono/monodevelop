@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
            <_Name>AWT Applet</_Name>
            <Icon>res:Java.File.FullFile</Icon>
-           <Category>Java</Category>
+           <Category>AWT</Category>
            <LanguageName>Java</LanguageName>
            <_Description>Creates a Java AWT Applet</_Description>
 	</TemplateConfiguration>

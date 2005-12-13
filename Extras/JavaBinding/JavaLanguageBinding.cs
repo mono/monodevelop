@@ -12,18 +12,21 @@ using System.Collections;
 using System.Reflection;
 using System.Resources;
 using System.Xml;
+using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace JavaBinding
 {
 	/// <summary>
 	/// This class describes the main functionalaty of a language binding
 	/// </summary>
-	public class JavaLanguageBinding : ILanguageBinding
+	public class JavaLanguageBinding : IDotNetLanguageBinding
 	{
 		internal const string LanguageName = "Java";
 		JavaBindingCompilerServices compilerServices = new JavaBindingCompilerServices ();
@@ -40,7 +43,7 @@ namespace JavaBinding
 			}
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerServices != null);
 			return compilerServices.CanCompile(fileName);
@@ -83,6 +86,24 @@ namespace JavaBinding
 		public string CommentTag
 		{
 			get { return "//"; }
+		}
+		
+		public CodeDomProvider GetCodeDomProvider ()
+		{
+			return null;
+		}
+		
+		public string GetFileName (string baseName)
+		{
+			return baseName + ".java";
+		}
+		
+		public IParser Parser {
+			get { return null; }
+		}
+		
+		public IRefactorer Refactorer {
+			get { return null; }
 		}
 	}
 	

@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
            <_Name>AWT Panel</_Name>
            <Icon>res:Java.File.Form</Icon>
-           <Category>Java</Category>
+           <Category>AWT</Category>
            <LanguageName>Java</LanguageName>
            <_Description>Creates a Java AWT panel.</_Description>
 	</TemplateConfiguration>

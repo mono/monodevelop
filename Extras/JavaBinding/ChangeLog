@@ -1,3 +1,8 @@
+2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* JavaLanguageBinding.cs: Implemented IDotNetLanguageBinding methods.
+	* templates/*: Set the correct category and language name.
+
 2005-11-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBindingCompilerServices.cs: Look for ikvmc.exe in the configured
