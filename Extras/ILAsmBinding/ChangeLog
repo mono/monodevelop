@@ -1,3 +1,8 @@
+2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* ILAsmLanguageBinding.cs: Implemented the new methods in
+	IDotNetLanguageBinding.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* ILAsmBinding.addin.xml: Fixed addin header information.

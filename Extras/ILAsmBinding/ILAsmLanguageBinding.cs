@@ -18,10 +18,12 @@ using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace ILAsmBinding
 {
-	public class ILAsmLanguageBinding : ILanguageBinding
+	public class ILAsmLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "ILAsm";
 		
@@ -33,7 +35,7 @@ namespace ILAsmBinding
 			}
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerManager != null);
 			return compilerManager.CanCompile(fileName);
@@ -58,6 +60,24 @@ namespace ILAsmBinding
 		public string CommentTag
 		{
 			get { return "//"; }
+		}
+		
+		public System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider ()
+		{
+			return null;
+		}
+		
+		public string GetFileName (string baseName)
+		{
+			return baseName + ".il";
+		}
+			
+		public IParser Parser {
+			get { return null; }
+		}
+		
+		public IRefactorer Refactorer {
+			get { return null; }
 		}
 	}
 }
