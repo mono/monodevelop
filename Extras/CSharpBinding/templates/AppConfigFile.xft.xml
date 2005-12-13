@@ -5,7 +5,7 @@
 		<_Name>Application Configuration File</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<Category>Misc</Category>
-		<LanguageName>XML</LanguageName>
+		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a .NET application configuration file.</_Description>
 	</TemplateConfiguration>
 	

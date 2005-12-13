@@ -12,11 +12,12 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Field(ReturnType type, string fullyQualifiedName, Modifier m, IRegion region)
+		public Field (IClass declaringType, ReturnType type, string fullyQualifiedName, ModifierFlags m, IRegion region)
 		{
 			this.returnType = type;
 			this.FullyQualifiedName = fullyQualifiedName;
 			this.region = region;
+			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
 		}
 	}

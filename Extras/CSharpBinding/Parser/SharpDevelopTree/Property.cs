@@ -12,13 +12,24 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Property(string fullyQualifiedName, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion)
+		public Property (IClass declaringType, string fullyQualifiedName, ReturnType type, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			this.FullyQualifiedName = fullyQualifiedName;
 			returnType = type;
 			this.region = region;
 			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
+		}
+		
+		public new IRegion GetterRegion {
+			get { return getterRegion; }
+			set { getterRegion = value; }
+		}
+
+		public new IRegion SetterRegion {
+			get { return setterRegion; }
+			set { setterRegion = value; }
 		}
 	}
 }

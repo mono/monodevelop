@@ -4,8 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty XML File</_Name>
 		<Icon>md-xml-file-icon</Icon>
-		<Category>Misc</Category>
-		<LanguageName>XML</LanguageName>
+		<Category>XML</Category>
 		<_Description>Creates an empty XML file.</_Description>
 	</TemplateConfiguration>
 	

@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty File</_Name>
 		<Icon>res:C#.File.EmptyFile</Icon>
-		<Category>C#</Category>
+		<Category>General</Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# file.</_Description>
 	</TemplateConfiguration>

@@ -7,19 +7,20 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class AttributeSection : AbstractAttributeSection
 	{
-		public AttributeSection(AttributeTarget attributeTarget,
-		                        AttributeCollection attributes) {
+		public AttributeSection(AttributeTarget attributeTarget, IRegion region)
+		{
 			this.attributeTarget = attributeTarget;
-			this.attributes = attributes;
+			this.region = region;
 		}
 	}
-	public class ASTAttribute : AbstractAttribute
+	public class Attribute : AbstractAttribute
 	{
-		public ASTAttribute(string name, ArrayList positionalArguments, SortedList namedArguments)
+		public Attribute(string name, ArrayList positionalArguments, SortedList namedArguments, IRegion region)
 		{
 			this.name = name;
 			this.positionalArguments = positionalArguments;
 			this.namedArguments = namedArguments;
+			this.region = region;
 		}
 	}
 }

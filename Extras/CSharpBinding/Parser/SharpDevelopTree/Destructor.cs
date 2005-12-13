@@ -11,11 +11,12 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Destructor(string className, Modifier m, IRegion region, IRegion bodyRegion)
+		public Destructor (IClass declaringType, string className, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = "~" + className;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType; 
 			modifiers = (ModifierEnum)m;
 		}
 	}

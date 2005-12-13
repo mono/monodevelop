@@ -12,11 +12,12 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Constructor(Modifier m, IRegion region, IRegion bodyRegion)
+		public Constructor (IClass declaringType, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = "ctor";
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
 		}
 	}

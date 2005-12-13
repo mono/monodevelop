@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Gtk# Window</_Name>
 		<Icon>res:C#.File.Form</Icon>
-		<Category>C#</Category>
+		<Category>Gtk</Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a top-level Gtk# window.</_Description>
 	</TemplateConfiguration>
@@ -17,11 +17,11 @@ using System;
 using Gtk;
 using GtkSharp;
 
-namespace MyWindow
+namespace ${Namespace}
 {
-	public class CreatedWindow : Window
+	public class ${Name} : Window
 	{
-		public CreatedWindow () : base ("MyWindow")
+		public ${Name} () : base ("MyWindow")
 		{
 		}
 	}

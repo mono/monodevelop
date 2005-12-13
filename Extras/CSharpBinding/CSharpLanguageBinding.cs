@@ -14,17 +14,23 @@ using System.Resources;
 using System.Xml;
 using System.CodeDom.Compiler;
 using System.Threading;
+using Microsoft.CSharp;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
+
+using CSharpBinding.Parser;
 
 namespace CSharpBinding
 {
-	public class CSharpLanguageBinding : ILanguageBinding
+	public class CSharpLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "C#";
 		
 		CSharpBindingCompilerManager   compilerManager  = new CSharpBindingCompilerManager();
+		CSharpCodeProvider provider;
 		
 		public string Language {
 			get {
@@ -32,7 +38,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerManager != null);
 			return compilerManager.CanCompile(fileName);
@@ -57,6 +63,29 @@ namespace CSharpBinding
 		public string CommentTag
 		{
 			get { return "//"; }
+		}
+		
+		public CodeDomProvider GetCodeDomProvider ()
+		{
+			if (provider == null)
+				provider = new CSharpCodeProvider ();
+			return provider;
+		}
+		
+		public string GetFileName (string baseName)
+		{
+			return baseName + ".cs";
+		}
+		
+		TParser parser = new TParser ();
+		CSharpRefactorer refactorer = new CSharpRefactorer ();
+			
+		public IParser Parser {
+			get { return parser; }
+		}
+		
+		public IRefactorer Refactorer {
+			get { return refactorer; }
 		}
 	}
 }

@@ -6,10 +6,11 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class Parameter : AbstractParameter
 	{
-		public Parameter(string name, ReturnType type)
+		public Parameter (IMember declaringMember, string name, ReturnType type)
 		{
 			this.name = name;
 			returnType = type;
+			this.declaringMember = declaringMember;
 		}
 	}
 }

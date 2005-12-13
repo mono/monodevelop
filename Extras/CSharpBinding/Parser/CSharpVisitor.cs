@@ -50,21 +50,50 @@ namespace CSharpBinding.Parser
 			return data;
 		}
 		
-		AttributeSectionCollection VisitAttributes(ArrayList attributes)
+		public AttributeTarget GetAttributeTarget (string attb)
+		{
+			switch (attb)
+			{
+				// check the 'assembly', I didn't saw it being used in c# parser....
+				case "assembly":
+					return AttributeTarget.Assembly;
+				case "event":
+					return AttributeTarget.Event;
+				case "return":
+					return AttributeTarget.Return;
+				case "field":
+					return AttributeTarget.Field;
+				case "method":
+					return AttributeTarget.Method;
+				case "module":
+					return AttributeTarget.Module;
+				case "param":
+					return AttributeTarget.Param;
+				case "property":
+					return AttributeTarget.Property;
+				case "type":
+					return AttributeTarget.Type;
+				default:
+					return AttributeTarget.None;
+			}
+		} 
+		
+		void FillAttributes (IDecoration decoration, ArrayList attributes)
 		{
 			// TODO Expressions???
-			//AttributeSectionCollection result = new AttributeSectionCollection();
 			foreach (AST.AttributeSection section in attributes) {
-				//AttributeCollection resultAttributes = new AttributeCollection();
+				AttributeSection resultSection = new AttributeSection (GetAttributeTarget (section.AttributeTarget), GetRegion (section.StartLocation, section.EndLocation));
+				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					IAttribute a = new ASTAttribute(attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList());
+					CSharpBinding.Parser.SharpDevelopTree.Attribute resultAttribute = new CSharpBinding.Parser.SharpDevelopTree.Attribute (attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList(), GetRegion (attribute.StartLocation, attribute.EndLocation));
 					foreach (AST.NamedArgument n in attribute.NamedArguments) {
-						a.NamedArguments[n.Name] = n.Expr;
+						resultAttribute.NamedArguments[n.Name] = n.Expr;
 					}
+					resultSection.Attributes.Add (resultAttribute);
 				}
-				//IAttributeSection s = new AttributeSection((AttributeTarget)Enum.Parse(typeof (AttributeTarget), section.AttributeTarget), resultAttributes);
+				decoration.Attributes.Add (resultSection);				
 			}
-			return null;
+
 		}
 		
 //		ModifierEnum VisitModifier(ICSharpCode.SharpRefactory.Parser.Modifier m)
@@ -103,8 +132,11 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
-			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifier, region);
+			DefaultRegion bodyRegion = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
+			DefaultRegion declarationRegion = GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
+			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifiers.Code, declarationRegion, bodyRegion);
+			
+			FillAttributes (c, typeDeclaration.Attributes);
 			
 			if (currentClass.Count > 0) {
 				Class cur = ((Class)currentClass.Peek());
@@ -139,20 +171,23 @@ namespace CSharpBinding.Parser
 		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
-			//			Console.WriteLine(region + " --- " + bodyRegion);
+
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
 			Class c       = (Class)currentClass.Peek();
 			
-			Method method = new Method(String.Concat(methodDeclaration.Name), type, methodDeclaration.Modifier, region, bodyRegion);
+			Method method = new Method (c, String.Concat(methodDeclaration.Name), type, methodDeclaration.Modifiers.Code, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter (method, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
 			method.Parameters = parameters;
+			
+			FillAttributes (method, methodDeclaration.Attributes);
+			
 			c.Methods.Add(method);
 			return null;
 		}
@@ -163,16 +198,19 @@ namespace CSharpBinding.Parser
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			Class c       = (Class)currentClass.Peek();
 			
-			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion);
+			Constructor constructor = new Constructor (c, constructorDeclaration.Modifiers.Code, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter (constructor, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
 			constructor.Parameters = parameters;
+			
+			FillAttributes (constructor, constructorDeclaration.Attributes);
+			
 			c.Methods.Add(constructor);
 			return null;
 		}
@@ -184,12 +222,15 @@ namespace CSharpBinding.Parser
 			
 			Class c       = (Class)currentClass.Peek();
 			
-			Destructor destructor = new Destructor(c.Name, destructorDeclaration.Modifier, region, bodyRegion);
+			Destructor destructor = new Destructor (c, c.Name, destructorDeclaration.Modifiers.Code, region, bodyRegion);
+			
+			FillAttributes (destructor, destructorDeclaration.Attributes);
+			
 			c.Methods.Add(destructor);
 			return null;
 		}
 		
-		
+		// No attributes?
 		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
@@ -202,11 +243,12 @@ namespace CSharpBinding.Parser
 			}
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
-					Field f = new Field(type, field.Name, fieldDeclaration.Modifier, region);
-					
+					Field f = new Field (c, type, field.Name, fieldDeclaration.Modifiers.Code, region);	
 					c.Fields.Add(f);
+					FillAttributes (f, fieldDeclaration.Attributes);
 				}
 			}
+			
 			return null;
 		}
 		
@@ -218,7 +260,15 @@ namespace CSharpBinding.Parser
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
 			
-			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion);
+			Property property = new Property (c, propertyDeclaration.Name, type, propertyDeclaration.Modifiers.Code, region, bodyRegion);
+			
+			FillAttributes (property, propertyDeclaration.Attributes);
+			
+			if (propertyDeclaration.HasGetRegion)
+				property.GetterRegion = GetRegion (propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
+			if (propertyDeclaration.HasSetRegion) 
+				property.SetterRegion = GetRegion (propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
+						
 			c.Properties.Add(property);
 			return null;
 		}
@@ -233,11 +283,13 @@ namespace CSharpBinding.Parser
 			
 			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.SharpRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					e = new Event(varDecl.Name, type, eventDeclaration.Modifier, region, bodyRegion);
+					e = new Event (c, varDecl.Name, type, eventDeclaration.Modifiers.Code, region, bodyRegion);
+					FillAttributes (e, eventDeclaration.Attributes);
 					c.Events.Add(e);
 				}
 			} else {
-				e = new Event(eventDeclaration.Name, type, eventDeclaration.Modifier, region, bodyRegion);
+				e = new Event (c, eventDeclaration.Name, type, eventDeclaration.Modifiers.Code, region, bodyRegion);
+				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
 			}
 			return null;
@@ -248,15 +300,16 @@ namespace CSharpBinding.Parser
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			ParameterCollection parameters = new ParameterCollection();
-			Indexer i = new Indexer(new ReturnType(indexerDeclaration.TypeReference), parameters, indexerDeclaration.Modifier, region, bodyRegion);
+			Class c = (Class)currentClass.Peek();
+			Indexer i = new Indexer (c, new ReturnType(indexerDeclaration.TypeReference), parameters, indexerDeclaration.Modifiers.Code, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter (i, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
-			Class c = (Class)currentClass.Peek();
+			FillAttributes (i, indexerDeclaration.Attributes);
 			c.Indexer.Add(i);
 			return null;
 		}

@@ -23,8 +23,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/FileTemplates">
-		<FileTemplate id = "SessionState" resource = "CSharpSessionStateWebService.xft.xml"/>
-		<FileTemplate id = "WebService" resource = "CSharpWebService.xft.xml"/>
 		<FileTemplate id = "Empty" resource = "EmptyCSharpFile.xft.xml"/>
 		<FileTemplate id = "GnomeSharpProgram" resource = "GnomeSharpProgram.xft.xml"/>
 		<FileTemplate id = "GtkSharpWindow" resource = "GtkSharpWindow.xft.xml"/>

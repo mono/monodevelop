@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Gnome# Program</_Name>
 		<Icon>res:C#.File.Form</Icon>
-		<Category>C#</Category>
+		<Category>Gnome</Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gnome# program.</_Description>
 	</TemplateConfiguration>
@@ -16,9 +16,9 @@
 using System;
 using Gnome;
 
-namespace MyProgram
+namespace ${Namespace}
 {
-	public class CreatedProgram : Program
+	public class ${Name} : Program
 	{
 		public CreatedProgram (string[] args) : base ("ChangeMe", "0.1", Gnome.Modules.Info, args)
 		{

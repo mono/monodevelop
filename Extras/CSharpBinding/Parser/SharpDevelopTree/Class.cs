@@ -12,11 +12,12 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 	{
 		ICompilationUnit cu;
 		
-		public Class(CompilationUnit cu, ClassType t, Modifier m, IRegion region)
+		public Class(CompilationUnit cu, ClassType t, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			this.cu = cu;
 			classType = t;
 			this.region = region;
+			this.bodyRegion = bodyRegion;
 			modifiers = (ModifierEnum)m;
 		}
 		

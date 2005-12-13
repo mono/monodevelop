@@ -33,6 +33,7 @@ Parser/TypeVisitor.cs \
 Parser/CSharpVisitor.cs \
 Parser/Resolver.cs \
 Parser/Parser.cs \
+Parser/CodeGenerator.cs \
 Parser/ExpressionFinder.cs \
 CSharpAmbience.cs \
 Project/CSharpCompilerParameters.cs \
@@ -45,8 +46,6 @@ CSharp.glade \
 templates/AppConfigFile.xft.xml \
 templates/BlankCombine.xpt.xml \
 templates/ConsoleProject.xpt.xml \
-templates/CSharpSessionStateWebService.xft.xml \
-templates/CSharpWebService.xft.xml \
 templates/EmptyCSharpFile.xft.xml \
 templates/EmptyHTMLFile.xft.xml \
 templates/EmptyProject.xpt.xml \

@@ -5,7 +5,7 @@
 		<_Name>Empty Resource File</_Name>
 		<Icon>md-resource-file-icon</Icon>
 		<Category>Misc</Category>
-		<LanguageName>ResourceFiles</LanguageName>
+		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates an empty resource file.</_Description>
 	</TemplateConfiguration>
 	

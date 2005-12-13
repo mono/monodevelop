@@ -36,10 +36,6 @@ namespace CSharpBinding.Parser
 		{
 			return System.IO.Path.GetExtension(fileName).ToUpper() == ".CS";
 		}
-		public bool CanParse(Project project)
-		{
-			return project.ProjectType == "C#";
-		}
 		
 		void RetrieveRegions(CompilationUnit cu, SpecialTracker tracker)
 		{

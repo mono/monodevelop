@@ -4,8 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty HTML File</_Name>
 		<Icon>md-html-file-icon</Icon>
-		<Category>Misc</Category>
-		<LanguageName>HTML</LanguageName>
+		<Category>Web</Category>
 		<_Description>Creates an empty HTML file.</_Description>
 	</TemplateConfiguration>
 	

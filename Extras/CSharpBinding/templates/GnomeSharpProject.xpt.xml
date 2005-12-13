@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Gnome# Project</_Name>
-		<Category>C#</Category>
+		<Category>Gnome</Category>
 		<Icon>res:C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gnome# project</_Description>

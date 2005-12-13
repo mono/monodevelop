@@ -1,3 +1,35 @@
+2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/Parser.cs: Track api changes.
+	* CSharpLanguageBinding.cs: Implemented the new methods in
+	IDotNetLanguageBinding.
+	* CSharpBinding.addin.xml: Removed some templates that don't really
+	belong here.
+	* CSharpBinding/CSharpBinding.mdp: Updated.
+	
+	* Parser/SharpDevelopTree/AttributeSection.cs:
+	* Parser/CSharpVisitor.cs: Properly collect region and attribute
+	information. This is a patch by Alex Gomes.
+	Also: properly set the declaring type to class members.
+	
+	* Parser/Resolver.cs: Added two new methods: ResolveExpressionType
+	returns the type of an arbitrary expression. ResolveIdentifier returns
+	information about an identifier.
+	
+	* Parser/SharpDevelopTree/Indexer.cs:
+	* Parser/SharpDevelopTree/Method.cs:
+	* Parser/SharpDevelopTree/Parameter.cs:
+	* Parser/SharpDevelopTree/Event.cs:
+	* Parser/SharpDevelopTree/Field.cs:
+	* Parser/SharpDevelopTree/Property.cs:
+	* Parser/SharpDevelopTree/Class.cs:
+	* Parser/SharpDevelopTree/Constructor.cs:
+	* Parser/SharpDevelopTree/Destructor.cs: Set the declaring type to
+	class members.
+	
+	* templates/*: Set the correct category, language and project type.
+	* Parser/CodeGenerator.cs: Initial implementation of IRefactorer.
+
 2005-11-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/GtkSharpProject.xpt.xml:

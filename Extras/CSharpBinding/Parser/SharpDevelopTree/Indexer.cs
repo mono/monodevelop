@@ -12,12 +12,13 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Indexer(ReturnType type, ParameterCollection parameters, Modifier m, IRegion region, IRegion bodyRegion)
+		public Indexer (IClass declaringType, ReturnType type, ParameterCollection parameters, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			returnType      = type;
 			this.parameters = parameters;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
 		}
 	}
