@@ -21,7 +21,7 @@ using MonoDevelop.Core.Gui;
 
 namespace PythonBinding
 {
-	public class PythonLanguageBinding : ILanguageBinding
+	public class PythonLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "Python";
 		
@@ -73,7 +73,7 @@ namespace PythonBinding
 			return compilerManager.GetCompiledOutputName(project);
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerManager != null);
 			return compilerManager.CanCompile(fileName);
