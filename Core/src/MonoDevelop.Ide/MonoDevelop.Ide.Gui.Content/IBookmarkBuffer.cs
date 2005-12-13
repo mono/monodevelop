@@ -30,8 +30,8 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IBookmarkBuffer: ITextBuffer
 	{
-		void SetBookmarked (object position, bool mark);
-		bool IsBookmarked (object position);
+		void SetBookmarked (int position, bool mark);
+		bool IsBookmarked (int position);
 		void PrevBookmark ();
 		void NextBookmark ();
 		void ClearBookmarks ();

@@ -229,8 +229,8 @@ namespace MonoDevelop.Ide.Gui
 
 			RedrawAllComponents ();
 			
-			if (content is IEditable) {
-				((IEditable)content).TextChanged += new EventHandler (OnViewTextChanged);
+			if (content is IEditableTextBuffer) {
+				((IEditableTextBuffer)content).TextChanged += new EventHandler (OnViewTextChanged);
 			}
 		}
 		
@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.Gui
 			if (ActiveWorkbenchWindow == null || ActiveWorkbenchWindow.ActiveViewContent == null)
 				return false;
 
-			IEditable editable = ActiveWorkbenchWindow.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = ActiveWorkbenchWindow.ActiveViewContent as IEditableTextBuffer;
 			if (editable == null)
 				return false;
 			

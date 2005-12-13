@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Template Originator="Lluis Sanchez" Created="3/09/2001" LastModified="3/09/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Empty Class</_Name>
+		<Icon>md-empty-file-icon</Icon>
+		<Category>General</Category>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an empty class.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultName="EmptyClass">
+		
+			<CompileUnit>
+				<Namespaces>
+					<Namespace Name="${Namespace}">
+						<Imports>
+							<NamespaceImport Namespace="System" />
+						</Imports>
+						<Types>
+							<TypeDeclaration Name="${Name}" IsClass="true">
+								<Members>
+									<Constructor />
+								</Members>
+							</TypeDeclaration>
+						</Types>
+					</Namespace>
+				</Namespaces>
+			</CompileUnit>
+
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (filename == null) {
 				FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
-				fdiag.SetFilename (Window.ViewContent.ContentName);
+				fdiag.CurrentName = Window.ViewContent.UntitledName;
 				int response = fdiag.Run ();
 				filename = fdiag.Filename;
 				fdiag.Hide ();

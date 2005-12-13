@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.Undo)]
 		protected void OnUndo ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.Undo();
 		}
@@ -136,13 +136,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditable;
+			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
 		protected void OnRedo ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null) {
 				editable.Redo();
 			}
@@ -151,13 +151,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditable;
+			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.ClipboardHandler.Cut(null, null);
 		}
@@ -165,14 +165,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo info)
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableCut;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.ClipboardHandler.Copy(null, null);
 		}
@@ -180,14 +180,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo info)
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableCopy;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.ClipboardHandler.Paste(null, null);
 		}
@@ -195,14 +195,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo info)
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			info.Enabled = editable != null && editable.ClipboardHandler.EnablePaste;
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.ClipboardHandler.Delete(null, null);
 		}
@@ -210,14 +210,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo info)
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableDelete;
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAll ()
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			if (editable != null)
 				editable.ClipboardHandler.SelectAll(null, null);
 		}
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void OnUpdateSelectAll (CommandInfo info)
 		{
-			IEditable editable = window.ActiveViewContent as IEditable;
+			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableSelectAll;
 		}
 		

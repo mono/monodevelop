@@ -96,12 +96,12 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void Replace()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				IEditable editable = IdeApp.Workbench.ActiveDocument.Content as IEditable;
+				IEditableTextBuffer editable = IdeApp.Workbench.ActiveDocument.Content as IEditableTextBuffer;
 				if (editable == null) return;
 					
 				if (lastResult != null && find.DocumentIterator.CurrentFileName == lastResult.FileName) {
-					int s1 = editable.GetOffsetFromPosition (editable.SelectionStartPosition);
-					int s2 = editable.GetOffsetFromPosition (editable.SelectionEndPosition);
+					int s1 = editable.SelectionStartPosition;
+					int s2 = editable.SelectionEndPosition;
 					if (lastResult.DocumentOffset == s1 && lastResult.DocumentOffset + lastResult.Length == s2)
 						editable.SelectedText = SearchOptions.ReplacePattern;
 				}
@@ -128,8 +128,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				} else {
 					IBookmarkBuffer textArea = OpenView (result.FileName) as IBookmarkBuffer; 
 					if (textArea != null) {
-						object pos = textArea.GetPositionFromOffset (result.DocumentOffset);
-						textArea.SetBookmarked (pos, true);
+						textArea.SetBookmarked (result.DocumentOffset, true);
 					}
 				}
 			}
@@ -185,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					find.Reset ();
 				else {
 					ITextBuffer textArea = OpenView (lastResult.FileName) as ITextBuffer;
-					if (textArea == null || (lastResult != null && textArea.GetOffsetFromPosition (textArea.CursorPosition) != lastResult.DocumentOffset + lastResult.Length)) {
+					if (textArea == null || (lastResult != null && textArea.CursorPosition != lastResult.DocumentOffset + lastResult.Length)) {
 						find.Reset();
 					}
 				}
@@ -217,15 +216,14 @@ namespace MonoDevelop.Ide.Gui.Search
 					int startPos = Math.Min (textArea.Text.Length, Math.Max(0, result.DocumentOffset));
 					int endPos   = Math.Min (textArea.Text.Length, startPos + result.Length);
 					
-					if (startPos == textArea.GetOffsetFromPosition (textArea.SelectionStartPosition) &&
-						endPos == textArea.GetOffsetFromPosition (textArea.SelectionEndPosition)) {
+					if (startPos == textArea.SelectionStartPosition && endPos == textArea.SelectionEndPosition) {
 						// If the result is the same of what we have selected, search again.
 						Find (reverse);
 						return;
 					}
 					
-					textArea.ShowPosition (textArea.GetPositionFromOffset (endPos));
-					textArea.Select (textArea.GetPositionFromOffset (endPos), textArea.GetPositionFromOffset (startPos));
+					textArea.ShowPosition (endPos);
+					textArea.Select (endPos, startPos);
 				}
 			}
 		}

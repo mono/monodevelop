@@ -41,25 +41,11 @@ namespace MonoDevelop.Ide.Codons
 		IViewContent CreateContentForFile(string fileName);
 		
 		/// <remarks>
-		/// This function determines, if this display binding is able to create
-		/// an IViewContent for the language given by languageName.
-		/// </remarks>
-		/// <returns>
-		/// true, if this display binding is able to create
-		/// an IViewContent for the language given by languageName.
-		/// false otherwise
-		/// </returns>
-		bool CanCreateContentForLanguage(string languageName);
-		
-		/// <remarks>
-		/// Creates a new IViewContent object for the language given by 
-		/// languageName with the content given by content
+		/// Creates a new IViewContent object for the given mime type  
 		/// </remarks>
 		/// <returns>
 		/// A newly created IViewContent object.
 		/// </returns>
-		IViewContent CreateContentForLanguage(string languageName, string content);
-		
-		IViewContent CreateContentForLanguage(string languageName, string content, string new_file_name);
+		IViewContent CreateContentForMimeType (string mimeType, string content);
 	}
 }

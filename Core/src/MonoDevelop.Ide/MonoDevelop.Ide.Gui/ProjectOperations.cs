@@ -454,35 +454,12 @@ namespace MonoDevelop.Ide.Gui
 			return res;
 		}
 		
-		public ProjectFile CreateProjectFile (Project parentProject, string basePath)
+		public void CreateProjectFile (Project parentProject, string basePath)
 		{
-			NewFileDialog nfd = new NewFileDialog ();
-			int res = nfd.Run ();
-			nfd.Dispose ();
-			if (res != (int) Gtk.ResponseType.Ok) return null;
-
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			int count = 1;
-				
-			string baseName  = Path.GetFileNameWithoutExtension (doc.Window.ViewContent.UntitledName);
-			string extension = Path.GetExtension (doc.Window.ViewContent.UntitledName);
-				
-			// first try the default untitled name of the viewcontent filename
-			string fileName = Path.Combine (basePath, baseName +  extension);
-				
-			// if it is already in the project, or it does exists we try to get a name that is
-			// untitledName + Numer + extension
-			while (parentProject.IsFileInProject (fileName) || System.IO.File.Exists (fileName)) {
-				fileName = Path.Combine (basePath, baseName + count.ToString() + extension);
-				++count;
+			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				nfd.Run ();
+				nfd.Dispose ();
 			}
-
-			// now we have a valid filename which we could use
-			doc.SaveAs (fileName);
-				
-			ProjectFile newFileInformation = new ProjectFile(fileName, BuildAction.Compile);
-			parentProject.ProjectFiles.Add (newFileInformation);
-			return newFileInformation;
 		}
 
 		public bool AddReferenceToProject (Project project)

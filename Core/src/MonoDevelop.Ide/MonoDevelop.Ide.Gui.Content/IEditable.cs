@@ -6,27 +6,20 @@
 // </file>
 
 using System;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface IEditable: ITextBuffer
+	public interface IEditableTextBuffer: ITextBuffer, IEditableTextFile
 	{
 		IClipboardHandler ClipboardHandler {
 			get;
-		}
-		
-		new string Text {
-			get;
-			set;
 		}
 		
 		void Undo();
 		void Redo();
 		
 		new string SelectedText { get; set; }
-		
-		void InsertText (object position, string text);
-		void DeleteText (object position, int length);
 		
 		event EventHandler TextChanged;
 	}

@@ -1,3 +1,48 @@
+2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/IEditable.cs: Renamed to IEditableTextBuffer.
+	This interface now inherits from IEditableTextFile. Removed some methods
+	that are now inherited.
+	* MonoDevelop.Ide.Gui.Content/ITextBuffer.cs: This interface now inherits
+	from ITextFile. Moved some methods to the base interface. Removed the
+	concept of 'position'. Now everything is handled with offsets.
+	* MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs: Removed the
+	concept of 'position'. Now everything is handled with offsets.
+	
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Added support for CodeDom
+	based file templates.
+	
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	Group language specific templates in its own tree branch. Added an entry
+	for the file name. Templates are now filtered according to the current
+	project type and language.
+	
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: New files
+	already have a name, so no need to rename them in the tree.
+	
+	* MonoDevelop.Ide/MonoDevelop.Ide.addin.xml: Added empty class template.
+	* MonoDevelop.Ide/MonoDevelop.Ide.mdp: Updated.
+	
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Display bindings are now
+	per mime type, not per language.
+	
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Track changes in IEditable.
+	
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Simplified CreateProjectFile,
+	since now the file comes with a real name and path.
+	
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:
+	Properly show the name of newly created files, since now they have a name.
+
 2005-12-05  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:

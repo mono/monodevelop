@@ -163,8 +163,9 @@ namespace MonoDevelop.Ide.Gui
 			if (content.ContentName == null) {
 				if (myUntitledTitle == null) {
 					string baseName  = System.IO.Path.GetFileNameWithoutExtension(content.UntitledName);
-					int    number    = 1;
-					bool   found     = true;
+					int number = 1;
+					bool found = true;
+					myUntitledTitle = baseName + System.IO.Path.GetExtension (content.UntitledName);
 					while (found) {
 						found = false;
 						foreach (IViewContent windowContent in workbench.ViewContentCollection) {
@@ -172,14 +173,14 @@ namespace MonoDevelop.Ide.Gui
 							if (title.EndsWith("*") || title.EndsWith("+")) {
 								title = title.Substring(0, title.Length - 1);
 							}
-							if (title == baseName + number) {
+							if (title == myUntitledTitle) {
+								myUntitledTitle = baseName + number + System.IO.Path.GetExtension (content.UntitledName);
 								found = true;
 								++number;
 								break;
 							}
 						}
 					}
-					myUntitledTitle = baseName + number;
 				}
 				newTitle = myUntitledTitle;
 			} else {

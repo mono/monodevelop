@@ -35,11 +35,6 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			return false;
 		}
 		
-		public bool CanCreateContentForLanguage(string language)
-		{
-			return false;
-		}
-		
 		public IViewContent CreateContentForFile(string fileName)
 		{
 			BrowserPane browserPane = new BrowserPane();
@@ -47,16 +42,11 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			return browserPane;
 		}
 		
-		public IViewContent CreateContentForLanguage(string language, string content)
+		public IViewContent CreateContentForMimeType (string mimeType, string content)
 		{
 			return null;
 		}
 		
-		public IViewContent CreateContentForLanguage(string languageName, string content, string new_file_name)
-		{
-			return null;
-		}
-
 		public bool CanAttachTo (IViewContent parent)
 		{
 			string filename = parent.ContentName;

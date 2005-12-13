@@ -506,7 +506,7 @@ namespace MonoDevelop.Ide.Gui
 		public IWorkbenchWindow ShowView(IViewContent content)
 		{	
 			Gtk.Image mimeimage = null;
-			if (content.IsUntitled) {
+			if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16));
 			} else {
 				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForFile (content.ContentName, 16));
@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 
 			sdiWorkspaceWindow.Closed += new EventHandler(CloseWindowEvent);
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
-		
+			
 			tabLabel.Show();
 			return sdiWorkspaceWindow;
 		}

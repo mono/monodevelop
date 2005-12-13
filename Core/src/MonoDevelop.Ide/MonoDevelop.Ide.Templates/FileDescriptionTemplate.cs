@@ -17,11 +17,18 @@ namespace MonoDevelop.Ide.Templates
 	{
 		string name;
 		string content;
+		XmlElement domContent;
 		
-		public FileDescriptionTemplate(string name, string content)
+		public FileDescriptionTemplate (string name, string content)
 		{
 			this.name    = name;
 			this.content = content;
+		}
+		
+		public FileDescriptionTemplate (string name, XmlElement domContent)
+		{
+			this.name    = name;
+			this.domContent = domContent;
 		}
 		
 		public string Name {
@@ -33,6 +40,12 @@ namespace MonoDevelop.Ide.Templates
 		public string Content {
 			get {
 				return content;
+			}
+		}
+		
+		public XmlElement CodeDomContent {
+			get {
+				return domContent;
 			}
 		}
 	}

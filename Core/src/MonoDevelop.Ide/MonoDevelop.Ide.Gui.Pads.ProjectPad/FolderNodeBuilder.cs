@@ -323,12 +323,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void AddNewFileToProject()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			ProjectFile file = IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
-			if (file != null) {
-				IdeApp.ProjectOperations.SaveCombine();
-				CurrentNode.Expanded = true;
-				Tree.AddNodeInsertCallback (file, new TreeNodeCallback (OnFileInserted));
-			}
+			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
+			IdeApp.ProjectOperations.SaveCombine();
+			CurrentNode.Expanded = true;
 		}
 		
 		void OnFileInserted (ITreeNavigator nav)

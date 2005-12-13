@@ -223,7 +223,6 @@
     <File name="./MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/FileTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Templates/INewFileCreator.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/ProjectDescriptor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/ProjectTemplate.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/TextTemplate.cs" subtype="Code" buildaction="Compile" />
@@ -236,6 +235,7 @@
     <File name="./options/TipsOfTheDay.xml" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Ide.Gui/AddinUpdateHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./templates" subtype="Directory" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -246,7 +246,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Dock" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
 </Project>

@@ -26,23 +26,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.Projects.Text;
+
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface ITextBuffer
+	public interface ITextBuffer: ITextFile
 	{
-		string Text { get; }
 		string SelectedText { get; }
 		
-		object CursorPosition { get; set; }
-		object GetPositionFromOffset (int offset);
-		object GetPositionFromLineColumn (int line, int column);
-		int GetOffsetFromPosition (object position);
+		int CursorPosition { get; set; }
 
-		object SelectionStartPosition { get; }
-		object SelectionEndPosition { get; }
+		int SelectionStartPosition { get; }
+		int SelectionEndPosition { get; }
 		
-		void Select (object startPosition, object endPosition);
-		void ShowPosition (object position);
-		string GetText (object startPosition, object endPosition);
+		void Select (int startPosition, int endPosition);
+		void ShowPosition (int position);
 	}
 }

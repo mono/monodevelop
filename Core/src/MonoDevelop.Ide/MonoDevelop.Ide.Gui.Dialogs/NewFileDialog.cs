@@ -17,6 +17,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 
 using Gtk;
 using MonoDevelop.Components;
@@ -27,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal class NewFileDialog : Dialog, INewFileCreator
+	internal class NewFileDialog : Dialog
 	{
 		ArrayList alltemplates = new ArrayList ();
 		ArrayList categories   = new ArrayList ();
@@ -43,12 +44,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Button okButton;
 		Button cancelButton;
 		Label infoLabel;
+		Entry nameEntry;
+		
+		Project parentProject;
+		string basePath;
+		
+		string currentProjectType = string.Empty;
+		string currentLanguage = string.Empty;
 
-		public NewFileDialog () : base ()
+		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
+			this.parentProject = parentProject;
+			this.basePath = basePath;
+			
 			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
+			
+			if (parentProject != null) {
+				currentProjectType = parentProject.ProjectType;
+				DotNetProject netproject = parentProject as DotNetProject;
+				if (netproject != null)
+					currentLanguage = netproject.LanguageName;
+			}
 			
 			InitializeTemplates ();
 		}
@@ -90,50 +108,108 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void InsertCategories(TreeIter node, ArrayList catarray)
 		{
 			foreach (Category cat in catarray) {
+				TreeIter cnode;
 				if (node.Equals(Gtk.TreeIter.Zero)) {
-					node = catStore.AppendValues (cat.Name, cat.Categories, cat.Templates, cat_imglist[1]);
+					cnode = catStore.AppendValues (cat.Name, cat.Categories, cat.Templates, cat_imglist[1]);
 				} else {
-					node = catStore.AppendValues (cat.Name, cat.Categories, cat.Templates, cat_imglist[1]);
+					cnode = catStore.AppendValues (node, cat.Name, cat.Categories, cat.Templates, cat_imglist[1]);
 				}
-				InsertCategories(node, cat.Categories);
+				if (cat.Categories.Count > 0)
+					InsertCategories (cnode, cat.Categories);
 			}
 		}
 		
-		// TODO : insert sub categories
-		Category GetCategory(string categoryname)
+		Category GetCategory (string categoryname)
 		{
-			foreach (Category category in categories) {
+			return GetCategory (categories, categoryname);
+		}
+		
+		Category GetCategory (ArrayList catList, string categoryname)
+		{
+			foreach (Category category in catList) {
 				if (category.Name == categoryname) {
 					return category;
 				}
 			}
 			Category newcategory = new Category(categoryname);
-			categories.Add(newcategory);
+			catList.Add(newcategory);
 			return newcategory;
 		}
 		
 		void InitializeTemplates()
 		{
 			foreach (FileTemplate template in FileTemplate.FileTemplates) {
-				TemplateItem titem = new TemplateItem(template);
-				if (titem.Template.Icon != null) {
-					icons[titem.Template.Icon] = 0; // "create template icon"
+			
+				if (template.Icon != null) {
+					icons[template.Icon] = 0; // "create template icon"
 				}
-				Category cat = GetCategory(titem.Template.Category);
-				cat.Templates.Add(titem); 
 				
-				if (cat.Selected == false && template.WizardPath == null) {
-					cat.Selected = true;
-				}
-				if (!cat.HasSelectedTemplate && titem.Template.Files.Count == 1) {
-					if (((FileDescriptionTemplate)titem.Template.Files[0]).Name.StartsWith("Empty")) {
-						//titem.Selected = true;
-						cat.HasSelectedTemplate = true;
+				// Ignore templates not supported by this project
+				if (template.ProjectType != "" && template.ProjectType != currentProjectType)
+					continue;
+					
+				// Ignore templates not supported by the current language
+				if (template.LanguageName != "" && template.LanguageName != "*" && currentLanguage != "" && template.LanguageName != currentLanguage)
+					continue;
+					
+				if (template.LanguageName == "*") {
+					ILanguageBinding[] langs = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
+					foreach (ILanguageBinding lang in langs) {
+						IDotNetLanguageBinding dnlang = lang as IDotNetLanguageBinding; 
+						if (dnlang != null && dnlang.GetCodeDomProvider () != null) {
+							TemplateItem titem = new TemplateItem (template, dnlang.Language);
+							AddTemplate (titem, dnlang.Language);
+						}
 					}
+				} else {
+					TemplateItem titem = new TemplateItem (template, template.LanguageName);
+					AddTemplate (titem, template.LanguageName);
 				}
-				alltemplates.Add(titem);
 			}
 			InitializeComponents ();
+		}
+		
+		void AddTemplate (TemplateItem titem, string templateLanguage)
+		{
+			Category cat = null;
+			
+			if (parentProject != null) {
+				if (templateLanguage != "") {
+					if (currentLanguage != "") {
+						// The template requires a language, and there is a language set, so only show it if they match 
+						if (currentLanguage != templateLanguage)
+							return;
+						cat = GetCategory (titem.Template.Category);
+					} else {
+						// The template requires a language, but there is no current language set, so create a category for it 
+						cat = GetCategory (templateLanguage);
+						cat = GetCategory (cat.Categories, titem.Template.Category);
+					}
+				} else {
+					cat = GetCategory (titem.Template.Category);
+				}
+			} else {
+				if (templateLanguage != "") {
+					// The template requires a language, but there is no current language set, so create a category for it
+					cat = GetCategory (templateLanguage);
+					cat = GetCategory (cat.Categories, titem.Template.Category);
+				} else {
+					cat = GetCategory (titem.Template.Category);
+				}
+			}
+
+			cat.Templates.Add (titem); 
+			
+			if (cat.Selected == false && titem.Template.WizardPath == null) {
+				cat.Selected = true;
+			}
+			if (!cat.HasSelectedTemplate && titem.Template.Files.Count == 1) {
+				if (((FileDescriptionTemplate)titem.Template.Files[0]).Name.StartsWith("Empty")) {
+					//titem.Selected = true;
+					cat.HasSelectedTemplate = true;
+				}
+			}
+			alltemplates.Add(titem);		
 		}
 		
 		// tree view event handlers
@@ -147,21 +223,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				foreach (TemplateItem item in (ArrayList)((Gtk.TreeStore)mdl).GetValue (iter, 2)) {
 					//templateStore.AppendValues (item.Name, item.Template);
 					
-					TemplateView.AddIcon(new Gtk.Image(Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item.Template);
+					TemplateView.AddIcon(new Gtk.Image(Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
 				}
 				okButton.Sensitive = false;
 			}
 		}
 		
 		// list view event handlers
-		void SelectedIndexChange(object sender, EventArgs e)
+		void SelectedIndexChange (object sender, EventArgs e)
 		{
-			FileTemplate item = (FileTemplate)TemplateView.CurrentlySelected;
+			UpdateOkStatus ();
+		}
+		
+		void NameChanged (object sender, EventArgs e)
+		{
+			UpdateOkStatus ();
+		}
+		
+		void UpdateOkStatus ()
+		{
+			TemplateItem sel = (TemplateItem) TemplateView.CurrentlySelected;
+			if (sel == null)
+				return;
+			
+			FileTemplate item = sel.Template;
 
-			if (item != null)
-			{
+			if (item != null) {
 				infoLabel.Text = item.Description;
-				okButton.Sensitive = true;
+				okButton.Sensitive = nameEntry.Text.Length > 0;
+			} else {
+				okButton.Sensitive = false;
 			}
 		}
 		
@@ -172,16 +263,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			//((ListView)ControlDictionary["templateListView"]).View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
 		}
 		
-		public bool IsFilenameAvailable(string fileName)
-		{
-			return true;
-		}
-		
-		public void SaveFile(string filename, string content, string languageName, bool showFile)
-		{
-			IdeApp.Workbench.NewDocument (filename, languageName, content);
-		}
-
 		public event EventHandler OnOked;	
 	
 		void OpenEvent(object sender, EventArgs e)
@@ -192,26 +273,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			//propertyService.SetProperty("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
 			
 			//if (templateView.Selection.GetSelected (out mdl, out iter)) {
-			if (TemplateView.CurrentlySelected != null) {
-				FileTemplate item = (FileTemplate)TemplateView.CurrentlySelected;
-				
-				if (item.WizardPath != null) {
-					//IProperties customizer = new DefaultProperties();
-					//customizer.SetProperty("Template", item);
-					//customizer.SetProperty("Creator",  this);
-					//WizardDialog wizard = new WizardDialog("File Wizard", customizer, item.WizardPath);
-					//if (wizard.ShowDialog() == DialogResult.OK) {
-						//DialogResult = DialogResult.OK;
-					//}
-				} else {
-					foreach (FileDescriptionTemplate newfile in item.Files) {
-						SaveFile(newfile.Name, newfile.Content, item.LanguageName, true);
-					}
-				}
-				
-				if (IdeApp.Workbench.ActiveDocument != null) {
-					IdeApp.Workbench.ActiveDocument.Select ();
-				}
+			if (TemplateView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
+				TemplateItem titem = (TemplateItem) TemplateView.CurrentlySelected;
+				FileTemplate item = titem.Template;
+				if (!item.Create (parentProject, basePath, titem.Language, nameEntry.Text))
+					return;
+
 				if (OnOked != null)
 					OnOked (null, null);
 				Respond (Gtk.ResponseType.Ok);
@@ -259,10 +326,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			FileTemplate template;
 			string name;
+			string language;
 			
-			public TemplateItem(FileTemplate template)
+			public TemplateItem (FileTemplate template, string language)
 			{
 				this.template = template;
+				this.language =  language;
 				this.name = template.Name;
 			}
 
@@ -276,6 +345,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				get {
 					return template;
 				}
+			}
+			
+			public string Language {
+				get { return language; }
 			}
 		}
 
@@ -337,6 +410,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			this.VBox.PackStart (viewbox);
 			this.VBox.PackStart (infoLabelFrame, false, false, 6);
+			
+			HBox nameBox = new HBox ();
+			nameBox.PackStart (new Label (GettextCatalog.GetString ("Name:")), false, false, 0);
+			nameEntry = new Entry ();
+			nameBox.PackStart (nameEntry, true, true, 6);
+			nameEntry.Changed += new EventHandler (NameChanged);
+			this.VBox.PackStart (nameBox, false, false, 6);
 
 			cat_imglist = new PixbufList();
 			cat_imglist.Add(Services.Resources.GetBitmap("md-open-folder"));

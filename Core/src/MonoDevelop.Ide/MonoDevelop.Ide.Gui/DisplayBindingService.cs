@@ -42,10 +42,14 @@ namespace MonoDevelop.Ide.Gui
 			return codon == null ? null : codon.DisplayBinding;
 		}
 		
-		public IDisplayBinding GetBindingPerLanguageName(string languagename)
+		public IDisplayBinding GetBindingForMimeType (string mimeType)
 		{
-			DisplayBindingCodon codon = GetCodonPerLanguageName(languagename);
-			return codon == null ? null : codon.DisplayBinding;
+			foreach (DisplayBindingCodon binding in bindings) {
+				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimeType)) {
+					return binding.DisplayBinding;
+				}
+			}
+			return null;
 		}
 		
 		public DisplayBindingCodon GetCodonPerFileName(string filename)
@@ -66,16 +70,6 @@ namespace MonoDevelop.Ide.Gui
 			Runtime.LoggingService.Info (String.Format (GettextCatalog.GetString ("Didnt match on mimetype: {0}, trying filename"), mimetype));
 			foreach (DisplayBindingCodon binding in bindings) {
 				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForFile(filename)) {
-					return binding;
-				}
-			}
-			return null;
-		}
-		
-		public DisplayBindingCodon GetCodonPerLanguageName(string languagename)
-		{
-			foreach (DisplayBindingCodon binding in bindings) {
-				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForLanguage(languagename)) {
 					return binding;
 				}
 			}

@@ -255,23 +255,23 @@ namespace MonoDevelop.Ide.Gui
 			return WrapDocument (content.WorkbenchWindow);
 		}
 		
-		public Document NewDocument (string defaultName, string language, string content)
+		public Document NewDocument (string defaultName, string mimeType, string content)
 		{
-			IDisplayBinding binding = Services.DisplayBindings.GetBindingPerLanguageName(language);
+			IDisplayBinding binding = Services.DisplayBindings.GetBindingForMimeType (mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
-				newContent = binding.CreateContentForLanguage(language, content, defaultName);
+				newContent = binding.CreateContentForMimeType (mimeType, content);
 				if (newContent == null) {
-					throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}Language:{1}{3}Content:{2}", defaultName, language, content, Environment.NewLine));
+					throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}MimeType:{1}{3}Content:{2}", defaultName, mimeType, content, Environment.NewLine));
 				}
 				newContent.UntitledName = defaultName;
-				newContent.IsDirty      = false;
+				newContent.IsDirty = true;
 				workbench.ShowView(newContent, true);
 				
 				Services.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			} else {
-				throw new ApplicationException("Can't create display binding for language " + language);				
+				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			}
 			
 			return WrapDocument (newContent.WorkbenchWindow);

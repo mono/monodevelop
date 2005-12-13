@@ -226,6 +226,7 @@ MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 
 RES= \
+templates/EmptyClass.xft.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/Icons.AboutImage
