@@ -16,6 +16,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.Projects.Text;
 
 using Gtk;
 using GtkSourceView;
@@ -51,11 +52,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			return false;
 		}
 		
-		public virtual bool CanCreateContentForLanguage (string language)
-		{
-			return true;
-		}
-		
 		public virtual IViewContent CreateContentForFile (string fileName)
 		{
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
@@ -64,46 +60,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			return w;
 		}
 		
-		public virtual IViewContent CreateContentForLanguage (string language, string content)
-		{
-			return CreateContentForLanguage (language, content, null);
-		}
-		
-		public virtual IViewContent CreateContentForLanguage (string language, string content, string new_file_name)
+		public virtual IViewContent CreateContentForMimeType (string mimeType, string content)
 		{
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			
-			switch (language.ToUpper ()) {
-				case "C#":
-					language = "text/x-csharp";
-					break;
-				case "JAVA":
-					language = "text/x-java";
-					break;
-				case "VBNET":
-					language = "text/x-vbnet";
-					break;
-				case "BOO":
-					language = "text/x-boo";
-					break;
-				case "NEMERLE":
-					language = "text/x-nemerle";
-					break;
-				case "XML":
-					language = "text/xml";
-					break;
-				default:
-					language = "text/plain";
-					break;
-			}
-			
-			w.LoadString (language, sps.Parse (content));
+			w.LoadString (mimeType, sps.Parse (content));
 			return w;
 		}	
 	}
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
-		IEditable, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
+		IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
 		IDocumentInformation
 	{
 		VBox mainBox;
@@ -263,7 +229,16 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void OnModifiedChanged (object o, EventArgs e)
 		{
-			this.IsDirty = se.Buffer.Modified;
+			base.IsDirty = se.Buffer.Modified;
+		}
+		
+		public override bool IsDirty {
+			get {
+				return base.IsDirty;
+			}
+			set {
+				se.Buffer.Modified = value;
+			}
 		}
 		
 		public override bool IsReadOnly
@@ -445,9 +420,13 @@ namespace MonoDevelop.SourceEditor.Gui
 				se.Buffer.LoadText (val);
 		}
 		
-#region IEditable
+#region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
 			get { return se.Buffer; }
+		}
+		
+		public string Name {
+			get { return ContentName; }
 		}
 		
 		string cachedText;
@@ -511,23 +490,21 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-		public object GetPositionFromLineColumn (int line, int column)
+		public int GetPositionFromLineColumn (int line, int column)
 		{
 			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
 			itr.LineOffset = column - 1 > itr.CharsInLine ? itr.CharsInLine - 1 : column - 1;
-			return itr;
+			return itr.Offset;
 		}
 		
-		public void InsertText (object position, string text)
+		public void InsertText (int position, string text)
 		{
-			TextIter it = (TextIter) position;
-			se.Buffer.Insert (it.Offset, text);
+			se.Buffer.Insert (position, text);
 		}
 		
-		public void DeleteText (object position, int length)
+		public void DeleteText (int pos, int length)
 		{
-			int pos = ((TextIter)position).Offset;
-			se.Buffer.Delete (pos, pos + length);
+			se.Buffer.Delete (pos, length);
 		}
 		
 		public event EventHandler TextChanged {
@@ -619,65 +596,66 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 #endregion 
 
-		public object CursorPosition {
-			get { return se.Buffer.GetIterAtMark (se.Buffer.InsertMark); }
-			set { se.Buffer.MoveMark (se.Buffer.InsertMark, (TextIter) value); }
+		public int CursorPosition {
+			get { return se.Buffer.GetIterAtMark (se.Buffer.InsertMark).Offset; }
+			set { se.Buffer.MoveMark (se.Buffer.InsertMark, se.Buffer.GetIterAtOffset (value)); }
 		}
 
-		public object GetPositionFromOffset (int offset)
+		public void Select (int startPosition, int endPosition)
 		{
-			return se.Buffer.GetIterAtOffset (offset);
+			se.Buffer.MoveMark (se.Buffer.InsertMark, se.Buffer.GetIterAtOffset (startPosition));
+			se.Buffer.MoveMark (se.Buffer.SelectionBound, se.Buffer.GetIterAtOffset (endPosition));
 		}
 		
-		public int GetOffsetFromPosition (object position)
-		{
-			return ((TextIter)position).Offset;
-		}
-		
-		public void Select (object startPosition, object endPosition)
-		{
-			se.Buffer.MoveMark (se.Buffer.InsertMark, (TextIter) startPosition);
-			se.Buffer.MoveMark (se.Buffer.SelectionBound, (TextIter) endPosition);
-		}
-		
-		public object SelectionStartPosition {
+		public int SelectionStartPosition {
 			get {
 				TextIter p1 = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				TextIter p2 = se.Buffer.GetIterAtMark (se.Buffer.SelectionBound);
-				if (p1.Offset < p2.Offset) return p1;
-				else return p2;
+				if (p1.Offset < p2.Offset) return p1.Offset;
+				else return p2.Offset;
 			}
 		}
 		
-		public object SelectionEndPosition {
+		public int SelectionEndPosition {
 			get {
 				TextIter p1 = se.Buffer.GetIterAtMark (se.Buffer.InsertMark);
 				TextIter p2 = se.Buffer.GetIterAtMark (se.Buffer.SelectionBound);
-				if (p1.Offset > p2.Offset) return p1;
-				else return p2;
+				if (p1.Offset > p2.Offset) return p1.Offset;
+				else return p2.Offset;
 			}
 		}
 		
-		public void ShowPosition (object position)
+		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
-			se.View.ScrollToIter ((TextIter)position, 0.3, false, 0, 0);
+			TextIter it = se.Buffer.GetIterAtOffset (position);
+			line = it.Line + 1;
+			column = it.LineOffset;
 		}
 		
-		public string GetText (object startPosition, object endPosition)
+		public void ShowPosition (int position)
 		{
-			return se.Buffer.GetText ((TextIter)startPosition, (TextIter)endPosition, true);
+			se.View.ScrollToIter (se.Buffer.GetIterAtOffset (position), 0.3, false, 0, 0);
+		}
+		
+		public string GetText (int startPosition, int endPosition)
+		{
+			return se.Buffer.GetText (se.Buffer.GetIterAtOffset (startPosition), se.Buffer.GetIterAtOffset (endPosition), true);
+		}
+		
+		int ITextFile.Length {
+			get { return se.Buffer.Length; }
 		}
 
-		public void SetBookmarked (object position, bool mark)
+		public void SetBookmarked (int position, bool mark)
 		{
-			int line = ((TextIter)position).Line;
+			int line = se.Buffer.GetIterAtOffset (position).Line;
 			if (se.Buffer.IsBookmarked (line) != mark)
 				se.Buffer.ToggleBookmark (line);
 		}
 		
-		public bool IsBookmarked (object position)
+		public bool IsBookmarked (int position)
 		{
-			int line = ((TextIter)position).Line;
+			int line = se.Buffer.GetIterAtOffset (position).Line;
 			return se.Buffer.IsBookmarked (line);
 		}
 		

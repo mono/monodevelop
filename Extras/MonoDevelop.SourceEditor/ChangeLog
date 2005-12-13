@@ -1,3 +1,8 @@
+2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	Track changes in the api.
+
 2005-12-02 Itamar Rogel  <chastamar@yahoo.com>
 
 	* Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
