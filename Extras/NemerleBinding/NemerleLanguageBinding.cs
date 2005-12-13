@@ -5,16 +5,19 @@ using System.Collections;
 using System.Reflection;
 using System.Resources;
 using System.Xml;
+using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace NemerleBinding
 {
 	/// <summary>
 	/// This class describes the main functionalaty of a language binding
 	/// </summary>
-	public class NemerleLanguageBinding : ILanguageBinding
+	public class NemerleLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "Nemerle";
 		
@@ -24,7 +27,7 @@ namespace NemerleBinding
 			get { return LanguageName; }
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			return compilerServices.CanCompile(fileName);
 		}
@@ -48,6 +51,24 @@ namespace NemerleBinding
 		public string CommentTag
 		{
 			get { return "//"; }
+		}
+		
+		public CodeDomProvider GetCodeDomProvider ()
+		{
+			return null;
+		}
+		
+		public string GetFileName (string baseName)
+		{
+			return baseName + ".n";
+		}
+		
+		public IParser Parser {
+			get { return null; }
+		}
+		
+		public IRefactorer Refactorer {
+			get { return null; }
 		}
 	}
 }
