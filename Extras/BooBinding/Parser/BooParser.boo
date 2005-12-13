@@ -53,12 +53,6 @@ class BooParser(IParser):
 		get:
 			return BooBinding.Parser.ExpressionFinder()
 	
-	def CanParse(fileName as string):
-		return Path.GetExtension(fileName).ToLower() == ".boo"
-	
-	def CanParse(project as Project):
-		return project.ProjectType == BooBinding.BooLanguageBinding.LanguageName
-	
 	def Parse(fileName as string) as ICompilationUnitBase:
 		content as string
 		using r = StreamReader(fileName):

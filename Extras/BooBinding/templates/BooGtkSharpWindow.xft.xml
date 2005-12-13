@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Gtk# Window</_Name>
 		<Icon>res:Boo.File.Form</Icon>
-		<Category>Boo</Category>
+		<Category>General</Category>
 		<LanguageName>Boo</LanguageName>
 		<_Description>Creates a top-level Gtk# window</_Description>
 	</TemplateConfiguration>
@@ -18,9 +18,9 @@
 import System
 import Gtk
 
-class CreatedWindow(Window):
+class ${Name}(Window):
 	def constructor():
-		super("CreatedWindow")
+		super("${Name}")
 ]]></File>
 	</TemplateFiles>
 	

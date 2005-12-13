@@ -26,14 +26,20 @@ import System.Collections
 import System.Reflection
 import System.Resources
 import System.Xml
+import System.CodeDom.Compiler;
+import Boo.Lang.CodeDom;
 
 import MonoDevelop.Projects
+import MonoDevelop.Projects.Parser
+import MonoDevelop.Projects.CodeGeneration
 import MonoDevelop.Core.Gui
 import MonoDevelop.Core
 
-public class BooLanguageBinding(ILanguageBinding):
+public class BooLanguageBinding(IDotNetLanguageBinding):
 	internal static LanguageName = "Boo"
 	compilerServices = BooBindingCompilerServices ()
+	provider = BooCodeProvider ()
+	parser = BooBinding.Parser.BooParser ()
 	
 	public Language as string:
 		get:
@@ -59,3 +65,20 @@ public class BooLanguageBinding(ILanguageBinding):
 	public CommentTag as string:
 		get:
 			return "//"
+
+	def IsSourceCodeFile (fileName as string):
+		return Path.GetExtension(fileName).ToLower() == ".boo"
+
+	public def GetCodeDomProvider () as CodeDomProvider:
+		return provider
+	
+	public def GetFileName (baseName as string) as string:
+		return baseName + ".boo"
+	
+	public Parser as IParser:
+		get:
+			return parser
+		
+	public Refactorer as IRefactorer:
+		get:
+			return null
