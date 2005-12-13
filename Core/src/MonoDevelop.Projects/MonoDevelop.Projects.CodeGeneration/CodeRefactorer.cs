@@ -65,11 +65,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameClass (IClass cls, string newName, RefactoryScope scope)
 		{
-			Refactor (cls, scope,
-				delegate (IRefactorerContext rctx, IRefactorer gen, string file) {
-					gen.RenameClassReferences (rctx, file, cls, newName);
-				}
-			);
+			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameClass (cls, newName).Refactor));
 			
 			InternalRefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
@@ -96,11 +92,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameMethod (IClass cls, IMethod method, string newName, RefactoryScope scope)
 		{
-			Refactor (cls, scope,
-				delegate (IRefactorerContext gctx, IRefactorer gen, string file) {
-					gen.RenameMethodReferences (gctx, file, cls, method, newName);
-				}
-			);
+			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameMethod (cls, method, newName).Refactor));
 			
 			InternalRefactorerContext rctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
@@ -127,11 +119,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameField (IClass cls, IField field, string newName, RefactoryScope scope)
 		{
-			RefactorDelegate del = delegate (IRefactorerContext rctx, IRefactorer r, string file) {
-				r.RenameFieldReferences (rctx, file, cls, field, newName);
-			};
-			
-			Refactor (cls, scope, del);
+			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameField (cls, field, newName).Refactor));
 			
 			InternalRefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
@@ -251,6 +239,61 @@ namespace MonoDevelop.Projects.CodeGeneration
 				foreach (TextFile file in textFiles)
 					file.Save ();
 			}
+		}
+	}
+	
+	class RefactorRenameClass
+	{
+		IClass cls;
+		string newName;
+		
+		public RefactorRenameClass (IClass cls, string newName)
+		{
+			this.cls = cls;
+			this.newName = newName;
+		}
+		
+		public void Refactor (IRefactorerContext rctx, IRefactorer gen, string file)
+		{
+			gen.RenameClassReferences (rctx, file, cls, newName);
+		}
+	}
+	
+	class RefactorRenameMethod
+	{
+		IClass cls;
+		string newName;
+		IMethod method;
+		
+		public RefactorRenameMethod (IClass cls, IMethod method, string newName)
+		{
+			this.cls = cls;
+			this.newName = newName;
+			this.method = method;
+		}
+		
+		public void Refactor (IRefactorerContext rctx, IRefactorer r, string file)
+		{
+			r.RenameMethodReferences (rctx, file, cls, method, newName);
+		}
+	}
+	
+	class RefactorRenameField
+	{
+		IClass cls;
+		string newName;
+		IField field;
+		
+		public RefactorRenameField (IClass cls, IField field, string newName)
+		{
+			this.cls = cls;
+			this.newName = newName;
+			this.field = field;
+		}
+		
+		public void Refactor (IRefactorerContext rctx, IRefactorer r, string file)
+		{
+			r.RenameFieldReferences (rctx, file, cls, field, newName);
 		}
 	}
 	
