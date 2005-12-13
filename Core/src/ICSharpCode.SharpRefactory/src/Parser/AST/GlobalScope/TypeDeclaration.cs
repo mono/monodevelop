@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	{
 		// Children of Enum : [Field]
 		string name;
-		Modifier modifier;
+		ModifierCollection modifier;
 		Types type; // Class | Interface | Struct | Enum
 		StringCollection bases;
 		ArrayList attributes;
@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 				name = value;
 			}
 		}
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
 				return modifier;
 			}
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 
 		// only valid for classes
 		public bool IsStatic {
-			get { return type == Types.Class && (modifier & Modifier.Static) != 0; }
+			get { return type == Types.Class && Modifiers.Contains (ModifierFlags.Static); }
 		}
 
 		public TypeDeclaration () : this (false)
@@ -105,5 +105,31 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			                     GetCollectionString(bases));
 		}
 		
+		#region Declaration Points
+		System.Drawing.Point declarationStartLocation;
+		public System.Drawing.Point DeclarationStartLocation
+		{
+			get {
+				return declarationStartLocation;
+			}
+			set {
+				declarationStartLocation = value;
+			}
+		}
+		
+		System.Drawing.Point declarationEndLocation;
+		public System.Drawing.Point DeclarationEndLocation
+		{
+			get {
+				if (declarationEndLocation.IsEmpty)
+					return this.StartLocation;
+				else
+					return declarationEndLocation;
+			}
+			set {
+				declarationEndLocation = value;
+			}
+		}
+		#endregion
 	}
 }

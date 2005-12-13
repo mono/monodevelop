@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	{
 		TypeReference   typeReference;
 		ArrayList variableDeclarators; // [Field]
-		Modifier modifier;
+		ModifierCollection modifiers;
 		ArrayList attributes;
 		string name;
 		EventAddRegion    addRegion;
@@ -49,12 +49,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 				variableDeclarators = value;
 			}
 		}
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		public ArrayList Attributes {
@@ -122,27 +122,27 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		public EventDeclaration()
 		{}
 		
-		public EventDeclaration(Modifier modifier, ArrayList attributes)
+		public EventDeclaration(ModifierCollection modifiers, ArrayList attributes)
 		{
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.attributes = attributes;
 		}
 		
-		public EventDeclaration(TypeReference typeReference, ArrayList variableDeclarators, Modifier modifier, ArrayList attributes)
+		public EventDeclaration(TypeReference typeReference, ArrayList variableDeclarators, ModifierCollection modifiers, ArrayList attributes)
 		{
 			this.typeReference = typeReference;
 			this.name = null;
 			this.variableDeclarators = variableDeclarators;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.attributes = attributes;
 		}
 		
-		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, ArrayList attributes)
+		public EventDeclaration(TypeReference typeReference, string name, ModifierCollection modifiers, ArrayList attributes)
 		{
 			this.typeReference = typeReference;
 			this.name = name;
 			this.variableDeclarators = null;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.attributes = attributes;
 		}
 		

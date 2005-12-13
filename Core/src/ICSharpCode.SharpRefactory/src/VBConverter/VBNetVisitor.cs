@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			AppendNewLine();
 			generateAttributeUnderScore = true;
 			AppendAttributes(typeDeclaration.Attributes);
-			string modifier =  GetModifier(typeDeclaration.Modifier);
+			string modifier =  GetModifier(typeDeclaration.Modifiers);
 			string type = String.Empty;
 			
 			switch (typeDeclaration.Type) {
@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			DebugOutput(delegateDeclaration);
 			AppendNewLine();
 			AppendAttributes(delegateDeclaration.Attributes);
-			AppendIndentation();sourceText.Append(GetModifier(delegateDeclaration.Modifier));
+			AppendIndentation();sourceText.Append(GetModifier(delegateDeclaration.Modifiers));
 			sourceText.Append("Delegate ");
 			bool isFunction = (delegateDeclaration.ReturnType.Type != "void");
 			if (isFunction) {
@@ -257,10 +257,10 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			foreach (VariableDeclaration field in fieldDeclaration.Fields) {
 				AppendAttributes(fieldDeclaration.Attributes);
 				AppendIndentation();
-				if (fieldDeclaration.Modifier == Modifier.None) {
+				if (fieldDeclaration.Modifiers.isNone) {
 					sourceText.Append(" Private ");
 				} else {
-					sourceText.Append(GetModifier(fieldDeclaration.Modifier));
+					sourceText.Append(GetModifier(fieldDeclaration.Modifiers));
 				}
 				sourceText.Append(field.Name);
 				sourceText.Append(" As ");
@@ -281,7 +281,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			AppendNewLine();
 			AppendAttributes(methodDeclaration.Attributes);
 			AppendIndentation();
-			sourceText.Append(GetModifier(methodDeclaration.Modifier));
+			sourceText.Append(GetModifier(methodDeclaration.Modifiers));
 			bool isFunction = methodDeclaration.TypeReference.Type != "void";
 			string defStr   = isFunction ? "Function" : "Sub";
 			sourceText.Append(defStr);
@@ -314,7 +314,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			DebugOutput(propertyDeclaration);
 			AppendNewLine();
 			AppendAttributes(propertyDeclaration.Attributes);
-			AppendIndentation();sourceText.Append(GetModifier(propertyDeclaration.Modifier));
+			AppendIndentation();sourceText.Append(GetModifier(propertyDeclaration.Modifiers));
 			if (propertyDeclaration.IsReadOnly) {
 				sourceText.Append("ReadOnly ");
 			} else if (propertyDeclaration.IsWriteOnly) {
@@ -388,7 +388,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 				foreach (VariableDeclaration field in eventDeclaration.VariableDeclarators) {
 					AppendAttributes(eventDeclaration.Attributes);
 					AppendIndentation();
-					sourceText.Append(GetModifier(eventDeclaration.Modifier));
+					sourceText.Append(GetModifier(eventDeclaration.Modifiers));
 					sourceText.Append("Event ");
 					sourceText.Append(field.Name);
 					sourceText.Append(" As ");
@@ -397,7 +397,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			} else {
 				AppendAttributes(eventDeclaration.Attributes);
 				AppendIndentation();
-				sourceText.Append(GetModifier(eventDeclaration.Modifier));
+				sourceText.Append(GetModifier(eventDeclaration.Modifiers));
 				sourceText.Append("Event ");
 				sourceText.Append(eventDeclaration.Name);
 				sourceText.Append(" As ");
@@ -430,7 +430,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			DebugOutput(constructorDeclaration);
 			AppendNewLine();
-			AppendIndentation();sourceText.Append(GetModifier(constructorDeclaration.Modifier));
+			AppendIndentation();sourceText.Append(GetModifier(constructorDeclaration.Modifiers));
 			sourceText.Append("Sub New");
 			sourceText.Append("(");
 			AppendParameters(constructorDeclaration.Parameters);
@@ -476,7 +476,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			AppendAttributes(indexerDeclaration.Attributes);
 			AppendIndentation();
 			sourceText.Append("Default ");
-			sourceText.Append(GetModifier(indexerDeclaration.Modifier));
+			sourceText.Append(GetModifier(indexerDeclaration.Modifiers));
 			sourceText.Append("Property Blubber(");
 			AppendParameters(indexerDeclaration.Parameters);
 			sourceText.Append(") As ");
@@ -519,7 +519,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			DebugOutput(localVariableDeclaration);
 			foreach (VariableDeclaration localVar in localVariableDeclaration.Variables) {
-				AppendIndentation();sourceText.Append(GetModifier(localVariableDeclaration.Modifier));
+				AppendIndentation();sourceText.Append(GetModifier(localVariableDeclaration.Modifiers));
 				ArrayCreateExpression ace = localVar.Initializer as ArrayCreateExpression;
 				if (ace != null && (ace.ArrayInitializer == null || ace.ArrayInitializer.CreateExpressions == null)) {
 					string arrayParameters  = String.Empty;
@@ -1380,59 +1380,59 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			return typeStr + arrays.ToString();
 		}
 		
-		string GetModifier(Modifier modifier)
+		string GetModifier(ModifierCollection modifier)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if ((modifier & Modifier.Public) == Modifier.Public) {
+			if (modifier.Contains (ModifierFlags.Public)) {
 				builder.Append("Public ");
-			} else if ((modifier & Modifier.Private) == Modifier.Private) {
+			} else if (modifier.Contains (ModifierFlags.Private)) {
 				builder.Append("Private ");
-			} else if ((modifier & (Modifier.Protected | Modifier.Internal)) == (Modifier.Protected | Modifier.Internal)) {
+			} else if (modifier.Contains (ModifierFlags.Protected | ModifierFlags.Internal)) {
 				builder.Append("Protected Friend ");
-			} else if ((modifier & Modifier.Internal) == Modifier.Internal) {
+			} else if (modifier.Contains (ModifierFlags.Internal)) {
 				builder.Append("Friend ");
-			} else if ((modifier & Modifier.Protected) == Modifier.Protected) {
+			} else if (modifier.Contains (ModifierFlags.Protected)) {
 				builder.Append("Protected ");
 			}
 			
-			if ((modifier & Modifier.Static) == Modifier.Static) {
+			if (modifier.Contains (ModifierFlags.Static)) {
 				builder.Append("Shared ");
 			}
-			if ((modifier & Modifier.Virtual) == Modifier.Virtual) {
+			if (modifier.Contains (ModifierFlags.Virtual)) {
 				builder.Append("Overridable ");
 			}
-			if ((modifier & Modifier.Abstract) == Modifier.Abstract) {
+			if (modifier.Contains (ModifierFlags.Abstract)) {
 				builder.Append("MustOverride ");
 			}
-			if ((modifier & Modifier.Override) == Modifier.Override) {
+			if (modifier.Contains (ModifierFlags.Override)) {
 				builder.Append("Overloads Overrides ");
 			}
-			if ((modifier & Modifier.New) == Modifier.New) {
+			if (modifier.Contains (ModifierFlags.New)) {
 				builder.Append("Shadows ");
 			}
 			
-			if ((modifier & Modifier.Sealed) == Modifier.Sealed) {
+			if (modifier.Contains (ModifierFlags.Sealed)) {
 				builder.Append("NotInheritable ");
 			}
 			
-			if ((modifier & Modifier.Const) == Modifier.Const) {
+			if (modifier.Contains (ModifierFlags.Const)) {
 				builder.Append("Const ");
 			}
-			if ((modifier & Modifier.Readonly) == Modifier.Readonly) {
+			if (modifier.Contains (ModifierFlags.Readonly)) {
 				builder.Append("ReadOnly ");
 			}
 			
 			// TODO : Extern 
-			if ((modifier & Modifier.Extern) == Modifier.Extern) {
+			if (modifier.Contains (ModifierFlags.Extern)) {
 				errors.Error(-1, -1, String.Format("'Extern' modifier not convertable"));
 			}
 			// TODO : Volatile 
-			if ((modifier & Modifier.Volatile) == Modifier.Volatile) {
+			if (modifier.Contains (ModifierFlags.Volatile)) {
 				errors.Error(-1, -1, String.Format("'Volatile' modifier not convertable"));
 			}
 			// TODO : Unsafe 
-			if ((modifier & Modifier.Unsafe) == Modifier.Unsafe) {
+			if (modifier.Contains (ModifierFlags.Unsafe)) {
 				errors.Error(-1, -1, String.Format("'Unsafe' modifier not convertable"));
 			}
 			return builder.ToString();
@@ -1574,19 +1574,19 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			foreach (object o in typeDeclaration.Children) {
 				if (o is MethodDeclaration) {
-					if ((((MethodDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
+					if (!((MethodDeclaration)o).Modifiers.Contains (ModifierFlags.Static)) {
 						return false;
 					}
 				} else if (o is PropertyDeclaration) {
-					if ((((PropertyDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
+					if (!((PropertyDeclaration)o).Modifiers.Contains (ModifierFlags.Static)) {
 						return false;
 					}
 				} else if (o is FieldDeclaration) {
-					if ((((FieldDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
+					if (!((FieldDeclaration)o).Modifiers.Contains (ModifierFlags.Static)) {
 						return false;
 					}
 				}else if (o is EventDeclaration) {
-					if ((((EventDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
+					if (!((EventDeclaration)o).Modifiers.Contains (ModifierFlags.Static)) {
 						return false;
 					}
 				}

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class ConstructorDeclaration : AbstractNode
 	{
 		string          name;
-		Modifier modifier;
+		ModifierCollection modifiers;
 		ArrayList       parameters = new ArrayList(); // [ParameterDeclarationExpression]
 		ArrayList       attributes = new ArrayList();
 		ConstructorInitializer constructorInitializer;
@@ -38,12 +38,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -82,10 +82,10 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public ConstructorDeclaration(string name, Modifier modifier, ArrayList parameters, ConstructorInitializer constructorInitializer, ArrayList attributes)
+		public ConstructorDeclaration(string name, ModifierCollection modifiers, ArrayList parameters, ConstructorInitializer constructorInitializer, ArrayList attributes)
 		{
 			this.name     = name;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			if (parameters != null) {
 				this.parameters = parameters;
 			}

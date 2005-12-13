@@ -6,7 +6,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class LocalVariableDeclaration : Statement
 	{
 		TypeReference type;
-		Modifier      modifier = Modifier.None;
+		ModifierCollection modifiers;
 		ArrayList     variables = new ArrayList(); // [VariableDeclaration]
 		INode block; // the block in witch the variable is declared; needed for the LookupTable
 		
@@ -19,12 +19,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -48,10 +48,10 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			this.type = type;
 		}
 		
-		public LocalVariableDeclaration(TypeReference type, Modifier modifier)
+		public LocalVariableDeclaration(TypeReference type, ModifierCollection modifiers)
 		{
 			this.type     = type;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 		}
 		
 		public VariableDeclaration GetVariableDeclaration(string variableName)
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		{
 			return String.Format("[LocalVariableDeclaration: Type={0}, Modifier ={1} Variables={2}]", 
 			                     type, 
-			                     modifier, 
+			                     modifiers, 
 			                     GetCollectionString(variables));
 		}
 	}

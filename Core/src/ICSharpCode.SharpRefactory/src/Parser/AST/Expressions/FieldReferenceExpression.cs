@@ -26,10 +26,11 @@ namespace ICSharpCode.SharpRefactory.Parser.AST {
 			}
 		}
 		
-		public FieldReferenceExpression(Expression targetObject, string fieldName)
+		public FieldReferenceExpression(Expression targetObject, string fieldName, System.Drawing.Point location)
 		{
 			this.targetObject = targetObject;
 			this.fieldName = fieldName;
+			this.StartLocation = location;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

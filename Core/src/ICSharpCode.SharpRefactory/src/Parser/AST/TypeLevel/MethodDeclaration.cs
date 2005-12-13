@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class MethodDeclaration : AbstractNode
 	{
 		string          name;
-		Modifier modifier;
+		ModifierCollection modifiers;
 		TypeReference   typeReference;
 		ArrayList       parameters = new ArrayList(); // [ParameterDeclarationExpression]
 		ArrayList       attributes = new ArrayList();
@@ -47,12 +47,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -83,10 +83,10 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, ArrayList parameters, ArrayList attributes)
+		public MethodDeclaration(string name, ModifierCollection modifiers, TypeReference typeReference, ArrayList parameters, ArrayList attributes)
 		{
 			this.name = name;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.typeReference = typeReference;
 			this.parameters = parameters;
 			this.attributes = attributes;
@@ -99,7 +99,34 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return String.Format("[MethodDeclaration: Name={0}, Modifier={1}, TypeReference={2}]", name, modifier, typeReference);
+			return String.Format("[MethodDeclaration: Name={0}, Modifier={1}, TypeReference={2}]", name, modifiers, typeReference);
 		}
+		
+		#region Declaration Points
+		System.Drawing.Point declarationStartLocation;
+		public System.Drawing.Point DeclarationStartLocation
+		{
+			get {
+				return declarationStartLocation;
+			}
+			set {
+				declarationStartLocation = value;
+			}
+		}
+		
+		System.Drawing.Point declarationEndLocation;
+		public System.Drawing.Point DeclarationEndLocation
+		{
+			get {
+				if (declarationEndLocation.IsEmpty)
+					return this.StartLocation;
+				else
+					return declarationEndLocation;
+			}
+			set {
+				declarationEndLocation = value;
+			}
+		}
+		#endregion
 	}
 }

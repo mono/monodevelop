@@ -92,41 +92,41 @@ namespace ICSharpCode.SharpRefactory.Parser
 		}
 
 		// FIXME: map all modifiers correctly
-		MemberAttributes ConvMemberAttributes(Modifier modifier) 
+		MemberAttributes ConvMemberAttributes(ModifierCollection modifier) 
 		{
 			MemberAttributes attr = (MemberAttributes)0;
 
-			if ((modifier & Modifier.Abstract) != 0)
+			if (modifier.Contains (ModifierFlags.Abstract))
 				attr |=  MemberAttributes.Abstract;
-//			if ((modifier & Modifier.None) != 0)
+//			if (modifier.Contains (ModifierFlags.None))
 //				attr |=  MemberAttributes.AccessMask;
-			if ((modifier & Modifier.Internal) != 0)
+			if (modifier.Contains (ModifierFlags.Internal))
 				attr |=  MemberAttributes.Assembly;
-			if ((modifier & Modifier.Const) != 0)
+			if (modifier.Contains (ModifierFlags.Const))
 				attr |=  MemberAttributes.Const;
-			if ((modifier & Modifier.Protected) != 0)
+			if (modifier.Contains (ModifierFlags.Protected))
 				attr |=  MemberAttributes.Family;
-			if ((modifier & Modifier.Protected) != 0 && (modifier & Modifier.Internal) != 0)
+			if (modifier.Contains (ModifierFlags.Protected) && modifier.Contains (ModifierFlags.Internal))
 				attr |=  MemberAttributes.FamilyAndAssembly;
-//			if ((modifier & Modifier.None) != 0)
+//			if (modifier.Contains (ModifierFlags.None))
 //				attr |=  MemberAttributes.FamilyOrAssembly;
-			if ((modifier & Modifier.Sealed) != 0)
+			if (modifier.Contains (ModifierFlags.Sealed))
 				attr |=  MemberAttributes.Final;
-			if ((modifier & Modifier.New) != 0)
+			if (modifier.Contains (ModifierFlags.New))
 				attr |=  MemberAttributes.New;
-			if ((modifier & Modifier.Virtual) != 0)
+			if (modifier.Contains (ModifierFlags.Virtual))
 				attr |=  MemberAttributes.Overloaded;
-			if ((modifier & Modifier.Override) != 0)
+			if (modifier.Contains (ModifierFlags.Override))
 				attr |=  MemberAttributes.Override;
-			if ((modifier & Modifier.Private) != 0)
+			if (modifier.Contains (ModifierFlags.Private))
 				attr |=  MemberAttributes.Private;
-			if ((modifier & Modifier.Public) != 0)
+			if (modifier.Contains (ModifierFlags.Public))
 				attr |=  MemberAttributes.Public;
-//			if ((modifier & Modifier.None) != 0)
+//			if (modifier.Contains (ModifierFlags.None))
 //				attr |=  MemberAttributes.ScopeMask;
-			if ((modifier & Modifier.Static) != 0)
+			if (modifier.Contains (ModifierFlags.Static))
 				attr |=  MemberAttributes.Static;
-//			if ((modifier & Modifier.None) != 0)
+//			if (modifier.Contains (ModifierFlags.None))
 //				attr |=  MemberAttributes.VTableMask;
 
 			return attr;
@@ -259,7 +259,7 @@ namespace ICSharpCode.SharpRefactory.Parser
 				VariableDeclaration field = (VariableDeclaration)fieldDeclaration.Fields[i];
 				
 				CodeMemberField memberField = new CodeMemberField(new CodeTypeReference(ConvType(fieldDeclaration.TypeReference.Type)), field.Name);
-				memberField.Attributes = ConvMemberAttributes(fieldDeclaration.Modifier);
+				memberField.Attributes = ConvMemberAttributes(fieldDeclaration.Modifiers);
 				if (field.Initializer != null) {
 					memberField.InitExpression =  (CodeExpression)((INode)field.Initializer).AcceptVisitor(this, data);
 				}
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpRefactory.Parser
 
 			CodeMemberMethod memberMethod = new CodeMemberMethod();
 			memberMethod.Name = methodDeclaration.Name;
-			memberMethod.Attributes = ConvMemberAttributes(methodDeclaration.Modifier);
+			memberMethod.Attributes = ConvMemberAttributes(methodDeclaration.Modifiers);
 			
 			codeStack.Push(memberMethod.Statements);
 
@@ -757,7 +757,7 @@ namespace ICSharpCode.SharpRefactory.Parser
 					if (fRef2.FieldName != null && Char.IsUpper(fRef2.FieldName[0])) {
 						// an exception is thrown if it doesn't end in an indentifier exception
 						// for example for : this.MyObject.MyMethod() leads to an exception, which 
-						// is correct in this case ... I know this is really HACKY :)
+						// is correct in this case . I know this is really HACKY :)
 						try {
 							targetExpr = ConvertToIdentifier(fRef2);
 						} catch (Exception) {}

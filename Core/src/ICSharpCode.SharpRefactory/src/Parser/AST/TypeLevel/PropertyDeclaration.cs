@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class PropertyDeclaration : AbstractNode
 	{
 		string          name;
-		Modifier        modifier;
+		ModifierCollection        modifiers;
 		TypeReference   typeReference;
 		ArrayList       attributes;
 		Point           bodyStart;
@@ -42,12 +42,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -129,11 +129,11 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		}
 		
 		
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, ArrayList attributes)
+		public PropertyDeclaration(string name, TypeReference typeReference, ModifierCollection modifiers, ArrayList attributes)
 		{
 			this.name = name;
 			this.typeReference = typeReference;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.attributes = attributes;
 		}
 		

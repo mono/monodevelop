@@ -1,3 +1,34 @@
+2005-12-12  Lluis Sanchez  <lluis@novell.com>
+
+	* src/Parser/AST/Statements/LocalVariableDeclaration.cs:
+	* src/Parser/AST/TypeLevel/MethodDeclaration.cs:
+	* src/Parser/AST/TypeLevel/PropertyGetRegion.cs:
+	* src/Parser/AST/TypeLevel/FieldDeclaration.cs:
+	* src/Parser/AST/TypeLevel/PropertyDeclaration.cs:
+	* src/Parser/AST/TypeLevel/ConstructorDeclaration.cs:
+	* src/Parser/AST/TypeLevel/OperatorDeclaration.cs:
+	* src/Parser/AST/TypeLevel/PropertySetRegion.cs:
+	* src/Parser/AST/TypeLevel/IndexerDeclaration.cs:
+	* src/Parser/AST/TypeLevel/DestructorDeclaration.cs:
+	* src/Parser/AST/GlobalScope/DelegateDeclaration.cs:
+	* src/Parser/AST/GlobalScope/TypeDeclaration.cs:
+	* src/Parser/AST/TypeLevel/EventDeclaration.cs:
+	* src/Parser/generated/cs.ATG:
+	* src/Parser/generated/Parser.cs:
+	* src/Parser/generated/Modifiers.cs:
+	* src/Parser/AST/Modifier.cs:
+	* src/VBConverter/VBNetVisitor.cs:
+	* src/CodeDOM/CodeDOMVisitor.cs:
+	* src/PrettyPrinter/PrettyPrintVisitor.cs:
+	Use a new class to store member modifiers. In this way it is possible
+	to store the location of the modifiers and get a more precise location
+	of classes, fields and methods. Patch by Alexandre Gomes with some
+	minor changes.
+	
+	* src/Parser/AST/Expressions/IdentifierExpression.cs:
+	* src/Parser/AST/Expressions/FieldReferenceExpression.cs:
+	Store location of field references and identifiers.
+
 2005-08-10  Ben Motmans  <ben.motmans@gmail.com>
 
     * ICSharpCode.SharpRefactory.mdp: references update

@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	{
 		ArrayList       attributes = null;
 		TypeReference   typeReference = null;
-		Modifier        modifier;
+		ModifierCollection      modifiers;
 		ArrayList       fields = new ArrayList(); // [VariableDeclaration]
 		
 		public ArrayList Attributes {
@@ -43,12 +43,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 				typeReference = value;
 			}
 		}
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		public ArrayList Fields {
@@ -67,11 +67,11 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		}
 		
 		// for all other cases
-		public FieldDeclaration(ArrayList attributes, TypeReference typeReference, Modifier modifier)
+		public FieldDeclaration(ArrayList attributes, TypeReference typeReference, ModifierCollection modifiers)
 		{
 			this.attributes    = attributes;
 			this.typeReference = typeReference;
-			this.modifier      = modifier;
+			this.modifiers      = modifiers;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

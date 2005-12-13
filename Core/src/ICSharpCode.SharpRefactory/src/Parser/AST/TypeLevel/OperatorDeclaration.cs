@@ -23,9 +23,9 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class OperatorDeclaration : AbstractNode
 	{
 		OperatorDeclarator opratorDeclarator;
-		Modifier           modifier;
-		ArrayList          attributes = new ArrayList();
-		Statement     body;
+		ModifierCollection modifiers;
+		ArrayList attributes = new ArrayList();
+		Statement body;
 		
 		// TODO: delegate OperatorDeclarator Members
 		public OperatorDeclarator OpratorDeclarator {
@@ -37,12 +37,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -63,10 +63,10 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public OperatorDeclaration(OperatorDeclarator opratorDeclarator, Modifier Modifier, ArrayList attributes)
+		public OperatorDeclaration(OperatorDeclarator opratorDeclarator, ModifierCollection modifiers, ArrayList attributes)
 		{
 			this.opratorDeclarator = opratorDeclarator;
-			this.modifier          = Modifier;
+			this.modifiers          = modifiers;
 			this.attributes        = attributes;
 		}
 		

@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class IndexerDeclaration : AbstractNode
 	{
 		TypeReference type = null;
-		Modifier      modifier;
+		ModifierCollection      modifiers;
 		ArrayList     parameters = new ArrayList();
 		ArrayList     attributes = new ArrayList();
 		string        namespaceName;
@@ -43,12 +43,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		public ArrayList Parameters {
@@ -135,17 +135,17 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public IndexerDeclaration(Modifier modifier, ArrayList parameters, ArrayList attributes)
+		public IndexerDeclaration(ModifierCollection modifiers, ArrayList parameters, ArrayList attributes)
 		{
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.parameters = parameters;
 			this.attributes = attributes;
 		}
 		
-		public IndexerDeclaration(TypeReference typeReference, ArrayList parameters, Modifier modifier, ArrayList attributes)
+		public IndexerDeclaration(TypeReference typeReference, ArrayList parameters, ModifierCollection modifiers, ArrayList attributes)
 		{
 			this.type = typeReference;
-			this.modifier = modifier;
+			this.modifiers = modifiers;
 			this.parameters = parameters;
 			this.attributes = attributes;
 		}

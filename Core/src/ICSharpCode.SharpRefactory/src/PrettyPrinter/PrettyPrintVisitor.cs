@@ -152,52 +152,52 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 			return null;
 		}
 		
-		object VisitModifier(Modifier modifier)
+		object VisitModifier(ModifierCollection modifier)
 		{
 			ArrayList tokenList = new ArrayList();
-			if ((modifier & Modifier.Unsafe) != 0) {
+			if (modifier.Contains (ModifierFlags.Unsafe)) {
 				tokenList.Add(Tokens.Unsafe);
 			}
-			if ((modifier & Modifier.Public) != 0) {
+			if (modifier.Contains (ModifierFlags.Public)) {
 				tokenList.Add(Tokens.Public);
 			}
-			if ((modifier & Modifier.Private) != 0) {
+			if (modifier.Contains (ModifierFlags.Private)) {
 				tokenList.Add(Tokens.Private);
 			}
-			if ((modifier & Modifier.Protected) != 0) {
+			if (modifier.Contains (ModifierFlags.Protected)) {
 				tokenList.Add(Tokens.Protected);
 			}
-			if ((modifier & Modifier.Static) != 0) {
+			if (modifier.Contains (ModifierFlags.Static)) {
 				tokenList.Add(Tokens.Static);
 			}
-			if ((modifier & Modifier.Internal) != 0) {
+			if (modifier.Contains (ModifierFlags.Internal)) {
 				tokenList.Add(Tokens.Internal);
 			}
-			if ((modifier & Modifier.Override) != 0) {
+			if (modifier.Contains (ModifierFlags.Override)) {
 				tokenList.Add(Tokens.Override);
 			}
-			if ((modifier & Modifier.Abstract) != 0) {
+			if (modifier.Contains (ModifierFlags.Abstract)) {
 				tokenList.Add(Tokens.Abstract);
 			}
-			if ((modifier & Modifier.Virtual) != 0) {
+			if (modifier.Contains (ModifierFlags.Virtual)) {
 				tokenList.Add(Tokens.Virtual);
 			}
-			if ((modifier & Modifier.New) != 0) {
+			if (modifier.Contains (ModifierFlags.New)) {
 				tokenList.Add(Tokens.New);
 			}
-			if ((modifier & Modifier.Sealed) != 0) {
+			if (modifier.Contains (ModifierFlags.Sealed)) {
 				tokenList.Add(Tokens.Sealed);
 			}
-			if ((modifier & Modifier.Extern) != 0) {
+			if (modifier.Contains (ModifierFlags.Extern)) {
 				tokenList.Add(Tokens.Extern);
 			}
-			if ((modifier & Modifier.Const) != 0) {
+			if (modifier.Contains (ModifierFlags.Const)) {
 				tokenList.Add(Tokens.Const);
 			}
-			if ((modifier & Modifier.Readonly) != 0) {
+			if (modifier.Contains (ModifierFlags.Readonly)) {
 				tokenList.Add(Tokens.Readonly);
 			}
-			if ((modifier & Modifier.Volatile) != 0) {
+			if (modifier.Contains (ModifierFlags.Volatile)) {
 				tokenList.Add(Tokens.Volatile);
 			}
 			outputFormatter.PrintTokenList(tokenList);
@@ -273,7 +273,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(typeDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(typeDeclaration.Modifier);
+			VisitModifier(typeDeclaration.Modifiers);
 			switch (typeDeclaration.Type) {
 				case Types.Class:
 					outputFormatter.PrintToken(Tokens.Class);
@@ -341,7 +341,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		public override object Visit(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
-			VisitModifier(delegateDeclaration.Modifier);
+			VisitModifier(delegateDeclaration.Modifiers);
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
 			Visit(delegateDeclaration.ReturnType, data);
@@ -388,7 +388,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(eventDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(eventDeclaration.Modifier);
+			VisitModifier(eventDeclaration.Modifiers);
 			outputFormatter.PrintToken(Tokens.Event);
 			outputFormatter.Space();
 			Visit(eventDeclaration.TypeReference, data);
@@ -453,7 +453,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(fieldDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(fieldDeclaration.Modifier);
+			VisitModifier(fieldDeclaration.Modifiers);
 			Visit(fieldDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			AppendCommaSeparatedList(fieldDeclaration.Fields);
@@ -466,7 +466,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(constructorDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(constructorDeclaration.Modifier);
+			VisitModifier(constructorDeclaration.Modifiers);
 			outputFormatter.PrintIdentifier(constructorDeclaration.Name);
 			outputFormatter.Space ();
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -498,7 +498,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(destructorDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(destructorDeclaration.Modifier);
+			VisitModifier(destructorDeclaration.Modifiers);
 			outputFormatter.PrintToken(Tokens.BitwiseComplement);
 			outputFormatter.PrintIdentifier(destructorDeclaration.Name);
 			outputFormatter.Space ();
@@ -515,7 +515,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(methodDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(methodDeclaration.Modifier);
+			VisitModifier(methodDeclaration.Modifiers);
 			Visit(methodDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(methodDeclaration.Name);
@@ -538,7 +538,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(indexerDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(indexerDeclaration.Modifier);
+			VisitModifier(indexerDeclaration.Modifiers);
 			Visit(indexerDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			if (indexerDeclaration.NamespaceName != null && indexerDeclaration.NamespaceName.Length > 0) {
@@ -571,7 +571,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertyDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(propertyDeclaration.Modifier);
+			VisitModifier(propertyDeclaration.Modifiers);
 			Visit(propertyDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
@@ -596,7 +596,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(getRegion.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(getRegion.Modifier);
+			VisitModifier(getRegion.Modifiers);
 			outputFormatter.PrintIdentifier("get");
 			if (getRegion.Block == null) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
@@ -618,7 +618,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(setRegion.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(setRegion.Modifier);
+			VisitModifier(setRegion.Modifiers);
 			outputFormatter.PrintIdentifier("set");
 			if (setRegion.Block == null) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
@@ -640,7 +640,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 			VisitAttributes(operatorDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			VisitModifier(operatorDeclaration.Modifier);
+			VisitModifier(operatorDeclaration.Modifiers);
 			switch (operatorDeclaration.OpratorDeclarator.OperatorType) {
 				case OperatorType.Explicit:
 					outputFormatter.PrintToken(Tokens.Explicit);
@@ -1114,7 +1114,7 @@ namespace ICSharpCode.SharpRefactory.PrettyPrinter
 		{
 //			Console.WriteLine(localVariableDeclaration);
 			outputFormatter.Indent();
-			VisitModifier(localVariableDeclaration.Modifier);
+			VisitModifier(localVariableDeclaration.Modifiers);
 			Visit(localVariableDeclaration.Type, data);
 			outputFormatter.Space();
 			this.AppendCommaSeparatedList(localVariableDeclaration.Variables);

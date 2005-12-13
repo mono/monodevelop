@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	{
 		string name; // exclusive '~'
 		ArrayList attributes = new ArrayList();
-		Modifier modifier;
+		ModifierCollection modifiers;
 		BlockStatement  body;
 		
 		public string Name {
@@ -43,12 +43,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 				attributes = value;
 			}
 		}
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		

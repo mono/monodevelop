@@ -16,9 +16,10 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public IdentifierExpression(string identifier)
+		public IdentifierExpression(string identifier, System.Drawing.Point location)
 		{
 			this.identifier = identifier;
+			this.StartLocation = location;
 		}
 		
 		

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 	public class DelegateDeclaration : AbstractNode
 	{
 		string          name;
-		Modifier modifier;
+		ModifierCollection modifiers;
 		TypeReference   returnType;
 		ArrayList       parameters = new ArrayList(); // [ParameterDeclarationExpression]
 		ArrayList       attributes = new ArrayList();
@@ -37,12 +37,12 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 			}
 		}
 		
-		public Modifier Modifier {
+		public ModifierCollection Modifiers {
 			get {
-				return modifier;
+				return modifiers;
 			}
 			set {
-				modifier = value;
+				modifiers = value;
 			}
 		}
 		
@@ -82,10 +82,37 @@ namespace ICSharpCode.SharpRefactory.Parser.AST
 		{
 			return String.Format("[DelegateDeclaration: Name={0}, Modifier={1}, ReturnType={2}, parameters={3}, attributes={4}]",
 			                     name,
-			                     modifier,
+			                     modifiers,
 			                     returnType,
 			                     GetCollectionString(parameters),
 			                     GetCollectionString(attributes));
 		}
+		
+		#region Declaration Points
+		System.Drawing.Point declarationStartLocation;
+		public System.Drawing.Point DeclarationStartLocation
+		{
+			get {
+				return declarationStartLocation;
+			}
+			set {
+				declarationStartLocation = value;
+			}
+		}
+		
+		System.Drawing.Point declarationEndLocation;
+		public System.Drawing.Point DeclarationEndLocation
+		{
+			get {
+				if (declarationEndLocation.IsEmpty)
+					return this.StartLocation;
+				else
+					return declarationEndLocation;
+			}
+			set {
+				declarationEndLocation = value;
+			}
+		}
+		#endregion
 	}
 }
