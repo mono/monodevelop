@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
                 <_Name>Empty File</_Name>
                 <Icon>res:VB.File.EmptyFile</Icon>
-                <Category>VBNet</Category>
+                <Category>General</Category>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net file.</_Description>
 	</TemplateConfiguration>

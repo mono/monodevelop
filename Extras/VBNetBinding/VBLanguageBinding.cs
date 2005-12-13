@@ -10,17 +10,24 @@ using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using System.Xml;
+using Microsoft.VisualBasic;
+using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
+using VBBinding.Parser;
 
 namespace VBBinding
 {
-	public class VBLanguageBinding : ILanguageBinding
+	public class VBLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "VBNet";
 		
 		VBBindingCompilerServices   compilerServices  = new VBBindingCompilerServices();
+		VBCodeProvider provider;
+		TParser parser = new TParser ();
 		
 		public string Language {
 			get {
@@ -28,7 +35,7 @@ namespace VBBinding
 			}
 		}
 		
-		public bool CanCompile(string fileName)
+		public bool IsSourceCodeFile (string fileName)
 		{
 			Debug.Assert(compilerServices != null);
 			return compilerServices.CanCompile(fileName);
@@ -53,6 +60,26 @@ namespace VBBinding
 		public string CommentTag
 		{
 			get { return "'"; }
+		}
+		
+		public CodeDomProvider GetCodeDomProvider ()
+		{
+			if (provider == null)
+				provider = new VBCodeProvider ();
+			return provider;
+		}
+		
+		public string GetFileName (string baseName)
+		{
+			return baseName + ".vb";
+		}
+		
+		public IParser Parser {
+			get { return parser; }
+		}
+		
+		public IRefactorer Refactorer {
+			get { return null; }
 		}
 	}
 }

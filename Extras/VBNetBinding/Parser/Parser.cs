@@ -45,11 +45,6 @@ namespace VBBinding.Parser
 			return System.IO.Path.GetExtension (fileName).ToLower () == ".vb";
 		}
 
-		public bool CanParse (Project project)
-		{
-			return project.ProjectType == "VBNET";
-		}
-		
 		void RetrieveRegions(CompilationUnit cu, SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
