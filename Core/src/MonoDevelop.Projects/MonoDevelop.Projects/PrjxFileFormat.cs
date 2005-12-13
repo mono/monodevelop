@@ -171,7 +171,10 @@ namespace MonoDevelop.Projects
 		{
 			if (reader.LocalName == "Configurations")
 			{
-				ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName);
+				IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+				if (binding == null)
+					throw new InvalidOperationException ("Language not supported: " + project.LanguageName);
+
 				object confObj = binding.CreateCompilationParameters (null);
 				Type confType = confObj.GetType ();
 				DataContext prjContext = Services.ProjectService.DataContext;

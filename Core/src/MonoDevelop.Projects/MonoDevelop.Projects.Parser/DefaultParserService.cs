@@ -25,16 +25,14 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Utility;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Projects.Parser
 {
 	public class DefaultParserService : AbstractService, IParserService
 	{
-		IParser[] parsers;
-		
 		public override void InitializeService()
 		{
-			parsers = (IParser[]) Runtime.AddInService.GetTreeItems ("/Workspace/Parser", typeof(IParser));
 		}
 		
 		public IParserDatabase CreateParserDatabase ()
@@ -55,16 +53,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public virtual IParser GetParser (string fileName)
 		{
-			// HACK: I'm too lazy to do it 'right'
-			// HACK: Still a hack, but extensible
-			if (fileName != null) {
-				foreach(IParser p in parsers) {
-					if (p.CanParse(fileName)) {
-						return p;
-					}
-				}
-			}
-			return null;
+			return Services.Languages.GetParserForFile (fileName);
 		}
 		
 		public void GenerateAssemblyDatabase (string baseDir, string name)
@@ -102,6 +91,11 @@ namespace MonoDevelop.Projects.Parser
 		public IParseInformation ParseFile (string fileName, string fileContent)
 		{
 			return pdb.ParseFile (fileName, fileContent);
+		}
+		
+		public IParseInformation ParseFile (ITextFile file)
+		{
+			return pdb.ParseFile (file.Name, file.Text);
 		}
 		
 		public IParseInformation GetParseInformation (string fileName)

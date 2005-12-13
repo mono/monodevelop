@@ -26,6 +26,9 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				return declaringType;
 			}
+			set {
+				declaringType = value;
+			}
 		}
 		
 		public IReturnType ReturnType {

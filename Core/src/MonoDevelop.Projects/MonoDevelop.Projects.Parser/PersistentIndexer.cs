@@ -26,6 +26,7 @@ namespace MonoDevelop.Projects.Parser
 				ind.parameters.Add (PersistentParameter.Resolve (p, typeResolver));
 
 			ind.region = source.Region;
+			ind.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return ind;
 		}
 		
@@ -42,6 +43,7 @@ namespace MonoDevelop.Projects.Parser
 				ind.parameters.Add (PersistentParameter.Read (reader, nameTable));
 			}
 			ind.region = PersistentRegion.Read (reader, nameTable);
+			ind.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return ind;
 		}
 		
@@ -58,6 +60,7 @@ namespace MonoDevelop.Projects.Parser
 				PersistentParameter.WriteTo (p, writer, nameTable);
 			}
 			PersistentRegion.WriteTo (ind.Region, writer, nameTable);
+			PersistentAttributeSectionCollection.WriteTo (ind.Attributes, writer, nameTable);
 		}
 	}
 }

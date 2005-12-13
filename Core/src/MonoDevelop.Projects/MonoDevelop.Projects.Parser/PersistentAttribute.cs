@@ -1,5 +1,5 @@
 //
-// DotNetProjectBinding.cs
+// PersistentAttribute.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,41 +28,31 @@
 
 using System;
 using System.IO;
-using System.Xml;
-using MonoDevelop.Projects.Serialization;
+using System.Reflection;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.Parser
 {
-	public class DotNetProjectBinding : IProjectBinding
+	[Serializable]
+	internal sealed class PersistentAttribute : AbstractAttribute
 	{
-		public virtual string Name {
-			get { return "DotNet"; }
+		public static PersistentAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
+		{
+			PersistentAttribute par = new PersistentAttribute ();
+			par.name = source.Name;
+			return par;
 		}
 		
-		public Project CreateProject (ProjectCreateInformation info, XmlElement projectOptions)
+		public static PersistentAttribute Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			string lang = projectOptions.GetAttribute ("language");
-			return CreateProject (lang, info, projectOptions);
+			PersistentAttribute par = new PersistentAttribute ();
+			par.name = PersistentHelper.ReadString (reader, nameTable);
+			return par;
 		}
 		
-		protected virtual DotNetProject CreateProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+		public static void WriteTo (IAttribute p, BinaryWriter writer, INameEncoder nameTable)
 		{
-			return new DotNetProject (languageName, info, projectOptions);
-		}
-		
-		public Project CreateSingleFileProject (string file)
-		{
-			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerFileName (file) as IDotNetLanguageBinding;
-			if (binding != null) {
-				ProjectCreateInformation info = new ProjectCreateInformation ();
-				info.ProjectName = Path.GetFileNameWithoutExtension (file);
-				info.CombinePath = Path.GetDirectoryName (file);
-				Project project = CreateProject (binding.Language, info, null);
-				project.ProjectFiles.Add (new ProjectFile (file));
-				return project;
-			}
-			return null;
+			PersistentHelper.WriteString (p.Name, writer, nameTable);
 		}
 	}
 }

@@ -1,3 +1,77 @@
+2005-12-13 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/PrjxFileFormat.cs:
+	* MonoDevelop.Projects/DotNetProjectBinding.cs: Use the new
+	IDotNetLanguageBinding subclass of ILanguageBinding.
+	
+	* MonoDevelop.Projects.Parser/IParser.cs:
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs:
+	* MonoDevelop.Projects/ILanguageBinding.cs: Created a subclass
+	of ILanguageBinding for .net languages. Moved some methods from
+	ILanguageBinding and IParser there.
+	
+	* MonoDevelop.Projects/LanguageBindingService.cs: Moved here some
+	methods from ParserService. Added support for IRefactorer.
+	
+	* MonoDevelop.Projects.Parser/ILanguageItem.cs:
+	* MonoDevelop.Projects.Parser/LocalVariable.cs:
+	Some new support classes needed by refactoring.
+	
+	* MonoDevelop.Projects.Parser/PersistentAttribute.cs:
+	New classes needed to support persistence of attributes.
+	
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/IRefactorerContext.cs:
+	* MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs:
+	* MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs:
+	Initial refactoring support.
+	
+	* MonoDevelop.Projects.Text/IEditableTextFile.cs:
+	* MonoDevelop.Projects.Text/ITextFile.cs:
+	* MonoDevelop.Projects.Text/ITextFileProvider.cs:
+	* MonoDevelop.Projects.Text/TextFile.cs:
+	New classes to support parsing and refactoring in different kinds of
+	text buffers.
+	
+	* MonoDevelop.Projects.Parser/IMember.cs:
+	* MonoDevelop.Projects.Parser/AbstractNamedEntity.cs:
+	* MonoDevelop.Projects.Parser/IDecoration.cs:
+	* MonoDevelop.Projects.Parser/AbstractDecoration.cs:
+	* MonoDevelop.Projects.Parser/IClass.cs: Moved Name property to
+	IDecoration. Moved Documentation to ILanguageItem.
+	
+	* MonoDevelop.Projects.Parser/PersistentIndexer.cs:
+	* MonoDevelop.Projects.Parser/AbstractMember.cs:
+	* MonoDevelop.Projects.Parser/PersistentEvent.cs:
+	* MonoDevelop.Projects.Parser/PersistentField.cs:
+	* MonoDevelop.Projects.Parser/PersistentProperty.cs:
+	* MonoDevelop.Projects.Parser/PersistentMethod.cs:
+	* MonoDevelop.Projects.Parser/PersistentClass.cs: Properly set the
+	DeclaringType property. Read/Write attributes and body location.
+	
+	* MonoDevelop.Projects.Parser/FieldCollection.cs: Added indexer.
+	
+	* MonoDevelop.Projects.Parser/AbstractAttribute.cs:
+	* MonoDevelop.Projects.Parser/IAttribute.cs: Added Region property.
+	
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Moved parser
+	management to the language service.
+	
+	* MonoDevelop.Projects.Parser/AbstractParameter.cs:
+	* MonoDevelop.Projects.Parser/IParameter.cs: Now it's a ILanguageItem.
+	Added DeclaringMethod property.
+	
+	* MonoDevelop.Projects.Parser/IParserService.cs: Added support for parsing
+	from text buffers, not only from files or strings.
+	
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Updated file
+	version.
+	
+	* MonoDevelop.Projects/MonoDevelop.Projects.mdp: Updated.
+
 2005-11-18 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/PersistentClass.cs: Fix write order.

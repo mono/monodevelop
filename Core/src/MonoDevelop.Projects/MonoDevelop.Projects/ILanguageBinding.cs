@@ -6,41 +6,37 @@
 // </file>
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.Xml;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Projects
 {
-	/// <summary>
-	/// The <code>ILanguageBinding</code> interface is the base interface
-	/// of all language bindings avaiable.
-	/// </summary>
 	public interface ILanguageBinding
 	{
 		/// <returns>
 		/// The language for this language binding.
 		/// </returns>
-		string Language {
-			get;
-		}
+		string Language { get; }
 		
-		/// <returns>
-		/// True, if this language binding can compile >fileName<
-		/// </returns>
-		bool CanCompile(string fileName);
-		
-		ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
-		
-		void GenerateMakefile (Project project, Combine parentCombine);
-		
-		ICloneable CreateCompilationParameters (XmlElement projectOptions);
-
 		/// <summary>
 		/// Used by Comment and Uncomment operations and by Centaurus Addin.
 		/// </summary>		
 		string CommentTag { get; }
+		
+		/// <returns>
+		/// True, if this language binding can compile >fileName<
+		/// </returns>
+		bool IsSourceCodeFile (string fileName);
+		
+		IParser Parser { get; }
+		IRefactorer Refactorer { get; }
+		
+		string GetFileName (string baseName);
 	}
 }

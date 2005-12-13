@@ -37,25 +37,45 @@ namespace MonoDevelop.Projects.Parser
 			foreach (string t in sclass.BaseTypes)
 				cls.baseTypes.Add (typeResolver.Resolve (t));
 			
-			foreach (IClass c in sclass.InnerClasses)
-				cls.innerClasses.Add (PersistentClass.Resolve (c,typeResolver));
+			foreach (IClass c in sclass.InnerClasses) {
+				PersistentClass pc = PersistentClass.Resolve (c, typeResolver);
+				pc.declaredIn = cls;
+				cls.innerClasses.Add (pc);
+			}
 
-			foreach (IField f in sclass.Fields)
-				cls.fields.Add (PersistentField.Resolve (f, typeResolver));
+			foreach (IField f in sclass.Fields) {
+				PersistentField pf = PersistentField.Resolve (f, typeResolver);
+				pf.DeclaringType = cls;
+				cls.fields.Add (pf);
+			}
 
-			foreach (IProperty p in sclass.Properties)
-				cls.properties.Add (PersistentProperty.Resolve (p, typeResolver));
+			foreach (IProperty p in sclass.Properties) {
+				PersistentProperty pp = PersistentProperty.Resolve (p, typeResolver);
+				pp.DeclaringType = cls;
+				cls.properties.Add (pp);
+			}
 
-			foreach (IMethod m in sclass.Methods)
-				cls.methods.Add (PersistentMethod.Resolve (m, typeResolver));
+			foreach (IMethod m in sclass.Methods) {
+				PersistentMethod pm = PersistentMethod.Resolve (m, typeResolver);
+				pm.DeclaringType = cls;
+				cls.methods.Add (pm);
+			}
 
-			foreach (IEvent e in sclass.Events)
-				cls.events.Add (PersistentEvent.Resolve (e, typeResolver));
+			foreach (IEvent e in sclass.Events) {
+				PersistentEvent pe = PersistentEvent.Resolve (e, typeResolver);
+				pe.DeclaringType = cls;
+				cls.events.Add (pe);
+			}
 
-			foreach (IIndexer i in sclass.Indexer)
-				cls.indexer.Add (PersistentIndexer.Resolve (i, typeResolver));
+			foreach (IIndexer i in sclass.Indexer) {
+				PersistentIndexer pi = PersistentIndexer.Resolve (i, typeResolver);
+				pi.DeclaringType = cls;
+				cls.indexer.Add (pi);
+			}
 			
 			cls.region = sclass.Region;
+			cls.bodyRegion = sclass.BodyRegion;
+			cls.attributes = PersistentAttributeSectionCollection.Resolve (sclass.Attributes, typeResolver);
 			return cls;
 		}
 		
@@ -76,36 +96,49 @@ namespace MonoDevelop.Projects.Parser
 			
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.innerClasses.Add(PersistentClass.Read (reader, nameTable));
+				PersistentClass c = PersistentClass.Read (reader, nameTable);
+				c.declaredIn = cls;
+				cls.innerClasses.Add (c);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.fields.Add(PersistentField.Read (reader, nameTable));
+				PersistentField f = PersistentField.Read (reader, nameTable);
+				f.DeclaringType = cls;
+				cls.fields.Add (f);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.properties.Add(PersistentProperty.Read (reader, nameTable));
+				PersistentProperty p = PersistentProperty.Read (reader, nameTable);
+				p.DeclaringType = cls;
+				cls.properties.Add (p);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				IMethod m = PersistentMethod.Read (reader, nameTable);
+				PersistentMethod m = PersistentMethod.Read (reader, nameTable);
+				m.DeclaringType = cls;
 				cls.methods.Add(m);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.events.Add(PersistentEvent.Read (reader, nameTable));
+				PersistentEvent e = PersistentEvent.Read (reader, nameTable);
+				e.DeclaringType = cls;
+				cls.events.Add (e);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.indexer.Add(PersistentIndexer.Read (reader, nameTable));
+				PersistentIndexer ind = PersistentIndexer.Read (reader, nameTable);
+				ind.DeclaringType = cls;
+				cls.indexer.Add (ind);
 			}
 			
 			cls.region = PersistentRegion.Read (reader, nameTable);
+			cls.bodyRegion = PersistentRegion.Read (reader, nameTable);
+			cls.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return cls;
 		}
 
@@ -152,6 +185,8 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			PersistentRegion.WriteTo (cls.Region, writer, nameTable);
+			PersistentRegion.WriteTo (cls.BodyRegion, writer, nameTable);
+			PersistentAttributeSectionCollection.WriteTo (cls.Attributes, writer, nameTable);
 		}
 	}
 	

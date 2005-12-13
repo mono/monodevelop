@@ -22,6 +22,7 @@ namespace MonoDevelop.Projects.Parser
 			ev.modifiers = source.Modifiers;
 			ev.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 			ev.region = source.Region;
+			ev.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return ev;
 		}
 		
@@ -33,6 +34,7 @@ namespace MonoDevelop.Projects.Parser
 			ev.modifiers = (ModifierEnum)reader.ReadUInt32();
 			ev.returnType = PersistentReturnType.Read (reader, nameTable);
 			ev.region = PersistentRegion.Read (reader, nameTable);
+			ev.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return ev;
 		}
 
@@ -43,6 +45,7 @@ namespace MonoDevelop.Projects.Parser
 			writer.Write ((uint)ev.Modifiers);
 			PersistentReturnType.WriteTo (ev.ReturnType, writer, nameTable);
 			PersistentRegion.WriteTo (ev.Region, writer, nameTable);
+			PersistentAttributeSectionCollection.WriteTo (ev.Attributes, writer, nameTable);
 		}
 	}
 }

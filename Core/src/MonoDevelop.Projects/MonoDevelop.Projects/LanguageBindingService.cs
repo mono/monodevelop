@@ -14,6 +14,8 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Projects.Parser;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -23,6 +25,7 @@ namespace MonoDevelop.Projects
 	public class LanguageBindingService : AbstractService
 	{
 		LanguageBindingCodon[] bindings = null;
+		ILanguageBinding[] langs;
 		
 		public ILanguageBinding GetBindingPerLanguageName(string languagename)
 		{
@@ -41,7 +44,49 @@ namespace MonoDevelop.Projects
 			LanguageBindingCodon codon = GetCodonPerProjectFile(filename);
 			return codon == null ? null : codon.LanguageBinding;
 		}
+		
+		public ILanguageBinding[] GetLanguageBindings ()
+		{
+			if (langs != null)
+				return langs;
+				
+			langs = new ILanguageBinding [bindings.Length];
+			for (int n=0; n<langs.Length; n++)
+				langs [n] = bindings [n].LanguageBinding;
 
+			return langs;
+		}
+
+		public IParser GetParserForFile (string fileName)
+		{
+			foreach (LanguageBindingCodon binding in bindings) {
+				if (binding.LanguageBinding.IsSourceCodeFile (fileName) && binding.LanguageBinding.Parser != null) {
+					return binding.LanguageBinding.Parser;
+				}
+			}
+			return null;
+		}
+		
+		public IRefactorer GetRefactorerForFile (string fileName)
+		{
+			foreach (LanguageBindingCodon binding in bindings) {
+				if (binding.LanguageBinding.IsSourceCodeFile (fileName) && binding.LanguageBinding.Refactorer != null) {
+					return binding.LanguageBinding.Refactorer;
+				}
+			}
+			return null;
+		}
+		
+		public IRefactorer GetRefactorerForLanguage (string languagename)
+		{
+			foreach (LanguageBindingCodon binding in bindings) {
+				if (binding.LanguageBinding.Language == languagename && binding.LanguageBinding.Refactorer != null) {
+					return binding.LanguageBinding.Refactorer;
+				}
+			}
+			return null;
+		}
+		
 		internal LanguageBindingCodon GetCodonPerLanguageName(string languagename)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {
@@ -55,7 +100,7 @@ namespace MonoDevelop.Projects
 		internal LanguageBindingCodon GetCodonPerFileName(string filename)
 		{
 			foreach (LanguageBindingCodon binding in bindings) {
-				if (binding.LanguageBinding.CanCompile(filename)) {
+				if (binding.LanguageBinding.IsSourceCodeFile(filename)) {
 					return binding;
 				}
 			}

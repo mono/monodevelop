@@ -23,7 +23,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty]
 		string language;
 		
-		ILanguageBinding languageBinding;
+		IDotNetLanguageBinding languageBinding;
 		
 		public override string ProjectType {
 			get { return "DotNet"; }
@@ -86,9 +86,9 @@ namespace MonoDevelop.Projects
 			languageBinding = FindLanguage (language);
 		}
 		
-		ILanguageBinding FindLanguage (string name)
+		IDotNetLanguageBinding FindLanguage (string name)
 		{
-			ILanguageBinding binding = Services.Languages.GetBindingPerLanguageName (language);
+			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
 			if (binding == null)
 				throw new InvalidOperationException ("Language not supported: " + language);
 			return binding;
@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects
 		
 		public override bool IsCompileable(string fileName)
 		{
-			return languageBinding.CanCompile(fileName);
+			return languageBinding.IsSourceCodeFile (fileName);
 		}
 	}
 }

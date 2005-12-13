@@ -126,9 +126,6 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 
-		bool CanParse (string fileName);
-		bool CanParse (Project_ project);
-		
 		ICompilationUnitBase Parse(string fileName);
 		ICompilationUnitBase Parse(string fileName, string fileContent);
 		

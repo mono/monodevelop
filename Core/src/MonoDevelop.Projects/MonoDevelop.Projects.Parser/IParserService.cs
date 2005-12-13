@@ -10,6 +10,7 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		IParserDatabase CreateParserDatabase ();
 		
-		IParser GetParser(string fileName);
+		IParser GetParser (string fileName);
 		IExpressionFinder GetExpressionFinder(string fileName);
 	}
 	
@@ -56,13 +57,25 @@ namespace MonoDevelop.Projects.Parser
 		event ParseInformationEventHandler ParseInformationChanged;
 		event ClassInformationEventHandler ClassInformationChanged;
 	}
+	
+/*	public interface IFileParserContext: IParserContext
+	{
+		IParseInformation ParseFile ();
+	}
 
+	public interface IProjectParserContext: IParserContext
+	{
+		IParseInformation ParseFile (string fileName);
+		IParseInformation ParseFile (string fileName, string fileContent);
+	}
+*/
 	public interface IParserContext
 	{
 		IExpressionFinder GetExpressionFinder(string fileName);
 		
 		IParseInformation ParseFile (string fileName);
 		IParseInformation ParseFile (string fileName, string fileContent);
+		IParseInformation ParseFile (ITextFile file);
 		
 		IParseInformation GetParseInformation (string fileName);
 		

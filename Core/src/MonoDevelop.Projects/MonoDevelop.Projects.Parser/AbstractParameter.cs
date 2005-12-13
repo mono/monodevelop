@@ -20,6 +20,7 @@ namespace MonoDevelop.Projects.Parser
 		protected IReturnType         returnType;
 		protected ParameterModifier   modifier;
 		protected AttributeCollection attributeCollection = new AttributeCollection();
+		protected IMember             declaringMember;
 
 		public bool IsOut {
 			get {
@@ -68,6 +69,10 @@ namespace MonoDevelop.Projects.Parser
 			set {
 				modifier = value;
 			}
+		}
+		
+		public virtual IMember DeclaringMember {
+			get { return declaringMember; }
 		}
 
 		public string Documentation {

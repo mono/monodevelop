@@ -18,10 +18,6 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 		
-		string Name {
-			get;
-		}
-
 		string Namespace {
 			get;
 		}

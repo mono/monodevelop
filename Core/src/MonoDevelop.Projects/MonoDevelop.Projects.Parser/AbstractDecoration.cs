@@ -19,6 +19,9 @@ namespace MonoDevelop.Projects.Parser
 		string documentation;
 		static Hashtable documentationHashtable = new Hashtable();
 		
+		public abstract string Name {
+			get;
+		}
 		
 		public virtual ModifierEnum Modifiers {
 			get {

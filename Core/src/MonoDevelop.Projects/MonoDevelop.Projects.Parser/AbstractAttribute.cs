@@ -16,6 +16,8 @@ namespace MonoDevelop.Projects.Parser
 		protected AttributeTarget     attributeTarget;
 		protected AttributeCollection attributes = new AttributeCollection();
 
+		protected IRegion region;
+
 		public virtual AttributeTarget AttributeTarget {
 			get {
 				return attributeTarget;
@@ -29,6 +31,11 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				return attributes;
 			}
+		}
+		
+		public IRegion Region
+		{
+			get { return region; }
 		}
 		
 		public virtual int CompareTo(IAttributeSection value) {
@@ -50,6 +57,7 @@ namespace MonoDevelop.Projects.Parser
 		protected string name;
 		protected ArrayList positionalArguments = new ArrayList();
 		protected SortedList namedArguments = new SortedList();
+		protected IRegion region;
 
 		public virtual string Name {
 			get {
@@ -74,6 +82,11 @@ namespace MonoDevelop.Projects.Parser
 			set {
 				namedArguments = value;
 			}
+		}
+		
+		public IRegion Region
+		{
+			get { return region; }
 		}
 		
 		public virtual int CompareTo(IAttribute value) {

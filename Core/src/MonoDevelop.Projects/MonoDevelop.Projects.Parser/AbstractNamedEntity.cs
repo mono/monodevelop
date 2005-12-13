@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 
-		public virtual string Name {
+		public override string Name {
 			get {
 				if (FullyQualifiedName != null) {
 					int lastIndex;

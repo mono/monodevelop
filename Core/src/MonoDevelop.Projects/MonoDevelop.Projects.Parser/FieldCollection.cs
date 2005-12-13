@@ -67,6 +67,15 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public IField this [string name] {
+			get {
+				foreach (IField f in List)
+					if (f.Name == name)
+						return f;
+				return null;
+			}
+		}
+		
 		/// <summary>
 		///    <para>Adds a <see cref='.IField'/> with the specified value to the
 		///    <see cref='.IFieldCollection'/> .</para>

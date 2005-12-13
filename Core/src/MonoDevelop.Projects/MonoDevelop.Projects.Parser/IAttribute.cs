@@ -17,6 +17,9 @@ namespace MonoDevelop.Projects.Parser
 		AttributeCollection Attributes {
 			get;
 		}
+		IRegion Region {
+			get;
+		}
 	}
 
 	public interface IAttribute: IComparable

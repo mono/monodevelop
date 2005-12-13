@@ -10,12 +10,8 @@ using System.Reflection;
 namespace MonoDevelop.Projects.Parser
 {
 
-	public interface IParameter: IComparable
+	public interface IParameter: ILanguageItem, IComparable
 	{
-		string Name {
-			get;
-		}
-
 		IReturnType ReturnType {
 			get;
 		}
@@ -28,10 +24,6 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 
-		string Documentation {
-			get;
-		}
-
 		bool IsOut {
 			get;
 		}
@@ -41,6 +33,10 @@ namespace MonoDevelop.Projects.Parser
 		}
 
 		bool IsParams {
+			get;
+		}
+		
+		IMember DeclaringMember {
 			get;
 		}
 	}

@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Projects.Parser
 {
-	public interface IDecoration: IComparable
+	public interface IDecoration: ILanguageItem, IComparable
 	{
 		ModifierEnum Modifiers {
 			get;
@@ -19,10 +19,6 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 		
-		string Documentation {
-			get;
-		}
-
 		bool IsAbstract {
 			get;
 		}
