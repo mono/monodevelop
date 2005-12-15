@@ -1,3 +1,7 @@
+2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+
+	* ChangeLogAddIn.cs: Fixed indention.
+
 2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* *:

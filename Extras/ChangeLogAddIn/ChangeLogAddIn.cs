@@ -10,11 +10,11 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
-        public enum ChangeLogCommands
-        {
-                InsertHeader,
-				InsertEntry
-        }
+	public enum ChangeLogCommands
+	{
+		InsertHeader,
+		InsertEntry
+	}
 
 	public class InsertHeaderHandler : CommandHandler
 	{
