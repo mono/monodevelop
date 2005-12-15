@@ -1,3 +1,10 @@
+2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* configure.in:
+	* Extras/Makefile.am:
+	* Extra/ChangeLogAddIn/*:
+	Added ChangeLogAddIn.
+
 2005-11-25 Rodrigo B. de Oliveira  <rodrigobamboo@gmail.com>
 
 	* configure.in: BOO_REQUIRED_VERSION bumped to 0.7.5.2013.

@@ -1,0 +1,45 @@
+<AddIn id           = "ChangeLogAddIn"
+        name        = "ChangeLog AddIn"
+        author      = "Jacob Ilsoe Christensen"
+        copyright   = "GPL"
+        url         = "http://monodevelop.com"
+        description = "Addin for working with ChangeLog files"
+        version     = "0.1">
+ 
+        <Runtime>
+		<Import assembly="ChangeLogAddIn.dll" />
+		</Runtime>
+
+	<Dependencies>
+		<AddIn id="MonoDevelop.Core" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"
+			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertHeaderHandler"
+			_label = "Insert Header" />
+		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"
+			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertEntryHandler"
+			_label = "Insert Entry" />
+	</Extension>
+ 
+	<Extension path="/SharpDevelop/Workbench/MainMenu/Edit">
+		<ItemSet id="ChangeLogCommands" _label = "ChangeLog" insertafter="Separator5">
+			<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"/>
+			<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"/>
+		</ItemSet>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "ChangeLogAddInOptions"
+			insertafter = "ToolsOptions"
+			_label = "ChangeLog AddIn">
+			<DialogPanel    id = "General"
+				_label = "General"
+				class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
+		</DialogPanel>
+	</Extension>
+
+</AddIn>

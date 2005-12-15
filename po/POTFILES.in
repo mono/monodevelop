@@ -230,3 +230,5 @@ Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplat
 Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs
 Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs
 Extras/VBNetBinding/Gui/CodeGenerationPanel.cs
+Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml
+Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs
