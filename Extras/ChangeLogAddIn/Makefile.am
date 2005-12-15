@@ -15,7 +15,8 @@ DLLS = /r:nunit.framework.dll \
 
 FILES = \
 	ChangeLogAddIn.cs \
-	ChangeLogAddInOptionsPanel.cs 
+	ChangeLogAddInOptionsPanel.cs \
+	AssemblyInfo.cs
 
 ADDIN = ChangeLogAddIn.addin.xml
 
