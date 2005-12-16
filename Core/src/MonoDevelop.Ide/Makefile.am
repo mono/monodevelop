@@ -227,6 +227,9 @@ MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 
 RES= \
 templates/EmptyClass.xft.xml \
+templates/EmptyEnum.xft.xml \
+templates/EmptyInterface.xft.xml \
+templates/EmptyStruct.xft.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/Icons.AboutImage

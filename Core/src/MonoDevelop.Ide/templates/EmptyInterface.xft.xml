@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Template Originator="John Luke" Created="12/16/2005" LastModified="12/16/2005">
+	
+	<TemplateConfiguration>
+		<_Name>Empty Interface</_Name>
+		<Icon>md-empty-file-icon</Icon>
+		<Category>General</Category>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an empty interface.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultName="EmptyInterface">
+		
+			<CompileUnit>
+				<Namespaces>
+					<Namespace Name="${Namespace}">
+						<Imports>
+							<NamespaceImport Namespace="System" />
+						</Imports>
+						<Types>
+							<TypeDeclaration Name="${Name}" IsInterface="true">
+							</TypeDeclaration>
+						</Types>
+					</Namespace>
+				</Namespaces>
+			</CompileUnit>
+
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

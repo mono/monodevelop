@@ -1,3 +1,10 @@
+2005-12-16  John Luke  <john.luke@gmail.com> 
+
+	* templates/Empty*.xft.xml:
+	* Makefile.am:
+	* MonoDevelop.Ide.addin.xml: add EmptyInterface, EmptyStruct, and
+	EmptyEnum templates
+	
 2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/IEditable.cs: Renamed to IEditableTextBuffer.

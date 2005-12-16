@@ -881,6 +881,9 @@
 
 	<Extension path = "/MonoDevelop/FileTemplates">
 		<FileTemplate resource = "EmptyClass.xft.xml"/>
+		<FileTemplate resource = "EmptyEnum.xft.xml"/>
+		<FileTemplate resource = "EmptyInterface.xft.xml"/>
+		<FileTemplate resource = "EmptyStruct.xft.xml"/>
 	</Extension>
 
 </AddIn>
