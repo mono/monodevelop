@@ -23,11 +23,11 @@ namespace MonoDevelop.Core.Gui
 	public class MessageService : GuiSyncAbstractService, IMessageService
 	{
 		StringParserService stringParserService = Runtime.StringParserService;
-		Gtk.Window rootWindow;
+		Window rootWindow;
 		
 		public object RootWindow {
 			get { return rootWindow; }
-			set { rootWindow = (Gtk.Window) value; }
+			set { rootWindow = (Window) value; }
 		}
 		
 		public void ShowError(Exception ex)
@@ -95,15 +95,11 @@ namespace MonoDevelop.Core.Gui
 
 		public void ShowWarning(string message)
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Warning, Gtk.ButtonsType.Ok, message);
-			md.Response += new Gtk.ResponseHandler (OnWarningResponse);
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Warning, ButtonsType.Ok, message);
+			md.Response += new ResponseHandler(OnResponse);
+			md.Close += new EventHandler(OnClose);
 			md.ShowAll ();
-		}
-
-		void OnWarningResponse (object o, Gtk.ResponseArgs e)
-		{
-			((Gtk.Dialog)o).Hide ();
-		}
+		}		
 		
 		public void ShowWarningFormatted(string formatstring, params string[] formatitems)
 		{
@@ -112,11 +108,11 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool AskQuestion(string question, string caption)
 		{
-			using (Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.YesNo, question)) {
+			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, question)) {
 				int response = md.Run ();
 				md.Hide ();
 				
-				if ((Gtk.ResponseType) response == Gtk.ResponseType.Yes)
+				if ((ResponseType) response == ResponseType.Yes)
 					return true;
 				else
 					return false;
@@ -140,25 +136,25 @@ namespace MonoDevelop.Core.Gui
 
 		public QuestionResponse AskQuestionWithCancel(string question, string caption)
 		{
-			using (Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Question, Gtk.ButtonsType.None, question)) {
+			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, question)) {
 				
 				md.AddActionWidget (new Button (Gtk.Stock.No), ResponseType.No);
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
 				md.AddActionWidget (new Button (Gtk.Stock.Yes), ResponseType.Yes);
 				md.ActionArea.ShowAll ();
 				
-				Gtk.ResponseType response = (Gtk.ResponseType)md.Run ();
+				ResponseType response = (ResponseType)md.Run ();
 				md.Hide ();
 
-				if (response == Gtk.ResponseType.Yes) {
+				if (response == ResponseType.Yes) {
 					return QuestionResponse.Yes;
 				}
 
-				if (response == Gtk.ResponseType.No) {
+				if (response == ResponseType.No) {
 					return QuestionResponse.No;
 				}
 
-				if (response == Gtk.ResponseType.Cancel) {
+				if (response == ResponseType.Cancel) {
 					return QuestionResponse.Cancel;
 				}
 
@@ -204,26 +200,33 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowMessage(string message, string caption)
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message);
-			md.Response += new Gtk.ResponseHandler(OnMessageResponse);
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, message);
+			md.Response += new ResponseHandler(OnResponse);
+			md.Close += new EventHandler(OnClose);
 			md.ShowAll ();
 		}
 
-		public void ShowMessage(string message, Gtk.Window parent )
+		public void ShowMessage(string message, Window parent)
 		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog (rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, message );
-			if ( parent != null )
-			{
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, message);
+			
+			if (parent != null)			
 				md.TransientFor = parent;
-			}
-			md.Response += new Gtk.ResponseHandler(OnMessageResponse);
-			md.ShowAll ();
+							
+			md.Response += new ResponseHandler(OnResponse);
+			md.Close += new EventHandler(OnClose);
+			md.ShowAll();
 		}
 
-		void OnMessageResponse (object o, Gtk.ResponseArgs e)
+		void OnResponse (object o, ResponseArgs e)
 		{
-			((Gtk.MessageDialog)o).Hide ();
+			((Dialog)o).Hide();
 		}
+		
+		void OnClose(object o, EventArgs e)
+		{
+			((Dialog)o).Hide();
+		} 
 		
 		// call this method to show a dialog and get a response value
 		// returns null if cancel is selected
@@ -231,20 +234,20 @@ namespace MonoDevelop.Core.Gui
 		{
 			string returnValue = null;
 			
-			using (Gtk.Dialog md = new Gtk.Dialog (caption, rootWindow, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent)) {
+			using (Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent)) {
 				// add a label with the question
-				Gtk.Label questionLabel = new Gtk.Label(question);
+				Label questionLabel = new Label(question);
 				questionLabel.UseMarkup = true;
 				questionLabel.Xalign = 0.0F;
 				md.VBox.PackStart(questionLabel, true, false, 6);
 				
 				// add an entry with initialValue
-				Gtk.Entry responseEntry = (initialValue != null) ? new Gtk.Entry(initialValue) : new Gtk.Entry();
+				Entry responseEntry = (initialValue != null) ? new Entry(initialValue) : new Entry();
 				md.VBox.PackStart(responseEntry, false, true, 6);
 				
 				// add action widgets
-				md.AddActionWidget(new Gtk.Button(Gtk.Stock.Cancel), Gtk.ResponseType.Cancel);
-				md.AddActionWidget(new Gtk.Button(Gtk.Stock.Ok), Gtk.ResponseType.Ok);
+				md.AddActionWidget(new Button(Gtk.Stock.Cancel), ResponseType.Cancel);
+				md.AddActionWidget(new Button(Gtk.Stock.Ok), ResponseType.Ok);
 				
 				md.VBox.ShowAll();
 				md.ActionArea.ShowAll();
@@ -254,7 +257,7 @@ namespace MonoDevelop.Core.Gui
 				int response = md.Run ();
 				md.Hide ();
 				
-				if ((Gtk.ResponseType) response == Gtk.ResponseType.Ok) {
+				if ((ResponseType) response == ResponseType.Ok) {
 					returnValue =  responseEntry.Text;
 				}
 			}

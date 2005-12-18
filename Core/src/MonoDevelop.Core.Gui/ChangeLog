@@ -1,3 +1,9 @@
+2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Escape now closes
+	message and warning dialogs. Refactored some duplicate methods.
+	Cleaned up Gtk namespace usage.
+	
 2005-12-11  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:
