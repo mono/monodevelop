@@ -1,3 +1,8 @@
+2005-12-19  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/CodeGenerator.cs: Track api changes. Added support for
+	renaming other member types (untested).
+
 2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/Parser.cs: Track api changes.

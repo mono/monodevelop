@@ -37,6 +37,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using ICSharpCode.SharpRefactory.Parser;
 using ICSharpCode.SharpRefactory.Parser.AST;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace CSharpBinding.Parser
 {
@@ -53,107 +54,173 @@ namespace CSharpBinding.Parser
 			return csharpProvider.CreateGenerator ();
 		}
 		
-		public override void RenameField (IRefactorerContext ctx, IClass cls, IField field, string newName)
+		public override IClass RenameClass (RefactorerContext ctx, IClass cls, string newName)
 		{
 			IEditableTextFile file = ctx.GetFile (cls.Region.FileName);
 			if (file == null)
-				return;
+				return null;
 
-			int pos1 = file.GetPositionFromLineColumn (field.Region.BeginLine, field.Region.BeginColumn);
-			int pos2 = file.GetPositionFromLineColumn (field.Region.EndLine, field.Region.EndColumn);
+			int pos1 = file.GetPositionFromLineColumn (cls.Region.BeginLine, cls.Region.BeginColumn);
+			int pos2 = file.GetPositionFromLineColumn (cls.Region.EndLine, cls.Region.EndColumn);
 			string txt = file.GetText (pos1, pos2);
-			Console.WriteLine ("TXT:[" + txt + "]");
-			int i = txt.IndexOf ('=');
-			if (i == -1) i = txt.Length;
-			int p = txt.LastIndexOf (field.Name, i);
-			if (p == -1)
-				return;
-
-			string newTxt = txt.Substring (0, p) + newName + txt.Substring (p + field.Name.Length);
-			file.DeleteText (pos1, txt.Length);
-			file.InsertText (pos1, newTxt);
+			
+			Regex targetExp = new Regex(@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+			Match match = targetExp.Match (" " + txt + " ");
+			if (!match.Success)
+				return null;
+			
+			int pos = pos1 + match.Groups [1].Index - 1;
+			file.DeleteText (pos, cls.Name.Length);
+			file.InsertText (pos, newName);
+			
+			return GetGeneratedClass (ctx, file, cls);
 		}
 		
-		public override void RenameFieldReferences (IRefactorerContext ctx, string fileName, IClass cls, IField field, string newName)
+		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls)
 		{
 			Resolver resolver = new Resolver (ctx.ParserContext);
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (resolver, cls.FullyQualifiedName, field.Name, newName);
-			Console.WriteLine ("Checking " + fileName);
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls.FullyQualifiedName, cls, refs);
 			
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
+			return refs;
+		}
+		
+		protected override int GetMemberNamePosition (IEditableTextFile file, IMember member)
+		{
+			int pos1 = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
+			int pos2 = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
+			string txt = file.GetText (pos1, pos2);
+			
+			if (member is IField)
+			{
+				int i = txt.IndexOf ('=');
+				if (i == -1) i = txt.Length;
+				int p = txt.LastIndexOf (member.Name, i);
+				if (p == -1) return -1;
+				return pos1 + p;
+			}
+			else if (member is IMethod)
+			{
+				int i = txt.IndexOf ('(');
+				if (i == -1) return -1;
+				int p = txt.LastIndexOf (member.Name, i);
+				if (p == -1) return -1;
+				return pos1 + p;
+			}
+			else if (member is IProperty)
+			{
+				int i = txt.IndexOf ('{');
+				if (i == -1) return -1;
+				int p = txt.LastIndexOf (member.Name, i);
+				if (p == -1) return -1;
+				return pos1 + p;
+			}
+			else if (member is IEvent)
+			{
+				int i = txt.IndexOf ('{');
+				if (i == -1) i = txt.Length;
+				int p = txt.LastIndexOf (member.Name, i);
+				if (p == -1) return -1;
+				return pos1 + p;
+			}
+			
+			return -1;
+		}
+		
+		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)
+		{
+			Resolver resolver = new Resolver (ctx.ParserContext);
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls.FullyQualifiedName, member, refs);
+			
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
+			return refs;
 		}
 	}
 	
 	class MemberRefactoryVisitor: AbstractASTVisitor
 	{
 		string className;
-		string memberName;
-		string newName;
+		ILanguageItem member;
 		Resolver resolver;
 		IEditableTextFile file;
-		string fileContent;
 		CompilationUnit fileCompilationUnit;
+		MemberReferenceCollection references;
+		RefactorerContext ctx;
 		
-		public MemberRefactoryVisitor (Resolver resolver, string className, string memberName, string newName)
+		public MemberRefactoryVisitor (RefactorerContext ctx, Resolver resolver, string className, ILanguageItem member, MemberReferenceCollection references)
 		{
+			this.ctx = ctx;
 			this.resolver = resolver;
 			this.className = className;
-			this.newName = newName;
-			this.memberName = memberName;
+			this.references = references;
+			this.member = member;
 		}
 		
 		public void Visit (IParserContext pctx, IEditableTextFile file)
 		{
 			this.file = file;
-			this.fileContent = file.Text;
 			
 			IParseInformation pi = pctx.ParseFile (file);
 			
 			fileCompilationUnit = pi.MostRecentCompilationUnit.Tag as CompilationUnit;
 			if (fileCompilationUnit != null)
 				Visit (fileCompilationUnit, null);
-			else
-				Console.WriteLine ("No parse info");
 		}
 		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
-			if (fieldExp.FieldName == memberName)
+			if (member is IField && fieldExp.FieldName == member.Name)
 			{
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && cls.FullyQualifiedName == className) {
-					Console.WriteLine ("Found field in " + file.Name + " " + fieldExp.StartLocation + " - " + fieldExp.EndLocation);
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					string txt = file.GetText (pos, pos + memberName.Length);
-					if (txt == memberName) {
-						file.DeleteText (pos, memberName.Length);
-						file.InsertText (pos, newName);
-					}
+					string txt = file.GetText (pos, pos + member.Name.Length);
+					if (txt == member.Name)
+						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
 				}
 				
 			}
 			return base.Visit (fieldExp, data);
 		}
 		
+		public override object Visit (InvocationExpression invokeExp, object data)
+		{
+			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
+				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
+				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
+				if (cls != null && cls.FullyQualifiedName == className) {
+					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
+					string txt = file.GetText (pos, pos + member.Name.Length);
+					if (txt == member.Name)
+						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
+				}
+			}
+			return base.Visit (invokeExp, data);
+		}
+		
 		public override object Visit (IdentifierExpression idExp, object data)
 		{
-			if (idExp.Identifier == memberName)
+			if (idExp.Identifier == member.Name)
 			{
 				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, idExp.StartLocation.Y, idExp.StartLocation.X);
-				if (item is IField) {
-					IField f = (IField) item;
-					if (f.DeclaringType.FullyQualifiedName == className) {
-						Console.WriteLine ("DC:" + f.DeclaringType);
-						Console.WriteLine ("Found field in " + f.Name + " " + idExp.StartLocation + " - " + idExp.EndLocation);
+				if (member is IMember) {
+					IMember m = item as IMember;
+					if (m != null && m.DeclaringType.FullyQualifiedName == className &&
+						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
+						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
+					{
 						int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
-						string txt = file.GetText (pos, pos + memberName.Length);
-						if (txt == memberName) {
-							file.DeleteText (pos, memberName.Length);
-							file.InsertText (pos, newName);
-						}
+						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
 					}
+				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
+					int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
+					references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
 				}
+				
 			}
 			return base.Visit (idExp, data);
 		}
