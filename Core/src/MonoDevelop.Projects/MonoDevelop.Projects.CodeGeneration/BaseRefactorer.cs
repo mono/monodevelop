@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected abstract ICodeGenerator GetGenerator ();
 	
-		public IClass CreateClass (IRefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
+		public IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			CodeCompileUnit unit = new CodeCompileUnit ();
 			CodeNamespace ns = new CodeNamespace (namspace);
@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			StreamWriter sw = new StreamWriter (file);
 			
 			ICodeGenerator gen = GetGenerator ();
-			gen.GenerateCodeFromCompileUnit (unit, sw, new CodeGeneratorOptions ());
+			gen.GenerateCodeFromCompileUnit (unit, sw, GetOpions ());
 			
 			sw.Close ();
 			
@@ -68,59 +68,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 				throw new Exception ("Class creation failed. The parser did not find the created class.");
 		}
 		
-		public virtual void RenameClass (IRefactorerContext ctx, IClass cls, string newName)
+		public virtual IClass RenameClass (RefactorerContext ctx, IClass cls, string newName)
 		{
-		}
-		
-		public virtual void RenameClassReferences (IRefactorerContext ctx, string file, IClass cls, string newName)
-		{
-		}
-		
-		public IMethod AddMethod (IRefactorerContext ctx, IClass cls, CodeMemberMethod method)
-		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
-			
-			int line, col;
-			int pos = GetNewMethodPosition (buffer, cls);
-			
-			buffer.GetLineColumnFromPosition (pos, out line, out col);
-			string indent = GetLineIndent (buffer, line);
-			
-			string code = GenerateCodeFromMember (method);
-			code = Indent (code, indent, false);
-			
-			buffer.InsertText (pos, code);
-			
-			IParseInformation pi = ctx.ParserContext.ParseFile (buffer.Name, buffer.Text);
-			foreach (IClass rclass in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
-				if (cls.Name == rclass.Name) {
-					foreach (IMethod m in rclass.Methods)
-						if (m.Region.BeginLine == line)
-							return m;
-				}
-			}
 			return null;
 		}
-
-		public virtual void RemoveMethod (IRefactorerContext ctx, IClass cls, IMethod method)
+		
+		public virtual MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string file, IClass cls)
 		{
+			return null;
 		}
 		
-		public virtual void RenameMethod (IRefactorerContext ctx, IClass cls, IMethod method, string newName)
-		{
-		}
-		
-		public virtual void RenameMethodReferences (IRefactorerContext ctx, string fileName, IClass cls, IMethod method, string newName)
-		{
-		}
-		
-		public virtual IField AddField (IRefactorerContext ctx, IClass cls, CodeMemberField field)
+		public virtual IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember member)
 		{
 			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
 			
-			int pos = GetNewFieldPosition (buffer, cls);
+			int pos = GetNewMemberPosition (buffer, cls, member);
 			
-			string code = GenerateCodeFromMember (field);
+			string code = GenerateCodeFromMember (member);
 			
 			int line, col;
 			buffer.GetLineColumnFromPosition (pos, out line, out col);
@@ -130,42 +94,219 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			buffer.InsertText (pos, code);
 			
-			IParseInformation pi = ctx.ParserContext.ParseFile (buffer.Name, buffer.Text);
-			foreach (IClass rclass in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
-				if (cls.Name == rclass.Name) {
-					foreach (IField f in rclass.Fields)
-						if (f.Region.BeginLine == line)
-							return f;
-				}
-			}
+			return FindGeneratedMember (ctx, buffer, cls, member);
+		}
+		
+		public virtual void RemoveMember (RefactorerContext ctx, IClass cls, IMember member)
+		{
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IRegion reg = GetMemberBounds (member);
+			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
+			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
+			buffer.DeleteText (sp, ep - sp);
+		}
+		
+		public virtual IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo)
+		{
+			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IRegion reg = GetMemberBounds (oldMember);
+			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
+			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
+			buffer.DeleteText (sp, ep - sp);
+			
+			string code = GenerateCodeFromMember (memberInfo);
+			string indent = GetLineIndent (buffer, reg.BeginLine);
+			code = Indent (code, indent, false);
+			
+			buffer.InsertText (sp, code);
+			
+			return FindGeneratedMember (ctx, buffer, cls, memberInfo);
+				
+		}
+		
+		public virtual IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName)
+		{
+			IEditableTextFile file = ctx.GetFile (cls.Region.FileName);
+			if (file == null)
+				return null;
+
+			int pos = GetMemberNamePosition (file, member);
+			if (pos == -1)
+				return null;
+
+			string txt = file.GetText (pos, pos + member.Name.Length);
+			if (txt != member.Name)
+				return null;
+			
+			file.DeleteText (pos, txt.Length);
+			file.InsertText (pos, newName);
+			
+			CodeTypeMember memberInfo;
+			if (member is IField)
+				memberInfo = new CodeMemberField ();
+			else if (member is IMethod)
+				memberInfo = new CodeMemberMethod ();
+			else if (member is IProperty)
+				memberInfo = new CodeMemberProperty ();
+			else if (member is IEvent)
+				memberInfo = new CodeMemberEvent ();
+			else
+				return null;
+			
+			memberInfo.Name = newName;
+			return FindGeneratedMember (ctx, file, cls, memberInfo);
+		}
+		
+		public virtual MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)
+		{
+			if (member is IField)
+				return FindFieldReferences (ctx, fileName, cls, (IField) member);
+			else if (member is IMethod)
+				return FindMethodReferences (ctx, fileName, cls, (IMethod) member);
+			else if (member is IProperty)
+				return FindPropertyReferences (ctx, fileName, cls, (IProperty) member);
+			else if (member is IEvent)
+				return FindEventReferences (ctx, fileName, cls, (IEvent) member);
+			else
+				return null;
+		}
+		
+
+		/// Method overridables ////////////////////////////
+		
+		protected virtual IMethod RenameMethod (RefactorerContext ctx, IClass cls, IMethod method, string newName)
+		{
 			return null;
 		}
 		
-		public virtual void RemoveField (IRefactorerContext ctx, IClass cls, IField field)
+		protected virtual MemberReferenceCollection FindMethodReferences (RefactorerContext ctx, string fileName, IClass cls, IMethod method)
 		{
+			return null;
 		}
 		
-		public virtual void RenameField (IRefactorerContext ctx, IClass cls, IField field, string newName)
+
+		/// Field overridables ////////////////////////////
+		
+		
+		protected virtual IField RenameField (RefactorerContext ctx, IClass cls, IField field, string newName)
 		{
+			return null;
 		}
 		
-		public virtual void RenameFieldReferences (IRefactorerContext ctx, string fileName, IClass cls, IField field, string newName)
+		protected virtual MemberReferenceCollection FindFieldReferences (RefactorerContext ctx, string fileName, IClass cls, IField field)
 		{
+			return null;
 		}
 
+
+		/// Property overridables ////////////////////////////
 		
+		protected virtual IProperty RenameProperty (RefactorerContext ctx, IClass cls, IProperty property, string newName)
+		{
+			return null;
+		}
+		
+		protected virtual MemberReferenceCollection FindPropertyReferences (RefactorerContext ctx, string fileName, IClass cls, IProperty property)
+		{
+			return null;
+		}		
+
+		
+		/// Event overridables ////////////////////////////		
+		
+		protected virtual IEvent RenameEvent (RefactorerContext ctx, IClass cls, IEvent evnt, string newName)
+		{
+			return null;
+		}
+		
+		protected virtual MemberReferenceCollection FindEventReferences (RefactorerContext ctx, string fileName, IClass cls, IEvent evnt)
+		{
+			return null;
+		}		
+
+		/// Helper overridables ////////////////////////////
+
+		protected virtual int GetMemberNamePosition (IEditableTextFile file, IMember member)
+		{
+			return -1;
+		}
+
+		protected virtual IRegion GetMemberBounds (IMember member)
+		{
+			int minLin = member.Region.BeginLine;
+			int minCol = member.Region.BeginColumn;
+			int maxLin = member.Region.EndLine;
+			int maxCol = member.Region.EndColumn;
+			
+			foreach (IAttributeSection att in member.Attributes) {
+				if (att.Region.BeginLine < minLin) {
+					minLin = att.Region.BeginLine;
+					minCol = att.Region.BeginColumn;
+				} else if (att.Region.BeginLine == minLin && att.Region.BeginColumn < minCol) {
+					minCol = att.Region.BeginColumn;
+				}
+				
+				if (att.Region.EndLine > maxLin) {
+					maxLin = att.Region.EndLine;
+					maxCol = att.Region.EndColumn;
+				} else if (att.Region.EndLine == maxLin && att.Region.EndColumn > maxCol) {
+					maxCol = att.Region.EndColumn;
+				}
+			}
+			return new DefaultRegion (minLin, minCol, maxLin, maxCol);
+		}
+				
 		protected virtual string GenerateCodeFromMember (CodeTypeMember member)
 		{
 			CodeTypeDeclaration type = new CodeTypeDeclaration ("temp");
 			type.Members.Add (member);
 			ICodeGenerator gen = GetGenerator ();
 			StringWriter sw = new StringWriter ();
-			gen.GenerateCodeFromType (type, sw, new CodeGeneratorOptions ());
+			gen.GenerateCodeFromType (type, sw, GetOpions ());
 			string code = sw.ToString ();
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');
 			code = code.Substring (i+1, j-i-1);
 			return RemoveIndent (code);
+		}
+		
+
+		/// Helper methods ////////////////////////////
+
+		// Returns a reparsed IClass instance that contains the generated code.
+		protected IClass GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IClass cls)
+		{
+			IParseInformation pi = ctx.ParserContext.ParseFile (buffer.Name, buffer.Text);
+			foreach (IClass rclass in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
+				if (cls.Name == rclass.Name)
+					return rclass;
+			}
+			return null;
+		}
+		
+		protected IMember FindGeneratedMember (RefactorerContext ctx, IEditableTextFile buffer, IClass cls, CodeTypeMember member)
+		{
+			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
+			if (rclass != null) {
+				if (member is CodeMemberField) {
+					foreach (IField m in cls.Fields)
+						if (m.Name == member.Name)
+							return m;
+				} else if (member is CodeMemberProperty) {
+					foreach (IProperty m in cls.Properties)
+						if (m.Name == member.Name)
+							return m;
+				} else if (member is CodeMemberEvent) {
+					foreach (IEvent m in cls.Events)
+						if (m.Name == member.Name)
+							return m;
+				} else if (member is CodeMemberMethod) {
+					foreach (IMethod m in cls.Methods)
+						if (m.Name == member.Name)
+							return m;
+				}
+			}
+			return null;
 		}
 		
 		protected string RemoveIndent (string code)
@@ -218,6 +359,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return code;
 		}
 		
+		protected virtual int GetNewMemberPosition (IEditableTextFile buffer, IClass cls, CodeTypeMember member)
+		{
+			if (member is CodeMemberField)
+				return GetNewFieldPosition (buffer, cls);
+			else if (member is CodeMemberMethod)
+				return GetNewMethodPosition (buffer, cls);
+			else if (member is CodeMemberEvent)
+				return GetNewEventPosition (buffer, cls);
+			else if (member is CodeMemberProperty)
+				return GetNewPropertyPosition (buffer, cls);
+			else
+				throw new InvalidOperationException ("Invalid member type: " + member);
+		}
+		
 		protected virtual int GetNewFieldPosition (IEditableTextFile buffer, IClass cls)
 		{
 			if (cls.Fields.Count == 0) {
@@ -244,7 +399,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual int GetNewMethodPosition (IEditableTextFile buffer, IClass cls)
 		{
 			if (cls.Methods.Count == 0) {
-				int pos = GetNewFieldPosition (buffer, cls);
+				int pos = GetNewPropertyPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
 				string ind = GetLineIndent (buffer, line);
@@ -254,6 +409,50 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			else {
 				IMethod m = cls.Methods [cls.Methods.Count - 1];
+				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				pos = GetNextLine (buffer, pos);
+				pos = GetNextLine (buffer, pos);
+				string ind = GetLineIndent (buffer, m.Region.EndLine);
+				buffer.InsertText (pos, ind);
+				return pos + ind.Length;
+			}
+		}
+		
+		protected virtual int GetNewPropertyPosition (IEditableTextFile buffer, IClass cls)
+		{
+			if (cls.Properties.Count == 0) {
+				int pos = GetNewEventPosition (buffer, cls);
+				int line, col;
+				buffer.GetLineColumnFromPosition (pos, out line, out col);
+				string ind = GetLineIndent (buffer, line);
+				pos = GetNextLine (buffer, pos);
+				buffer.InsertText (pos, ind);
+				return pos + ind.Length;
+			}
+			else {
+				IProperty m = cls.Properties [cls.Properties.Count - 1];
+				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				pos = GetNextLine (buffer, pos);
+				pos = GetNextLine (buffer, pos);
+				string ind = GetLineIndent (buffer, m.Region.EndLine);
+				buffer.InsertText (pos, ind);
+				return pos + ind.Length;
+			}
+		}
+		
+		protected virtual int GetNewEventPosition (IEditableTextFile buffer, IClass cls)
+		{
+			if (cls.Events.Count == 0) {
+				int pos = GetNewFieldPosition (buffer, cls);
+				int line, col;
+				buffer.GetLineColumnFromPosition (pos, out line, out col);
+				string ind = GetLineIndent (buffer, line);
+				pos = GetNextLine (buffer, pos);
+				buffer.InsertText (pos, ind);
+				return pos + ind.Length;
+			}
+			else {
+				IEvent m = cls.Events [cls.Events.Count - 1];
 				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
@@ -289,6 +488,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 				s = buffer.GetText (pos, pos + 1);
 			}
 			return buffer.GetText (ipos, pos);
+		}
+		
+		CodeGeneratorOptions GetOpions ()
+		{
+			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
+			ops.IndentString = "\t";
+			ops.BracingStyle = "C";
+			return ops;
 		}
 	}
 }

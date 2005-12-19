@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		Combine rootCombine;
 		ITextFileProvider fileProvider;
 		
-		delegate void RefactorDelegate (IRefactorerContext gctx, IRefactorer gen, string file);
+		delegate void RefactorDelegate (RefactorerContext gctx, IRefactorer gen, string file);
 		
 		public CodeRefactorer (Combine rootCombine, IParserDatabase pdb)
 		{
@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public IClass CreateClass (Project project, string language, string directory, string namspace, CodeTypeDeclaration type)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (project);
-			InternalRefactorerContext gctx = new InternalRefactorerContext (ctx, fileProvider);
+			RefactorerContext gctx = new RefactorerContext (ctx, fileProvider);
 			IRefactorer gen = Services.Languages.GetRefactorerForLanguage (language);
 			IClass c = gen.CreateClass (gctx, directory, namspace, type);
 			gctx.Save ();
@@ -65,66 +65,67 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameClass (IClass cls, string newName, RefactoryScope scope)
 		{
-			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameClass (cls, newName).Refactor));
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+			refs.RenameAll (newName);
 			
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
+			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
 			r.RenameClass (gctx, cls, newName);
 			gctx.Save ();
 		}
 		
-		public IMethod AddMethod (IClass cls, CodeMemberMethod method)
+		public MemberReferenceCollection FindClassReferences (IClass cls, RefactoryScope scope)
 		{
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+			return refs;
+		}
+		
+		public IMember AddMember (IClass cls, CodeTypeMember member)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			IMethod m = gen.AddMethod (gctx, cls, method);
+			IMember m = gen.AddMember (gctx, cls, member);
 			gctx.Save ();
 			return m;
 		}
 		
-		public void RemoveMethod (IClass cls, IMethod method)
+		public void RemoveMember (IClass cls, IMember member)
 		{
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
+			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.RemoveMethod (gctx, cls, method);
+			gen.RemoveMember (gctx, cls, member);
 			gctx.Save ();
 		}
 		
-		public void RenameMethod (IClass cls, IMethod method, string newName, RefactoryScope scope)
+		public IMember RenameMember (IClass cls, IMember member, string newName, RefactoryScope scope)
 		{
-			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameMethod (cls, method, newName).Refactor));
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+			refs.RenameAll (newName);
 			
-			InternalRefactorerContext rctx = GetGeneratorContext (cls);
-			IRefactorer r = GetGeneratorForClass (cls);
-			r.RenameMethod (rctx, cls, method, newName);
-			rctx.Save ();
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer gen = GetGeneratorForClass (cls);
+			IMember m = gen.RenameMember (gctx, cls, member, newName);
+			gctx.Save ();
+			return m;
 		}
 		
-		public IField AddField (IClass cls, CodeMemberField field)
+		public MemberReferenceCollection FindMemberReferences (IClass cls, IMember member, RefactoryScope scope)
 		{
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			IField f = gen.AddField (gctx, cls, field);
-			gctx.Save ();
-			return f;
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+			return refs;
 		}
 		
-		public void RemoveField (IClass cls, IField field)
+		public IMember ReplaceMember (IClass cls, IMember oldMember, CodeTypeMember member)
 		{
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
+			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.RemoveField (gctx, cls, field);
+			IMember m = gen.ReplaceMember (gctx, cls, oldMember, member);
 			gctx.Save ();
-		}
-		
-		public void RenameField (IClass cls, IField field, string newName, RefactoryScope scope)
-		{
-			Refactor (cls, scope, new RefactorDelegate (new RefactorRenameField (cls, field, newName).Refactor));
-			
-			InternalRefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.RenameField (gctx, cls, field, newName);
-			gctx.Save ();
+			return m;
 		}
 		
 		void Refactor (IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
@@ -135,7 +136,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (prj == null)
 					return;
 				
-				InternalRefactorerContext gctx = GetGeneratorContext (prj);
+				RefactorerContext gctx = GetGeneratorContext (prj);
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 				if (gen == null)
 					return;
@@ -168,7 +169,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		void RefactorProject (Project p, RefactorDelegate refactorDelegate)
 		{
-			InternalRefactorerContext gctx = GetGeneratorContext (p);
+			RefactorerContext gctx = GetGeneratorContext (p);
 			foreach (ProjectFile file in p.ProjectFiles) {
 				if (file.BuildAction != BuildAction.Compile) continue;
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
@@ -178,13 +179,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		InternalRefactorerContext GetGeneratorContext (Project p)
+		RefactorerContext GetGeneratorContext (Project p)
 		{
 			IParserContext ctx = pdb.GetProjectParserContext (p);
-			return new InternalRefactorerContext (ctx, fileProvider);
+			return new RefactorerContext (ctx, fileProvider);
 		}
 		
-		InternalRefactorerContext GetGeneratorContext (IClass cls)
+		RefactorerContext GetGeneratorContext (IClass cls)
 		{
 			Project p = GetProjectForFile (cls.Region.FileName);
 			return p != null ? GetGeneratorContext (p) : null;
@@ -202,98 +203,45 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			return Services.Languages.GetRefactorerForFile (cls.Region.FileName);
 		}
-
-		class InternalRefactorerContext: IRefactorerContext
+	}
+	
+	class RefactorFindClassReferences
+	{
+		MemberReferenceCollection references;
+		IClass cls;
+		
+		public RefactorFindClassReferences (IClass cls, MemberReferenceCollection references)
 		{
-			ITextFileProvider files;
-			ArrayList textFiles = new ArrayList ();
-			IParserContext ctx;
-			
-			public InternalRefactorerContext (IParserContext ctx, ITextFileProvider files)
-			{
-				this.files = files;
-				this.ctx = ctx;
-			}
-			
-			public IParserContext ParserContext {
-				get { return ctx; }
-			}
-			
-			public IEditableTextFile GetFile (string name)
-			{
-				if (files != null) {
-					IEditableTextFile ef = files.GetEditableTextFile (name);
-					if (ef != null) return ef;
-				}
-				foreach (IEditableTextFile f in textFiles)
-					if (f.Name == name)
-						return f;
-						
-				TextFile file = new TextFile (name);
-				textFiles.Add (file);
-				return file;
-			}
-			
-			internal void Save ()
-			{
-				foreach (TextFile file in textFiles)
-					file.Save ();
-			}
+			this.cls = cls;
+			this.references = references;
+		}
+		
+		public void Refactor (RefactorerContext rctx, IRefactorer r, string fileName)
+		{
+			MemberReferenceCollection refs = r.FindClassReferences (rctx, fileName, cls);
+			if (refs != null)
+				references.AddRange (refs);
 		}
 	}
 	
-	class RefactorRenameClass
+	class RefactorFindMemberReferences
 	{
 		IClass cls;
-		string newName;
+		MemberReferenceCollection references;
+		IMember member;
 		
-		public RefactorRenameClass (IClass cls, string newName)
+		public RefactorFindMemberReferences (IClass cls, IMember member, MemberReferenceCollection references)
 		{
 			this.cls = cls;
-			this.newName = newName;
+			this.references = references;
+			this.member = member;
 		}
 		
-		public void Refactor (IRefactorerContext rctx, IRefactorer gen, string file)
+		public void Refactor (RefactorerContext rctx, IRefactorer r, string fileName)
 		{
-			gen.RenameClassReferences (rctx, file, cls, newName);
-		}
-	}
-	
-	class RefactorRenameMethod
-	{
-		IClass cls;
-		string newName;
-		IMethod method;
-		
-		public RefactorRenameMethod (IClass cls, IMethod method, string newName)
-		{
-			this.cls = cls;
-			this.newName = newName;
-			this.method = method;
-		}
-		
-		public void Refactor (IRefactorerContext rctx, IRefactorer r, string file)
-		{
-			r.RenameMethodReferences (rctx, file, cls, method, newName);
-		}
-	}
-	
-	class RefactorRenameField
-	{
-		IClass cls;
-		string newName;
-		IField field;
-		
-		public RefactorRenameField (IClass cls, IField field, string newName)
-		{
-			this.cls = cls;
-			this.newName = newName;
-			this.field = field;
-		}
-		
-		public void Refactor (IRefactorerContext rctx, IRefactorer r, string file)
-		{
-			r.RenameFieldReferences (rctx, file, cls, field, newName);
+			MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
+			if (refs != null)
+				references.AddRange (refs);
 		}
 	}
 	

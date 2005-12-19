@@ -1,3 +1,18 @@
+2005-12-19 Lluis Sanchez Gual  <lluis@novell.com>  
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: 
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	Created generic methods for generating member code, instead
+	of having specific methods for field, method, event, etc.
+	Implemented most of refactoring operations for all member
+	types, but it's mostly untested.
+	
+	* MonoDevelop.Projects.CodeGeneration/IRefactorerContext.cs:
+	Removed. Using RefactorerContext insted.
+	* MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs:
+	New class.
+
 2005-12-13 Lluis Sanchez Gual  <lluis@novell.com>  
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Removed

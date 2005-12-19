@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.CodeDom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -37,19 +38,74 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		RefactorOperations SupportedOperations { get; }
 		
-		IClass CreateClass (IRefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
-		void RenameClass (IRefactorerContext ctx, IClass cls, string newName);
-		void RenameClassReferences (IRefactorerContext ctx, string file, IClass cls, string newName);
+		IClass CreateClass (RefactorerContext ctx, string directory, string namspace, CodeTypeDeclaration type);
+		IClass RenameClass (RefactorerContext ctx, IClass cls, string newName);
+		MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls);
 		
-		IMethod AddMethod (IRefactorerContext ctx, IClass cls, CodeMemberMethod method);
-		void RemoveMethod (IRefactorerContext ctx, IClass cls, IMethod method);
-		void RenameMethod (IRefactorerContext ctx, IClass cls, IMethod method, string newName);
-		void RenameMethodReferences (IRefactorerContext ctx, string fileName, IClass cls, IMethod method, string newName);
+		IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember memberInfo);
+		void RemoveMember (RefactorerContext ctx, IClass cls, IMember member);
+		IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName);
+		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);
+		MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member);
+	}
+	
+	public class MemberReference
+	{
+		int position;
+		string fileName;
+		string name;
+		RefactorerContext rctx;
 		
-		IField AddField (IRefactorerContext ctx, IClass cls, CodeMemberField field);
-		void RemoveField (IRefactorerContext ctx, IClass cls, IField field);
-		void RenameField (IRefactorerContext ctx, IClass cls, IField field, string newName);
+		public MemberReference (RefactorerContext rctx, string fileName, int position, string name)
+		{
+			this.position = position;
+			this.fileName = fileName;
+			this.name = name;
+		}
 		
-		void RenameFieldReferences (IRefactorerContext ctx, string fileName, IClass cls, IField field, string newName);
+		public int Position {
+			get { return position; }
+		}
+		
+		public string FileName {
+			get { return fileName; }
+		}
+		
+		public virtual void Rename (string newName)
+		{
+			if (rctx == null)
+				throw new InvalidOperationException ("Refactory context not available.");
+
+			IEditableTextFile file = rctx.GetFile (fileName);
+			if (file != null) {
+				file.DeleteText (position, name.Length);
+				file.InsertText (position, newName);
+				rctx.Save ();
+			}
+		}
+	}
+	
+	public class MemberReferenceCollection: CollectionBase
+	{
+		public void Add (MemberReference reference)
+		{
+			List.Add (reference);
+		}
+		
+		public void AddRange (IEnumerable collection)
+		{
+			foreach (MemberReference mref in collection)
+				List.Add (mref);
+		}
+		
+		public MemberReference this [int n] {
+			get { return (MemberReference) List [n]; }
+		}
+		
+		public void RenameAll (string newName)
+		{
+			foreach (MemberReference mref in List)
+				mref.Rename (newName);
+		}
 	}
 }
