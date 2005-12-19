@@ -1,3 +1,8 @@
+2005-12-13  David MakovskA <yakeen@sannyas-on.net>
+
+	* WelcomePageView.cs:
+	Show uri of project or web link in status bar when mouse over link
+	
 2005-11-29  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* WelcomePage.xsl:

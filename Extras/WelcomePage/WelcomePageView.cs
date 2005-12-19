@@ -70,6 +70,7 @@ namespace MonoDevelop.WelcomePage
 			control.Add(htmlControl);
 			htmlControl.Show();
 			htmlControl.OpenUri += new OpenUriHandler (CatchUri);
+			htmlControl.LinkMsg += new EventHandler (LinkMessage);
 			
 			//START HERE: Move To Thread?
 			
@@ -97,7 +98,21 @@ namespace MonoDevelop.WelcomePage
 			htmlControl.Html = fs.ToString();
 			//Initialize(null);
 		}
-
+		
+		void LinkMessage (object sender, EventArgs e)
+		{
+			if (htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1) return;
+			if (htmlControl.LinkMessage == null || htmlControl.LinkMessage == String.Empty)
+			{
+				IdeApp.Workbench.StatusBar.SetMessage (null);
+			} else
+			{
+				string message = htmlControl.LinkMessage;
+				if (message.IndexOf ("project://") != -1) message = message.Substring (10);
+				IdeApp.Workbench.StatusBar.SetMessage (message);
+			}
+		}
+		
 		void CatchUri (object sender, OpenUriArgs e)
 		{
 			e.RetVal = true;
