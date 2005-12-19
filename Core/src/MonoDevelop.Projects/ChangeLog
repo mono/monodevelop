@@ -1,3 +1,7 @@
+2005-12-19 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am: Added RefactorerContext.cs.
+
 2005-12-19 Lluis Sanchez Gual  <lluis@novell.com>  
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: 

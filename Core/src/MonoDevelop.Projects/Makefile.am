@@ -180,7 +180,7 @@ MonoDevelop.Projects.Parser/IParseInformationListener.cs \
 MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
 MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
 MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
-MonoDevelop.Projects.CodeGeneration/IRefactorerContext.cs \
+MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
 MonoDevelop.Projects.Text/IEditableTextFile.cs \
