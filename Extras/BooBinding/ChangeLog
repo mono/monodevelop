@@ -1,3 +1,11 @@
+2005-12-19  Peter Johanson  <latexer@gentoo.org>
+
+	* Parser/Resolver.boo: Add overload for doing a deep search for a
+	type.
+	* Parser/ExpressionTypeVisitor.boo: Do deep searches for members, as
+	we may have a member of a type not found in explicitly referenced
+	assemblies.
+
 2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/BooParser.boo: Track changes in the api.

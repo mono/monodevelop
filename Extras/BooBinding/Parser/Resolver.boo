@@ -144,10 +144,19 @@ class Resolver:
 		return null
 	
 	def SearchType(name as string) as IClass:
+		return SearchType (name, false)
+	
+	def SearchType (name as string, deep_search as bool) as IClass:
 		expandedName = BooAmbience.ReverseTypeConversionTable[name]
+		Log ("Expanded name |${expandedName}|") if expandedName != null
 		return _parserContext.GetClass(expandedName) if expandedName != null
 		//return _parserContext.SearchType(name, _callingClass, _caretLine, _caretColumn)
-		return _parserContext.SearchType(name, _callingClass, _compilationUnit)
+		klass as IClass = _parserContext.SearchType(name, _callingClass, _compilationUnit)
+		if klass == null:
+			klass = _parserContext.GetClass (name, true, false)
+
+		return klass
+		
 	
 	builtinClass as IClass
 	

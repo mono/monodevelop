@@ -93,7 +93,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 			mre as MemberReferenceExpression = node.Target
 			Visit(mre.Target)
 			if _returnClass == null and _returnType != null:
-				_returnClass = _resolver.SearchType(_returnType.FullyQualifiedName)
+				_returnClass = _resolver.SearchType(_returnType.FullyQualifiedName, true)
 			return if ProcessMethod(node, mre.Name, _returnClass)
 			// try if the MemberReferenceExpression is a fully qualified class name (constructor call)
 			ProcessMemberReferenceExpression(mre.Name)
@@ -105,7 +105,7 @@ class ExpressionTypeVisitor(DepthFirstVisitor):
 			// try if it is a builtin method
 			return if ProcessMethod(node, re.Name, _resolver.BuiltinClass)
 			// try if it is a class name -> constructor
-			CreateReturnType(_resolver.SearchType(re.Name))
+			CreateReturnType(_resolver.SearchType(re.Name, true))
 		else:
 			SetReturnType(null)
 	
