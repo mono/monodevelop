@@ -131,6 +131,9 @@
 		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
 		<StockIcon stockid = "md-user-package" resource = "user-package.png" />
+		<StockIcon stockid = "md-visual-studio" resource = "visual-studio.png" />
+		<StockIcon stockid = "md-comment" resource = "comment.png" />
+		<StockIcon stockid = "md-uncomment" resource = "uncomment.png" />
 	</Extension>
 	
 

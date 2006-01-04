@@ -185,7 +185,10 @@ icons/package-x-generic.png \
 icons/system-software-update.png \
 icons/system-software-update_22.png \
 icons/gnome-fs-regular.png \
-icons/user-package.png
+icons/user-package.png \
+icons/comment.png \
+icons/uncomment.png \
+icons/visual-studio.png
 
 GENERATED_FILES = \
 AssemblyInfo.cs

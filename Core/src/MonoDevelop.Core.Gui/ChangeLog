@@ -1,3 +1,9 @@
+2006-01-04  Alexandre Miguel Pedro Gomes <alexmipego@gmail.com>
+
+	* Makefile.am, icons/uncomment.png, icons/comment.png,
+	icons/visual-studio.png, MonoDevelop.Core.Gui.addin.xml: Added icons to
+	Import VS Solution, comment and uncomment code.
+
 2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Escape now closes

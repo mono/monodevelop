@@ -88,7 +88,8 @@
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber"
 				_label = "_Goto Line..." 
 				description = "Goto line"
-				shortcut = "Control|G" />
+				shortcut = "Control|G"
+				icon = "gtk-jump-to" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace"
 				_label = "Goto Matching _Brace" 
 				description = "Goto Matching Brace" 

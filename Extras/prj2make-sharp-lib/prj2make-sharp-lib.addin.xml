@@ -20,7 +20,8 @@
 		<Command id = "MonoDevelop.Prj2Make.Commands.ImportSolution"
 			_label = "_Import Visual Studio .NET Project"
 			defaultHandler = "MonoDevelop.Prj2Make.ImportPrj"
-			description = "Imports solutions created with MS Visual Studio" />
+			description = "Imports solutions created with MS Visual Studio"
+			icon = "md-visual-studio" />
 	</Extension>
 	
 	<Extension path="/SharpDevelop/Workbench/MainMenu/File">
