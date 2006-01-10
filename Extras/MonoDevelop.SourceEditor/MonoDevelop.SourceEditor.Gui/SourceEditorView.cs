@@ -273,7 +273,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			insertIter = triggerIter;
 			string fileName = ParentEditor.DisplayBinding.ContentName;
 			IExpressionFinder expressionFinder = GetParserContext ().GetExpressionFinder(fileName);
-			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(this, insertIter.Offset) : expressionFinder.FindExpression(buf.GetText(buf.StartIter, insertIter, true), insertIter.Offset - 2);
+			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(this, insertIter.Offset) : expressionFinder.FindExpression(buf.GetText(buf.StartIter, insertIter, true), insertIter.Offset - 2).Expression;
 			if (expression == null) return false;
 			Console.WriteLine ("Expression: {" + expression + "}");
 			string type = GetParserContext ().MonodocResolver (expression, insertIter.Line + 1, insertIter.LineOffset + 1, fileName, buf.Text);
