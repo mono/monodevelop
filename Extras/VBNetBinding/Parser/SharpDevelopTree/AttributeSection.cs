@@ -2,6 +2,7 @@
 
 using MonoDevelop.Projects.Parser;
 using System.Collections;
+using System.CodeDom;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
@@ -15,11 +16,12 @@ namespace VBBinding.Parser.SharpDevelopTree
 	}
 	public class ASTAttribute : AbstractAttribute
 	{
-		public ASTAttribute(string name, ArrayList positionalArguments, SortedList namedArguments)
+		public ASTAttribute(string name, CodeExpression[] positionalArguments, NamedAttributeArgument[] namedArguments, IRegion region)
 		{
 			this.name = name;
 			this.positionalArguments = positionalArguments;
 			this.namedArguments = namedArguments;
+			this.region = region;
 		}
 	}
 	

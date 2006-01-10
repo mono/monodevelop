@@ -34,10 +34,10 @@ namespace VBBinding.Parser
 				lexerTags = value;
 			}
 		}
-		public IExpressionFinder ExpressionFinder {
-			get {
-				return new ExpressionFinder();
-			}
+		
+		public IExpressionFinder CreateExpressionFinder (string file)
+		{
+			return new ExpressionFinder ();
 		}
 
 		public bool CanParse (string fileName)
@@ -145,7 +145,10 @@ namespace VBBinding.Parser
 			return new Resolver (parserContext).MonodocResolver (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
 		
-
+		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		{
+			return null;
+		}
 		
 		///////// IParser Interface END
 	}

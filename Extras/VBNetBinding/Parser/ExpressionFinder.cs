@@ -1,3 +1,10 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
+//     <version>$Revision: 915 $</version>
+// </file>
+
 using System;
 using System.Text;
 using MonoDevelop.Projects.Parser;
@@ -5,52 +12,161 @@ using MonoDevelop.Projects.Parser;
 namespace VBBinding.Parser
 {
 	/// <summary>
-	/// Description of ExpressionFinder.	
+	/// Description of ExpressionFinder.
 	/// </summary>
-	public class ExpressionFinder  : IExpressionFinder
+	public class ExpressionFinder : IExpressionFinder
 	{
-		public string FindExpression(string inText, int offset)
+		ExpressionResult CreateResult(string expression)
+		{
+			if (expression == null)
+				return new ExpressionResult(null);
+			if (expression.Length > 8 && string.Compare (expression.Substring(0, 8), "Imports ", true) == 0)
+				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Type, null);
+			if (expression.Length > 4 && string.Compare (expression.Substring(0, 4), "New ", true) == 0)
+				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
+			if (curTokenType == Ident && string.Compare (lastIdentifier, "as", true) == 0)
+				return new ExpressionResult(expression, ExpressionContext.Type);
+			return new ExpressionResult(expression);
+		}
+		
+		public ExpressionResult FindExpression(string inText, int offset)
+		{
+			return CreateResult(FindExpressionInternal(inText, offset));
+		}
+		
+		public string FindExpressionInternal(string inText, int offset)
 		{
 			this.text = FilterComments(inText, ref offset);
 			this.offset = this.lastAccept = offset;
-			this.state  = START;
-			if (this.text == null) {
+			this.state = START;
+			if (this.text == null)
+			{
 				return null;
 			}
-			while (state != ERROR) {
+			//Console.WriteLine("---------------");
+			while (state != ERROR)
+			{
 				ReadNextToken();
 				//Console.WriteLine("cur state {0} got token {1}/{3} going to {2}", GetStateName(state), GetTokenName(curTokenType), GetStateName(stateTable[state, curTokenType]), curTokenType);
 				state = stateTable[state, curTokenType];
 				
-				if (state == ACCEPT || state == ACCEPT2) {
+				if (state == ACCEPT || state == ACCEPT2 || state == DOT)
+				{
 					lastAccept = this.offset;
 				}
-				if (state == ACCEPTNOMORE) {
+				if (state == ACCEPTNOMORE)
+				{
 					return this.text.Substring(this.offset + 1, offset - this.offset);
 				}
 			}
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
 		
+		internal int LastExpressionStartPosition {
+			get {
+				return ((state == ACCEPTNOMORE) ? offset : lastAccept) + 1;
+			}
+		}
+		
+		public ExpressionResult FindFullExpression(string inText, int offset)
+		{
+			string expressionBeforeOffset = FindExpressionInternal(inText, offset);
+			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
+				return CreateResult(null);
+			StringBuilder b = new StringBuilder(expressionBeforeOffset);
+			// append characters after expression
+			for (int i = offset + 1; i < inText.Length; ++i) {
+				char c = inText[i];
+				if (Char.IsLetterOrDigit(c)) {
+					if (Char.IsWhiteSpace(inText, i - 1))
+						break;
+					b.Append(c);
+				} else if (c == ' ') {
+					b.Append(c);
+				} else if (c == '(') {
+					int otherBracket = SearchBracketForward(inText, i + 1, '(', ')');
+					if (otherBracket < 0)
+						break;
+					b.Append(inText, i, otherBracket - i + 1);
+					break;
+				} else {
+					break;
+				}
+			}
+			return CreateResult(b.ToString());
+		}
+		
+		// Like VBNetFormattingStrategy.SearchBracketForward, but operates on a string.
+		private int SearchBracketForward(string text, int offset, char openBracket, char closingBracket)
+		{
+			bool inString  = false;
+			bool inComment = false;
+			int  brackets  = 1;
+			for (int i = offset; i < text.Length; ++i) {
+				char ch = text[i];
+				if (ch == '\n') {
+					inString  = false;
+					inComment = false;
+				}
+				if (inComment) continue;
+				if (ch == '"') inString = !inString;
+				if (inString)  continue;
+				if (ch == '\'') {
+					inComment = true;
+				} else if (ch == openBracket) {
+					++brackets;
+				} else if (ch == closingBracket) {
+					--brackets;
+					if (brackets == 0) return i;
+				}
+			}
+			return -1;
+		}
+		
+		/// <summary>
+		/// Removed the last part of the expression.
+		/// </summary>
+		/// <example>
+		/// "obj.Field" => "obj"
+		/// "obj.Method(args,...)" => "obj.Method"
+		/// </example>
+		public string RemoveLastPart(string expression)
+		{
+			text = expression;
+			offset = text.Length - 1;
+			ReadNextToken();
+			if (curTokenType == Ident && Peek() == '.')
+				GetNext();
+			return text.Substring(0, offset + 1);
+		}
+		
 		#region Comment Filter and 'inside string watcher'
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)
 		{
+			if (text.Length <= offset)
+				return null;
 			this.initialOffset = offset;
 			StringBuilder outText = new StringBuilder();
 			int curOffset = 0;
-			while (curOffset <= initialOffset) {
+			while (curOffset <= initialOffset)
+			{
 				char ch = text[curOffset];
 				
-				switch (ch) {
+				switch (ch)
+				{
 					case '@':
-						if (curOffset + 1 < text.Length && text[curOffset + 1] == '"') {
+						if (curOffset + 1 < text.Length && text[curOffset + 1] == '"')
+						{
 							outText.Append(text[curOffset++]); // @
 							outText.Append(text[curOffset++]); // "
-							if (!ReadVerbatimString(outText, text, ref curOffset)) {
+							if (!ReadVerbatimString(outText, text, ref curOffset))
+							{
 								return null;
 							}
-						}else{
+						}
+						else
+						{
 							outText.Append(ch);
 							++curOffset;
 						}
@@ -58,14 +174,16 @@ namespace VBBinding.Parser
 					case '"':
 						outText.Append(ch);
 						curOffset++;
-						if (!ReadString(outText, text, ref curOffset)) {
+						if (!ReadString(outText, text, ref curOffset))
+						{
 							return null;
 						}
 						break;
 					case '\'':
-						offset    -= 1;
+						offset -= 1;
 						curOffset += 1;
-						if (!ReadToEOL(text, ref curOffset, ref offset)) {
+						if (!ReadToEOL(text, ref curOffset, ref offset))
+						{
 							return null;
 						}
 						break;
@@ -81,10 +199,12 @@ namespace VBBinding.Parser
 		
 		bool ReadToEOL(string text, ref int curOffset, ref int offset)
 		{
-			while (curOffset <= initialOffset) {
+			while (curOffset <= initialOffset)
+			{
 				char ch = text[curOffset++];
 				--offset;
-				if (ch == '\n') {
+				if (ch == '\n')
+				{
 					return true;
 				}
 			}
@@ -93,10 +213,12 @@ namespace VBBinding.Parser
 		
 		bool ReadString(StringBuilder outText, string text, ref int curOffset)
 		{
-			while (curOffset <= initialOffset) {
+			while (curOffset <= initialOffset)
+			{
 				char ch = text[curOffset++];
 				outText.Append(ch);
-				if (ch == '"') {
+				if (ch == '"')
+				{
 					return true;
 				}
 			}
@@ -105,13 +227,18 @@ namespace VBBinding.Parser
 		
 		bool ReadVerbatimString(StringBuilder outText, string text, ref int curOffset)
 		{
-			while (curOffset <= initialOffset) {
+			while (curOffset <= initialOffset)
+			{
 				char ch = text[curOffset++];
 				outText.Append(ch);
-				if (ch == '"') {
-					if (curOffset < text.Length && text[curOffset] == '"') {
+				if (ch == '"')
+				{
+					if (curOffset < text.Length && text[curOffset] == '"')
+					{
 						outText.Append(text[curOffset++]);
-					} else {
+					}
+					else
+					{
 						return true;
 					}
 				}
@@ -121,11 +248,14 @@ namespace VBBinding.Parser
 		
 		bool ReadMultiLineComment(string text, ref int curOffset, ref int offset)
 		{
-			while (curOffset <= initialOffset) {
+			while (curOffset <= initialOffset)
+			{
 				char ch = text[curOffset++];
 				--offset;
-				if (ch == '*') {
-					if (curOffset < text.Length && text[curOffset] == '/') {
+				if (ch == '*')
+				{
+					if (curOffset < text.Length && text[curOffset] == '/')
+					{
 						++curOffset;
 						--offset;
 						return true;
@@ -138,11 +268,12 @@ namespace VBBinding.Parser
 		
 		#region mini backward lexer
 		string text;
-		int    offset;
+		int offset;
 		
 		char GetNext()
 		{
-			if (offset >= 0) {
+			if (offset >= 0)
+			{
 				return text[offset--];
 			}
 			return '\0';
@@ -150,7 +281,8 @@ namespace VBBinding.Parser
 		
 		char Peek()
 		{
-			if (offset >= 0) {
+			if (offset >= 0)
+			{
 				return text[offset];
 			}
 			return '\0';
@@ -162,15 +294,15 @@ namespace VBBinding.Parser
 		}
 		
 		// tokens for our lexer
-		static int Err     = 0;
-		static int Dot     = 1;
-		static int StrLit  = 2;
-		static int Ident   = 3;
-		static int New     = 4;
-//		static int Bracket = 5;
-		static int Parent  = 6;
-		static int Curly   = 7;
-		static int Using   = 8;
+		static int Err = 0;
+		static int Dot = 1;
+		static int StrLit = 2;
+		static int Ident = 3;
+		static int New = 4;
+		//		static int Bracket = 5;
+		static int Parent = 6;
+		static int Curly = 7;
+		static int Using = 8;
 		int curTokenType;
 		
 		readonly static string[] tokenStateName = new string[] {
@@ -181,34 +313,43 @@ namespace VBBinding.Parser
 			return tokenStateName[state];
 		}
 		
+		string lastIdentifier;
+		
 		void ReadNextToken()
 		{
 			char ch = GetNext();
-				
+			
 			curTokenType = Err;
-			if (ch == '\0' || ch == '\n' || ch == '\r') {
+			if (ch == '\0' || ch == '\n' || ch == '\r')
+			{
 				return;
 			}
-			while (Char.IsWhiteSpace(ch)) {
+			while (Char.IsWhiteSpace(ch))
+			{
 				ch = GetNext();
-				if (ch == '\n' || ch == '\r') {
+				if (ch == '\n' || ch == '\r')
+				{
 					return;
 				}
 			}
 			
-			switch (ch) {
+			switch (ch)
+			{
 				case '}':
-					if (ReadBracket('{', '}')) {
+					if (ReadBracket('{', '}'))
+					{
 						curTokenType = Curly;
 					}
 					break;
 				case ')':
-					if (ReadBracket('(', ')')) {
+					if (ReadBracket('(', ')'))
+					{
 						curTokenType = Parent;
 					}
 					break;
 				case ']':
-					if (ReadBracket('[', ']')) {
+					if (ReadBracket('[', ']'))
+					{
 						curTokenType = Ident;
 					}
 					break;
@@ -217,15 +358,19 @@ namespace VBBinding.Parser
 					break;
 				case '\'':
 				case '"':
-					if (ReadStringLiteral(ch)) {
+					if (ReadStringLiteral(ch))
+					{
 						curTokenType = StrLit;
 					}
 					break;
 				default:
-					if (IsIdentifierPart(ch)) {
+					if (IsIdentifierPart(ch))
+					{
 						string ident = ReadIdentifier(ch);
-						if (ident != null) {
-							switch (ident.ToLower()) {
+						if (ident != null)
+						{
+							switch (ident.ToLower())
+							{
 								case "new":
 									curTokenType = New;
 									break;
@@ -233,6 +378,7 @@ namespace VBBinding.Parser
 									curTokenType = Using;
 									break;
 								default:
+									lastIdentifier = ident;
 									curTokenType = Ident;
 									break;
 							}
@@ -244,13 +390,17 @@ namespace VBBinding.Parser
 		
 		bool ReadStringLiteral(char litStart)
 		{
-			while (true) {
+			while (true)
+			{
 				char ch = GetNext();
-				if (ch == '\0') {
+				if (ch == '\0')
+				{
 					return false;
 				}
-				if (ch == litStart) {
-					if (Peek() == '@' && litStart == '"') {
+				if (ch == litStart)
+				{
+					if (Peek() == '@' && litStart == '"')
+					{
 						GetNext();
 					}
 					return true;
@@ -260,10 +410,11 @@ namespace VBBinding.Parser
 		
 		bool ReadBracket(char openBracket, char closingBracket)
 		{
-			int curlyBraceLevel    = 0;
+			int curlyBraceLevel = 0;
 			int squareBracketLevel = 0;
-			int parenthesisLevel   = 0;
-			switch (openBracket) {
+			int parenthesisLevel = 0;
+			switch (openBracket)
+			{
 				case '(':
 					parenthesisLevel++;
 					break;
@@ -275,12 +426,15 @@ namespace VBBinding.Parser
 					break;
 			}
 			
-			while (parenthesisLevel != 0 || squareBracketLevel != 0 || curlyBraceLevel != 0) {
+			while (parenthesisLevel != 0 || squareBracketLevel != 0 || curlyBraceLevel != 0)
+			{
 				char ch = GetNext();
-				if (ch == '\0') {
+				if (ch == '\0')
+				{
 					return false;
 				}
-				switch (ch) {
+				switch (ch)
+				{
 					case '(':
 						parenthesisLevel--;
 						break;
@@ -307,7 +461,8 @@ namespace VBBinding.Parser
 		string ReadIdentifier(char ch)
 		{
 			string identifier = ch.ToString();
-			while (IsIdentifierPart(Peek())) {
+			while (IsIdentifierPart(Peek()))
+			{
 				identifier = GetNext() + identifier;
 			}
 			return identifier;
@@ -319,12 +474,12 @@ namespace VBBinding.Parser
 		}
 		#endregion
 		
-		#region finite state machine 
-		readonly static int ERROR  = 0;
-		readonly static int START  = 1;
-		readonly static int DOT    = 2;
-		readonly static int MORE   = 3;
-		readonly static int CURLY  = 4;
+		#region finite state machine
+		readonly static int ERROR = 0;
+		readonly static int START = 1;
+		readonly static int DOT = 2;
+		readonly static int MORE = 3;
+		readonly static int CURLY = 4;
 		readonly static int CURLY2 = 5;
 		readonly static int CURLY3 = 6;
 		
@@ -344,7 +499,7 @@ namespace VBBinding.Parser
 			"ACCEPTNOMORE",
 			"ACCEPT2"
 		};
-			
+		
 		string GetStateName(int state)
 		{
 			return stateName[state];
@@ -355,16 +510,16 @@ namespace VBBinding.Parser
 		static int[,] stateTable = new int[,] {
 			//                   Err,     Dot,     Str,      ID,         New,     Brk,     Par,     Cur,   Using
 			/*ERROR*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
-			/*START*/        { ERROR,     DOT,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ACCEPTNOMORE},
-			/*DOT*/          { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE,  ACCEPT,   CURLY,   ERROR},
+			/*START*/        { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ACCEPTNOMORE},
+			/*DOT*/          { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ERROR},
 			/*MORE*/         { ERROR,   ERROR,  ACCEPT,  ACCEPT,        ERROR,   MORE, ACCEPT2,   CURLY,   ERROR},
 			/*CURLY*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR, CURLY2,   ERROR,   ERROR,   ERROR},
 			/*CURLY2*/       { ERROR,   ERROR,   ERROR,  CURLY3,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
 			/*CURLY3*/       { ERROR,   ERROR,   ERROR,   ERROR, ACCEPTNOMORE,  ERROR,   ERROR,   ERROR,   ERROR},
-			/*ACCEPT*/       { ERROR,    MORE,   ERROR,   ERROR,       ACCEPT,  ERROR,   ERROR,   ERROR,   ACCEPTNOMORE},
+			/*ACCEPT*/       { ERROR,     DOT,   ERROR,   ERROR,       ACCEPT,  ERROR,   ERROR,   ERROR,   ACCEPTNOMORE},
 			/*ACCEPTNOMORE*/ { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
-			/*ACCEPT2*/      { ERROR,    MORE,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR},
+			/*ACCEPT2*/      { ERROR,     DOT,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR},
 		};
-		#endregion 
+		#endregion
 	}
 }

@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
+using System.CodeDom;
 
 using RefParser = ICSharpCode.SharpRefactory.Parser.VB;
 using AST = ICSharpCode.SharpRefactory.Parser.AST.VB;
@@ -20,6 +21,7 @@ namespace VBBinding.Parser
 		CompilationUnit cu = new CompilationUnit();
 		Stack currentNamespace = new Stack();
 		Stack currentClass = new Stack();
+		static ICSharpCode.SharpRefactory.Parser.VB.CodeDOMVisitor domVisitor = new ICSharpCode.SharpRefactory.Parser.VB.CodeDOMVisitor ();
 		
 		public CompilationUnit Cu {
 			get {
@@ -49,24 +51,7 @@ namespace VBBinding.Parser
 			cu.Usings.Add(u);
 			return data;
 		}
-		
-		AttributeSectionCollection VisitAttributes(ArrayList attributes)
-		{
-			// TODO Expressions???
-			//AttributeSectionCollection result = new AttributeSectionCollection();
-			foreach (AST.AttributeSection section in attributes) {
-				//AttributeCollection resultAttributes = new AttributeCollection();
-				foreach (AST.Attribute attribute in section.Attributes) {
-					IAttribute a = new ASTAttribute(attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList());
-					foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
-						a.NamedArguments[n.Parametername] = n.Expression;
-					}
-				}
-				//IAttributeSection s = new AttributeSection((AttributeTarget)Enum.Parse(typeof (AttributeTarget), section.AttributeTarget), resultAttributes);
-			}
-			return null;
-		}
-		
+				
 //		ModifierEnum VisitModifier(ICSharpCode.SharpRefactory.Parser.Modifier m)
 //		{
 //			return (ModifierEnum)m;
