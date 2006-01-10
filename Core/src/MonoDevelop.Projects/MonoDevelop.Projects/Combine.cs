@@ -17,7 +17,7 @@ using System.ComponentModel;
 using System.Threading;
 
 using Mono.Unix.Native;
-using FileMode = Mono.Unix.FilePermissions;
+using FileMode = Mono.Unix.Native.FilePermissions;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;

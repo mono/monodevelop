@@ -1,3 +1,7 @@
+2006-01-10 Mart Roosmaa  <roosmaa@gmail.com>
+
+	* MonoDevelop.Projects/Combine.cs: Updated an using statement.
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Added Modified property.
