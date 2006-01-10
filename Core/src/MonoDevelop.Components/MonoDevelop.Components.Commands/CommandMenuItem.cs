@@ -93,7 +93,7 @@ namespace MonoDevelop.Components.Commands
 			if (isArray && !isArrayItem)
 			{
 				this.Visible = false;
-				CommandMenu menu = (CommandMenu) Parent;  
+				Gtk.Menu menu = (Gtk.Menu) Parent;  
 				
 				if (itemArray != null) {
 					foreach (Gtk.MenuItem item in itemArray)
@@ -142,6 +142,24 @@ namespace MonoDevelop.Components.Commands
 				if (cmdInfo.Icon != null && cmdInfo.Icon != "" && cmdInfo.Icon != lastIcon) {
 					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 					lastIcon = cmdInfo.Icon;
+				}
+				
+				if (cmdInfo is CommandInfoSet) {
+					CommandInfoSet ciset = (CommandInfoSet) cmdInfo;
+					Gtk.Menu smenu = new Gtk.Menu ();
+					Submenu = smenu;
+					foreach (CommandInfo info in ciset.CommandInfos) {
+						Gtk.MenuItem item;
+						if (info.IsArraySeparator) {
+							item = new Gtk.SeparatorMenuItem ();
+							item.Show ();
+						} else {
+							item = CommandEntry.CreateMenuItem (commandManager, commandId, false);
+							ICommandMenuItem mi = (ICommandMenuItem) item; 
+							mi.SetUpdateInfo (info);
+						}
+						smenu.Add (item);
+					}
 				}
 			}
 		}

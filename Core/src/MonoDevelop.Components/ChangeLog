@@ -1,3 +1,18 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am:
+	* MonoDevelop.Components.mdp: Added CommandInfoSet.cs.
+	
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs: Added Count
+	property.
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Handle enries
+	of type CommandInfoSet.
+	
+	* MonoDevelop.Components.Commands/CommandInfo.cs: Added default
+	constructor.
+	* MonoDevelop.Components.Commands/CommandManager.cs: Added InsertOptions
+	method.
+
 2005-11-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/DragNotebook.cs: Fix warnings.

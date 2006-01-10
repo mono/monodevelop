@@ -4,7 +4,7 @@
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -50,6 +50,10 @@ namespace MonoDevelop.Components.Commands
 			icon = cmd.Icon;
 			accelKey = cmd.AccelKey;
 			description = cmd.Description;
+		}
+		
+		public CommandInfo ()
+		{
 		}
 		
 		public CommandInfo (string text)

@@ -158,6 +158,20 @@ namespace MonoDevelop.Components.Commands
 			return menu;
 		}
 		
+		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
+		{
+			foreach (CommandEntry entry in entrySet) {
+				Gtk.MenuItem item = entry.CreateMenuItem (this);
+				int n = menu.Children.Length;
+				menu.Insert (item, index);
+				if (item is ICommandUserItem)
+					((ICommandUserItem)item).Update ();
+				else
+					item.Show ();
+				index += menu.Children.Length - n;
+			}
+		}
+		
 		public void ShowContextMenu (CommandEntrySet entrySet)
 		{
 			ShowContextMenu (CreateMenu (entrySet));

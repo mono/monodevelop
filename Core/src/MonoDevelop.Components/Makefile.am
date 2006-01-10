@@ -21,6 +21,7 @@ MonoDevelop.Components.Commands/CommandFrame.cs \
 MonoDevelop.Components.Commands/CommandHandler.cs \
 MonoDevelop.Components.Commands/CommandHandlerAttribute.cs \
 MonoDevelop.Components.Commands/CommandInfo.cs \
+MonoDevelop.Components.Commands/CommandInfoSet.cs \
 MonoDevelop.Components.Commands/CommandManager.cs \
 MonoDevelop.Components.Commands/CommandMenu.cs \
 MonoDevelop.Components.Commands/CommandMenuBar.cs \

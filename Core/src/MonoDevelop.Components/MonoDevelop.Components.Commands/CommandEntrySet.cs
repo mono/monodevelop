@@ -94,6 +94,10 @@ namespace MonoDevelop.Components.Commands
 			return cmds.GetEnumerator ();
 		}
 		
+		public int Count {
+			get { return cmds.Count; }
+		}
+		
 		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			Gtk.MenuItem mi = new Gtk.MenuItem (name != null ? name : "");

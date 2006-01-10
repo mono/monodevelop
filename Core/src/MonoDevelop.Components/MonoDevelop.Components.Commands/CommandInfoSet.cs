@@ -1,5 +1,5 @@
 //
-// CommandArrayInfo.cs
+// CommandInfoSet.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,49 +27,21 @@
 //
 
 using System;
-using System.Collections;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandArrayInfo: IEnumerable
+	public class CommandInfoSet: CommandInfo
 	{
-		ArrayList list = new ArrayList ();
-		CommandInfo defaultInfo;
+		CommandArrayInfo commandInfos;
 		
-		internal CommandArrayInfo (CommandInfo defaultInfo)
+		public CommandInfoSet ()
 		{
-			this.defaultInfo = defaultInfo;
-		}
-		
-		public void Add (CommandInfo info, object dataItem)
-		{
-			info.DataItem = dataItem;
-			if (info.Text == null) info.Text = defaultInfo.Text;
-			if (info.Icon == null) info.Icon = defaultInfo.Icon;
-			list.Add (info);
-		}
-
-		public CommandInfo Add (string text, object dataItem)
-		{
-			CommandInfo info = new CommandInfo (text);
-			Add (info, dataItem);
-			return info;
+			commandInfos = new CommandArrayInfo (this);
 		}
 		
-		public void AddSeparator ()
-		{
-			CommandInfo info = new CommandInfo ("-");
-			info.IsArraySeparator = true;
-			Add (info, null);
-		}
-
-		public CommandInfo DefaultCommandInfo {
-			get { return defaultInfo; }
-		}
-		
-		public IEnumerator GetEnumerator ()
-		{
-			return list.GetEnumerator ();
+		public CommandArrayInfo CommandInfos {
+			get { return commandInfos; }
 		}
 	}
+
 }
