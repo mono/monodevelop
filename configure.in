@@ -101,7 +101,7 @@ AC_ARG_ENABLE(debugger,
 				     enable_debugger=yes, enable_debugger=no)],
    enable_debugger=no)
  AM_CONDITIONAL(ENABLE_DEBUGGER, test x$enable_debugger = xyes)
- AC_SUBST(MONO_DEBUGGER_LIBS)
+ AC_SUBST(MONO_DEBUGGER_LIBS) 
 
 if test "x$enable_debugger" = "xyes"; then
 	AC_MSG_ERROR([The debugger add-in is not currently supported due to the API changes being done in the Mono debugger.])
@@ -161,6 +161,15 @@ AC_ARG_ENABLE(versioncontrol,
 		enable_versioncontrol=yes, enable_versioncontrol=no)
 
 AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
+
+GLADEUI_REQUIRED_VERSION=0.1
+AC_ARG_ENABLE(glade,
+	AC_HELP_STRING([--enable-glade],
+		[enable support for Glade-3 [default=no]]),
+		[PKG_CHECK_MODULES(GLADEUI, gladeui-sharp >= $GLADEUI_REQUIRED_VERSION, enable_glade=yes, enable_glade=no)],
+		enable_glade=no)
+
+AM_CONDITIONAL(ENABLE_GLADE, test x$enable_glade = xyes)
 
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
 AC_SUBST(MOZILLA_HOME)
@@ -259,6 +268,7 @@ Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.dll.config
 Extras/prj2make-sharp-lib/AssemblyInfo.cs
 Extras/prj2make-sharp-lib/Makefile
 Extras/WelcomePage/Makefile
+Extras/GladeAddIn/Makefile
 Extras/ChangeLogAddIn/Makefile
 Makefile
 monodevelop
@@ -284,4 +294,5 @@ echo "   * boo support: $enable_boo"
 echo "   * NUnit support: $enable_nunit"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
+echo "   * Glade-3 support: $enable_glade"
 echo ""

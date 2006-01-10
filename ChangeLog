@@ -1,3 +1,7 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* configure.in: Added glade3 addin.
+
 2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in:
