@@ -1,3 +1,10 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.Gui/CommandService.cs: Added InsertOptions
+	method.
+	* MonoDevelop.Core.Gui/MessageService.cs: Improve the error
+	dialog. Don't show the stack trace for exceptions of type UserException.
+
 2006-01-04  Alexandre Miguel Pedro Gomes <alexmipego@gmail.com>
 
 	* Makefile.am, icons/uncomment.png, icons/comment.png,

@@ -118,6 +118,11 @@ namespace MonoDevelop.Core.Gui
 			return manager.CreateMenu (cset);
 		}
 		
+		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
+		{
+			manager.InsertOptions (menu, entrySet, index);
+		}
+		
 		public void ShowContextMenu (CommandEntrySet cset)
 		{
 			manager.ShowContextMenu (cset);

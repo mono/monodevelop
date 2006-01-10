@@ -76,16 +76,27 @@ namespace MonoDevelop.Core.Gui
 		{
 			ErrorDialog dlg = new ErrorDialog (parent);
 			
-			if (message != null) {
+			if (message == null) {
+				if (ex != null)
+					dlg.Message = GettextCatalog.GetString ("Exception occurred: {0}", ex.Message);
+				else {
+					dlg.Message = "An unknown error occurred";
+					dlg.AddDetails (Environment.StackTrace, false);
+				}
+			} else
 				dlg.Message = message;
-			}
 			
 			if (ex != null) {
-				if (dlg.Message.Length == 0)
-					dlg.Message = ex.Message;
-				dlg.AddDetails ("Exception occurred: " + ex.Message + "\n\n", true);
-				dlg.AddDetails (ex.ToString (), false);
+				UserException uex = ex as UserException;
+				if (uex != null) {
+					if (uex.Details != null)
+						dlg.AddDetails (uex.Details, true);
+				} else {
+					dlg.AddDetails (GettextCatalog.GetString ("Exception occurred: {0}", ex.Message) + "\n\n", true);
+					dlg.AddDetails (ex.ToString (), false);
+				}
 			}
+
 			if (modal) {
 				dlg.Run ();
 				dlg.Dispose ();
