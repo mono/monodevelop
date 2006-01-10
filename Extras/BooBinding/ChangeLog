@@ -1,3 +1,8 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* BooBinding.mdp: Updated references.
+	* Parser/BooParser.boo: Track api changes.
+
 2005-12-19  Peter Johanson  <latexer@gentoo.org>
 
 	* Parser/Resolver.boo: Add overload for doing a deep search for a

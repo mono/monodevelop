@@ -168,6 +168,9 @@ class BooParser(IParser):
 			//ShowException(e)
 			return null
 	
+	def ResolveIdentifier (parserContext as IParserContext, id as string , caretLineNumber as int , caretColumn as int , fileName as string , fileContent as string ) as ILanguageItem:
+		return null
+		
 	private def Log (message):
 		Log (self.GetType(), message)
 

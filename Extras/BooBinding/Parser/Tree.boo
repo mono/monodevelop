@@ -26,6 +26,7 @@
 namespace BooBinding.Parser
 
 import System
+import System.CodeDom
 import System.Collections
 import System.Diagnostics
 import MonoDevelop.Projects.Parser
@@ -118,7 +119,7 @@ class AttributeSection(AbstractAttributeSection):
 		self.attributes = attributes
 
 class ASTAttribute(AbstractAttribute):
-	def constructor(name as string, positionalArguments as ArrayList, namedArguments as SortedList):
+	def constructor(name as string, positionalArguments as (CodeExpression), namedArguments as (NamedAttributeArgument)):
 		self.name = name
 		self.positionalArguments = positionalArguments
 		self.namedArguments = namedArguments
