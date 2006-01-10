@@ -1,3 +1,7 @@
+2006-01-10 Mart Roosmaa  <roosmaa@gmail.com>
+
+	* configure.in: Bumped required mono version for changes in r55333.
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* configure.in: Added glade3 addin.

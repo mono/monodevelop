@@ -36,7 +36,7 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-MONO_REQUIRED_VERSION=1.1.9
+MONO_REQUIRED_VERSION=1.1.10
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MINT,mint >= $MONO_REQUIRED_VERSION, has_mint=true, has_mint=false)
 
