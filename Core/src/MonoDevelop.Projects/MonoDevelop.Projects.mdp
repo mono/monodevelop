@@ -219,12 +219,13 @@
     <File name="./MonoDevelop.Projects.CodeGeneration/IRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/IRefactorerContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/ITextFileProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ILanguageItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/LocalVariable.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/IDotNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />

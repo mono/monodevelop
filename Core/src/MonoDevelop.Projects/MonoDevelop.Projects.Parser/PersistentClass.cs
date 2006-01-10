@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Runtime.Serialization.Formatters.Binary;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Parser
@@ -223,6 +224,8 @@ namespace MonoDevelop.Projects.Parser
 	
 	internal class PersistentHelper
 	{
+		static BinaryFormatter formatter = new BinaryFormatter ();
+		
 		public static void WriteString (string s, BinaryWriter writer, INameEncoder nameTable)
 		{
 			if (s == null)
@@ -255,6 +258,28 @@ namespace MonoDevelop.Projects.Parser
 		public static bool ReadNull (BinaryReader reader)
 		{
 			return reader.ReadBoolean ();
+		}
+		
+		public static void SerializeObject (BinaryWriter writer, object obj)
+		{
+			if (obj == null)
+				writer.Write (0);
+			else {
+				MemoryStream ms = new MemoryStream ();
+				formatter.Serialize (ms, obj);
+				byte[] data = ms.ToArray ();
+				writer.Write (data.Length);
+				writer.Write (data);
+			}
+		}
+		
+		public static object DeserializeObject (BinaryReader reader)
+		{
+			int len = reader.ReadInt32 ();
+			if (len == 0) return null;
+			byte[] data = reader.ReadBytes (len);
+			MemoryStream ms = new MemoryStream (data);
+			return formatter.Deserialize (ms);
 		}
 	}
 }

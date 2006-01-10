@@ -5,6 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.CodeDom;
 using System.Collections;
 
 namespace MonoDevelop.Projects.Parser
@@ -27,11 +28,32 @@ namespace MonoDevelop.Projects.Parser
 		string Name {
 			get;
 		}
-		ArrayList PositionalArguments { // [expression]
+		CodeExpression[] PositionalArguments { // [expression]
 			get;
 		}
-		SortedList NamedArguments { // string/expression
+		NamedAttributeArgument[] NamedArguments { // string/expression
 			get;
+		}
+	}
+	
+	[Serializable]
+	public class NamedAttributeArgument
+	{
+		string name;
+		CodeExpression expression;
+		
+		public NamedAttributeArgument (string name, CodeExpression expression)
+		{
+			this.name = name;
+			this.expression = expression;
+		}
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public CodeExpression Expression {
+			get { return expression; }
 		}
 	}
 

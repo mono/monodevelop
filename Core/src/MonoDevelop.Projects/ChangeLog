@@ -1,3 +1,45 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Added Modified property.
+	* MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs: Don't
+	save files that have not been modified.
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	In MemberReferenceCollection, properly sort the references
+	before renaming, to make sure that position values are
+	always correct. Added file and column to MemberReference.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	Class scope is actualy File scope.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	Find members in the correct class.
+	* MonoDevelop.Projects.Parser/PersistentClass.cs: Added
+	SerializeObject and DeserializeObject in PersistentHelper.
+	
+	* MonoDevelop.Projects.Parser/AbstractAttribute.cs:
+	* MonoDevelop.Projects.Parser/PersistentAttribute.cs:
+	* MonoDevelop.Projects.Parser/IAttribute.cs: Use CodeDom
+	expressions to store attribute parameters.
+	
+	* MonoDevelop.Projects.Parser/IExpressionFinder.cs: Updated
+	from SharpDevelop.
+	
+	* MonoDevelop.Projects.Parser/IParser.cs: Added ResolveIdentifier.
+	Replaced ExpressionFinder property by a CreateExpressionFinder method.
+	
+	* MonoDevelop.Projects.Parser/IParserService.cs: UpdateFile now
+	returns the parsed information. Added ResolveIdentifier and
+	GetEnclosingLanguageItem methods to the interface.
+	
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump file
+	version.
+	
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	Implemented ResolveIdentifier and other helper methods.
+	UpdateFile now reads the file from disc if the file content
+	is not provided as parameter.
+	
+	* Makefile.am: Added ExpressionContext.cs.
+	* MonoDevelop.Projects.mdp: Updated.
+
 2005-12-19 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Makefile.am: Added RefactorerContext.cs.

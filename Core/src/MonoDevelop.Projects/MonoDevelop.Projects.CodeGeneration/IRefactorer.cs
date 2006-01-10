@@ -52,19 +52,32 @@ namespace MonoDevelop.Projects.CodeGeneration
 	public class MemberReference
 	{
 		int position;
+		int line;
+		int column;
 		string fileName;
 		string name;
 		RefactorerContext rctx;
 		
-		public MemberReference (RefactorerContext rctx, string fileName, int position, string name)
+		public MemberReference (RefactorerContext rctx, string fileName, int position, int line, int column, string name)
 		{
 			this.position = position;
+			this.line = line;
+			this.column = column;
 			this.fileName = fileName;
 			this.name = name;
+			this.rctx = rctx;
 		}
 		
 		public int Position {
 			get { return position; }
+		}
+		
+		public int Line {
+			get { return line; }
+		}
+		
+		public int Column {
+			get { return column; }
 		}
 		
 		public string FileName {
@@ -104,8 +117,25 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void RenameAll (string newName)
 		{
-			foreach (MemberReference mref in List)
+			ArrayList list = new ArrayList ();
+			list.AddRange (this);
+			list.Sort (new MemberComparer ());
+			
+			foreach (MemberReference mref in list) {
 				mref.Rename (newName);
+			}
+		}
+		
+		class MemberComparer: IComparer
+		{
+			public int Compare (object o1, object o2)
+			{
+				MemberReference r1 = (MemberReference) o1;
+				MemberReference r2 = (MemberReference) o2;
+				int c = r1.FileName.CompareTo (r2.FileName);
+				if (c != 0) return c;
+				return r2.Position - r1.Position; 
+			}
 		}
 	}
 }

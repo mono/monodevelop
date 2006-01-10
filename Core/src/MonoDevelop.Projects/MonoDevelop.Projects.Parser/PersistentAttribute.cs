@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.CodeDom;
 using System.IO;
 using System.Reflection;
 using MonoDevelop.Core;
@@ -40,6 +41,8 @@ namespace MonoDevelop.Projects.Parser
 		{
 			PersistentAttribute par = new PersistentAttribute ();
 			par.name = source.Name;
+			par.positionalArguments = source.PositionalArguments;
+			par.namedArguments = source.NamedArguments;
 			return par;
 		}
 		
@@ -47,12 +50,16 @@ namespace MonoDevelop.Projects.Parser
 		{
 			PersistentAttribute par = new PersistentAttribute ();
 			par.name = PersistentHelper.ReadString (reader, nameTable);
+			par.positionalArguments = (CodeExpression[]) PersistentHelper.DeserializeObject (reader);
+			par.namedArguments = (NamedAttributeArgument[]) PersistentHelper.DeserializeObject (reader);
 			return par;
 		}
 		
 		public static void WriteTo (IAttribute p, BinaryWriter writer, INameEncoder nameTable)
 		{
 			PersistentHelper.WriteString (p.Name, writer, nameTable);
+			PersistentHelper.SerializeObject (writer, p.PositionalArguments);
+			PersistentHelper.SerializeObject (writer, p.NamedArguments);
 		}
 	}
 }

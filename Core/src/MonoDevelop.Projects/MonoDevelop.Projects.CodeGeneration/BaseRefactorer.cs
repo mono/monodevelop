@@ -289,19 +289,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IClass rclass = GetGeneratedClass (ctx, buffer, cls);
 			if (rclass != null) {
 				if (member is CodeMemberField) {
-					foreach (IField m in cls.Fields)
+					foreach (IField m in rclass.Fields)
 						if (m.Name == member.Name)
 							return m;
 				} else if (member is CodeMemberProperty) {
-					foreach (IProperty m in cls.Properties)
+					foreach (IProperty m in rclass.Properties)
 						if (m.Name == member.Name)
 							return m;
 				} else if (member is CodeMemberEvent) {
-					foreach (IEvent m in cls.Events)
+					foreach (IEvent m in rclass.Events)
 						if (m.Name == member.Name)
 							return m;
 				} else if (member is CodeMemberMethod) {
-					foreach (IMethod m in cls.Methods)
+					foreach (IMethod m in rclass.Methods)
 						if (m.Name == member.Name)
 							return m;
 				}

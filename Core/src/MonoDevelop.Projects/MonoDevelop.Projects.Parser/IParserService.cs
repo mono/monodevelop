@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Parser
 		IParserContext GetProjectParserContext (Project project);
 		IParserContext GetFileParserContext (string file);
 
-		void UpdateFile (Project project, string fileName, string fileContent);
+		IParseInformation UpdateFile (Project project, string fileName, string fileContent);
 		
 		bool TrackFileChanges { get; set; }
 		
@@ -113,6 +113,8 @@ namespace MonoDevelop.Projects.Parser
 		string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		ArrayList IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		ArrayList CtrlSpace (int caretLine, int caretColumn, string fileName);
+		ILanguageItem ResolveIdentifier (string id, int caretLineNumber, int caretColumn, string fileName, string fileContent);
+		ILanguageItem GetEnclosingLanguageItem (int caretLineNumber, int caretColumn, ITextFile file);
 	}
 	
 	public interface IProgressMonitorFactory

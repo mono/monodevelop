@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Text
 	{
 		string name;
 		StringBuilder text;
+		bool modified;
 		
 		public TextFile (string name)
 		{
@@ -49,9 +50,13 @@ namespace MonoDevelop.Projects.Text
 			get { return name; } 
 		}
 
+		public bool Modified {
+			get { return modified; }
+		}
+		
 		public string Text {
 			get { return text.ToString (); }
-			set { text = new StringBuilder (value); }
+			set { text = new StringBuilder (value); modified = true; }
 		}
 		
 		public int Length {
@@ -95,11 +100,13 @@ namespace MonoDevelop.Projects.Text
 		public void InsertText (int position, string text)
 		{
 			text.Insert (position, text);
+			modified = true;
 		}
 		
 		public void DeleteText (int position, int length)
 		{
 			text.Remove (position, length);
+			modified = true;
 		}
 		
 		public void Save ()
@@ -107,6 +114,7 @@ namespace MonoDevelop.Projects.Text
 			StreamWriter sw = new StreamWriter (name);
 			sw.Write (text.ToString ());
 			sw.Close ();
+			modified = false;
 		}
 	}
 }

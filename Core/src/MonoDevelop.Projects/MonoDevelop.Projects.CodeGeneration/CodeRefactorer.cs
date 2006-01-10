@@ -29,6 +29,7 @@
 using System;
 using System.CodeDom;
 using System.Collections;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
 
@@ -40,7 +41,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		Combine rootCombine;
 		ITextFileProvider fileProvider;
 		
-		delegate void RefactorDelegate (RefactorerContext gctx, IRefactorer gen, string file);
+		delegate void RefactorDelegate (IProgressMonitor monitor, RefactorerContext gctx, IRefactorer gen, string file);
 		
 		public CodeRefactorer (Combine rootCombine, IParserDatabase pdb)
 		{
@@ -63,10 +64,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return c;
 		}
 		
-		public void RenameClass (IClass cls, string newName, RefactoryScope scope)
+		public void RenameClass (IProgressMonitor monitor, IClass cls, string newName, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
 			refs.RenameAll (newName);
 			
 			RefactorerContext gctx = GetGeneratorContext (cls);
@@ -75,10 +76,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			gctx.Save ();
 		}
 		
-		public MemberReferenceCollection FindClassReferences (IClass cls, RefactoryScope scope)
+		public MemberReferenceCollection FindClassReferences (IProgressMonitor monitor, IClass cls, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindClassReferences (cls, refs).Refactor));
 			return refs;
 		}
 		
@@ -99,10 +100,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			gctx.Save ();
 		}
 		
-		public IMember RenameMember (IClass cls, IMember member, string newName, RefactoryScope scope)
+		public IMember RenameMember (IProgressMonitor monitor, IClass cls, IMember member, string newName, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
 			refs.RenameAll (newName);
 			
 			RefactorerContext gctx = GetGeneratorContext (cls);
@@ -112,10 +113,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public MemberReferenceCollection FindMemberReferences (IClass cls, IMember member, RefactoryScope scope)
+		public MemberReferenceCollection FindMemberReferences (IProgressMonitor monitor, IClass cls, IMember member, RefactoryScope scope)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, member, refs).Refactor));
 			return refs;
 		}
 		
@@ -128,9 +129,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		void Refactor (IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
+		void Refactor (IProgressMonitor monitor, IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
 		{
-			if (scope == RefactoryScope.Class) {
+			if (scope == RefactoryScope.File) {
 				string file = cls.Region.FileName;
 				Project prj = GetProjectForFile (file);
 				if (prj == null)
@@ -140,7 +141,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 				if (gen == null)
 					return;
-				refactorDelegate (gctx, gen, file);
+				refactorDelegate (monitor, gctx, gen, file);
 				gctx.Save ();
 			}
 			else if (scope == RefactoryScope.Project)
@@ -149,32 +150,33 @@ namespace MonoDevelop.Projects.CodeGeneration
 				Project prj = GetProjectForFile (file);
 				if (prj == null)
 					return;
-				RefactorProject (prj, refactorDelegate);
+				RefactorProject (monitor, prj, refactorDelegate);
 			}
 			else
 			{
-				RefactorCombine (rootCombine, refactorDelegate);
+				RefactorCombine (monitor, rootCombine, refactorDelegate);
 			}
 		}
 		
-		void RefactorCombine (CombineEntry ce, RefactorDelegate refactorDelegate)
+		void RefactorCombine (IProgressMonitor monitor, CombineEntry ce, RefactorDelegate refactorDelegate)
 		{
 			if (ce is Combine) {
 				foreach (CombineEntry e in ((Combine)ce).Entries)
-					RefactorCombine (e, refactorDelegate);
+					RefactorCombine (monitor, e, refactorDelegate);
 			} else if (ce is Project) {
-				RefactorProject ((Project) ce, refactorDelegate);
+				RefactorProject (monitor, (Project) ce, refactorDelegate);
 			}
 		}
 		
-		void RefactorProject (Project p, RefactorDelegate refactorDelegate)
+		void RefactorProject (IProgressMonitor monitor, Project p, RefactorDelegate refactorDelegate)
 		{
 			RefactorerContext gctx = GetGeneratorContext (p);
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Refactoring project {0}", p.Name));
 			foreach (ProjectFile file in p.ProjectFiles) {
 				if (file.BuildAction != BuildAction.Compile) continue;
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file.Name);
 				if (gen == null) continue;
-				refactorDelegate (gctx, gen, file.Name);
+				refactorDelegate (monitor, gctx, gen, file.Name);
 				gctx.Save ();
 			}
 		}
@@ -216,7 +218,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			this.references = references;
 		}
 		
-		public void Refactor (RefactorerContext rctx, IRefactorer r, string fileName)
+		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			MemberReferenceCollection refs = r.FindClassReferences (rctx, fileName, cls);
 			if (refs != null)
@@ -237,7 +239,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			this.member = member;
 		}
 		
-		public void Refactor (RefactorerContext rctx, IRefactorer r, string fileName)
+		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
 			if (refs != null)
@@ -247,7 +249,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 	
 	public enum RefactoryScope
 	{
-		Class,
+		File,
 		Project,
 		Solution
 	}

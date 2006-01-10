@@ -65,8 +65,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		internal void Save ()
 		{
-			foreach (TextFile file in textFiles)
-				file.Save ();
+			foreach (TextFile file in textFiles) {
+				if (file.Modified)
+					file.Save ();
+			}
 		}
 	}
 }

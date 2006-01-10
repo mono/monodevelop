@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Parser
 		{
 			IParser parser = GetParser (fileName);
 			if (parser != null) {
-				return parser.ExpressionFinder;
+				return parser.CreateExpressionFinder (fileName);
 			}
 			return null;
 		}
@@ -241,6 +241,57 @@ namespace MonoDevelop.Projects.Parser
 			IParser parser = parserService.GetParser (fileName);
 			if (parser != null) {
 				return parser.CtrlSpace (this, caretLine, caretColumn, fileName);
+			}
+			return null;
+		}
+		
+		public ILanguageItem ResolveIdentifier (string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		{
+			try {
+				IParser parser = parserService.GetParser (fileName);
+				if (parser != null) {
+					return parser.ResolveIdentifier (this, id, caretLineNumber, caretColumn, fileName, fileContent);
+				}
+				return null;
+			} catch {
+				return null;
+			}
+		}
+		
+		public ILanguageItem GetEnclosingLanguageItem (int caretLineNumber, int caretColumn, ITextFile file)
+		{
+			IParseInformation parseInfo = GetParseInformation (file.Name);
+			IClass cls = GetEnclosingClass (caretLineNumber, caretColumn, ((ICompilationUnit)parseInfo.MostRecentCompilationUnit).Classes);
+			if (cls == null)
+				return null;
+
+			foreach (IField f in cls.Fields)
+				if (f.Region.IsInside (caretLineNumber, caretColumn))
+					return f;
+			foreach (IMethod m in cls.Methods)
+				if (m.Region.IsInside (caretLineNumber, caretColumn) || m.BodyRegion.IsInside (caretLineNumber, caretColumn))
+					return m;
+			foreach (IProperty m in cls.Properties)
+				if (m.Region.IsInside (caretLineNumber, caretColumn) || m.BodyRegion.IsInside (caretLineNumber, caretColumn))
+					return m;
+			foreach (IEvent m in cls.Events)
+				if (m.Region.IsInside (caretLineNumber, caretColumn))
+					return m;
+			foreach (IIndexer m in cls.Indexer)
+				if (m.Region.IsInside (caretLineNumber, caretColumn))
+					return m;
+			return null;
+		}
+		
+		IClass GetEnclosingClass (int line, int col, IEnumerable classes)
+		{
+			foreach (IClass cls in classes) {
+				if (cls.InnerClasses != null) {
+					IClass c =  GetEnclosingClass (line, col, cls.InnerClasses);
+					if (c != null) return c;
+				}
+				if (cls.Region.IsInside (line, col) || cls.BodyRegion.IsInside (line, col))
+					return cls;
 			}
 			return null;
 		}
@@ -869,18 +920,25 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public void UpdateFile (Project project, string fileName, string fileContent)
+		public IParseInformation UpdateFile (Project project, string fileName, string fileContent)
 		{
 			try {
 				if (parserService.GetParser (fileName) == null)
-					return;
+					return null;
 				
 				IParseInformation parseInformation = null;
+				if (fileContent == null) {
+					StreamReader sr = new StreamReader (fileName);
+					fileContent = sr.ReadToEnd ();
+					sr.Close ();
+				}
+
 				int contentHash = fileContent.GetHashCode ();
 			
 				if (lastUpdateSize[fileName] == null || (int)lastUpdateSize[fileName] != contentHash) {
 					parseInformation = DoParseFile (fileName, fileContent);
-					if (parseInformation == null) return;
+					if (parseInformation == null)
+						return null;
 					
 					if (project != null) {
 						ProjectCodeCompletionDatabase db = GetProjectDatabase (project);
@@ -893,9 +951,12 @@ namespace MonoDevelop.Projects.Parser
 					}
 
 					lastUpdateSize[fileName] = contentHash;
-				}
+					return parseInformation;
+				} else
+					return this.GetCachedParseInformation (fileName);
 			} catch (Exception e) {
 				Runtime.LoggingService.Error (e.ToString ());
+				return null;
 			}
 		}
 		

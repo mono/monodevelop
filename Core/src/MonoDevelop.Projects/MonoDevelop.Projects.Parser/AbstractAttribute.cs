@@ -6,6 +6,7 @@
 // </file>
 using System;
 using System.Collections;
+using System.CodeDom;
 using MonoDevelop.Projects.Utility;
 
 namespace MonoDevelop.Projects.Parser
@@ -55,8 +56,8 @@ namespace MonoDevelop.Projects.Parser
 	public abstract class AbstractAttribute : IAttribute
 	{
 		protected string name;
-		protected ArrayList positionalArguments = new ArrayList();
-		protected SortedList namedArguments = new SortedList();
+		protected CodeExpression[] positionalArguments;
+		protected NamedAttributeArgument[] namedArguments;
 		protected IRegion region;
 
 		public virtual string Name {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Projects.Parser
 				name = value;
 			}
 		}
-		public virtual ArrayList PositionalArguments { // [expression]
+		public virtual CodeExpression[] PositionalArguments { // [expression]
 			get {
 				return positionalArguments;
 			}
@@ -75,7 +76,7 @@ namespace MonoDevelop.Projects.Parser
 				positionalArguments = value;
 			}
 		}
-		public virtual SortedList NamedArguments { // string/expression
+		public virtual NamedAttributeArgument[] NamedArguments { // string/expression
 			get {
 				return namedArguments;
 			}

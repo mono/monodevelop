@@ -68,6 +68,7 @@ MonoDevelop.Projects.Parser/IProperty.cs \
 MonoDevelop.Projects.Parser/IRegion.cs \
 MonoDevelop.Projects.Parser/IReturnType.cs \
 MonoDevelop.Projects.Parser/IUsing.cs \
+MonoDevelop.Projects.Parser/ExpressionContext.cs \
 MonoDevelop.Projects.Parser/ModifierEnum.cs \
 MonoDevelop.Projects.Parser/ParameterModifier.cs \
 MonoDevelop.Projects.Parser/Tag.cs \

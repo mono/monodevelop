@@ -122,9 +122,7 @@ namespace MonoDevelop.Projects.Parser
 			set;
 		}
 		
-		IExpressionFinder ExpressionFinder {
-			get;
-		}
+		IExpressionFinder CreateExpressionFinder (string fileName);
 
 		ICompilationUnitBase Parse(string fileName);
 		ICompilationUnitBase Parse(string fileName, string fileContent);
@@ -145,5 +143,7 @@ namespace MonoDevelop.Projects.Parser
 		ArrayList IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		
 		ArrayList CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName);
+		
+		ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent);
 	}
 }
