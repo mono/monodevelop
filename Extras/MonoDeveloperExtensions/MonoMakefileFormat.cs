@@ -84,7 +84,9 @@ namespace MonoDeveloper
 				monitor.EndTask ();
 				return project;
 			} else {
-				string subdirs = mkfile.GetVariable ("SUBDIRS");
+				string subdirs = mkfile.GetVariable ("default_SUBDIRS");
+				if (subdirs == null)
+					subdirs = mkfile.GetVariable ("SUBDIRS");
 				if (subdirs != null && (subdirs = subdirs.Trim (' ','\t')) != "")
 				{
 					Combine combine = new MonoCombine ();
