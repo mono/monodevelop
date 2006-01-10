@@ -455,7 +455,7 @@ namespace MonoDevelop.Core.AddIns
 						// The codons get topologically sorted and if I don't set the InsertAfter they may
 						// change it's sorting order.
 						e.Conditions[codon.ID] = new ConditionCollection(conditions);
-						if (codon.InsertAfter == null && codon.InsertBefore == null && e.CodonCollection.Count > 0) {
+						if (codon.InsertAfter == null && e.CodonCollection.Count > 0) {
 							codon.InsertAfter = new string[] { ((ICodon)e.CodonCollection[e.CodonCollection.Count - 1]).ID };
 						}
 						

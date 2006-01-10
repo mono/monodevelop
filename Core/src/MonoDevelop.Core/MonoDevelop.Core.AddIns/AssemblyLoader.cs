@@ -37,6 +37,22 @@ namespace MonoDevelop.Core.AddIns
 	class AssemblyLoader: MarshalByRefObject
 	{
 		Hashtable assemblies = new Hashtable ();
+		Hashtable loadedAssemblies = new Hashtable ();
+		
+		public AssemblyLoader ()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (OnResolveAssembly);
+		}
+		
+		Assembly OnResolveAssembly (object sender, ResolveEventArgs args)
+		{
+			int i = args.Name.IndexOf (',');
+			if (i == -1) return null;
+			string aname = args.Name.Substring (0, i).Trim ();
+			
+			Assembly asm = (Assembly) loadedAssemblies [aname];
+			return asm;
+		}
 		
 		public Assembly LoadAssembly (string fileName)
 		{
@@ -52,6 +68,9 @@ namespace MonoDevelop.Core.AddIns
 			if (asm == null) {
 				asm = Assembly.LoadWithPartialName(fileName);
 			}
+			
+			int i = asm.FullName.IndexOf (',');
+			loadedAssemblies [asm.FullName.Substring (0, i).Trim ()] = asm; 
 			return asm;
 		}
 		

@@ -100,27 +100,41 @@ namespace MonoDevelop.Core.AddIns
 			ArrayList sorted = new ArrayList ();
 			foreach (IAddInTreeNode tnode in sortedNodes) {
 				string[] insertAfters = tnode.Codon.InsertAfter;
+				string[] insertBefores = tnode.Codon.InsertBefore;
 				
-				if (insertAfters == null || insertAfters.Length == 0) {
-					sorted.Add (tnode);
-					continue;
+				int bestPos = sorted.Count;
+
+				if (insertAfters != null && insertAfters.Length > 0) {
+					int numAfters = insertAfters.Length;
+					int n;
+					
+					for (n=0; n<sorted.Count; n++) {
+						IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
+						for (int i=0; i<insertAfters.Length; i++) {
+							if (snode.Codon.ID == insertAfters [i])
+								numAfters--;
+						}
+						if (numAfters == 0) {
+							n++;
+							break;
+						}
+					}
+					bestPos = n;
 				}
 				
-				int numAfters = insertAfters.Length;
-				int n;
-				
-				for (n=0; n<sorted.Count; n++) {
-					IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
-					for (int i=0; i<insertAfters.Length; i++) {
-						if (snode.Codon.ID == insertAfters [i])
-							numAfters--;
-					}
-					if (numAfters == 0) {
-						n++;
-						break;
+				if (insertBefores != null && insertBefores.Length != 0) {
+					for (int n=0; n < bestPos; n++) {
+						IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
+						for (int i=0; i<insertBefores.Length; i++) {
+							if (snode.Codon.ID == insertBefores [i]) {
+								bestPos = n;
+								break;
+							}
+						}
 					}
 				}
-				sorted.Insert (n, tnode);
+
+				sorted.Insert (bestPos, tnode);
 			}
 			sortedNodes = sorted;
 			return (IAddInTreeNode[]) sorted.ToArray (typeof(IAddInTreeNode));

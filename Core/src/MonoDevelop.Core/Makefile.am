@@ -6,6 +6,7 @@ MonoDevelop.Core/IStringTagProvider.cs \
 MonoDevelop.Core/PropertyService.cs \
 MonoDevelop.Core/ServiceManager.cs \
 MonoDevelop.Core/StringParserService.cs \
+MonoDevelop.Core/UserException.cs \
 MonoDevelop.Core.Properties/CharacterEncodings.cs \
 MonoDevelop.Core.Properties/DefaultProperties.cs \
 MonoDevelop.Core.Properties/IProperties.cs \

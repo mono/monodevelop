@@ -1,3 +1,22 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs:
+	* MonoDevelop.Core.AddIns/AddIn.cs: Implement support for InsertBefore.
+	
+	* MonoDevelop.Core.AddIns/AssemblyLoader.cs: When a specific version of an
+	assembly is required and not found, use the currently loaded version.
+	For example, it should fix the problem of loading an add-in that has been
+	compiled with a different but compatible gtk version.
+	
+	* MonoDevelop.Core/UserException.cs: New exception type to be used for errors
+	that are to be shown to the user.
+	
+	* MonoDevelop.Core/StringParserService.cs: Keep variable refereces intact if the
+	variable has not been defined.
+	
+	* Makefile.am:
+	* MonoDevelop.Core.mdp: Updated.
+
 2005-12-01  Todd Berman  <tberman@off.net>
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Make ReadObject

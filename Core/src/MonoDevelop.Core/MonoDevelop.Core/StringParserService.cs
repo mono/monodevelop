@@ -130,6 +130,7 @@ namespace MonoDevelop.Core
 					break;
 				
 				if (input [i] != '{') {
+					sb.Append ('$');
 					sb.Append (input [i]);
 					continue;
 				}
@@ -142,8 +143,9 @@ namespace MonoDevelop.Core
 				
 				string replacement;
 				if (end == input.Length || (replacement = Replace (customTags, input.Substring (i, end - i))) == null) {
-					sb.Append (input.Substring (start, end - start));
-					break;
+					sb.Append (input.Substring (start, end - start + 1));
+					i = end;
+					continue;
 				}
 				
 				sb.Append (replacement);
