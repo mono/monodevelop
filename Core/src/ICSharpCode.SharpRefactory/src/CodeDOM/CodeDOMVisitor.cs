@@ -1064,6 +1064,8 @@ namespace ICSharpCode.SharpRefactory.Parser
 		
 		bool IsField(string identifier)
 		{
+			if (currentTypeDeclaration == null)
+				return false;
 			foreach (INode node in currentTypeDeclaration.Children) {
 				if (node is FieldDeclaration) {
 					FieldDeclaration fd = (FieldDeclaration)node;

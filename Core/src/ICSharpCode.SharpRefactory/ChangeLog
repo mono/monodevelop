@@ -1,3 +1,8 @@
+2006-01-10  Lluis Sanchez  <lluis@novell.com>
+
+	* src/CodeDOM/CodeDOMVisitor.cs:
+	* src/Parser/AST/AbstractASTVisitor.cs: Added some null checks.
+
 2005-12-12  Lluis Sanchez  <lluis@novell.com>
 
 	* src/Parser/AST/Statements/LocalVariableDeclaration.cs:

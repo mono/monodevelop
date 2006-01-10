@@ -537,6 +537,7 @@ namespace ICSharpCode.SharpRefactory.Parser
 		}
 		public virtual object Visit(ParenthesizedExpression parenthesizedExpression, object data)
 		{
+			if (parenthesizedExpression.Expression == null) return null;
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		public virtual object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
@@ -554,7 +555,8 @@ namespace ICSharpCode.SharpRefactory.Parser
 			}
 			if (invocationExpression.Parameters != null) {
 				foreach (INode n in invocationExpression.Parameters) {
-					n.AcceptVisitor(this, data);
+					if (n != null)
+						n.AcceptVisitor(this, data);
 				}
 			}
 			return result;
@@ -664,9 +666,14 @@ namespace ICSharpCode.SharpRefactory.Parser
 		}
 		public virtual object Visit(ConditionalExpression conditionalExpression, object data)
 		{
-			conditionalExpression.TestCondition.AcceptVisitor(this, data);
-			conditionalExpression.TrueExpression.AcceptVisitor(this, data);
-			return conditionalExpression.FalseExpression.AcceptVisitor(this, data);
+			if (conditionalExpression.TestCondition != null)
+				conditionalExpression.TestCondition.AcceptVisitor(this, data);
+			if (conditionalExpression.TrueExpression != null)
+				conditionalExpression.TrueExpression.AcceptVisitor(this, data);
+			if (conditionalExpression.FalseExpression != null)
+				return conditionalExpression.FalseExpression.AcceptVisitor(this, data);
+			else
+				return null;
 		}
 #endregion
 #endregion
