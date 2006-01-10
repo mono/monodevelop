@@ -1,3 +1,15 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am:
+	* CSharpBinding.mdp: Added Parser/LanguageItemVisitor.cs.
+	
+	* Parser/Parser.cs: Track api changes. Implemented ResolveIdentifier.
+	* Parser/CSharpVisitor.cs: Store attribute values in CodeExpression
+	instances.
+	* Parser/Resolver.cs: Implemented ResolveIdentifier.
+	* Parser/ExpressionFinder.cs: Updated from SharpDevelop.
+	* Parser/SharpDevelopTree/AttributeSection.cs: Track api changes.
+	
 2005-12-19  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/CodeGenerator.cs: Track api changes. Added support for

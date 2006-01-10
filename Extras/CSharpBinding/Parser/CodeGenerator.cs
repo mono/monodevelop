@@ -180,7 +180,7 @@ namespace CSharpBinding.Parser
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name)
-						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
+						references.Add (CreateReference (pos, member.Name));
 				}
 				
 			}
@@ -196,7 +196,7 @@ namespace CSharpBinding.Parser
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name)
-						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
+						references.Add (CreateReference (pos, member.Name));
 				}
 			}
 			return base.Visit (invokeExp, data);
@@ -214,15 +214,22 @@ namespace CSharpBinding.Parser
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
 					{
 						int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
-						references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
+						references.Add (CreateReference (pos, member.Name));
 					}
 				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
 					int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
-					references.Add (new MemberReference (ctx, file.Name, pos, member.Name));
+					references.Add (CreateReference (pos, member.Name));
 				}
 				
 			}
 			return base.Visit (idExp, data);
+		}
+		
+		MemberReference CreateReference (int pos, string name)
+		{
+			int l, c;
+			file.GetLineColumnFromPosition (pos, out l, out c);
+			return new MemberReference (ctx, file.Name, pos, l, c, name);
 		}
 	}
 }

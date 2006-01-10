@@ -31,6 +31,7 @@ Parser/SharpDevelopTree/Field.cs \
 Parser/SharpDevelopTree/ReturnType.cs \
 Parser/TypeVisitor.cs \
 Parser/CSharpVisitor.cs \
+Parser/LanguageItemVisitor.cs \
 Parser/Resolver.cs \
 Parser/Parser.cs \
 Parser/CodeGenerator.cs \

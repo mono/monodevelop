@@ -2,6 +2,7 @@
 
 using MonoDevelop.Projects.Parser;
 using System.Collections;
+using System.CodeDom;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
@@ -15,7 +16,7 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 	}
 	public class Attribute : AbstractAttribute
 	{
-		public Attribute(string name, ArrayList positionalArguments, SortedList namedArguments, IRegion region)
+		public Attribute (string name, CodeExpression[] positionalArguments, NamedAttributeArgument[] namedArguments, IRegion region)
 		{
 			this.name = name;
 			this.positionalArguments = positionalArguments;

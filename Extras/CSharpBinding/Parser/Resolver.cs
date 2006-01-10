@@ -171,11 +171,25 @@ namespace CSharpBinding.Parser
 			lookupTableVisitor.Visit (fileCompilationUnit, null);
 			TypeVisitor typeVisitor = new TypeVisitor (this);
 			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
-			return SearchType (type.FullyQualifiedName, cu);
+			if (type != null)
+				return SearchType (type.FullyQualifiedName, cu);
+			else
+				return null;
 		}
 
+		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent)
+		{
+			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
+			ICSharpCode.SharpRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.CompilationUnit;
+			return ResolveIdentifier (fileCompilationUnit, id, line, col);
+		}
+		
 		public ILanguageItem ResolveIdentifier (ICSharpCode.SharpRefactory.Parser.AST.CompilationUnit fileCompilationUnit, string id, int line, int col)
 		{
+			ICSharpCode.SharpRefactory.Parser.Parser p = new ICSharpCode.SharpRefactory.Parser.Parser();
+			Lexer l = new Lexer(new StringReader(id));
+			Expression expr = p.ParseExpression(l);
+			
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			
@@ -187,7 +201,9 @@ namespace CSharpBinding.Parser
 			lookupTableVisitor = new LookupTableVisitor();
 			lookupTableVisitor.Visit (fileCompilationUnit, null);
 			
-			return IdentifierLookup (id);
+			LanguageItemVisitor itemVisitor = new LanguageItemVisitor (this);
+			ILanguageItem item = expr.AcceptVisitor (itemVisitor, null) as ILanguageItem;
+			return item;
 		}
 
 		public string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent) 
@@ -389,6 +405,9 @@ namespace CSharpBinding.Parser
 //				Console.WriteLine("IsAccessible");
 				return true;
 			}
+			if (callingClass == null)
+				return false;
+
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		
@@ -490,7 +509,16 @@ namespace CSharpBinding.Parser
 			throw new InvalidOperationException ("Unknown member type:" + member);
 		}
 		
-		// no methods or indexer
+		public IDecoration SearchClassMember (IReturnType type, string memberName, bool includeMethods)
+		{
+			IDecoration member;
+			IClass curType;
+			if (SearchClassMember (type, memberName, includeMethods, out curType, out member))
+				return member;
+			else
+				return null;
+		}
+		
 		bool SearchClassMember (IReturnType type, string memberName, bool includeMethods, out IClass curType, out IDecoration member)
 		{
 			curType = null;
@@ -624,9 +652,8 @@ namespace CSharpBinding.Parser
 		/// <remarks>
 		/// does the dynamic lookup for the id
 		/// </remarks>
-		ILanguageItem IdentifierLookup (string id)
+		public ILanguageItem IdentifierLookup (string id)
 		{
-			Console.WriteLine ("IdentifierLookup: " + id);
 			// try if it exists a variable named id
 			ReturnType variable = SearchVariable (id);
 			if (variable != null) {
@@ -634,7 +661,6 @@ namespace CSharpBinding.Parser
 			}
 			
 			if (callingClass == null) {
-				Console.WriteLine ("callingClass null");
 				return null;
 			}
 			
@@ -908,7 +934,9 @@ namespace CSharpBinding.Parser
 		{
 			if (cu != null) {
 				foreach (IClass c in cu.Classes) {
-					if (c != null && c.Region != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
+					if (c != null && ((c.Region != null && c.Region.IsInside(caretLine, caretColumn)) ||
+						              (c.BodyRegion != null && c.BodyRegion.IsInside(caretLine, caretColumn))))
+					{
 						return GetInnermostClass(c);
 					}
 				}

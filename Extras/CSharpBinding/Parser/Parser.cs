@@ -27,11 +27,12 @@ namespace CSharpBinding.Parser
 				lexerTags = value;
 			}
 		}
-		public IExpressionFinder ExpressionFinder {
-			get {
-				return new ExpressionFinder();
-			}
+		
+		public IExpressionFinder CreateExpressionFinder(string fileName)
+		{
+			return new ExpressionFinder(fileName);
 		}
+		
 		public bool CanParse(string fileName)
 		{
 			return System.IO.Path.GetExtension(fileName).ToUpper() == ".CS";
@@ -120,6 +121,12 @@ namespace CSharpBinding.Parser
 		{
 			return new Resolver (parserContext).MonodocResolver (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
+		
+		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		{
+			return new Resolver (parserContext).ResolveIdentifier (parserContext, id, caretLineNumber, caretColumn, fileName, fileContent);
+		}
+		
 		///////// IParser Interface END
 	}
 }
