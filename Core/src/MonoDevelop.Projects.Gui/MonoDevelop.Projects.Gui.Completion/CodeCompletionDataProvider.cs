@@ -65,12 +65,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			ResolveResult results;
 			
 			IExpressionFinder expressionFinder = parserContext.GetExpressionFinder(fileName);
-			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(widget, widget.TriggerOffset) : expressionFinder.FindExpression(widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 2);
+			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(widget, widget.TriggerOffset) : expressionFinder.FindExpression(widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 2).Expression;
 			if (expression == null) return null;
 			Console.WriteLine ("Expr: |{0}|", expression);
 			//FIXME: This chartyped check is a fucking *HACK*
 			if (expression == "is" || expression == "as") {
-				string expr = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (widget, widget.TriggerOffset - 3) : expressionFinder.FindExpression (widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 5);
+				string expr = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (widget, widget.TriggerOffset - 3) : expressionFinder.FindExpression (widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 5).Expression;
 				AddResolveResults (parserContext.IsAsResolve (expr, caretLineNumber, caretColumn, fileName, widget.GetText (0, widget.TextLength)));
 				return (ICompletionData[])completionData.ToArray (typeof (ICompletionData));
 			}
