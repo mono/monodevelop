@@ -185,7 +185,13 @@ namespace MonoDevelop.Ide.Gui
 				Combine closedCombine = CurrentOpenCombine;
 				CurrentSelectedProject = null;
 				CurrentOpenCombine = CurrentSelectedCombine = null;
-				IdeApp.Workbench.CloseAllDocuments ();
+				
+				Document[] docs = new Document [IdeApp.Workbench.Documents.Count];
+				IdeApp.Workbench.Documents.CopyTo (docs, 0);
+				foreach (Document doc in docs) {
+					if (doc.HasProject)
+						doc.Close ();
+				}
 				
 				parserDatabase.Unload (closedCombine);
 

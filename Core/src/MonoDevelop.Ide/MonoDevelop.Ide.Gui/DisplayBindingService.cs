@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Gui
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	internal class DisplayBindingService : AbstractService
+	public class DisplayBindingService : AbstractService
 	{
 		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		DisplayBindingCodon[] bindings = null;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public DisplayBindingCodon GetCodonPerFileName(string filename)
+		internal DisplayBindingCodon GetCodonPerFileName(string filename)
 		{
 			string vfsname = filename;
 			vfsname = vfsname.Replace ("%", "%25");
@@ -60,6 +60,11 @@ namespace MonoDevelop.Ide.Gui
 			vfsname = vfsname.Replace ("?", "%3F");
 			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname);
 
+			foreach (DisplayBindingCodon binding in bindings) {
+				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForFile(filename)) {
+					return binding;
+				}
+			}
 			if (!filename.StartsWith ("http")) {
 				foreach (DisplayBindingCodon binding in bindings) {
 					if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimetype)) {
@@ -67,16 +72,10 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
-			Runtime.LoggingService.Info (String.Format (GettextCatalog.GetString ("Didnt match on mimetype: {0}, trying filename"), mimetype));
-			foreach (DisplayBindingCodon binding in bindings) {
-				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForFile(filename)) {
-					return binding;
-				}
-			}
 			return null;
 		}
 		
-		public void AttachSubWindows(IWorkbenchWindow workbenchWindow)
+		internal void AttachSubWindows(IWorkbenchWindow workbenchWindow)
 		{
 			foreach (DisplayBindingCodon binding in bindings) {
 				if (binding.SecondaryDisplayBinding != null && binding.SecondaryDisplayBinding.CanAttachTo(workbenchWindow.ViewContent)) {

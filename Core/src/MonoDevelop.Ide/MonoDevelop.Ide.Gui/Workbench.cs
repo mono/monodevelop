@@ -175,6 +175,10 @@ namespace MonoDevelop.Ide.Gui
 			get { return monitors; }
 		}
 		
+		public DisplayBindingService DisplayBindings {
+			get { return Services.DisplayBindings; }
+		}
+		
 		public IStatusBarService StatusBar {
 			get {
 				if (statusBarService == null)

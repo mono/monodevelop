@@ -1,3 +1,24 @@
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Make FileTemplate public
+	since now it can be subclassed. LoadFileTemplate is now static.
+	Split the Create method in several overridable methods.
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs: Made public for
+	the same reason.
+	* MonoDevelop.Ide.Templates/INewFileCreator.cs: The only method is
+	now CreateItem.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Catch and show error
+	messages.
+	
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs: Made public some of its
+	methods.
+	
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: When closing the combine, close
+	only open files that belong to the combine.
+	
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added getter for
+	the DisplayBindingService.
+
 2006-01-04  Alexandre Miguel Pedro Gomes <alexmipego@gmail.com>
 	
 	* MonoDevelop.Ide.addin.xml: Added icons to (un)comment lines,

@@ -10,10 +10,17 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Diagnostics;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.Ide.Templates
 {
-	internal class FileDescriptionTemplate
+	public class FileDescriptionTemplate
 	{
 		string name;
 		string content;

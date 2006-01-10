@@ -276,8 +276,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (TemplateView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) TemplateView.CurrentlySelected;
 				FileTemplate item = titem.Template;
-				if (!item.Create (parentProject, basePath, titem.Language, nameEntry.Text))
+				
+				try {
+					if (!item.Create (parentProject, basePath, titem.Language, nameEntry.Text))
+						return;
+				} catch (Exception ex) {
+					Services.MessageService.ShowError (ex);
 					return;
+				}
 
 				if (OnOked != null)
 					OnOked (null, null);
