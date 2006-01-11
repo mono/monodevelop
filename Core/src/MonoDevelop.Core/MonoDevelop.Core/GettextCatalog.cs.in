@@ -44,12 +44,12 @@ namespace MonoDevelop.Core
 	
 		public static string GetString (string str)
 		{
-			return Catalog.GetString (str);
+			return str != null ? Catalog.GetString (str) : null;
 		}
 	
 		public static string GetString (string str, params object[] arguments)
 		{
-			return string.Format (Catalog.GetString (str), arguments);
+			return string.Format (GetString (str), arguments);
 		}
 	
 		public static string GetPluralString (string singular,
