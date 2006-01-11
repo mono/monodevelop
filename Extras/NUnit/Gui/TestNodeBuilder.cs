@@ -83,11 +83,11 @@ namespace MonoDevelop.NUnit
 				return;
 			} else if (test.Status == TestStatus.Loading) {
 				icon = CircleImage.Loading;
-				label = test.Title + " (Loading)";
+				label = test.Title + GettextCatalog.GetString (" (Loading)");
 				return;
 			} else if (test.Status == TestStatus.LoadError) {
 				icon = CircleImage.Failure;
-				label = test.Title + " (Load failed)";
+				label = test.Title + GettextCatalog.GetString (" (Load failed)");
 				return;
 			} else {
 				label = test.Title;
@@ -111,7 +111,7 @@ namespace MonoDevelop.NUnit
 					icon = CircleImage.None;
 				
 				if (res != null && treeBuilder.Options ["ShowTestCounters"] && (test is UnitTestGroup)) {
-					label += string.Format (" ({0} success, {1} failed, {2} ignored)", res.TotalSuccess, res.TotalFailures, res.TotalIgnored);
+					label += string.Format (GettextCatalog.GetString (" ({0} success, {1} failed, {2} ignored)"), res.TotalSuccess, res.TotalFailures, res.TotalIgnored);
 				}
 			}
 		}

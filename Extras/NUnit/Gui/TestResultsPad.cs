@@ -50,8 +50,8 @@ namespace MonoDevelop.NUnit
 		HPaned book;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
-		Label infoFailed = new Label ("<b>Failed</b>: 0");
-		Label infoIgnored = new Label ("<b>Ignored</b>: 0");
+		Label infoFailed = new Label (GettextCatalog.GetString ("<b>Failed</b>: ") + "0");
+		Label infoIgnored = new Label (GettextCatalog.GetString ("<b>Ignored</b>: ") + "0");
 		Label infoCurrent = new Label ();
 		HBox labels;
 		
@@ -101,39 +101,39 @@ namespace MonoDevelop.NUnit
 			panel.PackStart (toolbar, false, false, 0);
 			
 			buttonSuccess = new ToggleToolButton ();
-			buttonSuccess.Label = "Successful Tests";
+			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
 			buttonSuccess.Active = false;
 			buttonSuccess.IconWidget = new Gtk.Image (CircleImage.Success);
 			buttonSuccess.IsImportant = true;
 			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
-			buttonSuccess.SetTooltip (tips, "Show Successful Tests", "Show Successful Tests");
+			buttonSuccess.SetTooltip (tips, GettextCatalog.GetString ("Show Successful Tests"), GettextCatalog.GetString ("Show Successful Tests"));
 			toolbar.Insert (buttonSuccess, -1);
 			
 			buttonFailures = new ToggleToolButton ();
-			buttonFailures.Label = "Failed Tests";
+			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
 			buttonFailures.Active = true;
 			buttonFailures.IconWidget = new Gtk.Image (CircleImage.Failure);
 			buttonFailures.IsImportant = true;
 			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
-			buttonFailures.SetTooltip (tips, "Show Failed Tests", "Show Failed Tests");
+			buttonFailures.SetTooltip (tips, GettextCatalog.GetString ("Show Failed Tests"), GettextCatalog.GetString ("Show Failed Tests"));
 			toolbar.Insert (buttonFailures, -1);
 			
 			buttonIgnored = new ToggleToolButton ();
-			buttonIgnored.Label = "Ignored Tests";
+			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
 			buttonIgnored.Active = true;
 			buttonIgnored.IconWidget = new Gtk.Image (CircleImage.NotRun);
 			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
 			buttonIgnored.IsImportant = true;
-			buttonIgnored.SetTooltip (tips, "Show Ignored Tests", "Show Ignored Tests");
+			buttonIgnored.SetTooltip (tips, GettextCatalog.GetString( "Show Ignored Tests"), GettextCatalog.GetString ("Show Ignored Tests"));
 			toolbar.Insert (buttonIgnored, -1);
 			
 			buttonOutput = new ToggleToolButton ();
-			buttonOutput.Label = "Output";
+			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
 			buttonOutput.IconWidget = Services.Resources.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.SmallToolbar);
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.IsImportant = true;
-			buttonOutput.SetTooltip (tips, "Show Output", "Show Output");
+			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show Output"), GettextCatalog.GetString ("Show Output"));
 			toolbar.Insert (buttonOutput, -1);
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);
@@ -215,7 +215,7 @@ namespace MonoDevelop.NUnit
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
-			window.Title = "Test results";
+			window.Title = GettextCatalog.GetString ("Test results");
 			window.Icon = "md-combine-icon";
 		}
 		
@@ -248,7 +248,7 @@ namespace MonoDevelop.NUnit
 			get { return running; }
 			set {
 				running = value;
-				string title = "Test results";
+				string title = GettextCatalog.GetString ("Test results");
 				if (running) 
 					window.Title = "<span foreground=\"blue\">" + title + "</span>";
 				else
@@ -268,8 +268,8 @@ namespace MonoDevelop.NUnit
 		
 		void UpdateCounters ()
 		{
-			infoFailed.Markup = "<b>Failed</b>: " + testsFailed;
-			infoIgnored.Markup = "<b>Ignored</b>: " + testsIgnored;
+			infoFailed.Markup = GettextCatalog.GetString ("<b>Failed</b>: ") + testsFailed;
+			infoIgnored.Markup = GettextCatalog.GetString ("<b>Ignored</b>: ") + testsIgnored;
 		}
 		
 		public void InitializeTestRun (UnitTest test)
@@ -319,14 +319,14 @@ namespace MonoDevelop.NUnit
 		
 		public void AddErrorMessage ()
 		{
-			string msg = "Internal error";
+			string msg = GettextCatalog.GetString ("Internal error");
 			if (errorMessage != null)
 				msg += ": " + errorMessage;
 
 			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.SmallToolbar, "");
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null);
 			failuresStore.AppendValues (testRow, null, Escape (error.GetType().Name + ": " + error.Message), null);
-			TreeIter row = failuresStore.AppendValues (testRow, null, "Stack Trace", null);
+			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null);
 			failuresStore.AppendValues (row, null, Escape (error.StackTrace), null);
 		}
 		
@@ -343,7 +343,7 @@ namespace MonoDevelop.NUnit
 			labels.Hide ();
 			buttonStop.Sensitive = false;
 			
-			resultLabel.Markup = "<b>Tests</b>: " + testsRun + "  <b>Failed</b>: " + testsFailed + "  <b>Ignored</b>: " + testsIgnored;
+			resultLabel.Markup = GettextCatalog.GetString ("<b>Tests</b>: ") + testsRun + GettextCatalog.GetString ("  <b>Failed</b>: ") + testsFailed + GettextCatalog.GetString ("  <b>Ignored</b>: ") + testsIgnored;
 			
 			Running = false;
 		}
@@ -351,7 +351,7 @@ namespace MonoDevelop.NUnit
 		void OnStopClicked (object sender, EventArgs args)
 		{
 			Cancel ();
-			failuresStore.AppendValues (CircleImage.Failure, "Test execution cancelled.", null);
+			failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
 		}
 		
 		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
@@ -457,7 +457,7 @@ namespace MonoDevelop.NUnit
 				if (result.StackTrace != null && result.StackTrace.Length > 0) {
 					TreeIter row = testRow;
 					if (hasMessage)
-						row = failuresStore.AppendValues (testRow, null, "Stack Trace", test);
+						row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), test);
 					failuresStore.AppendValues (row, null, Escape (result.StackTrace), test);
 				}
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
@@ -508,7 +508,7 @@ namespace MonoDevelop.NUnit
 		
 		void ITestProgressMonitor.BeginTest (UnitTest test)
 		{
-			infoCurrent.Text = "Running " + test.FullName;
+			infoCurrent.Text = GettextCatalog.GetString ("Running ") + test.FullName;
 			infoCurrent.Xalign = 0;
 		}
 		

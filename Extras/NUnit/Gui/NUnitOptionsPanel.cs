@@ -75,7 +75,7 @@ namespace MonoDevelop.NUnit
 				tr.Editable = true;
 				tr.Edited += new EditedHandler (OnCategoryEdited);
 				textColumn = new TreeViewColumn ();
-				textColumn.Title = "Category";
+				textColumn.Title = GettextCatalog.GetString ("Category");
 				textColumn.PackStart (tr, false);
 				textColumn.AddAttribute (tr, "text", 0);
 				textColumn.Expand = true;

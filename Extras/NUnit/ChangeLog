@@ -1,3 +1,11 @@
+2005-12-22  David Makovský <yakeen@sannyas-on.net> 
+
+	* Gui/TestResultsPad.cs:
+	* Gui/NUnitOptionsPanel.cs:
+	* Gui/TestNodeBuilder.cs:
+	* Gui/TestPad.cs: Make some strings translatable.
+
+
 2005-11-15  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Services/NUnitTestCase.cs:

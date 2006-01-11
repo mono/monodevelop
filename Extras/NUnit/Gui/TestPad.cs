@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 			tf.Add (sw);
 			tf.ShowAll ();
 			
-			TestSummaryPage = infoBook.AddPage ("Summary", tf);
+			TestSummaryPage = infoBook.AddPage (GettextCatalog.GetString ("Summary"), tf);
 			
 			// Info - Regressions list
 			
@@ -239,7 +239,7 @@ namespace MonoDevelop.NUnit
 			sw.Add (regressionTree);
 			tf.ShowAll ();
 			
-			TestRegressionsPage = infoBook.AddPage ("Regressions", tf);
+			TestRegressionsPage = infoBook.AddPage (GettextCatalog.GetString ("Regressions"), tf);
 			
 			// Info - Failed tests list
 			
@@ -264,7 +264,7 @@ namespace MonoDevelop.NUnit
 			sw.Add (failedTree);
 			tf.ShowAll ();
 			
-			TestFailuresPage = infoBook.AddPage ("Failed tests", tf);
+			TestFailuresPage = infoBook.AddPage (GettextCatalog.GetString ("Failed tests"), tf);
 			
 			// Info - results
 			
@@ -275,7 +275,7 @@ namespace MonoDevelop.NUnit
 			resultView.Editable = false;
 			sw.Add (resultView);
 			tf.ShowAll ();
-			TestResultPage = infoBook.AddPage ("Result", tf);
+			TestResultPage = infoBook.AddPage (GettextCatalog.GetString ("Result"), tf);
 			
 			// Info - Output
 			
@@ -286,7 +286,7 @@ namespace MonoDevelop.NUnit
 			outputView.Editable = false;
 			sw.Add (outputView);
 			tf.ShowAll ();
-			TestOutputPage = infoBook.AddPage ("Output", tf);
+			TestOutputPage = infoBook.AddPage (GettextCatalog.GetString ("Output"), tf);
 			
 			panedDetails.Pack2 (infoBook, true, true);
 			detailsPad.PackStart (panedDetails, true, true, 0);
@@ -503,7 +503,7 @@ namespace MonoDevelop.NUnit
 						foreach (UnitTest t in regs)
 							regressionStore.AppendValues (t, t.Name, CircleImage.Failure);
 					} else
-						regressionStore.AppendValues (null, "No regressions found.");
+						regressionStore.AppendValues (null, GettextCatalog.GetString ("No regressions found."));
 				}
 				else if (infoBook.Page == TestFailuresPage) {
 					failedStore.Clear ();
@@ -512,7 +512,7 @@ namespace MonoDevelop.NUnit
 						foreach (UnitTest t in regs)
 							failedStore.AppendValues (t, t.Name, CircleImage.Failure);
 					} else
-						failedStore.AppendValues (null, "No failed tests found.");
+						failedStore.AppendValues (null, GettextCatalog.GetString ("No failed tests found."));
 				}
 			} else {
 				UnitTestResult res = detailsTest.Results.GetLastResult (chart.CurrentDate);
