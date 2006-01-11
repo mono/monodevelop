@@ -49,9 +49,8 @@ class BooParser(IParser):
 		set:
 			_lexerTags = value
 	
-	ExpressionFinder as IExpressionFinder:
-		get:
-			return BooBinding.Parser.ExpressionFinder()
+	def CreateExpressionFinder(fileName as string) as IExpressionFinder:
+		return BooBinding.Parser.ExpressionFinder()
 	
 	def Parse(fileName as string) as ICompilationUnitBase:
 		content as string

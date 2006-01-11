@@ -47,8 +47,8 @@ class ExpressionFinder(IExpressionFinder):
 	static _closingBrackets = '}])'
 	static _openingBrackets = '{[('
 	
-	def FindExpression(inText as string, offset as int) as string:
-		return null if inText == null
+	def FindExpression(inText as string, offset as int) as ExpressionResult:
+		return ExpressionResult (null) if inText == null
 		Log ("Trying quickfind for ${offset}")
 		// OK, first try a kind of "quick find"
 		i = offset + 1
@@ -71,12 +71,12 @@ class ExpressionFinder(IExpressionFinder):
 				break
 		if start >= 0:
 			if CheckString(inText, start, '/#"\'', '\r\n'):
-				return GetExpression(inText, start, offset + 1)
+				return ExpressionResult (GetExpression(inText, start, offset + 1))
 		
 		inText = SimplifyCode(inText, offset)
 		if inText == null:
 			Log ('SimplifyCode returned null (cursor is in comment/string???)')
-			return null
+			return ExpressionResult (null)
 		// inText now has no comments or string literals, but the same meaning in
 		// terms of the type system
 		// Now go back until a finish-character or a whitespace character
@@ -86,7 +86,7 @@ class ExpressionFinder(IExpressionFinder):
 			i -= 1
 			c = inText[i]
 			if bracketStack.Length == 0 and (finish.IndexOf(c) >= 0 or Char.IsWhiteSpace(c)):
-				return GetExpression(inText, i + 1, inText.Length)
+				return ExpressionResult (GetExpression(inText, i + 1, inText.Length))
 			if _closingBrackets.IndexOf(c) >= 0:
 				bracketStack.Append(c)
 			bracket = _openingBrackets.IndexOf(c)
@@ -94,7 +94,13 @@ class ExpressionFinder(IExpressionFinder):
 				while Pop(bracketStack) > bracket:
 					pass
 		
-		return null
+		return ExpressionResult (null)
+	
+	def FindFullExpression(inText as string, offset as int) as ExpressionResult:
+		return ExpressionResult (null)
+	
+	def RemoveLastPart(expression as string) as string:
+		return expression
 	
 	private def CheckString(text as string, offset as int, forbidden as string, finish as string):
 		i = offset
