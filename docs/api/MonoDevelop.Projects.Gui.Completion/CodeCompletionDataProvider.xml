@@ -1,0 +1,69 @@
+<Type Name="CodeCompletionDataProvider" FullName="MonoDevelop.Projects.Gui.Completion.CodeCompletionDataProvider">
+  <TypeSignature Language="C#" Value="public class CodeCompletionDataProvider : MonoDevelop.Projects.Gui.Completion.ICompletionDataProvider" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Projects.Gui</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>MonoDevelop.Projects.Gui.Completion.ICompletionDataProvider</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public CodeCompletionDataProvider (MonoDevelop.Projects.Parser.IParserContext parserContext, string fileName);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="parserContext" Type="MonoDevelop.Projects.Parser.IParserContext" />
+        <Parameter Name="fileName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="parserContext">To be added.</param>
+        <param name="fileName">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public CodeCompletionDataProvider (MonoDevelop.Projects.Parser.IParserContext parserContext, string fileName, bool ctrl);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="parserContext" Type="MonoDevelop.Projects.Parser.IParserContext" />
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="ctrl" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="parserContext">To be added.</param>
+        <param name="fileName">To be added.</param>
+        <param name="ctrl">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GenerateCompletionData">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Gui.Completion.ICompletionData[] GenerateCompletionData (MonoDevelop.Projects.Gui.Completion.ICompletionWidget widget, char charTyped);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Gui.Completion.ICompletionData[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="widget" Type="MonoDevelop.Projects.Gui.Completion.ICompletionWidget" />
+        <Parameter Name="charTyped" Type="System.Char" />
+      </Parameters>
+      <Docs>
+        <param name="widget">To be added.</param>
+        <param name="charTyped">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

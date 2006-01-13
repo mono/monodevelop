@@ -1,0 +1,58 @@
+<Type Name="NodeState" FullName="MonoDevelop.Ide.Gui.Pads.NodeState">
+  <TypeSignature Language="C#" Value="public class NodeState" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public NodeState ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ToXml">
+      <MemberSignature Language="C#" Value="public System.Xml.XmlElement ToXml (System.Xml.XmlDocument doc);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Xml.XmlElement</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="doc" Type="System.Xml.XmlDocument" />
+      </Parameters>
+      <Docs>
+        <param name="doc">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FromXml">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Ide.Gui.Pads.NodeState FromXml (System.Xml.XmlElement elem);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Pads.NodeState</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="elem" Type="System.Xml.XmlElement" />
+      </Parameters>
+      <Docs>
+        <param name="elem">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

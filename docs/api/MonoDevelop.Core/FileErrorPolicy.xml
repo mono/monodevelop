@@ -1,0 +1,36 @@
+<Type Name="FileErrorPolicy" FullName="MonoDevelop.Core.FileErrorPolicy">
+  <TypeSignature Language="C#" Value="public enum FileErrorPolicy" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Core</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="ProvideAlternative">
+      <MemberSignature Language="C#" Value="ProvideAlternative" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.FileErrorPolicy</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Inform">
+      <MemberSignature Language="C#" Value="Inform" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.FileErrorPolicy</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

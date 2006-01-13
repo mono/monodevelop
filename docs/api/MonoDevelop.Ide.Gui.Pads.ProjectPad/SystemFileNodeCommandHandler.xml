@@ -1,0 +1,50 @@
+<Type Name="SystemFileNodeCommandHandler" FullName="MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFileNodeCommandHandler">
+  <TypeSignature Language="C#" Value="public class SystemFileNodeCommandHandler : MonoDevelop.Ide.Gui.Pads.NodeCommandHandler" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>MonoDevelop.Ide.Gui.Pads.NodeCommandHandler</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public SystemFileNodeCommandHandler ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveItem">
+      <MemberSignature Language="C#" Value="public void RemoveItem ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IncludeFileToProject">
+      <MemberSignature Language="C#" Value="public void IncludeFileToProject ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

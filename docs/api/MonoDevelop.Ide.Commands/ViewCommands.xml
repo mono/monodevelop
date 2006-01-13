@@ -1,0 +1,96 @@
+<Type Name="ViewCommands" FullName="MonoDevelop.Ide.Commands.ViewCommands">
+  <TypeSignature Language="C#" Value="public enum ViewCommands" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="Open">
+      <MemberSignature Language="C#" Value="Open" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NewLayout">
+      <MemberSignature Language="C#" Value="NewLayout" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ResetTreeDisplayOptions">
+      <MemberSignature Language="C#" Value="ResetTreeDisplayOptions" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="TreeDisplayOptionList">
+      <MemberSignature Language="C#" Value="TreeDisplayOptionList" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="LayoutList">
+      <MemberSignature Language="C#" Value="LayoutList" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ViewList">
+      <MemberSignature Language="C#" Value="ViewList" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="DeleteCurrentLayout">
+      <MemberSignature Language="C#" Value="DeleteCurrentLayout" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="FullScreen">
+      <MemberSignature Language="C#" Value="FullScreen" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.ViewCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

@@ -1,0 +1,134 @@
+<Type Name="Runtime" FullName="MonoDevelop.Core.Runtime">
+  <TypeSignature Language="C#" Value="public class Runtime" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Core</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Runtime ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Initialize">
+      <MemberSignature Language="C#" Value="public static void Initialize ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ProcessService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.Execution.ProcessService ProcessService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.Execution.ProcessService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Properties">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.PropertyService Properties { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.PropertyService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FileUtilityService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.FileUtilityService FileUtilityService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.FileUtilityService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="StringParserService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.StringParserService StringParserService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.StringParserService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SystemAssemblyService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.SystemAssemblyService SystemAssemblyService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.SystemAssemblyService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoggingService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.ILoggingService LoggingService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.ILoggingService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AddInService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.AddIns.AddInService AddInService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.AddIns.AddInService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetupService">
+      <MemberSignature Language="C#" Value="public static MonoDevelop.Core.AddIns.Setup.SetupService SetupService { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.AddIns.Setup.SetupService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

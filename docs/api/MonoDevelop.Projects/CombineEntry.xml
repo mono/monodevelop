@@ -1,0 +1,506 @@
+<Type Name="CombineEntry" FullName="MonoDevelop.Projects.CombineEntry">
+  <TypeSignature Language="C#" Value="public abstract class CombineEntry : MonoDevelop.Projects.Serialization.ICustomDataItem, MonoDevelop.Projects.Serialization.IExtendedDataItem, System.IDisposable" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Projects</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>MonoDevelop.Projects.Serialization.ICustomDataItem</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>MonoDevelop.Projects.Serialization.IExtendedDataItem</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>System.IDisposable</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public CombineEntry ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NameChanged">
+      <MemberSignature Language="C#" Value="public event MonoDevelop.Projects.CombineEntryRenamedEventHandler NameChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.CombineEntryRenamedEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ActiveConfigurationChanged">
+      <MemberSignature Language="C#" Value="public event MonoDevelop.Projects.ConfigurationEventHandler ActiveConfigurationChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.ConfigurationEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ConfigurationAdded">
+      <MemberSignature Language="C#" Value="public event MonoDevelop.Projects.ConfigurationEventHandler ConfigurationAdded;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.ConfigurationEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ConfigurationRemoved">
+      <MemberSignature Language="C#" Value="public event MonoDevelop.Projects.ConfigurationEventHandler ConfigurationRemoved;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.ConfigurationEventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="InitializeFromTemplate">
+      <MemberSignature Language="C#" Value="public virtual void InitializeFromTemplate (System.Xml.XmlElement template);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="template" Type="System.Xml.XmlElement" />
+      </Parameters>
+      <Docs>
+        <param name="template">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Save">
+      <MemberSignature Language="C#" Value="public virtual void Save (string fileName, MonoDevelop.Core.IProgressMonitor monitor);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">To be added.</param>
+        <param name="monitor">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Save">
+      <MemberSignature Language="C#" Value="public virtual void Save (MonoDevelop.Core.IProgressMonitor monitor);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Serialize">
+      <MemberSignature Language="C#" Value="public virtual MonoDevelop.Projects.Serialization.DataCollection Serialize (MonoDevelop.Projects.Serialization.ITypeSerializer handler);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Serialization.DataCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="handler" Type="MonoDevelop.Projects.Serialization.ITypeSerializer" />
+      </Parameters>
+      <Docs>
+        <param name="handler">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Deserialize">
+      <MemberSignature Language="C#" Value="public virtual void Deserialize (MonoDevelop.Projects.Serialization.ITypeSerializer handler, MonoDevelop.Projects.Serialization.DataCollection data);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="handler" Type="MonoDevelop.Projects.Serialization.ITypeSerializer" />
+        <Parameter Name="data" Type="MonoDevelop.Projects.Serialization.DataCollection" />
+      </Parameters>
+      <Docs>
+        <param name="handler">To be added.</param>
+        <param name="data">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateConfiguration">
+      <MemberSignature Language="C#" Value="public abstract MonoDevelop.Projects.IConfiguration CreateConfiguration (string name);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.IConfiguration</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetConfiguration">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.IConfiguration GetConfiguration (string name);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.IConfiguration</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAbsoluteChildPath">
+      <MemberSignature Language="C#" Value="public string GetAbsoluteChildPath (string relPath);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="relPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="relPath">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetRelativeChildPath">
+      <MemberSignature Language="C#" Value="public string GetRelativeChildPath (string absPath);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="absPath" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="absPath">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Dispose">
+      <MemberSignature Language="C#" Value="public virtual void Dispose ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnNameChanged">
+      <MemberSignature Language="C#" Value="protected virtual void OnNameChanged (MonoDevelop.Projects.CombineEntryRenamedEventArgs e);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="e" Type="MonoDevelop.Projects.CombineEntryRenamedEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="e">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnActiveConfigurationChanged">
+      <MemberSignature Language="C#" Value="protected virtual void OnActiveConfigurationChanged (MonoDevelop.Projects.ConfigurationEventArgs args);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="MonoDevelop.Projects.ConfigurationEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnConfigurationAdded">
+      <MemberSignature Language="C#" Value="protected virtual void OnConfigurationAdded (MonoDevelop.Projects.ConfigurationEventArgs args);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="MonoDevelop.Projects.ConfigurationEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnConfigurationRemoved">
+      <MemberSignature Language="C#" Value="protected virtual void OnConfigurationRemoved (MonoDevelop.Projects.ConfigurationEventArgs args);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="args" Type="MonoDevelop.Projects.ConfigurationEventArgs" />
+      </Parameters>
+      <Docs>
+        <param name="args">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Clean">
+      <MemberSignature Language="C#" Value="public abstract void Clean ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Build">
+      <MemberSignature Language="C#" Value="public abstract MonoDevelop.Projects.ICompilerResult Build (MonoDevelop.Core.IProgressMonitor monitor);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.ICompilerResult</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Execute">
+      <MemberSignature Language="C#" Value="public abstract void Execute (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+        <Parameter Name="context" Type="MonoDevelop.Projects.ExecutionContext" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="context">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GenerateMakefiles">
+      <MemberSignature Language="C#" Value="public virtual void GenerateMakefiles (MonoDevelop.Projects.Combine parentCombine);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parentCombine" Type="MonoDevelop.Projects.Combine" />
+      </Parameters>
+      <Docs>
+        <param name="parentCombine">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Name">
+      <MemberSignature Language="C#" Value="public virtual string Name { set; get; };" />
+      <MemberType>Property</MemberType>
+      <Attributes>
+        <Attribute>
+          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="name", Scope=0, SerializationDataType=null, ValueType=null, ReadOnly=False, WriteOnly=False)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FileName">
+      <MemberSignature Language="C#" Value="public virtual string FileName { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FileFormat">
+      <MemberSignature Language="C#" Value="public virtual MonoDevelop.Projects.IFileFormat FileFormat { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.IFileFormat</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RelativeFileName">
+      <MemberSignature Language="C#" Value="public virtual string RelativeFileName { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="BaseDirectory">
+      <MemberSignature Language="C#" Value="public string BaseDirectory { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentFileVersion">
+      <MemberSignature Language="C#" Value="protected virtual string CurrentFileVersion { set; get; };" />
+      <MemberType>Property</MemberType>
+      <Attributes>
+        <Attribute>
+          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="fileversion", Scope=0, SerializationDataType=null, ValueType=null, ReadOnly=False, WriteOnly=False)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ParentCombine">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Combine ParentCombine { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Combine</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RootCombine">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Combine RootCombine { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Combine</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Configurations">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.ConfigurationCollection Configurations { get; };" />
+      <MemberType>Property</MemberType>
+      <Attributes>
+        <Attribute>
+          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="Configuration", Scope=1, SerializationDataType=null, ValueType=typeof(MonoDevelop.Projects.IConfiguration), ReadOnly=False, WriteOnly=False)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>MonoDevelop.Projects.Serialization.ItemProperty(DefaultValue=null, Name="Configurations", Scope=0, SerializationDataType=null, ValueType=null, ReadOnly=False, WriteOnly=False)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.ConfigurationCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ActiveConfiguration">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.IConfiguration ActiveConfiguration { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.IConfiguration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NeedsBuilding">
+      <MemberSignature Language="C#" Value="public abstract bool NeedsBuilding { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

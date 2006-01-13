@@ -1,0 +1,161 @@
+<Type Name="ConversionFlags" FullName="MonoDevelop.Projects.Ambience.ConversionFlags">
+  <TypeSignature Language="C#" Value="public enum ConversionFlags" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Projects</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.Flags</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Members>
+    <Member MemberName="ShowModifiers">
+      <MemberSignature Language="C#" Value="ShowModifiers" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="StandardConversionFlags">
+      <MemberSignature Language="C#" Value="StandardConversionFlags" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShowParameterNames">
+      <MemberSignature Language="C#" Value="ShowParameterNames" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="QualifiedNamesOnlyForReturnTypes">
+      <MemberSignature Language="C#" Value="QualifiedNamesOnlyForReturnTypes" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="IncludeHTMLMarkup">
+      <MemberSignature Language="C#" Value="IncludeHTMLMarkup" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="None">
+      <MemberSignature Language="C#" Value="None" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShowAccessibility">
+      <MemberSignature Language="C#" Value="ShowAccessibility" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="AssemblyScoutDefaults">
+      <MemberSignature Language="C#" Value="AssemblyScoutDefaults" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="IncludeBodies">
+      <MemberSignature Language="C#" Value="IncludeBodies" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="UseLinkArrayList">
+      <MemberSignature Language="C#" Value="UseLinkArrayList" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="All">
+      <MemberSignature Language="C#" Value="All" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="IncludePangoMarkup">
+      <MemberSignature Language="C#" Value="IncludePangoMarkup" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShowInheritanceList">
+      <MemberSignature Language="C#" Value="ShowInheritanceList" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="UseFullyQualifiedNames">
+      <MemberSignature Language="C#" Value="UseFullyQualifiedNames" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Ambience.ConversionFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

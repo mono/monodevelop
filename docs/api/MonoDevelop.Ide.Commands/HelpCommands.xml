@@ -1,0 +1,36 @@
+<Type Name="HelpCommands" FullName="MonoDevelop.Ide.Commands.HelpCommands">
+  <TypeSignature Language="C#" Value="public enum HelpCommands" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="TipOfTheDay">
+      <MemberSignature Language="C#" Value="TipOfTheDay" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.HelpCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="About">
+      <MemberSignature Language="C#" Value="About" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Commands.HelpCommands</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

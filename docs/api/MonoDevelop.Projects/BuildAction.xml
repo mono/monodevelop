@@ -1,0 +1,56 @@
+<Type Name="BuildAction" FullName="MonoDevelop.Projects.BuildAction">
+  <TypeSignature Language="C#" Value="public enum BuildAction" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Projects</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="Compile">
+      <MemberSignature Language="C#" Value="Compile" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.BuildAction</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Nothing">
+      <MemberSignature Language="C#" Value="Nothing" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.BuildAction</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="EmbedAsResource">
+      <MemberSignature Language="C#" Value="EmbedAsResource" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.BuildAction</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Exclude">
+      <MemberSignature Language="C#" Value="Exclude" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.BuildAction</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

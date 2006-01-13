@@ -1,0 +1,209 @@
+<Type Name="CodeRefactorer" FullName="MonoDevelop.Projects.CodeGeneration.CodeRefactorer">
+  <TypeSignature Language="C#" Value="public class CodeRefactorer" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Projects</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public CodeRefactorer (MonoDevelop.Projects.Combine rootCombine, MonoDevelop.Projects.Parser.IParserDatabase pdb);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="rootCombine" Type="MonoDevelop.Projects.Combine" />
+        <Parameter Name="pdb" Type="MonoDevelop.Projects.Parser.IParserDatabase" />
+      </Parameters>
+      <Docs>
+        <param name="rootCombine">To be added.</param>
+        <param name="pdb">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateClass">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.IClass CreateClass (MonoDevelop.Projects.Project project, string language, string directory, string namspace, System.CodeDom.CodeTypeDeclaration type);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Parser.IClass</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="project" Type="MonoDevelop.Projects.Project" />
+        <Parameter Name="language" Type="System.String" />
+        <Parameter Name="directory" Type="System.String" />
+        <Parameter Name="namspace" Type="System.String" />
+        <Parameter Name="type" Type="System.CodeDom.CodeTypeDeclaration" />
+      </Parameters>
+      <Docs>
+        <param name="project">To be added.</param>
+        <param name="language">To be added.</param>
+        <param name="directory">To be added.</param>
+        <param name="namspace">To be added.</param>
+        <param name="type">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AddMember">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.IMember AddMember (MonoDevelop.Projects.Parser.IClass cls, System.CodeDom.CodeTypeMember member);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Parser.IMember</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="member" Type="System.CodeDom.CodeTypeMember" />
+      </Parameters>
+      <Docs>
+        <param name="cls">To be added.</param>
+        <param name="member">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveMember">
+      <MemberSignature Language="C#" Value="public void RemoveMember (MonoDevelop.Projects.Parser.IClass cls, MonoDevelop.Projects.Parser.IMember member);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="member" Type="MonoDevelop.Projects.Parser.IMember" />
+      </Parameters>
+      <Docs>
+        <param name="cls">To be added.</param>
+        <param name="member">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ReplaceMember">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.IMember ReplaceMember (MonoDevelop.Projects.Parser.IClass cls, MonoDevelop.Projects.Parser.IMember oldMember, System.CodeDom.CodeTypeMember member);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Parser.IMember</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="oldMember" Type="MonoDevelop.Projects.Parser.IMember" />
+        <Parameter Name="member" Type="System.CodeDom.CodeTypeMember" />
+      </Parameters>
+      <Docs>
+        <param name="cls">To be added.</param>
+        <param name="oldMember">To be added.</param>
+        <param name="member">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TextFileProvider">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Text.ITextFileProvider TextFileProvider { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Text.ITextFileProvider</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RenameClass">
+      <MemberSignature Language="C#" Value="public void RenameClass (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.Parser.IClass cls, string newName, MonoDevelop.Projects.CodeGeneration.RefactoryScope scope);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="newName" Type="System.String" />
+        <Parameter Name="scope" Type="MonoDevelop.Projects.CodeGeneration.RefactoryScope" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="cls">To be added.</param>
+        <param name="newName">To be added.</param>
+        <param name="scope">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FindClassReferences">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.CodeGeneration.MemberReferenceCollection FindClassReferences (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.Parser.IClass cls, MonoDevelop.Projects.CodeGeneration.RefactoryScope scope);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.CodeGeneration.MemberReferenceCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="scope" Type="MonoDevelop.Projects.CodeGeneration.RefactoryScope" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="cls">To be added.</param>
+        <param name="scope">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RenameMember">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.Parser.IMember RenameMember (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.Parser.IClass cls, MonoDevelop.Projects.Parser.IMember member, string newName, MonoDevelop.Projects.CodeGeneration.RefactoryScope scope);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.Parser.IMember</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="member" Type="MonoDevelop.Projects.Parser.IMember" />
+        <Parameter Name="newName" Type="System.String" />
+        <Parameter Name="scope" Type="MonoDevelop.Projects.CodeGeneration.RefactoryScope" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="cls">To be added.</param>
+        <param name="member">To be added.</param>
+        <param name="newName">To be added.</param>
+        <param name="scope">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FindMemberReferences">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Projects.CodeGeneration.MemberReferenceCollection FindMemberReferences (MonoDevelop.Core.IProgressMonitor monitor, MonoDevelop.Projects.Parser.IClass cls, MonoDevelop.Projects.Parser.IMember member, MonoDevelop.Projects.CodeGeneration.RefactoryScope scope);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Projects.CodeGeneration.MemberReferenceCollection</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
+        <Parameter Name="cls" Type="MonoDevelop.Projects.Parser.IClass" />
+        <Parameter Name="member" Type="MonoDevelop.Projects.Parser.IMember" />
+        <Parameter Name="scope" Type="MonoDevelop.Projects.CodeGeneration.RefactoryScope" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="cls">To be added.</param>
+        <param name="member">To be added.</param>
+        <param name="scope">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

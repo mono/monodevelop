@@ -1,0 +1,92 @@
+<Type Name="ProjectFileNodeCommandHandler" FullName="MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFileNodeCommandHandler">
+  <TypeSignature Language="C#" Value="public class ProjectFileNodeCommandHandler : MonoDevelop.Ide.Gui.Pads.NodeCommandHandler" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>MonoDevelop.Ide.Gui.Pads.NodeCommandHandler</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ProjectFileNodeCommandHandler ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RemoveItem">
+      <MemberSignature Language="C#" Value="public void RemoveItem ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnUpdateIncludeInBuild">
+      <MemberSignature Language="C#" Value="public void OnUpdateIncludeInBuild (MonoDevelop.Components.Commands.CommandInfo info);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="info" Type="MonoDevelop.Components.Commands.CommandInfo" />
+      </Parameters>
+      <Docs>
+        <param name="info">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnIncludeInBuild">
+      <MemberSignature Language="C#" Value="public void OnIncludeInBuild ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnUpdateIncludeInDeploy">
+      <MemberSignature Language="C#" Value="public void OnUpdateIncludeInDeploy (MonoDevelop.Components.Commands.CommandInfo info);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="info" Type="MonoDevelop.Components.Commands.CommandInfo" />
+      </Parameters>
+      <Docs>
+        <param name="info">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnIncludeInDeploy">
+      <MemberSignature Language="C#" Value="public void OnIncludeInDeploy ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

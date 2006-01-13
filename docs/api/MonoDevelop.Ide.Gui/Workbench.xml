@@ -1,0 +1,330 @@
+<Type Name="Workbench" FullName="MonoDevelop.Ide.Gui.Workbench">
+  <TypeSignature Language="C#" Value="public class Workbench" />
+  <AssemblyInfo>
+    <AssemblyName>MonoDevelop.Ide</AssemblyName>
+    <AssemblyVersion>0.9.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public Workbench ();" />
+      <MemberType>Constructor</MemberType>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ActiveDocumentChanged">
+      <MemberSignature Language="C#" Value="public event EventHandler ActiveDocumentChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DeleteLayout">
+      <MemberSignature Language="C#" Value="public void DeleteLayout (string name);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SaveAll">
+      <MemberSignature Language="C#" Value="public void SaveAll ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CloseAllDocuments">
+      <MemberSignature Language="C#" Value="public void CloseAllDocuments ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ShowPad">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Pad ShowPad (MonoDevelop.Ide.Gui.IPadContent content);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Pad</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="content" Type="MonoDevelop.Ide.Gui.IPadContent" />
+      </Parameters>
+      <Docs>
+        <param name="content">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OpenDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document OpenDocument (string fileName);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OpenDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document OpenDocument (string fileName, bool bringToFront);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="bringToFront" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">To be added.</param>
+        <param name="bringToFront">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OpenDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document OpenDocument (string fileName, int line, int column, bool bringToFront);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fileName" Type="System.String" />
+        <Parameter Name="line" Type="System.Int32" />
+        <Parameter Name="column" Type="System.Int32" />
+        <Parameter Name="bringToFront" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="fileName">To be added.</param>
+        <param name="line">To be added.</param>
+        <param name="column">To be added.</param>
+        <param name="bringToFront">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OpenDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document OpenDocument (MonoDevelop.Ide.Gui.IViewContent content, bool bringToFront);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="content" Type="MonoDevelop.Ide.Gui.IViewContent" />
+        <Parameter Name="bringToFront" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="content">To be added.</param>
+        <param name="bringToFront">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="NewDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document NewDocument (string defaultName, string mimeType, string content);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="defaultName" Type="System.String" />
+        <Parameter Name="mimeType" Type="System.String" />
+        <Parameter Name="content" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="defaultName">To be added.</param>
+        <param name="mimeType">To be added.</param>
+        <param name="content">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RecentOpen">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Core.Gui.RecentOpen RecentOpen { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Core.Gui.RecentOpen</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Documents">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.DocumentCollection Documents { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.DocumentCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ActiveDocument">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.Document ActiveDocument { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.Document</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Pads">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.PadCollection Pads { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.PadCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="RootWindow">
+      <MemberSignature Language="C#" Value="public Gtk.Window RootWindow { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>Gtk.Window</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Context">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.WorkbenchContext Context { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.WorkbenchContext</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="FullScreen">
+      <MemberSignature Language="C#" Value="public bool FullScreen { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentLayout">
+      <MemberSignature Language="C#" Value="public string CurrentLayout { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Layouts">
+      <MemberSignature Language="C#" Value="public string[] Layouts { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String[]</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ProgressMonitors">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.ProgressMonitorManager ProgressMonitors { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.ProgressMonitorManager</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="StatusBar">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.IStatusBarService StatusBar { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.IStatusBarService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DisplayBindings">
+      <MemberSignature Language="C#" Value="public MonoDevelop.Ide.Gui.DisplayBindingService DisplayBindings { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>MonoDevelop.Ide.Gui.DisplayBindingService</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>
