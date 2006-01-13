@@ -13,6 +13,7 @@
       <Entry configuration="Debug" build="True" name="NemerleBinding" />
       <Entry configuration="Debug" build="True" name="prj2make" />
       <Entry configuration="Debug" build="True" name="VBNetBinding" />
+      <Entry configuration="Debug" build="True" name="GladeAddIn" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
@@ -27,6 +28,7 @@
       <Entry configuration="Debug" build="True" name="NemerleBinding" />
       <Entry configuration="Debug" build="True" name="prj2make" />
       <Entry configuration="Debug" build="True" name="VBNetBinding" />
+      <Entry configuration="Debug" build="True" name="GladeAddIn" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">
@@ -42,6 +44,7 @@
     <Execute type="None" entry="NemerleBinding" />
     <Execute type="None" entry="prj2make" />
     <Execute type="None" entry="VBNetBinding" />
+    <Execute type="None" entry="GladeAddIn" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -56,5 +59,6 @@
     <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
     <Entry filename="./prj2make-sharp-lib/prj2make.mdp" />
     <Entry filename="./VBNetBinding/VBNetBinding.mdp" />
+    <Entry filename="./GladeAddIn/GladeAddIn.mdp" />
   </Entries>
 </Combine>
