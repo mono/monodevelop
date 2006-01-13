@@ -1,3 +1,11 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: WrapDocument() does not create
+	a Document if it already exists. In ActiveDocument use WrapDocument
+	instead of FindDocument since the document may not yet exist.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Set the name of the file
+	as a tooltip of the tab.
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Make FileTemplate public

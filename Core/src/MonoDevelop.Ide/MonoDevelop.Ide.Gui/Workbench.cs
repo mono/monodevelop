@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public Document ActiveDocument {
-			get { return FindDocument (workbench.ActiveWorkbenchWindow); }
+			get { return WrapDocument (workbench.ActiveWorkbenchWindow); }
 		}
 		
 		public PadCollection Pads {
@@ -289,7 +289,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		Document WrapDocument (IWorkbenchWindow window)
 		{
-			Document doc = new Document (window);
+			if (window == null) return null;
+			Document doc = FindDocument (window);
+			if (doc != null) return doc;
+			doc = new Document (window);
 			window.Closing += new WorkbenchWindowEventHandler (OnWindowClosing);
 			window.Closed += new EventHandler (OnWindowClosed);
 			Documents.Add (doc);

@@ -295,6 +295,10 @@ namespace MonoDevelop.Ide.Gui
 				tabLabel.Label.UseMarkup = false;
 			}
 			
+			if (content.ContentName != null && content.ContentName != "") {
+				tabLabel.SetTooltip (content.ContentName, content.ContentName);
+			}
+			
 			try {
 				if (content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
 					tabLabel.Icon.Pixbuf = FileIconLoader.GetPixbufForFile (content.ContentName, 16);
