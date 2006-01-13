@@ -42,6 +42,9 @@ namespace MonoDevelop.Projects.Parser
 		ClassEntry firstClass;
 		int parseErrorRetries;
 		
+		[NonSerialized]
+		bool disableParse;
+		
 		public FileEntry (string path)
 		{
 			filePath = path;
@@ -51,6 +54,11 @@ namespace MonoDevelop.Projects.Parser
 		public string FileName
 		{
 			get { return filePath; }
+		}
+		
+		public bool DisableParse {
+			get { return disableParse; }
+			set { disableParse = value; }
 		}
 		
 		public DateTime LastParseTime

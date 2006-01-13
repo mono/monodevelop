@@ -117,6 +117,18 @@ namespace MonoDevelop.Projects.Parser
 					ainfo.Load (fileName, false);
 					UpdateClassInformation (ainfo.Classes, fileName);
 				}
+			} catch (Exception ex) {
+				FileEntry e = GetFile (fileName);
+				e.LastParseTime = DateTime.MinValue;
+				if (e.ParseErrorRetries > 0) {
+					if (--e.ParseErrorRetries == 0) {
+						e.DisableParse = true;
+					}
+				}
+				else
+					e.ParseErrorRetries = 3;
+				monitor.ReportError ("Error parsing assembly: " + fileName, ex);
+				throw;
 			} finally {
 				monitor.EndTask ();
 				if (parentMonitor == null) monitor.Dispose ();

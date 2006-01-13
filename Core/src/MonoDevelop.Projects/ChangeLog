@@ -1,3 +1,14 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	Properly handle errors found when parsing an assembly. When there
+	is an error, make sure the assembly is reparsed the next time MD starts.
+	* MonoDevelop.Projects.Parser/FileEntry.cs: Added DisableParse
+	property.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: In Write(),
+	close the file in case of error. Also flush the binary writer
+	before writing the index offset.
+
 2006-01-10 Mart Roosmaa  <roosmaa@gmail.com>
 
 	* MonoDevelop.Projects/Combine.cs: Updated an using statement.

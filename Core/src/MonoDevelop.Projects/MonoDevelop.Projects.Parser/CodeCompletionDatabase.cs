@@ -183,74 +183,84 @@ namespace MonoDevelop.Projects.Parser
 				BinaryFormatter bf = new BinaryFormatter ();
 				BinaryWriter bw = new BinaryWriter (dfile);
 				
-				// The headers are the first thing to write, so they can be read
-				// without deserializing the whole file.
-				bf.Serialize (dfile, headers);
-				
-				// The position of the index will be written here
-				long indexOffsetPos = dfile.Position;
-				bw.Write ((long)0);
-				
-				MemoryStream buffer = new MemoryStream ();
-				BinaryWriter bufWriter = new BinaryWriter (buffer);
-				
-				// Write all class data
-				foreach (FileEntry fe in files.Values) 
-				{
-					ClassEntry ce = fe.FirstClass;
-					while (ce != null)
-					{
-						IClass c = ce.Class;
-						byte[] data;
-						int len;
-						
-						if (c == null) {
-							// Copy the data from the source file
-							if (datareader == null) {
-								datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-								datareader = new BinaryReader (datafile);
-							}
-							datafile.Position = ce.Position;
-							len = datareader.ReadInt32 ();
-							data = new byte[len];
-							datafile.Read (data, 0, len);
-						}
-						else {
-							buffer.Position = 0;
-							PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
-							data = buffer.GetBuffer ();
-							len = (int)buffer.Position;
-						}
-						
-						ce.Position = dfile.Position;
-						bw.Write (len);
-						bw.Write (data, 0, len);
-						ce = ce.NextInFile;
-					}
-				}
-				
-				// Write the index
-				long indexOffset = dfile.Position;
-				
-				Queue dataQueue = new Queue ();
-				dataQueue.Enqueue (references);
-				dataQueue.Enqueue (rootNamespace);
-				dataQueue.Enqueue (files);
-				SerializeData (dataQueue);
-				bf.Serialize (dfile, dataQueue.ToArray ());
-				
-				dfile.Position = indexOffsetPos;
-				bw.Write (indexOffset);
-				
-				bw.Close ();
-				dfile.Close ();
-				
-				CloseReader ();
-				
-				if (File.Exists (dataFile))
-					File.Delete (dataFile);
+				try {
+					// The headers are the first thing to write, so they can be read
+					// without deserializing the whole file.
+					bf.Serialize (dfile, headers);
 					
-				File.Move (tmpDataFile, dataFile);
+					// The position of the index will be written here
+					long indexOffsetPos = dfile.Position;
+					bw.Write ((long)0);
+					
+					MemoryStream buffer = new MemoryStream ();
+					BinaryWriter bufWriter = new BinaryWriter (buffer);
+					
+					// Write all class data
+					foreach (FileEntry fe in files.Values) 
+					{
+						ClassEntry ce = fe.FirstClass;
+						while (ce != null)
+						{
+							IClass c = ce.Class;
+							byte[] data;
+							int len;
+							
+							if (c == null) {
+								// Copy the data from the source file
+								if (datareader == null) {
+									datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+									datareader = new BinaryReader (datafile);
+								}
+								datafile.Position = ce.Position;
+								len = datareader.ReadInt32 ();
+								data = new byte[len];
+								datafile.Read (data, 0, len);
+							}
+							else {
+								buffer.Position = 0;
+								PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
+								data = buffer.GetBuffer ();
+								len = (int)buffer.Position;
+							}
+							
+							ce.Position = dfile.Position;
+							bw.Write (len);
+							bw.Write (data, 0, len);
+							ce = ce.NextInFile;
+						}
+					}
+					
+					bw.Flush ();
+					
+					// Write the index
+					long indexOffset = dfile.Position;
+					
+					Queue dataQueue = new Queue ();
+					dataQueue.Enqueue (references);
+					dataQueue.Enqueue (rootNamespace);
+					dataQueue.Enqueue (files);
+					SerializeData (dataQueue);
+					bf.Serialize (dfile, dataQueue.ToArray ());
+					
+					dfile.Position = indexOffsetPos;
+					bw.Write (indexOffset);
+					
+					bw.Close ();
+					dfile.Close ();
+					dfile = null;
+					
+					CloseReader ();
+					
+					if (File.Exists (dataFile))
+						File.Delete (dataFile);
+						
+					File.Move (tmpDataFile, dataFile);
+				} catch {
+					if (dfile != null)
+						dfile.Close ();
+					if (File.Exists (tmpDataFile))
+						File.Delete (tmpDataFile);
+				}
 			}
 		}
 		
@@ -381,7 +391,7 @@ namespace MonoDevelop.Projects.Parser
 				{
 					if (!File.Exists (file.FileName)) continue;
 					FileInfo fi = new FileInfo (file.FileName);
-					if (fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) 
+					if ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse) 
 						QueueParseJob (file);
 				}
 			}
