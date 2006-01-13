@@ -1,3 +1,8 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am: Added some targets for updating the API documentation
+	and for building add-in packages.
+
 2006-01-10 Mart Roosmaa  <roosmaa@gmail.com>
 
 	* configure.in: Bumped required mono version for changes in r55333.

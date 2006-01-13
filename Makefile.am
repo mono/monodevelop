@@ -28,6 +28,44 @@ uninstall-hook:
 
 endif # ENABLE_UPDATE_MIMEDB
 
+PACKAGES = \
+	build/AddIns/MonoDevelop.Core.Gui.addin.xml \
+	build/AddIns/MonoDevelop.Documentation.addin.xml \
+	build/AddIns/MonoDevelop.Ide.addin.xml \
+	build/AddIns/MonoDevelop.Projects.addin.xml \
+	build/AddIns/MonoDevelop.Projects.Gui.addin.xml \
+	build/AddIns/MonoDevelop.SourceEditor.addin.xml \
+	build/AddIns/BackendBindings/BooBinding.addin.xml \
+	build/AddIns/BackendBindings/CSharpBinding.addin.xml \
+	build/AddIns/BackendBindings/ILAsmBinding.addin.xml \
+	build/AddIns/BackendBindings/JavaBinding.addin.xml \
+	build/AddIns/BackendBindings/VBNetBinding.addin.xml \
+	build/AddIns/MonoQuery/MonoQuery.addin.xml \
+	build/AddIns/NUnit/MonoDevelopNUnit.addin.xml \
+	build/AddIns/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml \
+	build/AddIns/prj2makesharp/prj2make-sharp-lib.addin.xml \
+	build/AddIns/WelcomePage/WelcomePage.addin.xml
+
+
+DOCFILES = \
+	build/bin/MonoDevelop.Core.dll \
+	build/AddIns/MonoDevelop.Components.dll \
+	build/AddIns/MonoDevelop.Core.Gui.dll \
+	build/AddIns/MonoDevelop.Documentation.dll \
+	build/AddIns/MonoDevelop.Ide.dll \
+	build/AddIns/MonoDevelop.Projects.dll \
+	build/AddIns/MonoDevelop.Projects.Gui.dll
+
+mpacks: $(PACKAGES)
+	test -z "packages" || mkdir -p packages
+	mono build/bin/mdrun.exe setup p $(PACKAGES:%=%) -d:packages
+	mono build/bin/mdrun.exe setup rb packages
+
+apidocs:
+	monodocer $(DOCFILES:%=--assembly:%) --path docs/api
+	cd docs/web/sources && mdassembler --out monodevelop-reference --ecma ../../api
+#	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
+
 run: runmd
 
 runmd: $(PROGRAM)
