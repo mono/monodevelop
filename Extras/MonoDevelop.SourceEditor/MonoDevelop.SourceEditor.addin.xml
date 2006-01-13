@@ -97,24 +97,14 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.Cut" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.Copy" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.Paste" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<SeparatorItem id = "Separator1" />
-		<CommandItem id = "MonoDevelop.Commands.FileCommands.Save" />
-		<CommandItem id = "MonoDevelop.Commands.FileCommands.SaveAs" />
-		<CommandItem id = "MonoDevelop.Commands.FileCommands.CloseFile" />
-		<SeparatorItem id = "Separator2" _label = "-" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.CommentCode" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.UncommentCode" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.IndentSelection" />
-		<CommandItem id = "MonoDevelop.Commands.EditCommands.UnIndentSelection" />
-		<ItemSet id = "FileMode" _label = "Highlighting Mode">
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.HighlightingTypeList" />
-		</ItemSet>
-		<SeparatorItem id = "Separator3" />
-		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ShowBufferOptions" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/ToolBar">

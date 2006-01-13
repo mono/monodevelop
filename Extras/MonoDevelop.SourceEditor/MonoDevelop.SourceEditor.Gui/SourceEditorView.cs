@@ -140,6 +140,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			return base.OnButtonPressEvent (e);
 		}
 		
+		protected override void OnPopulatePopup (Menu menu)
+		{
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu");
+			if (cset.Count > 0) {
+				cset.AddItem (Command.Separator);
+				IdeApp.CommandService.InsertOptions (menu, cset, 0);
+			}
+			base.OnPopulatePopup (menu);
+		}
+		
 		public void ShowBreakpointAt (int linenumber)
 		{
 			if (!buf.IsMarked (linenumber, SourceMarkerType.BreakpointMark))

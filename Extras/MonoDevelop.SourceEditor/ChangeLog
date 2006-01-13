@@ -1,3 +1,9 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Made extensible the
+	context menu of the editor.
+
 2006-01-10  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Track api changes.
