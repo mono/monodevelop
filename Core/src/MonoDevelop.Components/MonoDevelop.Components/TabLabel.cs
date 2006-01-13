@@ -15,6 +15,8 @@ namespace MonoDevelop.Components
 		private Label title;
 		private Gtk.Image icon;
 		private Button btn;
+		private EventBox titleBox;
+		Tooltips tips;
 		
 		protected TabLabel (IntPtr p): base (p)
 		{
@@ -22,11 +24,13 @@ namespace MonoDevelop.Components
 
 		public TabLabel (Label label, Gtk.Image icon) : base (false, 2)
 		{
+			this.titleBox = new EventBox ();
 			this.icon = icon;
 			this.PackStart (icon, false, true, 2);
 
 			title = label;
-			this.PackStart (title, true, true, 0);
+			titleBox.Add (title);
+			this.PackStart (titleBox, true, true, 0);
 			
 			btn = new Button ();
 			btn.Add (new Gtk.Image (GetType().Assembly, "MonoDevelop.Close.png"));
@@ -53,6 +57,12 @@ namespace MonoDevelop.Components
 		public Button Button
 		{
 			get { return btn; }
+		}
+		
+		public void SetTooltip (string tip, string desc)
+		{
+			if (tips == null) tips = new Tooltips ();
+			tips.SetTip (titleBox, tip, desc);
 		}
 	}
 }
