@@ -12,6 +12,7 @@ namespace GladeAddIn.Gui
 		
 		public GladePropertiesPad (): base ("")
 		{
+			DefaultPlacement = "GladeAddIn.Gui.GladeWidgetTreePad/right; bottom";
 			VBox box = new VBox ();
 			CheckButton la = new CheckButton ("Map to code");
 		//	box.PackStart (la, false, false, 6);

@@ -20,6 +20,7 @@ namespace GladeAddIn.Gui
 		
 		public GladeWidgetTreePad (): base ("")
 		{
+			DefaultPlacement = "GladeAddIn.Gui.GladePropertiesPad/left; bottom";
 			store = new Gtk.TreeStore (
 				typeof (Gdk.Pixbuf), // image
 				typeof (string),     // name

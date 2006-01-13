@@ -11,6 +11,7 @@ namespace GladeAddIn.Gui
 		
 		public GladePalettePad (): base ("")
 		{
+			DefaultPlacement = "right";
 			try {
 				widget = GladeService.App.Palette;
 				widget.ShowAll ();

@@ -1,3 +1,14 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* GladeAddIn.Gui/GladePropertiesPad.cs: 
+	* GladeAddIn.Gui/GladePalettePad.cs:
+	* GladeAddIn.Gui/GladeWidgetTreePad.cs:
+	* GladeAddIn.Gui/GladeProjectPad.cs: Set a better default placement
+	for the pads.
+	
+	* GladeAddIn.Gui/GladeFileTemplate.cs: When adding a window or
+	dialog, create a new glade file if it doesn't yet exist.
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	Initial implementation of the glade-3 add-in

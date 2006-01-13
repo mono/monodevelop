@@ -13,6 +13,7 @@ namespace GladeAddIn.Gui
 		
 		public GladeProjectPad (): base ("")
 		{
+			DefaultPlacement = "bottom";
 			pview = new Gladeui.ProjectView (Gladeui.ProjectViewType.Tree);
 			GladeService.App.AddProjectView (pview);
 			pview.ShowAll ();
