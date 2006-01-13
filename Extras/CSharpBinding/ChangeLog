@@ -1,3 +1,13 @@
+2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* templates/GtkSharpProject.xpt.xml:
+	* templates/GnomeSharp2Project.xpt.xml:
+	* templates/GladeSharp2Project.xpt.xml:
+	* templates/GnomeSharpProject.xpt.xml:
+	* templates/GtkSharp2Project.xpt.xml:
+	* templates/GladeSharpProject.xpt.xml: Moved project templates to
+	the C# category, since they are C# templates.
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Makefile.am:
