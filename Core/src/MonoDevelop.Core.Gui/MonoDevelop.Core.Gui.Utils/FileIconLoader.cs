@@ -33,25 +33,26 @@ namespace MonoDevelop.Core.Gui.Utils
 		// FIXME: is there a GTK replacement for Gnome.Icon.LookupSync?
 		public static Gdk.Pixbuf GetPixbufForFile (string filename, int size)
 		{
-			Gnome.IconLookupResultFlags result;
-			string icon;
-			try {
-				if (filename == "Documentation")
-					icon = "gnome-fs-regular";
-				else {
-					if (File.Exists (filename) || Directory.Exists (filename)) {
-						filename = filename.Replace ("%", "%25");
-						filename = filename.Replace ("#", "%23");
-						filename = filename.Replace ("?", "%3F");
-						icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, "", Gnome.IconLookupFlags.None, out result);
-					}
-					else
-						icon = "gnome-fs-regular";
-				}
-			} catch {
-				icon = "gnome-fs-regular";
+			if (filename == "Documentation") {
+				return GetPixbufForType ("gnome-fs-regular", size);
+			} else if (Directory.Exists (filename)) {
+				return GetPixbufForType ("gnome-fs-directory", size);
+			} else if (File.Exists (filename)) {
+				filename = filename.Replace ("%", "%25");
+				filename = filename.Replace ("#", "%23");
+				filename = filename.Replace ("?", "%3F");
+				string icon = null;
+				try {
+					Gnome.IconLookupResultFlags result;
+					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+				} catch {}
+				if (icon == null || icon.Length == 0)
+					return GetPixbufForType ("gnome-fs-regular", size);
+				else
+					return GetPixbufForType (icon, size);
 			}
-			return GetPixbufForType (icon, size);
+
+			return GetPixbufForType ("gnome-fs-regular", size);
 		}
 
 		public static Gdk.Pixbuf GetPixbufForType (string type, int size)

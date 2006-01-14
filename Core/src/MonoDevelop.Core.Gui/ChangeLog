@@ -1,3 +1,10 @@
+2006-01-14  John Luke  <john.luke@gmail.com>   
+
+	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs:
+	rewrite the way we lookup the "icon_name" from Gnome
+	to avoid relying on exceptions, and just always use
+	"gnome-fs-directory" for directories
+
 2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.Gui/CommandService.cs: Added InsertOptions
