@@ -264,7 +264,14 @@ namespace CSharpBinding.Parser
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
 					ModifierFlags mf = fieldDeclaration.Modifiers != null ? fieldDeclaration.Modifiers.Code : ModifierFlags.None;
-					Field f = new Field (c, type, field.Name, mf, region);	
+
+					Field f;
+
+					if (fieldDeclaration.Modifiers == null)
+						f = new Field (c, type, field.Name, RefParser.ModifierFlags.None, region);	
+					else
+						f = new Field (c, type, field.Name, fieldDeclaration.Modifiers.Code, region);	
+
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
 				}

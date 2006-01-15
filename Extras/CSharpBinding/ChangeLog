@@ -1,3 +1,9 @@
+2006-01-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* Parser/CSharpVisitor.cs: Make sure that a null modifier
+	is not passed to the Field constructor which is the case
+	for enum members. Fixes bug 77080.
+
 2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* templates/GtkSharpProject.xpt.xml:
