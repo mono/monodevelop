@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			TemplateView = new IconView ();
 			hbox_template.PackStart (TemplateView, true, true, 0);
 
-			entry_location = new FolderEntry (GettextCatalog.GetString ("Combine Location"));
+			entry_location = new FolderEntry (GettextCatalog.GetString ("Solution Location"));
 			hbox_for_browser.PackStart (entry_location, true, true, 0);
 			
 			

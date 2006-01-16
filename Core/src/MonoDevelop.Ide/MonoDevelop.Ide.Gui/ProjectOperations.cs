@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Gui
 				Services.DispatchService.GuiDispatch (new StatefulMessageHandler (RestoreCombinePreferences), CurrentOpenCombine);
 				
 				SaveCombine ();
-				monitor.ReportSuccess (GettextCatalog.GetString ("Combine loaded."));
+				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
 			} finally {
@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Gui
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ();
 			try {
 				openCombine.Save (monitor);
-				monitor.ReportSuccess (GettextCatalog.GetString ("Combine saved."));
+				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
