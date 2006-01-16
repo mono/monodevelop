@@ -219,7 +219,7 @@ namespace MonoQuery
 
 			if (query.Trim ().Length > 0) {
 				IdeApp.Workbench.StatusBar.BeginProgress (
-					GettextCatalog.GetString("Execuing sql query on")
+					GettextCatalog.GetString("Executing sql query on")
 					+ String.Format (" {0}", Connection.Name));
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 
@@ -256,7 +256,7 @@ namespace MonoQuery
 
 			if (query.Trim ().Length > 0) {
 				IdeApp.Workbench.StatusBar.BeginProgress (
-					GettextCatalog.GetString("Execuing sql query on")
+					GettextCatalog.GetString("Executing sql query on")
 					+ String.Format (" {0}", Connection.Name));
 				IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 
@@ -466,7 +466,7 @@ namespace MonoQuery
 		void OnExplain (object sender, EventArgs args)
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (
-				GettextCatalog.GetString("Execuing sql query on")
+				GettextCatalog.GetString("Executing sql query on")
 				+ String.Format (" {0}", Connection.Name));
 			IdeApp.Workbench.StatusBar.SetProgressFraction (0.1);
 			
