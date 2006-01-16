@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					}
 					
 					// tell the user we encountered and worked around an issue 
-					Services.MessageService.ShowError(GettextCatalog.GetString ("The Combine Execute Definitions for this Combine were invalid. A new empty set of Execute Definitions has been created."));
+					Services.MessageService.ShowError(GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."));
 				}
 					
  				entryTreeView.Selection.Changed += new EventHandler(SelectedEntryChanged);
