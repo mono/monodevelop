@@ -1,3 +1,10 @@
+2006-01-14 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelop.Projects/MdsFileFormat.cs: Replaced 'Combine' by
+	'Solution'.
+	* MonoDevelop.Projects/CmbxFileFormat.cs: Replaced 'Combine' by
+	'Solution'.
+
 2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:

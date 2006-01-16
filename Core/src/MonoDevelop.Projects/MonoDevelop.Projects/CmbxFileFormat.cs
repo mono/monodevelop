@@ -60,18 +60,18 @@ namespace MonoDevelop.Projects
 		{
 			Combine combine = node as Combine;
 			if (combine == null)
-				throw new InvalidOperationException ("The provided object is not a Combine");
+				throw new InvalidOperationException ("The provided object is not a Solution");
 
 			StreamWriter sw = new StreamWriter (file);
 			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving combine: {0}"), file), 1);
+				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving solution: {0}"), file), 1);
 				XmlTextWriter tw = new XmlTextWriter (sw);
 				tw.Formatting = Formatting.Indented;
 				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor);
 				combineWriter.WriteCombine (tw, combine);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save combine: {0}"), file), ex);
+				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save solution: {0}"), file), ex);
 			} finally {
 				monitor.EndTask ();
 				sw.Close ();
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects
 			
 			if (version == "1.0" || version == "1") {
 				combineReader = new CombineReaderV1 (serializer, monitor);
-				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old combine file format. It will be automatically converted to the current format."), file));
+				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old solution file format. It will be automatically converted to the current format."), file));
 			}
 			else if (version == "2.0")
 				combineReader = new CombineReaderV2 (serializer, monitor);
@@ -150,7 +150,7 @@ namespace MonoDevelop.Projects
 				if (reader.IsEmptyElement) { reader.Skip(); return null; }
 				string basePath = Path.GetDirectoryName (file);
 				reader.ReadStartElement ();
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading combine: {0}"), combine.FileName), 1);
+				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading solution: {0}"), combine.FileName), 1);
 				while (MoveToNextElement (reader)) {
 					string nodefile = reader.GetAttribute ("filename");
 					nodefile = Runtime.FileUtilityService.RelativeToAbsolutePath (basePath, nodefile);
@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects
 					reader.Skip ();
 				}
 				
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading combine: {0}"), combine.FileName), files.Count);
+				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading solution: {0}"), combine.FileName), files.Count);
 				try {
 					foreach (string nodefile in files) {
 						combine.Entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
