@@ -1,5 +1,5 @@
 //
-// WindowsFolder.cs
+// GladeFileDisplayBinding.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,21 +27,33 @@
 //
 
 
-using MonoDevelop.Projects;
+using System;
+using System.IO;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide.Gui;
 
 namespace GladeAddIn.Gui
 {
-	class WindowsFolder
+	public class GladeFileDisplayBinding: IDisplayBinding
 	{
-		Project project;
-		
-		public WindowsFolder (Project project)
+		public bool CanCreateContentForFile (string fileName)
 		{
-			this.project = project;
+			return Path.GetExtension (fileName) == ".glade";
 		}
 		
-		public Project Project {
-			get { return project; }
+		public bool CanCreateContentForMimeType (string mimetype)
+		{
+			return false;
+		}
+		
+		public IViewContent CreateContentForFile(string fileName)
+		{
+			return null;
+		}
+		
+		public IViewContent CreateContentForMimeType (string mimeType, string content)
+		{
+			return null;
 		}
 	}
 }

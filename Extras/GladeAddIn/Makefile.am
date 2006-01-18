@@ -21,6 +21,8 @@ Metacity/FrameType.cs \
 Metacity/ObjectManager.cs \
 Metacity/Preview.cs \
 Metacity/Theme.cs \
+GladeAddIn.Commands/GladeCommands.cs \
+GladeAddIn.Gui/ProjectFolderNodeBuilderExtension.cs \
 GladeAddIn.Gui/GladeFileTemplate.cs \
 GladeAddIn.Gui/GladePalettePad.cs \
 GladeAddIn.Gui/GladeProjectNodeBuilder.cs \
@@ -39,6 +41,7 @@ GladeAddIn.Gui/GuiBuilderView.cs \
 GladeAddIn.Gui/GuiBuilderDisplayBinding.cs \
 GladeAddIn.Gui/GuiBuilderEditSession.cs \
 GladeAddIn.Gui/ClassUtils.cs \
+GladeAddIn.Gui/GladeFileDisplayBinding.cs \
 GladeAddIn.Gui/WindowsFolderNodeBuilder.cs
 
 RES = \

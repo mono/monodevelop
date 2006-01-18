@@ -35,8 +35,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/FileTemplates">
-		<FileTemplate resource = "GladeDialog.xft.xml"/>
-		<FileTemplate resource = "GladeWindow.xft.xml"/>
+		<FileTemplate id = "GladeDialogFileTemplate" resource = "GladeDialog.xft.xml"/>
+		<FileTemplate id = "GladeWindowFileTemplate" resource = "GladeWindow.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/GladeFileNodeBuilder/ContextMenu">
@@ -49,6 +49,31 @@
 		<DisplayBinding insertbefore = "NewText"
 		       supportedformats = "Text Files,Source Files"
 		       class = "GladeAddIn.Gui.GuiBuilderDisplayBinding" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "GladeAddIn.GladeCommands.AddNewDialog"
+				_label = "Add New Dialog" />
+		<Command id = "GladeAddIn.GladeCommands.AddNewWindow"
+				_label = "Add New Window" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
+		<CommandItem id = "GladeAddIn.GladeCommands.AddNewDialog" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+		<CommandItem id = "GladeAddIn.GladeCommands.AddNewWindow" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode/Add">
+		<CommandItem id = "GladeAddIn.GladeCommands.AddNewDialog" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+		<CommandItem id = "GladeAddIn.GladeCommands.AddNewWindow" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder class = "GladeAddIn.Gui.ProjectFolderNodeBuilderExtension"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding class = "GladeAddIn.Gui.GladeFileDisplayBinding"/>
 	</Extension>
 	
 </AddIn>

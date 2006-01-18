@@ -1,4 +1,30 @@
-// created on 03/11/2005 at 11:43
+//
+// GladeService.cs
+//
+// Author:
+//   Lluis Sanchez Gual
+//
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.Reflection;
@@ -23,6 +49,8 @@ namespace GladeAddIn.Gui
 		static CombineEntryEventHandler entryRemovedHander;
 		static GladeWidgetTreePad widgetTreePad;
 		internal static Gladeui.Project EmptyProject;
+		static string GuiBuilderLayout = "GUI Builder";
+		static string defaultLayout;
 	
 		static GladeService ()
 		{
@@ -54,6 +82,7 @@ namespace GladeAddIn.Gui
 				gladeApp.Project = EmptyProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
+//				RestoreLayout ();
 				return;
 			}
 
@@ -62,11 +91,38 @@ namespace GladeAddIn.Gui
 				gladeApp.Project = view.EditSession.GladeProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (view.EditSession.GladeWidget);
+//				SetDesignerLayout ();
 			}
 			else {
 				gladeApp.Project = EmptyProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
+//				RestoreLayout ();
+			}
+		}
+		
+		static void SetDesignerLayout ()
+		{
+			if (IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
+				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) == -1;
+				defaultLayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
+				if (!exists) {
+					Pad p = IdeApp.Workbench.Pads [typeof(GladePalettePad)];
+					if (p != null) p.Visible = true;
+					p = IdeApp.Workbench.Pads [typeof(GladeWidgetTreePad)];
+					if (p != null) p.Visible = true;
+					p = IdeApp.Workbench.Pads [typeof(GladePropertiesPad)];
+					if (p != null) p.Visible = true;
+				}
+			}
+		}
+		
+		static void RestoreLayout ()
+		{
+			if (defaultLayout != null) {
+				IdeApp.Workbench.CurrentLayout = defaultLayout;
+				defaultLayout = null;
 			}
 		}
 		

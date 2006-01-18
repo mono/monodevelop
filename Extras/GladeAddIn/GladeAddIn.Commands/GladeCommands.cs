@@ -1,5 +1,5 @@
 //
-// WindowsFolder.cs
+// GladeCommands.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,22 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-using MonoDevelop.Projects;
-
-namespace GladeAddIn.Gui
+namespace GladeAddIn
 {
-	class WindowsFolder
+	public enum GladeCommands
 	{
-		Project project;
-		
-		public WindowsFolder (Project project)
-		{
-			this.project = project;
-		}
-		
-		public Project Project {
-			get { return project; }
-		}
+		AddNewDialog,
+		AddNewWindow,
 	}
 }

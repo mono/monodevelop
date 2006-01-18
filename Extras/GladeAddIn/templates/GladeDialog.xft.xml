@@ -4,7 +4,7 @@
 	<TemplateConfiguration>
 		<_Name>Dialog</_Name>
 		<Icon>md-empty-file-icon</Icon>
-		<Category>Glade</Category>
+		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Glade dialog.</_Description>
 		<Type>GladeAddIn.Gui.GladeFileTemplate</Type>
