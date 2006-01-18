@@ -523,6 +523,9 @@ namespace MonoDevelop.Ide.Gui
 		public void Invoke(string fileName)
 		{
 			newContent = binding.CreateContentForFile(fileName);
+			if (newContent == null)
+				return;
+
 			if (project != null)
 			{
 				newContent.HasProject = true;

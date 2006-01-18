@@ -1,3 +1,26 @@
+2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Added an Id property,
+	which stores the codon Id.
+	
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	On project specific commands, save the affected project, not the
+	whole combine.
+	
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added SaveProject method.
+	Added a CreateProjectFile overload with a parameter that can be
+	the id of the template to select by default in the new file dialog.
+	
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Allow selecting
+	a template.
+	
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added null check.
+
 2006-01-14 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Replaced 'Combine'

@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				project.ProjectFiles.Add (folderFile);
 			}
 			project.ProjectFiles.Remove (file);
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				finfo.BuildAction = BuildAction.Compile;
 			}
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.ProjectOperations.SaveProject (finfo.Project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				project.DeployInformation.AddExcludedFile (finfo.Name);
 			}
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.ProjectOperations.SaveProject (finfo.Project);
 		}
 	}
 }

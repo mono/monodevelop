@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			InitializeTemplates ();
+			nameEntry.GrabFocus ();
 		}
 		
 		void InitializeView()
@@ -117,6 +118,36 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (cat.Categories.Count > 0)
 					InsertCategories (cnode, cat.Categories);
 			}
+		}
+		
+		public void SelectTemplate (string id)
+		{
+			TreeIter iter;
+			catStore.GetIterFirst (out iter);
+			SelectTemplate (iter, id);
+		}
+		
+		public bool SelectTemplate (TreeIter iter, string id)
+		{
+			do {
+				foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
+					if (item.Template.Id == id) {
+						catView.Selection.SelectIter (iter);
+						TemplateView.CurrentlySelected = item;
+						return true;
+					}
+				}
+				
+				TreeIter citer;
+				if (catStore.IterChildren (out citer, iter)) {
+					do {
+						if (SelectTemplate (citer, id))
+							return true;
+					} while (catStore.IterNext (ref citer));
+				}
+				
+			} while (catStore.IterNext (ref iter));
+			return false;
 		}
 		
 		Category GetCategory (string categoryname)
@@ -218,14 +249,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeModel mdl;
 			TreeIter  iter;
 			if (catView.Selection.GetSelected (out mdl, out iter)) {
-				//templateStore.Clear ();
-				TemplateView.Clear ();
-				foreach (TemplateItem item in (ArrayList)((Gtk.TreeStore)mdl).GetValue (iter, 2)) {
-					//templateStore.AppendValues (item.Name, item.Template);
-					
-					TemplateView.AddIcon(new Gtk.Image(Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
-				}
+				FillCategoryTemplates (iter);
 				okButton.Sensitive = false;
+			}
+		}
+		
+		void FillCategoryTemplates (TreeIter iter)
+		{
+			TemplateView.Clear ();
+			foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
+				TemplateView.AddIcon (new Gtk.Image (Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
 			}
 		}
 		

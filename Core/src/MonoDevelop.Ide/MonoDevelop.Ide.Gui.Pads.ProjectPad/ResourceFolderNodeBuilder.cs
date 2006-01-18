@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 			foreach (string fileName in files)
 				project.AddFile (fileName, BuildAction.EmbedAsResource);
-			IdeApp.ProjectOperations.SaveCombine ();
+			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		string[] AskFiles (Project project)

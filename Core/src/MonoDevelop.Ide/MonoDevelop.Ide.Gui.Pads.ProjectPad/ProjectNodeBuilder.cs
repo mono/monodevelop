@@ -306,7 +306,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project p = (Project) CurrentNode.DataItem;
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.ProjectOperations.SaveProject (p);
 		}
 		
 		public override DragOperation CanDragNode ()

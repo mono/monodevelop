@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
-			IdeApp.ProjectOperations.SaveCombine();
+			IdeApp.ProjectOperations.SaveProject (project);
 			CurrentNode.Expanded = true;
 		}
 		

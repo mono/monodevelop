@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project p = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p)) {
-				IdeApp.ProjectOperations.SaveCombine();
+				IdeApp.ProjectOperations.SaveProject (p);
 				CurrentNode.Expanded = true;
 			}
 		}

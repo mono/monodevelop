@@ -32,6 +32,7 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static ArrayList FileTemplates = new ArrayList();
 		
+		string    id;
 		string    originator   = null;
 		string    created      = null;
 		string    lastmodified = null;
@@ -47,6 +48,12 @@ namespace MonoDevelop.Ide.Templates
 		ArrayList files        = new ArrayList(); // contains FileDescriptionTemplate classes
 		
 		XmlElement fileoptions = null;
+		
+		public string Id {
+			get {
+				return id;
+			}
+		}
 		
 		public string WizardPath {
 			get {
@@ -201,6 +208,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (FileTemplateCodon codon in codons) {
 				try {
 					FileTemplate t = LoadFileTemplate (codon.AddIn, codon.Resource);
+					t.id = codon.ID;
 					FileTemplates.Add (t);
 				} catch (Exception e) {
 					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));

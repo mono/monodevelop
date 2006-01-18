@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			project.ProjectReferences.Remove (pref);
-			IdeApp.ProjectOperations.SaveCombine ();
+			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		[CommandHandler (ProjectCommands.LocalCopyReference)]
@@ -104,7 +104,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectReference pref = (ProjectReference) CurrentNode.DataItem;
 			pref.LocalCopy = !pref.LocalCopy;
-			IdeApp.ProjectOperations.SaveCombine ();
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
+			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.LocalCopyReference)]

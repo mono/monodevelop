@@ -342,6 +342,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public void SaveProject (Project project)
+		{
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ();
+			try {
+				project.Save (monitor);
+				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
 		public void MarkFileDirty (string filename)
 		{
 			if (openCombine != null) {
@@ -462,7 +475,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void CreateProjectFile (Project parentProject, string basePath)
 		{
+			CreateProjectFile (parentProject, basePath, null);
+		}
+		
+		public void CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
+		{
 			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
 				nfd.Run ();
 				nfd.Dispose ();
 			}
