@@ -1,3 +1,10 @@
+2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Components.mdp: Added some assembly references.
+	* MonoDevelop.Components/IconView.cs: Converted CurrentlySelected
+	into a property. The setter now property selects the item corresponding
+	with the provided value.
+
 2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components/TabLabel.cs: Added support for tooltips.

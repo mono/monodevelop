@@ -10,7 +10,7 @@ namespace MonoDevelop.Components {
 		
 		Hashtable userData = new Hashtable ();
 	
-		public object CurrentlySelected;
+		object currentlySelected;
 		public event EventHandler IconSelected;
 		public event EventHandler IconDoubleClicked;
 				
@@ -38,9 +38,23 @@ namespace MonoDevelop.Components {
 			userData.Add (itm, obj);
 		}
 		
+		public object CurrentlySelected {
+			get {
+				return currentlySelected;
+			}
+			set {
+				foreach (DictionaryEntry de in userData) {
+					if (de.Value == value) {
+						iconList.SelectIcon ((int)de.Key);
+						return;
+					}
+				}
+			}
+		}
+		
 		void HandleKeyPressed (object o, KeyPressEventArgs args)
 		{
-			if (CurrentlySelected == null)
+			if (currentlySelected == null)
 				return;
 			
 			if (args.Event.Key == Gdk.Key.Return && IconDoubleClicked != null)
@@ -49,7 +63,7 @@ namespace MonoDevelop.Components {
 		
 		void HandleIconSelected (object o, IconSelectedArgs args)
 		{
-			CurrentlySelected = userData [args.Num];
+			currentlySelected = userData [args.Num];
 			
 			if (IconSelected != null)
 				IconSelected (this, EventArgs.Empty);
