@@ -80,12 +80,21 @@ namespace MonoDevelop.Projects
 			format.WriteFile (entry.FileName, entry, monitor);
 		}
 		
+		public bool CanCreateSingleFileProject (string file)
+		{
+			foreach (ProjectBindingCodon projectBinding in projectBindings) {
+				if (projectBinding.ProjectBinding.CanCreateSingleFileProject (file))
+					return true;
+			}
+			return false;
+		}
+		
 		public Project CreateSingleFileProject (string file)
 		{
 			foreach (ProjectBindingCodon projectBinding in projectBindings) {
-				Project project = projectBinding.ProjectBinding.CreateSingleFileProject (file);
-				if (project != null)
-					return project;
+				if (projectBinding.ProjectBinding.CanCreateSingleFileProject (file)) {
+					return projectBinding.ProjectBinding.CreateSingleFileProject (file);
+				}
 			}
 			return null;
 		}

@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects
 
 		void WriteFile (string file, CombineEntry entry, IProgressMonitor monitor);
 		
+		bool CanCreateSingleFileProject (string file);
 		Project CreateSingleFileProject (string file);
 		
 		Project CreateProject (string type, ProjectCreateInformation info, XmlElement projectOptions);

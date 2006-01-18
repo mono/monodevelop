@@ -64,5 +64,12 @@ namespace MonoDevelop.Projects
 			}
 			return null;
 		}
+		
+		public bool CanCreateSingleFileProject (string file)
+		{
+			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerFileName (file) as IDotNetLanguageBinding;
+			return binding != null;
+		}
+		
 	}
 }

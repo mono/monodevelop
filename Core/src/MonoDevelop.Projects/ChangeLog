@@ -1,3 +1,13 @@
+2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/DotNetProjectBinding.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/IProjectService.cs:
+	* MonoDevelop.Projects/IProjectBinding.cs: Added
+	CanCreateSingleFileProject() method to all those
+	classes. It checks if a single file project can be created
+	from a given file.
+
 2006-01-14 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.Projects/MdsFileFormat.cs: Replaced 'Combine' by
