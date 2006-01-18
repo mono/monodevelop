@@ -185,7 +185,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		void IAsyncOperation.Cancel ()
 		{
 			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Cancel) != 0)
+				if ((info.ActionMask & MonitorAction.Cancel) != 0 && !info.Monitor.IsCancelRequested)
 					info.Monitor.AsyncOperation.Cancel ();
 		}
 		

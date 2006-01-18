@@ -1,3 +1,10 @@
+2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs:
+	Don't try to cancel monitors that are already cancelled. Fixes
+	bug #77100.
+	* MonoDevelop.Core/Runtime.cs: Runtime is a static class.
+
 2006-01-11 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core/GettextCatalog.cs.in: Added some null checks.

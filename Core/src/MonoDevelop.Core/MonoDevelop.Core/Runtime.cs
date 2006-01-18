@@ -48,6 +48,10 @@ namespace MonoDevelop.Core
 		static SetupService setupService;
 		static bool initialized;
 		
+		private Runtime ()
+		{
+		}
+		
 		public static void Initialize ()
 		{
 			if (initialized)
