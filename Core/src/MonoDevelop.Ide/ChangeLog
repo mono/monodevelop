@@ -1,3 +1,9 @@
+2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Disable build and
+	run commands if the current file is not a valid build target.
+	* MonoDevelop.Ide.Gui/Document.cs: Added IsBuildTarget property.
+
 2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Added an Id property,

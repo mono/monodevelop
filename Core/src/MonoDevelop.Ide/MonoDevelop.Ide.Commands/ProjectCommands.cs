@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 			} else {
-				info.Enabled = (IdeApp.Workbench.ActiveDocument != null);
+				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
 		}
 		
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 			} else {
-				info.Enabled = (IdeApp.Workbench.ActiveDocument != null);
+				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
 		}
 		
@@ -235,7 +235,7 @@ namespace MonoDevelop.Ide.Commands
 					info.Enabled = false;
 				}
 			} else {
-				if (IdeApp.Workbench.ActiveDocument != null) {
+				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
 					info.Text = info.Description = string.Format (GettextCatalog.GetString ("Build {0}"), file);
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.Commands
 					info.Enabled = false;
 				}
 			} else {
-				if (IdeApp.Workbench.ActiveDocument != null) {
+				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
 					info.Text = info.Description = string.Format (GettextCatalog.GetString ("Rebuild {0}"), file);
