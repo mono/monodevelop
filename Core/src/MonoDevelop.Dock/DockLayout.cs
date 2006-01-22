@@ -45,6 +45,7 @@ namespace Gdl
 		DockMaster master = null;
 		ArrayList layouts;
 		Hashtable placeholders;
+		bool loading;
 
 		CheckButton locked_check;
 
@@ -165,12 +166,14 @@ namespace Gdl
 				s.Close ();
 				// minimum validation: test root element
 				if (this.RootNode != null) {
+					loading = true;
 					foreach (XmlNode n in this.RootNode.ChildNodes)
 					{
 						if (n.Name == "layout")
 							layouts.Add (n.Attributes["name"].Value);
 					}
 					UpdateLayoutsModel ();
+					loading = false;
 					return true;
 				}
 				else {
@@ -196,7 +199,12 @@ namespace Gdl
 			if (node == null)
 				return false;
 
-			Load (node);
+			try {
+				loading = true;
+				Load (node);
+			} finally {
+				loading = true;
+			}
 			return true;
 		}
 
@@ -610,6 +618,8 @@ namespace Gdl
 
 		void OnLayoutChanged (object sender, EventArgs a)
 		{
+			if (loading) return;
+			
 			UpdateItemsModel ();
 
 			if (!idleSavePending) {

@@ -43,6 +43,8 @@ namespace Gdl
 		private bool reducePending;
 
 		private PropertyInfo[] publicProps;
+		Hashtable afterProps;
+		Hashtable beforeProps;
 		
 		public event DetachedHandler Detached;
 		public event DockedHandler Docked;
@@ -167,24 +169,26 @@ namespace Gdl
 
 		void SetPropertyValue (string property, string val, bool after)
 		{
-			foreach (PropertyInfo p in PublicProps) {
-				if (after) {
-					if (p.IsDefined (typeof (AfterAttribute), true))
-						SetPropertyValue (p, property, val);
-				}
-				else {
-					if (!p.IsDefined (typeof (AfterAttribute), true))
-						SetPropertyValue (p, property, val);
+			if (afterProps == null) {
+				afterProps = new Hashtable ();
+				beforeProps = new Hashtable ();
+				foreach (PropertyInfo pp in PublicProps) {
+					if (pp.IsDefined (typeof (AfterAttribute), true))
+						afterProps [pp.Name.ToLower ()] = pp;
+					else
+						beforeProps [pp.Name.ToLower ()] = pp;
 				}
 			}
+			
+			property = property.ToLower ();
+			PropertyInfo p = after ? (PropertyInfo) afterProps [property] : (PropertyInfo) beforeProps [property];
+			if (p != null)
+				SetPropertyValue (p, property, val);
 		}
 
 		void SetPropertyValue (PropertyInfo pi, string property, string val)
 		{
-			if (property != pi.Name.ToLower ())
-				return;
-
-			if (pi.PropertyType.IsSubclassOf (typeof (System.Enum)))
+			if (pi.PropertyType.IsEnum)
 				pi.SetValue (this, Enum.Parse (pi.PropertyType, val, true), null);
 			else if (pi.PropertyType == typeof (bool))
 				pi.SetValue (this, val == "no" ? false : true, null);
