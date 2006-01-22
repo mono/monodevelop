@@ -82,7 +82,7 @@ namespace GladeAddIn.Gui
 				gladeApp.Project = EmptyProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
-//				RestoreLayout ();
+				RestoreLayout ();
 				return;
 			}
 
@@ -91,13 +91,13 @@ namespace GladeAddIn.Gui
 				gladeApp.Project = view.EditSession.GladeProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (view.EditSession.GladeWidget);
-//				SetDesignerLayout ();
+				SetDesignerLayout ();
 			}
 			else {
 				gladeApp.Project = EmptyProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
-//				RestoreLayout ();
+				RestoreLayout ();
 			}
 		}
 		
