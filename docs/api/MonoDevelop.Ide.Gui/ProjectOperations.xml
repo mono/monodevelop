@@ -758,6 +758,40 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="SaveProject">
+      <MemberSignature Language="C#" Value="public void SaveProject (MonoDevelop.Projects.Project project);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="project" Type="MonoDevelop.Projects.Project" />
+      </Parameters>
+      <Docs>
+        <param name="project">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CreateProjectFile">
+      <MemberSignature Language="C#" Value="public void CreateProjectFile (MonoDevelop.Projects.Project parentProject, string basePath, string selectedTemplateId);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parentProject" Type="MonoDevelop.Projects.Project" />
+        <Parameter Name="basePath" Type="System.String" />
+        <Parameter Name="selectedTemplateId" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="parentProject">To be added.</param>
+        <param name="basePath">To be added.</param>
+        <param name="selectedTemplateId">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>To be added.</summary>

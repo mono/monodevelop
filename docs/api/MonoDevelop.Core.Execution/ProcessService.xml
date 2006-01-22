@@ -166,10 +166,10 @@
         <Parameter Name="type" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="type">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="type">Type of the object to create. It must be a subclass of <see cref="T:MonoDevelop.Core.Execution.RemoteProcessObject" />.</param>
+        <summary>Creates an object in an external process.</summary>
+        <returns>A proxy to the remote object.</returns>
+        <remarks>The returned object must be explicitely disposed with a call to <see cref="M:MonoDevelop.Core.Execution.RemoteProcessObject.Dispose" />.</remarks>
       </Docs>
     </Member>
     <Member MemberName="CreateExternalProcessObject">
@@ -183,11 +183,11 @@
         <Parameter Name="shared" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="type">To be added.</param>
-        <param name="shared">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="type">Type of the object to create. It must be a subclass of <see cref="T:MonoDevelop.Core.Execution.RemoteProcessObject" />.</param>
+        <param name="shared">If set to 'true', it will try to reuse an existing external process.</param>
+        <summary>Creates an object in an external process.</summary>
+        <returns>A proxy to the remote object.</returns>
+        <remarks>The returned object must be explicitely disposed with a call to <see cref="M:MonoDevelop.Core.Execution.RemoteProcessObject.Dispose" />.</remarks>
       </Docs>
     </Member>
     <Member MemberName="CreateExternalProcessObject">
@@ -202,17 +202,17 @@
         <Parameter Name="shared" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="assemblyPath">To be added.</param>
-        <param name="typeName">To be added.</param>
-        <param name="shared">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="assemblyPath">Path to the assembly that implements the remote object's type.</param>
+        <param name="typeName">Name of the type of the object to create. It must be a subclass of <see cref="T:MonoDevelop.Core.Execution.RemoteProcessObject" />.</param>
+        <param name="shared">If set to 'true', it will try to reuse an existing external process.</param>
+        <summary>Creates an object in an external process.</summary>
+        <returns>A proxy to the remote object.</returns>
+        <remarks>The returned object must be explicitely disposed with a call to <see cref="M:MonoDevelop.Core.Execution.RemoteProcessObject.Dispose" />.</remarks>
       </Docs>
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Class that provides several utility methods related to process operations.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

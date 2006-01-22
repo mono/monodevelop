@@ -19,9 +19,9 @@
         <Parameter Name="monitor" Type="MonoDevelop.Core.IProgressMonitor" />
       </Parameters>
       <Docs>
-        <param name="monitor">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="monitor">Monitor where progress will be reported.</param>
+        <summary>Initializes the IDE.</summary>
+        <remarks>Initializes the IDE workbench and executes the startup commands. This method must be called only once.</remarks>
       </Docs>
     </Member>
     <Member MemberName="Run">
@@ -32,8 +32,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Executes the IDE.</summary>
+        <remarks />
       </Docs>
     </Member>
     <Member MemberName="Exit">
@@ -44,8 +44,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Ends the exection of the IDE.</summary>
+        <remarks />
       </Docs>
     </Member>
     <Member MemberName="Workbench">
@@ -98,7 +98,29 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>The root IDE class.</summary>
+    <remarks>
+      <para>
+This class provides access to several components, services and methods offered by the IDE. It is the starting point for most of the functionality available to add-ins.
+</para>
+      <para>
+        <example>
+          <code lang="C#">
+// The following call opens a file into the IDE, writes some text into it.
+// First of all, open the document:
+Document doc;
+doc = IdeApp.Workbench.OpenDocument ("SomeDocument.txt");
+
+// Access to the editor and add some text
+IEditableTextBuffer editor = doc.Content as IEditableTextBuffer;
+editor.InsertText (0, "Hello world!");
+
+// Save and close the document
+doc.Save ();
+doc.Close ();
+  </code>
+        </example>
+      </para>
+    </remarks>
   </Docs>
 </Type>

@@ -40,17 +40,6 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="CurrentlySelected">
-      <MemberSignature Language="C#" Value="public object CurrentlySelected;" />
-      <MemberType>Field</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Object</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="AddIcon">
       <MemberSignature Language="C#" Value="public void AddIcon (Gtk.Image icon, string name, object obj);" />
       <MemberType>Method</MemberType>
@@ -100,6 +89,18 @@
       <Parameters />
       <Docs>
         <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentlySelected">
+      <MemberSignature Language="C#" Value="public object CurrentlySelected { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Object</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

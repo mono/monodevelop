@@ -30,11 +30,11 @@
         <Parameter Name="searchSubdirectories" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="directory">To be added.</param>
-        <param name="filemask">To be added.</param>
-        <param name="searchSubdirectories">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="directory">Directory where to look for files.</param>
+        <param name="filemask">File mask.</param>
+        <param name="searchSubdirectories">Set to <b>true</b> if subdirectories must be searched.</param>
+        <summary>Finds all files in a directory.</summary>
+        <returns>Finds all files which are valid to the mask filemask in the path directory and all subdirectories (if searchSubdirectories is true). The found files are returned in a StringCollection collection.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -154,7 +154,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Class that provides several utility methods related to file operations.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

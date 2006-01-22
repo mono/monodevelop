@@ -14,8 +14,8 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Creates a CommandService instance.</summary>
+        <remarks />
       </Docs>
     </Member>
     <Member MemberName="LoadCommands">
@@ -41,8 +41,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Enables toolbar status updating.</summary>
+        <remarks>Call this method to enable toolbar status updating at idle time.</remarks>
       </Docs>
     </Member>
     <Member MemberName="SetRootWindow">
@@ -164,9 +164,9 @@
         <Parameter Name="menu" Type="Gtk.Menu" />
       </Parameters>
       <Docs>
-        <param name="menu">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="menu">Menu to show.</param>
+        <summary>Displays a contextual menu.</summary>
+        <remarks />
       </Docs>
     </Member>
     <Member MemberName="CreateMenu">
@@ -264,7 +264,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Provides operations for managing commands, menus and toolbars.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

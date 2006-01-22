@@ -44,10 +44,10 @@
         <Parameter Name="assemblyName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="assemblyName">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="assemblyName">Full or partial name of the assembly.</param>
+        <summary>Gets the path of an assembly.</summary>
+        <returns>The path to the assembly.</returns>
+        <remarks>The assembly is not loaded into the current process. It may return a path to the GAC if the assembly is loaded from the GAC.</remarks>
       </Docs>
     </Member>
     <Member MemberName="AssemblyPaths">
@@ -72,15 +72,15 @@
         <Parameter Name="assemblyName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="assemblyName">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="assemblyName">Partial name of an assembly.</param>
+        <summary>Returns the full name of an assembly.</summary>
+        <returns>The full name of the provided assembly name.</returns>
+        <remarks>The assembly is not loaded in the executing process.</remarks>
       </Docs>
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Utility class that provides methods for getting information about assemblies.</summary>
+    <remarks>All methods of this class use an external process to load assembly information, so there is no danger of conflicts with assemblies already loaded in the current process.</remarks>
   </Docs>
 </Type>

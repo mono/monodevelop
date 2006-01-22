@@ -241,7 +241,7 @@
       </Parameters>
       <Docs>
         <param name="args">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Called when the document has been saved to disk.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -260,9 +260,21 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="IsBuildTarget">
+      <MemberSignature Language="C#" Value="public virtual bool IsBuildTarget { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Represents a document that has been opened in the workbench.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

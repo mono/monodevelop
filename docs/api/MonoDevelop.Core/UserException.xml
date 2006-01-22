@@ -16,9 +16,9 @@
         <Parameter Name="message" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="message">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="message">Error message.</param>
+        <summary>Creates an UserException</summary>
+        <remarks>Creates a new UserException.</remarks>
       </Docs>
     </Member>
     <Member MemberName=".ctor">
@@ -29,10 +29,10 @@
         <Parameter Name="details" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="message">To be added.</param>
-        <param name="details">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="message">Error message.</param>
+        <param name="details">Detailed description of the error.</param>
+        <summary>Creates a new UserException.</summary>
+        <remarks>Creates a new UserException.</remarks>
       </Docs>
     </Member>
     <Member MemberName="Details">
@@ -42,14 +42,14 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Returns the detailed description of the error.</summary>
+        <value>The detailed description of the error.</value>
+        <remarks>This text will usually be shown in the expandable details section of the error dialog.</remarks>
       </Docs>
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Exception class used to report errors to the user.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

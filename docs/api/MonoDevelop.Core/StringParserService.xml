@@ -96,7 +96,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>This class parses internal ${xyz} tags of MonoDevelop.</summary>
+    <remarks>This class parses internal ${xyz} tags of MonoDevelop. All environment variables are avaible under the name env.[NAME] where [NAME] represents the string under which it is avaiable in the environment.</remarks>
   </Docs>
 </Type>

@@ -202,14 +202,10 @@
       <Type Name="Runtime" />
       <Type Name="SystemAssemblyService" />
       <Type Name="GettextCatalog" />
-      <Type Name="FileOperationDelegate" />
-      <Type Name="NamedFileOperationDelegate" />
       <Type Name="ServiceLoadCallback" />
       <Type Name="LogAppendedHandler" />
       <Type Name="OperationHandler" />
       <Type Name="MonitorHandler" />
-      <Type Name="FileErrorPolicy" />
-      <Type Name="FileOperationResult" />
       <Type Name="ServiceLoadType" />
       <Type Name="UserException" />
     </Namespace>

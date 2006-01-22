@@ -9,15 +9,6 @@
   </Base>
   <Interfaces />
   <Members>
-    <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public Runtime ();" />
-      <MemberType>Constructor</MemberType>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="Initialize">
       <MemberSignature Language="C#" Value="public static void Initialize ();" />
       <MemberType>Method</MemberType>
@@ -26,8 +17,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes the MonoDevelop runtime.</summary>
+        <remarks>This method must be called once in all aplications (and application domains) that want to use the MonoDevelop runtime and services.</remarks>
       </Docs>
     </Member>
     <Member MemberName="ProcessService">
@@ -37,7 +28,7 @@
         <ReturnType>MonoDevelop.Core.Execution.ProcessService</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Class that provides several utility methods related to process operations.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -61,7 +52,7 @@
         <ReturnType>MonoDevelop.Core.FileUtilityService</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Service that provides several utility methods related to file operations.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -109,7 +100,7 @@
         <ReturnType>MonoDevelop.Core.AddIns.AddInService</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>This service provides methods for loading add-ins and for getting information about currently loaded add-ins.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -128,7 +119,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>The core runtime of MonoDevelop.</summary>
+    <remarks>This class provides access to the core services of the MonoDevelop runtime.</remarks>
   </Docs>
 </Type>

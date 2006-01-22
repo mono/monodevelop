@@ -9,15 +9,6 @@
   </Base>
   <Interfaces />
   <Members>
-    <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public GettextCatalog ();" />
-      <MemberType>Constructor</MemberType>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="GetString">
       <MemberSignature Language="C#" Value="public static string GetString (string str);" />
       <MemberType>Method</MemberType>
@@ -80,7 +71,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Class that provides utility methods for getting translatable string values.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

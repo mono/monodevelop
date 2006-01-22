@@ -14,7 +14,7 @@
   </Interfaces>
   <Members>
     <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public RemoteProcessObject ();" />
+      <MemberSignature Language="C#" Value="protected RemoteProcessObject ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>

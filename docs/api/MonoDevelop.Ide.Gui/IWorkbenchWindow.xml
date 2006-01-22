@@ -6,28 +6,6 @@
   </AssemblyInfo>
   <Interfaces />
   <Members>
-    <Member MemberName="WindowSelected">
-      <MemberSignature Language="C#" Value="public event EventHandler WindowSelected;" />
-      <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>System.EventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="WindowDeselected">
-      <MemberSignature Language="C#" Value="public event EventHandler WindowDeselected;" />
-      <MemberType>Event</MemberType>
-      <ReturnValue>
-        <ReturnType>System.EventHandler</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="TitleChanged">
       <MemberSignature Language="C#" Value="public event EventHandler TitleChanged;" />
       <MemberType>Event</MemberType>
@@ -103,21 +81,6 @@
       </Parameters>
       <Docs>
         <param name="viewNumber">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="OnWindowDeselected">
-      <MemberSignature Language="C#" Value="public void OnWindowDeselected (EventArgs e);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="e" Type="System.EventArgs" />
-      </Parameters>
-      <Docs>
-        <param name="e">To be added.</param>
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>

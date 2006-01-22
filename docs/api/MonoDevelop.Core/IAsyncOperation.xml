@@ -13,8 +13,8 @@
         <ReturnType>MonoDevelop.Core.OperationHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Fired when the operation has completed.</summary>
+        <remarks>The event is fired if the operation has been successfully or unsuccessfully completed, or if it has been cancelled.</remarks>
       </Docs>
     </Member>
     <Member MemberName="Cancel">
@@ -25,8 +25,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Cancels the operation.</summary>
+        <remarks>This is a cancel request. The operation may decide to delay or just ignore the request.</remarks>
       </Docs>
     </Member>
     <Member MemberName="WaitForCompleted">
@@ -37,8 +37,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Stops the execution until the operation is completed (or cancelled).</summary>
+        <remarks>In some implementations (such as for example the one provided by BaseProgressMonitor), if the current thread is the GTK thread, GTK events will still be executed (the GUI will not freeze).</remarks>
       </Docs>
     </Member>
     <Member MemberName="IsCompleted">
@@ -48,8 +48,9 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Gets an indication whether the operation has completed.</summary>
+        <value>
+          <b>true</b> is if the operation has completed. <b>false</b> otherwise.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -60,14 +61,14 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Indicates whether the operation has completed successfully or not.</summary>
+        <value>'true' if the operation has completed successfully, 'false' otherwise.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Provides methods for checking the status and controlling asynchronous operations.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>
