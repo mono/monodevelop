@@ -99,6 +99,10 @@ namespace MonoDevelop.Core.AddIns
 			
 			ArrayList sorted = new ArrayList ();
 			foreach (IAddInTreeNode tnode in sortedNodes) {
+				if (tnode.Codon == null) {
+					sorted.Add (tnode);
+					continue;
+				}
 				string[] insertAfters = tnode.Codon.InsertAfter;
 				string[] insertBefores = tnode.Codon.InsertBefore;
 				
@@ -110,6 +114,7 @@ namespace MonoDevelop.Core.AddIns
 					
 					for (n=0; n<sorted.Count; n++) {
 						IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
+						if (snode.Codon == null) continue;
 						for (int i=0; i<insertAfters.Length; i++) {
 							if (snode.Codon.ID == insertAfters [i])
 								numAfters--;
@@ -125,6 +130,7 @@ namespace MonoDevelop.Core.AddIns
 				if (insertBefores != null && insertBefores.Length != 0) {
 					for (int n=0; n < bestPos; n++) {
 						IAddInTreeNode snode = (IAddInTreeNode) sorted [n];
+						if (snode.Codon == null) continue;
 						for (int i=0; i<insertBefores.Length; i++) {
 							if (snode.Codon.ID == insertBefores [i]) {
 								bestPos = n;
@@ -172,6 +178,7 @@ namespace MonoDevelop.Core.AddIns
 			
 			foreach (IAddInTreeNode curNode in sortedNodes) {
 				// don't include excluded childs.
+				if (curNode.Codon == null) continue;
 				ArrayList subItems = curNode.BuildChildItems(caller);
 				object newItem = null;
 				if (curNode.Codon.HandleConditions || curNode.ConditionCollection.GetCurrentConditionFailedAction(caller) == ConditionFailedAction.Nothing) {

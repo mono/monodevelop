@@ -1,3 +1,13 @@
+2006-01-22 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs: Added some
+	null checks.
+	* MonoDevelop.Core.Execution/RemoteProcessObject.cs: Made protected
+	default constructor.
+	* MonoDevelop.Core/FileUtilityService.cs: Removed unused enums and
+	delegates.
+	* MonoDevelop.Core/GettextCatalog.cs.in: Added private constructor.
+
 2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs:

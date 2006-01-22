@@ -16,21 +16,6 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core
 {
-	public enum FileErrorPolicy {
-		Inform,
-		ProvideAlternative
-	}
-	
-	public enum FileOperationResult {
-		OK,
-		Failed,
-		SavedAlternatively
-	}
-	
-	public delegate void FileOperationDelegate();
-	
-	public delegate void NamedFileOperationDelegate(string fileName);
-	
 	/// <summary>
 	/// A utility class related to file utilities.
 	/// </summary>

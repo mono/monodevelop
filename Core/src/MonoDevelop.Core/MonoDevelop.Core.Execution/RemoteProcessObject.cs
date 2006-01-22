@@ -34,6 +34,10 @@ namespace MonoDevelop.Core.Execution
 	{
 		IProcessHostController controller;
 		
+		protected RemoteProcessObject ()
+		{
+		}
+		
 		public void Attach (IProcessHostController controller)
 		{
 			this.controller = controller;

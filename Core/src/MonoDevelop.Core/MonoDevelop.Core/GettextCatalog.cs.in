@@ -36,12 +36,15 @@ namespace MonoDevelop.Core
 
 	public class GettextCatalog
 	{
-
 		static GettextCatalog ()
 		{
 			Catalog.Init ("monodevelop", "@prefix@/share/locale");
 		}
 	
+		private GettextCatalog ()
+		{
+		}
+
 		public static string GetString (string str)
 		{
 			return str != null ? Catalog.GetString (str) : null;
