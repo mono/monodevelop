@@ -1,3 +1,13 @@
+2006-01-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: In CloseAllDocuments,
+	the active document is now the last one to close. It avoids firing too
+	many ActiveDocumentChanged events.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs: Removed unused events.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Make sure the active
+	window changed event is fired only when really necessary.
+
 2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Disable build and

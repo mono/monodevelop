@@ -221,7 +221,6 @@ namespace MonoDevelop.Ide.Gui
 			} else {
 				workbench.WorkbenchLayout.RemoveTab (pageNum);
 			}
-			OnWindowDeselected(EventArgs.Empty);
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
 			content.DirtyChanged       -= new EventHandler(SetTitleEvent);
@@ -320,28 +319,11 @@ namespace MonoDevelop.Ide.Gui
 
 		protected virtual void OnClosed (EventArgs e)
 		{
-			OnWindowDeselected(e);
 			if (Closed != null) {
 				Closed (this, e);
 			}
 		}
 
-		public virtual void OnWindowSelected(EventArgs e)
-		{
-			if (WindowSelected != null) {
-				WindowSelected(this, e);
-			}
-		}
-		public virtual void OnWindowDeselected(EventArgs e)
-		{
-			if (WindowDeselected != null) {
-				WindowDeselected(this, e);
-			}
-		}
-		
-		public event EventHandler WindowSelected;
-		public event EventHandler WindowDeselected;
-				
 		public event EventHandler TitleChanged;
 		public event EventHandler Closed;
 		public event WorkbenchWindowEventHandler Closing;

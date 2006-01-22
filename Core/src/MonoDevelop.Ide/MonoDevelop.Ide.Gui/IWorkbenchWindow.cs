@@ -61,23 +61,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SwitchView(int viewNumber);
 		
-//		void OnWindowSelected(EventArgs e);
-		/// <summary>
-		/// Only for internal use.
-		/// </summary>
-		void OnWindowDeselected(EventArgs e);
-		
 		void AttachSecondaryViewContent(ISecondaryViewContent secondaryViewContent);
-		
-		/// <summary>
-		/// Is called when the window is selected.
-		/// </summary>
-		event EventHandler WindowSelected;
-		
-		/// <summary>
-		/// Is called when the window is deselected.
-		/// </summary>
-		event EventHandler WindowDeselected;
 		
 		/// <summary>
 		/// Is called when the title of this window has changed.

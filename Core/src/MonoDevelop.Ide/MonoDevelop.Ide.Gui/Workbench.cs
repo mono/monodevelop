@@ -202,8 +202,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Document[] docs = new Document [Documents.Count];
 			Documents.CopyTo (docs, 0);
-			foreach (Document doc in docs)
-				doc.Close ();
+			
+			// The active document is the last one to close.
+			// It avoids firing too many ActiveDocumentChanged events.
+			
+			foreach (Document doc in docs) {
+				if (doc != ActiveDocument)
+					doc.Close ();
+			}
+			if (ActiveDocument != null)
+				ActiveDocument.Close ();
 		}
 
 		public Pad ShowPad (IPadContent content)

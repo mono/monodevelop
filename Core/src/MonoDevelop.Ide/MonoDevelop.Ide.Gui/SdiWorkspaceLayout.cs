@@ -56,6 +56,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		WorkbenchContextCodon[] contextCodons;
 		bool initialized;
+		IWorkbenchWindow lastActive;
+		bool ignorePageSwitch;
 
 		public SdiWorkbenchLayout () {
 			contextChangedHandler = new EventHandler (OnContextChanged);
@@ -227,12 +229,13 @@ namespace MonoDevelop.Ide.Gui
 				}
 				else
 				{
-					if (currentLayout == "")
+					if (currentLayout == "") {
 						// if the layout doesn't exists and we need to
 						// load a layout (ie.  we've just been
 						// created), load the default so old layout
 						// xml files work smoothly
 						dockLayout.LoadLayout (null);
+					}
 					
 					// the layout didn't exist, so save it and add it to our list
 					dockLayout.SaveLayout (newLayout);
@@ -547,7 +550,17 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public void RemoveTab (int pageNum) {
-			tabControl.RemovePage (pageNum);
+			try {
+				// Weird switch page events are fired when a tab is removed.
+				// This flag avoids unneeded events.
+				ignorePageSwitch = true;
+				IWorkbenchWindow w = ActiveWorkbenchwindow;
+				tabControl.RemovePage (pageNum);
+				if (w != ActiveWorkbenchwindow)
+					ActiveMdiChanged (null, null);
+			} finally {
+				ignorePageSwitch = false;
+			}
 		}
 
 		/// <summary>
@@ -568,6 +581,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ActiveMdiChanged(object sender, SwitchPageArgs e)
 		{
+			if (ignorePageSwitch)
+				return;
+
+			if (lastActive == ActiveWorkbenchwindow)
+				return;
+				
+			lastActive = ActiveWorkbenchwindow;
+
 			try {
 				if (ActiveWorkbenchwindow != null) {
 					if (ActiveWorkbenchwindow.ViewContent.IsUntitled) {
