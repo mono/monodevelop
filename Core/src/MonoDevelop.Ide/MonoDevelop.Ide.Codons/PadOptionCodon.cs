@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
 		{
-			option = new TreePadOption (ID, label, defaultValue);
+			option = new TreePadOption (ID, GettextCatalog.GetString(label), defaultValue);
 			return this;
 		}
 	}

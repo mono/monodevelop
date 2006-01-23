@@ -1,6 +1,8 @@
 2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
-	* MonoDevelop.Ide.Gui/Ide.cs: Added internationalization.
+	* MonoDevelop.Ide.Codons/PadOptionCodon.cs:
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	Added internationalization.
 
 2006-01-22 Lluis Sanchez Gual  <lluis@novell.com>
 

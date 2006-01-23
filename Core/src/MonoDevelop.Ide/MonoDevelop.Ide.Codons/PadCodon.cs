@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -58,7 +59,7 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public string Label {
-			get { return label; }
+			get { return GettextCatalog.GetString(label); }
 		}
 		
 		public string Icon {
