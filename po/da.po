@@ -739,11 +739,11 @@ msgstr "Fokustilstand"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:37
 msgid "Markers And Rulers"
-msgstr "Markøre og linealer"
+msgstr "Markører og linealer"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:38
 msgid "Markers and Rulers"
-msgstr "Markøre og linealer"
+msgstr "Markører og linealer"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/MonoDevelopEditor.addin.xml.h:39
 msgid "Next Bookmark"
@@ -1127,7 +1127,7 @@ msgstr "Lad være med at gemme ændringer til åbne _dokumenter"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:84
 msgid "_Else on same line as closing bracket"
-msgstr "_Ellers på samme linje som afsluttende parantes"
+msgstr "_Ellers på samme linje som afsluttende parentes"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:85
 msgid "_Include files in compile run"
@@ -1239,11 +1239,11 @@ msgstr "<b>Generelle indstillinger</b>"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:10
 msgid "<b>Markers</b>"
-msgstr "<b>Markøre</b>"
+msgstr "<b>Markører</b>"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:11
 msgid "<b>Rulers</b>"
-msgstr "<b>Linialer</b>"
+msgstr "<b>Linealer</b>"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:12
 msgid "<b>Tabs</b>"
@@ -1251,7 +1251,7 @@ msgstr "<b>Indrykninger</b>"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:13
 msgid "A_uto insert curly braces"
-msgstr "Indsæt a_utomatisk tuborg-paranteser"
+msgstr "Indsæt a_utomatisk tuborg-parenteser"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:14
 msgid "Add Group"
@@ -1311,7 +1311,7 @@ msgstr "GeneralTextEditorPanel"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:28
 msgid "Highlight _matching bracket"
-msgstr "Fokuser _matchende paranteser"
+msgstr "Fokuser _matchende parenteser"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:29
 msgid "I_ndentation"
@@ -1340,7 +1340,7 @@ msgstr "Genskab standardværdier"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:34
 msgid "Show _column ruler,"
-msgstr "Vis kolonne-linial"
+msgstr "Vis kolonne-lineal"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:35
 msgid "Show _line numbers"
@@ -1462,8 +1462,9 @@ msgstr "E_rstat"
 msgid "translator-credits"
 msgstr ""
 "Martin Willemoes Hansen\n"
+"Jacob Ilsø Christensen\n"
 "\n"
-"Dansk-gruppen <dansk@klid.dk>\n"
+"Dansk-gruppen &lt;dansk@klid.dk&gt;\n"
 "Mere info: http://www.klid.dk/dansk/"
 
 #: ../Core/src/MonoDevelop.Base/Gui/Dialogs/CommonAboutDialog.cs:143
@@ -3506,7 +3507,7 @@ msgstr "Opretter et Java/AWT-panel."
 #~ msgstr "Vis _EOL markører"
 
 #~ msgid "Show _horizontal ruler"
-#~ msgstr "Vis _horizontal-linial"
+#~ msgstr "Vis _horizontal-lineal"
 
 #~ msgid "Show _invalid lines"
 #~ msgstr "Vis _invalide linjer"
