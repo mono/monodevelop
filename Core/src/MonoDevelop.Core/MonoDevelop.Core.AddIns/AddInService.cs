@@ -123,7 +123,7 @@ namespace MonoDevelop.Core.AddIns
 					monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
 				
 				try {
-					monitor.BeginTask ("Loading Addins", addins.Count);
+					monitor.BeginTask (GettextCatalog.GetString("Loading Addins"), addins.Count);
 					foreach (string id in addins) {
 						PreloadAddin (monitor, id);
 						monitor.Step (1);
@@ -147,7 +147,7 @@ namespace MonoDevelop.Core.AddIns
 			ResolveLoadDependencies (addins, depCheck, id, null);
 			addins.Reverse ();
 			
-			monitor.BeginTask ("Loading Addins", addins.Count);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Addins"), addins.Count);
 			try {
 				foreach (AddinSetupInfo iad in addins) {
 					if (IsAddinLoaded (iad.Addin.Id)) {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Core.AddIns
 						continue;
 					}
 
-					monitor.BeginTask ("Loading " + iad.Addin.Id + " add-in", 1);
+					monitor.BeginTask (string.Format(GettextCatalog.GetString("Loading {0} add-in"), iad.Addin.Id), 1);
 					try {
 						AddinError err = AddInTreeSingleton.InsertAddIn (iad.ConfigFile);
 						if (err != null) {

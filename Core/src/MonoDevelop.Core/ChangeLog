@@ -1,3 +1,7 @@
+2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: Added internationalization.
+
 2006-01-22 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs: Added some

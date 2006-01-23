@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			monitor.BeginTask ("Loading Workbench", 6);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			
 			commandService.LoadCommands ("/SharpDevelop/Commands");
 			monitor.Step (1);
