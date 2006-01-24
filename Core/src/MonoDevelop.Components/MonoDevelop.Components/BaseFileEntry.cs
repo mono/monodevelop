@@ -12,6 +12,7 @@ namespace MonoDevelop.Components {
 		
 		Entry text;
 		Button browse;
+		bool loading;
 		
 		public event EventHandler PathChanged;
 		
@@ -38,7 +39,13 @@ namespace MonoDevelop.Components {
 		}
 		
 		public new string Path {
-			get { return System.IO.Path.Combine (default_path, text.Text); }
+			get { return default_path != null ? System.IO.Path.Combine (default_path, text.Text) : text.Text; }
+			set {
+				loading = true; 
+				text.Text = value;
+				loading = false;
+				OnTextChanged (null, null);
+			}
 		}
 		
 		void OnButtonClicked (object o, EventArgs args)
@@ -59,7 +66,7 @@ namespace MonoDevelop.Components {
 		
 		void OnTextChanged (object o, EventArgs args)
 		{
-			if (PathChanged != null)
+			if (!loading && PathChanged != null)
 				PathChanged (this, EventArgs.Empty);
 		}
 	}

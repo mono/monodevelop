@@ -1,3 +1,9 @@
+2006-01-24  Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Components/BaseFileEntry.cs: Added setter to Path
+	property. Make sure to have the correct path value before firing
+	the PathChanged event.
+
 2006-01-18 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components.mdp: Added some assembly references.
