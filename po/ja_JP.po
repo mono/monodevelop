@@ -3269,7 +3269,7 @@ msgstr "プロジェクト {0} をソリューション {1} から削除しま�
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
 #, csharp-format
 msgid "Are you sure you want to permanently delete the file {0}?"
-msgstr "本当にこのファイルを削除しますか?"
+msgstr "本当にファイル {0} を削除しますか?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:126
 #, csharp-format
