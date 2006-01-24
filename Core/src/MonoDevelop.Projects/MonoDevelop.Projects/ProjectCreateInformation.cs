@@ -19,6 +19,7 @@ namespace MonoDevelop.Projects
 	public class ProjectCreateInformation
 	{
 		string projectName;
+		string combineName;
 		string combinePath;
 		string projectBasePath;
 		
@@ -28,6 +29,15 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				projectName = value;
+			}
+		}
+		
+		public string CombineName {
+			get {
+				return combineName;
+			}
+			set {
+				combineName = value;
 			}
 		}
 		
