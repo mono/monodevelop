@@ -39,11 +39,15 @@ namespace MonoDevelop.Ide.Templates
 			this.name = name;
 		}
 		
+		public ICombineEntryDescriptor[] EntryDescriptors {
+			get { return (ICombineEntryDescriptor[]) entryDescriptors.ToArray (typeof(ICombineEntryDescriptor)); }
+		}
+		
 		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			Combine newCombine     = new Combine();
 			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
-				{"ProjectName", projectCreateInformation.ProjectName}
+				{"ProjectName", projectCreateInformation.CombineName}
 			});
 			
 			newCombine.Name = newCombineName;

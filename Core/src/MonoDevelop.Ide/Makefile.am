@@ -230,6 +230,7 @@ templates/EmptyClass.xft.xml \
 templates/EmptyEnum.xft.xml \
 templates/EmptyInterface.xft.xml \
 templates/EmptyStruct.xft.xml \
+templates/BlankCombine.xpt.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/Icons.AboutImage

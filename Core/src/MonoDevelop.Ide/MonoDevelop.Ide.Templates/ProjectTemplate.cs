@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static ArrayList ProjectTemplates = new ArrayList();
 		
+		string    id           = null;
 		string    originator   = null;
 		string    created      = null;
 		string    lastmodified = null;
@@ -67,6 +68,10 @@ namespace MonoDevelop.Ide.Templates
 			get {
 				return wizardpath;
 			}
+		}
+		
+		public string Id {
+			get { return id; }
 		}
 		
 		public string Originator {
@@ -127,8 +132,10 @@ namespace MonoDevelop.Ide.Templates
 		}
 #endregion
 		
-		protected ProjectTemplate (AddIn addin, string fileName)
+		protected ProjectTemplate (AddIn addin, string id, string fileName)
 		{
+			this.id = id;
+			
 			Stream stream = addin.GetResourceStream (fileName);
 			if (stream == null)
 				throw new ApplicationException ("Template " + fileName + " not found");
@@ -177,29 +184,27 @@ namespace MonoDevelop.Ide.Templates
 		}
 		
 		string lastCombine    = null;
-//		string startupProject = null;
 		ProjectCreateInformation projectCreateInformation;
 		
-		public string CreateProject(ProjectCreateInformation projectCreateInformation)
+		public string CreateCombine (ProjectCreateInformation projectCreateInformation)
+		{
+			this.projectCreateInformation = projectCreateInformation;
+			lastCombine = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename);
+			return lastCombine;
+		}
+		
+		public string CreateProject (ProjectCreateInformation projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
 			
-			if (wizardpath != null) {
-//              TODO: WIZARD
-				IProperties customizer = new DefaultProperties();
-				customizer.SetProperty("ProjectCreateInformation", projectCreateInformation);
-				customizer.SetProperty("ProjectTemplate", this);
-				//WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
-				//if (wizard.ShowDialog() == DialogResult.OK) {
-				//	lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
-				//} else {
-				//	return null;
-				//}
-			} else {
-				lastCombine = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename);
-			}
+			// Create a project using the first child template of the combine template
 			
-			return lastCombine;
+			ICombineEntryDescriptor[] entries = combineDescriptor.EntryDescriptors;
+			if (entries.Length == 0)
+				throw new InvalidOperationException ("Combine template does not contain any project template");
+
+			lastCombine = null;
+			return entries[0].CreateEntry (projectCreateInformation, this.languagename);
 		}
 		
 		public void OpenCreatedCombine()
@@ -221,7 +226,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			foreach (ProjectTemplateCodon codon in codons) {
 				try {
-					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.Resource));
+					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.ID, codon.Resource));
 				} catch (Exception e) {
 					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
 				}

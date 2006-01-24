@@ -1,3 +1,24 @@
+2006-01-24 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Added getter for
+	the list of entry descriptors. Take the combine name from the new
+	ProjectCreateInformation.CombineName property.
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs: Added Id property
+	(taken from the codon ID). Added CreateCombine method, which does
+	what CreateProject was doing until now. CreateProject now creates
+	a project but not a combine.
+	
+	* Base.glade:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:  Some improvements
+	in the new project dialog.
+	
+	* MonoDevelop.Ide.addin.xml: Use some new icons for new project and
+	new solution. Moved here the BlankSolution template from the CSharpBinding.
+	* Makefile.am: Added BlankSolution.
+	
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Track api changes.
+
 2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Codons/PadOptionCodon.cs:

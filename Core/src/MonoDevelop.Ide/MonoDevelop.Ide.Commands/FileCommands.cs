@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NewProjectDialog pd = new NewProjectDialog (true);
+			NewProjectDialog pd = new NewProjectDialog (true, true, null);
 			pd.Run ();
 		}
 	}

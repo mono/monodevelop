@@ -127,7 +127,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewCombine"
 				_label = "Add New Solution..." 
 				description = "Add a new solution to the selected solution"
-				icon  = "md-new-project-icon" />
+				icon  = "md-new-solution-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
 				description = "Add a project to the selected solution"
 				_label = "Add existing _Project" />
@@ -256,7 +256,7 @@
 				_label = "Save All" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
-				_label = "N_ew Solution/Project..." 
+				_label = "N_ew Project..." 
 				icon = "md-new-project-icon" 
 				description = "Create a new project" 
 				shortcut = "Control|Shift|N"  />
@@ -449,7 +449,7 @@
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
 	</Extension>
-
+	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
@@ -891,4 +891,7 @@
 		<FileTemplate resource = "EmptyStruct.xft.xml"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectTemplates">
+		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
+	</Extension>
 </AddIn>

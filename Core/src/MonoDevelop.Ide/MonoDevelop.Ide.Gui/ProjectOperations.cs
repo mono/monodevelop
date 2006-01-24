@@ -424,23 +424,22 @@ namespace MonoDevelop.Ide.Gui
 		CombineEntry CreateCombineEntry (Combine parentCombine, bool createCombine)
 		{
 			CombineEntry res = null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentCombine == null);
+			string basePath = parentCombine != null ? parentCombine.BaseDirectory : null;
+			NewProjectDialog npdlg = new NewProjectDialog (parentCombine == null, createCombine, basePath);
+			if (createCombine && parentCombine != null)
+				npdlg.SelectTemplate ("MonoDevelop.BlankSolution");
+
 			if (npdlg.Run () == (int) Gtk.ResponseType.Ok) {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ();
 				try {
-					if (createCombine)
-						res = parentCombine.AddEntry (npdlg.NewCombineLocation, monitor);
-					else
-						res = parentCombine.AddEntry (npdlg.NewProjectLocation, monitor);
+					res = parentCombine.AddEntry (npdlg.NewCombineEntryLocation, monitor);
 				}
 				catch {
-					Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), npdlg.NewProjectLocation));
+					Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), npdlg.NewCombineEntryLocation));
 					res = null;
 				}
 				monitor.Dispose ();
 			}
-			
-			npdlg = null;
 
 			if (res != null)
 				SaveCombine ();
