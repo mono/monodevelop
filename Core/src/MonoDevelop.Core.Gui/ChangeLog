@@ -1,3 +1,8 @@
+2006-01-24  Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.Gui.addin.xml:
+	* Makefile.am: Added new icons.
+
 2006-01-14  John Luke  <john.luke@gmail.com>   
 
 	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs:

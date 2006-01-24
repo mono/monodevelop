@@ -80,7 +80,8 @@
 		<StockIcon stockid = "md-name-space" resource = "Icons.16x16.NameSpace" />
 		<StockIcon stockid = "md-network" resource = "Icons.16x16.NETWORK" />
 		<StockIcon stockid = "md-new-folder-icon" resource = "Icons.16x16.NewFolderIcon" />
-		<StockIcon stockid = "md-new-project-icon" resource = "Icons.16x16.NewProjectIcon" />
+		<StockIcon stockid = "md-new-project-icon" resource = "Icons.16x16.NewSolutionIcon.png" />
+		<StockIcon stockid = "md-new-solution-icon" resource = "Icons.16x16.NewCombineIcon.png" />
 		<StockIcon stockid = "md-open-folder" resource = "Icons.16x16.OpenFolderBitmap" />
 		<StockIcon stockid = "md-open-project-icon" resource = "Icons.16x16.OpenProjectIcon" />
 		<StockIcon stockid = "md-open-reference-folder" resource = "Icons.16x16.OpenReferenceFolder" />

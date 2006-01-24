@@ -124,7 +124,8 @@ icons/Icons.16x16.MyComputer \
 icons/Icons.16x16.NETWORK \
 icons/Icons.16x16.NameSpace \
 icons/Icons.16x16.NewFolderIcon \
-icons/Icons.16x16.NewProjectIcon \
+icons/Icons.16x16.NewSolutionIcon.png \
+icons/Icons.16x16.NewCombineIcon.png \
 icons/Icons.16x16.NextWindowIcon \
 icons/Icons.16x16.OpenFileIcon \
 icons/Icons.16x16.OpenFolderBitmap \
