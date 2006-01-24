@@ -1,3 +1,7 @@
+2006-01-24  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* Base.glade: Fixed spelling mistake.
+
 2006-01-24 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Added getter for
