@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 07:43+0900\n"
+"POT-Creation-Date: 2006-01-24 12:34+0900\n"
 "PO-Revision-Date: 2004-07-12 10:51+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -231,8 +231,9 @@ msgid "Mono Project"
 msgstr "Monoプロジェクト"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:41
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:40
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:291
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
@@ -254,7 +255,7 @@ msgid "New File"
 msgstr "新しいファイル"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:347
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:344
 msgid "New Folder"
 msgstr "新しいフォルダ"
 
@@ -272,7 +273,7 @@ msgid "Open"
 msgstr "開く"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:44
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:43
 msgid "Options"
 msgstr "オプション"
 
@@ -579,13 +580,15 @@ msgstr "コンパイル"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
 msgid "Configurations"
 msgstr "コンフィグレーション"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:5
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:1
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
 msgid "General"
 msgstr "一般"
 
@@ -598,16 +601,10 @@ msgid "Startup Properties"
 msgstr "スタートアップのプロパティ"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
-#: ../Extras/CSharpBinding/CSharp.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
 msgid "<b>Select the addins to install and click on Next</b>"
 msgstr "<b>インストールするアドインを選択して 次 をクリックしてください</b>"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:3
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
 msgid ""
 "<b>The following addins will be installed:</b>\n"
 "\n"
@@ -657,120 +654,120 @@ msgstr ""
 "sd\n"
 "asd\n"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:27
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:26
 msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
 msgstr "<big><b>MonoDevelopアドイン マネージャ</b></big>"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:28
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:27
 msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
 msgstr "<span weight=\"bold\" size=\"x-large\">タイトル</span>"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:28
 msgid "Add New Repository"
 msgstr "新しいリポジトリを追加"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
 msgid "Add-in Repository Management"
 msgstr "アドイン リポジトリ管理"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
 msgid "Addin Installation"
 msgstr "アドインのインストール"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:32
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
 msgid "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
 msgstr "例外が投げられました 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:33
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:32
 msgid "Cat_egories:"
 msgstr "カテゴリ(_e)"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:34
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:33
 msgid "Details"
 msgstr "詳細"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:35
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:34
 msgid "Disable"
 msgstr "無効"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:36
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:35
 msgid "Downloading addins ..."
 msgstr "アドインをダウンロード中 ..."
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:37
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:36
 msgid "Enable"
 msgstr "有効"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:38
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:37
 msgid "Install Addins..."
 msgstr "アドインをインストール..."
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:39
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:38
 msgid "Install from:"
 msgstr "インストール元:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:39
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:194
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:42
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:41
 msgid "MonoDevelop Addin Manager"
 msgstr "MonoDevelop アドイン マネージャ"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:43
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:42
 msgid "MonoDevelop Package"
 msgstr "MonoDevelopパッケージ"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:45
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:44
 msgid "Overall Progress:"
 msgstr "全体的な進行状況:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:46
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:45
 msgid "Path:"
 msgstr "パス:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:47
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:46
 msgid "Register a local repository"
 msgstr "ローカル リポジトリを追加"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:48
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:47
 msgid "Register an on-line repository"
 msgstr "オンライン リポジトリを追加"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:48
 msgid "Repositories..."
 msgstr "リポジトリ..."
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:50
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:49
 msgid "Select All"
 msgstr "全て選択"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:51
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:50
 msgid "Select the location of the repository you want to register:"
 msgstr "登録するリポジトリの場所を選択してください:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:52
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:51
 msgid "Show updates only"
 msgstr "アップデートのみ表示"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:53
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:52
 msgid "The following add-ins are currently installed:"
 msgstr "以下のアドインが現在インストールされています"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:54
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:53
 msgid "Uninstall..."
 msgstr "アンインストールする"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:55
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:54
 msgid "Unselect All"
 msgstr "全て選択解除"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:56
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:55
 msgid "Url:"
 msgstr "Url:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:57
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:56
 msgid ""
 "You need to restart MonoDevelop\n"
 "sdfsdf\n"
@@ -780,7 +777,7 @@ msgstr ""
 "sdfsdf\n"
 "sdfsf"
 
-#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:60
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:59
 msgid ""
 "aa a a a a a a a a aa a a a a aaa a a a a a a a a aa a a a a aaa a a a a a a "
 "a a aa a a a a a"
@@ -1143,6 +1140,12 @@ msgstr "型の完全名を使う (_U)"
 msgid "_Working Directory:"
 msgstr "作業ディレクトリ (_W):"
 
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
+#: ../Extras/JavaBinding/Java.glade.h:1
+#: ../Extras/CSharpBinding/CSharp.glade.h:1
+msgid "*"
+msgstr "*"
+
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
 msgid "<b>Execute scripts </b>"
 msgstr "<b>スクリプトの実行</b>"
@@ -1224,6 +1227,7 @@ msgid "GeneralProjectOptionsPanel"
 msgstr "GeneralProjectOptionsPanel"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:454
 msgid "Name:"
 msgstr "名前:"
 
@@ -1334,74 +1338,71 @@ msgid "cmbBuildOptions"
 msgstr "cmbBuildOptions"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:1
-msgid "-"
-msgstr "-"
-
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
 msgid "Behavior"
 msgstr "動作"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
 msgid "Buffer Options"
 msgstr "バッファ オプション"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:4
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
 msgid "Clear Bookmarks"
 msgstr "ブックマークのクリア"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:5
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:4
 msgid "Code Templates"
 msgstr "コード テンプレート"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
 msgid "Goto Matching _Brace"
 msgstr "対応する括弧に移動 (_B)"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
-msgid "Highlighting Mode"
-msgstr "ハイライティング モード"
-
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:9
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
 msgid "Markers And Rulers"
 msgstr "マーカーとルーラ"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:10
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
 msgid "Markers and Rulers"
 msgstr "マーカーとルーラ"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:11
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:9
 msgid "Next Bookmark"
 msgstr "次のブックマーク"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:12
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:10
 msgid "Previous Bookmark"
 msgstr "前のブックマーク"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:13
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:11
+msgid "Search"
+msgstr "検索"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:12
 msgid "Syntax highlighting"
 msgstr "ハイライティング モード"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:14
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:13
 msgid "Text Editor"
 msgstr "テキストエディタ"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:15
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:14
 msgid "Toggle Bookmark"
 msgstr "ブックマークの切り替え"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:16
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:15
 msgid "_Goto Line..."
 msgstr "指定行に移動... (_G)"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:16
 msgid "_Search"
 msgstr "検索 (_S)"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:18
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
 msgid "bogus_label"
 msgstr "バグの目印 (_l)"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:131
 msgid "Output"
 msgstr "出力"
 
@@ -1590,6 +1591,102 @@ msgstr "指定行に移動 (_G)"
 msgid "_Line Number:"
 msgstr "行番号 (_L):"
 
+#: ../Extras/JavaBinding/Java.glade.h:2
+#: ../Extras/CSharpBinding/CSharp.glade.h:2
+#: ../Extras/NemerleBinding/Nemerle.glade.h:2
+#: ../Extras/VBNetBinding/VB.glade.h:2
+msgid "<b>Code Generation</b>"
+msgstr "<b>コード生成</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:3
+msgid "<b>Compiler</b>"
+msgstr "<b>コンパイラ</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:4
+msgid "<b>Options</b>"
+msgstr "<b>オプション</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:5
+#: ../Extras/CSharpBinding/CSharp.glade.h:3
+#: ../Extras/VBNetBinding/VB.glade.h:3
+msgid "<b>Warnings</b>"
+msgstr "<b>警告</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:6
+msgid "Classpath:"
+msgstr "Classpath:"
+
+#: ../Extras/JavaBinding/Java.glade.h:7
+#: ../Extras/CSharpBinding/CSharp.glade.h:5
+#: ../Extras/NemerleBinding/Nemerle.glade.h:5
+#: ../Extras/VBNetBinding/VB.glade.h:5
+msgid "CodeGenerationPanel"
+msgstr "CodeGenerationPanel"
+
+#: ../Extras/JavaBinding/Java.glade.h:8
+#: ../Extras/CSharpBinding/CSharp.glade.h:6
+msgid "Compile _Target:"
+msgstr "コンパイルのターゲット: (_T)"
+
+#: ../Extras/JavaBinding/Java.glade.h:9
+msgid "Compiler command:"
+msgstr "コンパイラ コマンド:"
+
+#: ../Extras/JavaBinding/Java.glade.h:10
+#: ../Extras/CSharpBinding/CSharp.glade.h:7
+msgid "Define S_ymbols:"
+msgstr "シンボルを定義: (_y)"
+
+#: ../Extras/JavaBinding/Java.glade.h:11
+#: ../Extras/CSharpBinding/CSharp.glade.h:8
+msgid "Emit _debugging information"
+msgstr "デバッグ情報の出力 (_D)"
+
+#: ../Extras/JavaBinding/Java.glade.h:12
+#: ../Extras/CSharpBinding/CSharp.glade.h:9
+#: ../Extras/VBNetBinding/VB.glade.h:8
+msgid "Enable _optimizations"
+msgstr "最適化を有効にする (_O)"
+
+#: ../Extras/JavaBinding/Java.glade.h:13
+msgid "Enable deprecation warnings"
+msgstr "廃止機能の警告を有効にする"
+
+#: ../Extras/JavaBinding/Java.glade.h:14
+msgid "Generate warnings"
+msgstr "警告を生成"
+
+#: ../Extras/JavaBinding/Java.glade.h:15
+msgid "IKVM path:"
+msgstr "IKVMのパス:"
+
+#: ../Extras/JavaBinding/Java.glade.h:16
+msgid "Java compiler:"
+msgstr "Javaコンパイラ:"
+
+#: ../Extras/JavaBinding/Java.glade.h:17
+#: ../Extras/CSharpBinding/CSharp.glade.h:11
+#: ../Extras/VBNetBinding/VB.glade.h:10
+msgid "Treat warnings as _errors"
+msgstr "警告をエラーとして扱う (_E)"
+
+#: ../Extras/JavaBinding/Java.glade.h:18
+#: ../Extras/CSharpBinding/CSharp.glade.h:13
+msgid "_Main Class:"
+msgstr "_Main クラス:"
+
+#: ../Extras/JavaBinding/Java.glade.h:19
+msgid "gcj"
+msgstr "gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:20
+msgid "javac"
+msgstr "javac"
+
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:2
+msgid "Welcome Page"
+msgstr ""
+
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
 msgid "_Import Visual Studio .NET Project"
 msgstr "Visual Studio .NETプロジェクトのインポート (_I)"
@@ -1752,63 +1849,20 @@ msgstr "ライブラリ"
 msgid "Creates an empty Nemerle project"
 msgstr "空のNemerleプロジェクトを作成します"
 
-#: ../Extras/CSharpBinding/CSharp.glade.h:2
-#: ../Extras/NemerleBinding/Nemerle.glade.h:2
-#: ../Extras/VBNetBinding/VB.glade.h:2
-msgid "<b>Code Generation</b>"
-msgstr "<b>コード生成</b>"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:3
-#: ../Extras/VBNetBinding/VB.glade.h:3
-msgid "<b>Warnings</b>"
-msgstr "<b>警告</b>"
-
 #: ../Extras/CSharpBinding/CSharp.glade.h:4
 #: ../Extras/VBNetBinding/VB.glade.h:4
 msgid "Allow '_unsafe' code"
 msgstr "'_unsafe'コードを許可"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:5
-#: ../Extras/NemerleBinding/Nemerle.glade.h:5
-#: ../Extras/VBNetBinding/VB.glade.h:5
-msgid "CodeGenerationPanel"
-msgstr "CodeGenerationPanel"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:6
-msgid "Compile _Target:"
-msgstr "コンパイルのターゲット: (_T)"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:7
-msgid "Define S_ymbols:"
-msgstr "シンボルを定義: (_y)"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:8
-msgid "Emit _debugging information"
-msgstr "デバッグ情報の出力 (_D)"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:9
-#: ../Extras/VBNetBinding/VB.glade.h:8
-msgid "Enable _optimizations"
-msgstr "最適化を有効にする (_O)"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:10
 #: ../Extras/VBNetBinding/VB.glade.h:9
 msgid "Generate _xml documentation"
 msgstr "_xml ドキュメンテーションを生成する"
 
-#: ../Extras/CSharpBinding/CSharp.glade.h:11
-#: ../Extras/VBNetBinding/VB.glade.h:10
-msgid "Treat warnings as _errors"
-msgstr "警告をエラーとして扱う (_E)"
-
 #: ../Extras/CSharpBinding/CSharp.glade.h:12
 #: ../Extras/VBNetBinding/VB.glade.h:11
 msgid "_Generate overflow checks"
 msgstr "オーバーフローのチェックを生成 (_G)"
-
-#: ../Extras/CSharpBinding/CSharp.glade.h:13
-msgid "_Main Class:"
-msgstr "_Main クラス:"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:14
 msgid "_Warning Level:"
@@ -2003,10 +2057,110 @@ msgstr "AWT パネル"
 msgid "Creates a Java AWT panel."
 msgstr "Java AWTパネルを作成します"
 
+#: ../Extras/NUnit/nunit.glade.h:1
+msgid "Categories:"
+msgstr "カテゴリ:"
+
+#: ../Extras/NUnit/nunit.glade.h:2
+msgid "Don't apply any filter"
+msgstr "フィルタを適用しない"
+
+#: ../Extras/NUnit/nunit.glade.h:3
+msgid "Exclude the following categories"
+msgstr "以下のカテゴリを除外"
+
+#: ../Extras/NUnit/nunit.glade.h:4
+msgid "Include the following categories"
+msgstr "以下のカテゴリが対象"
+
+#: ../Extras/NUnit/nunit.glade.h:5
+msgid "NUnit Options"
+msgstr "NUnit オプション"
+
+#: ../Extras/NUnit/nunit.glade.h:6
+msgid "The following filter will be applied when running the tests:"
+msgstr "以下のフィルタがテスト実行時に適用されます"
+
+#: ../Extras/NUnit/nunit.glade.h:7
+msgid "Use parent test settings"
+msgstr "親テスト設定を使用する"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
+msgid "Add assembly ..."
+msgstr "アセンブリの追加 ..."
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
+msgid "NUnit Categories"
+msgstr "NUnitカテゴリ"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
+msgid "NUnit options"
+msgstr "NUnit オプション"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
+msgid "Proportional time scale"
+msgstr "プロポーショナルな時間軸"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
+msgid "Results chart"
+msgstr "結果チャート"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
+msgid "Run Test"
+msgstr "テストを実行"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
+msgid "Select test in tree"
+msgstr "ツリー中のテストを選択"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
+msgid "Show Test Counters"
+msgstr "テストカウンタを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
+msgid "Show Test Time"
+msgstr "テスト時間を表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
+msgid "Show failed tests"
+msgstr "失敗したテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
+msgid "Show ignored tests"
+msgstr "無視されたテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
+msgid "Show one result per day"
+msgstr "1日につき1件を表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
+msgid "Show results pad"
+msgstr "結果パッドを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
+msgid "Show successful tests"
+msgstr "成功したテストを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
+msgid "Show test source code"
+msgstr "テストのソースコードを表示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
+msgid "Time chart"
+msgstr "タイムチャート"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
+msgid "Unit Tests"
+msgstr "単体テスト"
+
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
 #, csharp-format
 msgid "The addin '{0}' is not installed."
 msgstr "アドイン '{0}' がインストールできませんでした。"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:122
+msgid "Not all dependencies could be resolved."
+msgstr "依存関係の全てを解決することができませんでした"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:130
 msgid "Installing addins..."
@@ -2031,11 +2185,29 @@ msgstr "インストール完了"
 msgid "The package '{0}' could not be found in any repository"
 msgstr "パッケージ '{0}' がどのリポジトリからも見つかりませんでした。"
 
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:454
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:461
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:469
+msgid "Can't install two versions of the same add-in: '"
+msgstr "同一のアドインの2つのバージョンをインストールすることはできません: '"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:690
+msgid "The repository could not be registered"
+msgstr "リポジトリを登録することができませんでした"
+
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:794
 msgid "Could not get information from repository"
 msgstr "リポジトリから情報を取得できませんでした"
 
-#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1121
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1064
+msgid "Requesting "
+msgstr "リクエスト中: "
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1070
+msgid "Downloading "
+msgstr "ダウンロード中: "
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1150
 #, csharp-format
 msgid ""
 "The addin '{0} v{1}' can't be uninstalled with the current user permissions."
@@ -2067,8 +2239,14 @@ msgstr "ファイル {0} の名前を変更できません"
 msgid "Resource not found: {0}"
 msgstr "リソースが見つかりません: {0}"
 
-#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:138
-#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:181
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:81
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:95
+#, csharp-format
+msgid "Exception occurred: {0}"
+msgstr "例外が発生しました: {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:145
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:188
 msgid "Question"
 msgstr "質問"
 
@@ -2096,13 +2274,13 @@ msgstr "著作権:"
 msgid "Add-in Dependencies:"
 msgstr "アドインの依存関係:"
 
-#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:23
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:24
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:52
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:6
 msgid "Name"
 msgstr "名前"
 
-#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:24
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:25
 msgid "Url"
 msgstr "Url"
 
@@ -2325,7 +2503,7 @@ msgid "Could not delete folder '{0}'"
 msgstr "フォルダ '{0}' を削除できませんでした"
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
-#: ../Extras/WelcomePage/WelcomePageView.cs:130
+#: ../Extras/WelcomePage/WelcomePageView.cs:145
 #, csharp-format
 msgid "Could not open the url {0}"
 msgstr "url '{0}' を開けませんでした"
@@ -2399,30 +2577,30 @@ msgstr "プロジェクトを読み込めませんでした: {0}"
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
 #, csharp-format
-msgid "Saving combine: {0}"
-msgstr "コンバインを保存中: {0}"
+msgid "Saving solution: {0}"
+msgstr "ソリューションを保存しています: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
 #, csharp-format
-msgid "Could not save combine: {0}"
-msgstr "コンバインを保存できませんでした: {0}"
+msgid "Could not save solution: {0}"
+msgstr "ソリューションを保存できませんでした: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
 #, csharp-format
 msgid ""
-"The file '{0}' is using an old combine file format. It will be automatically "
-"converted to the current format."
+"The file '{0}' is using an old solution file format. It will be "
+"automatically converted to the current format."
 msgstr ""
-"古いプロジェクトファイルフォーマットが見つかりました。\n"
-"これは自動的に {0} の情報に変換されます"
+"ファイル '{0}' は古いソリューションファイルフォーマットを使用しています。\n"
+"これは自動的に現在のフォーマットに変換されます"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:213
 #, csharp-format
-msgid "Loading combine: {0}"
-msgstr "コンバインを読み込み中: {0}"
+msgid "Loading solution: {0}"
+msgstr "ソリューションをロードしています: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:543
 msgid "The solution does not have an active configuration."
@@ -2480,13 +2658,27 @@ msgstr "ビルド完了 -- エラー {0}件, 警告 {1}件"
 msgid "Executing: {0}"
 msgstr "実行中 : {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:420
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:465
 msgid "Generating database"
 msgstr "データベースを生成しています"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:69
+msgid "<b>Ported and developed by:</b>\n"
+msgstr "<b>移植および開発:</b>\n"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:77
 msgid "translator-credits"
 msgstr "翻訳者クレジット"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:80
+msgid ""
+"\n"
+"\n"
+"<b>Translated by:</b>\n"
+msgstr ""
+"\n"
+"\n"
+"<b>翻訳者:</b>\n"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:141
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:151
@@ -2566,8 +2758,27 @@ msgid "Whole solution"
 msgstr "全てのソリューション"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:32
+#, csharp-format
+msgid ""
+"<b>License</b>\n"
+"    {0}"
+msgstr ""
+"<b>ライセンス</b>\n"
+"    {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:32
 msgid "Released under the GNU General Public license."
 msgstr "GNU一般公開使用許諾の下で公開されています"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:36
+msgid ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
+msgstr ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:54
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:166
@@ -2580,7 +2791,7 @@ msgid "dynamic"
 msgstr "動的"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:60
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:171
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:160
 msgid "_Description"
 msgstr "説明 (_D)"
@@ -2645,8 +2856,8 @@ msgid "The project could not be created"
 msgstr "プロジェクトが作成できませんでした"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:326
-msgid "Combine Location"
-msgstr "コンバインの場所を選択して下さい"
+msgid "Solution Location"
+msgstr "ソリューションの格納位置"
 
 #  set up dialog title
 #. set up dialog title
@@ -2678,17 +2889,25 @@ msgstr "ディレクトリ"
 msgid "Whole project"
 msgstr "プロジェクト全体"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:267
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:266
 msgid "Select directory"
 msgstr "ディレクトリを選択して下さい"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:326
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:331
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:325
+msgid "Empty search pattern"
+msgstr "検索パターンが空です"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:332
+msgid "Empty directory name"
+msgstr "ディレクトリ名が空です"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:337
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
 #, csharp-format
 msgid "Invalid directory name: {0}"
 msgstr "無効なディレクトリ名です: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:336
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:347
 #, csharp-format
 msgid "Invalid file mask: {0}"
 msgstr "無効なファイルマスクです: {0}"
@@ -2756,7 +2975,7 @@ msgstr "プロジェクト"
 msgid "Directory"
 msgstr "ディレクトリ"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:73
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:92
 #, csharp-format
 msgid "Can't load bitmap {0} using default"
 msgstr "ビットマップ {0}をデフォルトで読み込めません"
@@ -2765,16 +2984,31 @@ msgstr "ビットマップ {0}をデフォルトで読み込めません"
 msgid "Can't load templates configuration file"
 msgstr "構成ファイルが読み込めませんでした"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:161
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:153
 msgid "_Name"
 msgstr "名前 (_N)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:173
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:214
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:226
 #, csharp-format
 msgid "Error loading template from resource {0}"
 msgstr "リソース {0} のテンプレートの読み込みでエラーが発生しました"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:260
+#, csharp-format
+msgid "The file '{0}' already exists in the project."
+msgstr "ファイル '{0}' は既にこのプロジェクトに存在します"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:291
+#, csharp-format
+msgid "The file '{0}' already exists. Do you want to replace it?."
+msgstr "ファイル '{0}' は既に存在します。上書きしますか?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:292
+#, csharp-format
+msgid "The file '{0}' could not be created."
+msgstr "ファイル '{0}' が作成できませんでした"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:68
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:83
@@ -3145,11 +3379,6 @@ msgstr "ツール \"{0}\" の作業ディレクトリが無効です"
 msgid "Change me"
 msgstr "Change me"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DisplayBindingService.cs:61
-#, csharp-format
-msgid "Didnt match on mimetype: {0}, trying filename"
-msgstr "{0} はmime型にマッチしません。ファイル名で試行します。"
-
 #  using (SaveFileDialog fdiag = new SaveFileDialog()) {
 #  fdiag.OverwritePrompt = true;
 #  fdiag.AddExtension    = true;
@@ -3205,10 +3434,6 @@ msgstr "INS"
 msgid "OVR"
 msgstr "OVR"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:75
-msgid "Loading Workbench"
-msgstr "ワークベンチをロードしています"
-
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:100
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:105
 #, csharp-format
@@ -3221,6 +3446,8 @@ msgid ""
 " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
 "{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
 msgstr ""
+" <span font_family='fixed'>{0,-4}</span>行目  <span font_family='fixed'>{1,-"
+"3}</span>列目  <span font_family='fixed'>{2,-3}</span>文字目 "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:107
 msgid "Are you sure that you want to reload the file?"
@@ -3239,121 +3466,130 @@ msgstr "アドインの新しいアップデートが利用可能です:"
 msgid "Search Results"
 msgstr "検索結果"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:222
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:381
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:228
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:402
 #, csharp-format
 msgid "File not found: {0}"
 msgstr "ファイルが見つかりません: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:264
-msgid "Combine loaded."
-msgstr "コンバインを読み込みました"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:270
+msgid "Solution loaded."
+msgstr "ソリューションを読み込みました"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:331
-msgid "Combine saved."
-msgstr "コンバインを保存しました"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:337
+msgid "Solution saved."
+msgstr "ソリューションを保存しました"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:333
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:339
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:352
 msgid "Save failed."
 msgstr "保存に失敗しました。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:418
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:445
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:350
+msgid "Project saved."
+msgstr "プロジェクトを保存しました"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:437
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:464
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "ファイル '{0}' が読み込めませんでした。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:436
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:455
 msgid "Add to Solution"
 msgstr "ソリューションに追加"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:655
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:688
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:658
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:691
 msgid "Execution failed."
 msgstr "実行に失敗しました。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:705
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:764
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:708
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:767
 msgid "No runnable executable found."
 msgstr "実行可能ファイルが見つかりませんでした。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:749
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:752
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "ファイル {0} がコンパイルできません"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:800
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:857
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:803
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:860
 #, csharp-format
 msgid "Build failed."
 msgstr "ビルドに失敗しました。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:816
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:819
 msgid "Save changed files?"
 msgstr "変更されたファイルを保存しますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:844
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:847
 #, csharp-format
 msgid "---------------------- Done ----------------------"
 msgstr "---------------------- 完了 ----------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:851
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:854
 msgid "Build successful."
 msgstr "ビルド成功"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:853
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:855
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:856
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:858
 #, csharp-format
 msgid "Build: {0} errors, {1} warnings."
 msgstr "エラー {0}件, 警告 {1}件"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:890
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:893
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "'{0}'にはファイルが存在しません。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:902
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:905
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "新しいフォルダ '{0}'は作成できませんでした"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:909
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:912
 msgid "Copying files..."
 msgstr "ファイルをコピーしています..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:921
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:924
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "ファイル {0} が作成できませんでした"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:943
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:946
 #, csharp-format
 msgid "File '{0}' could not be deleted."
 msgstr "ファイル {0} が削除できませんでした。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:958
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:961
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "ディレクトリ {0} が削除できませんでした。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
+msgid "Initializing Main Window"
+msgstr "メインウィンドウを初期化中です"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:246
 #, csharp-format
 msgid "Opening {0}"
 msgstr "{0}を開いています"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:307
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:322
 msgid "Do you want to save the current changes?"
 msgstr "現在の変更内容を保存しますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:319
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:334
 msgid "Do you really want to discard your changes ?"
 msgstr "本当に変更内容を破棄しますか?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:351
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:366
 msgid "Invalid file name"
 msgstr "無効なファイル名です"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:365
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:386
 #, csharp-format
 msgid "{0} is a directory"
 msgstr "{0}はディレクトリです"
@@ -3361,6 +3597,26 @@ msgstr "{0}はディレクトリです"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:95
 msgid "Ready"
 msgstr "準備完了"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:94
+msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
+msgstr "MonoDevelopの起動に失敗しました。ローカルホスト名が解決できません。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:95
+msgid ""
+"Your network may be misconfigured. Make sure the hostname of your system is "
+"added to the /etc/hosts file."
+msgstr ""
+"ネットワークの設定が不正です。システムのホスト名が/etc/hosts ファイルに追加さ"
+"れているか、確認してください。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:109
+msgid "Initializing MonoDevelop"
+msgstr "MonoDevelopを初期化中です"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:152
+msgid "MonoDevelop failed to start. The following error has been reported: "
+msgstr "MonoDevelopの起動に失敗しました。以下のエラーが報告されました: "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs:28
 msgid "Documentation"
@@ -3519,8 +3775,8 @@ msgid "Text"
 msgstr "テキスト"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:118
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:144
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:199
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:198
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:90
 msgid "Search pattern is invalid"
 msgstr "検索パターンが無効です"
@@ -3534,13 +3790,13 @@ msgstr "全てのマークが完了しました"
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
 #  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:152
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:151
 #, csharp-format
 msgid "Replace all finished. {0} matches found."
 msgstr "全ての置換が完了しました。{0}件見つかりました。"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:212
-msgid "Search string not Found:"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:211
+msgid "Search string not found:"
 msgstr "検索文字列が見つかりませんでした:"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:70
@@ -3632,10 +3888,10 @@ msgstr "実行"
 #. tell the user we encountered and worked around an issue
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:105
 msgid ""
-"The Combine Execute Definitions for this Combine were invalid. A new empty "
+"The Solution Execute Definitions for this Solution were invalid. A new empty "
 "set of Execute Definitions has been created."
 msgstr ""
-"このコンバインの実行定義が無効です。新しい空の実行定義のセットが作成されまし"
+"このソリューションの実行定義が無効です。新しい空の実行定義のセットが作成されまし"
 "た。"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:101
@@ -3651,8 +3907,8 @@ msgid "Deploy script doesn't exists"
 msgstr "デプロイ スクリプトが存在しません"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
-msgid "Combine Options"
-msgstr "コンバイン オプション"
+msgid "Solution Options"
+msgstr "ソリューション オプション"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:45
 msgid "Project Options"
@@ -3682,110 +3938,86 @@ msgstr "Javac"
 msgid "Gcj"
 msgstr "Gcj"
 
-#: ../Extras/NUnit/nunit.glade.h:1
-msgid "Categories:"
-msgstr "カテゴリ:"
-
-#: ../Extras/NUnit/nunit.glade.h:2
-msgid "Don't apply any filter"
-msgstr "フィルタを適用しない"
-
-#: ../Extras/NUnit/nunit.glade.h:3
-msgid "Exclude the following categories"
-msgstr "以下のカテゴリを除外"
-
-#: ../Extras/NUnit/nunit.glade.h:4
-msgid "Include the following categories"
-msgstr "以下のカテゴリが対象"
-
-#: ../Extras/NUnit/nunit.glade.h:5
-msgid "NUnit Options"
-msgstr "NUnit オプション"
-
-#: ../Extras/NUnit/nunit.glade.h:6
-msgid "The following filter will be applied when running the tests:"
-msgstr "以下のフィルタがテスト実行時に適用されます"
-
-#: ../Extras/NUnit/nunit.glade.h:7
-msgid "Use parent test settings"
-msgstr "親テスト設定を使用する"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
-msgid "Add assembly ..."
-msgstr "アセンブリの追加 ..."
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
-msgid "NUnit Categories"
-msgstr "NUnitカテゴリ"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
-msgid "NUnit options"
-msgstr "NUnit オプション"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
-msgid "Proportional time scale"
-msgstr "プロポーショナルな時間軸"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
-msgid "Results chart"
-msgstr "結果チャート"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
-msgid "Run Test"
-msgstr "テストを実行"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
-msgid "Select test in tree"
-msgstr "ツリー中のテストを選択"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
-msgid "Show Test Counters"
-msgstr "テストカウンタを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
-msgid "Show Test Time"
-msgstr "テスト時間を表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
-msgid "Show failed tests"
-msgstr "失敗したテストを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
-msgid "Show ignored tests"
-msgstr "無視されたテストを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
-msgid "Show one result per day"
-msgstr "1日につき1件を表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
-msgid "Show results pad"
-msgstr "結果パッドを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
-msgid "Show successful tests"
-msgstr "成功したテストを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
-msgid "Show test source code"
-msgstr "テストのソースコードを表示"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
-msgid "Time chart"
-msgstr "タイムチャート"
-
-#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
-msgid "Unit Tests"
-msgstr "単体テスト"
-
 #: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
 msgid "Unit Test Options"
 msgstr "単体テスト オプション"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:53
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:271
+msgid "<b>Failed</b>: "
+msgstr "<b>失敗</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:54
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:272
+msgid "<b>Ignored</b>: "
+msgstr "<b>無視</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:104
+msgid "Successful Tests"
+msgstr "成功したテスト"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:109
+msgid "Show Successful Tests"
+msgstr "成功したテストを表示"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:113
+msgid "Failed Tests"
+msgstr "失敗したテスト"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:118
+msgid "Show Failed Tests"
+msgstr "失敗したテストを表示"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:122
+msgid "Ignored Tests"
+msgstr "無視したテスト"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:127
+msgid "Show Ignored Tests"
+msgstr "無視したテストを表示"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:136
+msgid "Show Output"
+msgstr "出力を表示"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:218
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:251
+msgid "Test results"
+msgstr "テスト結果"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:309
 #, csharp-format
 msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
 msgstr "<b>{0}</b> のテストをコンフィグレーション {1} で実行しています"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:322
+msgid "Internal error"
+msgstr "内部エラー"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:329
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:460
+msgid "Stack Trace"
+msgstr "スタックトレース"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "<b>Tests</b>: "
+msgstr "<b>テスト</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Failed</b>: "
+msgstr "<b>失敗</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Ignored</b>: "
+msgstr "  <b>無視</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:354
+msgid "Test execution cancelled."
+msgstr "テストの実行は中断されました。"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+msgid "Running "
+msgstr "実行中 - "
 
 #: ../Extras/NUnit/Services/NUnitOptions.cs:80
 msgid "Exclude the following categories: "
@@ -3815,16 +4047,16 @@ msgstr "プロジェクトファイルが見つかりません: "
 msgid "The solution could not be imported."
 msgstr "ソリューションがインポートできませんでした。"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:637
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:674
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:623
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:661
 msgid "Assembly reference could not be imported: "
 msgstr "アセンブリ参照がインポートできませんでした: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:715
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:708
 msgid "Can't import file: "
 msgstr "ファイルがインポートできません: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:761
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:754
 #, csharp-format
 msgid ""
 "Output directory '{0}' can't be mapped to a local directory. The directory "
@@ -4021,14 +4253,10 @@ msgstr "制約"
 msgid "Procedure"
 msgstr "プロシージャ"
 
-#: ../Extras/MonoQuery/MonoQuery/Gui/SqlDefinitionPad.cs:54
-msgid "SQL Definition"
-msgstr "SQL 定義"
-
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:222
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:259
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:469
-msgid "Execuing sql query on"
+msgid "Executing sql query on"
 msgstr "以下にSQLクエリを実行します "
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:227
@@ -4059,18 +4287,18 @@ msgstr "新規 "
 msgid "Edit "
 msgstr "編集"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:170
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:142
 msgid "Source Editor"
 msgstr "ソースエディタ"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:274
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:255
 #, csharp-format
 msgid ""
 "The file {0} has been changed outside of MonoDevelop. Are you sure you want "
 "to overwrite the file?"
 msgstr "ファイル {0} はMonoDevelopの外部で変更されています。上書きしますか?"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:352
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:337
 msgid "This file has been changed outside of MonoDevelop"
 msgstr "このファイルはMonoDevelopの外部で変更されています"
 
@@ -4097,23 +4325,60 @@ msgstr "WinEXE"
 msgid "Module"
 msgstr "モジュール"
 
-#~ msgid "move"
-#~ msgstr "移動"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:1
+msgid "ChangeLog"
+msgstr "ChangeLog"
 
-#~ msgid "copy"
-#~ msgstr "コピー"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:2
+msgid "ChangeLog AddIn"
+msgstr "ChangeLogアドイン"
 
-#~ msgid "the folder '{0}'"
-#~ msgstr "フォルダ '{0}'"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:4
+msgid "Insert Entry"
+msgstr "エントリを追加"
 
-#~ msgid "the file '{0}'"
-#~ msgstr "ファイル '{0}'"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:5
+msgid "Insert Header"
+msgstr "ヘッダを追加"
 
-#~ msgid "root folder of project '{0}'"
-#~ msgstr "プロジェクト {0} のルート フォルダ"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:18
+msgid "Specify personal information used in ChangeLog entries"
+msgstr "ChangeLogエントリで使用する個人情報を設定してください"
 
-#~ msgid "folder '{0}'"
-#~ msgstr "フォルダ '{0}'"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:22
+msgid "Full Name:"
+msgstr "フルネーム:"
 
-#~ msgid "Do you really want to {0} {1} to {2}?"
-#~ msgstr "本当に {1} を {2} から{0}しますか?"
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:26
+msgid "Email Address:"
+msgstr "eメールアドレス"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:126
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:150
+msgid "Loading Addins"
+msgstr "アドインを読み込み中"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:158
+#, csharp-format
+msgid "Loading {0} add-in"
+msgstr "{0} アドインを読み込み中"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:76
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:78
+msgid "Loading Workbench"
+msgstr "ワークベンチをロードしています"
+
+#~ msgid "Saving combine: {0}"
+#~ msgstr "コンバインを保存中: {0}"
+
+#~ msgid "Loading combine: {0}"
+#~ msgstr "コンバインを読み込み中: {0}"
+
+#~ msgid "Combine Location"
+#~ msgstr "コンバインの場所を選択して下さい"
+
+#~ msgid "Combine saved."
+#~ msgstr "コンバインを保存しました"
+
+#~ msgid "SQL Definition"
+#~ msgstr "SQL 定義"
