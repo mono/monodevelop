@@ -234,3 +234,4 @@ Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml
 Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs
+Core/src/MonoDevelop.Dock/DockItem.cs
