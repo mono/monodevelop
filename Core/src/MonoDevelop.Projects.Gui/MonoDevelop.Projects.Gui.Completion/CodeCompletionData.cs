@@ -82,22 +82,29 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 				
+		private string GetDescription(string desc)
+		{
+			// don't give a description string, if no documentation or description is provided
+			if (description.Length + documentation.Length == 0) {
+				return null;
+			}
+		
+			if (!convertedDocumentation) {
+				convertedDocumentation = true;
+				try {
+					documentation = GetDocumentation(documentation);
+				} catch (Exception e) {
+					Console.WriteLine(e.ToString());
+				}
+			}
+		
+			return (desc + "\n" + documentation).Trim ();
+		}		
+		
 		public string Description
 		{
 			get {
-				// don't give a description string, if no documentation or description is provided
-				if (description.Length + documentation.Length == 0) {
-					return null;
-				}
-				if (!convertedDocumentation) {
-					convertedDocumentation = true;
-					try {
-						documentation = GetDocumentation(documentation);
-					} catch (Exception e) {
-						Console.WriteLine(e.ToString());
-					}
-				}
-				return (description + "\n" + documentation).Trim ();
+				return GetDescription(description);		
 			}
 			set {
 				description = value;
@@ -107,19 +114,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string DescriptionPango
 		{
 			get {
-				// don't give a description string, if no documentation or description is provided
-				if (description.Length + documentation.Length == 0) {
-					return null;
-				}
-				if (!convertedDocumentation) {
-					convertedDocumentation = true;
-					try {
-						documentation = GetDocumentation(documentation);
-					} catch (Exception e) {
-						Console.WriteLine(e.ToString());
-					}
-				}
-				return (pango_description + "\n" + documentation).Trim ();
+				return GetDescription(pango_description);				
 			}
 			set {
 				description = value;
