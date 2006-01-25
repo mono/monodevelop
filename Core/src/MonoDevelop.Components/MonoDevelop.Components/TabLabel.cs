@@ -25,6 +25,7 @@ namespace MonoDevelop.Components
 		public TabLabel (Label label, Gtk.Image icon) : base (false, 2)
 		{
 			this.titleBox = new EventBox ();
+			titleBox.VisibleWindow = false;
 			this.icon = icon;
 			this.PackStart (icon, false, true, 2);
 

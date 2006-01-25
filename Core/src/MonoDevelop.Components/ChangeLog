@@ -1,3 +1,7 @@
+2006-01-25  Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Components/TabLabel.cs: Fix ugly tabs.
+
 2006-01-24  Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components/BaseFileEntry.cs: Added setter to Path
