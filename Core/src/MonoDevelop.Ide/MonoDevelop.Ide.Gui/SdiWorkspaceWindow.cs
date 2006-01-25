@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			if (fromMenu == true) {
-				workbench.WorkbenchLayout.RemoveTab (tabControl.CurrentPage);
+				workbench.WorkbenchLayout.RemoveTab (tabControl.PageNum(this));
 			} else {
 				workbench.WorkbenchLayout.RemoveTab (pageNum);
 			}

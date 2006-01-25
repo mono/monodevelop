@@ -1,4 +1,10 @@
+2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	Make sure the correct tab is removed. Fixes bug 76900.
+
 2006-01-24  Muthiah Annamalai  <gnumuthu@users.sf.net> 
+
 	* Monodevelop.Core.Gui.Dialogs/NewFileDialog.cs:
 	Added double-click response to expand category tree or  
 	collapse tree, a toggle effect.
