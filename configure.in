@@ -40,6 +40,13 @@ MONO_REQUIRED_VERSION=1.1.10
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MINT,mint >= $MONO_REQUIRED_VERSION, has_mint=true, has_mint=false)
 
+if test "x$has_mono" = "xfalse"; then
+  if test "x$has_mint" = "xfalse"; then
+      AC_MSG_ERROR([Please install mono version $MONO_REQUIRED_VERSION or later to install MonoDevelop.
+Please see http://www.mono-project.org/ to download latest mono sources or packages])
+  fi
+fi
+
 if test "x$has_mono" = "xtrue"; then
     if test `uname -s` = "Darwin"; then
 	AC_PATH_PROG(RUNTIME, mono, no)
