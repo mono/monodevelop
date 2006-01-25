@@ -506,7 +506,7 @@
 
 <widget class="GtkDialog" id="AddinManagerDialog">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">MonoDevelop Addin Manager</property>
+  <property name="title" translatable="yes">MonoDevelop Add-in Manager</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -737,7 +737,7 @@
 				  <child>
 				    <widget class="GtkLabel" id="label137">
 				      <property name="visible">True</property>
-				      <property name="label" translatable="yes">Install Addins...</property>
+				      <property name="label" translatable="yes">Install Add-ins...</property>
 				      <property name="use_underline">True</property>
 				      <property name="use_markup">False</property>
 				      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1067,7 +1067,7 @@
 
 <widget class="GtkDialog" id="AddinInstallDialog">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Addin Installation</property>
+  <property name="title" translatable="yes">Add-in Installation</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">True</property>
@@ -1198,7 +1198,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label113">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">&lt;b&gt;Select the addins to install and click on Next&lt;/b&gt;</property>
+		  <property name="label" translatable="yes">&lt;b&gt;Select the add-ins to install and click on Next&lt;/b&gt;</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">True</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1503,15 +1503,15 @@
 		      <child>
 			<widget class="GtkLabel" id="labelSummary">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">&lt;b&gt;The following addins will be installed:&lt;/b&gt;
+			  <property name="label" translatable="yes">&lt;b&gt;The following add-ins will be installed:&lt;/b&gt;
 
 C# language binding
 C# language IDE extension
 
-&lt;b&gt;The following addins are required by the selected addins&lt;/b&gt;
+&lt;b&gt;The following add-ins are required by the selected add-ins&lt;/b&gt;
 
-NUnit addin
-NAnt addin
+NUnit add-in
+NAnt add-in
 
 asd
 asd
@@ -1639,7 +1639,7 @@ asd
 	      <child>
 		<widget class="GtkLabel" id="progressLabel">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Downloading addins ...</property>
+		  <property name="label" translatable="yes">Downloading add-ins ...</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>

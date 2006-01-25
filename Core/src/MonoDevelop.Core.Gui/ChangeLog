@@ -1,3 +1,7 @@
+2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* Base.glade: Corrected spellings of add-in.
+
 2006-01-24  Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.Gui.addin.xml:
