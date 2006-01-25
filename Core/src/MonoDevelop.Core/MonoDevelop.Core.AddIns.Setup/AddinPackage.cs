@@ -206,7 +206,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			string id = info.Id;
 			iaddin = service.GetInstalledAddin (id, info.Version);
 			if (iaddin == null)
-				throw new InstallException (string.Format (GettextCatalog.GetString ("The addin '{0}' is not installed."), id));
+				throw new InstallException (string.Format (GettextCatalog.GetString ("The add-in '{0}' is not installed."), id));
 
 			AddinConfiguration conf = iaddin.GetConfiguration ();
 			string basePath = Path.GetDirectoryName (iaddin.ConfigFile);

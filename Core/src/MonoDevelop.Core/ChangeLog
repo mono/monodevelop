@@ -1,3 +1,10 @@
+2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Core.AddIns/AddInService.cs:
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:
+	Fixed spelling of add-in.
+
 2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.AddIns/AddInService.cs: Added internationalization.

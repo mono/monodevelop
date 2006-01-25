@@ -127,7 +127,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			ArrayList uninstallPrepared = new ArrayList ();
 			bool rollback = false;
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Installing addins..."), 100);
+			monitor.BeginTask (GettextCatalog.GetString ("Installing add-ins..."), 100);
 			
 			// Prepare install
 			
@@ -1147,7 +1147,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		internal static string GetUninstallErrorNoRoot (AddinInfo ainfo)
 		{
-			return string.Format (GettextCatalog.GetString ("The addin '{0} v{1}' can't be uninstalled with the current user permissions."), ainfo.Id, ainfo.Version);
+			return string.Format (GettextCatalog.GetString ("The add-in '{0} v{1}' can't be uninstalled with the current user permissions."), ainfo.Id, ainfo.Version);
 		}
 	}
 	

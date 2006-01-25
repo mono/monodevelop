@@ -123,7 +123,7 @@ namespace MonoDevelop.Core.AddIns
 					monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
 				
 				try {
-					monitor.BeginTask (GettextCatalog.GetString("Loading Addins"), addins.Count);
+					monitor.BeginTask (GettextCatalog.GetString("Loading Add-ins"), addins.Count);
 					foreach (string id in addins) {
 						PreloadAddin (monitor, id);
 						monitor.Step (1);
