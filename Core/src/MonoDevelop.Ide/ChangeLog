@@ -1,5 +1,9 @@
 2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
+	* Base.glade: Fixed spelling of add-in.
+
+2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
 	Make sure the correct tab is removed. Fixes bug 76900.
 

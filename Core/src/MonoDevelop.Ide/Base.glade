@@ -4994,7 +4994,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label4">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">The following addins could not be started:</property>
+		  <property name="label" translatable="yes">The following add-ins could not be started:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -5050,7 +5050,7 @@
 		<widget class="GtkLabel" id="labelContinue">
 		  <property name="width_request">479</property>
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">You can start MonoDevelop without these addins, but the functionality they provide will be missing. Do you wish to continue?</property>
+		  <property name="label" translatable="yes">You can start MonoDevelop without these add-ins, but the functionality they provide will be missing. Do you wish to continue?</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -5098,7 +5098,7 @@
 
 	      <child>
 		<widget class="GtkLabel" id="labelWarning">
-		  <property name="label" translatable="yes">MonoDevelop can run without these addins, but the functionality they provide will be missing.</property>
+		  <property name="label" translatable="yes">MonoDevelop can run without these add-ins, but the functionality they provide will be missing.</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
