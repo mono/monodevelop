@@ -1,9 +1,9 @@
 <AddIn id           = "ChangeLogAddIn"
-        name        = "ChangeLog AddIn"
+        name        = "ChangeLog Add-in"
         author      = "Jacob Ilsoe Christensen"
         copyright   = "GPL"
         url         = "http://monodevelop.com"
-        description = "Addin for working with ChangeLog files"
+        description = "Add-in for working with ChangeLog files"
         version     = "0.1">
  
         <Runtime>
@@ -35,7 +35,7 @@
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id    = "ChangeLogAddInOptions"
 			insertafter = "ToolsOptions"
-			_label = "ChangeLog AddIn">
+			_label = "ChangeLog Add-in">
 			<DialogPanel    id = "General"
 				_label = "General"
 				class = "MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanel" />
