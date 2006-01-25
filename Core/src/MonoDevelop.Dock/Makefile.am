@@ -15,7 +15,7 @@ RESOURCES = \
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(DOCK)
 
-REFS = $(GTK_SHARP_LIBS) $(GLADE_SHARP_LIBS)
+REFS = -r:Mono.Posix.dll $(GTK_SHARP_LIBS) $(GLADE_SHARP_LIBS)
 
 FILES = AssemblyInfo.cs \
 	DockedHandler.cs \

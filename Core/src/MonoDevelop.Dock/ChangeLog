@@ -1,3 +1,9 @@
+2006-01-24  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* DockItem.cs:
+	* Makefile.am:
+	Added internationalization. Fixes bug 77102.
+
 2006-01-22  Lluis Sanchez Gual <lluis@novell.com>
 
 	* MonoDevelop.Dock/DockObject.cs: Store object properties
