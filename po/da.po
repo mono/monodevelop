@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-24 22:24+0100\n"
+"POT-Creation-Date: 2006-01-25 21:58+0100\n"
 "PO-Revision-Date: 2005-05-20 17:07+0200\n"
 "Last-Translator: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
 "Language-Team: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
@@ -371,7 +371,7 @@ msgstr "Løsning"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
 msgid "Standard"
-msgstr ""
+msgstr "Standard"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
 msgid "Step Into"
@@ -686,11 +686,11 @@ msgstr "Aktivér"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:37
 msgid "Install Addins..."
-msgstr ""
+msgstr "Installer add-ins..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:38
 msgid "Install from:"
-msgstr ""
+msgstr "Installer fra:"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:39
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:194
@@ -1217,7 +1217,7 @@ msgid "GeneralProjectOptionsPanel"
 msgstr "GeneralProjectOptionsPanel"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:454
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:466
 #, fuzzy
 msgid "Name:"
 msgstr "_Navn:"
@@ -1540,7 +1540,7 @@ msgstr "Vis _linjenumre"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
 msgid "Smart"
-msgstr ""
+msgstr "Smart"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
 msgid "Use default _monospace font"
@@ -1659,7 +1659,7 @@ msgstr "Generér advarsler"
 
 #: ../Extras/JavaBinding/Java.glade.h:15
 msgid "IKVM path:"
-msgstr ""
+msgstr "IKVM-sti:"
 
 #: ../Extras/JavaBinding/Java.glade.h:16
 #, fuzzy
@@ -1679,11 +1679,11 @@ msgstr "_Hovedklasse:"
 
 #: ../Extras/JavaBinding/Java.glade.h:19
 msgid "gcj"
-msgstr ""
+msgstr "gcj"
 
 #: ../Extras/JavaBinding/Java.glade.h:20
 msgid "javac"
-msgstr ""
+msgstr "javac"
 
 #: ../Extras/WelcomePage/WelcomePage.addin.xml.h:2
 msgid "Welcome Page"
@@ -2060,9 +2060,8 @@ msgid "Creates a Java AWT panel."
 msgstr "Opretter et Java/AWT-panel."
 
 #: ../Extras/NUnit/nunit.glade.h:1
-#, fuzzy
 msgid "Categories:"
-msgstr "Kat_egorier"
+msgstr "Kategorier:"
 
 #: ../Extras/NUnit/nunit.glade.h:2
 msgid "Don't apply any filter"
@@ -2070,16 +2069,15 @@ msgstr ""
 
 #: ../Extras/NUnit/nunit.glade.h:3
 msgid "Exclude the following categories"
-msgstr ""
+msgstr "Ekskluder de følgende kategorier"
 
 #: ../Extras/NUnit/nunit.glade.h:4
 msgid "Include the following categories"
-msgstr ""
+msgstr "Inkluder de følgende kategorier"
 
 #: ../Extras/NUnit/nunit.glade.h:5
-#, fuzzy
 msgid "NUnit Options"
-msgstr "Indstillinger"
+msgstr "NUnit-indstillinger"
 
 #: ../Extras/NUnit/nunit.glade.h:6
 msgid "The following filter will be applied when running the tests:"
@@ -2090,19 +2088,17 @@ msgid "Use parent test settings"
 msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
-#, fuzzy
 msgid "Add assembly ..."
-msgstr "Assembly-navn"
+msgstr "Tilføj assembly..."
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
-#, fuzzy
 msgid "NUnit Categories"
-msgstr "Kat_egorier"
+msgstr "NUnit-kategorier"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
 #, fuzzy
 msgid "NUnit options"
-msgstr "Mål-indstillinger"
+msgstr "NUnit-indstillinger"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
 msgid "Proportional time scale"
@@ -2114,7 +2110,7 @@ msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
 msgid "Run Test"
-msgstr ""
+msgstr "Kør test"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
 #, fuzzy
@@ -2152,11 +2148,11 @@ msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
 msgid "Show successful tests"
-msgstr ""
+msgstr "Vis succesfulde tests"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
 msgid "Show test source code"
-msgstr ""
+msgstr "Vis testkildekoden"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
 msgid "Time chart"
@@ -2164,7 +2160,7 @@ msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
 msgid "Unit Tests"
-msgstr ""
+msgstr "Enhedstests"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
 #, fuzzy, csharp-format
@@ -2268,11 +2264,11 @@ msgstr "Spørgsmål"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:125
 msgid "WARNING: "
-msgstr ""
+msgstr "ADVARSEL: "
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:147
 msgid "ERROR: "
-msgstr ""
+msgstr "FEJL: "
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:76
 msgid "Version:"
@@ -2280,7 +2276,7 @@ msgstr "Version:"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:79
 msgid "Author:"
-msgstr ""
+msgstr "Forfatter:"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:82
 msgid "Copyright:"
@@ -2462,7 +2458,7 @@ msgstr "Localitet"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:208
 msgid "Access denied"
-msgstr ""
+msgstr "Adgang nægtet"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:210
 #, fuzzy
@@ -2820,9 +2816,8 @@ msgid "Reference Name"
 msgstr "Referencenavn"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:70
-#, fuzzy
 msgid "New Project"
-msgstr "Projekt"
+msgstr "Nyt projekt"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:261
 msgid "Project will be saved at"
@@ -2859,9 +2854,8 @@ msgid "You do not have permission to create to {0}"
 msgstr "Du har ikke rettigheder til at oprette til {0}"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:359
-#, fuzzy
 msgid "The project could not be created"
-msgstr "Filen \"{0}\" kunne ikke oprettes."
+msgstr "Projektet kunne ikke oprettes."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:434
 #, fuzzy
@@ -2902,12 +2896,11 @@ msgstr "Vælg folder"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:325
 msgid "Empty search pattern"
-msgstr ""
+msgstr "Tomt søgemønster"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:332
-#, fuzzy
 msgid "Empty directory name"
-msgstr "Invalid foldernavn: {0}"
+msgstr "Tomt foldernavn"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:337
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
@@ -3016,7 +3009,7 @@ msgstr ""
 "den eksisterende fil ?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:292
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "The file '{0}' could not be created."
 msgstr "Filen \"{0}\" kunne ikke oprettes."
 
@@ -3123,13 +3116,11 @@ msgid ""
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:218
-#, fuzzy
 msgid "Save operation failed."
 msgstr "Det mislykkedes at gemme."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:335
-#, fuzzy
 msgid "Copying files ..."
 msgstr "Kopierer filer..."
 
@@ -3168,9 +3159,9 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:83
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs:63
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Solution {0}"
-msgstr "Løsning: {0}"
+msgstr "Løsning {0}"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:86
 #, csharp-format
@@ -3193,9 +3184,8 @@ msgid "Do you really want to remove solution {0} from solution {1}?"
 msgstr "Vil du virkelig fjerne løsning {0} fra løsning {1}?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
-#, fuzzy
 msgid "Resources"
-msgstr "Resourcefiler"
+msgstr "Ressourcer"
 
 #. string[] fileFilters  = (string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
 #. bool foundFilter      = false;
@@ -3256,9 +3246,9 @@ msgstr ""
 "Dit valgte filnavn indeholder illegale tegn. Vælg venligst et andet filnavn."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:169
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Do you want to remove folder {0}?"
-msgstr "Vil du fjerne folder {0} fra projekt {1}?"
+msgstr "Vil du fjerne folderen {0}?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:253
 #, csharp-format
@@ -3276,7 +3266,7 @@ msgid "Are you sure you want to permanently delete the file {0}?"
 msgstr "Er du sikker på at du vil slette denne fil?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:126
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "The file {0} could not be deleted"
 msgstr "Filen \"{0}\" kunne ikke slettes."
 
@@ -3430,114 +3420,111 @@ msgstr "Abstraktindhold"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:105
 msgid "New add-in updates are available:"
-msgstr ""
+msgstr "Nye add-in-opdateringer er tilgængelige:"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:132
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:136
 msgid "Search Results"
-msgstr ""
+msgstr "Søgeresultater"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:244
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:405
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:228
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:402
 #, csharp-format
 msgid "File not found: {0}"
 msgstr "Fil ikke fundet: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:286
-#, fuzzy
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:270
 msgid "Solution loaded."
-msgstr "Kombinering gemt."
+msgstr "Løsning indælst."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:360
-#, fuzzy
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:337
 msgid "Solution saved."
-msgstr "Løsning"
+msgstr "Løsning gemt."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:362
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:375
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:339
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:352
 msgid "Save failed."
 msgstr "Det mislykkedes at gemme."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:373
-#, fuzzy
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:350
 msgid "Project saved."
-msgstr "Projekt gemt"
+msgstr "Projekt gemt."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:461
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:486
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:438
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:463
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "Filen \"{0}\" kunne ikke indlæses."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:477
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:454
 msgid "Add to Solution"
 msgstr "Tilføj til løsning"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:680
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:713
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:657
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:690
 msgid "Execution failed."
 msgstr "Starten mislykkedes."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:730
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:789
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:707
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:766
 msgid "No runnable executable found."
 msgstr "Fandt intet kørbart program."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:774
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:751
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "Filen {0} kan ikke oversættes."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:825
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:882
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:802
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:859
 #, csharp-format
 msgid "Build failed."
 msgstr "Bygning fejlede"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:841
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:818
 msgid "Save changed files?"
 msgstr "Gem ændrede filer?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:869
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:846
 #, csharp-format
 msgid "---------------------- Done ----------------------"
 msgstr "--------------------- Færdig ---------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:876
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:853
 msgid "Build successful."
 msgstr "Bygning lykkedes"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:878
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:880
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:855
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:857
 #, csharp-format
 msgid "Build: {0} errors, {1} warnings."
 msgstr "Bygning: {0} fejl, {1} advarsler."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:915
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:892
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "Kunne ikke hente nogen filer fra \"{0}\""
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:927
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:904
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "Kunne ikke oprette kataloget \"{0}\"."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:934
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:911
 msgid "Copying files..."
 msgstr "Kopierer filer..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:946
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:923
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "Filen \"{0}\" kunne ikke oprettes."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:945
 #, csharp-format
 msgid "File '{0}' could not be deleted."
 msgstr "Filen \"{0}\" kunne ikke slettes."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:983
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:960
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "Kataloget \"{0}\" kunne ikke slettes."
@@ -3546,24 +3533,24 @@ msgstr "Kataloget \"{0}\" kunne ikke slettes."
 msgid "Initializing Main Window"
 msgstr "Initialiserer hovedvindue"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:249
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:246
 #, csharp-format
 msgid "Opening {0}"
 msgstr "Åbner {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:325
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:322
 msgid "Do you want to save the current changes?"
 msgstr "Vil du gemme de nuværende ændringer?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:337
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:334
 msgid "Do you really want to discard your changes ?"
 msgstr "Vil du virkelig fjerne dine ændringer ?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:369
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:366
 msgid "Invalid file name"
 msgstr "Ugyldigt filnavn"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:389
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:386
 #, csharp-format
 msgid "{0} is a directory"
 msgstr "{0} er et katalog"
@@ -3792,7 +3779,7 @@ msgstr "Søgning fuldført. fandt {0} der matchede i {1} filer."
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:114
 #, csharp-format
 msgid "Search time: {0} seconds."
-msgstr ""
+msgstr "Søgetid: {0} sekunder."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:123
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:169
@@ -3915,9 +3902,8 @@ msgid "Gcj"
 msgstr "Gcj"
 
 #: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
-#, fuzzy
 msgid "Unit Test Options"
-msgstr "Nulstil indstillinger"
+msgstr "Enhedstestindstillinger"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:53
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:271
@@ -3969,9 +3955,8 @@ msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
 msgstr "Bygger projekt: {0} Konfiguration: {1}"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:322
-#, fuzzy
 msgid "Internal error"
-msgstr "_Understreg fejl"
+msgstr "Intern fejl"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:329
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:460
@@ -3983,31 +3968,28 @@ msgid "<b>Tests</b>: "
 msgstr "<b>Tests</b>:"
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:346
-#, fuzzy
 msgid "  <b>Failed</b>: "
-msgstr "<b>Fil tegnkodning</b>"
+msgstr "  <b>Fejlede</b>: "
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:346
-#, fuzzy
 msgid "  <b>Ignored</b>: "
-msgstr "<b>Inkluder</b>"
+msgstr "  <b>Ignorerede</b>: "
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:354
-#, fuzzy
 msgid "Test execution cancelled."
-msgstr "Starten mislykkedes."
+msgstr "Testafvikling afbrudt."
 
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:511
 msgid "Running "
-msgstr ""
+msgstr "Kører"
 
 #: ../Extras/NUnit/Services/NUnitOptions.cs:80
 msgid "Exclude the following categories: "
-msgstr ""
+msgstr "Ekskluder de følgende kategorier: "
 
 #: ../Extras/NUnit/Services/NUnitOptions.cs:82
 msgid "Include the following categories: "
-msgstr ""
+msgstr "Inkluder de følgende kategorier: "
 
 #: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:456
 msgid "Importing project: "
@@ -4159,11 +4141,11 @@ msgstr "Tabel"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:155
 msgid "Table emptied"
-msgstr ""
+msgstr "Tabel tømt"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:165
 msgid "Table dropped"
-msgstr ""
+msgstr "Tabel droppet"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:61
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:66
@@ -4205,9 +4187,8 @@ msgstr "Tabeller"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:51
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:56
-#, fuzzy
 msgid "Groups"
-msgstr "Tilføj gruppe"
+msgstr "Grupper"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:51
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:56
@@ -4352,6 +4333,16 @@ msgstr "Indlæser {0} add-in"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:75
 msgid "Loading Workbench"
 msgstr "Indlæser Workbench"
+
+#. Hide menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:761
+msgid "Hide"
+msgstr "Skjul"
+
+#. Lock menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:766
+msgid "Lock"
+msgstr "Lås"
 
 #~ msgid "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
 #~ msgstr "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
