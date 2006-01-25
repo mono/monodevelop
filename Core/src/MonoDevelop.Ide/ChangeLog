@@ -1,3 +1,8 @@
+2006-01-24  Muthiah Annamalai  <gnumuthu@users.sf.net> 
+	* Monodevelop.Core.Gui.Dialogs/NewFileDialog.cs:
+	Added double-click response to expand category tree or  
+	collapse tree, a toggle effect.
+
 2006-01-24  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* Base.glade: Fixed spelling mistake.

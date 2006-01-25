@@ -242,6 +242,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			alltemplates.Add(titem);		
 		}
+
+                //tree view event handler for double-click
+                //toggle the expand collapse methods.
+		void CategoryActivated(object sender,RowActivatedArgs args)
+		{
+					
+			if (!catView.GetRowExpanded(args.Path)) {
+                            catView.ExpandRow(args.Path,false);
+			} else {
+				catView.CollapseRow(args.Path);
+			}
+		}
 		
 		// tree view event handlers
 		void CategoryChange(object sender, EventArgs e)
@@ -461,6 +473,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			cat_imglist.Add(Services.Resources.GetBitmap("md-open-folder"));
 			cat_imglist.Add(Services.Resources.GetBitmap("md-closed-folder"));
 			catView.Selection.Changed += new EventHandler (CategoryChange);
+			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
 			TemplateView.IconSelected += new EventHandler(SelectedIndexChange);
 			TemplateView.IconDoubleClicked += new EventHandler(OpenEvent);
 			InitializeView ();
