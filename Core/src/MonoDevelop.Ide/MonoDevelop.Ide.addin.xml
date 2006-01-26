@@ -448,6 +448,13 @@
 				_label = "R_eplace In Files..." 
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
+
+		<!-- RefactoryCommands -->
+		
+		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
+				defaultHandler = "MonoDevelop.Ide.Commands.CurrentRefactoryOperationsHandler"
+				type="array"
+				_label = "Refactory Operations" /> 
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">

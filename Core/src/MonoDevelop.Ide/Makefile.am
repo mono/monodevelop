@@ -26,6 +26,7 @@ MonoDevelop.Ide.Commands/EditCommands.cs \
 MonoDevelop.Ide.Commands/FileCommands.cs \
 MonoDevelop.Ide.Commands/HelpCommands.cs \
 MonoDevelop.Ide.Commands/ProjectCommands.cs \
+MonoDevelop.Ide.Commands/RefactoryCommands.cs \
 MonoDevelop.Ide.Commands/SearchCommands.cs \
 MonoDevelop.Ide.Commands/ToolsCommands.cs \
 MonoDevelop.Ide.Commands/ViewCommands.cs \
