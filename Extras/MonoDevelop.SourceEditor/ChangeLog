@@ -1,3 +1,10 @@
+2006-01-26 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.SourceEditor.addin.xml: Added refactory commands to
+	context menu.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Right click now
+	moves the cursor to the clicked position.
+
 2006-01-13 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.SourceEditor.addin.xml:

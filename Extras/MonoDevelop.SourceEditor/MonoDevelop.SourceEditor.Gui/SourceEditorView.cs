@@ -136,7 +136,12 @@ namespace MonoDevelop.SourceEditor.Gui
 					
 					menu.Popup (null, null, null, 3, e.Time);
 				}
+			} else if (e.Button == 3 && buf.GetSelectedText ().Length == 0) {
+				int x, y;
+				WindowToBufferCoords (Gtk.TextWindowType.Text, (int) e.X, (int) e.Y, out x, out y);
+				buf.PlaceCursor (GetIterAtLocation (x, y));		
 			}
+			
 			return base.OnButtonPressEvent (e);
 		}
 		
