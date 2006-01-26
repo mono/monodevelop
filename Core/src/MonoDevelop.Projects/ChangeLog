@@ -1,3 +1,9 @@
+2006-01-26 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/Namespace.cs:
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Added Namespace class.
+
 2006-01-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects/ProjectCreateInformation.cs: Added CombineName

@@ -70,6 +70,7 @@ MonoDevelop.Projects.Parser/IReturnType.cs \
 MonoDevelop.Projects.Parser/IUsing.cs \
 MonoDevelop.Projects.Parser/ExpressionContext.cs \
 MonoDevelop.Projects.Parser/ModifierEnum.cs \
+MonoDevelop.Projects.Parser/Namespace.cs \
 MonoDevelop.Projects.Parser/ParameterModifier.cs \
 MonoDevelop.Projects.Parser/Tag.cs \
 MonoDevelop.Projects.Parser/AttributeCollection.cs \
