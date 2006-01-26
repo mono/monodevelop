@@ -43,7 +43,6 @@
 		<ProjectTemplate id = "GtkSharpProject" resource = "GtkSharpProject.xpt.xml"/>
 		<ProjectTemplate id = "GtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
 		<ProjectTemplate id = "Library" resource = "Library.xpt.xml"/>
-		<ProjectTemplate id = "BlankCombine" resource = "BlankCombine.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/FileFilter">

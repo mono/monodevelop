@@ -80,7 +80,7 @@ namespace CSharpBinding.Parser
 		{
 			Resolver resolver = new Resolver (ctx.ParserContext);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls.FullyQualifiedName, cls, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, cls, refs);
 			
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
@@ -133,7 +133,7 @@ namespace CSharpBinding.Parser
 		{
 			Resolver resolver = new Resolver (ctx.ParserContext);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls.FullyQualifiedName, member, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, cls, member, refs);
 			
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
@@ -143,7 +143,7 @@ namespace CSharpBinding.Parser
 	
 	class MemberRefactoryVisitor: AbstractASTVisitor
 	{
-		string className;
+		IClass declaringType;
 		ILanguageItem member;
 		Resolver resolver;
 		IEditableTextFile file;
@@ -151,11 +151,11 @@ namespace CSharpBinding.Parser
 		MemberReferenceCollection references;
 		RefactorerContext ctx;
 		
-		public MemberRefactoryVisitor (RefactorerContext ctx, Resolver resolver, string className, ILanguageItem member, MemberReferenceCollection references)
+		public MemberRefactoryVisitor (RefactorerContext ctx, Resolver resolver, IClass declaringType, ILanguageItem member, MemberReferenceCollection references)
 		{
 			this.ctx = ctx;
 			this.resolver = resolver;
-			this.className = className;
+			this.declaringType = declaringType;
 			this.references = references;
 			this.member = member;
 		}
@@ -171,12 +171,27 @@ namespace CSharpBinding.Parser
 				Visit (fileCompilationUnit, null);
 		}
 		
+		bool IsExpectedClass (IClass type)
+		{
+			if (type.FullyQualifiedName == declaringType.FullyQualifiedName)
+				return true;
+				
+			if (type.BaseTypes != null) {
+				foreach (string bc in type.BaseTypes) {
+					IClass bcls = ctx.ParserContext.GetClass (bc, true, true);
+					if (bcls != null && IsExpectedClass (bcls))
+						return true;
+				}
+			}
+			return false;
+		}
+		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
 			if (member is IField && fieldExp.FieldName == member.Name)
 			{
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-				if (cls != null && cls.FullyQualifiedName == className) {
+				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name)
@@ -191,12 +206,12 @@ namespace CSharpBinding.Parser
 		{
 			if (member is IMethod && invokeExp.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
-				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-				if (cls != null && cls.FullyQualifiedName == className) {
-					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					string txt = file.GetText (pos, pos + member.Name.Length);
-					if (txt == member.Name)
+				if (fieldExp.FieldName == member.Name) {
+					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
+					if (cls != null && IsExpectedClass (cls)) {
+						int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 						references.Add (CreateReference (pos, member.Name));
+					}
 				}
 			}
 			return base.Visit (invokeExp, data);
@@ -209,7 +224,7 @@ namespace CSharpBinding.Parser
 				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, idExp.StartLocation.Y, idExp.StartLocation.X);
 				if (member is IMember) {
 					IMember m = item as IMember;
-					if (m != null && m.DeclaringType.FullyQualifiedName == className &&
+					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
 					{

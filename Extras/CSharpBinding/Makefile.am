@@ -45,7 +45,6 @@ CSharpBindingCompilerManager.cs
 RES = \
 CSharp.glade \
 templates/AppConfigFile.xft.xml \
-templates/BlankCombine.xpt.xml \
 templates/ConsoleProject.xpt.xml \
 templates/EmptyCSharpFile.xft.xml \
 templates/EmptyHTMLFile.xft.xml \

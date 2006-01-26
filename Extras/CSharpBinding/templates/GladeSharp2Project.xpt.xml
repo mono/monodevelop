@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Glade# 2.0 Project</_Name>
-		<Category>C#</Category>
+		<Category>C#/Samples</Category>
 		<Icon>res:C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>a Glade# 2.0 project with one window and button</_Description>

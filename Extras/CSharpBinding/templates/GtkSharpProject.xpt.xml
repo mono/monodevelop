@@ -5,8 +5,8 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Gtk# Project</_Name>
-		<Category>C#</Category>
+		<_Name>Gtk# 1.0 Project</_Name>
+		<Category>C#/Samples</Category>
 		<Icon>res:C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gtk# project.</_Description>

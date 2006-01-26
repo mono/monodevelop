@@ -1,3 +1,19 @@
+2006-01-26 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* CSharpBinding.addin.xml: Removed BlankCombine template (now
+	in MonoDevelop.Ide).
+	* Parser/CodeGenerator.cs: Properly find members referenced
+	in subclasses.
+	* Parser/LanguageItemVisitor.cs: Visit methods must always
+	return a ILanguageItem.
+	
+	* templates/GtkSharpProject.xpt.xml:
+	* templates/GnomeSharp2Project.xpt.xml:
+	* templates/GladeSharp2Project.xpt.xml:
+	* templates/GnomeSharpProject.xpt.xml:
+	* templates/GladeSharpProject.xpt.xml: Moved to a Samples subcategories
+	for now, to reduce clutter.
+
 2006-01-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* Parser/CSharpVisitor.cs: Make sure that a null modifier

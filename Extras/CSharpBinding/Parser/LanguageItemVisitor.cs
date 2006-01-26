@@ -139,12 +139,12 @@ namespace CSharpBinding.Parser
 			}
 			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
 			if (name != null) {
-				return new ReturnType(name);
+				return new Namespace (name, "");
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
-				return new ReturnType(c.FullyQualifiedName);
+				return c;
 			}
 			return resolver.IdentifierLookup (identifierExpression.Identifier);
 		}
