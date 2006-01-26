@@ -109,9 +109,13 @@ sub write_keywordfile {
 	print DAT "		public static int GetToken(string keyword)\n";
 	print DAT "		{\n";
 	if ($properties{'UpperCaseKeywords'} eq "True") {
-		print DAT "			return (int)keywords[keyword.ToUpper()];\n";
+		print DAT "			object k = keywords[keyword.ToUpper()];\n";
+		print DAT "			if (k == null) return -1;\n";
+		print DAT "			return (int)k;\n";
 	} else {
-		print DAT "			return (int)keywords[keyword];\n";
+		print DAT "			object k = keywords[keyword];\n";
+		print DAT "			if (k == null) return -1;\n";
+		print DAT "			return (int)k;\n";
 	}
 	print DAT "		}\n";
 	print DAT "	}\n";

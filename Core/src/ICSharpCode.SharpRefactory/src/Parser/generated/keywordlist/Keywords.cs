@@ -103,7 +103,9 @@ namespace ICSharpCode.SharpRefactory.Parser
 		
 		public static int GetToken(string keyword)
 		{
-			return (int)keywords[keyword];
+			object k = keywords[keyword];
+			if (k == null) return -1;
+			return (int)k;
 		}
 	}
 }
