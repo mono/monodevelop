@@ -1,3 +1,9 @@
+2006-01-29  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+
+	* ChangeLogAddIn.cs:
+	* ChangeLogAddInOptionsPanel.cs:
+	Added copyright comment.
+
 2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* ChangeLogAddIn.addin.xml: Fixed spelling of add-in.
