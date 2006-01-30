@@ -1,3 +1,17 @@
+2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/LanguageItemCollection.cs:
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Added LanguageItemCollection.cs.
+	
+	* MonoDevelop.Projects.Parser/IParser.cs:
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Use
+	LanguageItemCollection instead of ArrayList.
+	
+	* MonoDevelop.Projects.Parser/Namespace.cs: Added constructor.
+
 2006-01-26 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/Namespace.cs:

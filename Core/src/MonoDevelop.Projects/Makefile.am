@@ -34,6 +34,7 @@ MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/ReferenceEntry.cs \
 MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/ILanguageItem.cs \
+MonoDevelop.Projects.Parser/LanguageItemCollection.cs \
 MonoDevelop.Projects.Parser/LocalVariable.cs \
 MonoDevelop.Projects/CombineEventArgs.cs \
 MonoDevelop.Projects/FileFormatManager.cs \

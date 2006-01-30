@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects.Parser
 		IClass    GetClass (string typeName);
 		string[]  GetClassList (string subNameSpace, bool includeReferences);
 		string[]  GetNamespaceList (string subNameSpace);
-		ArrayList GetNamespaceContents (string subNameSpace, bool includeReferences);
+		LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences);
 		bool      NamespaceExists (string name);
 		string    SearchNamespace (IUsing iusing, string partitialNamespaceName);
 		IClass    SearchType (IUsing iusing, string partitialTypeName);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Parser
 		IClass    GetClass (string typeName, bool deepSearchReferences, bool caseSensitive);
 		string[]  GetClassList (string subNameSpace, bool includeReferences, bool caseSensitive);
 		string[]  GetNamespaceList (string subNameSpace, bool includeReferences, bool caseSensitive);
-		ArrayList GetNamespaceContents (string subNameSpace, bool includeReferences, bool caseSensitive);
+		LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences, bool caseSensitive);
 		bool      NamespaceExists (string name, bool caseSensitive);
 		string    SearchNamespace (IUsing iusing, string partitialNamespaceName, bool caseSensitive);
 		IClass    SearchType (IUsing iusing, string partitialTypeName, bool caseSensitive);
@@ -111,8 +111,8 @@ namespace MonoDevelop.Projects.Parser
 		ResolveResult Resolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		
 		string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
-		ArrayList IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
-		ArrayList CtrlSpace (int caretLine, int caretColumn, string fileName);
+		LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
+		LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName);
 		ILanguageItem ResolveIdentifier (string id, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		ILanguageItem GetEnclosingLanguageItem (int caretLineNumber, int caretColumn, ITextFile file);
 	}

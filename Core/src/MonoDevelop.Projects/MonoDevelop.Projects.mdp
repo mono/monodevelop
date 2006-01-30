@@ -227,6 +227,7 @@
     <File name="./MonoDevelop.Projects/IDotNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/Namespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/LanguageItemCollection.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />

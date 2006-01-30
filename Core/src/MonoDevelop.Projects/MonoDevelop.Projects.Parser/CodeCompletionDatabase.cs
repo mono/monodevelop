@@ -567,7 +567,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public void GetNamespaceContents (ArrayList list, string subNameSpace, bool caseSensitive)
+		public void GetNamespaceContents (LanguageItemCollection list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
@@ -577,7 +577,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				foreach (DictionaryEntry en in tns.Contents) {
 					if (en.Value is NamespaceEntry)
-						list.Add (en.Key);
+						list.Add (new Namespace ((string)en.Key));
 					else
 						list.Add (GetClass ((ClassEntry)en.Value));
 				}

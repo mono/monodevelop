@@ -26,8 +26,8 @@ namespace MonoDevelop.Projects.Parser
 	public class ResolveResult
 	{
 		IClass type;
-		ArrayList members;
-		StringCollection namespaces;
+		LanguageItemCollection members;
+		LanguageItemCollection namespaces;
 		
 		public IClass Type {
 			get {
@@ -35,39 +35,38 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public ArrayList Members {
+		public LanguageItemCollection Members {
 			get {
 				return members;
 			}
 		}
 		
-		public StringCollection Namespaces {
+		public LanguageItemCollection Namespaces {
 			get {
 				return namespaces;
 			}
 		}
 		
-		public ResolveResult(string[] namespaces) {
-			this.namespaces = new StringCollection();
-			this.namespaces.AddRange(namespaces);
-			members = new ArrayList();
+		public ResolveResult (string[] namespaces): this (namespaces,  new LanguageItemCollection())
+		{
 		}
 		
-		public ResolveResult(string[] namespaces, ArrayList classes) {
-			this.namespaces = new StringCollection();
-			this.namespaces.AddRange(namespaces);
+		public ResolveResult (string[] namespaces, LanguageItemCollection classes) {
+			this.namespaces = new LanguageItemCollection();
+			foreach (string s in namespaces)
+				this.namespaces.Add (new Namespace (s));
 			members = classes;
 		}
 		
-		public ResolveResult(StringCollection namespaces) {
+		public ResolveResult (LanguageItemCollection namespaces) {
 			this.namespaces = namespaces;
-			members = new ArrayList();
+			members = new LanguageItemCollection();
 		}
 		
-		public ResolveResult(IClass type, ArrayList members) {
+		public ResolveResult(IClass type, LanguageItemCollection members) {
 			this.type = type;
 			this.members = members;
-			namespaces = new StringCollection();
+			namespaces = new LanguageItemCollection();
 		}
 //		object[]    resolveContents;
 //		ShowMembers showMembers;
@@ -140,9 +139,9 @@ namespace MonoDevelop.Projects.Parser
 
 		string MonodocResolver (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 
-		ArrayList IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
+		LanguageItemCollection IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		
-		ArrayList CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName);
+		LanguageItemCollection CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName);
 		
 		ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent);
 	}

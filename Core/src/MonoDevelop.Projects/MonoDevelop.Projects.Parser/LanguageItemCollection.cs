@@ -1,5 +1,5 @@
 //
-// Namespace.cs
+// LanguageItemCollection.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,32 +26,42 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
+using System.Collections;	
 
 namespace MonoDevelop.Projects.Parser
 {
-	public class Namespace: ILanguageItem
+	public class LanguageItemCollection: CollectionBase
 	{
-		string name;
-		string documentation;
-		
-		public Namespace (string name)
+		public void AddRange (LanguageItemCollection items)
 		{
-			this.name = name;
+			foreach (ILanguageItem item in items)
+				List.Add (item);
 		}
 		
-		public Namespace (string name, string documentation)
+		public int Add (ILanguageItem item)
 		{
-			this.name = name;
-			this.documentation = documentation;
+			return List.Add (item);
 		}
 		
-		public string Name {
-			get { return name; }
+		public ILanguageItem this [int index] {
+			get { return (ILanguageItem) List [index]; }
 		}
-
-		public string Documentation {
-			get { return documentation; }
+		
+		public void Remove (ILanguageItem item)
+		{
+			List.Remove (item);
+		}
+		
+		public void CopyTo (ILanguageItem[] array, int index)
+		{
+			List.CopyTo (array, index);
+		}
+		
+		public bool Contains (ILanguageItem item)
+		{
+			return List.Contains (item);
 		}
 	}
 }

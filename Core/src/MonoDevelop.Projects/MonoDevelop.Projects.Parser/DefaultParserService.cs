@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Parser
 			return pdb.GetNamespaceList (db, subNameSpace);
 		}
 		
-		public ArrayList GetNamespaceContents (string subNameSpace, bool includeReferences)
+		public LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences)
 		{
 			return pdb.GetNamespaceContents (db, subNameSpace, includeReferences);
 		}
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects.Parser
 			return pdb.GetNamespaceList (db, subNameSpace, includeReferences, caseSensitive);
 		}
 		
-		public ArrayList GetNamespaceContents (string subNameSpace, bool includeReferences, bool caseSensitive)
+		public LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences, bool caseSensitive)
 		{
 			return pdb.GetNamespaceContents (db, subNameSpace, includeReferences, caseSensitive);
 		}
@@ -223,7 +223,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public ArrayList IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		public LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			try {
 				IParser parser = parserService.GetParser (fileName);
@@ -236,7 +236,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public ArrayList CtrlSpace (int caretLine, int caretColumn, string fileName)
+		public LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName)
 		{
 			IParser parser = parserService.GetParser (fileName);
 			if (parser != null) {
@@ -1087,14 +1087,14 @@ namespace MonoDevelop.Projects.Parser
 			return (string[]) contents.ToArray (typeof(string));
 		}
 		
-		public ArrayList GetNamespaceContents (CodeCompletionDatabase db, string namspace, bool includeReferences)
+		public LanguageItemCollection GetNamespaceContents (CodeCompletionDatabase db, string namspace, bool includeReferences)
 		{
 			return GetNamespaceContents (db, namspace, includeReferences, true);
 		}
 		
-		public ArrayList GetNamespaceContents (CodeCompletionDatabase db, string namspace, bool includeReferences, bool caseSensitive)
+		public LanguageItemCollection GetNamespaceContents (CodeCompletionDatabase db, string namspace, bool includeReferences, bool caseSensitive)
 		{
-			ArrayList contents = new ArrayList ();
+			LanguageItemCollection contents = new LanguageItemCollection ();
 			
 			if (db != null) {
 				db.GetNamespaceContents (contents, namspace, caseSensitive);
