@@ -93,15 +93,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return (ICompletionData[]) completionData.ToArray (typeof (ICompletionData));
 		}
 		
-		void AddResolveResults(ICollection list) 
+		void AddResolveResults(LanguageItemCollection list) 
 		{
 			if (list == null) {
 				return;
 			}
 			completionData.Capacity += list.Count;
-			foreach (object o in list) {
-				if (o is string) {
-					completionData.Add(new CodeCompletionData(o.ToString(), Stock.NameSpace));
+			foreach (ILanguageItem o in list) {
+				if (o is Namespace) {
+					Namespace ns = (Namespace) o;
+					completionData.Add(new CodeCompletionData(ns.Name, Stock.NameSpace));
 				} else if (o is IClass) {
 					IClass iclass = (IClass) o;
 					if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
