@@ -235,10 +235,10 @@ namespace VBBinding.Parser
 			return "T:" + retClass.FullyQualifiedName;
 		}
 		
-		public ArrayList IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent)
+		public LanguageItemCollection IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent)
 		{
 			//Console.WriteLine("Entering IsAsResolve for " + expression);
-			ArrayList result = new ArrayList ();
+			LanguageItemCollection result = new LanguageItemCollection ();
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
 			
@@ -472,8 +472,8 @@ namespace VBBinding.Parser
 				if (n == null) {
 					return null;
 				}
-				ArrayList content = parserContext.GetNamespaceContents(n,true,false);
-				ArrayList classes = new ArrayList();
+				LanguageItemCollection content = parserContext.GetNamespaceContents(n,true,false);
+				LanguageItemCollection classes = new LanguageItemCollection();
 				for (int i = 0; i < content.Count; ++i) {
 					if (content[i] is IClass) {
 						classes.Add((IClass)content[i]);
@@ -485,7 +485,7 @@ namespace VBBinding.Parser
 			//Console.WriteLine("Returning Result!");
 			if (returnClass.FullyQualifiedName == "System.Void")
 				return null;
-			return new ResolveResult(returnClass, ListMembers(new ArrayList(), returnClass));
+			return new ResolveResult(returnClass, ListMembers(new LanguageItemCollection(), returnClass));
 		}
 		
 		
@@ -495,7 +495,7 @@ namespace VBBinding.Parser
 		
 		
 		
-		ArrayList ListMembers(ArrayList members, IClass curType)
+		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass curType)
 		{
 			//Console.WriteLine("LIST MEMBERS!!!");
 			//Console.WriteLine("showStatic = " + showStatic);
@@ -574,7 +574,7 @@ namespace VBBinding.Parser
 		
 		
 		//Hacked from ListMembers - not sure if entirely correct or necessary
-		ArrayList ListTypes(ArrayList members, IClass curType)
+		LanguageItemCollection ListTypes (LanguageItemCollection members, IClass curType)
 		{
 			//Console.WriteLine("LIST TYPES!!!");
 			//Console.WriteLine("showStatic = " + showStatic);
@@ -1098,10 +1098,13 @@ namespace VBBinding.Parser
 			return parserContext.SearchType(name, curType,unit); //, unit, caretLine, caretColumn, false);
 		}
 		
-		public ArrayList CtrlSpace (int caretLine, int caretColumn, string fileName)
+		public LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName)
 		{
 			//Console.WriteLine("Entering CtrlSpace for " + caretLine + ":" + caretColumn + " in " + fileName);
-			ArrayList result = new ArrayList(TypeReference.PrimitiveTypes);
+			LanguageItemCollection result = new LanguageItemCollection();
+			foreach (string pt in TypeReference.PrimitiveTypes)
+				result.Add (new Namespace (pt));
+				
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
 			ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
 			if (fileCompilationUnit == null) {
@@ -1121,7 +1124,7 @@ namespace VBBinding.Parser
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							result.Add(v);
+							result.Add(new Parameter (name, new ReturnType (v.TypeRef.SystemType)));
 							break;
 						}
 					}
@@ -1139,7 +1142,7 @@ namespace VBBinding.Parser
 						result.AddRange(parserContext.GetNamespaceContents(name,true, false));
 					}
 					foreach (string alias in u.Aliases.Keys) {
-						result.Add(alias);
+						result.Add (new Namespace (alias));
 					}
 				}
 			}
