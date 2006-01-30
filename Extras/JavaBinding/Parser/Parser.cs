@@ -89,7 +89,7 @@ namespace JavaBinding.Parser
 			return visitor.Cu;
 		}
 		
-		public ArrayList CtrlSpace(IParserContext parserService, int caretLine, int caretColumn, string fileName)
+		public LanguageItemCollection CtrlSpace(IParserContext parserService, int caretLine, int caretColumn, string fileName)
 		{
 			return new Resolver().CtrlSpace(parserService, caretLine, caretColumn, fileName);
 		}

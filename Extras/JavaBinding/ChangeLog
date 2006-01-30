@@ -1,3 +1,8 @@
+2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Parser/Resolver.cs:
+	* Parser/Parser.cs: Track changes in parser api.
+
 2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* JavaLanguageBinding.cs: Implemented IDotNetLanguageBinding methods.

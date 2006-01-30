@@ -796,9 +796,9 @@ namespace JavaBinding.Parser
 			}
 		}
 		
-		public ArrayList CtrlSpace(IParserContext parserService, int caretLine, int caretColumn, string fileName)
+		public LanguageItemCollection CtrlSpace(IParserContext parserService, int caretLine, int caretColumn, string fileName)
 		{
-			ArrayList result = new ArrayList();
+			LanguageItemCollection result = new LanguageItemCollection();
 			this.parserService = parserService;
 			IParseInformation parseInfo = parserService.GetParseInformation(fileName);
 			JRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as JRefactory.Parser.AST.CompilationUnit;
