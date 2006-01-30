@@ -171,11 +171,14 @@ class Resolver:
 	#endregion
 	
 	#region CtrlSpace-Completion
-	def CtrlSpace(caretLine as int, caretColumn as int, fileName as string) as ArrayList:
+	def CtrlSpace(caretLine as int, caretColumn as int, fileName as string) as LanguageItemCollection:
 		_caretLine = caretLine
 		_caretColumn = caretColumn
-		result = ArrayList(BooAmbience.TypeConversionTable.Values)
-		result.Add("System") // system namespace can be used everywhere
+		result = LanguageItemCollection ()
+		for pt as string in BooAmbience.TypeConversionTable.Values:
+			result.Add (Namespace (pt))
+		
+		result.Add(Namespace ("System")) // system namespace can be used everywhere
 		
 		builtinClass = self.BuiltinClass
 		if builtinClass != null:
@@ -196,7 +199,7 @@ class Resolver:
 					for name as string in u.Usings:
 						result.AddRange(_parserContext.GetNamespaceContents(name, true, true))
 					for alias as string in u.Aliases.Keys:
-						result.Add(alias)
+						result.Add(Namespace (alias))
 			member = self.CurrentMember
 			if member != null:
 				varList as Hashtable = null
@@ -222,7 +225,7 @@ class Resolver:
 		result.AddRange(_parserContext.GetNamespaceContents("", true, true))
 		return result
 	
-	def AddCurrentClassMembers(result as ArrayList, curClass as IClass) as ArrayList:
+	def AddCurrentClassMembers(result as LanguageItemCollection, curClass as IClass) as LanguageItemCollection:
 		if self.CurrentMember != null and self.CurrentMember.IsStatic == false:
 			//result = ListMembers(result, curClass, curClass, false)
 			result = ListMembers(result, curClass)
@@ -240,7 +243,7 @@ class Resolver:
 	
 	#region IsAsResolve
 
-	def IsAsResolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as ArrayList: 
+	def IsAsResolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as LanguageItemCollection: 
 		return null
 
 	def MonodocResolver(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as string: 
@@ -301,7 +304,7 @@ class Resolver:
 			// try looking if the expression is the name of a class
 			expressionClass = self.SearchType(expression)
 			if expressionClass != null:
-				return ResolveResult(expressionClass, ListMembers(ArrayList(), expressionClass, true))
+				return ResolveResult(expressionClass, ListMembers(LanguageItemCollection(), expressionClass, true))
 			
 			// try if it is the name of a namespace
 			if _parserContext.NamespaceExists(expression):
@@ -323,7 +326,7 @@ class Resolver:
 					returnClass = self.SearchType(retType.FullyQualifiedName)
 		
 		return null if returnClass == null
-		return ResolveResult(returnClass, ListMembers(ArrayList(), returnClass, _showStatic))
+		return ResolveResult(returnClass, ListMembers(LanguageItemCollection(), returnClass, _showStatic))
 	#endregion
 
 	#region Code converted from CSharpBinding/Parser/Resolver.cs
@@ -377,10 +380,10 @@ class Resolver:
 				return baseClass
 		return null
 	
-	def ListMembers(members as ArrayList, curType as IClass) as ArrayList:
+	def ListMembers(members as LanguageItemCollection, curType as IClass) as LanguageItemCollection:
 		return ListMembers (members, curType, false)
 	
-	def ListMembers(members as ArrayList, curType as IClass, showStatic as bool) as ArrayList:
+	def ListMembers(members as LanguageItemCollection, curType as IClass, showStatic as bool) as LanguageItemCollection:
 		_showStatic = showStatic
 		Log ("LIST MEMBERS!!!")
 		Log ("_showStatic = " + _showStatic)

@@ -140,7 +140,7 @@ class BooParser(IParser):
 		cuCache[fileName] = visitor.Cu
 		return visitor.Cu
 	
-	def CtrlSpace(parserContext as IParserContext, caretLine as int, caretColumn as int, fileName as string) as ArrayList:
+	def CtrlSpace(parserContext as IParserContext, caretLine as int, caretColumn as int, fileName as string) as LanguageItemCollection:
 		Log ("Ctrl-Space (${caretLine}/${caretColumn})")
 		try:
 			return Resolver(parserContext).CtrlSpace(caretLine, caretColumn, fileName)
@@ -148,7 +148,7 @@ class BooParser(IParser):
 			//ShowException(e)
 			return null
 	
-	def IsAsResolve (parserContext as IParserContext, expression as string , caretLineNumber as int , caretColumn as int , fileName as string , fileContent as string ) as ArrayList:
+	def IsAsResolve (parserContext as IParserContext, expression as string , caretLineNumber as int , caretColumn as int , fileName as string , fileContent as string ) as LanguageItemCollection:
 		return Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent)
 
 	def Resolve(parserContext as IParserContext, expression as string, caretLineNumber as int, caretColumn as int, fileName as string, fileContent as string) as ResolveResult:
