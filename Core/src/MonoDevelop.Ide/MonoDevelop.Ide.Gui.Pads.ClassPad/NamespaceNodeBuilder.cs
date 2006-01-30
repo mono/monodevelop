@@ -74,28 +74,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 			if (nsData.Project != null) {
 				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (nsData.Project);
-				ArrayList list = ctx.GetNamespaceContents (nsData.FullName, false);
+				LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
 				AddProjectContent (builder, nsData.Project, nsData, list);
 			}
 			else {
 				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 					IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-					ArrayList list = ctx.GetNamespaceContents (nsData.FullName, false);
+					LanguageItemCollection list = ctx.GetNamespaceContents (nsData.FullName, false);
 					AddProjectContent (builder, p, nsData, list);
 				}
 			}
 			
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, ArrayList list)
+		void AddProjectContent (ITreeBuilder builder, Project project, NamespaceData nsData, LanguageItemCollection list)
 		{
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 
-			foreach (object ob in list) {
-				if (ob is string && nestedNs) {
-					string ns = nsData.FullName + "." + ob;
-					if (!builder.HasChild (ob as string, typeof(NamespaceData)))
+			foreach (ILanguageItem ob in list) {
+				if (ob is Namespace && nestedNs) {
+					Namespace nsob = (Namespace)ob;
+					string ns = nsData.FullName + "." + nsob.Name;
+					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
 						builder.AddChild (new NamespaceData (project, ns));
 				}
 				else if (ob is IClass) {

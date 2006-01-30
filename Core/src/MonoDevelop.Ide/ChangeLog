@@ -1,3 +1,12 @@
+2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: When selecting
+	a field or property, add refactoring submenu for the member type.
+	
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: Track
+	changes in parser api.
+
 2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* Base.glade: Fixed spelling of add-in.

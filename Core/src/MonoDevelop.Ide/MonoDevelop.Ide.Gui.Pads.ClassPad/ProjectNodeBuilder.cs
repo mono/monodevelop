@@ -87,13 +87,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			ArrayList list = ctx.GetNamespaceContents ("", false);
-			foreach (object ob in list) {
-				if (ob is string) {
+			LanguageItemCollection list = ctx.GetNamespaceContents ("", false);
+			foreach (ILanguageItem ob in list) {
+				if (ob is Namespace) {
 					if (builder.Options ["NestedNamespaces"])
-						builder.AddChild (new NamespaceData (project, ob as string));
+						builder.AddChild (new NamespaceData (project, ((Namespace)ob).Name));
 					else {
-						FillNamespaces (builder, project, ob as string);
+						FillNamespaces (builder, project, ((Namespace)ob).Name);
 					}
 				}
 				else if (!publicOnly || ((IClass)ob).IsPublic)

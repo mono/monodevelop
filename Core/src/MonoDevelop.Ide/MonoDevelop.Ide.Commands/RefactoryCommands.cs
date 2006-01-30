@@ -118,35 +118,48 @@ namespace MonoDevelop.Ide.Commands
 			}
 			else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field {0} : {1}", item.Name, ((IField)item).ReturnType.Name);
-			}
-			else if (item is IProperty)
+				AddRefactoryMenuForClass (ctx, ciset, ((IField)item).ReturnType.FullyQualifiedName);
+			} else if (item is IProperty) {
 				txt = GettextCatalog.GetString ("Property {0} : {1}", item.Name, ((IProperty)item).ReturnType.Name);
-			else if (item is IEvent)
+				AddRefactoryMenuForClass (ctx, ciset, ((IProperty)item).ReturnType.FullyQualifiedName);
+			} else if (item is IEvent)
 				txt = GettextCatalog.GetString ("Event {0}", item.Name);
 			else if (item is IMethod)
 				txt = GettextCatalog.GetString ("Method {0}", item.Name);
 			else if (item is IIndexer)
 				txt = GettextCatalog.GetString ("Indexer {0}", item.Name);
-			else if (item is IParameter)
+			else if (item is IParameter) {
 				txt = GettextCatalog.GetString ("Parameter {0}", item.Name);
-			else if (item is LocalVariable) {
+				AddRefactoryMenuForClass (ctx, ciset, ((IParameter)item).ReturnType.FullyQualifiedName);
+			} else if (item is LocalVariable) {
 				LocalVariable var = (LocalVariable) item;
-				IClass cls = ctx.GetClass (var.ReturnType.FullyQualifiedName, true, true);
-				if (cls != null)
-					ciset.CommandInfos.Add (BuildRefactoryMenuForItem (ctx, cls), null);
+				AddRefactoryMenuForClass (ctx, ciset, var.ReturnType.FullyQualifiedName);
 				txt = GettextCatalog.GetString ("Variable {0}", item.Name);
 			}
 			else
 				return null;
 				
-			if ((item is IMember) && !(item is IClass)) {
+			if (item is IMember) {
 				IClass cls = ((IMember)item).DeclaringType;
-				if (cls != null)
-					ciset.CommandInfos.Add (BuildRefactoryMenuForItem (ctx, cls), null);
+				if (cls != null) {
+					CommandInfo ci = BuildRefactoryMenuForItem (ctx, cls);
+					if (ci != null)
+						ciset.CommandInfos.Add (ci, null);
+				}
 			} 
 
 			ciset.Text = txt;
 			return ciset;
+		}
+		
+		void AddRefactoryMenuForClass (IParserContext ctx, CommandInfoSet ciset, string className)
+		{
+			IClass cls = ctx.GetClass (className, true, true);
+			if (cls != null) {
+				CommandInfo ci = BuildRefactoryMenuForItem (ctx, cls);
+				if (ci != null)
+					ciset.CommandInfos.Add (ci, null);
+			}
 		}
 		
 		delegate void RefactoryOperation ();
