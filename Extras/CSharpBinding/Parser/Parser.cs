@@ -102,12 +102,12 @@ namespace CSharpBinding.Parser
 			return visitor.Cu;
 		}
 		
-		public ArrayList CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName)
+		public LanguageItemCollection CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName)
 		{
 			return new Resolver (parserContext).CtrlSpace (caretLine, caretColumn, fileName);
 		}
 
-		public ArrayList IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+		public LanguageItemCollection IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return new Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
