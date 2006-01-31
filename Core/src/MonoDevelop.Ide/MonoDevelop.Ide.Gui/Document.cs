@@ -163,8 +163,15 @@ namespace MonoDevelop.Ide.Gui
 			OnSaved (EventArgs.Empty);
 		}
 		
-		public virtual bool IsBuildTarget {
-			get { return Services.ProjectService.CanCreateSingleFileProject (Window.ViewContent.ContentName); }
+		public virtual bool IsBuildTarget
+		{
+			get
+			{
+				if (Window.ViewContent.ContentName != null)
+					return Services.ProjectService.CanCreateSingleFileProject(Window.ViewContent.ContentName);
+				
+				return false;
+			}
 		}
 		
 		public virtual IAsyncOperation Build ()

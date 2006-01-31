@@ -1,3 +1,8 @@
+2006-01-31  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/Document.cs: Make sure that a null ContentName
+	is handled in IsBuildTarget. Fixes bug 77361.
+
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: When selecting
