@@ -309,7 +309,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void Save (string fileName)
 		{
-			TextWriter s = new StreamWriter (fileName, false);
+			// This is workaround for Mono bug #77423.
+			TextWriter s = new StreamWriter (fileName, true);
+			s.Close ();
+			
+			s = new StreamWriter (fileName, false);
 			s.Write (Text);
 			s.Close ();
 			Modified = false;
