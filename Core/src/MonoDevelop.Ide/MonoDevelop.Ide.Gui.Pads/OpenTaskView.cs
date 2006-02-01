@@ -24,12 +24,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 {
 	internal class OpenTaskView : IPadContent
 	{
+		VBox control;
 		ScrolledWindow sw;
 		Gtk.TreeView view;
 		ListStore store;
+		TreeModelFilter filter;
+		ToggleToolButton errorBtn, warnBtn, msgBtn;
+		Gtk.Tooltips tips = new Gtk.Tooltips ();
+		int errors = 0, warns = 0, msgs = 0;
 		Clipboard clipboard;
 		Hashtable tasks = new Hashtable ();
 		IPadWindow window;
+		
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
@@ -40,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public Gtk.Widget Control {
 			get {
-				return sw;
+				return control;
 			}
 		}
 
@@ -61,8 +67,41 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public OpenTaskView()
 		{
+			control = new VBox ();
+
+			Toolbar toolbar = new Toolbar ();
+			toolbar.IconSize = IconSize.SmallToolbar;
+			control.PackStart (toolbar, false, false, 0);
+			
+			errorBtn = new ToggleToolButton ();
+			errorBtn.Label = String.Format (GettextCatalog.GetString ("{0} Errors"), errors);
+			errorBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowErrors", true);
+			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
+			errorBtn.IsImportant = true;
+			errorBtn.Toggled += new EventHandler (FilterChanged);
+			errorBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Errors"), GettextCatalog.GetString ("Show Errors"));
+			toolbar.Insert (errorBtn, -1);
+			
+			warnBtn = new ToggleToolButton ();
+			warnBtn.Label = String.Format (GettextCatalog.GetString ("{0} Warnings"), warns);
+			warnBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowWarnings", true);
+			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
+			warnBtn.IsImportant = true;
+			warnBtn.Toggled += new EventHandler (FilterChanged);
+			warnBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Warnings"), GettextCatalog.GetString ("Show Warnings"));
+			toolbar.Insert (warnBtn, -1);
+			
+			msgBtn = new ToggleToolButton ();
+			msgBtn.Label = String.Format (GettextCatalog.GetString ("{0} Messages"), msgs);
+			msgBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowMessages", true);
+			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
+			msgBtn.IsImportant = true;
+			msgBtn.Toggled += new EventHandler (FilterChanged);
+			msgBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Messages"), GettextCatalog.GetString ("Show Messages"));
+			toolbar.Insert (msgBtn, -1);
+			
 			store = new Gtk.ListStore (
-				typeof (Gdk.Pixbuf), // image
+                typeof (Gdk.Pixbuf), // image
 				typeof (int),        // line
 				typeof (string),     // desc
 				typeof (string),     // file
@@ -76,8 +115,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			store.SetSortFunc (COL_TASK, sortFunc);
 			store.DefaultSortFunc = sortFunc;
 			store.SetSortColumnId (COL_TASK, SortType.Ascending);
-
-			view = new Gtk.TreeView (store);
+			
+			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes); 
+			filter = new TreeModelFilter (store, null);
+            filter.VisibleFunc = filterFunct;
+			
+			view = new Gtk.TreeView (filter);
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
@@ -94,6 +137,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
+						
+			control.Add (sw);
+			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
+			toolbar.ShowArrow = false;
 			Control.ShowAll ();
 		}
 
@@ -128,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			if (view.Selection.GetSelected (out model, out iter))
 			{
-				task = (Task) model.GetValue (iter, 5);
+				task = (Task) model.GetValue (iter, COL_TASK);
 			}
 			else
 			{
@@ -208,10 +255,41 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public CompilerResults CompilerResults = null;
 		
+		void FilterChanged (object sender, EventArgs e)
+		{
+			
+			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowErrors", errorBtn.Active);
+			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowWarnings", warnBtn.Active);
+			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowMessages", msgBtn.Active);
+			
+			filter.Refilter ();
+		} 
+		
+		bool FilterTaskTypes (TreeModel model, TreeIter iter)
+        {
+        		bool canShow = false;
+        	
+        		try {
+              	Task task = (Task) store.GetValue (iter, COL_TASK);
+        			if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
+        			else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
+        			else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
+        		} catch {
+        			//Not yet fully added
+        			return false;
+        		}
+        	
+        		return canShow;
+        }
+        
 		public void ShowResults (object sender, EventArgs e)
 		{
 			store.Clear ();
 			tasks.Clear ();
+			errors = warns = msgs = 0;
+			UpdateErrorsNum ();
+			UpdateWarningsNum ();
+			UpdateMessagesNum ();
 			
 			foreach (Task t in Services.TaskService.Tasks) {
 				AddTask (t);
@@ -227,6 +305,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public void AddTask (Task t)
 		{
 			if (tasks.Contains (t)) return;
+			
+			
+			switch (t.TaskType) {
+				case TaskType.Error:
+					errors++;
+					UpdateErrorsNum ();
+					break; 
+				case TaskType.Warning:
+					warns++;
+					UpdateWarningsNum ();	
+					break;
+				default:
+					msgs++;
+					UpdateMessagesNum ();
+					break;
+			}
+		
 			tasks [t] = t;
 			
 			Gdk.Pixbuf stock;
@@ -270,6 +365,23 @@ namespace MonoDevelop.Ide.Gui.Pads
 				fileName,
 				path,
 				t, false, false, (int) Pango.Weight.Bold);
+			
+			filter.Refilter ();
+		}
+		
+		void UpdateErrorsNum () 
+		{
+			errorBtn.Label = String.Format (GettextCatalog.GetString ("{0} Errors"), errors);
+		}
+		
+		void UpdateWarningsNum ()
+		{
+			warnBtn.Label = String.Format (GettextCatalog.GetString ("{0} Warnings"), warns);
+		}	
+		
+		void UpdateMessagesNum ()
+		{
+			msgBtn.Label = String.Format (GettextCatalog.GetString ("{0} Messages"), msgs);
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

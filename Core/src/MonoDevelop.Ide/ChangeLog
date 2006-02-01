@@ -1,3 +1,8 @@
+2006-02-01 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Implement filtering
+	in tasklist by item types. Patch by David Makovský.
+
 2006-01-31  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: Make sure that a null ContentName
