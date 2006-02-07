@@ -9,6 +9,7 @@
 
   <Runtime>
     <Import assembly = "BooBinding.dll"/>
+    <Import assembly = "BooShell.dll"/>
   </Runtime>
 
   <Dependencies>

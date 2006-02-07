@@ -1,3 +1,8 @@
+2005-02-07  Peter Johanson  <latexer@gentoo.org>
+
+	* BooBinding.addin.xml: Update imports to get BooShell.dll to be
+	bundled as well.
+
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Parser/BooParser.boo: 
