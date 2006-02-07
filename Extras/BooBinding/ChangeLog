@@ -1,4 +1,10 @@
+2005-02-07  Peter Johanson  <latexer@gentoo.org> 
+
+	* BooBinding.addin.xml: Add BooShell.dll to import list. Fixes
+	bundling issue.
+
 2005-11-16  Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
 	* Gui/ShellTextView.boo: fix EndIter error that caused prompt not to
 	be displayed
 	
