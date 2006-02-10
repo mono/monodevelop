@@ -40,6 +40,7 @@ namespace MonoDevelop.Components.Commands
 		object arrayDataItem;
 		ArrayList itemArray;
 		string lastIcon;
+		bool wasButtonActivation;
 		
 		public CommandMenuItem (object commandId, CommandManager commandManager): base ("")
 		{
@@ -78,14 +79,27 @@ namespace MonoDevelop.Components.Commands
 			Visible = true;
 		}
 		
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton ev)
+		{
+			wasButtonActivation = true;
+			return base.OnButtonReleaseEvent (ev);
+		}
+		
 		protected override void OnActivated ()
 		{
 			base.OnActivated ();
 
 			if (commandManager == null)
 				throw new InvalidOperationException ();
-				
-			commandManager.DispatchCommand (commandId, arrayDataItem);
+			
+			if (!wasButtonActivation) {
+				// It's being activated by an accelerator.
+				commandManager.DispatchCommandFromAccel (commandId, arrayDataItem);
+			}
+			else {
+				wasButtonActivation = false;
+				commandManager.DispatchCommand (commandId, arrayDataItem);
+			}
 		}
 		
 		void Update (CommandInfo cmdInfo)

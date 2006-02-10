@@ -1,3 +1,14 @@
+2006-02-10  Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Detect
+	when a menu item is activated using an accelerator, since it
+	needs a special handling.
+	* MonoDevelop.Components.Commands/CommandManager.cs: Handle the
+	case when one accelerator is used by more than one command.
+	This case makes sense when only one of those commands can
+	be activated at the same time.
+	Also did some small optimization in GetActiveWidget.
+
 2006-01-25  Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components/TabLabel.cs: Fix ugly tabs.

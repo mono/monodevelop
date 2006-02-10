@@ -42,6 +42,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList toolbars = new ArrayList ();
 		ArrayList globalHandlers = new ArrayList ();
 		ArrayList commandUpdateErrors = new ArrayList ();
+		Hashtable overloadedAccelCommands = new Hashtable ();
 		Stack delegatorStack = new Stack ();
 		bool disposed;
 		bool toolbarUpdaterRunning;
@@ -103,6 +104,22 @@ namespace MonoDevelop.Components.Commands
 		public void RegisterCommand (Command cmd, string category)
 		{
 			cmds [cmd.Id] = cmd;
+			
+			if (cmd.AccelKey != null && cmd.AccelKey != "") {
+				// Register overloaded key bindings
+				foreach (Command ac in cmds.Values) {
+					if (ac.AccelKey == cmd.AccelKey) {
+						ArrayList list = (ArrayList) overloadedAccelCommands [ac.AccelKey];
+						if (list == null) {
+							list = new ArrayList ();
+							overloadedAccelCommands [ac.AccelKey] = list;
+							list.Add (ac.Id);
+						}
+						list.Add (cmd.Id);
+						break;
+					}
+				}
+			}
 		}
 		
 		public void RegisterGlobalHandler (object handler)
@@ -300,6 +317,55 @@ namespace MonoDevelop.Components.Commands
 			return info;
 		}
 		
+		internal ArrayList FindAlternateAccelCommands (object commandId)
+		{
+			return (ArrayList) overloadedAccelCommands [commandId];
+		}
+		
+		internal bool DispatchCommandFromAccel (object commandId, object dataItem)
+		{
+			// Dispatches a command that has been fired by an accelerator.
+			// The difference from a normal dispatch is that there may
+			// be several commands bound to the same accelerator, and in
+			// this case it will execute the one that is enabled.
+			
+			// If the original key has been modified
+			// by a CommandUpdate handler, it won't work. That's a limitation,
+			// but checking all possible commands would be too slow.
+			
+			Command cmd = GetCommand (commandId);
+			string accel = cmd.AccelKey;
+			if (accel == null || accel == "")
+				return DispatchCommand (commandId, dataItem);
+			
+			ArrayList list = (ArrayList) overloadedAccelCommands [accel];
+			if (list == null)
+				// The command is not overloaded, so it can be handled normally.
+				return DispatchCommand (commandId, dataItem);
+			
+			// Get the accelerator used to fire the command and make sure it has not changed.
+			CommandInfo accelInfo = GetCommandInfo (commandId);
+			bool res = DispatchCommand (commandId, accelInfo.DataItem);
+
+			// If the accelerator has changed, we can't handle overloading.
+			if (res || accel != accelInfo.AccelKey)
+				return res;
+			
+			// Execution failed. Now try to execute alternate commands
+			// bound to the same key.
+			
+			foreach (object altId in list) {
+				if (altId == commandId)	// already handled above.
+					continue;
+				CommandInfo cinfo = GetCommandInfo (altId);
+				if (cinfo.AccelKey != accel)	// Key changed by a handler, just ignore the command.
+					continue;
+				if (DispatchCommand (altId, cinfo.DataItem))
+					return true;
+			}
+			return false;
+		}
+		
 		internal string GetAccelPath (string key)
 		{
 			string path = "<MonoDevelop>/MainWindow/" + key;
@@ -417,10 +483,12 @@ namespace MonoDevelop.Components.Commands
 		
 		Gtk.Widget GetActiveWidget (Gtk.Widget widget)
 		{
-			if (widget is Gtk.Container) {
+			while (widget is Gtk.Container) {
 				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
 				if (child != null)
-					return GetActiveWidget (child);
+					widget = child;
+				else
+					break;
 			}
 			return widget;
 		}
