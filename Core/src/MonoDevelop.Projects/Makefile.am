@@ -26,6 +26,7 @@ MonoDevelop.Projects.Parser/ClassProxy.cs \
 MonoDevelop.Projects.Parser/ClassProxyCollection.cs \
 MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/DefaultParserService.cs \
+MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs \
 MonoDevelop.Projects.Parser/FileEntry.cs \
 MonoDevelop.Projects.Parser/IParserService.cs \
 MonoDevelop.Projects.Parser/NamespaceEntry.cs \

@@ -29,8 +29,8 @@
 	</Extension>
 	
 	<Extension path = "/Workspace/Applications">
-		<Class id    = "build"
-		       class = "MonoDevelop.Projects.BuildTool"/>
+		<Class id = "build" class = "MonoDevelop.Projects.BuildTool"/>
+		<Class id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">

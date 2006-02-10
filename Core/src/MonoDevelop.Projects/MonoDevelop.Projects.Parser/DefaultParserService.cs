@@ -56,12 +56,13 @@ namespace MonoDevelop.Projects.Parser
 			return Services.Languages.GetParserForFile (fileName);
 		}
 		
-		public void GenerateAssemblyDatabase (string baseDir, string name)
+		public string GenerateAssemblyDatabase (string baseDir, string name)
 		{
 			AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (baseDir, name, (ParserDatabase) CreateParserDatabase());
 			db.ParseInExternalProcess = false;
 			db.ParseAll ();
 			db.Write ();
+			return db.DataFile;
 		}
 	}
 	

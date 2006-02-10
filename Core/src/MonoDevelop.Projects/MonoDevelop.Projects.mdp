@@ -228,6 +228,8 @@
     <File name="./MonoDevelop.Projects.Parser/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/Namespace.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/LanguageItemCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />

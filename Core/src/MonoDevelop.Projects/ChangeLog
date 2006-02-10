@@ -1,3 +1,14 @@
+2006-02-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs:
+	added tool for generating parser databases (replaces dbgen).
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: 
+	GenerateAssemblyDatabase now returns the name of the generated DB.
+	* MonoDevelop.Projects.addin.xml: Registered the new tool.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+	
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/LanguageItemCollection.cs:
