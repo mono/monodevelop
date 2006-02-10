@@ -1,4 +1,10 @@
+2006-02-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Core/src/Tools/Makefile.am:
+	* configure.in: Removed dbgen from the build.
+
 2006-01-25  Muthiah Annamalai <muthus_post@yahoo.com>
+
 	* configure.in: Report error when $has_mono, and $has_mint flags
 	are false, due to mono version lower than $MONO_REQUIRED_VERSION.
 	
