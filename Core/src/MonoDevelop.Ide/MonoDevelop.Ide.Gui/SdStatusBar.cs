@@ -7,7 +7,6 @@
 using System;
 using MonoDevelop.Core;
 using Gtk;
-using Gnome;
 
 namespace MonoDevelop.Ide.Gui
 {

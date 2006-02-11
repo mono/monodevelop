@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.Collections;
 using Gtk;
-using Gnome;
 using MonoDevelop.Components;
 
 using MonoDevelop.Ide.ExternalTools;

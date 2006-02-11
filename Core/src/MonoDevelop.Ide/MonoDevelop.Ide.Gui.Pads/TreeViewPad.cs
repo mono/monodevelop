@@ -603,14 +603,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 		[CommandHandler (EditCommands.Rename)]
 		public void StartLabelEdit()
 		{
-			Gtk.TreeModel foo;
-			Gtk.TreeIter iter;
-			if (!tree.Selection.GetSelected (out foo, out iter))
+			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+			if (node == null)
 				return;
 			
-			workNode.MoveToIter (iter);
-			workNode.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
-			store.SetValue (iter, TreeViewPad.TextColumn, workNode.NodeName);
+			Gtk.TreeIter iter = node.CurrentPosition._iter;
+			object dataObject = node.DataItem;
+			NodeAttributes attributes = NodeAttributes.None;
+			
+			ITreeNavigator parentNode = node.Clone ();
+			parentNode.MoveToParent ();
+			NodePosition pos = parentNode.CurrentPosition;
+			
+			foreach (NodeBuilder b in node.NodeBuilderChain) {
+				b.GetNodeAttributes (parentNode, dataObject, ref attributes);
+				parentNode.MoveToPosition (pos);
+			}
+			
+			if ((attributes & NodeAttributes.AllowRename) == 0)
+				return;
+
+			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
+			
+			store.SetValue (iter, TreeViewPad.TextColumn, node.NodeName);
 			
 			text_render.Editable = true;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);

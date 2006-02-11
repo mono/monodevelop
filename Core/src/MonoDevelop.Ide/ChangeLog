@@ -1,3 +1,10 @@
+2006-02-11 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Honor the
+	AllowRename flag.
+	* MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:
+	* MonoDevelop.Ide.Gui/SdStatusBar.cs: Remove Gnome reference.
+
 2006-02-01 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Implement filtering
