@@ -86,7 +86,7 @@ namespace MonoDevelop.Core.Gui.Components
 			tv.RulesHint = true;
 
 			TreeViewColumn directorycolumn = new TreeViewColumn ();
-			directorycolumn.Title = "Directories";
+			directorycolumn.Title = GettextCatalog.GetString ("Directories");
 			
 			CellRendererPixbuf pix_render = new CellRendererPixbuf ();
 			directorycolumn.PackStart (pix_render, false);
