@@ -16,7 +16,6 @@ Extras/MonoDevelop.SourceEditor/texteditoraddin.glade
 Extras/JavaBinding/Java.glade
 Extras/WelcomePage/WelcomePage.addin.xml
 Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml
-Extras/CSharpBinding/templates/BlankCombine.xpt.xml
 Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
 Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml
 Extras/CSharpBinding/templates/CSharpWebService.xft.xml
@@ -181,6 +180,7 @@ Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOption
 Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs
 Extras/JavaBinding/Gui/GlobalOptionsPanel.cs
 Extras/VersionControl/VersionControl/Subversion.cs
+Extras/VersionControl/AddIn/VersionControl.addin.xml
 Extras/NUnit/Gui/UnitTestOptionsDialog.cs
 Extras/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs
 Extras/NUnit/Gui/TestResultsPad.cs
@@ -224,6 +224,7 @@ Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs
 Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintNodeBuilder.cs
 Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProcedureNodeBuilder.cs
 Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs
+Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs
