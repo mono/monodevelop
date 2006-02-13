@@ -1830,7 +1830,7 @@ msgstr "Tworzy pusty projekt Nemerle"
 #: ../Extras/CSharpBinding/CSharp.glade.h:4
 #: ../Extras/VBNetBinding/VB.glade.h:4
 msgid "Allow '_unsafe' code"
-msgstr "Dop_uszczaj 'niebezpieczny\' kod"
+msgstr "Dop_uszczaj 'niebezpieczny' kod"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:10
 #: ../Extras/VBNetBinding/VB.glade.h:9
