@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-14 17:39+0100\n"
+"POT-Creation-Date: 2006-02-14 18:35+0100\n"
 "PO-Revision-Date: 2005-05-20 17:07+0200\n"
 "Last-Translator: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
 "Language-Team: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
@@ -793,11 +793,11 @@ msgstr "..."
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:5
 msgid "<b>Code generation options</b>"
-msgstr "Indstillinger for kodegenererings"
+msgstr "<b>Indstillinger for kodegenerering</b>"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:6
 msgid "<b>Comment generation options</b>"
-msgstr "Indstillinger for kommentargenerereing"
+msgstr "<b>Indstillinger for kommentargenerereing</b>"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:7
 msgid "<b>Load</b>"
@@ -1339,7 +1339,7 @@ msgstr "Opførsel"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
 msgid "Buffer Options"
-msgstr "Indstillinger for Mellemlager"
+msgstr "Indstillinger for mellemlager"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
 msgid "Clear Bookmarks"
@@ -1601,9 +1601,8 @@ msgid "<b>Compiler</b>"
 msgstr "<b>Skabelon</b>"
 
 #: ../Extras/JavaBinding/Java.glade.h:4
-#, fuzzy
 msgid "<b>Options</b>"
-msgstr "<b>Optimeringer</b>"
+msgstr "<b>Indstillinger</b>"
 
 #: ../Extras/JavaBinding/Java.glade.h:5
 #: ../Extras/CSharpBinding/CSharp.glade.h:3
@@ -1612,9 +1611,8 @@ msgid "<b>Warnings</b>"
 msgstr "<b>Advarsler</b>"
 
 #: ../Extras/JavaBinding/Java.glade.h:6
-#, fuzzy
 msgid "Classpath:"
-msgstr "Klasse-sti"
+msgstr "Klassesti:"
 
 #: ../Extras/JavaBinding/Java.glade.h:7
 #: ../Extras/CSharpBinding/CSharp.glade.h:5
@@ -1655,7 +1653,6 @@ msgid "Enable deprecation warnings"
 msgstr "Aktivér _kodefuldførelse"
 
 #: ../Extras/JavaBinding/Java.glade.h:14
-#, fuzzy
 msgid "Generate warnings"
 msgstr "Generér advarsler"
 
@@ -1664,9 +1661,8 @@ msgid "IKVM path:"
 msgstr "IKVM-sti:"
 
 #: ../Extras/JavaBinding/Java.glade.h:16
-#, fuzzy
 msgid "Java compiler:"
-msgstr "Oversætter:"
+msgstr "Java-oversætter:"
 
 #: ../Extras/JavaBinding/Java.glade.h:17
 #: ../Extras/CSharpBinding/CSharp.glade.h:11
@@ -2099,7 +2095,6 @@ msgid "NUnit Categories"
 msgstr "NUnit-kategorier"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
-#, fuzzy
 msgid "NUnit options"
 msgstr "NUnit-indstillinger"
 
@@ -2131,19 +2126,16 @@ msgid "Show Test Time"
 msgstr "Vis beskrivelse"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
-#, fuzzy
 msgid "Show failed tests"
-msgstr "Vis _invalide linjer"
+msgstr "Vis fejlede test"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
-#, fuzzy
 msgid "Show ignored tests"
-msgstr "Vis _linjenumre"
+msgstr "Vis ignorerede test"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
-#, fuzzy
 msgid "Show one result per day"
-msgstr "Vis kolonne-lineal"
+msgstr "Vis et resultat per dag"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
 msgid "Show results pad"
@@ -2151,7 +2143,7 @@ msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
 msgid "Show successful tests"
-msgstr "Vis succesfulde tests"
+msgstr "Vis succesfulde test"
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
 msgid "Show test source code"
@@ -2163,7 +2155,7 @@ msgstr ""
 
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
 msgid "Unit Tests"
-msgstr "Enhedstests"
+msgstr "Enhedstest"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
 #, fuzzy, csharp-format
@@ -2175,9 +2167,8 @@ msgid "Not all dependencies could be resolved."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:130
-#, fuzzy
 msgid "Installing add-ins..."
-msgstr "Installerer addins..."
+msgstr "Installerer add-ins..."
 
 #. Prepare install
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:134
@@ -2215,14 +2206,12 @@ msgid "Could not get information from repository"
 msgstr "Kunne ikke hente nogen filer fra \"{0}\""
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1064
-#, fuzzy
 msgid "Requesting "
-msgstr "Spørgsmål"
+msgstr "Spørger "
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1070
-#, fuzzy
 msgid "Downloading "
-msgstr "Overføringer"
+msgstr "Henter "
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1150
 #, csharp-format
@@ -2310,7 +2299,7 @@ msgstr "Næste"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:287
 msgid "Finish"
-msgstr "Færdig"
+msgstr "Afslut"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:179
 msgid "MonoDevelop options"
@@ -2321,9 +2310,8 @@ msgid "All registered repositories"
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:172
-#, fuzzy
 msgid "Are you sure you want to cancel the installation?"
-msgstr "Er du sikker på at du vil slette denne fil?"
+msgstr "Er du sikker på, at du vil afbryde installationen?"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:284
 msgid ""
@@ -2382,18 +2370,16 @@ msgid "The installation has been successfully completed."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:417
-#, fuzzy
 msgid "The instalation failed!"
-msgstr "Starten mislykkedes."
+msgstr "Installationen mislykkedes!"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:420
 msgid "The uninstallation has been successfully completed."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:421
-#, fuzzy
 msgid "The uninstallation failed!"
-msgstr "Starten mislykkedes."
+msgstr "Afinstallationen fejlede!"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:437
 msgid "You need to restart MonoDevelop for the changes to take effect."
@@ -2405,20 +2391,19 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:185
 msgid "Operation completed with errors."
-msgstr ""
+msgstr "Operationen fuldførtes med fejl."
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:187
 msgid "Operation completed with warnings."
-msgstr ""
+msgstr "Operationen fuldførtes med advarsler."
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:189
 msgid "Operation successfully completed."
-msgstr ""
+msgstr "Operationen fuldførtes succesfuldt."
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:56
-#, fuzzy
 msgid "Add-in"
-msgstr "Tilføj"
+msgstr "Add-in"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:27
@@ -2555,16 +2540,16 @@ msgstr "Indlæs adresse"
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Saving project: {0}"
-msgstr "Projekt: {0}"
+msgstr "Gemmer projekt: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Could not save project: {0}"
-msgstr "Kunne ikke oprette kataloget \"{0}\"."
+msgstr "Kunne ikke gemme projekt: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:113
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
@@ -2579,28 +2564,28 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:116
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Loading project: {0}"
-msgstr "Projekt: {0}"
+msgstr "Henter projekt: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:122
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Could not load project: {0}"
-msgstr "Kunne ikke oprette kataloget \"{0}\"."
+msgstr "Kunne ikke hente projekt: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Saving solution: {0}"
-msgstr "Løsning: {0}"
+msgstr "Gemmer løsning: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Could not save solution: {0}"
-msgstr "indlæs løsning {0}"
+msgstr "Kunne ikke gemme løsning: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
@@ -2614,18 +2599,18 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:213
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Loading solution: {0}"
-msgstr "indlæs løsning {0}"
+msgstr "Henter løsning: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:543
 msgid "The solution does not have an active configuration."
-msgstr ""
+msgstr "Løsningen har ikke en aktiv konfiguration."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:547
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "Building Solution {0}"
-msgstr "Byg løsning {0}"
+msgstr "Bygger løsning {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:554
 msgid ""
@@ -2717,7 +2702,7 @@ msgstr "total"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:95
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:110
 msgid "You must save the file"
-msgstr "Du bliver nød til at gemme filen"
+msgstr "Du bliver nødt til at gemme filen"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:123
 msgid "Unsaved changed to open files were not included in counting"
@@ -2725,7 +2710,7 @@ msgstr "Ændringer i åbne filer som ikke er gemt, blev ikke talt med"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:130
 msgid "You must be in project mode"
-msgstr "Du bliver nød til at være i projekttilstand"
+msgstr "Du bliver nødt til at være i projekttilstand"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:232
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:278
@@ -3733,14 +3718,12 @@ msgid "Show Errors"
 msgstr "Vis _EOL markører"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:91
-#, fuzzy
 msgid "Show Warnings"
-msgstr "Advarsel"
+msgstr "Vis advarsler"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:100
-#, fuzzy
 msgid "Show Messages"
-msgstr "Vis _indrykninger"
+msgstr "Vis beskeder"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:208
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:245
@@ -3756,22 +3739,22 @@ msgstr "Beskrivelse"
 #, csharp-format
 msgid "{0} Error"
 msgid_plural "{0} Errors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{0} fejl"
+msgstr[1] "{1} fejl"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:379
-#, fuzzy, csharp-format
+#, csharp-format
 msgid "{0} Warning"
 msgid_plural "{0} Warnings"
-msgstr[0] "Advarsel"
-msgstr[1] "Advarsel"
+msgstr[0] "{0} advarsel"
+msgstr[1] "{0} advarsler"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:384
 #, csharp-format
 msgid "{0} Message"
 msgid_plural "{0} Messages"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{0} besked"
+msgstr[1] "{0} beskeder"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:248
 msgid "Text"
@@ -3862,9 +3845,8 @@ msgid "A configuration with the name '{0}' already exists."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:132
-#, fuzzy
 msgid "There must be at least one configuration."
-msgstr "Opretter en .NET-program-konfigurationsfil."
+msgstr "Der skal være mindst én konfiguration."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:62
 #, fuzzy
@@ -4070,14 +4052,12 @@ msgid "Importing solution"
 msgstr "Importerer løsning"
 
 #: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:533
-#, fuzzy
 msgid "Project file not found: "
-msgstr "Fil ikke fundet: {0}"
+msgstr "Projektfil ikke fundet: "
 
 #: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:554
-#, fuzzy
 msgid "The solution could not be imported."
-msgstr "Filen \"{0}\" kunne ikke indlæses."
+msgstr "Løsningen kunne ikke importeres."
 
 #: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:623
 #: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:661
@@ -4325,9 +4305,8 @@ msgid "Drop table"
 msgstr ""
 
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:5
-#, fuzzy
 msgid "Empty table"
-msgstr "Tom fil"
+msgstr "Tom tabel"
 
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
 msgid "Refresh"
@@ -4424,7 +4403,6 @@ msgid "Email Address:"
 msgstr "E-mail-adresse"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:126
-#, fuzzy
 msgid "Loading Add-ins"
 msgstr "Indlæser add-ins"
 
