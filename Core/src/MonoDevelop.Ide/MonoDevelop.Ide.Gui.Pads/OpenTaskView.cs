@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			control.PackStart (toolbar, false, false, 0);
 			
 			errorBtn = new ToggleToolButton ();
-			errorBtn.Label = String.Format (GettextCatalog.GetString ("{0} Errors"), errors);
+			UpdateErrorsNum();
 			errorBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowErrors", true);
 			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
 			errorBtn.IsImportant = true;
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Insert (errorBtn, -1);
 			
 			warnBtn = new ToggleToolButton ();
-			warnBtn.Label = String.Format (GettextCatalog.GetString ("{0} Warnings"), warns);
+			UpdateWarningsNum();
 			warnBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowWarnings", true);
 			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
 			warnBtn.IsImportant = true;
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Insert (warnBtn, -1);
 			
 			msgBtn = new ToggleToolButton ();
-			msgBtn.Label = String.Format (GettextCatalog.GetString ("{0} Messages"), msgs);
+			UpdateMessagesNum();
 			msgBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowMessages", true);
 			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
 			msgBtn.IsImportant = true;
@@ -371,17 +371,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = String.Format (GettextCatalog.GetString ("{0} Errors"), errors);
+			errorBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errors), errors);
 		}
 		
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = String.Format (GettextCatalog.GetString ("{0} Warnings"), warns);
+			warnBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warns), warns); 
 		}	
 		
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = String.Format (GettextCatalog.GetString ("{0} Messages"), msgs);
+			msgBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", msgs), msgs);
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)
@@ -428,6 +428,5 @@ namespace MonoDevelop.Ide.Gui.Pads
 				compare = task1.Line.CompareTo (task2.Line);
 			return compare;
 		}
-
 	}
 }

@@ -1,3 +1,8 @@
+2006-02-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Fixed plural
+	issues with labels. Removed code duplication.
+
 2006-02-11 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Honor the
@@ -10,7 +15,7 @@
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Implement filtering
 	in tasklist by item types. Patch by David Makovský.
 
-2006-01-31  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+2006-01-31  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.Gui/Document.cs: Make sure that a null ContentName
 	is handled in IsBuildTarget. Fixes bug 77361.
@@ -24,11 +29,11 @@
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ProjectNodeBuilder.cs: Track
 	changes in parser api.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* Base.glade: Fixed spelling of add-in.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
 	Make sure the correct tab is removed. Fixes bug 76900.
@@ -39,7 +44,7 @@
 	Added double-click response to expand category tree or  
 	collapse tree, a toggle effect.
 
-2006-01-24  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-24  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* Base.glade: Fixed spelling mistake.
 
@@ -64,7 +69,7 @@
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Track api changes.
 
-2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-23  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Codons/PadOptionCodon.cs:
 	* MonoDevelop.Ide.Codons/PadCodon.cs:
@@ -202,7 +207,7 @@
 	* MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:
 	Properly show the name of newly created files, since now they have a name.
 
-2005-12-05  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-05  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
 	Handle empty directories and empty search patterns appropriately.
@@ -213,7 +218,7 @@
 
 	* AssemblyInfo.cs.in: add back --help output with Mono.GetOptions
 	
-2005-12-02  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-02  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:
 	Fixed typo.
@@ -223,7 +228,7 @@
 	* MonoDevelop.Ide.Gui/IdeStartup.cs:
 	* MonoDevelop.Ide.Gui/Workbench.cs: Make some strings translatable.
 
-2005-11-28  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-11-28  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs:
 	Make sure the size of the progress bar stays the same
