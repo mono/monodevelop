@@ -1,3 +1,7 @@
+2006-02-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* da.po: Updated.
+
 2006-02-13  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* pl.po: Fixed a typo.
@@ -7,15 +11,15 @@
 	* pl.po: Updated.
 	* POTFILES.in: Added VersionControl and MonoQuery.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* da.po: Updated.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* POTFILES.in: Added missing files.
 
-2006-01-24  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-24  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* da.po: Updated.
 
@@ -27,11 +31,11 @@
 
 	* ja_JP.po : updated.
 
-2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-23  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* POTFILES.in: Added missing files.
 
-2006-01-23  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-23  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* da.po: Updated.
 
@@ -41,12 +45,12 @@
 	* POTFILES.in: Added the 'in' extension to the file
 	GettextCatalog.cs.
 
-2005-12-19  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-19  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* fr.po: Use UTF-8 as charset. Thanks goes to
 	Hubert FONGARNAND.
 
-2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* POTFILES.in: Added files for ChangeLogAddIn.
 

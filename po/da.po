@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-25 21:58+0100\n"
+"POT-Creation-Date: 2006-02-14 17:39+0100\n"
 "PO-Revision-Date: 2005-05-20 17:07+0200\n"
 "Last-Translator: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
 "Language-Team: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
@@ -248,9 +248,8 @@ msgid "MonoDevelop Options"
 msgstr "Indstillinger for MonoDevelop"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
-#, fuzzy
 msgid "N_ew Project..."
-msgstr "Tilføj nyt projekt"
+msgstr "N_yt projekt..."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
 msgid "Nested namespaces"
@@ -319,258 +318,263 @@ msgstr "_Seneste løsninger"
 msgid "Recent _Files"
 msgstr "Seneste _filer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+#. RefactoryCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+#, fuzzy
+msgid "Refactory Operations"
+msgstr "Nulstil indstillinger"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
 msgid "Reset Options"
 msgstr "Nulstil indstillinger"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
 msgid "Run"
 msgstr "Kør"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
 msgid "Save"
 msgstr "Gem"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
 msgid "Save All"
 msgstr "Gem alle"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
 msgid "Save _As..."
 msgstr "Gem _som..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
 msgid "Select _All"
 msgstr "Vælg _alle"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
 msgid "Set As Startup Project"
 msgstr "Sæt som opstartsprojekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
 msgid "Setup"
 msgstr "Opsætning"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
 msgid "Show All Files"
 msgstr "Vis alle filer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
 msgid "Show project structure"
 msgstr "Vis projektstruktur"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
-#, fuzzy
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
 msgid "Show public members only"
-msgstr "Vis _linjenumre"
+msgstr "Vis kun offentlige medlemmer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
 msgid "Solution"
 msgstr "Løsning"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
 msgid "Standard"
 msgstr "Standard"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
 msgid "Step Into"
 msgstr "Gå ind i"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
 msgid "Step Out"
 msgstr "Gå ud af"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
 msgid "Step Over"
 msgstr "Gå over"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
 msgid "Stop"
 msgstr "Stop"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
 msgid "Toggle Breakpoint"
 msgstr "Slå stoppunkt til/fra"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
 msgid "Tool List"
 msgstr "Værktøjsliste"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
 #, fuzzy
 msgid "Toolbars"
 msgstr "Værktøjer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
 msgid "Tools"
 msgstr "Værktøjer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
 msgid "Use Existing File"
 msgstr "Brug eksisterende fil"
 
 #. ViewCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
 msgid "View List"
 msgstr "Oversigtsliste"
 
 #. <DialogPanel id = "SelectCulture"
 #. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 #. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
 msgid "Visual style"
 msgstr "Visuel stil"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
 msgid "Window List"
 msgstr "Vinduesliste"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
 msgid "[!] Any one character not in the set"
 msgstr "[!] Tegn der ikke er i sættet"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
 msgid "[] Any one character in the set"
 msgstr "[] Tegn der er i sættet"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
 msgid "_About"
 msgstr "_Om"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
 msgid "_Clear Recent Files"
 msgstr "_Fjern seneste filer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
 msgid "_Clear Recent Solutions"
 msgstr "_Fjern seneste løsninger"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
 msgid "_Close File"
 msgstr "_Luk fil"
 
 #. EditCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
 msgid "_Copy"
 msgstr "_Kopiér"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
 msgid "_Delete"
 msgstr "_Slet"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
 msgid "_Delete Current Layout"
 msgstr ""
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
 msgid "_Edit"
 msgstr "_Redigér"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
 msgid "_File"
 msgstr "_Fil"
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
 msgid "_Find..."
 msgstr "_Søg..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
 msgid "_Full Screen"
 msgstr "_Fuldskærmstilstand"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
 msgid "_Help"
 msgstr "_Hjælp"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
 msgid "_Indent Selection"
 msgstr "_Indryk markering"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
 msgid "_Layouts"
 msgstr "_Layouts"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
 msgid "_New Layout"
 msgstr "_Nyt layout"
 
 #. WindowCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
 msgid "_Next Window"
 msgstr "_Næste vindue"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
 msgid "_Paste"
 msgstr "_Indsæt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
 msgid "_Preferences"
 msgstr "_Indstillinger"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
 msgid "_Previous Window"
 msgstr "_Forrige vindue"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
 msgid "_Quit"
 msgstr "_Afslut"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
 msgid "_Redo"
 msgstr "_Omgør"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
 msgid "_Reload File"
 msgstr "_Genindlæs fil"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
 msgid "_Remove From Project"
 msgstr "_Fjern fra projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:136
 msgid "_Replace..."
 msgstr "_Erstat..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:137
 msgid "_Run"
 msgstr "_Kør"
 
 #. HelpCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:137
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
 msgid "_Tip of the Day..."
 msgstr "_Dagens tip..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
 msgid "_Uncomment Line(s)"
 msgstr "_Afkommentér linje(r)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
 msgid "_Undo"
 msgstr "_Fortryd"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
 msgid "_Unindent Selection"
 msgstr "_Fortryd indryk af markering"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
 msgid "_View"
 msgstr "_Vis"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
 msgid "_Web"
 msgstr "_Web"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
 msgid "_Window"
 msgstr "_Vindue"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
 msgid "_Word Count..."
 msgstr "_Ordoptælling..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
 msgid "cshrp.net"
 msgstr "cshrp.net"
 
@@ -609,20 +613,20 @@ msgid "Startup Properties"
 msgstr "Indstillinger for Opstart"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
-msgid "<b>Select the addins to install and click on Next</b>"
+msgid "<b>Select the add-ins to install and click on Next</b>"
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
 msgid ""
-"<b>The following addins will be installed:</b>\n"
+"<b>The following add-ins will be installed:</b>\n"
 "\n"
 "C# language binding\n"
 "C# language IDE extension\n"
 "\n"
-"<b>The following addins are required by the selected addins</b>\n"
+"<b>The following add-ins are required by the selected add-ins</b>\n"
 "\n"
-"NUnit addin\n"
-"NAnt addin\n"
+"NUnit add-in\n"
+"NAnt add-in\n"
 "\n"
 "asd\n"
 "asd\n"
@@ -653,12 +657,12 @@ msgid "Add New Repository"
 msgstr "Tilføj ny folder"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
-msgid "Add-in Repository Management"
-msgstr ""
+msgid "Add-in Installation"
+msgstr "Add-in-installation"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
-msgid "Addin Installation"
-msgstr "Add-in-installation"
+msgid "Add-in Repository Management"
+msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
 msgid "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
@@ -677,7 +681,7 @@ msgid "Disable"
 msgstr "Deaktivér"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:35
-msgid "Downloading addins ..."
+msgid "Downloading add-ins ..."
 msgstr "Henter add-ins ..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:36
@@ -685,8 +689,8 @@ msgid "Enable"
 msgstr "Aktivér"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:37
-msgid "Install Addins..."
-msgstr "Installer add-ins..."
+msgid "Install Add-ins..."
+msgstr "Installér add-ins..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:38
 msgid "Install from:"
@@ -699,13 +703,12 @@ msgstr "Indlæser..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:41
 #, fuzzy
-msgid "MonoDevelop Addin Manager"
+msgid "MonoDevelop Add-in Manager"
 msgstr "Indstillinger for MonoDevelop"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:42
-#, fuzzy
 msgid "MonoDevelop Package"
-msgstr "MonoDevelop"
+msgstr "MonoDevelop-pakke"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:44
 msgid "Overall Progress:"
@@ -748,9 +751,8 @@ msgid "Uninstall..."
 msgstr "Afinstallér"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:54
-#, fuzzy
 msgid "Unselect All"
-msgstr "Vælg alle"
+msgstr "Fravælg alle"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:55
 msgid "Url:"
@@ -927,8 +929,8 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
 msgid ""
-"MonoDevelop can run without these addins, but the functionality they provide "
-"will be missing."
+"MonoDevelop can run without these add-ins, but the functionality they "
+"provide will be missing."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
@@ -966,6 +968,7 @@ msgstr "Gennemgå underfoldere rekursivt"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
 msgid "Remove"
 msgstr "Fjern"
 
@@ -1012,7 +1015,7 @@ msgstr "Vis skjulte filer og foldere"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
 #, fuzzy
-msgid "The following addins could not be started:"
+msgid "The following add-ins could not be started:"
 msgstr "Filen \"{0}\" kunne ikke indlæses."
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
@@ -1042,7 +1045,7 @@ msgstr "Kun hele ord"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
 msgid ""
-"You can start MonoDevelop without these addins, but the functionality they "
+"You can start MonoDevelop without these add-ins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
 msgstr ""
 
@@ -1163,9 +1166,8 @@ msgid "Action"
 msgstr "Handling"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
-#, fuzzy
 msgid "Are you sure you want to delete this configuration?"
-msgstr "Er du sikker på at du vil slette denne fil?"
+msgstr "Er du sikker på, at du vil slette denne konfiguration?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
 msgid "Assembly _name:"
@@ -1693,14 +1695,6 @@ msgstr "Velkomstside"
 msgid "_Import Visual Studio .NET Project"
 msgstr "_Importér Visual Studio .NET-projekt"
 
-#: ../Extras/CSharpBinding/templates/BlankCombine.xpt.xml.h:1
-msgid "A blank solution"
-msgstr "En blank løsning"
-
-#: ../Extras/CSharpBinding/templates/BlankCombine.xpt.xml.h:2
-msgid "Blank Solution"
-msgstr "Blank løsning"
-
 #: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
 #: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
 #: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
@@ -1790,7 +1784,8 @@ msgid "Empty XML File"
 msgstr "Tom XML-fil"
 
 #: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
-msgid "Glade# Project"
+#, fuzzy
+msgid "Glade# 1.0 Project"
 msgstr "Glade#-projekt"
 
 #: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
@@ -1810,8 +1805,8 @@ msgid "Creates a Gnome# project"
 msgstr "Opretter et nyt Gnome#-projekt."
 
 #: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
-#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
-msgid "Gnome# Project"
+#, fuzzy
+msgid "Gnome# 1.0 Project"
 msgstr "Gnome#-projekt"
 
 #: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
@@ -1819,8 +1814,8 @@ msgid "Creates a Gtk# project."
 msgstr "Opretter et nyt Gtk#-projekt."
 
 #: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
-#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
-msgid "Gtk# Project"
+#, fuzzy
+msgid "Gtk# 1.0 Project"
 msgstr "Gtk#-projekt"
 
 #: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
@@ -1927,9 +1922,17 @@ msgstr "Streng-konstant-matchning-optimering"
 msgid "Creates a Nemerle/Gnome# project"
 msgstr "Opretter et nyt Nemerle/Gnome#-projekt"
 
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Gnome#-projekt"
+
 #: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:1
 msgid "Creates a Nemerle/Gtk# project"
 msgstr "Opret et nyt Nemerle/Gtk#-projekt"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Gtk#-projekt"
 
 #: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
 msgid "Creates a top-level Gtk# window"
@@ -2164,7 +2167,7 @@ msgstr "Enhedstests"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
 #, fuzzy, csharp-format
-msgid "The addin '{0}' is not installed."
+msgid "The add-in '{0}' is not installed."
 msgstr "Filen \"{0}\" kunne ikke indlæses."
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:122
@@ -2172,7 +2175,8 @@ msgid "Not all dependencies could be resolved."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:130
-msgid "Installing addins..."
+#, fuzzy
+msgid "Installing add-ins..."
 msgstr "Installerer addins..."
 
 #. Prepare install
@@ -2223,7 +2227,7 @@ msgstr "Overføringer"
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1150
 #, csharp-format
 msgid ""
-"The addin '{0} v{1}' can't be uninstalled with the current user permissions."
+"The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:40
@@ -2456,6 +2460,11 @@ msgstr "Hjem"
 msgid "Location"
 msgstr "Localitet"
 
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:173
+msgid "Directories"
+msgstr "Foldere"
+
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:208
 msgid "Access denied"
 msgstr "Adgang nægtet"
@@ -2498,7 +2507,7 @@ msgstr "Kunne ikke oprette ny folder '{0}'"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
 msgid "Are you sure you want to delete this folder?"
-msgstr "Er du sikker på at du vil slette denne folder?"
+msgstr "Er du sikker på, at du vil slette denne folder?"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
 msgid "Delete folder"
@@ -2665,7 +2674,7 @@ msgstr "Bygning færdig - {0} fejl, {1} advarsler"
 msgid "Executing: {0}"
 msgstr "Starter: {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:465
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:466
 msgid "Generating database"
 msgstr "Genererer database"
 
@@ -2720,7 +2729,7 @@ msgstr "Du bliver nød til at være i projekttilstand"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:232
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:278
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:164
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:211
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:246
 msgid "File"
 msgstr "Fil"
@@ -2780,7 +2789,7 @@ msgid ""
 msgstr ""
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:54
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:166
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:213
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:250
 msgid "Path"
 msgstr "Sti"
@@ -2881,10 +2890,6 @@ msgstr "Jokere"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:135
 msgid "Regular Expressions"
 msgstr "Regulæreudtryk"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:173
-msgid "Directories"
-msgstr "Foldere"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:175
 msgid "Whole project"
@@ -3273,98 +3278,98 @@ msgstr "Filen \"{0}\" kunne ikke slettes."
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:140
 #, csharp-format
 msgid "Are you sure you want to remove file {0} from project {1}?"
-msgstr "Er du sikker på at du vil fjerne fil {0} fra projekt {1}?"
+msgstr "Er du sikker på, at du vil fjerne fil {0} fra projekt {1}?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:42
 msgid "Item Path"
 msgstr "Enhedssti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:44
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:67
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:66
 msgid "_Item Directory"
 msgstr "_Enhedsfolder"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:45
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:44
 msgid "Item file name"
 msgstr "Enhedsfilnavn"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:45
 msgid "Item extension"
 msgstr "Enhedsudvidelse"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:48
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:47
 msgid "Current line"
 msgstr "Nuværende linje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:49
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:48
 msgid "Current column"
 msgstr "Nuværende kolonne"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:50
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:49
 msgid "Current text"
 msgstr "Nuværende tekst"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:51
 msgid "Target Path"
 msgstr "Målsti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:53
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:69
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:68
 msgid "_Target Directory"
 msgstr "_Målfolder"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:54
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:70
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:69
 msgid "Target Name"
 msgstr "Målnavn"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:55
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:54
 msgid "Target Extension"
 msgstr "Måludvidelse"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:57
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:72
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:71
 msgid "_Project Directory"
 msgstr "_Projektfolder"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:58
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:57
 msgid "Project file name"
 msgstr "Projektfilnavn"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:60
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:74
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:73
 msgid "_Solution Directory"
 msgstr "Lø_sningsfolder"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:61
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:60
 msgid "Solution File Name"
 msgstr "Løsningsfilnavn"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:63
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:76
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:75
 msgid "MonoDevelop Startup Directory"
 msgstr "MonoDevelop-opstartsfolder"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
 msgid "_Tools"
 msgstr "Værk_tøjer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:281
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:280
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:23
 msgid "New Tool"
 msgstr "Nyt værktøj"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:320
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:319
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:150
 msgid "Control not found!"
 msgstr "Kontrol ikke fundet!"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:341
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:340
 #, csharp-format
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "Værktøjskommandoen \"{0}\" er invalid."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:347
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:346
 #, csharp-format
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "Arbejdsfolderen for værktøjet \"{0}\" er invalid."
@@ -3395,13 +3400,13 @@ msgstr "INS"
 msgid "OVR"
 msgstr "OVR"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:100
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
 #, csharp-format
 msgid "Error : {0}"
 msgstr "Fejl : {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
 #, csharp-format
 msgid ""
 " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
@@ -3713,24 +3718,60 @@ msgstr "Hjælp"
 msgid "Mono Documentation"
 msgstr "Mono-dokumentation"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:958
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:973
 #, fuzzy
 msgid "Display Options"
 msgstr "Vis indstillingsliste"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:37
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:43
 msgid "Task List"
 msgstr "Opgaveliste"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:82
+#, fuzzy
+msgid "Show Errors"
+msgstr "Vis _EOL markører"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:91
+#, fuzzy
+msgid "Show Warnings"
+msgstr "Advarsel"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:100
+#, fuzzy
+msgid "Show Messages"
+msgstr "Vis _indrykninger"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:208
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:245
 msgid "Line"
 msgstr "Linje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:162
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:209
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:108
 msgid "Description"
 msgstr "Beskrivelse"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:374
+#, csharp-format
+msgid "{0} Error"
+msgid_plural "{0} Errors"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:379
+#, fuzzy, csharp-format
+msgid "{0} Warning"
+msgid_plural "{0} Warnings"
+msgstr[0] "Advarsel"
+msgstr[1] "Advarsel"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:384
+#, csharp-format
+msgid "{0} Message"
+msgid_plural "{0} Messages"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:248
 msgid "Text"
@@ -3900,6 +3941,31 @@ msgstr "Javac"
 #: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:31
 msgid "Gcj"
 msgstr "Gcj"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:1
+msgid "Diff"
+msgstr ""
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:2
+msgid "Log"
+msgstr ""
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:3
+msgid "Show version control overlay icons"
+msgstr ""
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:4
+msgid "Status/Commit..."
+msgstr ""
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:5
+msgid "Update"
+msgstr ""
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:6
+#, fuzzy
+msgid "Version Control"
+msgstr "Versionsinformation"
 
 #: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
 msgid "Unit Test Options"
@@ -4240,6 +4306,42 @@ msgstr ""
 msgid "Invalid select query"
 msgstr "Invalid projektfil"
 
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:1
+#, fuzzy
+msgid "Add connection"
+msgstr "Test tilslutning"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:2
+#, fuzzy
+msgid "Database Browser"
+msgstr "Database"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:3
+msgid "Disconnect"
+msgstr ""
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:4
+msgid "Drop table"
+msgstr ""
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:5
+#, fuzzy
+msgid "Empty table"
+msgstr "Tom fil"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
+msgid "Refresh"
+msgstr "Opdater"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:8
+#, fuzzy
+msgid "SQL Query Editor"
+msgstr "Kildekodeeditor"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:9
+msgid "Show System Objects"
+msgstr ""
+
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:104
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:118
 msgid "Template"
@@ -4297,7 +4399,8 @@ msgid "ChangeLog"
 msgstr "ChangeLog"
 
 #: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:2
-msgid "ChangeLog AddIn"
+#, fuzzy
+msgid "ChangeLog Add-in"
 msgstr "ChangeLog add-in"
 
 #: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:4
@@ -4308,19 +4411,23 @@ msgstr "Indsæt indgang"
 msgid "Insert Header"
 msgstr "Indsæt overskrift"
 
-#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:18
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:36
 msgid "Specify personal information used in ChangeLog entries"
 msgstr "Angiv personlige oplysninger til brug i ChangeLog indgange"
 
-#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:22
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:40
 msgid "Full Name:"
 msgstr "Navn:"
 
-#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:26
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:44
 msgid "Email Address:"
 msgstr "E-mail-adresse"
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:126
+#, fuzzy
+msgid "Loading Add-ins"
+msgstr "Indlæser add-ins"
+
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:150
 msgid "Loading Addins"
 msgstr "Indlæser add-ins"
@@ -4343,6 +4450,12 @@ msgstr "Skjul"
 #: ../Core/src/MonoDevelop.Dock/DockItem.cs:766
 msgid "Lock"
 msgstr "Lås"
+
+#~ msgid "A blank solution"
+#~ msgstr "En blank løsning"
+
+#~ msgid "Blank Solution"
+#~ msgstr "Blank løsning"
 
 #~ msgid "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
 #~ msgstr "${res:Dialog.Options.CombineOptions.ConfigurationOptions}"
@@ -4406,9 +4519,6 @@ msgstr "Lås"
 
 #~ msgid "N_ew Solution/Project..."
 #~ msgstr "_Ny løsning/projekt..."
-
-#~ msgid "Refresh"
-#~ msgstr "Opdater"
 
 #~ msgid "Rename Tab"
 #~ msgstr "Omdøb side"
@@ -4552,9 +4662,6 @@ msgstr "Lås"
 
 #~ msgid "Connection Settings"
 #~ msgstr "Indstillinger for tilslutning"
-
-#~ msgid "Test Connection"
-#~ msgstr "Test tilslutning"
 
 #~ msgid ""
 #~ "We are now ready to create your new connection. Press Finish to create "
@@ -4833,14 +4940,8 @@ msgstr "Lås"
 #~ msgid "Edit"
 #~ msgstr "Editer"
 
-#~ msgid "Show _EOL markers"
-#~ msgstr "Vis _EOL markører"
-
 #~ msgid "Show _horizontal ruler"
 #~ msgstr "Vis _horizontal-lineal"
-
-#~ msgid "Show _tabs"
-#~ msgstr "Vis _indrykninger"
 
 #~ msgid "_Can move caret behind EOL"
 #~ msgstr "Markør _kan flyttes efter EOL"
@@ -4946,9 +5047,6 @@ msgstr "Lås"
 
 #~ msgid "The project or source entry is empty, can't create project."
 #~ msgstr "Projektfeltet eller kildefeltet er tomt, kan ikke oprette projekt."
-
-#~ msgid "Warning"
-#~ msgstr "Advarsel"
 
 #~ msgid "Extracted more of the archive"
 #~ msgstr "Udtrak mere af arkivet"
