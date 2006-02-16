@@ -31,6 +31,7 @@ using System.Resources;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui;
 
@@ -63,6 +64,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		void OnWindowChanged (object ob, EventArgs args)
+		{
+			Services.DispatchService.GuiDispatch (new MessageHandler (SelectActiveFile));
+		}
+		
+		void SelectActiveFile ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc != null && doc.Project != null) {

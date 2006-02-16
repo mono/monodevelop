@@ -111,8 +111,10 @@ namespace MonoDevelop.Ide.Gui
 					// save backup first						
 					if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
 						Window.ViewContent.Save (fileName + "~");
+						IdeApp.Services.FileService.NotifyFileChange (fileName);
 					}
 					Window.ViewContent.Save (fileName);
+					IdeApp.Services.FileService.NotifyFileChange (fileName);
 					OnSaved (EventArgs.Empty);
 				}
 			}
@@ -158,6 +160,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// do actual save
 			Window.ViewContent.Save (filename);
+			IdeApp.Services.FileService.NotifyFileChange (filename);
 			IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
 			
 			OnSaved (EventArgs.Empty);

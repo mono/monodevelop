@@ -41,6 +41,15 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Documentation;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Gui;
+
+
+
 namespace MonoDevelop.Ide.Gui
 {
 	public abstract class IdeApp
@@ -49,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 		static ProjectOperations projectOperations = new ProjectOperations ();
 		static HelpOperations helpOperations = new HelpOperations ();
 		static CommandService commandService = new CommandService ();
+		static IdeServices ideServices = new IdeServices ();
 		
 		IdeApp ()
 		{
@@ -68,6 +78,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static CommandService CommandService {
 			get { return commandService; }
+		}
+		
+		public static IdeServices Services {
+			get { return ideServices; }
 		}
 		
 		public static void Initialize (IProgressMonitor monitor)
@@ -142,4 +156,117 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Application.Quit ();
 		}
 	}
+	
+	public class IdeServices
+	{
+		MessageService messageService;
+		DisplayBindingService displayBindingService;
+		ResourceService resourceService;
+		IStatusBarService statusBarService;
+		IconService icons;
+		MonodocService monodocService;
+		IDebuggingService debuggingService;
+		TaskService taskService;
+		IParserService parserService;
+		DispatchService dispatchService;
+		IProjectService projectService;
+		IFileService fileService;
+	
+		public IFileService FileService {
+			get {
+				if (fileService == null)
+					fileService = (IFileService) ServiceManager.GetService (typeof(IFileService));
+				return fileService;
+			}
+		}
+
+		public IStatusBarService StatusBar {
+			get {
+				if (statusBarService == null)
+					statusBarService = (IStatusBarService) ServiceManager.GetService (typeof(IStatusBarService));
+				return statusBarService;
+			}
+		}
+
+		public MessageService MessageService {
+			get {
+				if (messageService == null)
+					messageService = (MessageService) ServiceManager.GetService (typeof(MessageService));
+				return messageService;
+			}
+		}
+
+		internal DisplayBindingService DisplayBindings {
+			get {
+				if (displayBindingService == null)
+					displayBindingService = (DisplayBindingService) ServiceManager.GetService (typeof(DisplayBindingService));
+				return displayBindingService;
+			}
+		}
+	
+		public ResourceService Resources {
+			get {
+				if (resourceService == null)
+					resourceService = (ResourceService) ServiceManager.GetService (typeof(ResourceService));
+				return resourceService;
+			}
+		}
+	
+		public IconService Icons {
+			get {
+				if (icons == null)
+					icons = (IconService) ServiceManager.GetService (typeof(IconService));
+				return icons;
+			}
+		}
+	
+		public MonodocService Documentation {
+			get {
+				if (monodocService == null)
+					monodocService = (MonodocService) ServiceManager.GetService (typeof(MonodocService));
+				return monodocService;
+			}
+		}
+	
+		public IDebuggingService DebuggingService {
+			get {
+				if (debuggingService == null)
+					debuggingService = (IDebuggingService) ServiceManager.GetService (typeof(IDebuggingService));
+				return debuggingService;
+			}
+		}
+	
+		public TaskService TaskService {
+			get {
+				if (taskService == null)
+					taskService = (TaskService) ServiceManager.GetService (typeof(TaskService));
+				return taskService;
+			}
+		}
+	
+		public IParserService ParserService {
+			get {
+				if (parserService == null)
+					parserService = (IParserService) ServiceManager.GetService (typeof(IParserService));
+				return parserService;
+			}
+		}
+	
+		public DispatchService DispatchService {
+			get {
+				if (dispatchService == null)
+					dispatchService = (DispatchService) ServiceManager.GetService (typeof(DispatchService));
+				return dispatchService;
+			}
+		}
+	
+		public IProjectService ProjectService {
+			get {
+				if (projectService == null)
+					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
+				return projectService;
+			}
+		}
+	}
+	
 }

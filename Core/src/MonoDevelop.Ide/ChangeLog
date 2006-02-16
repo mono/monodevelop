@@ -1,3 +1,13 @@
+2006-02-16 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs:
+	Delay file selection in the tree when switching documents.
+	* MonoDevelop.Ide.Gui/Document.cs: Notify file changes when
+	saving documents.
+	* MonoDevelop.Ide.Gui/Ide.cs: Added new Services member to
+	IdeApp which provides access to most of services used in
+	the Ide.
+
 2006-02-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Fixed plural
