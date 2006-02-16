@@ -98,6 +98,26 @@ namespace MonoDevelop.Core.Gui
 			OnFileCreated (new FileEventArgs (path, true));
 		}
 		
+		public void NotifyFileChange (string path)
+		{
+			OnFileChanged (new FileEventArgs (path, false));
+		}
+		
+		public void NotifyFileRemove (string path)
+		{
+			OnFileRemoved (new FileEventArgs (path, false));
+		}
+		
+		public void NotifyFileRename (string path)
+		{
+			OnFileRenamed (new FileEventArgs (path, false));
+		}
+		
+		public void NotifyFileCreate (string path)
+		{
+			OnFileCreated (new FileEventArgs (path, false));
+		}
+		
 		protected virtual void OnFileCreated (FileEventArgs e)
 		{
 			if (FileCreated != null) {
@@ -119,8 +139,16 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 
+		protected virtual void OnFileChanged (FileEventArgs e)
+		{
+			if (FileChanged != null) {
+				FileChanged(this, e);
+			}
+		}
+
 		public event FileEventHandler FileCreated;
 		public event FileEventHandler FileRenamed;
 		public event FileEventHandler FileRemoved;
+		public event FileEventHandler FileChanged;
 	}
 }

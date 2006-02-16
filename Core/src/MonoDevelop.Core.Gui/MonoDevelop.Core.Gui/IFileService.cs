@@ -38,6 +38,12 @@ namespace MonoDevelop.Core.Gui
 		
 		void CreateDirectory (string path);
 
+
+		void NotifyFileChange (string path);
+		void NotifyFileRemove (string path);
+		void NotifyFileRename (string path);
+		void NotifyFileCreate (string path);
+
 		/// <remarks>
 		/// Is called, when a file is renamed.
 		/// </remarks>
@@ -52,5 +58,10 @@ namespace MonoDevelop.Core.Gui
 		/// Is called, when a file is created.
 		/// </remarks>
 		event FileEventHandler FileCreated;
+		
+		/// <remarks>
+		/// Is called, when a file is created.
+		/// </remarks>
+		event FileEventHandler FileChanged;
 	}
 }

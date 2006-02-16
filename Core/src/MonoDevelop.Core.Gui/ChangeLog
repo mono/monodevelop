@@ -1,3 +1,9 @@
+2006-02-16  Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.Gui/IFileService.cs:
+	* MonoDevelop.Core.Gui/DefaultFileService.cs: Added some
+	method for notifying file changes.
+
 2006-02-12  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Localization fix.
