@@ -45,7 +45,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		object GenerateElement (XmlElement elem, Type requiredType)
 		{
 			Type type = GetElementType (elem.Name);
-			object ob = Activator.CreateInstance (type);
+			object ob;
+			
+			if (type == typeof(CodeTypeReference))
+				ob = new CodeTypeReference (elem.GetAttribute ("BaseType"));
+			else
+				ob = Activator.CreateInstance (type);
 			
 			foreach (XmlAttribute att in elem.Attributes) {
 				PropertyInfo prop = type.GetProperty (att.Name);

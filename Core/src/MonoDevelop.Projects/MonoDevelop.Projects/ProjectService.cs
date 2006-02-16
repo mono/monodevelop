@@ -133,6 +133,11 @@ namespace MonoDevelop.Projects
 			foreach (ClassCodon cls in Runtime.AddInService.GetTreeCodons ("/SharpDevelop/Workbench/SerializableClasses"))
 				DataContext.IncludeType (cls.Type);
 						
+			foreach (ItemPropertyCodon cls in Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/Serialization/ExtendedProperties")) {
+				if (cls.ClassType != null && cls.PropertyType != null)
+					DataContext.RegisterProperty (cls.ClassType, cls.PropertyName, cls.PropertyType);
+			}
+						
 			projectBindings = (ProjectBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectBindings", typeof(ProjectBindingCodon));
 		}
 	}

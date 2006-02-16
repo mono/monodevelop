@@ -69,6 +69,15 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public IEvent this [string name] {
+			get {
+				foreach (IEvent f in List)
+					if (f.Name == name)
+						return f;
+				return null;
+			}
+		}
+		
 		/// <summary>
 		///    <para>Adds a <see cref='.IEvent'/> with the specified value to the
 		///    <see cref='.IEventCollection'/> .</para>

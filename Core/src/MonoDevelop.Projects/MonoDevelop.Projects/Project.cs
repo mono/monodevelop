@@ -52,6 +52,8 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("DeploymentInformation")]
 		protected DeployInformation deployInformation = new DeployInformation();
 		
+		IBuildStep[] buildPipeline;
+		
 		bool isDirty = false;
 		bool filesChecked;
 		
@@ -301,24 +303,31 @@ namespace MonoDevelop.Projects
 				return new DefaultCompilerResult (new CompilerResults (null), "");
 			
 			try {
-				monitor.BeginTask (String.Format (GettextCatalog.GetString ("Building Project: {0} Configuration: {1}"), Name, ActiveConfiguration.Name), 3);
+			
+				IBuildStep[] steps = BuildPipeline;
+				
+				monitor.BeginTask (String.Format (GettextCatalog.GetString ("Building Project: {0} Configuration: {1}"), Name, ActiveConfiguration.Name), steps.Length);
 				
 				Runtime.StringParserService.Properties["Project"] = Name;
 				
-				DoPreBuild (monitor);
+				ICompilerResult res = null;
 				
-				monitor.Step (1);
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Performing main compilation...")));
-				
-				ICompilerResult res = DoBuild (monitor);
-				
-				monitor.Step (1);
-				
-				DoPostBuild (monitor);
+				foreach (IBuildStep step in BuildPipeline) {
+					ICompilerResult sres = step.Build (monitor, this);
+					if (sres != null) {
+						if (res != null) {
+							CompilerResults cres = new CompilerResults (null);
+							cres.Errors.AddRange (res.CompilerResults.Errors);
+							cres.Errors.AddRange (sres.CompilerResults.Errors);
+							res = new DefaultCompilerResult (cres, res.CompilerOutput + "\n" + sres.CompilerOutput);
+						} else
+							res = sres;
+					}
+					monitor.Step (1);
+				}
 				
 				isDirty = false;
 				
-				monitor.Step (1);
 				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Build complete -- {0} errors, {1} warnings"), res.ErrorCount, res.WarningCount));
 				
 				return res;
@@ -326,6 +335,15 @@ namespace MonoDevelop.Projects
 				monitor.EndTask ();
 			}
 		}
+		
+		protected virtual IBuildStep[] BuildPipeline {
+			get {
+				if (buildPipeline == null)
+					buildPipeline = (IBuildStep[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/BuildPipeline", typeof(IBuildStep));
+				return buildPipeline;
+			}
+		}
+		
 		
 		void GetReferencedProjects (CombineEntryCollection referenced, Project project)
 		{
@@ -591,53 +609,48 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
-	}
-	
-	public class ProjectActiveConfigurationTypeConverter : TypeConverter
-	{
-		public override bool CanConvertFrom(ITypeDescriptorContext context,Type sourceType)
-		{
-			return true;
-		}
 		
-		public override  bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+		class MainBuildStep: IBuildStep
 		{
-			return true;
-		}
-		
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture,  object value)
-		{
-			Project project = (Project)context.Instance;
-			foreach (IConfiguration configuration in project.Configurations) {
-				if (configuration.Name == value.ToString()) {
-					return configuration;
-				}
+			public ICompilerResult Build (IProgressMonitor monitor, Project project)
+			{
+				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Performing main compilation...")));
+				return project.DoBuild (monitor);
 			}
-			return null;
-		}
-		
-		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-		{
-			IConfiguration config = value as IConfiguration;
-			Debug.Assert(config != null, String.Format("Tried to convert {0} to IConfiguration", config));
-			if (config != null) {
-				return config.Name;
+			
+			public bool NeedsBuilding (Project project)
+			{
+				if (!project.isDirty) project.CheckNeedsBuild ();
+				return project.isDirty;
 			}
-			return String.Empty;
 		}
 		
-		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		class PreBuildStep: IBuildStep
 		{
-			return true;
-		}
-		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
-		{
-			return true;
+			public ICompilerResult Build (IProgressMonitor monitor, Project project)
+			{
+				project.DoPreBuild (monitor);
+				return null;
+			}
+			
+			public bool NeedsBuilding (Project project)
+			{
+				return false;
+			}
 		}
 		
-		public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
+		class PostBuildStep: IBuildStep
 		{
-			return new TypeConverter.StandardValuesCollection(((Project)context.Instance).Configurations);
+			public ICompilerResult Build (IProgressMonitor monitor, Project project)
+			{
+				project.DoPostBuild (monitor);
+				return null;
+			}
+			
+			public bool NeedsBuilding (Project project)
+			{
+				return false;
+			}
 		}
 	}
 }

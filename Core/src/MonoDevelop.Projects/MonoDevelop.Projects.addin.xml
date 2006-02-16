@@ -56,5 +56,13 @@
 		<Class class = "MonoDevelop.Projects.DotNetProject" />
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
+		<Class id = "PreBuildStep" class = "MonoDevelop.Projects.Project+PreBuildStep" />
+		<Class id = "MainBuildStep" class = "MonoDevelop.Projects.Project+MainBuildStep" />
+		<Class id = "PostBuildStep" class = "MonoDevelop.Projects.Project+PostBuildStep" />
+	</Extension>
 
 </AddIn>

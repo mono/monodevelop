@@ -1,3 +1,31 @@
+2006-02-16 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs:
+	* MonoDevelop.Projects/ProjectService.cs: Added new extension point
+	where custom properties can be registered.
+	
+	* MonoDevelop.Projects/Combine.cs: Added new GetAllProjects
+	overload which returns the projects in the order they need to
+	be built.
+	
+	* MonoDevelop.Projects/IBuildStep.cs:
+	* MonoDevelop.Projects/Project.cs: Added yet another extension
+	point for Project. There is now a build pipeline which can
+	be extended by add-ins to perform custom actions before or
+	after the main build.
+	
+	* MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs:
+	properly deserialize CodeTypeReference.
+	
+	* MonoDevelop.Projects.Parser/PropertyCollection.cs:
+	* MonoDevelop.Projects.Parser/EventCollection.cs: Added indexer
+	which looks for a member by name.
+	
+	* MonoDevelop.Projects.addin.xml: Declared new extension points.
+	
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Updated.
+
 2006-02-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs:

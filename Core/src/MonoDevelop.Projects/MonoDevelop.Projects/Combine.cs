@@ -432,9 +432,19 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public CombineEntryCollection GetAllProjects ()
 		{
+			return GetAllProjects (false);
+		}
+		
+		// When topologicalSort=true, the projects are returned in the order
+		// they should be compiled, acording to their references.
+		public CombineEntryCollection GetAllProjects (bool topologicalSort)
+		{
 			CombineEntryCollection list = new CombineEntryCollection();
 			GetAllProjects (list);
-			return list;
+			if (topologicalSort)
+				return TopologicalSort (list);
+			else
+				return list;
 		}
 		
 		void GetAllProjects (CombineEntryCollection list)

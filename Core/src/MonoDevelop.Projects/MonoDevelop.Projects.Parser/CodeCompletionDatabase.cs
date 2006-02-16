@@ -391,7 +391,7 @@ namespace MonoDevelop.Projects.Parser
 				{
 					if (!File.Exists (file.FileName)) continue;
 					FileInfo fi = new FileInfo (file.FileName);
-					if ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse) 
+					if ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse)
 						QueueParseJob (file);
 				}
 			}
@@ -496,6 +496,8 @@ namespace MonoDevelop.Projects.Parser
 				
 				FileEntry fe = files [fileName] as FileEntry;
 				if (fe == null) return null;
+				
+				// Get the namespace entry for each class
 				
 				bool[] added = new bool [newClasses.Count];
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];

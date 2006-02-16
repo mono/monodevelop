@@ -230,10 +230,14 @@
     <File name="./MonoDevelop.Projects.Parser/LanguageItemCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs" subtype="Code" buildaction="Compile" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Projects/IBuildStep.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/AddIns/ICSharpCode.SharpRefactory.dll" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
 </Project>

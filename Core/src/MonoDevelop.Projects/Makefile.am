@@ -44,6 +44,7 @@ MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs \
 MonoDevelop.Projects/ProjectEventArgs.cs \
 MonoDevelop.Projects/ProjectRenameEventArgs.cs \
 MonoDevelop.Projects/ProjectService.cs \
+MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 MonoDevelop.Projects.Extensions/FileFormatCodon.cs \
 MonoDevelop.Projects.Utility/Comparers.cs \
 MonoDevelop.Projects.Utility/DiffUtility.cs \
@@ -142,6 +143,7 @@ MonoDevelop.Projects/DotNetProject.cs \
 MonoDevelop.Projects/DotNetProjectBinding.cs \
 MonoDevelop.Projects/DotNetProjectConfiguration.cs \
 MonoDevelop.Projects/IConfiguration.cs \
+MonoDevelop.Projects/IBuildStep.cs \
 MonoDevelop.Projects/Project.cs \
 MonoDevelop.Projects/ProjectCompileEventHandler.cs \
 MonoDevelop.Projects/ProjectFile.cs \

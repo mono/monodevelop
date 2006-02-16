@@ -67,6 +67,15 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public IProperty this [string name] {
+			get {
+				foreach (IProperty f in List)
+					if (f.Name == name)
+						return f;
+				return null;
+			}
+		}
+		
 		/// <summary>
 		///    <para>Adds a <see cref='.IProperty'/> with the specified value to the
 		///    <see cref='.IPropertyCollection'/> .</para>
