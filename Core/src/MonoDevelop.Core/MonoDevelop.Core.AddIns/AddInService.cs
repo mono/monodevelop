@@ -134,7 +134,7 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 		
-		void PreloadAddin (IProgressMonitor monitor, string id)
+		public void PreloadAddin (IProgressMonitor monitor, string id)
 		{
 			if (IsAddinLoaded (id))
 				return;

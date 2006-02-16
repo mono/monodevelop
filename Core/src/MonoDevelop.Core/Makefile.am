@@ -90,6 +90,7 @@ MonoDevelop.Core/DefaultLoggingService.cs \
 MonoDevelop.Core/ILoggingService.cs \
 MonoDevelop.Core/Runtime.cs \
 MonoDevelop.Core/SystemAssemblyService.cs \
+MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 MonoDevelop.Core.Execution/IBreakpoint.cs \
 MonoDevelop.Core.Execution/IDebuggerService.cs \

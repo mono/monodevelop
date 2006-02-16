@@ -1,3 +1,12 @@
+2006-02-16 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: Made PreloadAddin
+	public.
+	* MonoDevelop.Core/Runtime.cs: Don't crash if Initialize
+	is called more than once.
+	
+	* MonoDevelop.Core.mdp, Makefile.am: Updated.
+
 2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.AddIns/AddInService.cs:

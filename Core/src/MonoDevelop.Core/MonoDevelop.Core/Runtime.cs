@@ -55,7 +55,7 @@ namespace MonoDevelop.Core
 		public static void Initialize ()
 		{
 			if (initialized)
-				throw new InvalidOperationException ("Runtime already initialized.");
+				return;
 			initialized = true;
 			AddInService.Initialize ();
 		}
