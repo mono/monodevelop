@@ -1,3 +1,7 @@
+2006-02-16  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* src/mdhost.cs: Preload add-ins required by the provided type.
+
 2005-08-08  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* src/mdhost.cs: Use an internal tcp channel for communication with
