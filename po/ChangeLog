@@ -1,3 +1,10 @@
+2006-02-19  Andrés G. Aragoneses  <knocte@gmail.com>
+
+        * POTFILES.in: Updated (added 'RefactoryCommands.cs'
+        and 'BlankCombine.xpt.xml').
+        * README: Added a note about using l10n with the
+        SVN version of MD.
+
 2006-02-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* da.po: Updated.

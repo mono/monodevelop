@@ -44,6 +44,9 @@ namespace MonoDevelop.Core.Gui.Codons
 		[XmlMemberAttribute ("_label", IsRequired=true)]
 		string label;
 		
+		[XmlMemberAttribute ("_description")]
+		string _description;
+		
 		[XmlMemberAttribute ("description")]
 		string description;
 		
@@ -145,7 +148,14 @@ namespace MonoDevelop.Core.Gui.Codons
 			
 			cmd.Id = ParseCommandId (this);
 			cmd.Text = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
-			cmd.Description = GettextCatalog.GetString (description);
+			if ((_description != null) && (_description.Length > 0)){
+				cmd.Description = _description;				
+			}
+			else{
+				cmd.Description = description;
+			}
+			cmd.Description = GettextCatalog.GetString(cmd.Description);
+			
 			if (icon != null)
 				cmd.Icon = ResourceService.GetStockId (AddIn, icon);
 			cmd.AccelKey = shortcut;

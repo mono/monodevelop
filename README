@@ -34,6 +34,8 @@ Installing is currently optional.
 
 make install
 
+(It's possible that you need to install for your locale to be correctly set.)
+
 Dependencies
 ------------
 Mono >= 1.1.4

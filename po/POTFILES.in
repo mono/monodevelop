@@ -7,6 +7,8 @@ Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml
 Core/src/MonoDevelop.Documentation/MonoDevelop.Documentation.addin.xml
 Core/src/MonoDevelop.Core.Gui/Base.glade
 Core/src/MonoDevelop.Ide/Base.glade
+Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs
 Core/src/MonoDevelop.Projects.Gui/Base.glade
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml
 Extras/CSharpBinding/CSharpBinding.addin.xml

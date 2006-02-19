@@ -111,7 +111,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				}
 				
 				if (!System.IO.File.Exists(selectScriptButton.Filename)) {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Deploy script doesn't exists"));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Deploy script doesn't exist"));
 					return false;
  				}
 			

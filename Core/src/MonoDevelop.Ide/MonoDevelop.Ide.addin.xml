@@ -56,21 +56,21 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Copy"
 				_label = "_Copy"
 				icon = "gtk-copy" 
-				description = "Copy the selection" 
+				_description = "Copy the selection" 
 				shortcut = "Control|C"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Cut"
 				_label = "Cu_t"
 				icon = "gtk-cut" 
-				description = "Cut the selection" 
+				_description = "Cut the selection" 
 				shortcut = "Control|X"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Paste"
 				_label = "_Paste" 
 				icon = "gtk-paste"
-				description = "Paste" 
+				_description = "Paste" 
 				shortcut = "Control|V"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Delete"
 				_label = "_Delete" 
-				description = "Delete the selection"
+				_description = "Delete the selection"
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Rename"
 				_label    = "Re_name"
@@ -78,12 +78,12 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Undo"
 				_label = "_Undo" 
 				icon = "gtk-undo" 
-				description = "Undo last action" 
+				_description = "Undo last action" 
 				shortcut = "Control|Z" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Redo" 
 				_label = "_Redo" 
 				icon = "gtk-redo" 
-				description = "Redo last undone action" 
+				_description = "Redo last undone action" 
 				shortcut = "Control|Y" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
 				_label = "Select _All" 
@@ -114,7 +114,7 @@
 				description = "Count words in a text file"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
-				_label = "_Preferences"
+				_label = "Pre_ferences..."
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
 				
@@ -135,11 +135,11 @@
 				description = "Add a solution to the selected solution"
 				_label = "Add existing Solution" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RemoveFromProject"
-				_label = "_Remove From Project" 
+				_label = "_Remove From Project"
 				description = "Remove an item from the project"
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
-				_label = "Options" 
+				_label = "Options..." 
 				description = "Show options window"
 				icon  = "md-properties-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddResource"
@@ -147,13 +147,13 @@
 				_label = "Add Resource" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				description = "Edit project references"
-				_label = "Edit References" />
+				_label = "Edit References..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"
-				_label = "New _File" 
+				_label = "New _File..." 
 				description = "Create a new file"
 				icon  = "gtk-new" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
-				_label = "Add Files" />
+				_label = "Add Files..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
 				_label = "New Folder" 
 				description = "Create a new folder"
@@ -164,7 +164,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
 				_label = "Buil_d Solution"
 				shortcut = "F8"
-				description = "Build the solution"
+				_description = "Build the solution"
 				icon  = "md-build-combine" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
@@ -185,7 +185,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
 				icon = "gtk-execute"
 				shortcut = "F5"
-				description = "Run"
+				_description = "Run"
 				_label = "Run" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry"
 				defaultHandler = "MonoDevelop.Ide.Commands.RunEntryHandler"
@@ -222,7 +222,7 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
 				icon = "gtk-stop"
 				shortcut = "Shift|F5"
-				description = "Stop current build or application execution"
+				_description = "Stop current build or application execution"
 				_label = "Stop" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector"
 				type = "custom"
@@ -234,25 +234,25 @@
 		
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile"
 				defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
-				_label = "O_pen" 
+				_label = "O_pen..." 
 				shortcut = "Control|O"
-				description = "Open file or solution"
+				_description = "Open file or solution"
 				icon  = "gtk-open" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
-				_label = "New File"
+				_label = "New File..."
 				shortcut = "Control|N"
-				description = "Create a new file"
+				_description = "Create a new file"
 				icon = "gtk-new" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save" 
 				icon = "gtk-save" 
 				shortcut = "Control|S"
-				description = "Save the active document"
+				_description = "Save the active document"
 				_label = "Save" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 				defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
 				icon = "md-save-all-icon" 
-				description = "Save all open files"
+				_description = "Save all open files"
 				_label = "Save All" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
@@ -321,7 +321,7 @@
 				_label = "Layout List" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout"
 				defaultHandler = "MonoDevelop.Ide.Commands.NewLayoutHandler"
-				_label = "_New Layout" />
+				_label = "_New Layout..." />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout"
 				defaultHandler = "MonoDevelop.Ide.Commands.DeleteCurrentLayoutHandler"
 				_label = "_Delete Current Layout" />
@@ -343,7 +343,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 				defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 				icon = "md-software-update"
-				_label = "Add-in Manager..." />
+				_label = "_Add-in Manager..." />
 		<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 				defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 				type="array"
@@ -377,7 +377,7 @@
 				description = "Show tip of the day" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 				defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
-				_label = "_About" 
+				_label = "_About..." 
 				icon = "gnome-stock-about" 
 				description = "Show about dialog" />
 				
@@ -414,12 +414,12 @@
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Find"
 				_label = "_Find..." 
 				icon = "gtk-find" 
-				description = "Find" 
+				_description = "Find" 
 				shortcut = "Control|F" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
 				_label = "Find _Next" 
 				icon = "md-find-next-icon" 
-				description = "Find next" 
+				_description = "Find next" 
 				shortcut = "F3" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
 				_label = "Find Next Selection" 
@@ -436,7 +436,7 @@
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Replace"
 				_label = "_Replace..." 
 				icon = "gtk-find-and-replace" 
-				description = "Replace" 
+				_description = "Replace" 
 				shortcut = "Control|H" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 				defaultHandler = "MonoDevelop.Ide.Commands.FindInFilesHandler"
@@ -831,7 +831,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
 		</ItemSet>
         
-		<ItemSet id = "Tools" _label = "Tools">
+		<ItemSet id = "Tools" _label = "_Tools">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />

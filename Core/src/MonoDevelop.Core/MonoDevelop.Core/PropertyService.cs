@@ -103,7 +103,7 @@ namespace MonoDevelop.Core
 		
 		/// <summary>
 		/// Loads the global properties from the current users application data folder, or
-		/// if it doesn't exists or couldn't read them it reads the default properties out
+		/// if it doesn't exist or couldn't read them it reads the default properties out
 		/// of the application folder.
 		/// </summary>
 		/// <exception cref="PropertyFileLoadException">

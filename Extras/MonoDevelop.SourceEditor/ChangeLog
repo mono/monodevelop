@@ -1,3 +1,8 @@
+2006-02-19 Andrés G. Aragoneses  <knocte@gmail.com>   
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: added
+	messages to l10n and improved one string.
+
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: workaround

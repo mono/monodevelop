@@ -2,6 +2,7 @@ Notes on how to do a localization (l10n) for MonoDevelop
 ========================================================
 
 Creating a l10n:
+---------------
 	First of all you create a template to base your translation on:
 		intltool-update --pot
 
@@ -18,3 +19,10 @@ Updating your l10n:
 ------------------
 	To update an existing po fx da.po:
 		intltool-update da
+
+Using your l10n:
+---------------
+	Be sure to set correctly the environment variable LC_ALL:
+		export LC_ALL=es_ES
+
+	Perhaps you also need to install (make install) for the locale to work.

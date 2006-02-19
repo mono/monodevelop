@@ -1,3 +1,9 @@
+2006-02-19  Andrés G. Aragoneses  <knocte@gmail.com>
+
+        * Base.glade: Improved some strings.
+        * MonoDevelop.Core.Gui.Codons/CommandCodon.cs: fixed bug 
+	#77516.
+
 2006-02-16  Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.Gui/IFileService.cs:

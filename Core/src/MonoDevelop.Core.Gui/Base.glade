@@ -737,7 +737,7 @@
 				  <child>
 				    <widget class="GtkLabel" id="label137">
 				      <property name="visible">True</property>
-				      <property name="label" translatable="yes">Install Add-ins...</property>
+				      <property name="label" translatable="yes">_Install Add-ins...</property>
 				      <property name="use_underline">True</property>
 				      <property name="use_markup">False</property>
 				      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -770,7 +770,7 @@
 			<widget class="GtkButton" id="button3">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
-			  <property name="label" translatable="yes">Repositories...</property>
+			  <property name="label" translatable="yes">_Repositories...</property>
 			  <property name="use_underline">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
@@ -840,7 +840,7 @@
 				  <child>
 				    <widget class="GtkLabel" id="label142">
 				      <property name="visible">True</property>
-				      <property name="label" translatable="yes">Uninstall...</property>
+				      <property name="label" translatable="yes">_Uninstall...</property>
 				      <property name="use_underline">True</property>
 				      <property name="use_markup">False</property>
 				      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1276,7 +1276,7 @@
 		    <widget class="GtkButton" id="btnManageSites">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Repositories...</property>
+		      <property name="label" translatable="yes">_Repositories...</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -1346,7 +1346,7 @@
 			    <widget class="GtkCheckButton" id="checkShowUpdates">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Show updates only</property>
+			      <property name="label" translatable="yes">Sh_ow updates only</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
@@ -1384,7 +1384,7 @@
 			    <widget class="GtkButton" id="btnUnselectAll">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Unselect All</property>
+			      <property name="label" translatable="yes">_Unselect All</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
@@ -1402,7 +1402,7 @@
 			    <widget class="GtkButton" id="btnSelectAll">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Select All</property>
+			      <property name="label" translatable="yes">Select _All</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
@@ -1639,7 +1639,7 @@ asd
 	      <child>
 		<widget class="GtkLabel" id="progressLabel">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Downloading add-ins ...</property>
+		  <property name="label" translatable="yes">Downloading add-ins...</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>

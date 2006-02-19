@@ -1,3 +1,7 @@
+2006-02-19  Andrés G. Aragoneses <knocte@gmail.com>
+
+        * README: Added a note about using l10n.
+
 2006-02-10 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Core/src/Tools/Makefile.am:

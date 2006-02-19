@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Gui
 				else
 				{
 					if (currentLayout == "") {
-						// if the layout doesn't exists and we need to
+						// if the layout doesn't exist and we need to
 						// load a layout (ie.  we've just been
 						// created), load the default so old layout
 						// xml files work smoothly

@@ -252,7 +252,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
+					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
 						return;
 				}
 				warnOverwrite = false;
@@ -338,11 +338,11 @@ namespace MonoDevelop.SourceEditor.Gui
 				HBox box = new HBox ();
 				reloadBar.PackStart (box, true, true, 10);
 				
-				Button b1 = new Button ("Reload");
+				Button b1 = new Button (GettextCatalog.GetString("Reload"));
 				box.PackStart (b1, false, false, 5);
 				b1.Clicked += new EventHandler (ClickedReload);
 				
-				Button b2 = new Button ("Ignore");
+				Button b2 = new Button (GettextCatalog.GetString("Ignore"));
 				box.PackStart (b2, false, false, 5);
 				b2.Clicked += new EventHandler (ClickedIgnore);
 

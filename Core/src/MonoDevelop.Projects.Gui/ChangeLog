@@ -1,4 +1,9 @@
-2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
+2006-02-19 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	fixed a typo in a string.
+
+2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
 	Use LanguageItemCollection instead of ArrayList.
