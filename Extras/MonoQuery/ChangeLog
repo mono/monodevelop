@@ -1,3 +1,7 @@
+2006-02-23  Daniel Morgan <danielmorgan@verizon.net>
+
+	* TODO: add ToDo file for MonoQuery and Mono.Data.Sql
+
 2006-02-22  Daniel Morgan <danielmorgan@verizon.net>
 
 	* Mono.Data.Sql/Makefile.Win32: added file to build
