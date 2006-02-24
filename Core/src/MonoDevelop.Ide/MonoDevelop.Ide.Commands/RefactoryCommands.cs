@@ -74,6 +74,8 @@ namespace MonoDevelop.Ide.Commands
 					string id = editor.SelectedText;
 					if (id.Length == 0) {
 						IExpressionFinder finder = Services.ParserService.GetExpressionFinder (editor.Name);
+						if (finder == null)
+							return;
 						id = finder.FindFullExpression (editor.Text, editor.CursorPosition).Expression;
 						if (id == null) return;
 					}

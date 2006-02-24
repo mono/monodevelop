@@ -237,6 +237,10 @@
     <File name="./MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./templates" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Commands/RefactoryCommands.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

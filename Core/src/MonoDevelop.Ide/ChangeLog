@@ -1,3 +1,44 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Changed
+	  the extensio model for file templates. Now all work
+	  is done by FileDescriptionTemplate.
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	  this is now a base class for different types of file
+	  templates. It has several overridable methods for
+	  generating file content.
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	  Most of the funcionality of creating and adding files
+	  to the project has been moved to FileDescriptionTemplate.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Added 
+	  null check.
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs:
+	  Don't show members for classes of type Delegate.
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Track
+	  api changes.
+	  
+	* templates/EmptyStruct.xft.xml: 
+	* templates/EmptyClass.xft.xml:
+	* templates/EmptyInterface.xft.xml:
+	* templates/EmptyEnum.xft.xml: Use the new syntax for
+	  specifying CodeDom file templates.
+	  
+	* MonoDevelop.Ide.addin.xml: Added new extension point
+	  for registering new FileDescriptorTemplates.
+	  
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs: Use a Stream paramenter
+	  instead of a String for providing the content for a document. 
+	
+	* MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs: New files.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Use one

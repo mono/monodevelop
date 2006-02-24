@@ -898,6 +898,11 @@
 		<FileTemplate resource = "EmptyStruct.xft.xml"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/FileTemplateTypes">
+		<FileTemplateType name = "File" class = "MonoDevelop.Ide.Templates.TextFileDescriptionTemplate"/>
+		<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 	</Extension>

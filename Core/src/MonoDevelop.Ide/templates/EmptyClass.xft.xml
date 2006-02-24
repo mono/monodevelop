@@ -10,18 +10,19 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultName="EmptyClass">
-		
+		<CodeDomFile DefaultName="EmptyClass">
 			<CompileUnit>
 				<Namespaces>
-					<Namespace Name="${Namespace}">
+					<Namespace Name="">
 						<Imports>
 							<NamespaceImport Namespace="System" />
 						</Imports>
+					</Namespace>
+					<Namespace Name="${Namespace}">
 						<Types>
-							<TypeDeclaration Name="${Name}" IsClass="true">
+							<TypeDeclaration Name="${Name}" IsClass="true" Attributes="Public">
 								<Members>
-									<Constructor />
+									<Constructor Attributes="Public" />
 								</Members>
 							</TypeDeclaration>
 						</Types>
@@ -29,7 +30,7 @@
 				</Namespaces>
 			</CompileUnit>
 
-		</File>
+		</CodeDomFile>
 	</TemplateFiles>
 	
 	<FileOptions/>

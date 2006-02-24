@@ -61,6 +61,9 @@ MonoDevelop.Ide.Templates/TextTemplate.cs \
 MonoDevelop.Ide.Templates/CombineDescriptor.cs \
 MonoDevelop.Ide.Templates/ProjectDescriptor.cs \
 MonoDevelop.Ide.Templates/ProjectTemplate.cs \
+MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
+MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
+MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs \
 MonoDevelop.Ide.Gui.Undo/UndoQueue.cs \
 MonoDevelop.Ide.Gui.Undo/UndoStack.cs \
@@ -195,6 +198,7 @@ MonoDevelop.Ide.Codons/DisplayBindingCodon.cs \
 MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 MonoDevelop.Ide.Codons/ISubDisplayBinding.cs \
 MonoDevelop.Ide.Codons/FileTemplateCodon.cs \
+MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
 MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
 MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 MonoDevelop.Ide.Codons/PadCodon.cs \

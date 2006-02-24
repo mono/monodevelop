@@ -63,6 +63,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ClassData classData = dataObject as ClassData;
 			bool publicOnly = builder.Options ["PublicApiOnly"];
+			
+			// Delegates have an Invoke method, which doesn't need to be shown.
+			if (classData.Class.ClassType == ClassType.Delegate)
+				return;
 
 			foreach (IClass innerClass in classData.Class.InnerClasses)
 				if (innerClass.IsPublic || !publicOnly)

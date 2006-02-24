@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void InitializeTemplates()
 		{
-			foreach (FileTemplate template in FileTemplate.FileTemplates) {
+			foreach (FileTemplate template in FileTemplate.GetFileTemplates (parentProject)) {
 			
 				if (template.Icon != null) {
 					icons[template.Icon] = 0; // "create template icon"

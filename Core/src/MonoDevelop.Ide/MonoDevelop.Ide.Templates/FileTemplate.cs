@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Templates
 	/// </summary>
 	public class FileTemplate
 	{
-		public static ArrayList FileTemplates = new ArrayList();
+		public static ArrayList fileTemplates = new ArrayList();
 		
 		string    id;
 		string    originator   = null;
@@ -185,14 +185,7 @@ namespace MonoDevelop.Ide.Templates
 			XmlElement files  = doc.DocumentElement["TemplateFiles"];
 			XmlNodeList nodes = files.ChildNodes;
 			foreach (XmlElement filenode in nodes) {
-				string tfname = filenode.GetAttribute ("DefaultName") + filenode.GetAttribute ("DefaultExtension");
-				XmlElement domElem = filenode ["CompileUnit"];
-				
-				FileDescriptionTemplate template;
-				if (domElem != null)
-					template = new FileDescriptionTemplate (tfname, domElem);
-				else
-					template = new FileDescriptionTemplate (tfname, filenode.InnerText);
+				FileDescriptionTemplate template = FileDescriptionTemplate.CreateTemplate (filenode);
 				fileTemplate.files.Add(template);
 			}
 			return fileTemplate;
@@ -209,11 +202,21 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					FileTemplate t = LoadFileTemplate (codon.AddIn, codon.Resource);
 					t.id = codon.ID;
-					FileTemplates.Add (t);
+					fileTemplates.Add (t);
 				} catch (Exception e) {
 					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
 				}
 			}
+		}
+		
+		internal static ArrayList GetFileTemplates (Project project)
+		{
+			ArrayList list = new ArrayList ();
+			foreach (FileTemplate t in fileTemplates) {
+				if (t.IsValidForProject (project))
+					list.Add (t);
+			}
+			return list;
 		}
 		
 		public virtual bool Create (Project project, string directory, string language, string name)
@@ -236,119 +239,47 @@ namespace MonoDevelop.Ide.Templates
 		
 		protected virtual void CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
 		{
-			string fileName = name;
-			string defaultName = newfile.Name;
-			IDotNetLanguageBinding languageBinding;
-			StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
-			
-			if (language != "") {
-				languageBinding = GetDotNetLanguageBinding (language);
-				defaultName = languageBinding.GetFileName (Path.GetFileNameWithoutExtension (defaultName));
-			}
-			
-			if (fileName != null) {
-				if (Path.GetExtension (name) != Path.GetExtension (defaultName))
-					fileName = fileName + Path.GetExtension (defaultName);
-			} else {
-				fileName = defaultName;
-			}
-			
-			if (directory != null)
-				fileName = Path.Combine (directory, fileName);
-			
-			if (project != null && project.IsFileInProject (fileName))
-				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
-			
-			string content = CreateFileContent (newfile, language);
-			
-			string ns = project != null ? project.Name : "Global";
-			string[,] tags = { {"Name", Path.GetFileNameWithoutExtension (fileName)}, {"Namespace", ns} };
-			content = sps.Parse (content, tags);
-			
-			if (directory != null) {
-				CreateProjectFile (project, fileName, content);
-				IdeApp.Workbench.OpenDocument (fileName);
-			} else {
-				// Guess the mime type of the new file
-				string fn = Path.GetTempFileName ();
-				string ext = Path.GetExtension (fileName);
-				int n=0;
-				while (File.Exists (fn + n + ext))
-					n++;
-				File.Move (fn, fn + n + ext);
-				string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
-				File.Delete (fn + n + ext);
-				if (mimeType == null || mimeType == "")
-					mimeType = "text";
-				
-				IdeApp.Workbench.NewDocument (fileName, mimeType, content);
-			}
-		}
-		
-		protected virtual void CreateProjectFile (Project project, string fileName, string fileContent)
-		{
-			if (System.IO.File.Exists (fileName)) {
-				if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?.", Path.GetFileName (fileName)), GettextCatalog.GetString ("MonoDevelop")))
-					throw new UserException (GettextCatalog.GetString ("The file '{0}' could not be created.", fileName));
-			}
-			StreamWriter sw = new StreamWriter (fileName);
-			sw.Write (fileContent);
-			sw.Close ();
-			
 			if (project != null) {
-				ProjectFile pfile = new ProjectFile (fileName, BuildAction.Compile);
-				project.ProjectFiles.Add (pfile);
+				newfile.AddToProject (project, language, name);
+			} else {
+				SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
+				if (singleFile == null)
+					throw new InvalidOperationException ("Single file template expected");
+				
+				if (directory != null) {
+					string fileName = singleFile.SaveFile (project, language, directory, name);
+					IdeApp.Workbench.OpenDocument (fileName);
+				} else {
+					string fileName = singleFile.GetFileName (project, language, directory, name);
+					Stream stream = singleFile.CreateFile (project, language, fileName);
+				
+					// Guess the mime type of the new file
+					string fn = Path.GetTempFileName ();
+					string ext = Path.GetExtension (fileName);
+					int n=0;
+					while (File.Exists (fn + n + ext))
+						n++;
+					File.Move (fn, fn + n + ext);
+					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
+					File.Delete (fn + n + ext);
+					if (mimeType == null || mimeType == "")
+						mimeType = "text";
+					
+					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
+				}
 			}
 		}
 		
-		protected virtual string CreateFileContent (FileDescriptionTemplate newfile, string language)
+		bool IsValidForProject (Project project)
 		{
-			if (newfile.CodeDomContent != null)
-				return GenerateContent (newfile, language);
-			else
-				return newfile.Content;
-		}
-		
-		string GenerateContent (FileDescriptionTemplate newfile, string language)
-		{
-			if (language == null || language == "")
-				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
+			// When there is no project, only single template files can be created.
 			
-			IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
-			
-			CodeDomProvider provider = binding.GetCodeDomProvider ();
-			if (provider == null)
-				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
-
-			XmlCodeDomReader xcd = new XmlCodeDomReader ();
-			CodeCompileUnit cu = xcd.ReadCompileUnit (newfile.CodeDomContent);
-			
-			ICodeGenerator generator = provider.CreateGenerator();
-			CodeGeneratorOptions options = new CodeGeneratorOptions();
-			options.IndentString = "\t";
-			options.BracingStyle = "C";
-			
-			StringWriter sw = new StringWriter ();
-			generator.GenerateCodeFromCompileUnit (cu, sw, options);
-			sw.Close();
-			
-			string txt = sw.ToString ();
-			int i = txt.IndexOf ("</autogenerated>");
-			if (i == -1) return txt;
-			i = txt.IndexOf ('\n', i);
-			if (i == -1) return txt;
-			i = txt.IndexOf ('\n', i + 1);
-			if (i == -1) return txt;
-			
-			return txt.Substring (i+1);
-		}
-		
-		IDotNetLanguageBinding GetDotNetLanguageBinding (string language)
-		{
-			IDotNetLanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
-			if (binding == null)
-				throw new InvalidOperationException ("Language '" + language + "' not found");
-			return binding;
+			if (project == null) {
+				foreach (FileDescriptionTemplate f in files)
+					if (!(f is SingleFileDescriptionTemplate))
+						return false;
+			}
+			return true;
 		}
 	}
 }

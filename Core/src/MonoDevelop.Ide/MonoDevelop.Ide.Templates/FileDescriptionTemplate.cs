@@ -1,9 +1,3 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
-// </file>
 
 using System;
 using System.IO;
@@ -17,43 +11,33 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class FileDescriptionTemplate
+	public abstract class FileDescriptionTemplate
 	{
-		string name;
-		string content;
-		XmlElement domContent;
+		static FileTemplateTypeCodon[] templates;
 		
-		public FileDescriptionTemplate (string name, string content)
+		public static FileDescriptionTemplate CreateTemplate (XmlElement element)
 		{
-			this.name    = name;
-			this.content = content;
-		}
-		
-		public FileDescriptionTemplate (string name, XmlElement domContent)
-		{
-			this.name    = name;
-			this.domContent = domContent;
-		}
-		
-		public string Name {
-			get {
-				return name;
+			if (templates == null)
+				templates = (FileTemplateTypeCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/FileTemplateTypes", typeof(FileTemplateTypeCodon));
+			
+			foreach (FileTemplateTypeCodon template in templates) {
+				if (template.ElementName == element.Name) {
+					Type type = template.ClassType;
+					FileDescriptionTemplate t = (FileDescriptionTemplate) Activator.CreateInstance (type);
+					t.Load (element);
+					return t;
+				}
 			}
+			throw new InvalidOperationException ("Unknown file template type: " + element.Name);
 		}
 		
-		public string Content {
-			get {
-				return content;
-			}
-		}
+		public abstract string Name { get; }
 		
-		public XmlElement CodeDomContent {
-			get {
-				return domContent;
-			}
-		}
+		public abstract void Load (XmlElement filenode);
+		public abstract void AddToProject (Project project, string language, string name);
 	}
 }

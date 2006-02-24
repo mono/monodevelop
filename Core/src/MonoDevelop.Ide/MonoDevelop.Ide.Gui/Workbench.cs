@@ -269,11 +269,25 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, string content)
 		{
+			MemoryStream ms = new MemoryStream ();
+			byte[] data = System.Text.Encoding.UTF8.GetBytes (content);
+			ms.Write (data, 0, data.Length);
+			ms.Position = 0;
+			return NewDocument (defaultName, mimeType, ms);
+		}
+		
+		public Document NewDocument (string defaultName, string mimeType, Stream content)
+		{
 			IDisplayBinding binding = Services.DisplayBindings.GetBindingForMimeType (mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
-				newContent = binding.CreateContentForMimeType (mimeType, content);
+				try {
+					newContent = binding.CreateContentForMimeType (mimeType, content);
+				} finally {
+					content.Close ();
+				}
+				
 				if (newContent == null) {
 					throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}MimeType:{1}{3}Content:{2}", defaultName, mimeType, content, Environment.NewLine));
 				}

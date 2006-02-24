@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Templates
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
+			project.FileName = fileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
 			project.Name = newProjectName;
 			
 			// Add References
@@ -96,69 +97,43 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			foreach (FileDescriptionTemplate file in resources) {
-				string fileName = fileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + stringParserService.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
-				
-				ProjectFile resource = new ProjectFile (fileName);
-				resource.BuildAction = BuildAction.EmbedAsResource;
-				project.ProjectFiles.Add(resource);
-				
-				if (File.Exists(fileName)) {
-					if (!Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("File {0} already exists, do you want to overwrite\nthe existing file ?"), fileName), GettextCatalog.GetString ("File already exists"))) {
-						continue;
-					}
-				}
-				
+				SingleFileDescriptionTemplate singleFile = file as SingleFileDescriptionTemplate;
+				if (singleFile == null)
+					throw new InvalidOperationException ("Only single-file templates can be used to generate resource files");
+
 				try {
-					if (!Directory.Exists(Path.GetDirectoryName(fileName))) {
-						Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-					}
-					StreamWriter sr = File.CreateText(fileName);
-					sr.Write(stringParserService.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}}));
-					sr.Close();
+					string fileName = singleFile.SaveFile (project, defaultLanguage, project.BaseDirectory, null);
+
+					ProjectFile resource = new ProjectFile (fileName);
+					resource.BuildAction = BuildAction.EmbedAsResource;
+					project.ProjectFiles.Add(resource);
 				} catch (Exception ex) {
-					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), fileName));
+					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), file.Name));
 				}
 			}
 	
 			// Add Files
 			foreach (FileDescriptionTemplate file in files) {
-				string fileName = fileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + stringParserService.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
-				
-				project.ProjectFiles.Add(new ProjectFile(fileName));
-				
-				if (File.Exists(fileName)) {
-					if (!Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("File {0} already exists, do you want to overwrite\nthe existing file ?"), fileName), GettextCatalog.GetString ("File already exists"))) {
-						continue;
-					}
-				}
-				
 				try {
-					if (!Directory.Exists(Path.GetDirectoryName(fileName))) {
-						Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-					}
-					StreamWriter sr = File.CreateText(fileName);
-					sr.Write(stringParserService.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}}));
-					sr.Close();
+					file.AddToProject (project, defaultLanguage, null);
 				} catch (Exception ex) {
-					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), fileName));
+					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), file.Name));
 				}
 			}
 			
 			// Save project
-			string projectLocation = fileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
-			
 			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
-				if (File.Exists(projectLocation)) {
-					if (Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("Project file {0} already exists, do you want to overwrite\nthe existing file ?"), projectLocation),  GettextCatalog.GetString ("File already exists"))) {
-						project.Save (projectLocation, monitor);
+				if (File.Exists (project.FileName)) {
+					if (Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("Project file {0} already exists, do you want to overwrite\nthe existing file ?"), project.FileName),  GettextCatalog.GetString ("File already exists"))) {
+						project.Save (project.FileName, monitor);
 					}
 				} else {
-					project.Save (projectLocation, monitor);
+					project.Save (monitor);
 				}
 			}
 			
-			return projectLocation;
+			return project.FileName;
 		}
 		
 		public static ProjectDescriptor CreateProjectDescriptor(XmlElement element)
@@ -174,16 +149,16 @@ namespace MonoDevelop.Ide.Templates
 			
 			if (element["Files"] != null) {
 				foreach (XmlNode node in element["Files"].ChildNodes) {
-					if (node != null && node.Name == "File") {
-						projectDescriptor.files.Add(new FileDescriptionTemplate(node.Attributes["name"].InnerText, node.InnerText));
-					}
+					XmlElement elem = node as XmlElement;
+					if (elem != null)
+						projectDescriptor.files.Add (FileDescriptionTemplate.CreateTemplate (elem));
 				}
 			}
 			if (element["Resources"] != null) {
 				foreach (XmlNode node in element["Resources"].ChildNodes) {
-					if (node != null && node.Name == "File") {
-						projectDescriptor.resources.Add (new FileDescriptionTemplate (node.Attributes["name"].InnerText, node.InnerText));
-					}
+					XmlElement elem = node as XmlElement;
+					if (elem != null)
+						projectDescriptor.resources.Add (FileDescriptionTemplate.CreateTemplate (elem));
 				}
 			}
 			if (element["References"] != null) {
@@ -192,7 +167,7 @@ namespace MonoDevelop.Ide.Templates
 						ProjectReference projectReference = new ProjectReference();
 						
 						projectReference.ReferenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
-						projectReference.Reference     = node.Attributes["refto"].InnerXml;
+						projectReference.Reference = node.Attributes["refto"].InnerXml;
 						projectDescriptor.references.Add(projectReference);
 					}
 				}

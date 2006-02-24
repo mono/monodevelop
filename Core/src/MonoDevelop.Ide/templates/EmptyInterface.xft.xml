@@ -10,14 +10,16 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultName="EmptyInterface">
+		<CodeDomFile DefaultName="EmptyInterface">
 		
 			<CompileUnit>
 				<Namespaces>
-					<Namespace Name="${Namespace}">
+					<Namespace Name="">
 						<Imports>
 							<NamespaceImport Namespace="System" />
 						</Imports>
+					</Namespace>
+					<Namespace Name="${Namespace}">
 						<Types>
 							<TypeDeclaration Name="${Name}" IsInterface="true">
 							</TypeDeclaration>
@@ -26,7 +28,7 @@
 				</Namespaces>
 			</CompileUnit>
 
-		</File>
+		</CodeDomFile>
 	</TemplateFiles>
 	
 	<FileOptions/>

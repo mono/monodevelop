@@ -46,6 +46,6 @@ namespace MonoDevelop.Ide.Codons
 		/// <returns>
 		/// A newly created IViewContent object.
 		/// </returns>
-		IViewContent CreateContentForMimeType (string mimeType, string content);
+		IViewContent CreateContentForMimeType (string mimeType, Stream content);
 	}
 }

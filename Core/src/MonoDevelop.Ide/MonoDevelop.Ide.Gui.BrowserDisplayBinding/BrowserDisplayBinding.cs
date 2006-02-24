@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 			return browserPane;
 		}
 		
-		public IViewContent CreateContentForMimeType (string mimeType, string content)
+		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			return null;
 		}
