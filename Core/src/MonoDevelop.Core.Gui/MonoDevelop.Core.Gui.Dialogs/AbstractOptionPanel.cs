@@ -65,18 +65,22 @@ namespace MonoDevelop.Core.Gui.Dialogs
 
 		public virtual bool ReceiveDialogMessage(DialogMessage message)
 		{
-			switch (message) {
-				case DialogMessage.Activated:
-					if (!wasActivated) {
-						LoadPanelContents();
-						wasActivated = true;
-					}
-					break;
-				case DialogMessage.OK:
-					if (wasActivated) {
-						return StorePanelContents();
-					}
-					break;
+			try {
+				switch (message) {
+					case DialogMessage.Activated:
+						if (!wasActivated) {
+							LoadPanelContents();
+							wasActivated = true;
+						}
+						break;
+					case DialogMessage.OK:
+						if (wasActivated) {
+							return StorePanelContents();
+						}
+						break;
+				}
+			} catch (Exception ex) {
+				Services.MessageService.ShowError (ex);
 			}
 			
 			return true;
