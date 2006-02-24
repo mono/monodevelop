@@ -1,3 +1,10 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	  Track api changes.
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs:
+	  Removed unused namespace include.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs:

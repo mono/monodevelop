@@ -60,10 +60,14 @@ namespace MonoDevelop.SourceEditor.Gui
 			return w;
 		}
 		
-		public virtual IViewContent CreateContentForMimeType (string mimeType, string content)
+		public virtual IViewContent CreateContentForMimeType (string mimeType, Stream content)
 		{
+			StreamReader sr = new StreamReader (content);
+			string text = sr.ReadToEnd ();
+			sr.Close ();
+			
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			w.LoadString (mimeType, sps.Parse (content));
+			w.LoadString (mimeType, sps.Parse (text));
 			return w;
 		}	
 	}
@@ -395,7 +399,6 @@ namespace MonoDevelop.SourceEditor.Gui
 					IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode(path).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
 					if (formatter != null && formatter.Length > 0) {
 						se.View.fmtr = formatter[0];
-						Console.WriteLine ("set formatter to {0}", formatter[0]);
 						return;
 					}
 				}

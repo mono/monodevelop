@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections;
 using System.Text;
 using Gtk;
-using Gnome;
 using Pango;
 using GtkSourceView;
 
