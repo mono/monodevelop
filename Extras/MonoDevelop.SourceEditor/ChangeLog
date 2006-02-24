@@ -1,3 +1,8 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs:
+	Use one line per field, in order to get attributes properly applied.
+
 2006-02-19 Andrés G. Aragoneses  <knocte@gmail.com>   
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: added

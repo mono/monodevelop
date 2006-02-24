@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections;
 using System.Text;
 using Gtk;
-using Gnome;
 using Pango;
 
 using MonoDevelop.Core.Properties;
@@ -40,10 +39,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 	
 		class GeneralTextEditorPanelWidget : GladeWidgetExtract 
 		{	
-			[Glade.Widget] CheckButton enableCodeCompletionCheckBox, enableFoldingCheckBox;
+			[Glade.Widget] CheckButton enableCodeCompletionCheckBox;
+			[Glade.Widget] CheckButton enableFoldingCheckBox;
 			[Glade.Widget] FontButton fontNameDisplayTextBox;
 			[Glade.Widget] VBox encodingBox;
-			[Glade.Widget] RadioButton use_monospace, use_sans, use_cust;
+			[Glade.Widget] RadioButton use_monospace;
+			[Glade.Widget] RadioButton use_sans;
+			[Glade.Widget] RadioButton use_cust;
 			
 			public GeneralTextEditorPanelWidget (IProperties CustomizationObject) :  base ("EditorBindings.glade", "GeneralTextEditorPanel")
 			{
