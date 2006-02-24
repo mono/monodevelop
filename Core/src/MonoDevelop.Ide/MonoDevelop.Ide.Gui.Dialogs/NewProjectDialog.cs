@@ -42,16 +42,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 //		[Glade.Widget] Button btn_close;
 		[Glade.Widget] Button btn_new;
 		
-//		[Glade.Widget] Label lbl_hdr_template, lbl_hdr_location;
+//		[Glade.Widget] Label lbl_hdr_template;
+//		[Glade.Widget] Label lbl_hdr_location;
 		[Glade.Widget] Label lbl_subdirectory;
 		[Glade.Widget] Label lbl_will_save_in;
 		[Glade.Widget] Label lbl_template_descr;
 		
-		[Glade.Widget] Gtk.Entry txt_name, txt_subdirectory;
+		[Glade.Widget] Gtk.Entry txt_name
+		[Glade.Widget] Gtk.Entry txt_subdirectory;
 		[Glade.Widget] CheckButton chk_combine_directory;
 		
 		[Glade.Widget] Gtk.TreeView lst_template_types;
-		[Glade.Widget] HBox hbox_template, hbox_for_browser;
+		[Glade.Widget] HBox hbox_template;
+		[Glade.Widget] HBox hbox_for_browser;
 		[Glade.Widget] Gtk.HSeparator hseparator;
 		
 		FileUtilityService  fileUtilityService = Runtime.FileUtilityService;
