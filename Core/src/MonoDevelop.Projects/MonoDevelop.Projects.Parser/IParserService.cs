@@ -45,8 +45,13 @@ namespace MonoDevelop.Projects.Parser
 		void Load (CombineEntry entry);
 		void Unload (CombineEntry entry);
 		
-		IParserContext GetProjectParserContext (Project project);
-		IParserContext GetFileParserContext (string file);
+		// Returns the normalized assembly name to use to later reference this assembly
+		string LoadAssembly (string assemblyName);
+		void UnloadAssembly (string assemblyName);
+		
+		IProjectParserContext GetProjectParserContext (Project project);
+		IFileParserContext GetFileParserContext (string file);
+		IAssemblyParserContext GetAssemblyParserContext (string assemblyFile);
 
 		IParseInformation UpdateFile (Project project, string fileName, string fileContent);
 		
@@ -56,26 +61,29 @@ namespace MonoDevelop.Projects.Parser
 
 		event ParseInformationEventHandler ParseInformationChanged;
 		event ClassInformationEventHandler ClassInformationChanged;
+		event AssemblyInformationEventHandler AssemblyInformationChanged;
 	}
 	
-/*	public interface IFileParserContext: IParserContext
+	public interface IFileParserContext: IParserContext
 	{
 		IParseInformation ParseFile ();
 	}
 
 	public interface IProjectParserContext: IParserContext
 	{
-		IParseInformation ParseFile (string fileName);
-		IParseInformation ParseFile (string fileName, string fileContent);
 	}
-*/
+
+	public interface IAssemblyParserContext: IParserContext
+	{
+	}
+
 	public interface IParserContext
 	{
-		IExpressionFinder GetExpressionFinder(string fileName);
-		
 		IParseInformation ParseFile (string fileName);
 		IParseInformation ParseFile (string fileName, string fileContent);
 		IParseInformation ParseFile (ITextFile file);
+		
+		IExpressionFinder GetExpressionFinder(string fileName);
 		
 		IParseInformation GetParseInformation (string fileName);
 		

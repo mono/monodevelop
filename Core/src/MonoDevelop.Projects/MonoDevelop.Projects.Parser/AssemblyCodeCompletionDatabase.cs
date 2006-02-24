@@ -133,6 +133,7 @@ namespace MonoDevelop.Projects.Parser
 				monitor.EndTask ();
 				if (parentMonitor == null) monitor.Dispose ();
 			}
+			parserDatabase.NotifyAssemblyInfoChange (fileName, assemblyName);
 		}
 		
 		public bool ParseInExternalProcess

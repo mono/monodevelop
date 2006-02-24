@@ -1,3 +1,20 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Notify assembly changes.
+	  
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Added
+	  support for loading assemblies. Implemented a new 
+	  GetAssemblyContext method in IParserDatabase, which provides
+	  access to assembly parser information.
+	
+	* MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs:
+	  New event handler.
+	  
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Updated.
+
 2006-02-16 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs:

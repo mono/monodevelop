@@ -18,6 +18,7 @@ MonoDevelop.Projects.Ambience/NetAmbience.cs \
 MonoDevelop.Projects/Language.cs \
 MonoDevelop.Projects/LanguageService.cs \
 MonoDevelop.Projects/LanguageBindingService.cs \
+MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs \
 MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/AssemblyInformation.cs \
 MonoDevelop.Projects.Parser/ClassEntry.cs \

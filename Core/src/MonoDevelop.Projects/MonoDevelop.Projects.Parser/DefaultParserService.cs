@@ -66,6 +66,35 @@ namespace MonoDevelop.Projects.Parser
 		}
 	}
 	
+	internal class FileParserContext: ParserContext, IFileParserContext
+	{
+		string file;
+		
+		public FileParserContext (DefaultParserService parserService, ParserDatabase pdb, CodeCompletionDatabase db, string file): base (parserService, pdb, db)
+		{
+			this.file = file;
+		}
+		
+		public IParseInformation ParseFile ()
+		{
+			return ParseFile (file);
+		}
+	}
+	
+	internal class ProjectParserContext: ParserContext, IProjectParserContext
+	{
+		public ProjectParserContext (DefaultParserService parserService, ParserDatabase pdb, CodeCompletionDatabase db): base (parserService, pdb, db)
+		{
+		}
+	}
+	
+	internal class AssemblyParserContext: ParserContext, IAssemblyParserContext
+	{
+		public AssemblyParserContext (DefaultParserService parserService, ParserDatabase pdb, CodeCompletionDatabase db): base (parserService, pdb, db)
+		{
+		}
+	}
+	
 	internal class ParserContext: IParserContext
 	{
 		DefaultParserService parserService;
@@ -306,6 +335,10 @@ namespace MonoDevelop.Projects.Parser
 		bool trackingFileChanges;
 		IProgressMonitorFactory parseProgressMonitorFactory;
 		
+		// Only keeps track of explicitely loaded assemblies, not the ones
+		// referenced by projects.
+		Hashtable loadedAssemblies = new Hashtable ();
+		
 		const int MAX_PARSING_CACHE_SIZE = 10;
 		const int MAX_SINGLEDB_CACHE_SIZE = 10;
 		string CoreDB;
@@ -422,14 +455,19 @@ namespace MonoDevelop.Projects.Parser
 			nameTable = new StringNameTable (sharedNameTable);
 		}
 		
-		public IParserContext GetProjectParserContext (Project project)
+		public IProjectParserContext GetProjectParserContext (Project project)
 		{
-			return new ParserContext (parserService, this, GetProjectDatabase (project));
+			return new ProjectParserContext (parserService, this, GetProjectDatabase (project));
 		}
 		
-		public IParserContext GetFileParserContext (string file)
+		public IFileParserContext GetFileParserContext (string file)
 		{
-			return new ParserContext (parserService, this, GetSingleFileDatabase (file));
+			return new FileParserContext (parserService, this, GetSingleFileDatabase (file), file);
+		}
+		
+		public IAssemblyParserContext GetAssemblyParserContext (string assemblyFile)
+		{
+			return new AssemblyParserContext (parserService, this, GetAssemblyDatabase (assemblyFile));
 		}
 		
 		public IProgressMonitorFactory ParseProgressMonitorFactory {
@@ -534,6 +572,11 @@ namespace MonoDevelop.Projects.Parser
 			return (ProjectCodeCompletionDatabase) GetDatabase (null, "Project:" + project.Name);
 		}
 		
+		internal CodeCompletionDatabase GetAssemblyDatabase (string assemblyName)
+		{
+			return GetDatabase (null, "Assembly:" + assemblyName);
+		}
+		
 		internal CodeCompletionDatabase GetDatabase (string baseDir, string uri)
 		{
 			lock (databases)
@@ -607,6 +650,38 @@ namespace MonoDevelop.Projects.Parser
 					return db;
 				}
 			}
+		}
+		
+		public string LoadAssembly (string assemblyName)
+		{
+			string aname = AssemblyCodeCompletionDatabase.GetFullAssemblyName (assemblyName);
+			string name = "Assembly:" + aname;
+			
+			lock (databases) {
+				object c = loadedAssemblies [name];
+				if (c == null)
+					loadedAssemblies [name] = 1;
+				else
+					loadedAssemblies [name] = ((int)c) + 1;
+			}
+			return aname;
+		}
+		
+		public void UnloadAssembly (string assemblyName)
+		{
+			string name = "Assembly:" + AssemblyCodeCompletionDatabase.GetFullAssemblyName (assemblyName);
+			
+			lock (databases) {
+				object c = loadedAssemblies [name];
+				if (c != null) {
+					int nc = ((int)c) - 1;
+					if (nc == 0)
+						loadedAssemblies.Remove (name);
+					else
+						loadedAssemblies [name] = nc;
+				}
+			}
+			CleanUnusedDatabases ();
 		}
 		
 		public void Load (CombineEntry entry)
@@ -686,7 +761,10 @@ namespace MonoDevelop.Projects.Parser
 				ArrayList todel = new ArrayList ();
 				foreach (DictionaryEntry en in databases)
 				{
-					if (!(en.Value is ProjectCodeCompletionDatabase) && !references.Contains (en.Key))
+					if (!(en.Value is ProjectCodeCompletionDatabase) &&
+						!references.Contains (en.Key) &&
+						!loadedAssemblies.Contains (en.Key)
+					)
 						todel.Add (en.Key);
 				}
 				
@@ -1447,6 +1525,13 @@ namespace MonoDevelop.Projects.Parser
 			OnClassInformationChanged (args);
 		}
 
+		public void NotifyAssemblyInfoChange (string file, string asmName)
+		{
+			AssemblyInformationEventArgs args = new AssemblyInformationEventArgs (file, asmName);
+			if (AssemblyInformationChanged != null)
+				AssemblyInformationChanged (this, args);
+		}
+
 		protected virtual void OnParseInformationChanged(ParseInformationEventArgs e)
 		{
 			if (ParseInformationChanged != null) {
@@ -1463,6 +1548,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public event ParseInformationEventHandler ParseInformationChanged;
 		public event ClassInformationEventHandler ClassInformationChanged;
+		public event AssemblyInformationEventHandler AssemblyInformationChanged;
 	}
 	
 	[Serializable]

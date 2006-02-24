@@ -232,6 +232,7 @@
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Projects/IBuildStep.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
