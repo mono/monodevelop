@@ -150,9 +150,14 @@ namespace GladeAddIn.Gui
 			if (list == null)
 				return null;
 			
-			GuiBuilderProject fp = new GuiBuilderProject (gladeApp, project, fileName);
-			list.Add (fp);
-			return fp;
+			try {
+				GuiBuilderProject fp = new GuiBuilderProject (gladeApp, project, fileName);
+				list.Add (fp);
+				return fp;
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				return null;
+			}
 		}
 		
 		static void OnOpenCombine (object s, CombineEventArgs args)

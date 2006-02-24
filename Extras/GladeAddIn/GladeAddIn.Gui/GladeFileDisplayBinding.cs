@@ -51,7 +51,7 @@ namespace GladeAddIn.Gui
 			return null;
 		}
 		
-		public IViewContent CreateContentForMimeType (string mimeType, string content)
+		public IViewContent CreateContentForMimeType (string mimeType, Stream content)
 		{
 			return null;
 		}
