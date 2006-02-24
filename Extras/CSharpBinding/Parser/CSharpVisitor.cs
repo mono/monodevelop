@@ -179,6 +179,46 @@ namespace CSharpBinding.Parser
 			return ret;
 		}
 		
+		public override object Visit(AST.DelegateDeclaration typeDeclaration, object data)
+		{
+			DefaultRegion declarationRegion = GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
+			ModifierFlags mf = typeDeclaration.Modifiers != null ? typeDeclaration.Modifiers.Code : ModifierFlags.None;
+			Class c = new Class (cu, ClassType.Delegate, mf, declarationRegion, null);
+			
+			FillAttributes (c, typeDeclaration.Attributes);
+			
+			if (currentClass.Count > 0) {
+				Class cur = ((Class)currentClass.Peek());
+				cur.InnerClasses.Add(c);
+				c.FullyQualifiedName = String.Concat(cur.FullyQualifiedName, '.', typeDeclaration.Name);
+			} else {
+				if (currentNamespace.Count == 0) {
+					c.FullyQualifiedName = typeDeclaration.Name;
+				} else {
+					c.FullyQualifiedName = String.Concat(currentNamespace.Peek(), '.', typeDeclaration.Name);
+				}
+				cu.Classes.Add(c);
+			}
+			
+			ReturnType type = new ReturnType (typeDeclaration.ReturnType);
+			
+			mf = ModifierFlags.None;
+			Method method = new Method (c, "Invoke", type, mf, null, null);
+			ParameterCollection parameters = new ParameterCollection();
+			if (typeDeclaration.Parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in typeDeclaration.Parameters) {
+					ReturnType parType = new ReturnType(par.TypeReference);
+					Parameter p = new Parameter (method, par.ParameterName, parType);
+					parameters.Add(p);
+				}
+			}
+			method.Parameters = parameters;
+			c.Methods.Add(method);			
+			
+			c.UpdateModifier();
+			return c;
+		}
+		
 		DefaultRegion GetRegion(Point start, Point end)
 		{
 			return new DefaultRegion(start.Y, start.X, end.Y, end.X);

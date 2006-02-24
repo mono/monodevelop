@@ -1,3 +1,8 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Parser/CSharpVisitor.cs: Generate parse information for
+	  delegates.
+
 2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Parser/Resolver.cs:
