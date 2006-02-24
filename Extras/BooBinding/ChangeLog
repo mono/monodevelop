@@ -1,3 +1,8 @@
+2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* BooBinding/BooShell/BooShell.mdp:
+	* BooBinding/BooBinding.mdp: Updated references.
+
 2005-02-07  Peter Johanson  <latexer@gentoo.org>
 
 	* BooBinding.addin.xml: Update imports to get BooShell.dll to be
