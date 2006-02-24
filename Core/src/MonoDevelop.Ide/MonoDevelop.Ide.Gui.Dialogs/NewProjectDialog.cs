@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		[Glade.Widget] Label lbl_will_save_in;
 		[Glade.Widget] Label lbl_template_descr;
 		
-		[Glade.Widget] Gtk.Entry txt_name
+		[Glade.Widget] Gtk.Entry txt_name;
 		[Glade.Widget] Gtk.Entry txt_subdirectory;
 		[Glade.Widget] CheckButton chk_combine_directory;
 		
