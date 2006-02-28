@@ -61,5 +61,14 @@ namespace MonoDevelop.Core
 		{
 			return Catalog.GetPluralString (singular, plural, n);
 		}
+
+		public static string GetPluralString (string singular,
+			    	 	              string plural,
+					              int n,
+						      params object[] arguments)
+		{
+			return string.Format(GetPluralString (singular, plural, n), arguments);
+		}
+
 	}
 }
