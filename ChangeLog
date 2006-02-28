@@ -12,7 +12,7 @@
 	* configure.in: Report error when $has_mono, and $has_mint flags
 	are false, due to mono version lower than $MONO_REQUIRED_VERSION.
 	
-2006-01-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* monodevelop.desktop:
 	Adhere to the HIG (thanks to Gabriel Burt).
@@ -31,7 +31,7 @@
 
 	* configure.in: Added glade3 addin.
 
-2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in:
 	* Extras/Makefile.am:

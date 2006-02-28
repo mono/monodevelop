@@ -8,7 +8,7 @@
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
 	Use LanguageItemCollection instead of ArrayList.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
 	Removed duplication.

@@ -24,7 +24,7 @@
 	* templates/GladeSharpProject.xpt.xml: Moved to a Samples subcategories
 	for now, to reduce clutter.
 
-2006-01-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* Parser/CSharpVisitor.cs: Make sure that a null modifier
 	is not passed to the Field constructor which is the case

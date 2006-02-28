@@ -19,7 +19,7 @@
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Localization fix.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* Base.glade: Corrected spellings of add-in.
 
@@ -48,13 +48,13 @@
 	icons/visual-studio.png, MonoDevelop.Core.Gui.addin.xml: Added icons to
 	Import VS Solution, comment and uncomment code.
 
-2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+2005-12-15  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Escape now closes
 	message and warning dialogs. Refactored some duplicate methods.
 	Cleaned up Gtk namespace usage.
 	
-2005-12-11  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-11  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:
 	Only enable the delete button when something is selected.
