@@ -216,12 +216,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void OnCombineOpen(object sender, CombineEventArgs e)
 		{
-			store.Clear ();
+			Clear();
 		}
 		
 		void OnCombineClosed(object sender, CombineEventArgs e)
 		{
-			store.Clear ();
+			Clear();
 		}
 		
 		public void Dispose ()
@@ -266,11 +266,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		} 
 		
 		bool FilterTaskTypes (TreeModel model, TreeIter iter)
-        {
-        		bool canShow = false;
+		{
+			bool canShow = false;
         	
-        		try {
-              	Task task = (Task) store.GetValue (iter, COL_TASK);
+			try {
+				Task task = (Task) store.GetValue (iter, COL_TASK);
         			if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
         			else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
         			else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
@@ -280,9 +280,19 @@ namespace MonoDevelop.Ide.Gui.Pads
         		}
         	
         		return canShow;
-        }
+		}
         
 		public void ShowResults (object sender, EventArgs e)
+		{
+			Clear();
+						
+			foreach (Task t in Services.TaskService.Tasks) {
+				AddTask (t);
+			}
+			SelectTaskView(true);
+		}
+
+		private void Clear()
 		{
 			store.Clear ();
 			tasks.Clear ();
@@ -290,11 +300,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
-			
-			foreach (Task t in Services.TaskService.Tasks) {
-				AddTask (t);
-			}
-			SelectTaskView(true);
 		}
 		
 		void TaskAdded (object sender, TaskEventArgs e)
