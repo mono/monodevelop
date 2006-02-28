@@ -1,6 +1,6 @@
 <AddIn id           = "ChangeLogAddIn"
         name        = "ChangeLog Add-in"
-        author      = "Jacob Ilsoe Christensen"
+        author      = "Jacob Ilsø Christensen"
         copyright   = "GPL"
         url         = "http://monodevelop.com"
         description = "Add-in for working with ChangeLog files"

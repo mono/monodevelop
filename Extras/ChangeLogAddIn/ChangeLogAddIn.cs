@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2006  Jacob Ilsoe Christensen
+Copyright (C) 2006  Jacob Ilsø Christensen
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

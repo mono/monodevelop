@@ -1,23 +1,29 @@
-2006-01-29  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-02-28  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+	* ChangeLogAddIn.addin.xml:
+	* ChangeLogAddInOptionsPanel.cs:
+	* ChangeLogAddIn.cs:
+	Fixed spelling.
+
+2006-01-29  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* ChangeLogAddIn.cs:
 	* ChangeLogAddInOptionsPanel.cs:
 	Added copyright comment.
 
-2006-01-25  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* ChangeLogAddIn.addin.xml: Fixed spelling of add-in.
 
-2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+2005-12-15  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* Makefile.am: Added AssemblyInfo.cs
 	* AssemblyInfo.cs: Added version info.
 	
-2005-12-15  Jacob Ilsoe Christensen <jacobilsoe@gmail.com> 
+2005-12-15  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* ChangeLogAddIn.cs: Fixed indention.
 
-2005-12-15  Jacob Ilsoe Christensen  <jacobilsoe@gmail.com>
+2005-12-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* *:
 	Initial version.
