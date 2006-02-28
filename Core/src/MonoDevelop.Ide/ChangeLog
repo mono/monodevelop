@@ -1,3 +1,8 @@
+2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fixed plural
+	issues.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Changed

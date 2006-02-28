@@ -849,14 +849,17 @@ namespace MonoDevelop.Ide.Gui
 				Services.TaskService.AddTask (new Task(null, err));
 			}
 			
+			string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
+			string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
+
 			if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
 				monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
 			} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
-				monitor.ReportWarning (String.Format (GettextCatalog.GetString ("Build: {0} errors, {1} warnings."), result.ErrorCount, result.WarningCount));
+				monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
 			} else if (result.ErrorCount > 0) {
-				monitor.ReportError (String.Format (GettextCatalog.GetString ("Build: {0} errors, {1} warnings."), result.ErrorCount, result.WarningCount), null);
+				monitor.ReportError(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString, null);
 			} else {
-				monitor.ReportError (String.Format (GettextCatalog.GetString ("Build failed.")), null);
+				monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 			}
 			
 			OnEndBuild (lastResult.FailedBuildCount == 0);
