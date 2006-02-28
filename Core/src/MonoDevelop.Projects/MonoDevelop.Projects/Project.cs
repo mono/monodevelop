@@ -328,7 +328,10 @@ namespace MonoDevelop.Projects
 				
 				isDirty = false;
 				
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Build complete -- {0} errors, {1} warnings"), res.ErrorCount, res.WarningCount));
+				string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
+				string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", res.WarningCount, res.WarningCount);
+				
+				monitor.Log.WriteLine(GettextCatalog.GetString("Build complete -- ") + errorString + ", " + warningString);
 				
 				return res;
 			} finally {

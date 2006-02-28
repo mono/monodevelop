@@ -1,3 +1,7 @@
+2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Projects/Project.cs: Fixed plural issue.
+	
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
