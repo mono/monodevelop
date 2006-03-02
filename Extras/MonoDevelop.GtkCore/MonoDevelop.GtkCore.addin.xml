@@ -1,0 +1,132 @@
+<AddIn id = "SteticAddIn"
+       name	= "Stetic Form Editor"
+       author	 = "Lluis Sanchez Gual"
+       copyright = "X11"
+       url       = ""
+       description = ""
+	   category    = "IDE extensions"
+       version   = "0.1">
+
+	<Runtime>
+		<Import assembly="libstetic.dll"/>
+		<Import assembly="libsteticui.dll"/>
+		<Import assembly="MonoDevelop.GtkCore.dll"/>
+	</Runtime>
+
+	<Dependencies>
+		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+	</Dependencies>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads">
+		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" _label="Widgets Palette" />
+		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" _label="Widget Properties"/>
+		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" _label="Widget Tree"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
+		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" />
+		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" />
+		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.ProjectFolderNodeBuilderExtension"/>
+		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.ProjectNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.WidgetNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.WindowsFolderNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/FileTemplates">
+		<FileTemplate id = "DialogFileTemplate" resource = "Dialog.xft.xml"/>
+		<FileTemplate id = "WindowFileTemplate" resource = "Window.xft.xml"/>
+		<FileTemplate id = "WidgetFileTemplate" resource = "Widget.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/GladeFileNodeBuilder/ContextMenu">
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/GladeWindowNodeBuilder/ContextMenu">
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding insertbefore = "NewText"
+		       supportedformats = "Text Files,Source Files"
+		       class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderDisplayBinding" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"
+				icon = "md-gtkcore-dialog"
+				_label = "New Dialog..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow"
+				icon = "md-gtkcore-window"
+				_label = "New Window..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget"
+				icon = "md-gtkcore-widget"
+				_label = "New Widget..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.ImportGladeFile"
+				_label = "Import Glade file..." />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
+		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode/Add">
+		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode">
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding class = "MonoDevelop.GtkCore.GuiBuilder.GladeFileDisplayBinding"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
+		<Class insertbefore = "MainBuildStep" class = "MonoDevelop.GtkCore.GeneratorBuildStep" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.Project"
+		              name = "GtkDesignInfo"
+		              type = "MonoDevelop.GtkCore.GtkDesignInfo" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
+		<Class class="MonoDevelop.GtkCore.GtkCoreStartupCommand" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+		<DialogPanel id = "SteticOptionsPanel"
+		             _label = "Widget Export"
+		             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/FileTemplateTypes">
+		<FileTemplateType name = "Widget" class = "MonoDevelop.GtkCore.WidgetFileDescriptionTemplate"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "md-gtkcore-window" resource = "window.png" />
+		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
+		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
+	</Extension>
+</AddIn>
+
