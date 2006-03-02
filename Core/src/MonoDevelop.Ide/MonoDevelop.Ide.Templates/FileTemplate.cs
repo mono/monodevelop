@@ -240,7 +240,8 @@ namespace MonoDevelop.Ide.Templates
 		protected virtual void CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
-				newfile.AddToProject (project, language, name);
+				newfile.AddToProject (project, language, directory, name);
+				newfile.Show ();
 			} else {
 				SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
 				if (singleFile == null)

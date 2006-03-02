@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Templates
 			// Add Files
 			foreach (FileDescriptionTemplate file in files) {
 				try {
-					file.AddToProject (project, defaultLanguage, null);
+					file.AddToProject (project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
 					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), file.Name));
 				}

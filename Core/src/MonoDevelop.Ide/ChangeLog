@@ -1,3 +1,14 @@
+2006-03-02 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Added
+	  directory parameter to AddToProject.
+
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	  Same as previous. Also added Show method.
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Create the file in the correct directory. Implemented Show ().
+
 2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Updated

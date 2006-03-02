@@ -32,12 +32,14 @@ using System.Xml;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Templates
 {
 	public class SingleFileDescriptionTemplate: FileDescriptionTemplate
 	{
 		string name;
+		string generatedFile;
 		
 		public override void Load (XmlElement filenode)
 		{
@@ -50,15 +52,20 @@ namespace MonoDevelop.Ide.Templates
 			get { return name; } 
 		}
 		
-		public sealed override void AddToProject (Project project, string language, string name)
+		public sealed override void AddToProject (Project project, string language, string directory, string name)
 		{
-			string fileName = GetFileName (project, language, project.BaseDirectory, name);
-			if (project != null && project.IsFileInProject (fileName))
-				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
+			generatedFile = GetFileName (project, language, directory, name);
+			if (project != null && project.IsFileInProject (generatedFile))
+				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
 			
-			fileName = SaveFile (project, language, project.BaseDirectory, name);
-			if (fileName != null)
-				project.AddFile (fileName, BuildAction.Compile);
+			generatedFile = SaveFile (project, language, directory, name);
+			if (generatedFile != null)
+				project.AddFile (generatedFile, BuildAction.Compile);
+		}
+		
+		public override void Show ()
+		{
+			IdeApp.Workbench.OpenDocument (generatedFile);
 		}
 		
 		// Creates a file and saves it to disk. Returns the path to the new file
@@ -129,10 +136,13 @@ namespace MonoDevelop.Ide.Templates
 			
 			string content = CreateContent (language);
 			
-			string ns = project != null ? project.Name : "Global";
+			DotNetProject netProject = project as DotNetProject;
+			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
+			string cname = Path.GetFileNameWithoutExtension (fileName);
 			string[,] tags = { 
-				{"Name", Path.GetFileNameWithoutExtension (fileName)}, 
+				{"Name", cname}, 
 				{"Namespace", ns},
+				{"FullName", ns.Length > 0 ? ns + "." + cname : cname},
 				{"ProjectName", project != null ? project.Name : ""}
 			};
 				
