@@ -36,38 +36,68 @@
 			</References>
 		
 			<Files>
-				<File name="Main.cs"><![CDATA[// project created on ${Date} at ${Time}
-using System;
+			
+			<!-- A window template -->
+			
+				<Widget>
+					<SteticTemplate>
+					  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
+					    <property name="Title" translatable="yes">${Name}</property>
+					    <property name="WindowPosition">CenterOnParent</property>
+					    <signal name="DeleteEvent" handler="OnDeleteEvent" />
+				        <child>
+				          <placeholder />
+				        </child>
+					  </widget>			
+					</SteticTemplate>
+					
+					<!-- Class bound to the window -->
+				
+					<File name="MainWindow.cs">
+<![CDATA[using System;
 using Gtk;
 
-class MainClass
-{
-	public static void Main (string[] args)
-	{
-		Application.Init ();
-		new MyWindow ();
-		Application.Run ();
-	}
-}]]></File>
-			<File name="MyWindow.cs"><![CDATA[using System;
-using Gtk;
-
-public class MyWindow : Window
+public class MainWindow: Gtk.Window
 {	
-	public MyWindow () : base ("MyWindow")
+	public MainWindow (): base ("")
 	{
-		this.SetDefaultSize (400, 300);
-		this.DeleteEvent += new DeleteEventHandler (OnMyWindowDelete);
-		this.ShowAll ();
+		Stetic.Gui.Build (this, "MainWindow");
 	}
 	
-	void OnMyWindowDelete (object sender, DeleteEventArgs a)
+	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
 		Application.Quit ();
 		a.RetVal = true;
 	}
-}]]></File>
-			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
+}]]>
+					</File>
+				</Widget>
+				
+				<!-- The main class -->
+				
+				<File name="Main.cs">
+<![CDATA[// project created on ${Date} at ${Time}
+using System;
+using Gtk;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Application.Init ();
+			MainWindow win = new MainWindow ();
+			win.Show ();
+			Application.Run ();
+		}
+	}
+}]]>
+				</File>
+
+				<!-- Assembly information file -->
+				
+				<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -99,7 +129,8 @@ using System.Runtime.CompilerServices;
 // This is not required, if you don't want signing let these attributes like they're.
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
-]]></File>
+]]>
+				</File>
 			</Files>
 		</Project>
 	</Combine>
