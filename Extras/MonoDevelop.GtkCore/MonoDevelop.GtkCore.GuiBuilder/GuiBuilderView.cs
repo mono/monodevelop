@@ -130,6 +130,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			editSession.RootWidgetChanged += new EventHandler (OnRootWidgetChanged);
 		}
 		
+		public override MonoDevelop.Projects.Project Project {
+			get { return base.Project; }
+			set { 
+				base.Project = value; 
+				content.Project = value; 
+			}
+		}
+		
 		void OnRootWidgetChanged (object o, EventArgs a)
 		{
 			designerBox.Remove (currentDesigner);
