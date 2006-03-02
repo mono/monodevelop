@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				IViewContent viewcontent = doc.Window.ViewContent;
 				 
-				if (viewcontent.HasProject) {
+				if (viewcontent.Project != null) {
 					TreeIter projIter = TreeIter.Zero;
 					if (projectIters.ContainsKey (viewcontent.Project))
 						projIter = (TreeIter) projectIters[viewcontent.Project];

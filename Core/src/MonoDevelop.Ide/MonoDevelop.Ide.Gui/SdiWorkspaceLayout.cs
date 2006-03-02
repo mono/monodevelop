@@ -598,7 +598,7 @@ namespace MonoDevelop.Ide.Gui
 						if (ActiveWorkbenchwindow.ViewContent.IsDirty) {
 							post = "*";
 						}
-						if (ActiveWorkbenchwindow.ViewContent.HasProject)
+						if (ActiveWorkbenchwindow.ViewContent.Project != null)
 						{
 							((Gtk.Window)workbench).Title = ActiveWorkbenchwindow.ViewContent.Project.Name + " - " + ActiveWorkbenchwindow.ViewContent.PathRelativeToProject + post + " - MonoDevelop";
 						}

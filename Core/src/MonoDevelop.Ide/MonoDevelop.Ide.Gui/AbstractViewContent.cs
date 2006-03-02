@@ -20,7 +20,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool   isDirty  = false;
 		bool   isViewOnly = false;
-		bool   hasproject = false;
 
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Change me"); }
@@ -78,18 +77,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool HasProject
-		{
-			get
-			{
-				return hasproject;
-			}
-			set
-			{
-				hasproject = value;
-			}
-		}
-		
 		public virtual void Save()
 		{
 			OnBeforeSave(EventArgs.Empty);
@@ -103,11 +90,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public abstract void Load(string fileName);
 
-		public override void Dispose ()
-		{
-		}
-
-		public Project Project
+		public virtual Project Project
 		{
 			get
 			{
@@ -115,10 +98,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			set
 			{
-				if (value != null)
-					HasProject = true;
-				else
-					HasProject = false;
 				project = value;
 			}
 		}
@@ -127,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			get
 			{
-				if (HasProject) {
+				if (project != null) {
 					return Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, ContentName).Substring (2);
 				}
 				return null;

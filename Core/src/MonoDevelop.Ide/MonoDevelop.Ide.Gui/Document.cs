@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public bool HasProject {
-			get { return Window.ViewContent.HasProject; }
+			get { return Window.ViewContent.Project != null; }
 		}
 		
 		public Project Project {

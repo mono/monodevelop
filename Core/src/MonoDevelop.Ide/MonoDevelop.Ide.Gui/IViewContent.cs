@@ -66,14 +66,6 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		/// <summary>
-		/// If this property return true the content has been opened from a project
-		/// </summary>
-		bool HasProject {
-			get;
-			set;
-		}
-		
-		/// <summary>
 		/// Saves this content to the last load/save location.
 		/// </summary>
 		void Save();

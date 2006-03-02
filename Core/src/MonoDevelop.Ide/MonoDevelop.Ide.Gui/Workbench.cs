@@ -549,10 +549,8 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			if (project != null)
-			{
-				newContent.HasProject = true;
 				newContent.Project = project;
-			}
+
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			Services.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			
