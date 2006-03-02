@@ -38,10 +38,16 @@ namespace MonoDevelop.Core.AddIns
 	{
 		Hashtable assemblies = new Hashtable ();
 		Hashtable loadedAssemblies = new Hashtable ();
+		bool checkAssemblyConflicts = false;
 		
 		public AssemblyLoader ()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (OnResolveAssembly);
+		}
+		
+		public bool CheckAssemblyConflicts {
+			get { return checkAssemblyConflicts; }
+			set { checkAssemblyConflicts = value; }
 		}
 		
 		Assembly OnResolveAssembly (object sender, ResolveEventArgs args)
@@ -79,19 +85,24 @@ namespace MonoDevelop.Core.AddIns
 			CheckAssemblyFile (asm.Location);
 		}
 		
-		public void CheckAssembly (string aname)
+		void CheckAssembly (string aname)
 		{
 			CheckAssemblyVersion (aname, null, Environment.CurrentDirectory);
 		}
 		
-		public void CheckAssemblyFile (string assemblyFile)
+		void CheckAssemblyFile (string assemblyFile)
 		{
+			if (!checkAssemblyConflicts) return;
+			
 			IAssemblyDefinition asm = AssemblyFactory.GetAssembly (assemblyFile);
 			CheckAssemblyVersion (asm.Name.FullName, asm, Path.GetDirectoryName (assemblyFile));
 		}
 		
 		void CheckAssemblyVersion (string aname, IAssemblyDefinition asm, string baseDirectory)
 		{
+			if (!checkAssemblyConflicts)
+				return;
+			
 			if (assemblies.Contains (aname))
 				return;
 

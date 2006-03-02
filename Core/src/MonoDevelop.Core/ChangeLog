@@ -1,3 +1,12 @@
+2006-03-02 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.AddIns/AddInTreeSingleton.cs:
+	* MonoDevelop.Core.AddIns/AddInService.cs:
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:
+	* MonoDevelop.Core.AddIns/AssemblyLoader.cs:
+	  Made assembly load check optional. It will be enabled when
+	  starting the main MD app, but not for tools.
+
 2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Core/GettextCatalog.cs.in: Added a string.Format

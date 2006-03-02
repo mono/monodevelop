@@ -50,6 +50,10 @@ namespace MonoDevelop.Core.AddIns
 				return codonFactory;
 			}
 		}
+		
+		internal AssemblyLoader Loader {
+			get { return loader; }
+		}
 
 		public bool TreeNodeExists (string path)
 		{

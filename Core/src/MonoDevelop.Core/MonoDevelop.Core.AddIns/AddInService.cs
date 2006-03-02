@@ -45,6 +45,13 @@ namespace MonoDevelop.Core.AddIns
 			AddInTreeSingleton.SetAddInDirectories (addInDirs, ignoreDefaultPath);
 			Runtime.SetupService.Initialize (addInDirs, ignoreDefaultPath);
 		}
+		
+		// Enables or disables conflict checking while loading assemblies.
+		// Disabling makes loading faster, but less safe.
+		public bool CheckAssemblyLoadConflicts {
+			get { return AddInTreeSingleton.CheckAssemblyLoadConflicts; }
+			set { AddInTreeSingleton.CheckAssemblyLoadConflicts = value; }
+		}
 
 		public AddinError[] AddInLoadErrors {
 			get { return (AddinError[]) addInLoadErrors.ToArray (typeof(AddinError)); }
