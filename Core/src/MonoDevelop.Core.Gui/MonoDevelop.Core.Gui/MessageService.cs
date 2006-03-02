@@ -106,7 +106,7 @@ namespace MonoDevelop.Core.Gui
 
 		public void ShowWarning(string message)
 		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Warning, ButtonsType.Ok, message);
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Warning, ButtonsType.Ok, EscapeBraces(message));
 			md.Response += new ResponseHandler(OnResponse);
 			md.Close += new EventHandler(OnClose);
 			md.ShowAll ();
@@ -119,7 +119,7 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool AskQuestion(string question, string caption)
 		{
-			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, question)) {
+			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, EscapeBraces(question))) {
 				int response = md.Run ();
 				md.Hide ();
 				
@@ -147,7 +147,7 @@ namespace MonoDevelop.Core.Gui
 
 		public QuestionResponse AskQuestionWithCancel(string question, string caption)
 		{
-			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, question)) {
+			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(question))) {
 				
 				md.AddActionWidget (new Button (Gtk.Stock.No), ResponseType.No);
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
@@ -211,15 +211,15 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowMessage(string message, string caption)
 		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, message);
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, EscapeBraces(message));
 			md.Response += new ResponseHandler(OnResponse);
 			md.Close += new EventHandler(OnClose);
 			md.ShowAll ();
 		}
 
 		public void ShowMessage(string message, Window parent)
-		{
-			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, message);
+		{			
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Info, ButtonsType.Ok, EscapeBraces(message));
 			
 			if (parent != null)			
 				md.TransientFor = parent;
@@ -227,6 +227,11 @@ namespace MonoDevelop.Core.Gui
 			md.Response += new ResponseHandler(OnResponse);
 			md.Close += new EventHandler(OnClose);
 			md.ShowAll();
+		}
+
+		string EscapeBraces(string stringToEscape)
+		{
+			return stringToEscape.Replace("{", "{{").Replace("}", "}}");
 		}
 
 		void OnResponse (object o, ResponseArgs e)
