@@ -256,11 +256,6 @@ namespace VersionControlPlugin {
 			set { }
 		}
 		
-		bool IViewContent.HasProject {
-			get { return false; }
-			set { }
-		}
-		
 		bool IViewContent.IsDirty {
 			get { return false; }
 			set { }
