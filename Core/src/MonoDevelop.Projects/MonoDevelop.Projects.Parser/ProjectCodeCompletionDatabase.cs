@@ -91,8 +91,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		void OnFileAdded (object sender, ProjectFileEventArgs args)
 		{
-			if (args.ProjectFile.BuildAction == BuildAction.Compile)
-				AddFile (args.ProjectFile.Name);
+			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
+				FileEntry file = AddFile (args.ProjectFile.Name);
+				// CheckModifiedFiles won't detect new files, so parsing
+				// must be manyally signaled
+				QueueParseJob (file);
+			}
 		}
 
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
@@ -104,7 +108,10 @@ namespace MonoDevelop.Projects.Parser
 		{
 			if (args.ProjectFile.BuildAction == BuildAction.Compile) {
 				RemoveFile (args.OldName);
-				AddFile (args.NewName);
+				FileEntry file = AddFile (args.NewName);
+				// CheckModifiedFiles won't detect new files, so parsing
+				// must be manyally signaled
+				QueueParseJob (file);
 			}
 		}
 

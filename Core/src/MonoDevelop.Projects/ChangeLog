@@ -1,3 +1,12 @@
+2006-03-02 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/DotNetProject.cs: Added GetDefaultNamespace
+	  overridable.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs:
+	  Parse files added to projects.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
+	  AddFile now returns the added FileEntry.
+
 2006-02-28  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/Project.cs: Fixed plural issue.

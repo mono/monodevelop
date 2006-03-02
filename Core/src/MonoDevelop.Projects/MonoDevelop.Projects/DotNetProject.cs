@@ -184,5 +184,10 @@ namespace MonoDevelop.Projects
 		{
 			return languageBinding.IsSourceCodeFile (fileName);
 		}
+		
+		public virtual string GetDefaultNamespace (string fileName)
+		{
+			return Name;
+		}
 	}
 }

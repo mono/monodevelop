@@ -460,13 +460,14 @@ namespace MonoDevelop.Projects.Parser
 			return false;
 		}
 		
-		public void AddFile (string fileName)
+		public FileEntry AddFile (string fileName)
 		{
 			lock (rwlock)
 			{
 				FileEntry fe = new FileEntry (fileName);
 				files [fileName] = fe;
 				modified = true;
+				return fe;
 			}
 		}
 		
