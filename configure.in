@@ -276,6 +276,7 @@ Extras/prj2make-sharp-lib/Makefile
 Extras/WelcomePage/Makefile
 Extras/GladeAddIn/Makefile
 Extras/ChangeLogAddIn/Makefile
+Extras/MonoDevelop.GtkCore/Makefile
 Makefile
 monodevelop
 mdtool
