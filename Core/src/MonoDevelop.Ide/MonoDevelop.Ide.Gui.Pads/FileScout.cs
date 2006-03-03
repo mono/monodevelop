@@ -68,22 +68,27 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			foreach (string f in fb.Files)
 			{
-				if (System.IO.File.Exists(f)) {
-					if (!(System.IO.Path.GetFileName (f)).StartsWith ("."))
+				try
+				{
+					if (System.IO.File.Exists(f))
 					{
-						FileListItem it = new FileListItem (f);
-						filelister.ItemAdded (it);
-					}
-					else
-					{
-						if (!ignoreHidden)
+						if (!(System.IO.Path.GetFileName (f)).StartsWith ("."))
 						{
 							FileListItem it = new FileListItem (f);
 							filelister.ItemAdded (it);
-						
+						}
+						else
+						{
+							if (!ignoreHidden)
+							{
+								FileListItem it = new FileListItem (f);
+								filelister.ItemAdded (it);
+							
+							}
 						}
 					}
 				}
+				catch (System.IO.IOException) {} // Avoid crash on file existence check error
 			}
 		}
 
