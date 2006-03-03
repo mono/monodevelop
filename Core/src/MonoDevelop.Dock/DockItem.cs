@@ -48,7 +48,7 @@ namespace Gdl
 		private Widget tabLabel = null;
 		private int preferredWidth = -1;
 		private int preferredHeight = -1;
-		private DockPlaceholder ph = null;
+		private DockPlaceholder dockPlaceHolder = null;
 		private int startX;
 		private int startY;
 		
@@ -458,8 +458,8 @@ namespace Gdl
 				Remove (grip);
 				grip = null;
 			}
-			if (ph != null) {
-				ph = null;
+			if (dockPlaceHolder != null) {
+				dockPlaceHolder = null;
 			}
 			base.OnDestroyed ();
 		}
@@ -888,7 +888,7 @@ namespace Gdl
 		}
 		
 		public void HideItem ()
-		{
+		{					
 			if (!IsAttached)
 				/* already hidden/detached */
 				return;
@@ -896,7 +896,7 @@ namespace Gdl
 			/* if the object is manual, create a new placeholder to be
 			   able to restore the position later */
 			if (!IsAutomatic)
-				ph = new DockPlaceholder (this, false);
+				dockPlaceHolder = new DockPlaceholder (this, false);
 			
 			Freeze ();
 
@@ -927,9 +927,9 @@ namespace Gdl
 		{
 			DockObjectFlags &= ~(DockObjectFlags.Iconified);
 			
-			if (ph != null) {
-				ph.Add (this);
-				ph = null;
+			if (dockPlaceHolder != null) {
+				dockPlaceHolder.Add (this);
+				dockPlaceHolder = null;
 			} else if (IsBound) {
 				if (Master.Controller != null) {
 					Master.Controller.Dock (this, DockPlacement.Floating, null);
@@ -939,19 +939,19 @@ namespace Gdl
 		
 		public virtual void SetDefaultPosition (DockObject reference)
 		{
-			ph = null;
+			dockPlaceHolder = null;
 			
 			if (reference != null && reference.IsAttached) {
 				if (reference is DockPlaceholder) {
-					ph = (DockPlaceholder)reference;
+					dockPlaceHolder = (DockPlaceholder)reference;
 				} else {
-					ph = new DockPlaceholder (reference, true);
+					dockPlaceHolder = new DockPlaceholder (reference, true);
 				}
 			}
 		}
 		
 		public DockPlaceholder DefaultPosition {
-			get { return ph; }
+			get { return dockPlaceHolder; }
 		}
 
 		private bool EventInGripWindow (Gdk.Event evnt)

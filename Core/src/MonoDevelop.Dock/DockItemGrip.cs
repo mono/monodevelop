@@ -24,9 +24,15 @@
 
 using System;
 using Gtk;
+using Mono.Unix;
 
 namespace Gdl
 {
+	/// <summary>
+	/// This class represents header part of a DockItem.
+	/// It provided buttons for iconifying and closing the DockItem.
+	/// In addition it lets the user drag the DockItem.
+	/// </summary>	
 	public class DockItemGrip : Container
 	{
 		private DockItem item;
@@ -75,8 +81,8 @@ namespace Gdl
 			iconifyButton.Clicked += new EventHandler (IconifyClicked);
 			
 			tooltips = new Tooltips ();
-			tooltips.SetTip (iconifyButton, "Iconify", "Iconify this dock");
-			tooltips.SetTip (closeButton, "Close", "Close this dock");
+			tooltips.SetTip (iconifyButton, Catalog.GetString("Iconify"), Catalog.GetString("Iconify this dock"));
+			tooltips.SetTip (closeButton, Catalog.GetString("Close"), Catalog.GetString("Close this dock"));
 		}
 		
 		public DockItemGrip (DockItem item) : this ()

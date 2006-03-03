@@ -26,6 +26,10 @@ using Gtk;
 
 namespace Gdl
 {
+	/// <summary>
+	/// This class is used to represent a number of iconified DockItems.
+	/// It shows the icons by means of an according number of DockBarButtons.
+	/// </summary>
 	public class DockBar : VBox
 	{
 		DockMaster master;
@@ -39,7 +43,8 @@ namespace Gdl
 			Master = dock.Master;
 		}
 		
-		public DockMaster Master {
+		public DockMaster Master 
+		{
 			get { return master; }
 			set { this.Attach (value); }
 		}

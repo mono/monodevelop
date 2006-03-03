@@ -20,11 +20,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
-using System;
 using Gtk;
 
 namespace Gdl
 {
+	/// <summary>
+	/// This class represents a button which is placed in a DockBar.
+	/// The button is used to represent iconified DockItems.
+	/// </summary>
 	public class DockBarButton : Button
 	{
 		DockItem item;
@@ -36,7 +39,8 @@ namespace Gdl
 			this.Add (new Image (item.StockId, IconSize.SmallToolbar));
 		}
 
-		public DockItem DockItem {
+		public DockItem DockItem 
+		{
 			get { return item; }
 		}
 	}
