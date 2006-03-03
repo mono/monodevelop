@@ -1,3 +1,9 @@
+2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Projects/Combine.cs: Make sure that solutions
+	added to an existing solution will inherit the configurations
+	from the parent.		
+
 2006-03-02 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects/DotNetProject.cs: Added GetDefaultNamespace

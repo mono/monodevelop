@@ -180,10 +180,14 @@ namespace MonoDevelop.Projects
 						ActiveConfiguration = cconf;
 				}
 			}
-			
+		
 			foreach (CombineConfiguration conf in Configurations)
-				conf.AddEntry (entry);
-
+				conf.AddEntry (entry);						
+			
+			if (entry.Configurations.Count == 0 && entry is Combine)			
+				foreach (CombineConfiguration conf in Configurations)					
+					entry.Configurations.Add(new CombineConfiguration(conf.Name));			
+			
 			combineExecuteDefinitions.Add (new CombineExecuteDefinition (entry, EntryExecuteType.None));
 			
 			if (eventsAllowed)
