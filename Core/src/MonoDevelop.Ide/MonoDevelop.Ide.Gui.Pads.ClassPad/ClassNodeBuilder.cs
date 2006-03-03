@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 			foreach (IClass innerClass in classData.Class.InnerClasses)
 				if (innerClass.IsPublic || !publicOnly)
-					builder.AddChild (innerClass);
+					builder.AddChild (new ClassData (classData.Project, innerClass));
 
 			foreach (IMethod method in classData.Class.Methods)
 				if (method.IsPublic || !publicOnly)
