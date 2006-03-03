@@ -61,9 +61,7 @@ templates/Dialog.xft.xml
 
 STETIC_FILES = \
 libstetic.dll \
-libstetic.dll.mdb \
 libsteticui.dll \
-libsteticui.dll.mdb \
 libstetic.dll.config \
 libsteticui.dll.config
 
