@@ -41,6 +41,7 @@
     <File name="./stock-menu-left-12.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./stock-menu-right-12.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Stock.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gdk-sharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

@@ -1,3 +1,7 @@
+2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* DockBar.cs: Use correct tooltip for iconified docks.
+	
 2006-01-24  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* DockItem.cs:

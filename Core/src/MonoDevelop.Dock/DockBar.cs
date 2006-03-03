@@ -56,8 +56,8 @@ namespace Gdl
 
 			// create a button for the item
 			DockBarButton button = new DockBarButton (item);
-			this.PackStart (button, false, false, 0);
-			tooltips.SetTip (button, item.Name, item.Name);
+			this.PackStart (button, false, false, 0);						
+			tooltips.SetTip (button, item.LongName, item.LongName);
 			item.DockBar = this;
 			item.DockBarButton = button;
 			button.Clicked += new EventHandler (OnDockButtonClicked);

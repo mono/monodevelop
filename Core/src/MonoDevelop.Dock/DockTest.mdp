@@ -1,5 +1,5 @@
 <Project name="DockTest" fileversion="2.0" language="C#" ctype="DotNetProject">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/bin" assembly="DockTest" />
       <Build debugmode="True" target="WinExe" />
@@ -13,6 +13,12 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./GdlDockTest.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Dock" />
     <ProjectReference type="Gac" localcopy="False" refto="glade-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -20,10 +26,4 @@
     <ProjectReference type="Gac" localcopy="False" refto="gtk-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="False" refto="pango-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
-  <Contents>
-    <File name="./GdlDockTest.cs" subtype="Code" buildaction="Compile" />
-  </Contents>
 </Project>

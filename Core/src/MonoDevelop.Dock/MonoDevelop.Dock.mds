@@ -1,12 +1,12 @@
 <Combine name="MonoDevelop.Dock" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.Dock" />
-      <Entry build="True" name="DockTest" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
+      <Entry configuration="Debug" build="True" name="DockTest" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry build="True" name="MonoDevelop.Dock" />
-      <Entry build="True" name="DockTest" />
+      <Entry configuration="Release" build="True" name="MonoDevelop.Dock" />
+      <Entry configuration="Release" build="True" name="DockTest" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="DockTest" single="True">
