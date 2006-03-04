@@ -27,6 +27,7 @@ MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectPropertyDescriptor.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectSignalDescriptor.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectWidgetLibrary.cs \
+MonoDevelop.GtkCore.WidgetLibrary/CachedProjectWidgetLibrary.cs \
 MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
 MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \

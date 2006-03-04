@@ -34,8 +34,6 @@ using System.Xml;
 
 using MonoDevelop.Projects;	
 using MonoDevelop.Projects.Parser;	
-using MonoDevelop.Ide.Gui;	
-using MonoDevelop.GtkCore.GuiBuilder;	
 
 namespace MonoDevelop.GtkCore.WidgetLibrary
 {
@@ -52,7 +50,6 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			this.typeClassDescriptor = classInfo.BaseDescriptor;
 			
 			wrappedTypeName = element.GetAttribute ("type");
-			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget", Gtk.IconSize.LargeToolbar);
 			
 			Load (element);
 		}
@@ -66,7 +63,11 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		}
 		
 		public override Gdk.Pixbuf Icon {
-			get { return icon; }
+			get {
+				if (icon == null)
+					icon = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("md-gtkcore-widget", Gtk.IconSize.LargeToolbar);
+				return icon; 
+			}
 		}
 		
 		public override object CreateInstance (Stetic.IProject proj)

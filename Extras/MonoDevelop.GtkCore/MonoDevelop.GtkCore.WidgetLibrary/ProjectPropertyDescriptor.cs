@@ -45,6 +45,10 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		{
 			this.pinfo = pinfo;
 			Load (elem);
+			
+			// Consider all properties runtime-properties, since they have been created
+			// from class properties.
+			isRuntimeProperty = true;
 		}
 		
 		public override string Name {

@@ -50,9 +50,21 @@ namespace MonoDevelop.GtkCore
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null)
 				return null;
-				
-			if (info.IsWidgetLibrary)
+			
+			Hashtable projectInfo = null;
+			string projectObjectsFile = null;
+			
+			if (info.IsWidgetLibrary) {
+				// Make sure the widget export file is up to date.
 				GtkCoreService.UpdateObjectsFile (project);
+
+				// The project library must be included in the own code generation,
+				// since project windows may contain widgets created in the same
+				// project. We can't load widget class information from the assembly
+				// in this case since it may not yet exist (we are creating it just now).
+				projectInfo = ProjectWidgetLibrary.GetProjectData ((DotNetProject) project);
+				projectObjectsFile = info.ObjectsFile;
+			}
 
 			if (!info.GuiBuilderProject.IsEmpty) {
 				monitor.Log.WriteLine ("Generating stetic code...");
@@ -69,7 +81,7 @@ namespace MonoDevelop.GtkCore
 				
 				CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 				using (cob) {
-					cob.GenerateCode (Path.Combine (project.BaseDirectory, info.SteticGeneratedFile), projects, libs, netproject.LanguageName);
+					cob.GenerateCode (Path.Combine (project.BaseDirectory, info.SteticGeneratedFile), projects, libs, projectInfo, projectObjectsFile, netproject.LanguageName);
 				}
 			}
 			
@@ -85,16 +97,14 @@ namespace MonoDevelop.GtkCore
 	[AddinDependency ("MonoDevelop.Projects")]
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public void GenerateCode (string targetFile, ArrayList projectFiles, ArrayList libraries, string langName)
+		public void GenerateCode (string targetFile, ArrayList projectFiles, ArrayList libraries, Hashtable projectInfo, string projectObjectsFile, string langName)
 		{
-			Console.WriteLine ("p1");
 			Gtk.Application.Init ();
 			
 			CodeDomProvider provider;
 			
 			if (langName == "C#") {
 				// FIXME: This is a fast path. Do not add other languages here.
-				Console.WriteLine ("p2");
 				provider = new Microsoft.CSharp.CSharpCodeProvider ();
 			} else {
 				IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (langName) as IDotNetLanguageBinding;
@@ -103,20 +113,23 @@ namespace MonoDevelop.GtkCore
 					throw new UserException ("Code generation not supported in language: " + langName);
 			}
 			
+			foreach (string lib in libraries) {
+				Stetic.AssemblyWidgetLibrary alib = new Stetic.AssemblyWidgetLibrary (lib);
+				Stetic.Registry.RegisterWidgetLibrary (alib);
+			}
+
+			if (projectInfo != null) {
+				CachedProjectWidgetLibrary clib = new CachedProjectWidgetLibrary (projectInfo, projectObjectsFile);
+				Stetic.Registry.RegisterWidgetLibrary (clib);
+			}
+			
 			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
 			for (int n=0; n < projectFiles.Count; n++) {
 				projects [n] = new Stetic.Project ();
 				projects [n].Load ((string) projectFiles [n]);
 			}
 			
-			foreach (string lib in libraries) {
-				Stetic.AssemblyWidgetLibrary alib = new Stetic.AssemblyWidgetLibrary (lib);
-				Stetic.Registry.RegisterWidgetLibrary (alib);
-			}
-
-			Console.WriteLine ("p3");
 			Stetic.CodeGenerator.GenerateProjectCode (targetFile, "Stetic", provider, projects);
-			Console.WriteLine ("p4");
 		}
 	}
 }

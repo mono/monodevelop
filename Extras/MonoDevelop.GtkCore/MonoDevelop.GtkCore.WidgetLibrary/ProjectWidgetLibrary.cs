@@ -52,6 +52,10 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			LoadProjectInfo ();
 		}
 		
+		ProjectWidgetLibrary ()
+		{
+		}
+		
 		protected override XmlDocument GetObjectsDocument ()
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
@@ -77,10 +81,25 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			SaveProjectInfo ();
 		}
 		
+		Hashtable LoadClasses ()
+		{
+			base.Load ();
+			return classes;
+		}
+		
 		public void ClearCachedInfo ()
 		{
 			fromCache = false;
 			classes.Clear ();
+		}
+		
+		public static Hashtable GetProjectData (DotNetProject project)
+		{
+			ProjectWidgetLibrary lib = new ProjectWidgetLibrary ();
+			lib.project = project;
+			Hashtable info = lib.LoadClasses ();
+			lib.Dispose ();
+			return info;
 		}
 		
 		public void LoadProjectInfo ()
@@ -135,7 +154,6 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			if (fromCache) {
 				cinfo = (ProjectClassInfo) classes [name];
 				if (cinfo != null) {
-					Console.WriteLine ("READ CLASS " + name);
 					return new ProjectClassDescriptor (element, cinfo);
 				} else
 					return null;

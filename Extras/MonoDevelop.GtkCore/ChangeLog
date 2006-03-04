@@ -1,3 +1,23 @@
+2006-03-04 Lluis Sanchez Gual  <lluis@novell.com>    
+
+	* MonoDevelop.GtkCore.mdp, Makefile.am: Updated.
+	* MonoDevelop.GtkCore/GeneratorBuildStep.cs: When generating
+	  code for a project that exports widgets, include the own
+	  project library to the generation, since there can be
+	  widgets that contain other widgets defined in the project.
+	* MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs:
+	  removed some IdeApp dependencies.
+	* MonoDevelop.GtkCore.WidgetLibrary/ProjectWidgetLibrary.cs:
+	  added method for getting the class information from
+	  a project.
+	* CachedProjectWidgetLibrary.cs: New widget library class
+	  which takes class information from a collection of 
+	  ProjectClassInfo objects.
+	* MonoDevelop.GtkCore.WidgetLibrary/ProjectPropertyDescriptor.cs:
+	  Consider all properties runtime-properties, since they have 
+	  been created from class properties.
+	* lib/*: Updated.
+
 2006-03-03 Lluis Sanchez Gual  <lluis@novell.com>    
 
 	* Makefile.am: removed debug files.
