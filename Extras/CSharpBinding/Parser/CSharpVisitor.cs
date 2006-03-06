@@ -200,6 +200,9 @@ namespace CSharpBinding.Parser
 				cu.Classes.Add(c);
 			}
 			
+			if (typeDeclaration.ReturnType == null)
+				return c;
+				
 			ReturnType type = new ReturnType (typeDeclaration.ReturnType);
 			
 			mf = ModifierFlags.None;
