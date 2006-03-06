@@ -1,3 +1,16 @@
+2006-03-06 Lluis Sanchez Gual  <lluis@novell.com>    
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: If text editing
+	  is cancelled, restore the original text. Also avoid
+	  editing the name if it is already being edited.
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/Ide.cs: Don't exit if the user cancels
+	  the operation.
+
+2006-03-05 Lluis Sanchez Gual  <lluis@novell.com>    
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: 
+
 2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Added fix for

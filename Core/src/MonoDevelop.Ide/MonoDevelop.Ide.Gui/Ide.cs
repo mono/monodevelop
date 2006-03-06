@@ -152,8 +152,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Exit ()
 		{
-			workbench.Close ();
-			Gtk.Application.Quit ();
+			if (workbench.Close ())
+				Gtk.Application.Quit ();
 		}
 	}
 	

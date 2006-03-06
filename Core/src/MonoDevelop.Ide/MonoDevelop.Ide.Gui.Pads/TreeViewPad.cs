@@ -75,6 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		internal Gtk.CellRendererText text_render;
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
+		bool editingText = false;
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -204,6 +205,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			text_render = new Gtk.CellRendererText ();
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
+			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "text", TextColumn);
@@ -603,6 +605,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		[CommandHandler (EditCommands.Rename)]
 		public void StartLabelEdit()
 		{
+			if (editingText)
+				return;
+
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node == null)
 				return;
@@ -629,18 +634,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			text_render.Editable = true;
 			tree.SetCursor (store.GetPath (iter), complete_column, true);
+			
+			editingText = true;
 		}
 
 		void HandleOnEdit (object o, Gtk.EditedArgs e)
 		{
+			editingText = false;
 			text_render.Editable = false;
+			
 			Gtk.TreeIter iter;
 			if (!store.GetIterFromString (out iter, e.Path))
 				throw new Exception("Error calculating iter for path " + e.Path);
 
-			if (e.NewText == null || e.NewText.Length == 0) {
+			if (e.NewText == null || e.NewText.Length == 0)
 				return;
-			}
 
 			ITreeNavigator nav = new TreeNodeNavigator (this, iter);
 			NodePosition pos = nav.CurrentPosition;
@@ -652,6 +660,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 				handler.RenameItem (e.NewText);
 				nav.MoveToPosition (pos);
 			}
+		}
+		
+		void HandleOnEditCancelled (object s, EventArgs args)
+		{
+			editingText = false;
+			
+			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
+			if (node == null)
+				return;
+			
+			// Restore the original node label
+			Gtk.TreeIter iter = node.CurrentPosition._iter;
+			ITreeBuilder builder = new TreeBuilder (this, iter);
+			builder.Update ();
 		}
 		
 		public void SaveTreeState (XmlElement el)

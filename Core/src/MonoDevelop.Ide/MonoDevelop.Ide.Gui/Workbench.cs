@@ -111,9 +111,9 @@ namespace MonoDevelop.Ide.Gui
 			RootWindow.Present ();
 		}
 		
-		internal void Close ()
+		internal bool Close ()
 		{
-			((DefaultWorkbench)workbench).Close();
+			return ((DefaultWorkbench)workbench).Close();
 		}
 		
 		public RecentOpen RecentOpen {
