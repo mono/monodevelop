@@ -1,3 +1,9 @@
+2006-03-06 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:
+	  Added a more user friendly error message to show when loading
+	  a project of an unknown language. Fixes bug #77467.
+
 2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Make sure that solutions

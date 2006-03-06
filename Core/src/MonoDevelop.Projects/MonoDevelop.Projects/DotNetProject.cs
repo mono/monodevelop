@@ -82,6 +82,10 @@ namespace MonoDevelop.Projects
 		
 		public override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
+			DataValue val = data ["language"] as DataValue;
+			if (val != null && Services.Languages.GetBindingPerLanguageName (val.Value) == null)
+				throw new UserException (GettextCatalog.GetString ("Unknown language: {0}", val.Value), GettextCatalog.GetString ("You may need to install an additional add-in to support projects for the language '{0}'", val.Value));
+
 			base.Deserialize (handler, data);
 			languageBinding = FindLanguage (language);
 		}
