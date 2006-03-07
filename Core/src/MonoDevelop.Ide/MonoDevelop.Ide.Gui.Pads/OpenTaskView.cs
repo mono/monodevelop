@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			errorBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Errors"), GettextCatalog.GetString ("Show Errors"));
 			toolbar.Insert (errorBtn, -1);
 			
+			toolbar.Insert (new SeparatorToolItem (), -1);
+
 			warnBtn = new ToggleToolButton ();
 			UpdateWarningsNum();
 			warnBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowWarnings", true);
@@ -91,6 +93,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			warnBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Warnings"), GettextCatalog.GetString ("Show Warnings"));
 			toolbar.Insert (warnBtn, -1);
 			
+			toolbar.Insert (new SeparatorToolItem (), -1);
+
 			msgBtn = new ToggleToolButton ();
 			UpdateMessagesNum();
 			msgBtn.Active = (bool)Runtime.Properties.GetProperty ("SharpDevelop.TaskList.ShowMessages", true);
