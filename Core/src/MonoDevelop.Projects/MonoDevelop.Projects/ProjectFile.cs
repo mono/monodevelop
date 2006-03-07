@@ -118,6 +118,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				subtype = value;
+				if (project != null)
+					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
 		
@@ -127,6 +129,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				buildaction = value;
+				if (project != null)
+					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
 		
@@ -137,6 +141,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				dependsOn = value;
+				if (project != null)
+					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
 		
@@ -147,6 +153,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				data = value;
+				if (project != null)
+					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
 		

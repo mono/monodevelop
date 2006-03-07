@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
 		ProjectFileEventHandler fileChangedInProjectHandler;
+		ProjectFileEventHandler filePropertyChangedInProjectHandler;
 		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
 
 		ProjectReferenceEventHandler referenceAddedToProjectHandler;
@@ -141,6 +142,7 @@ namespace MonoDevelop.Projects
 		{
 			fileAddedToProjectHandler = new ProjectFileEventHandler (NotifyFileAddedToProject);
 			fileChangedInProjectHandler = new ProjectFileEventHandler (NotifyFileChangedInProject);
+			filePropertyChangedInProjectHandler = new ProjectFileEventHandler (NotifyFilePropertyChangedInProject);
 			fileRemovedFromProjectHandler = new ProjectFileEventHandler (NotifyFileRemovedFromProject);
 			fileRenamedInProjectHandler = new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
 			referenceAddedToProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
@@ -199,6 +201,7 @@ namespace MonoDevelop.Projects
 				project.FileRemovedFromProject += fileRemovedFromProjectHandler;
 				project.FileAddedToProject += fileAddedToProjectHandler;
 				project.FileChangedInProject += fileChangedInProjectHandler;
+				project.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
 				project.FileRenamedInProject += fileRenamedInProjectHandler;
 				project.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
 				project.ReferenceAddedToProject += referenceAddedToProjectHandler;
@@ -209,6 +212,7 @@ namespace MonoDevelop.Projects
 				combine.FileRemovedFromProject += fileRemovedFromProjectHandler;
 				combine.FileAddedToProject += fileAddedToProjectHandler;
 				combine.FileChangedInProject += fileChangedInProjectHandler;
+				combine.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
 				combine.FileRenamedInProject += fileRenamedInProjectHandler;
 				combine.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
 				combine.ReferenceAddedToProject += referenceAddedToProjectHandler;
@@ -271,6 +275,7 @@ namespace MonoDevelop.Projects
 				pce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
 				pce.FileAddedToProject -= fileAddedToProjectHandler;
 				pce.FileChangedInProject -= fileChangedInProjectHandler;
+				pce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
 				pce.FileRenamedInProject -= fileRenamedInProjectHandler;
 				pce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
 				pce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
@@ -281,6 +286,7 @@ namespace MonoDevelop.Projects
 					cce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
 					cce.FileAddedToProject -= fileAddedToProjectHandler;
 					cce.FileChangedInProject -= fileChangedInProjectHandler;
+					cce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
 					cce.FileRenamedInProject -= fileRenamedInProjectHandler;
 					cce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
 					cce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
@@ -774,6 +780,11 @@ namespace MonoDevelop.Projects
 			OnFileChangedInProject (e);
 		}
 		
+		internal void NotifyFilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
+		{
+			OnFilePropertyChangedInProject (e);
+		}
+		
 		internal void NotifyFileRenamedInProject (object sender, ProjectFileRenamedEventArgs e)
 		{
 			OnFileRenamedInProject (e);
@@ -824,6 +835,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			if (FilePropertyChangedInProject != null) {
+				FilePropertyChangedInProject (this, e);
+			}
+		}
+		
 		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
 			if (FileAddedToProject != null) {
@@ -858,6 +876,7 @@ namespace MonoDevelop.Projects
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileChangedInProject;
+		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;

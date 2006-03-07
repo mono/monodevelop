@@ -77,42 +77,43 @@ namespace MonoDevelop.Projects
 		
 		public object ReadFile (string fileName, IProgressMonitor monitor)
 		{
-			XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
-			reader.MoveToContent ();
-
-			string version = reader.GetAttribute ("version");
-			if (version == null) version = reader.GetAttribute ("fileversion");
-			
-			DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, fileName);
-			IProjectReader projectReader = null;
-			
-			if (version == "1.0" || version == "1") {
-				string tempFile = Path.GetTempFileName();
-				
-				ConvertXml.Convert(fileName,
-				                   Runtime.Properties.DataDirectory + Path.DirectorySeparatorChar +
-				                   "ConversionStyleSheets" + Path.DirectorySeparatorChar +
-				                   "ConvertPrjx10to11.xsl",
-				                   tempFile);
-				reader.Close ();
-				StreamReader sr = new StreamReader (tempFile);
-				string fdata = sr.ReadToEnd ();
-				sr.Close ();
-				File.Delete (tempFile);
-				reader = new XmlTextReader (new StringReader (fdata));
-				projectReader = new ProjectReaderV1 (serializer);
-			}
-			else if (version == "1.1") {
-				projectReader = new ProjectReaderV1 (serializer);
-			}
-			else if (version == "2.0") {
-				projectReader = new ProjectReaderV2 (serializer);
-			}
-			
-			if (version != "2.0")
-				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old project file format. It will be automatically converted to the current format."), fileName));
-			
+			XmlTextReader reader = null;
 			try {
+				reader = new XmlTextReader (new StreamReader (fileName));
+				reader.MoveToContent ();
+
+				string version = reader.GetAttribute ("version");
+				if (version == null) version = reader.GetAttribute ("fileversion");
+				
+				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, fileName);
+				IProjectReader projectReader = null;
+				
+				if (version == "1.0" || version == "1") {
+					string tempFile = Path.GetTempFileName();
+					
+					ConvertXml.Convert(fileName,
+					                   Runtime.Properties.DataDirectory + Path.DirectorySeparatorChar +
+					                   "ConversionStyleSheets" + Path.DirectorySeparatorChar +
+					                   "ConvertPrjx10to11.xsl",
+					                   tempFile);
+					reader.Close ();
+					StreamReader sr = new StreamReader (tempFile);
+					string fdata = sr.ReadToEnd ();
+					sr.Close ();
+					File.Delete (tempFile);
+					reader = new XmlTextReader (new StringReader (fdata));
+					projectReader = new ProjectReaderV1 (serializer);
+				}
+				else if (version == "1.1") {
+					projectReader = new ProjectReaderV1 (serializer);
+				}
+				else if (version == "2.0") {
+					projectReader = new ProjectReaderV2 (serializer);
+				}
+				
+				if (version != "2.0")
+					monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old project file format. It will be automatically converted to the current format."), fileName));
+				
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading project: {0}"), fileName), 1);
 				if (projectReader != null)
 					return projectReader.ReadProject (reader);
@@ -123,7 +124,8 @@ namespace MonoDevelop.Projects
 				throw;
 			} finally {
 				monitor.EndTask ();
-				reader.Close ();
+				if (reader != null)
+					reader.Close ();
 			}
 		}
 	}

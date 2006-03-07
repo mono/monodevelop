@@ -534,6 +534,11 @@ namespace MonoDevelop.Projects
 			OnFileChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 		
+ 		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
+		{
+			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
+		}
+		
 		internal void NotifyFileRemovedFromProject (ProjectFile file)
 		{
 			isDirty = true;
@@ -599,6 +604,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+ 		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			if (FilePropertyChangedInProject != null) {
+				FilePropertyChangedInProject (this, e);
+			}
+		}
+		
  		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
 		{
 			if (FileRenamedInProject != null) {
@@ -609,6 +621,7 @@ namespace MonoDevelop.Projects
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileChangedInProject;
+		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;

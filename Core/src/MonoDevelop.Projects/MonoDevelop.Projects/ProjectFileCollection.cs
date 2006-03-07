@@ -212,6 +212,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public void Remove (string fileName)
+		{
+			ProjectFile f = GetFile (fileName);
+			if (f != null)
+				Remove (f);
+		}
+		
 		public class ProjectFileEnumerator : object, IEnumerator {
 			
 			private IEnumerator baseEnumerator;

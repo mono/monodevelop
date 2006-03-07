@@ -1,3 +1,15 @@
+2006-03-07 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/MdpFileFormat.cs: Catch exceptions
+	  thrown while opening the file.
+	* MonoDevelop.Projects/ProjectFileCollection.cs: Added
+	  Remove overload.
+	
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/ProjectFile.cs:
+	* MonoDevelop.Projects/Combine.cs: Added new event fired
+	  when the properties of a project file change.
+
 2006-03-06 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:
