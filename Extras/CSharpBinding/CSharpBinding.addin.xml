@@ -26,11 +26,6 @@
 		<FileTemplate id = "Empty" resource = "EmptyCSharpFile.xft.xml"/>
 		<FileTemplate id = "GnomeSharpProgram" resource = "GnomeSharpProgram.xft.xml"/>
 		<FileTemplate id = "GtkSharpWindow" resource = "GtkSharpWindow.xft.xml"/>
-		<FileTemplate id = "EmptyHTMLFile" resource = "EmptyHTMLFile.xft.xml"/>
-		<FileTemplate id = "AppConfigFile" resource = "AppConfigFile.xft.xml"/>
-		<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
-		<FileTemplate id = "EmptyTextFile" resource = "EmptyTextFile.xft.xml"/>
-		<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectTemplates">

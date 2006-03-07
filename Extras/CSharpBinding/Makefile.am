@@ -44,14 +44,9 @@ CSharpBindingCompilerManager.cs
 
 RES = \
 CSharp.glade \
-templates/AppConfigFile.xft.xml \
 templates/ConsoleProject.xpt.xml \
 templates/EmptyCSharpFile.xft.xml \
-templates/EmptyHTMLFile.xft.xml \
 templates/EmptyProject.xpt.xml \
-templates/EmptyResourceFile.xft.xml \
-templates/EmptyTextFile.xft.xml \
-templates/EmptyXMLFile.xft.xml \
 templates/GladeSharpProject.xpt.xml \
 templates/GladeSharp2Project.xpt.xml \
 templates/GnomeSharpProgram.xft.xml \
