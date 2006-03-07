@@ -54,13 +54,21 @@ namespace MonoDevelop.Ide.Templates
 		
 		public sealed override void AddToProject (Project project, string language, string directory, string name)
 		{
+			AddFileToProject (project, language, directory, name);
+		}
+		
+		public ProjectFile AddFileToProject (Project project, string language, string directory, string name)
+		{
 			generatedFile = GetFileName (project, language, directory, name);
 			if (project != null && project.IsFileInProject (generatedFile))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (generatedFile)));
 			
 			generatedFile = SaveFile (project, language, directory, name);
-			if (generatedFile != null)
+			if (generatedFile != null) {
 				project.AddFile (generatedFile, BuildAction.Compile);
+				return project.GetProjectFile (generatedFile);
+			} else
+				return null;
 		}
 		
 		public override void Show ()

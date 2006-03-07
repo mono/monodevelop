@@ -1,3 +1,21 @@
+2006-03-07 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs:
+	  Implemented template for adding resources to a project.
+	  
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:
+	  When adding a resource to a project, if the file is already
+	  present in the project, just change the build action.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Update
+	  the tree when the properties of a project file change.
+	* MonoDevelop.Ide.addin.xml: Registered some templates moved
+	  from the c# binding.
+	  
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
 2006-03-06 Lluis Sanchez Gual  <lluis@novell.com>    
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: If text editing

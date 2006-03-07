@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Template Originator="Mike Krueger" Language="XML" Created="6/10/2001" LastModified="6/10/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Empty XML File</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<Category>XML</Category>
+		<_Description>Creates an empty XML file.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".xml" DefaultName="EmptyXmlfile"/>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

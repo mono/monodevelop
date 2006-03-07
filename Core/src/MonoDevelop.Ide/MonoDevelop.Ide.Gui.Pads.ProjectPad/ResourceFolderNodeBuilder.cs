@@ -110,8 +110,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			CurrentNode.Expanded = true;
 		
-			foreach (string fileName in files)
-				project.AddFile (fileName, BuildAction.EmbedAsResource);
+			foreach (string fileName in files) {
+				ProjectFile file = project.ProjectFiles.GetFile (fileName);
+				if (file != null)
+					file.BuildAction = BuildAction.EmbedAsResource;
+				else
+					project.AddFile (fileName, BuildAction.EmbedAsResource);
+			}
 			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		

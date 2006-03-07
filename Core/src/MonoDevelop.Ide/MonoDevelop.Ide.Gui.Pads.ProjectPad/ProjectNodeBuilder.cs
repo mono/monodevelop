@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileEventHandler fileAddedHandler;
 		ProjectFileEventHandler fileRemovedHandler;
 		ProjectFileRenamedEventHandler fileRenamedHandler;
+		ProjectFileEventHandler filePropertyChangedHandler;
 		CombineEntryRenamedEventHandler projectNameChanged;
 		Hashtable projectsByPath = new Hashtable ();
 		
@@ -59,12 +60,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			fileAddedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
 			fileRemovedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
+			filePropertyChangedHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
 			fileRenamedHandler = (ProjectFileRenamedEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
 			projectNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnProjectRenamed));
 			
 			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
 			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
 			IdeApp.ProjectOperations.FileRenamedInProject += fileRenamedHandler;
+			IdeApp.ProjectOperations.FilePropertyChangedInProject += filePropertyChangedHandler;
 		}
 		
 		public override void Dispose ()
@@ -72,6 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
 			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
 			IdeApp.ProjectOperations.FileRenamedInProject -= fileRenamedHandler;
+			IdeApp.ProjectOperations.FilePropertyChangedInProject -= filePropertyChangedHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -237,6 +241,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
 			if (tb != null) tb.Update ();
+		}
+		
+		void OnFilePropertyChanged (object sender, ProjectFileEventArgs args)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (args.Project);
+			if (tb != null) tb.UpdateAll ();
 		}
 	}
 	

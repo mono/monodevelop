@@ -64,6 +64,7 @@ MonoDevelop.Ide.Templates/ProjectTemplate.cs \
 MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
+MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs \
 MonoDevelop.Ide.Gui.Undo/UndoQueue.cs \
 MonoDevelop.Ide.Gui.Undo/UndoStack.cs \
@@ -231,11 +232,16 @@ MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 
 RES= \
+templates/AppConfigFile.xft.xml \
+templates/BlankCombine.xpt.xml \
 templates/EmptyClass.xft.xml \
 templates/EmptyEnum.xft.xml \
+templates/EmptyHTMLFile.xft.xml \
 templates/EmptyInterface.xft.xml \
+templates/EmptyResourceFile.xft.xml \
 templates/EmptyStruct.xft.xml \
-templates/BlankCombine.xpt.xml \
+templates/EmptyTextFile.xft.xml \
+templates/EmptyXMLFile.xft.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/Icons.AboutImage

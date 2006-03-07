@@ -256,6 +256,7 @@ namespace MonoDevelop.Ide.Gui
 				openCombine.FileRemovedFromProject += new ProjectFileEventHandler (NotifyFileRemovedFromProject);
 				openCombine.FileRenamedInProject += new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
 				openCombine.FileChangedInProject += new ProjectFileEventHandler (NotifyFileChangedInProject);
+				openCombine.FilePropertyChangedInProject += new ProjectFileEventHandler (NotifyFilePropertyChangedInProject);
 				openCombine.ReferenceAddedToProject += new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
 				openCombine.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject);
 				
@@ -1010,6 +1011,11 @@ namespace MonoDevelop.Ide.Gui
 			OnFileChangedInProject (e);
 		}		
 		
+		internal void NotifyFilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
+		{
+			OnFilePropertyChangedInProject (e);
+		}		
+		
 		internal void NotifyReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
 		{
 			OnReferenceAddedToProject (e);
@@ -1045,6 +1051,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (FileChangedInProject != null) {
 				FileChangedInProject (this, e);
+			}
+		}
+		
+		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			if (FilePropertyChangedInProject != null) {
+				FilePropertyChangedInProject (this, e);
 			}
 		}
 		
@@ -1117,6 +1130,7 @@ namespace MonoDevelop.Ide.Gui
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileChangedInProject;
+		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		
 		public event EventHandler StartBuild;
