@@ -39,6 +39,8 @@ namespace MonoDevelop.SourceEditor
 		NextBookmark,
 		ClearBookmarks,
 		GotoLineNumber,
-		GotoMatchingBrace
+		GotoMatchingBrace,
+		PrintDocument,
+		PrintPreviewDocument
 	}
 }

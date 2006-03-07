@@ -94,6 +94,16 @@
 				_label = "Goto Matching _Brace" 
 				description = "Goto Matching Brace" 
 				shortcut = "Control|B" />
+		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
+				_label = "_Print..." 
+				description = "Print current document" 
+				icon  = "gtk-print"
+				shortcut = "Control|P" />
+		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
+				_label = "Print Previe_w" 
+				description = "Print current document" 
+				icon  = "gtk-print-preview"
+				shortcut = "Shift|Control|P" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
@@ -145,6 +155,20 @@
 			<SeparatorItem id = "Separator3" />
 			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" />
 		</ItemSet>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/File">
+			<SeparatorItem id = "PrintSeparator"  insertafter = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
+						 insertafter = "SaveSeparator"
+						 insertbefore = "PrintSeparator" />
+			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
+						 insertafter = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ToolBar/Standard">
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
+					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 	</Extension>
 	
 	<!--

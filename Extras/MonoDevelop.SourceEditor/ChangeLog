@@ -1,3 +1,10 @@
+2006-03-07 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/EditorCommands.cs:
+	* MonoDevelop.SourceEditor.addin.xml: Added printing support.
+	  Patch by David Makovský.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
