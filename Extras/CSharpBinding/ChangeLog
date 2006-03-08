@@ -1,3 +1,10 @@
+2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Parser/CodeGenerator.cs: Fixed issues when finding class
+	  references. Add text line to found references.
+	* Parser/LanguageItemVisitor.cs: Properly resolve primitive
+	  type aliases.
+
 2006-03-07 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Makefile.am:

@@ -186,6 +186,17 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
+		public override object Visit(FieldDeclaration fieldDeclaration, object data)
+		{
+			if (member is IClass && member.Name == GetNameWithoutPrefix (fieldDeclaration.TypeReference.SystemType)) {
+				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, fieldDeclaration.TypeReference.SystemType, fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
+				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
+					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
+				}
+			}
+			return base.Visit (fieldDeclaration, data);
+		}
+		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
 			if (member is IField && fieldExp.FieldName == member.Name)
@@ -195,10 +206,10 @@ namespace CSharpBinding.Parser
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name)
-						references.Add (CreateReference (pos, member.Name));
+						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 				}
-				
-			}
+			} 
+			
 			return base.Visit (fieldExp, data);
 		}
 		
@@ -208,10 +219,8 @@ namespace CSharpBinding.Parser
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					if (cls != null && IsExpectedClass (cls)) {
-						int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-						references.Add (CreateReference (pos, member.Name));
-					}
+					if (cls != null && IsExpectedClass (cls))
+						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 				}
 			}
 			return base.Visit (invokeExp, data);
@@ -228,23 +237,53 @@ namespace CSharpBinding.Parser
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
 					{
-						int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
-						references.Add (CreateReference (pos, member.Name));
+						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
-					int pos = file.GetPositionFromLineColumn (idExp.StartLocation.Y, idExp.StartLocation.X);
-					references.Add (CreateReference (pos, member.Name));
+					references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 				}
 				
 			}
 			return base.Visit (idExp, data);
 		}
 		
-		MemberReference CreateReference (int pos, string name)
+		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
-			int l, c;
-			file.GetLineColumnFromPosition (pos, out l, out c);
-			return new MemberReference (ctx, file.Name, pos, l, c, name);
+			if (member is IClass && typeDeclaration.BaseTypes != null) {
+				string fname = declaringType.FullyQualifiedName;
+				
+				foreach (string bc in typeDeclaration.BaseTypes) {
+					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
+					if (bclass != null && bclass.FullyQualifiedName == fname)
+						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc));
+				}
+			}
+			return base.Visit (typeDeclaration, data);
+		}
+		
+		MemberReference CreateReference (int lin, int col, string name)
+		{
+			int pos = file.GetPositionFromLineColumn (lin, col);
+			int spos = file.GetPositionFromLineColumn (lin, 1);
+			int epos = file.GetPositionFromLineColumn (lin + 1, 1);
+			if (epos == -1) epos = file.Length - 1;
+			
+			string txt;
+			if (spos != -1)
+				txt = file.GetText (spos, epos - 1);
+			else
+				txt = null;
+			
+			return new MemberReference (ctx, file.Name, pos, lin, col, name, txt);
+		}
+		
+		string GetNameWithoutPrefix (string fullName)
+		{
+			int i = fullName.LastIndexOf ('.');
+			if (i == -1)
+				return fullName;
+			else
+				return fullName.Substring (i+1);
 		}
 	}
 }

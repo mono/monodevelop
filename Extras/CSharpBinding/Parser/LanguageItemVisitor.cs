@@ -90,8 +90,8 @@ namespace CSharpBinding.Parser
 			// int. generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
 			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-//					resolver.ShowStatic = true;
-//					return new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+					resolver.ShowStatic = true;
+					return resolver.SearchType (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference.SystemType, resolver.CompilationUnit);
 					return null;
 				}
 			}
@@ -133,7 +133,6 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(IdentifierExpression identifierExpression, object data)
 		{
-			//Console.WriteLine("visiting IdentifierExpression");
 			if (identifierExpression == null) {
 				return null;
 			}
