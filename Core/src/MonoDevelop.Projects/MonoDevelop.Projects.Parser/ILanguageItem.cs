@@ -28,7 +28,7 @@
 
 namespace MonoDevelop.Projects.Parser
 {
-	public interface ILanguageItem
+	public interface ILanguageItem: System.IComparable
 	{
 		string Name {
 			get;

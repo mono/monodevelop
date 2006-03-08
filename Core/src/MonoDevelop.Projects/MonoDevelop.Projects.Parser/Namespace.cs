@@ -53,5 +53,23 @@ namespace MonoDevelop.Projects.Parser
 		public string Documentation {
 			get { return documentation; }
 		}
+		
+		public virtual int CompareTo (object value)
+		{
+			Namespace loc = (Namespace) value;
+			return name.CompareTo (loc.name);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			Namespace other = ob as Namespace;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return name.GetHashCode ();
+		}
 	}
 }

@@ -49,6 +49,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			this.pdb = pdb;
 		}
 		
+		public CodeRefactorer (IParserDatabase pdb)
+		{
+			this.pdb = pdb;
+		}
+		
 		public ITextFileProvider TextFileProvider {
 			get { return fileProvider; }
 			set { fileProvider = value; } 
@@ -129,15 +134,47 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
+		public IClass[] FindDerivedClasses (IClass baseClass)
+		{
+			ArrayList list = new ArrayList ();
+			
+			if (rootCombine != null) {
+				foreach (Project p in rootCombine.GetAllProjects ()) {
+					IParserContext ctx = pdb.GetProjectParserContext (p);
+					foreach (IClass cls in ctx.GetProjectContents ()) {
+						if (IsSubclass (ctx, baseClass, cls))
+							list.Add (cls);
+					}
+				}
+			} else {
+				IParserContext ctx = GetParserContext (baseClass);
+				foreach (IClass cls in ctx.GetProjectContents ()) {
+					if (IsSubclass (ctx, baseClass, cls))
+						list.Add (cls);
+				}
+			}
+			return (IClass[]) list.ToArray (typeof(IClass));
+		}
+		
+		bool IsSubclass (IParserContext ctx, IClass baseClass, IClass subclass)
+		{
+			foreach (string clsName in subclass.BaseTypes)
+				if (clsName == baseClass.FullyQualifiedName)
+					return true;
+
+			foreach (string clsName in subclass.BaseTypes) {
+				IClass cls = ctx.GetClass (clsName, true, true);
+				if (cls != null && IsSubclass (ctx, baseClass, cls))
+					return true;
+			}
+			return false;
+		}
+		
 		void Refactor (IProgressMonitor monitor, IClass cls, RefactoryScope scope, RefactorDelegate refactorDelegate)
 		{
-			if (scope == RefactoryScope.File) {
+			if (scope == RefactoryScope.File || rootCombine == null) {
 				string file = cls.Region.FileName;
-				Project prj = GetProjectForFile (file);
-				if (prj == null)
-					return;
-				
-				RefactorerContext gctx = GetGeneratorContext (prj);
+				RefactorerContext gctx = GetGeneratorContext (cls);
 				IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
 				if (gen == null)
 					return;
@@ -189,12 +226,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		RefactorerContext GetGeneratorContext (IClass cls)
 		{
+			return new RefactorerContext (GetParserContext (cls), fileProvider);
+		}
+		
+		IParserContext GetParserContext (IClass cls)
+		{
 			Project p = GetProjectForFile (cls.Region.FileName);
-			return p != null ? GetGeneratorContext (p) : null;
+			if (p != null)
+				return pdb.GetProjectParserContext (p);
+			else
+				return pdb.GetFileParserContext (cls.Region.FileName);
 		}
 		
 		Project GetProjectForFile (string file)
 		{
+			if (rootCombine == null)
+				return null;
+
 			foreach (Project p in rootCombine.GetAllProjects ())
 				if (p.IsFileInProject (file))
 					return p;

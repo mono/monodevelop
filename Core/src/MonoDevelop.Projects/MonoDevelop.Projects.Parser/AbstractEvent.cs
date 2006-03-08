@@ -31,31 +31,32 @@ namespace MonoDevelop.Projects.Parser {
 			}
 		}
 
-		public virtual int CompareTo(IEvent value) {
-			int cmp;
-			
-			if(0 != (cmp = base.CompareTo((IDecoration)value)))
-				return cmp;
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-						
-			return Region.CompareTo(value.Region);
+		public override int CompareTo (object ob) 
+		{
+			IEvent value = (IEvent) ob;
+			return base.CompareTo (value);
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IEvent)value);
+		public override bool Equals (object ob)
+		{
+			IEvent other = ob as IEvent;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = base.GetHashCode () + (int) eventAttributes;
+			if (bodyRegion != null)
+				c += bodyRegion.GetHashCode ();
+			if (addMethod != null)
+				c += addMethod.GetHashCode ();
+			if (removeMethod != null)
+				c += removeMethod.GetHashCode ();
+			if (raiseMethod != null)
+				c += raiseMethod.GetHashCode ();
+				
+			return c; 
 		}
 		
 		public virtual IMethod AddMethod {

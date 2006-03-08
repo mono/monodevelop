@@ -81,19 +81,28 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public virtual int CompareTo(IParameter value) {
+		public virtual int CompareTo (object ob) 
+		{
 			int cmp;
+			IParameter value = (IParameter) ob;
 			
 			if (Name != null) {
+				if (value.Name == null)
+					return -1;
 				cmp = Name.CompareTo(value.Name);
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
+			} else if (value.Name != null)
+				return 1;
+				
 			if (ReturnType != null) {
+				if (value.ReturnType == null)
+					return -1;
 				if(0 != (cmp = ReturnType.CompareTo(value.ReturnType)))
 					return cmp;
-			}
+			} else if (value.ReturnType != null)
+				return 1;
 			
 			if(0 != (cmp = (int)(Modifier - value.Modifier)))
 				return cmp;
@@ -101,8 +110,19 @@ namespace MonoDevelop.Projects.Parser
 			return DiffUtility.Compare(AttributeCollection, value.AttributeCollection);
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IParameter)value);
+		public override bool Equals (object ob)
+		{
+			IParameter other = ob as IParameter;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = (int) Modifier;
+			if (Name != null) c += Name.GetHashCode ();
+			if (ReturnType != null) c += ReturnType.GetHashCode ();
+			return c;
 		}
 	}
 }

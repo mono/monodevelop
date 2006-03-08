@@ -75,15 +75,20 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 
-		public virtual int CompareTo(IReturnType value) {
+		public virtual int CompareTo (object ob) 
+		{
 			int cmp;
+			IReturnType value = (IReturnType) ob;
 			
 			if (FullyQualifiedName != null) {
+				if (value.FullyQualifiedName == null)
+					return -1;
 				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
+			} else if (value.FullyQualifiedName != null)
+				return 1;
 			
 			cmp = (PointerNestingLevel - value.PointerNestingLevel);
 			if (cmp != 0) {
@@ -96,6 +101,24 @@ namespace MonoDevelop.Projects.Parser
 		int IComparable.CompareTo(object value)
 		{
 			return CompareTo((IReturnType)value);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			IReturnType other = ob as IReturnType;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = PointerNestingLevel;
+			if (ArrayDimensions != null)
+				for (int n=0; n<ArrayDimensions.Length; n++)
+					c += arrayDimensions [n];
+			if (FullyQualifiedName != null)
+				c += FullyQualifiedName.GetHashCode ();
+			return c;
 		}
 		
 		public virtual object DeclaredIn {

@@ -47,46 +47,25 @@ namespace MonoDevelop.Projects.Parser
 			                     base.Modifiers);
 		}
 		
-		public virtual int CompareTo(IMethod value)
+		public override int CompareTo (object value)
 		{
-			int cmp;
-			
-			cmp = base.CompareTo((IDecoration)value);
-			
-			if (cmp != 0) {
+			int cmp = base.CompareTo (value);
+			if (cmp != 0)
 				return cmp;
-			}
 			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (Region != null) {
-				cmp = Region.CompareTo(value.Region);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			return DiffUtility.Compare(Parameters, value.Parameters);
+			return DiffUtility.Compare(Parameters, ((IMethod)value).Parameters);
 		}
 		
-		int IComparable.CompareTo(object value)
+		public override bool Equals (object ob)
 		{
-			if (value == null) {
-				return 0;
-			}
-			return CompareTo((IMethod)value);
+			IMethod other = ob as IMethod;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
 		}
 	}
 }

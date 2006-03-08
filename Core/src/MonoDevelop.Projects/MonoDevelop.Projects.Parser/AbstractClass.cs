@@ -101,27 +101,34 @@ namespace MonoDevelop.Projects.Parser
 		}
 
 
-		public virtual int CompareTo(IClass value)
+		public override int CompareTo (object ob)
 		{
 			int cmp;
+			IClass value = (IClass) ob;
 			
-			if(0 != (cmp = base.CompareTo((IDecoration)value))) {
+			if(0 != (cmp = base.CompareTo(value))) {
 				return cmp;
 			}
 			
 			if (FullyQualifiedName != null) {
+				if (value.FullyQualifiedName == null)
+					return -1;
 				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
+			} else if (value.FullyQualifiedName != null)
+				return 1;
 			
 			if (Region != null) {
+				if (value.Region == null)
+					return -1;
 				cmp = Region.CompareTo(value.Region);
-				if (cmp != 0) {
+				if (cmp != 0)
 					return cmp;
-				}
-			}
+			} else
+				if (value.Region != null)
+					return 1;
 			
 			cmp = DiffUtility.Compare(BaseTypes, value.BaseTypes);
 			if(cmp != 0)
@@ -150,9 +157,16 @@ namespace MonoDevelop.Projects.Parser
 			return DiffUtility.Compare(Events, value.Events);
 		}
 		
-		int IComparable.CompareTo(object o) 
+		public override bool Equals (object ob)
 		{
-			return CompareTo((IClass)o);
+			IClass other = ob as IClass;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode() + FullyQualifiedName.GetHashCode ();
 		}
 		
 		protected override bool CanBeSubclass {

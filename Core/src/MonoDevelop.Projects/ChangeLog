@@ -1,3 +1,31 @@
+2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Some small improvements.
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: 
+	  In MemberReference, added TextLine property that holds the text
+	  of the line where the reference was found.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Implemented
+	  FindDerivedClasses method.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: make sure
+	  GetEnclosingLanguageItem returns fully resolved classes. 
+	
+	* MonoDevelop.Projects.Parser/AbstractIndexer.cs:
+	* MonoDevelop.Projects.Parser/AbstractAttribute.cs:
+	* MonoDevelop.Projects.Parser/AbstractMember.cs:
+	* MonoDevelop.Projects.Parser/Namespace.cs:
+	* MonoDevelop.Projects.Parser/AbstractEvent.cs:
+	* MonoDevelop.Projects.Parser/AbstractField.cs:
+	* MonoDevelop.Projects.Parser/AbstractProperty.cs:
+	* MonoDevelop.Projects.Parser/ClassProxy.cs:
+	* MonoDevelop.Projects.Parser/ILanguageItem.cs:
+	* MonoDevelop.Projects.Parser/LocalVariable.cs:
+	* MonoDevelop.Projects.Parser/AbstractMethod.cs:
+	* MonoDevelop.Projects.Parser/AbstractParameter.cs:
+	* MonoDevelop.Projects.Parser/AbstractClass.cs:
+	* MonoDevelop.Projects.Parser/AbstractReturnType.cs:
+	* MonoDevelop.Projects.Parser/AbstractDecoration.cs: Several fixes
+	  in CompareTo, and implemented Equals and GetHashCode.
+
 2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:

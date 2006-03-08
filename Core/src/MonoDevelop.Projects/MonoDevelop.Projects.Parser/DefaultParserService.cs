@@ -290,8 +290,8 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ILanguageItem GetEnclosingLanguageItem (int caretLineNumber, int caretColumn, ITextFile file)
 		{
-			IParseInformation parseInfo = GetParseInformation (file.Name);
-			IClass cls = GetEnclosingClass (caretLineNumber, caretColumn, ((ICompilationUnit)parseInfo.MostRecentCompilationUnit).Classes);
+			IClass[] classes = GetFileContents (file.Name);			
+			IClass cls = GetEnclosingClass (caretLineNumber, caretColumn, classes);
 			if (cls == null)
 				return null;
 

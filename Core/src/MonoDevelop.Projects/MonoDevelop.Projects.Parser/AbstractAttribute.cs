@@ -51,6 +51,22 @@ namespace MonoDevelop.Projects.Parser
 		int IComparable.CompareTo(object value) {
 			return CompareTo((IAttributeSection)value);
 		}
+		
+		public override bool Equals (object ob)
+		{
+			IAttributeSection sec = ob as IAttributeSection;
+			if (sec == null) return false;
+			return CompareTo (sec) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = 0;
+			foreach (IAttribute at in Attributes)
+				c += at.GetHashCode ();
+
+			return attributeTarget.GetHashCode () + c;
+		}
 	}
 	
 	public abstract class AbstractAttribute : IAttribute
@@ -108,6 +124,18 @@ namespace MonoDevelop.Projects.Parser
 		
 		int IComparable.CompareTo(object value) {
 			return CompareTo((IAttribute)value);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			IAttribute other = ob as IAttribute;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return Name.GetHashCode ();
 		}
 	}
 }

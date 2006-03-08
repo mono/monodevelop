@@ -153,8 +153,10 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public virtual int CompareTo(IDecoration value) {
+		public virtual int CompareTo (object ob) 
+		{
 			int cmp;
+			IDecoration value = (IDecoration) ob;
 			
 			if(0 != (cmp = (int)(Modifiers - value.Modifiers)))
 				return cmp;
@@ -162,8 +164,16 @@ namespace MonoDevelop.Projects.Parser
 			return DiffUtility.Compare(Attributes, value.Attributes);
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IDecoration)value);
+		public override bool Equals (object ob)
+		{
+			IDecoration other = ob as IDecoration;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return modifiers.GetHashCode () + Name.GetHashCode ();
 		}
 	}
 }

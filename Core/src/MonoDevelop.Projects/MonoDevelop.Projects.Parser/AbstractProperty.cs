@@ -73,45 +73,44 @@ namespace MonoDevelop.Projects.Parser {
 			}
 		}
 
-		public virtual int CompareTo(IProperty value)
+		public override int CompareTo (object ob)
 		{
 			int cmp;
+			IProperty value = (IProperty) ob;
 			
-			if(0 != (cmp = base.CompareTo((IDecoration)value)))
+			if(0 != (cmp = base.CompareTo (value)))
 				return cmp;
 			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				if(0 != (cmp = ReturnType.CompareTo(value.ReturnType)))
-					return cmp;
-			}
-			
-			if(0 != (cmp = Region.CompareTo(value.Region)))
-				return cmp;
-			
-			if(SetterRegion != null && value.SetterRegion == null)
-				return 1;
-			
-			if(SetterRegion == null && value.SetterRegion != null)
+			if (SetterRegion != null) {
+				if (value.SetterRegion == null)	return 1;
+				cmp = SetterRegion.CompareTo (value.SetterRegion);
+				if (cmp != 0) return cmp;
+			} else if (value.SetterRegion != null)
 				return -1;
 			
-			if(GetterRegion != null && value.GetterRegion == null)
-				return 1;
-			
-			if(GetterRegion == null && value.GetterRegion != null)
+			if (GetterRegion != null) {
+				if (value.GetterRegion == null)	return 1;
+				cmp = GetterRegion.CompareTo (value.GetterRegion);
+				if (cmp != 0) return cmp;
+			} else if (value.GetterRegion != null)
 				return -1;
 			
 			return 0;
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IProperty)value);
+		public override bool Equals (object ob)
+		{
+			IProperty other = ob as IProperty;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = base.GetHashCode ();
+			if (SetterRegion != null) c += SetterRegion.GetHashCode ();
+			if (GetterRegion != null) c += GetterRegion.GetHashCode ();
+			return c;
 		}
 	}
 }

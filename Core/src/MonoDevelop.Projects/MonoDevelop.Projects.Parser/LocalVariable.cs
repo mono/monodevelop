@@ -56,5 +56,27 @@ namespace MonoDevelop.Projects.Parser
 		public string Documentation {
 			get { return documentation; }
 		}
+		
+		public virtual int CompareTo (object value)
+		{
+			LocalVariable loc = (LocalVariable) value;
+			
+			int res = name.CompareTo (loc.name);
+			if (res != 0) return res;
+			
+			return returnType.CompareTo (loc.returnType);
+		}
+		
+		public override bool Equals (object ob)
+		{
+			LocalVariable other = ob as LocalVariable;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return name.GetHashCode () + returnType.GetHashCode ();
+		}
 	}
 }

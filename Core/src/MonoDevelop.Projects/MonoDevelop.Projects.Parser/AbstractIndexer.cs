@@ -42,53 +42,54 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public virtual int CompareTo(IIndexer value) {
+		public override int CompareTo (object ob) 
+		{
 			int cmp;
-			cmp = base.CompareTo((IDecoration)value);
+			IIndexer value = (IIndexer) ob;
+			
+			cmp = base.CompareTo (value);
 			if (cmp != 0) {
 				return cmp;
 			}
 			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (Region != null) {
-				cmp = Region.CompareTo(value.Region);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
 			if (GetterRegion != null) {
+				if (value.GetterRegion == null)
+					return -1;
 				cmp = GetterRegion.CompareTo(value.GetterRegion);
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
+			} else if (value.GetterRegion != null)
+				return 1;
 			
 			if (SetterRegion != null) {
+				if (value.SetterRegion == null)
+					return -1;
 				cmp = SetterRegion.CompareTo(value.SetterRegion);
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
+			} else if (value.SetterRegion != null)
+				return 1;
 			
 			return DiffUtility.Compare(Parameters, value.Parameters);
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IIndexer)value);
+		public override bool Equals (object ob)
+		{
+			IIndexer other = ob as IIndexer;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int c = base.GetHashCode ();
+			if (GetterRegion != null)
+				c += GetterRegion.GetHashCode ();
+			if (SetterRegion != null)
+				c += SetterRegion.GetHashCode ();
+			return c;
 		}
 	}
 }

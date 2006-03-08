@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public int CompareTo(object obj)
+		public override int CompareTo (object obj)
 		{
 			return FullyQualifiedName.CompareTo(((ClassProxy)obj).FullyQualifiedName);
 		}

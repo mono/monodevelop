@@ -56,9 +56,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		int column;
 		string fileName;
 		string name;
+		string textLine;
 		RefactorerContext rctx;
 		
-		public MemberReference (RefactorerContext rctx, string fileName, int position, int line, int column, string name)
+		public MemberReference (RefactorerContext rctx, string fileName, int position, int line, int column, string name, string textLine)
 		{
 			this.position = position;
 			this.line = line;
@@ -66,6 +67,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			this.fileName = fileName;
 			this.name = name;
 			this.rctx = rctx;
+			this.textLine = textLine;
+			if (textLine == null || textLine.Length == 0)
+				textLine = name;
 		}
 		
 		public int Position {
@@ -82,6 +86,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public string FileName {
 			get { return fileName; }
+		}
+		
+		public string TextLine {
+			get { return textLine; }
 		}
 		
 		public virtual void Rename (string newName)

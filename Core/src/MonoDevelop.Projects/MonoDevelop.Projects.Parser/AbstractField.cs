@@ -12,44 +12,22 @@ namespace MonoDevelop.Projects.Parser {
 	[Serializable]
 	public abstract class AbstractField : AbstractMember, IField
 	{
-		public virtual int CompareTo(IField field) 
+		public override int CompareTo(object ob) 
 		{
-			int cmp;
-			
-			cmp = base.CompareTo((IDecoration)field);
-			if (cmp != 0) {
-				return cmp;
-			}
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(field.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(field.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(field.ReturnType);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			if (Region != null) {
-				return Region.CompareTo(field.Region);
-			}
-			return 0;
+			IField field = (IField) ob;		// Just crash if this is not a field
+			return base.CompareTo (field);
 		}
 		
-		int IComparable.CompareTo(object value)
+		public override bool Equals (object ob)
 		{
-			return CompareTo((IField)value);
+			IField other = ob as IField;
+			if (other == null) return false;
+			return CompareTo (other) == 0;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
 		}
 	}
 }

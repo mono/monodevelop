@@ -65,14 +65,14 @@ namespace MonoDevelop.Projects.Text
 		
 		public string GetText (int startPosition, int endPosition)
 		{
-			return text.ToString ().Substring (startPosition, endPosition - startPosition);
+			return text.ToString (startPosition, endPosition - startPosition);
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
 			int lin = 1;
 			int col = 1;
-			for (int i = 0; i < text.Length; i++) {
+			for (int i = 0; i < text.Length && lin <= line; i++) {
 				if (line == lin && column == col)
 					return i;
 				if (text[i] == '\n') {
