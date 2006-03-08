@@ -1,3 +1,9 @@
+2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Avoid creating a MonodocService instance. Instead, add a
+	  MonoDevelop.Documentation dependency to the external process.
+
 2006-03-07 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects/MdpFileFormat.cs: Catch exceptions

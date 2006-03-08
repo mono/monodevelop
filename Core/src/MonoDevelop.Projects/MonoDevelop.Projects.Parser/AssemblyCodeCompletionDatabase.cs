@@ -36,7 +36,6 @@ using MonoDevelop.Projects.Parser;
 using System.Reflection;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Documentation;
 
 namespace MonoDevelop.Projects.Parser
 {	
@@ -105,7 +104,7 @@ namespace MonoDevelop.Projects.Parser
 				monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
 				if (useExternalProcess)
 				{
-					using (AssemblyDatabaseHelper helper = GetExternalHelper (true))
+					using (DatabaseGenerator helper = GetGenerator (true))
 					{
 						helper.GenerateDatabase (baseDir, assemblyName);
 						Read ();
@@ -155,6 +154,13 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		static DatabaseGenerator GetGenerator (bool share)
+		{
+			if (Runtime.ProcessService != null)
+				return (DatabaseGenerator) Runtime.ProcessService.CreateExternalProcessObject (typeof(DatabaseGenerator), share);
+			else
+				return new DatabaseGenerator ();
+		}
 		
 		static AssemblyDatabaseHelper GetExternalHelper (bool share)
 		{
@@ -162,6 +168,16 @@ namespace MonoDevelop.Projects.Parser
 				return (AssemblyDatabaseHelper) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyDatabaseHelper), share);
 			else
 				return new AssemblyDatabaseHelper ();
+		}
+	}
+	
+	[AddinDependency ("MonoDevelop.Documentation")]
+	internal class DatabaseGenerator: RemoteProcessObject
+	{
+		public void GenerateDatabase (string baseDir, string assemblyName)
+		{
+			DefaultParserService parserService = new DefaultParserService ();
+			parserService.GenerateAssemblyDatabase (baseDir, assemblyName);
 		}
 	}
 	
@@ -229,15 +245,6 @@ namespace MonoDevelop.Projects.Parser
 				return asm.GetName().FullName;
 			else
 				return s;
-		}
-		
-		public void GenerateDatabase (string baseDir, string assemblyName)
-		{
-			if (ServiceManager.GetService (typeof(MonodocService)) == null)
-				ServiceManager.AddService (new MonodocService());
-
-			DefaultParserService parserService = new DefaultParserService ();
-			parserService.GenerateAssemblyDatabase (baseDir, assemblyName);
 		}
 		
 		Assembly FindAssembly (string name)
