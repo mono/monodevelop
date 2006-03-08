@@ -37,6 +37,7 @@ using System.Collections.Specialized;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -67,6 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		Combine  currentCombine = null;
 		Combine  openCombine    = null;
 		IParserDatabase parserDatabase;
+		CodeRefactorer refactorer;
 
 		ICompilerResult lastResult = new DefaultCompilerResult ();
 		
@@ -83,6 +85,15 @@ namespace MonoDevelop.Ide.Gui
 		public IParserDatabase ParserDatabase {
 			get { return parserDatabase; }
 		}
+		
+		public CodeRefactorer CodeRefactorer {
+			get {
+				if (refactorer == null)
+					refactorer = new CodeRefactorer (openCombine, parserDatabase);
+				return refactorer;
+			}
+		}
+
 
 		public ICompilerResult LastCompilerResult {
 			get { return lastResult; }
@@ -185,6 +196,7 @@ namespace MonoDevelop.Ide.Gui
 				Combine closedCombine = CurrentOpenCombine;
 				CurrentSelectedProject = null;
 				CurrentOpenCombine = CurrentSelectedCombine = null;
+				refactorer = null;
 				
 				Document[] docs = new Document [IdeApp.Workbench.Documents.Count];
 				IdeApp.Workbench.Documents.CopyTo (docs, 0);

@@ -1,3 +1,15 @@
+2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show
+	  the enclosing item if it is the same as the identified item.
+	  Implemented FindDerivedClasses.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:
+	  Update the entry count when solution entries change.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Update the node
+	  label after renaming.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added CodeRefactorer
+	  property.
+
 2006-03-07  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Added fix for

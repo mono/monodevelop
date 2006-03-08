@@ -138,6 +138,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (sender);
 			if (tb != null) {
+				tb.Update ();	// Update the entry count
 				tb.AddChild (e.CombineEntry, true);
 				tb.Expanded = true;
 			}
@@ -146,7 +147,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnEntryRemoved (object sender, CombineEntryEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
-			if (tb != null) tb.Remove ();
+			if (tb != null) {
+				tb.Remove ();
+				if (tb.MoveToParent (typeof(Combine)))
+					tb.Update ();	// Update the entry count
+			}
 		}
 		
 		void OnCombineRenamed (object sender, CombineEntryRenamedEventArgs e)

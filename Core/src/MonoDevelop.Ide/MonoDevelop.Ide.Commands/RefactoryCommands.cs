@@ -88,9 +88,8 @@ namespace MonoDevelop.Ide.Commands
 					}
 					
 					// Look for the enclosing language item
-					
 					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
-					if (eitem != null && eitem != item) {
+					if (eitem != null && !eitem.Equals (item)) {
 						CommandInfo ci = BuildRefactoryMenuForItem (ctx, eitem);
 						if (ci != null)
 							ainfo.Add (ci, null);
@@ -204,7 +203,7 @@ namespace MonoDevelop.Ide.Commands
 		void FindReferencesThread ()
 		{
 			using (monitor) {
-				CodeRefactorer refactorer = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 				
 				if (item is IMember) {
 					references = refactorer.FindMemberReferences (monitor, ((IMember)item).DeclaringType, (IMember)item, RefactoryScope.Solution);
@@ -214,7 +213,7 @@ namespace MonoDevelop.Ide.Commands
 				
 				if (references != null) {
 					foreach (MemberReference mref in references) {
-						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, item.Name);
+						monitor.ReportResult (mref.FileName, mref.Line, mref.Column, mref.TextLine);
 					}
 				}
 			}
@@ -238,6 +237,24 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void FindDerivedClasses ()
 		{
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
+			Thread t = new Thread (new ThreadStart (FindDerivedThread));
+			t.IsBackground = true;
+			t.Start ();
+		}
+		
+		void FindDerivedThread ()
+		{
+			using (monitor) {
+				IClass cls = (IClass) item;
+				if (cls == null) return;
+			
+				IClass[] classes = IdeApp.ProjectOperations.CodeRefactorer.FindDerivedClasses (cls);
+				foreach (IClass sub in classes) {
+					if (sub.Region != null)
+						monitor.ReportResult (sub.Region.FileName, sub.Region.BeginLine, sub.Region.BeginColumn, sub.FullyQualifiedName);
+				}
+			}
 		}
 	}
 }

@@ -647,19 +647,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (!store.GetIterFromString (out iter, e.Path))
 				throw new Exception("Error calculating iter for path " + e.Path);
 
-			if (e.NewText == null || e.NewText.Length == 0)
-				return;
+			if (e.NewText != null && e.NewText.Length > 0) {
+				ITreeNavigator nav = new TreeNodeNavigator (this, iter);
+				NodePosition pos = nav.CurrentPosition;
 
-			ITreeNavigator nav = new TreeNodeNavigator (this, iter);
-			NodePosition pos = nav.CurrentPosition;
-
-			NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
-			foreach (NodeBuilder b in chain) {
-				NodeCommandHandler handler = b.CommandHandler;
-				handler.SetCurrentNode (nav);
-				handler.RenameItem (e.NewText);
-				nav.MoveToPosition (pos);
+				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
+				foreach (NodeBuilder b in chain) {
+					NodeCommandHandler handler = b.CommandHandler;
+					handler.SetCurrentNode (nav);
+					handler.RenameItem (e.NewText);
+					nav.MoveToPosition (pos);
+				}
 			}
+			
+			ITreeBuilder builder = new TreeBuilder (this, iter);
+			builder.Update ();
 		}
 		
 		void HandleOnEditCancelled (object s, EventArgs args)
