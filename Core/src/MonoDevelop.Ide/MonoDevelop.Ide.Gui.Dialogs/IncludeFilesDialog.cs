@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Runtime.LoggingService.Debug ("*** Include files dialog ***");
 			// we must do it from *here* otherwise, we get this assembly, not the caller
-			Glade.XML glade = new Glade.XML (null, "Base.glade", "IncludeFilesDialogWidget", null);
+			Glade.XML glade = new Glade.XML (typeof (IncludeFilesDialog).Assembly, "Base.glade", "IncludeFilesDialogWidget", null);
 			glade.Autoconnect (this);
 			
 			// set up dialog title

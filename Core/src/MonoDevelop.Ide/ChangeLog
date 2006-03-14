@@ -1,3 +1,9 @@
+2006-03-14 Michael Hutchinson  <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:
+	  Make sure that Glade looks for the resource file in
+	  the correct assembly
+
 2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show
