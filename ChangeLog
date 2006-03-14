@@ -1,6 +1,11 @@
+2006-03-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* configure.in: Added zh_TW translation. Thanks to
+	Yan-ren Tsai <elleryq@gmail.com>.
+
 2006-03-06  Lluis Sanchez Gual  <lluis@novell.com>   
 
-	* monodevelop.pc.in: Fix target path of MonoDevelop.Compotents.dll.
+	* monodevelop.pc.in: Fix target path of MonoDevelop.Components.dll.
 
 2006-03-02  Lluis Sanchez Gual  <lluis@novell.com>   
 
