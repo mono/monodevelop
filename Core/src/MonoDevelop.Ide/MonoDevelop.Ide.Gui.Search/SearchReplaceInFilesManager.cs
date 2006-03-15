@@ -65,6 +65,9 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			if (result.Line != -1) {
 				string text = result.DocumentInformation.GetLineTextAtOffset (result.DocumentOffset);
+				if(null != text) {
+					text = text.Trim();
+				}
 				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, text);
 			} else {
 				string msg = string.Format (GettextCatalog.GetString ("Match at offset {0}"), result.DocumentOffset);
