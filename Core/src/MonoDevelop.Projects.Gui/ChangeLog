@@ -1,3 +1,7 @@
+2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * Base.glade: Marking some strings not to be translated. Not include balast in pot file.
+
 2006-02-19 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
