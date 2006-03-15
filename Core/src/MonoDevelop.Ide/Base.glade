@@ -417,7 +417,7 @@
 			<widget class="GtkLabel" id="lbl_will_save_in">
 			  <property name="width_request">580</property>
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Project will be saved in: /dev/null</property>
+			  <property name="label">Project will be saved in: /dev/null</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -636,7 +636,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label7">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">label7</property>
+		  <property name="label">label7</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -660,7 +660,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label6">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">label6</property>
+		  <property name="label">label6</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -830,7 +830,7 @@
 
 <widget class="GtkWindow" id="CodeGenerationOptionsPanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">window1</property>
+  <property name="title">window1</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -1146,7 +1146,7 @@
 
 <widget class="GtkWindow" id="SelectStylePanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">window1</property>
+  <property name="title">window1</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -1212,7 +1212,7 @@
 
 <widget class="GtkWindow" id="LoadSavePanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">LoadSavePanel</property>
+  <property name="title">LoadSavePanel</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -1814,7 +1814,7 @@
 
 <widget class="GtkWindow" id="BuildPanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">BuildPanel</property>
+  <property name="title">BuildPanel</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -2011,7 +2011,7 @@
 
 <widget class="GtkWindow" id="ExternalToolPanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">ExternalToolPanel</property>
+  <property name="title">ExternalToolPanel</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -2355,7 +2355,7 @@
 		<widget class="GtkButton" id="argumentQuickInsertButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes"> &gt; </property>
+		  <property name="label"> &gt; </property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -2414,7 +2414,7 @@
 		<widget class="GtkButton" id="workingDirQuickInsertButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes"> &gt; </property>
+		  <property name="label"> &gt; </property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -3246,7 +3246,7 @@
 		<widget class="GtkButton" id="findHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -3319,7 +3319,7 @@
 		<widget class="GtkButton" id="replaceHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -3618,7 +3618,7 @@
 		<widget class="GtkButton" id="findHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -3748,7 +3748,7 @@
 		<widget class="GtkButton" id="browseButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">...</property>
+		  <property name="label">...</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -4141,7 +4141,7 @@
 		<widget class="GtkButton" id="findHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -4214,7 +4214,7 @@
 		<widget class="GtkButton" id="replaceHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -4344,7 +4344,7 @@
 		<widget class="GtkButton" id="browseButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">...</property>
+		  <property name="label">...</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -4724,7 +4724,7 @@
 		<widget class="GtkButton" id="findHelpButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">&gt;</property>
+		  <property name="label">&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -5139,7 +5139,7 @@
 
 <widget class="GtkWindow" id="AddInsOptionsPanel">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">AddInsOptionsPanel</property>
+  <property name="title">AddInsOptionsPanel</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>

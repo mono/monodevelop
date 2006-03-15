@@ -1,4 +1,10 @@
+2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* Base.glade: Marking some strings not to be translated. Not include 
+	balast in pot file.
+
 2006-03-14 Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Trim
 	search results.  Also strip ^M from source.
 
