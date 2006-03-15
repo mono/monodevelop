@@ -78,6 +78,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			IClass cls = win.GetClass (); 
 			className = cls.FullyQualifiedName;
 			classFile = cls.Region.FileName;
+			
+			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (win.Project.Project).ResourceProvider;
 		}
 		
 		public Stetic.Project SteticProject {

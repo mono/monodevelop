@@ -104,7 +104,8 @@ namespace MonoDevelop.GtkCore
 			info.UpdateGtkFolder ();
 
 			XmlDocument doc = new XmlDocument ();
-			doc.Load (info.ObjectsFile);
+			if (File.Exists (info.ObjectsFile))
+				doc.Load (info.ObjectsFile);
 			
 			// Add or update the selected classes
 
@@ -136,7 +137,8 @@ namespace MonoDevelop.GtkCore
 			info.UpdateGtkFolder ();
 			
 			XmlDocument doc = new XmlDocument ();
-			doc.Load (info.ObjectsFile);
+			if (File.Exists (info.ObjectsFile))
+				doc.Load (info.ObjectsFile);
 			UpdateClass (project, doc, widgetClass, wrapperClass);
 			
 			doc.Save (info.ObjectsFile);

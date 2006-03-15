@@ -63,6 +63,7 @@
     <File name="./icons/dialog.png" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.WidgetLibrary/CachedProjectWidgetLibrary.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.GtkCore/ProjectResourceProvider.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

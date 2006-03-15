@@ -1,3 +1,26 @@
+2006-03-15 Lluis Sanchez Gual  <lluis@novell.com>    
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.mdp: Updated.
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Added support for using
+	  resource images in the designer.
+	  
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Check if the objects.xml
+	  file exists before loading it.
+	* MonoDevelop.GtkCore/GeneratorBuildStep.cs: Don't generate code
+	  if the stetic file has not been modified since the last
+	  generation.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: If Gtk
+	  support is not enabled, don't enable it if no widgets have
+	  been selected.
+	* lib/libstetic.dll: Updated.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Mapped some
+	  commands.
+	* templates/Window.xft.xml: The constructor of Gtk.Window requires
+	  the title of the window.
+
 2006-03-04 Lluis Sanchez Gual  <lluis@novell.com>    
 
 	* MonoDevelop.GtkCore.mdp, Makefile.am: Updated.

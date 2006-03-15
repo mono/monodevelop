@@ -20,6 +20,7 @@ FILES = \
 MonoDevelop.GtkCore/GtkCoreService.cs \
 MonoDevelop.GtkCore/GtkDesignInfo.cs \
 MonoDevelop.GtkCore/GeneratorBuildStep.cs \
+MonoDevelop.GtkCore/ProjectResourceProvider.cs \
 MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
 MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs \
 MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs \

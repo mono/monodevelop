@@ -67,6 +67,11 @@ namespace MonoDevelop.GtkCore
 			}
 
 			if (!info.GuiBuilderProject.IsEmpty) {
+				if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
+					if (File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
+						return null;
+				}
+				
 				monitor.Log.WriteLine ("Generating stetic code...");
 				DotNetProject netproject = (DotNetProject) project;
 				
@@ -81,7 +86,7 @@ namespace MonoDevelop.GtkCore
 				
 				CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 				using (cob) {
-					cob.GenerateCode (Path.Combine (project.BaseDirectory, info.SteticGeneratedFile), projects, libs, projectInfo, projectObjectsFile, netproject.LanguageName);
+					cob.GenerateCode (info.SteticGeneratedFile, projects, libs, projectInfo, projectObjectsFile, netproject.LanguageName);
 				}
 			}
 			

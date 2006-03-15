@@ -52,6 +52,7 @@ namespace MonoDevelop.GtkCore
 		ProjectWidgetLibrary widgetLibrary;
 		GuiBuilderProject builderProject;
 		IDotNetLanguageBinding binding;
+		ProjectResourceProvider resourceProvider;
 		
 		public GtkDesignInfo ()
 		{
@@ -85,6 +86,14 @@ namespace MonoDevelop.GtkCore
 					builderProject = new GuiBuilderProject (project, SteticFile);
 				}
 				return builderProject;
+			}
+		}
+		
+		public ProjectResourceProvider ResourceProvider {
+			get {
+				if (resourceProvider == null)
+					resourceProvider = new ProjectResourceProvider (project);
+				return resourceProvider;
 			}
 		}
 		

@@ -36,6 +36,9 @@
 									</BaseTypes>
 									<Members>
 										<Constructor Attributes="Public, Final">
+											<BaseConstructorArgs>
+												<PrimitiveExpression Value="" />
+											</BaseConstructorArgs>
 											<Statements>
 												<MethodInvokeExpression>
 													<Method>

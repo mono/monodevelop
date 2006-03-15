@@ -114,6 +114,9 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 			public void Store (IProperties customizationObject)
 			{
+				if (selection.Count == 0 && (designInfo == null || designInfo.ExportedWidgets.Length == 0))
+					return;
+				
 				if (designInfo == null)
 					designInfo = GtkCoreService.EnableGtkSupport (project);
 				designInfo.ExportedWidgets = (string[]) selection.ToArray (typeof(string));

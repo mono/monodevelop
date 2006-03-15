@@ -32,6 +32,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
@@ -268,6 +270,38 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
 			OnDirtyChanged (args);
+		}
+		
+		/* Commands *********************************/
+		
+		[CommandHandler (EditCommands.Delete)]
+		protected void OnDelete ()
+		{
+			if (editSession.SteticProject.Selection != null) {
+				Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
+				wrapper.Delete ();
+			}
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			if (editSession.SteticProject.Selection != null)
+				Stetic.Clipboard.Copy (editSession.SteticProject.Selection);
+		}
+		
+		[CommandHandler (EditCommands.Cut)]
+		protected void OnCut ()
+		{
+			if (editSession.SteticProject.Selection != null)
+				Stetic.Clipboard.Cut (editSession.SteticProject.Selection);
+		}
+		
+		[CommandHandler (EditCommands.Paste)]
+		protected void OnPaste ()
+		{
+			if (editSession.SteticProject.Selection != null)
+				Stetic.Clipboard.Cut (editSession.SteticProject.Selection as Stetic.Placeholder);
 		}
 		
 		/* IEditableTextBuffer **********************/
