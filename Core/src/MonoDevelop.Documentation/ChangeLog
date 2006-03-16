@@ -1,5 +1,9 @@
 2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
 
+	* Makefile.am: Fixed rename.
+
+2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
+
 	* MonoDevelop.Documentation/DocumentationService.cs: Renamed from
 	MonoDevelop.Documentation/MonodocService.cs.
 

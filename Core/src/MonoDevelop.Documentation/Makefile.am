@@ -7,7 +7,7 @@ REFERENCES = \
 	$(MONODOC_LIBS)
 
 FILES= \
-MonoDevelop.Documentation/MonodocService.cs
+MonoDevelop.Documentation/DocumentationService.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs
