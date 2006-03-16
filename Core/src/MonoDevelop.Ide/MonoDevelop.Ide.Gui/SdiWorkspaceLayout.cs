@@ -416,6 +416,11 @@ namespace MonoDevelop.Ide.Gui
 			if (placement != null)
 				GetPlacement (placement, out dockPlacement, out ot);
 				
+			if (item.Iconified)
+			{
+				item.Iconified = false;
+			}
+			
 			if (dockPlacement != DockPlacement.None && dockPlacement != DockPlacement.Floating) {
 				if (ot != null) {
 					item.DockTo (ot, dockPlacement);

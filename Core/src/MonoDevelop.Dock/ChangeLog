@@ -1,3 +1,7 @@
+2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* DockItem.cs: Added setter to the Iconified property.	
+
 2006-03-03  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* DockBar.cs:

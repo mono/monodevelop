@@ -151,8 +151,20 @@ namespace Gdl
 			get { return !NoGrip; }
 		}
 		
-		public bool Iconified {
+		public bool Iconified
+		{
 			get { return ((DockObjectFlags & DockObjectFlags.Iconified) != 0); }
+			set
+			{ 
+				if (value)
+				{
+					DockObjectFlags |= DockObjectFlags.Iconified;
+				}
+				else
+				{
+					DockObjectFlags &= ~(DockObjectFlags.Iconified);
+				}
+			}
 		}
 		
 		public bool InDrag {

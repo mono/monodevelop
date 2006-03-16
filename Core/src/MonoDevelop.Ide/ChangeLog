@@ -1,5 +1,11 @@
 2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: If a pad
+	is iconified remember to uniconify it before showing it.
+	Fixes bug 77604.
+
+2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
 	* MonoDevelop.Ide/Services.cs:
 	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:
 	* MonoDevelop.Ide.Gui/Ide.cs:
