@@ -42,11 +42,11 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Documentation;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui;
+using MonoDevelop.Projects.Documentation;
 
 
 
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui
 		ResourceService resourceService;
 		IStatusBarService statusBarService;
 		IconService icons;
-		MonodocService monodocService;
+		IDocumentationService documentationService;
 		IDebuggingService debuggingService;
 		TaskService taskService;
 		IParserService parserService;
@@ -220,11 +220,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 	
-		public MonodocService Documentation {
+		public IDocumentationService Documentation {
 			get {
-				if (monodocService == null)
-					monodocService = (MonodocService) ServiceManager.GetService (typeof(MonodocService));
-				return monodocService;
+				if (documentationService == null)
+					documentationService = (IDocumentationService) ServiceManager.GetService (typeof(IDocumentationService));
+				return documentationService;
 			}
 		}
 	

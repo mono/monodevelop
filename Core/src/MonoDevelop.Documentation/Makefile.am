@@ -3,6 +3,7 @@ DLL = $(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll
 
 REFERENCES = \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	$(MONODOC_LIBS)
 
 FILES= \

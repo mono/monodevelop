@@ -272,6 +272,7 @@ namespace MonoDevelop.SourceEditor.Gui
 					case '\r':
 					case '\n':
 					case '.':
+					case ';':
 					case '(':
 					case '[':
 						triggerIter = insertIter;
@@ -291,11 +292,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(this, insertIter.Offset) : expressionFinder.FindExpression(buf.GetText(buf.StartIter, insertIter, true), insertIter.Offset - 2).Expression;
 			if (expression == null) return false;
 			Console.WriteLine ("Expression: {" + expression + "}");
-			string type = GetParserContext ().MonodocResolver (expression, insertIter.Line + 1, insertIter.LineOffset + 1, fileName, buf.Text);
-			if (type == null || type.Length == 0)
+
+			ILanguageItem languageItem = GetParserContext ().ResolveIdentifier(expression, insertIter.Line + 1, insertIter.LineOffset + 1, fileName, buf.Text);
+			
+			if (languageItem == null)
 				return false;
 
-			IdeApp.HelpOperations.ShowHelp (type);
+			IdeApp.HelpOperations.ShowHelp (MonoDevelop.Projects.Services.DocumentationService.GetHelpUrl(languageItem));
 			
 			return true;
 		}

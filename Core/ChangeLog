@@ -1,3 +1,7 @@
+2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* src/Makefile.am: Changed build order.
+
 2005-01-13  Christian Hergert <chris@mosaix.net>
 
 	* AUTHORS: Added christian and ankit

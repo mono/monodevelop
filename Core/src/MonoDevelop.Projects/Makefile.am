@@ -6,7 +6,7 @@ REFERENCES = \
 	/r:Mono.Posix.dll \
 	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll
+	$(MONODOC_LIBS)
 
 FILES= \
 MonoDevelop.Projects.Ambience/AbstractAmbience.cs \
@@ -208,7 +208,8 @@ MonoDevelop.Projects/ConfigurationCollection.cs \
 MonoDevelop.Projects/ConfigurationEventHandler.cs \
 MonoDevelop.Projects/ExecutionContext.cs \
 MonoDevelop.Projects/BuildTool.cs \
-MonoDevelop.Projects/ProjectsServices.cs
+MonoDevelop.Projects/ProjectsServices.cs \
+MonoDevelop.Projects.Documentation/IDocumentationService.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs

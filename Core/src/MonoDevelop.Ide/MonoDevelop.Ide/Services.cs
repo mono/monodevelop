@@ -8,6 +8,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui;
+using MonoDevelop.Projects.Documentation;
 
 namespace MonoDevelop.Ide
 {
@@ -18,7 +19,7 @@ namespace MonoDevelop.Ide
 		static ResourceService resourceService;
 		static IStatusBarService statusBarService;
 		static IconService icons;
-		static MonodocService monodocService;
+		static IDocumentationService documentationService;
 		static IDebuggingService debuggingService;
 		static TaskService taskService;
 		static IParserService parserService;
@@ -74,11 +75,11 @@ namespace MonoDevelop.Ide
 			}
 		}
 	
-		public static MonodocService Documentation {
+		public static IDocumentationService DocumentationService {
 			get {
-				if (monodocService == null)
-					monodocService = (MonodocService) ServiceManager.GetService (typeof(MonodocService));
-				return monodocService;
+				if (documentationService == null)
+					documentationService = (IDocumentationService) ServiceManager.GetService (typeof(IDocumentationService));
+				return documentationService;
 			}
 		}
 	

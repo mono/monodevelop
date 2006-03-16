@@ -1,3 +1,12 @@
+2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Projects/ProjectsServices.cs:
+	* MonoDevelop.Projects.Documentation:
+	* MonoDevelop.Projects.Documentation/IDocumentationService.cs:
+	* Makefile.am:
+	* MonoDevelop.Projects.Parser/ReflectionClass.cs:
+	Use new DocumentationService.
+
 2006-03-08 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Some small improvements.

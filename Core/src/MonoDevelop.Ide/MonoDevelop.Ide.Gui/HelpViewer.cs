@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 		void UrlRequested (object sender, UrlRequestedArgs args)
 		{
 			Runtime.LoggingService.DebugFormat ("Image requested: {0}", args.Url);
-			Stream s = Services.Documentation.HelpTree.GetImage (args.Url);
+			Stream s = Services.DocumentationService.HelpTree.GetImage (args.Url);
 			
 			if (s != null) {
 				byte [] buffer = new byte [8192];
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Node node;
 			
-			string res = Services.Documentation.HelpTree.RenderUrl (url, out node);
+			string res = Services.DocumentationService.HelpTree.RenderUrl (url, out node);
 			if (res != null) {
 				Render (res, node, url);
 			}

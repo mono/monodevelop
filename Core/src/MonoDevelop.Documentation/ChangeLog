@@ -1,3 +1,10 @@
+2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Documentation/MonodocService.cs:
+	* Makefile.am:
+	* MonoDevelop.Documentation.addin.xml:
+	Use new DocumentationService.	
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Documentation.addin.xml: Fixed addin header

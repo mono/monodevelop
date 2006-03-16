@@ -1,8 +1,7 @@
-
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Documentation;
+using MonoDevelop.Projects.Documentation;
 
 namespace MonoDevelop.Projects
 {
@@ -12,7 +11,7 @@ namespace MonoDevelop.Projects
 		static IProjectService projectService;
 		static LanguageBindingService languageBindingService;
 		static IParserService parserService;
-		static MonodocService monodocService;
+		static IDocumentationService documentationService;
 
 		public static AmbienceService Ambience {
 			get {
@@ -46,11 +45,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 	
-		internal static MonodocService Documentation {
+		public static IDocumentationService DocumentationService {
 			get {
-				if (monodocService == null)
-					monodocService = (MonodocService) ServiceManager.GetService (typeof(MonodocService));
-				return monodocService;
+				if (documentationService == null)
+					documentationService = (IDocumentationService) ServiceManager.GetService (typeof(IDocumentationService));
+				return documentationService;
 			}
 		}
 	}
