@@ -1,5 +1,10 @@
 2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
 
+	* MonoDevelop.Documentation/DocumentationService.cs: Renamed from
+	MonoDevelop.Documentation/MonodocService.cs.
+
+2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
+
 	* MonoDevelop.Documentation/MonodocService.cs:
 	* Makefile.am:
 	* MonoDevelop.Documentation.addin.xml:
