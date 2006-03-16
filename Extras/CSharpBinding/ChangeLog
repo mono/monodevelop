@@ -1,3 +1,8 @@
+2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* Parser/LanguageItemVisitor.cs: Make sure that composite
+	namespaces are parsed correctly.
+
 2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * CSharp.glade: Marking some strings not to be translated. Not include balast in pot file.

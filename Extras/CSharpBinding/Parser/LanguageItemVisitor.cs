@@ -102,7 +102,7 @@ namespace CSharpBinding.Parser
 				if (name != null) {
 					string n = resolver.SearchNamespace(string.Concat(name, ".", fieldReferenceExpression.FieldName), null);
 					if (n != null) {
-						return null;
+						return new Namespace (n, "");
 					}
 					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), resolver.CompilationUnit);
 					if (c != null) {
