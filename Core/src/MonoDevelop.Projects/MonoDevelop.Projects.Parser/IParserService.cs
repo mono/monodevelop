@@ -118,7 +118,6 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		ResolveResult Resolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		
-		string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
 		LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName);
 		ILanguageItem ResolveIdentifier (string id, int caretLineNumber, int caretColumn, string fileName, string fileContent);

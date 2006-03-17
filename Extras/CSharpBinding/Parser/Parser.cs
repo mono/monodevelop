@@ -116,12 +116,7 @@ namespace CSharpBinding.Parser
 		{
 			return new Resolver (parserContext).Resolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
-
-		public string MonodocResolver (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			return new Resolver (parserContext).MonodocResolver (expression, caretLineNumber, caretColumn, fileName, fileContent);
-		}
-		
+	
 		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return new Resolver (parserContext).ResolveIdentifier (parserContext, id, caretLineNumber, caretColumn, fileName, fileContent);

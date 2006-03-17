@@ -206,26 +206,6 @@ namespace CSharpBinding.Parser
 			return item;
 		}
 
-		public string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent) 
-		{
-			if (expression == null) {
-				return null;
-			}
-			expression = expression.TrimStart (null);
-			if (expression == "") {
-				return null;
-			}
-			IReturnType retType = internalResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
-			IClass retClass = parserContext.SearchType (retType.FullyQualifiedName, null, cu);
-			if (retClass == null) {
-				Console.WriteLine ("Retclass was null");
-				return null;
-			}
-			
-			Console.WriteLine (retClass.FullyQualifiedName);
-			return "T:" + retClass.FullyQualifiedName;
-		}
-		
 		public ResolveResult Resolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent) 
 		{
 			if (expression == null) {

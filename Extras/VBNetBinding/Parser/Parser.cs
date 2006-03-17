@@ -140,11 +140,6 @@ namespace VBBinding.Parser
 			return new Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
 		}
 		
-		public string MonodocResolver (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			return new Resolver (parserContext).MonodocResolver (expression, caretLineNumber, caretColumn, fileName, fileContent);
-		}
-		
 		public ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return null;

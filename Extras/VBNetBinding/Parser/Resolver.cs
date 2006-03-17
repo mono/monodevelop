@@ -212,29 +212,6 @@ namespace VBBinding.Parser
 			return parserContext.GetClass (cls.FullyQualifiedName,true,false);
 		}
 
-
-		
-		public string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent) 
-		{
-			//Console.WriteLine("Entering MonodocResolver for " + expression);
-			if (expression == null) {
-				return null;
-			}
-			expression = expression.TrimStart (null);
-			if (expression == "") {
-				return null;
-			}
-			IReturnType retType = internalResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
-			IClass retClass = parserContext.SearchType (retType.FullyQualifiedName, null, cu);
-			if (retClass == null) {
-				//Console.WriteLine ("Retclass was null");
-				return null;
-			}
-			
-			//Console.WriteLine (retClass.FullyQualifiedName);
-			return "T:" + retClass.FullyQualifiedName;
-		}
-		
 		public LanguageItemCollection IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent)
 		{
 			//Console.WriteLine("Entering IsAsResolve for " + expression);

@@ -1,3 +1,9 @@
+2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* Parser/Parser.cs:
+	* Parser/Resolver.cs:
+	Removed unused MonodocResolver.
+
 2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * VB.glade: Marking some strings not to be translated. Not include balast in pot file.

@@ -1,3 +1,10 @@
+2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	* MonoDevelop.Projects.Parser/IParser.cs:
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	Removed unused MonodocResolver.
+
 2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/ProjectsServices.cs:

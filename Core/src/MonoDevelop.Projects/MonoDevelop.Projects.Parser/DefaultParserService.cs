@@ -239,20 +239,7 @@ namespace MonoDevelop.Projects.Parser
 				return null;
 			}
 		}
-		
-		public string MonodocResolver (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			try {
-				IParser parser = parserService.GetParser (fileName);
-				if (parser != null) {
-					return parser.MonodocResolver (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
-				}
-				return null;
-			} catch {
-				return null;
-			}
-		}
-		
+			
 		public LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			try {
