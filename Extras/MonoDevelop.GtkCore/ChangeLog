@@ -1,3 +1,7 @@
+2006-03-19  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added Makefile.in and Makefile to svn:ignore.
+
 2006-03-15 Lluis Sanchez Gual  <lluis@novell.com>    
 
 	* Makefile.am:
