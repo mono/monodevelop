@@ -22,12 +22,8 @@ Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
 Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml
 Extras/CSharpBinding/templates/CSharpWebService.xft.xml
 Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml
-Extras/CSharpBinding/templates/EmptyHTMLFile.xft.xml
 Extras/NemerleBinding/EmptyNemerleFile.xft.xml
 Extras/CSharpBinding/templates/EmptyProject.xpt.xml
-Extras/CSharpBinding/templates/EmptyResourceFile.xft.xml
-Extras/CSharpBinding/templates/EmptyTextFile.xft.xml
-Extras/CSharpBinding/templates/EmptyXMLFile.xft.xml
 Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml
 Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml
 Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml
@@ -37,7 +33,6 @@ Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml
 Extras/CSharpBinding/templates/Library.xpt.xml
 Extras/NemerleBinding/NemerleEmptyProject.xpt.xml
 Extras/CSharpBinding/CSharp.glade
-Extras/CSharpBinding/templates/AppConfigFile.xft.xml
 Extras/NemerleBinding/Nemerle.glade
 Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml
 Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml

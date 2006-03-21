@@ -1,3 +1,7 @@
+2006-03-21  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* POTFILES.in: Removed unused C# templates.	
+
 2006-03-14  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* zh_TW.po: Added. Thanks to Yan-ren Tsai <elleryq@gmail.com>.
