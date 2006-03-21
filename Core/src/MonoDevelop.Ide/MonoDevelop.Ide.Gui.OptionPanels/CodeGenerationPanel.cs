@@ -20,24 +20,20 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	public class CodeGenerationPanel : AbstractOptionPanel {
+	public class CodeGenerationPanel : AbstractOptionPanel
+	{
 		
-		class CodeGenerationPanelWidget : GladeWidgetExtract {
+		class CodeGenerationPanelWidget : GladeWidgetExtract
+		{
 			PropertyService p = Runtime.Properties;
-			
-//			[Glade.Widget] Label hdr_code_generation_options;
-			
-			[Glade.Widget] CheckButton
-				chk_blk_on_same_line,
-				chk_else_on_same_line,
-				chk_blank_lines,
-				chk_full_type_names;
-			
-//			[Glade.Widget] Label hdr_comment_generation_options;
-			
-			[Glade.Widget] CheckButton
-				chk_doc_comments,
-				chk_other_comments;
+		
+			[Glade.Widget] CheckButton chk_blk_on_same_line;
+			[Glade.Widget] CheckButton chk_else_on_same_line;
+			[Glade.Widget] CheckButton chk_blank_lines;
+			[Glade.Widget] CheckButton chk_full_type_names;				
+
+			[Glade.Widget] CheckButton chk_doc_comments;
+			[Glade.Widget] CheckButton chk_other_comments;
 			
 			public CodeGenerationPanelWidget () : base ("Base.glade", "CodeGenerationOptionsPanel")
 			{
