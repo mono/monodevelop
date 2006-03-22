@@ -36,6 +36,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Diagnostics;
 
 using Mono.Unix;
 using Mono.GetOptions;
@@ -48,6 +49,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Execution;
 
 
 namespace MonoDevelop.Ide.Gui
@@ -85,6 +87,10 @@ namespace MonoDevelop.Ide.Gui
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			new Gnome.Program (name, version, Gnome.Modules.UI, remainingArgs);
+			
+			// System checks
+			if (!CheckBug77135 ())
+				return 1;
 
 			// Remoting check
 			try {
@@ -225,7 +231,61 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.RootWindow.Present ();
 				return false;
 			}
-		}		
+		}
+		
+		bool CheckBug77135 ()
+		{
+			try {
+				// Check for bug 77135. Some versions of gnome-vfs2 and libgda
+				// make MD crash in the file open dialog or in FileIconLoader.
+				// Only in Suse.
+				
+				string path = "/etc/SuSE-release";
+				if (!File.Exists (path))
+					return true;
+					
+				string current_libgda;
+				string current_gnomevfs;
+				string required_libgda = "1.3.91.5.4";
+				string required_gnomevfs = "2.12.0.9.2";
+				
+				StringWriter sw = new StringWriter ();
+				ProcessWrapper pw = Runtime.ProcessService.StartProcess ("rpm", "--qf %{version}.%{release} -q libgda", null, sw, null, null);
+				pw.WaitForOutput ();
+				current_libgda = sw.ToString ().Trim (' ','\n');
+				
+				sw = new StringWriter ();
+				pw = Runtime.ProcessService.StartProcess ("rpm", "--qf %{version}.%{release} -q gnome-vfs2", null, sw, null, null);
+				pw.WaitForOutput ();
+				current_gnomevfs = sw.ToString ().Trim (' ','\n');
+				
+				bool fail1 = MonoDevelop.Core.AddIns.Setup.AddinInfo.CompareVersions (current_libgda, required_libgda) == 1;
+				bool fail2 = MonoDevelop.Core.AddIns.Setup.AddinInfo.CompareVersions (current_gnomevfs, required_gnomevfs) == 1;
+				
+				if (fail1 || fail2) {
+					string msg = GettextCatalog.GetString ("Some packages installed in your system are not compatible with MonoDevelop:\n");
+					if (fail1)
+						msg += "\nlibgda " + current_libgda + " ("+ GettextCatalog.GetString ("version required: {0}", required_libgda) + ")";
+					if (fail2)
+						msg += "\ngnome-vfs2 " + current_gnomevfs + " ("+ GettextCatalog.GetString ("version required: {0}", required_gnomevfs) + ")";
+					msg += "\n\n";
+					msg += GettextCatalog.GetString ("You need to upgrade the previous packages to start using MonoDevelop.");
+					
+					Gtk.MessageDialog dlg = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
+					dlg.Run ();
+					dlg.Destroy ();
+					
+					return false;
+				} else
+					return true;
+			}
+			catch (Exception ex)
+			{
+				// Just ignore for now.
+				Console.WriteLine (ex);
+				return true;
+			}
+		}
 	}
 	
 	public class MonoDevelopOptions : Options

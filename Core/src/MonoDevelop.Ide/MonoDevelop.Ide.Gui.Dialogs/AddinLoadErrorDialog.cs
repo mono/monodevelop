@@ -65,8 +65,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				TreeIter it = store.AppendValues (name);
 				store.AppendValues (it, "Full Path: " + err.AddinFile);
 				store.AppendValues (it, "Error: " + err.Exception.Message);
-				it = store.AppendValues (it, "Exception: " + err.Exception.GetType ());
-				store.AppendValues (it, err.Exception.StackTrace.ToString ());
+				if (!(err.Exception is MissingDependencyException)) {
+					it = store.AppendValues (it, "Exception: " + err.Exception.GetType ());
+					store.AppendValues (it, err.Exception.StackTrace.ToString ());
+				}
 				if (err.Fatal) fatal = true;
 			}
 			

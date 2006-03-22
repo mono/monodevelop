@@ -1,3 +1,11 @@
+2006-03-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs: 
+	  Don't show the stack trace for exceptions of type
+	  MissingDependencyException.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added a check for
+	  bug #77135.
+
 2006-03-21  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs:
