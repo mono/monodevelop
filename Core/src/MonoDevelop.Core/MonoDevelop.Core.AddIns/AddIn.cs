@@ -503,7 +503,11 @@ namespace MonoDevelop.Core.AddIns
 				if (t != null) return t;
 			}
 			
-			return Assembly.GetExecutingAssembly().GetType (className);
+			Type at = Assembly.GetExecutingAssembly().GetType (className);
+			if (at != null)
+				return at;
+				
+			return Type.GetType (className);
 		}		
 		/// <summary>
 		/// Definies an extension point (path in the tree) with its codons.
