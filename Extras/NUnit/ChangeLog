@@ -1,3 +1,8 @@
+2006-03-22  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* NUnit/MonoDevelopNUnit.addin.xml: Declared nunit.framework
+	  dependency.
+
 2005-12-22  David Makovský <yakeen@sannyas-on.net> 
 
 	* Gui/TestResultsPad.cs:
