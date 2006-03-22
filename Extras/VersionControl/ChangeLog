@@ -1,3 +1,7 @@
+2006-03-21  Wade Berrier <wberrier@novell.com> 
+
+	* AddIn/Makefile.am: Fix 'make dist' to include missing png files
+
 2006-03-02  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/Addin.cs: Track api changes.

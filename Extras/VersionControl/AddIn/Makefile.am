@@ -53,6 +53,6 @@ $(DLL): $(build_sources)
 
 CLEANFILES = $(DLL) $(DLL).mdb $(ADDIN_BUILD)/$(ADDIN)
 
-EXTRA_DIST = $(build_sources) $(ADDIN) overlay_added.png overlay_modified.png overlay_conflicted.png overlay_normal.png overlay_locked.png
+EXTRA_DIST = $(build_sources) $(ADDIN) overlay_added.png overlay_modified.png overlay_conflicted.png overlay_normal.png overlay_locked.png menu_log.png menu_diff.png menu_update.png menu_status.png
 
 
