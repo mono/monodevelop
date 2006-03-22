@@ -95,10 +95,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding class = "MonoDevelop.GtkCore.GuiBuilder.GladeFileDisplayBinding"/>
-	</Extension>
-
 	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
 		<Class insertbefore = "MainBuildStep" class = "MonoDevelop.GtkCore.GeneratorBuildStep" />
 	</Extension>

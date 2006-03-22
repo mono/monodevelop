@@ -105,13 +105,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void SetDesignerLayout ()
 		{
 			if (IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
-				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) == -1;
+				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) != -1;
 				defaultLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
 				if (!exists) {
 					Pad p = IdeApp.Workbench.Pads [typeof(GuiBuilderPalettePad)];
-					if (p != null) p.Visible = true;
-					p = IdeApp.Workbench.Pads [typeof(GuiBuilderProjectPad)];
 					if (p != null) p.Visible = true;
 					p = IdeApp.Workbench.Pads [typeof(GuiBuilderPropertiesPad)];
 					if (p != null) p.Visible = true;

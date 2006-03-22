@@ -48,9 +48,7 @@ MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs \
-MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs \
-MonoDevelop.GtkCore.GuiBuilder/WidgetTreeCombo.cs \
-MonoDevelop.GtkCore.GuiBuilder/GladeFileDisplayBinding.cs
+MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs
 
 RES = \
 gui.glade \

@@ -54,10 +54,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		ToggleToolButton codeButton;
 		ToggleToolButton designerButton;
 		VBox designerBox;
-		Button bindButton;
 		
 		Gtk.Widget currentDesigner;
-		WidgetTreeCombo widgetsCombo;
+		MonoDevelopWidgetActionBar widgetBar;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window)
 		{
@@ -67,7 +66,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			editSession.ModifiedChanged += new EventHandler (OnWindowChanged);
-			editSession.SteticProject.Selected += new Stetic.Project.SelectedHandler (OnSelectionChanged);
 			
 			notebook = new Gtk.Notebook ();
 			designerPage = new Gtk.EventBox ();
@@ -105,18 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			box.Show ();
 			
 			// Widget toolbar
-			HBox widgetBar = new HBox ();
-			bindButton = new Button ("");
-			bindButton.Relief = Gtk.ReliefStyle.None;
-			bindButton.Label = GettextCatalog.GetString ("Bind to Field");
-			bindButton.Clicked += new EventHandler (OnBindWidget);
-			
-			// Widget combobox
-			widgetsCombo = new WidgetTreeCombo ();
-			widgetsCombo.RootWidget = editSession.RootWidget;
-			
-			widgetBar.PackStart (widgetsCombo, false, false, 0);
-			widgetBar.PackStart (bindButton, false, false, 3);
+			widgetBar = new MonoDevelopWidgetActionBar (editSession.RootWidget);
 			widgetBar.BorderWidth = 3;
 			
 			// Designer page
@@ -145,13 +132,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designerBox.Remove (currentDesigner);
 			currentDesigner = editSession.WrapperWidget;
 			designerBox.PackStart (currentDesigner, true, true, 0);
+			widgetBar.RootWidget = editSession.RootWidget;
 			editSession.WrapperWidget.ShowAll ();
-			widgetsCombo.RootWidget = editSession.RootWidget;
-		}
-		
-		void OnBindWidget (object o, EventArgs a)
-		{
-			GuiBuilderService.AddCurrentWidgetToClass ();
 		}
 		
 		protected override void OnWorkbenchWindowChanged (EventArgs e)
@@ -162,12 +144,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderEditSession EditSession {
 			get { return editSession; }
-		}
-		
-		void OnSelectionChanged (Gtk.Widget selection, Stetic.ProjectNode node)
-		{
-			Stetic.Wrapper.Widget sel = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-			bindButton.Sensitive = (sel != null && sel != editSession.RootWidget);
 		}
 		
 		void OnToggledCode (object s, EventArgs args)
@@ -192,6 +168,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
+			widgetBar.Dispose ();
 			designerPage.Remove (editSession.WrapperWidget);
 			editSession.Dispose ();
 			content.ContentChanged -= new EventHandler (OnTextContentChanged);
@@ -257,7 +234,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnWindowChanged (object s, EventArgs args)
 		{
-//			Console.WriteLine (Environment.StackTrace);
 			OnContentChanged (args);
 			OnDirtyChanged (args);
 		}
@@ -479,5 +455,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return ((IDocumentInformation)content).GetLineTextAtOffset (offset);
 		}
 	}
+	
+	class MonoDevelopWidgetActionBar: Stetic.WidgetActionBar
+	{
+		public MonoDevelopWidgetActionBar (Stetic.Wrapper.Widget widget): base (widget)
+		{
+		}
+		
+		protected override void AddWidgetCommands (Stetic.Wrapper.Widget widget)
+		{
+			ToolButton bindButton = new ToolButton (null, GettextCatalog.GetString ("Bind to Field"));
+			bindButton.IsImportant = true;
+			bindButton.Clicked += new EventHandler (OnBindWidget);
+			bindButton.Show ();
+			Insert (bindButton, -1);
+			base.AddWidgetCommands (widget);
+		}
+		
+		void OnBindWidget (object o, EventArgs a)
+		{
+			GuiBuilderService.AddCurrentWidgetToClass ();
+		}
+	}
+	
 }
 

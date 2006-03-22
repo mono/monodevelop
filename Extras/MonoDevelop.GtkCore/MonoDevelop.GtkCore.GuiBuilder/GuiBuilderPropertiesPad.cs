@@ -38,7 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderPropertiesPad: AbstractPadContent
 	{
-		Stetic.PropertyGrid grid;
+		Stetic.WidgetPropertyTree grid;
 		Stetic.SignalsEditor signalsEditor;
 		Gtk.Widget widget;
 		
@@ -46,9 +46,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			GuiBuilderService.ActiveProjectChanged += new EventHandler (OnActiveProjectChanged);
 
-			grid = new Stetic.PropertyGrid ();
+			grid = new Stetic.WidgetPropertyTree ();
 			
-			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GladeWidgetTreePad/right; bottom";
+			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad/bottom; right";
 			
 			Notebook tabs = new Notebook ();
 			

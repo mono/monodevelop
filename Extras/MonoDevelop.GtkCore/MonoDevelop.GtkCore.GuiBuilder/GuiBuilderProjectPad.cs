@@ -43,7 +43,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public GuiBuilderProjectPad (): base ("")
 		{
 			GuiBuilderService.ActiveProjectChanged += new EventHandler (OnActiveProjectChanged);
-			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad/left; bottom";
+			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad/center; bottom";
 			pview = new Stetic.ProjectView ();
 			
 			scrolledWindow = new ScrolledWindow ();

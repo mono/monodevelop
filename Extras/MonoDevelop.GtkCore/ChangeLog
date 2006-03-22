@@ -1,3 +1,21 @@
+2006-03-22 Lluis Sanchez Gual  <lluis@novell.com>    
+
+	* MonoDevelop.GtkCore.addin.xml:
+	* MonoDevelop.GtkCore.mdp: Removed GladeFileDisplayBinding.
+	* lib/*: Updated.
+	* Makefile.am: Updated. Some files have been moved to Stetic.
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Fixed
+	  layout switching. Don't show the widget tree pad by default,
+	  since it is already available as a combo in the designer.
+	* MonoDevelop.GtkCore.GuiBuilder/GladeFileDisplayBinding.cs: Removed.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs: use
+	  the new property tree instead of the grid.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: The designer
+	  toolbar has been moved to Stetic.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs: Changed
+	  default placement.
+
 2006-03-19  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added Makefile.in and Makefile to svn:ignore.
