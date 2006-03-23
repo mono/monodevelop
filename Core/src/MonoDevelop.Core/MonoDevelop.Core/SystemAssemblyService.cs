@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.IO;
 using System.Collections;
 using System.Diagnostics;
@@ -11,31 +12,54 @@ namespace MonoDevelop.Core
 	{
 		Hashtable assemblyPathToPackage = new Hashtable ();
 		Hashtable assemblyFullNameToPath = new Hashtable ();
+		object initLock = new object ();
 		bool initialized;
+		
+		public override void InitializeService ()
+		{
+			// Initialize the service in a background thread.
+			Thread t = new Thread (new ThreadStart (BackgroundInitialize));
+			t.IsBackground = true;
+			t.Start ();
+		}
 
 		public ICollection AssemblyPaths
 		{
 			get {
-				if (!initialized)
-					Initialize ();
-					
+				Initialize ();
 				return assemblyPathToPackage.Keys;
 			}
 		}
 
 		public string GetPackageFromFullName (string fullname)
 		{
-			if (!initialized)
-				Initialize ();
-					
-			if (!assemblyFullNameToPath.Contains (fullname))
-				return String.Empty;
+			Initialize ();
 			
 			string path = (string)assemblyFullNameToPath[fullname];
-			if (!assemblyPathToPackage.Contains (path))
+			if (path == null)
 				return String.Empty;
+
+			string pkg = (string)assemblyPathToPackage[path];
+			return pkg != null ? pkg : String.Empty;
+		}
+	
+		// Returns the installed version of the given assembly name
+		// (it returns the full name of the installed assembly).
+		public string FindInstalledAssembly (string fullname)
+		{
+			Initialize ();
+			if (assemblyFullNameToPath.Contains (fullname))
+				return fullname;
 			
-			return (string)assemblyPathToPackage[path];
+			// Try to find a newer version of the same assembly.
+			AssemblyName reqName = ParseAssemblyName (fullname);
+			foreach (string asm in assemblyFullNameToPath.Keys) {
+				AssemblyName foundName = ParseAssemblyName (asm);
+				if (reqName.Name == foundName.Name && reqName.Version.CompareTo (foundName.Version) < 0)
+					return asm;
+			}
+			
+			return null;
 		}
 	
 		public string GetAssemblyLocation (string assemblyName)
@@ -59,8 +83,26 @@ namespace MonoDevelop.Core
 		
 		new void Initialize ()
 		{
-			initialized = true;
-
+			lock (initLock) {
+				while (!initialized)
+					Monitor.Wait (initLock);
+			}
+		}
+		
+		void BackgroundInitialize ()
+		{
+			lock (initLock) {
+				try {
+					RunInitialization ();
+				} finally {
+					Monitor.PulseAll (initLock);
+					initialized = true;
+				}
+			}
+		}
+		
+		void RunInitialization ()
+		{
 			//Pull up assemblies from the installed mono system.
 			string prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
 			if (prefix.IndexOf ("mono/1.0") == -1) {
@@ -209,6 +251,30 @@ namespace MonoDevelop.Core
 			if (ret == null || ret.Length == 0)
 				return String.Empty;
 			return ret;
+		}
+		
+		public AssemblyName ParseAssemblyName (string fullname)
+		{
+			AssemblyName aname = new AssemblyName ();
+			int i = fullname.IndexOf (',');
+			if (i == -1) {
+				aname.Name = fullname.Trim ();
+				return aname;
+			}
+			
+			aname.Name = fullname.Substring (0, i).Trim ();
+			i = fullname.IndexOf ("Version", i+1);
+			if (i == -1)
+				return aname;
+			i = fullname.IndexOf ('=', i);
+			if (i == -1) 
+				return aname;
+			int j = fullname.IndexOf (',', i);
+			if (j == -1)
+				aname.Version = new Version (fullname.Substring (i+1).Trim ());
+			else
+				aname.Version = new Version (fullname.Substring (i+1, j - i - 1).Trim ());
+			return aname;
 		}
 	}
 	
