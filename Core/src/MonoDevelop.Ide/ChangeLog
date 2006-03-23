@@ -1,3 +1,11 @@
+2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	  Renamed the GAC tab to Packages tab. The references dialog don't
+	  show assemblies in the gac, but from properly registered packages.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added a better explanation for
+	  a common crash.
+
 2006-03-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs: 

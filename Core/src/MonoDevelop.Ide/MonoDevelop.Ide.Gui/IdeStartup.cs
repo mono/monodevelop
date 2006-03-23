@@ -86,7 +86,16 @@ namespace MonoDevelop.Ide.Gui
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Revision != 0)
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
-			new Gnome.Program (name, version, Gnome.Modules.UI, remainingArgs);
+			try {
+				new Gnome.Program (name, version, Gnome.Modules.UI, remainingArgs);
+			} catch (Exception ex) {
+				string msg = GettextCatalog.GetString ("MonoDevelop failed to start.\nIf you installed MonoDevelop using a binary instaler, take a look at \nhttp://www.mono-project.com/InstallerInstructions for more info about possible\ncauses of this error.");
+				Console.WriteLine (new string ('#',70));
+				Console.WriteLine (msg);
+				Console.WriteLine (new string ('#',70));
+				Console.WriteLine (ex);
+				return 1;
+			}
 			
 			// System checks
 			if (!CheckBug77135 ())

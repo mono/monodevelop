@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			SetProject (configureProject);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
-			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Global Assembly Cache")));
+			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));
 			mainBook.AppendPage (projectRefPanel, new Label (GettextCatalog.GetString ("Projects")));
 			mainBook.AppendPage (new AssemblyReferencePanel (this), new Label (GettextCatalog.GetString (".Net Assembly")));
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);

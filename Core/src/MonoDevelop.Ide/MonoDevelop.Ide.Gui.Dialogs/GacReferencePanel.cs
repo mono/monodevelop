@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new TreeStore (typeof (string), typeof (string), typeof(string), typeof(bool), typeof(string));
+			store = new TreeStore (typeof (string), typeof (string), typeof(string), typeof(bool), typeof(string), typeof(string));
 			treeView = new TreeView (store);
 
 			TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -41,9 +41,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			firstColumn.AddAttribute (text_render, "text", 0);
 			
 			treeView.AppendColumn (firstColumn);
+			firstColumn.Resizable = true;
 			treeView.AppendColumn (GettextCatalog.GetString ("Version"), new CellRendererText (), "text", 1);
-			// FIXME: this seems useless
-			//treeView.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), "text", 2);
+			treeView.AppendColumn (GettextCatalog.GetString ("Package"), new CellRendererText (), "text", 5);
 
 			store.SetSortColumnId (0, SortType.Ascending);
 			store.SetSortFunc (0, new TreeIterCompareFunc (SortTree));
@@ -119,7 +119,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (string assemblyPath in Runtime.SystemAssemblyService.AssemblyPaths) {
 				try {
 					System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyPath);
-					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName);
+					string package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
+					if (package == "MONO-SYSTEM")
+						package = "mono";
+					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, package);
 				}catch {
 				}
 			}
