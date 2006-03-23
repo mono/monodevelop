@@ -1,3 +1,9 @@
+2006-03-23 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: ProjectReference
+	  doesn't have a setter for ReferenceType anymore.
+	* Makefile.am: Removed unused file.
+
 2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:

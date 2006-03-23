@@ -164,10 +164,9 @@ namespace MonoDevelop.Ide.Templates
 			if (element["References"] != null) {
 				foreach (XmlNode node in element["References"].ChildNodes) {
 					if (node != null && node.Name == "Reference") {
-						ProjectReference projectReference = new ProjectReference();
-						
-						projectReference.ReferenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
-						projectReference.Reference = node.Attributes["refto"].InnerXml;
+					
+						ReferenceType referenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
+						ProjectReference projectReference = new ProjectReference (referenceType, node.Attributes["refto"].InnerXml);
 						projectDescriptor.references.Add(projectReference);
 					}
 				}

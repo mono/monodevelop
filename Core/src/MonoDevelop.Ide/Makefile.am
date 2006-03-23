@@ -118,7 +118,6 @@ MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
-MonoDevelop.Ide.Gui.Dialogs/WebReference.cs \
 MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs \
 MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
