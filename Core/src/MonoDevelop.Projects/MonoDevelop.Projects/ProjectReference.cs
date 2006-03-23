@@ -36,6 +36,15 @@ namespace MonoDevelop.Projects
 		
 		string reference = String.Empty;
 		
+		// A project may reference assemblies which are not available
+		// in the system where it is opened. For example, opening
+		// a project that references gtk# 2.4 in a system with gtk# 2.6.
+		// In this case the reference will be upgraded to 2.6, but for
+		// consistency reasons the reference will still be saved as 2.4.
+		// The loadedReference stores the reference initially loaded,
+		// so it can be saved again.
+		string loadedReference;
+		
 		[ItemProperty ("localcopy")]
 		bool localCopy = true;
 		
@@ -52,6 +61,7 @@ namespace MonoDevelop.Projects
 		{
 			this.referenceType = referenceType;
 			this.reference     = reference;
+			UpdateGacReference ();
 		}
 		
 		public ProjectReference (Project referencedProject)
@@ -65,9 +75,6 @@ namespace MonoDevelop.Projects
 			get {
 				return referenceType;
 			}
-			set {
-				referenceType = value;
-			}
 		}
 		
 		[ReadOnly(true)]
@@ -77,6 +84,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				reference = value;
+				UpdateGacReference ();
 				OnReferenceChanged(EventArgs.Empty);
 			}
 		}
@@ -129,7 +137,9 @@ namespace MonoDevelop.Projects
 			if (referenceType == ReferenceType.Assembly) {
 				string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
 				refto = Runtime.FileUtilityService.AbsoluteToRelativePath (basePath, refto);
-			}
+			} else if (referenceType == ReferenceType.Gac && loadedReference != null)
+				refto = loadedReference;
+
 			data.Add (new DataValue ("refto", refto));
 			return data;
 		}
@@ -140,6 +150,7 @@ namespace MonoDevelop.Projects
 			handler.Deserialize (this, data);
 			if (refto != null) {
 				reference = refto.Value;
+				UpdateGacReference ();
 				if (referenceType == ReferenceType.Assembly) {
 					string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
 					reference = Runtime.FileUtilityService.RelativeToAbsolutePath (basePath, reference);
@@ -176,6 +187,18 @@ namespace MonoDevelop.Projects
 			       Path.DirectorySeparatorChar + aName +
 			       Path.DirectorySeparatorChar + aVersion + "__" + aPublicKey +
 			       Path.DirectorySeparatorChar + aName + ".dll";*/
+		}
+		
+		void UpdateGacReference ()
+		{
+			if (referenceType == ReferenceType.Gac) {
+				string cref = Runtime.SystemAssemblyService.FindInstalledAssembly (reference);
+				if (cref != null && cref != reference) {
+					loadedReference = reference;
+					reference = cref;
+				} else
+					loadedReference = null;
+			}
 		}
 		
 		public object Clone()

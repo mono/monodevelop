@@ -1,3 +1,11 @@
+2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectReference.cs: When creating
+	  or loading a gac reference, if the exact assembly version
+	  is not installed, try to find a superior one. This should
+	  avoid build errors when loading a project with references to
+	  old gtk# assemblies. It also fixes bug #70645.
+
 2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
