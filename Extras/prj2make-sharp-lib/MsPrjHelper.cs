@@ -604,10 +604,7 @@ namespace MonoDevelop.Prj2Make
 					
 					if (rf.Package != null && rf.Package.Length != 0)
 					{
-						rfOut = new ProjectReference ();
-						rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Project;
-						
-						rfOut.Reference = Path.GetFileName (rf.Name);
+						rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Project, Path.GetFileName (rf.Name));
 						rfOut.LocalCopy = true;
 						references.Add (rfOut);
 					}
@@ -617,13 +614,12 @@ namespace MonoDevelop.Prj2Make
 						if (rname == "System.XML")
 							rname = "System.Xml";
 						
-						rfOut = new ProjectReference ();
-						rfOut.Reference = Runtime.SystemAssemblyService.GetAssemblyFullName (rname);
-						if (rfOut.Reference == null) {
+						string oref = Runtime.SystemAssemblyService.GetAssemblyFullName (rname);
+						if (oref == null) {
 							monitor.ReportWarning (GettextCatalog.GetString ("Assembly reference could not be imported: ") + rf.AssemblyName);
 							continue;
 						}
-						rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+						rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Gac, oref);
 						rfOut.LocalCopy = true;
 						references.Add (rfOut);
 					}
@@ -649,9 +645,7 @@ namespace MonoDevelop.Prj2Make
 							}
 							
 							if (rfOut == null) {
-								rfOut = new ProjectReference ();
-								rfOut.Reference = Path.GetFileName (rf.HintPath);
-								rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+								rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Gac, Path.GetFileName (rf.HintPath));
 								rfOut.LocalCopy = true;
 							}
 							references.Add (rfOut);
@@ -678,9 +672,7 @@ namespace MonoDevelop.Prj2Make
 
 			// Test to see if file exist in GAC location
 			if (System.IO.File.Exists (strRefFileName)) {
-				ProjectReference rfOut = new ProjectReference ();
-				rfOut.Reference = Runtime.SystemAssemblyService.GetAssemblyFullName (strRefFileName);
-				rfOut.ReferenceType = MonoDevelop.Projects.ReferenceType.Gac;
+				ProjectReference rfOut = new ProjectReference (MonoDevelop.Projects.ReferenceType.Gac, Runtime.SystemAssemblyService.GetAssemblyFullName (strRefFileName));
 				rfOut.LocalCopy = true;
 				return rfOut;
 			}
