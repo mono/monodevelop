@@ -81,6 +81,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				DefaultProperties configNodeProperties = new DefaultProperties();
 				configNodeProperties.SetProperty("Combine", combine);
 				configNodeProperties.SetProperty("Config", config);
+				configNodeProperties.SetProperty ("CombineConfigData", configData);
 				
 				ArrayList list = configurationNode.BuildChildItems (this);
 				if (list.Count > 1) {
