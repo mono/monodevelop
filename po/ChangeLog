@@ -1,5 +1,10 @@
 2006-03-23  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
+	* POTFILES.in: Added missing files.
+	* pl.po: Updated.
+
+2006-03-23  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
 	* POTFILES.in: Added templates which Jacob removed (they were moved to
 	other directory not deleted).
 	* pl.po: Updated.
