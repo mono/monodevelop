@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.SourceEditor.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelop.SourceEditor.addin.xml: Updated add-in versions.
+
 2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs:

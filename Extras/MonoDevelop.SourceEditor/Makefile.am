@@ -1,6 +1,6 @@
 DLLNAME = MonoDevelop.SourceEditor.dll
 CONFIG = $(DLLNAME).config
-DLL = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
 FILES = \
 MonoDevelop.SourceEditor/SourceViewService.cs \
@@ -38,14 +38,16 @@ EditorBindings.glade
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-REFS = /r:System.Drawing.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
+REFS = -r:System \
+       -r:System.Drawing \
+       -r:System.Xml \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
@@ -56,24 +58,24 @@ ADDIN = MonoDevelop.SourceEditor.addin.xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-all : $(DLL) $(ADDIN_BUILD)/$(ADDIN)
+all : $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(DLL) : $(build_sources) $(RES)
+$(ASSEMBLY) : $(build_sources) $(RES)
 	mkdir -p $(top_builddir)/build/bin
 	$(CSC) $(CSC_FLAGS) $(RES:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) \
 	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(DLL) $(CONFIG)
+assembly_DATA = $(ASSEMBLY) $(CONFIG)
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(CONFIG)
 
 EXTRA_DIST = $(FILES) $(CONFIG).in $(RES) $(ADDIN)
