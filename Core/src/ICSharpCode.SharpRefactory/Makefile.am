@@ -1,7 +1,7 @@
-DLL = $(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
+ASSEMBLY = $(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
 TEST = test-parser.exe
 
-REFS = -r:System.Drawing.dll
+REFS = -r:System -r:System.Drawing
 
 FILES = \
 src/Lexer/Reader/IReader.cs \
@@ -116,15 +116,15 @@ src/VBConverter/VBNetRefactory.cs \
 src/VBConverter/VBNetVisitor.cs \
 src/AssemblyInfo.cs
 
-all: $(DLL) $(TEST)
+all: $(ASSEMBLY) $(TEST)
 
-$(DLL): $(FILES)
+$(ASSEMBLY): $(FILES)
 	$(CSC) $(CSC_FLAGS) -out:$@ /target:library $(REFS) $(build_sources)
 
 test: $(TEST)
 
-$(TEST): $(DLL) $(srcdir)/src/Main.cs
-	$(CSC) -out:$@ -r:$(DLL) $(srcdir)/src/Main.cs
+$(TEST): $(ASSEMBLY) $(srcdir)/src/Main.cs
+	$(CSC) -out:$@ -r:$(ASSEMBLY) $(srcdir)/src/Main.cs
 
 run-test: run-tests run-errors
 
@@ -138,9 +138,9 @@ run-mcs-tests: $(TEST)
 	MONO_PATH=../../../build/bin mono $(TEST) ../../../../mcs/tests
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb $(TEST)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(TEST)
 
 EXTRA_DIST = $(FILES) src/Main.cs
 
