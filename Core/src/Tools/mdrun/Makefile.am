@@ -4,11 +4,9 @@ ASSEMBLY = $(top_builddir)/build/bin/mdrun.exe
 FILES = src/AssemblyInfo.cs \
 src/mdrun.cs
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
-REFS = /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
 	
 $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) /out:$(ASSEMBLY)
@@ -22,3 +20,4 @@ assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).config
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) app.config
 
+include $(top_srcdir)/Makefile.include
