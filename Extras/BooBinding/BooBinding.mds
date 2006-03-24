@@ -6,7 +6,7 @@
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry configuration="Release" build="True" name="BooBinding" />
-      <Entry configuration="Release" build="True" name="BooShell" />
+      <Entry configuration="Debug" build="True" name="BooShell" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">

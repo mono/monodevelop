@@ -1,3 +1,11 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* BooShell/BooShell.mdp:
+	* BooBinding.mdp:
+	* BooBinding.mds: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* BooBinding.addin.xml: Updated add-in versions.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* BooBinding/BooShell/BooShell.mdp:

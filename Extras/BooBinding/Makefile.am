@@ -1,10 +1,9 @@
-#SUBDIRS = PythonShell
+SUBDIRS = BooShell
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/BooBinding.dll
-BOOSHELL_LIB = $(ADDIN_BUILD)/BooShell.dll
 
-DLLS = -r:System.Drawing \
+REFS =	-r:System.Drawing \
 	-r:System.Xml \
 	-r:System.Runtime.Remoting \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -15,16 +14,11 @@ DLLS = -r:System.Drawing \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
-	-r:$(BOOSHELL_LIB) \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/BooShell.dll \
 	$(BOO_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GCONF_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS)
-
-BOOSHELL_DLLS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-		-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-		$(GTK_SHARP_LIBS) \
-		$(BOO_LIBS)
 
 FILES = \
 FormattingStrategy/BooFormattingStrategy.boo \
@@ -52,8 +46,6 @@ Parser/ExpressionTypeVisitor.boo \
 Parser/Tree.boo \
 Parser/Visitor.boo
 
-BOOSHELL_FILES = BooShell/BooShell.boo
-
 RES = \
 templates/BooGtkSharpProject.xpt.xml \
 templates/BooLibraryProject.xpt.xml \
@@ -68,14 +60,10 @@ icons/Boo.Project.EmptyProject \
 icons/Boo.Project.Form \
 icons/Boo.ProjectIcon
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-booshell_build_sources = $(addprefix $(srcdir)/, $(BOOSHELL_FILES))
-
 ADDIN = BooBinding.addin.xml
 
 if ENABLE_BOO
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) \
-	$(BOOSHELL_LIB)
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 else
 all:
 endif
@@ -84,20 +72,16 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(FILES) $(BOOSHELL_LIB) $(RES)
+$(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	$(BOOC) $(DLLS) $(RES:%=-embedres:%) $(build_sources) -o:$@ -t:library
-
-$(BOOSHELL_LIB): $(BOOSHELL_FILES)
-	mkdir -p $(ADDIN_BUILD)
-	$(BOOC) $(BOOSHELL_DLLS) $(booshell_build_sources) -o:$@ -t:library
+	$(BOOC) $(REFS) $(RES:%=-embedres:%) $(build_sources) -o:$@ -t:library
 
 if ENABLE_BOO
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
-assembly_DATA = $(ASSEMBLY) $(ADDIN) $(BOOSHELL_LIB)
+assembly_DATA = $(ASSEMBLY) $(ADDIN)
 
 endif
 
-CLEANFILES = $(ASSEMBLY) $(BOOSHELL_LIB)
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(BOOSHELL_FILES)
-
+CLEANFILES = $(ASSEMBLY)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+include $(top_srcdir)/Makefile.include
