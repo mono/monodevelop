@@ -9,8 +9,11 @@
       <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry configuration="Debug" build="True" />
       <Entry configuration="" build="True" name="Tools" />
+      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpRefactory" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
@@ -21,8 +24,11 @@
       <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry configuration="Debug" build="True" />
       <Entry configuration="" build="True" name="Tools" />
+      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpRefactory" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Core" single="True">
@@ -34,8 +40,10 @@
     <Execute type="None" entry="MonoDevelop.Ide" />
     <Execute type="None" entry="MonoDevelop.Projects" />
     <Execute type="None" entry="MonoDevelop.Projects.Gui" />
-    <Execute type="None" entry="MonoDevelop.Startup" />
     <Execute type="None" entry="Tools" />
+    <Execute type="None" entry="ICSharpCode.SharpRefactory" />
+    <Execute type="None" entry="MonoDevelop" />
+    <Execute type="None" entry="MonoDevelop.Startup" />
   </StartMode>
   <Entries>
     <Entry filename="./MonoDevelop.Core/MonoDevelop.Core.mdp" />
@@ -46,7 +54,9 @@
     <Entry filename="./MonoDevelop.Ide/MonoDevelop.Ide.mdp" />
     <Entry filename="./MonoDevelop.Projects/MonoDevelop.Projects.mdp" />
     <Entry filename="./MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
-    <Entry filename="./MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
     <Entry filename="./Tools/Tools.mds" />
+    <Entry filename="./ICSharpCode.SharpRefactory/ICSharpCode.SharpRefactory.mdp" />
+    <Entry filename="./MonoDevelop.Startup/MonoDevelop.mdp" />
+    <Entry filename="./MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
   </Entries>
 </Combine>
