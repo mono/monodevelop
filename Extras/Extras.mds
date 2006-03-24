@@ -11,9 +11,12 @@
       <Entry configuration="Debug" build="True" name="JavaBinding" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
       <Entry configuration="Debug" build="True" name="NemerleBinding" />
-      <Entry configuration="Debug" build="True" name="prj2make" />
-      <Entry configuration="Debug" build="True" name="VBNetBinding" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.GtkCore" />
+      <Entry configuration="Debug" build="True" name="WelcomePage" />
+      <Entry configuration="Debug" build="True" name="prj2make-sharp-lib" />
+      <Entry configuration="" build="True" name="VBNetBinding" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Debugger" />
+      <Entry configuration="Debug" build="True" name="ChangeLogAddIn" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
@@ -26,9 +29,12 @@
       <Entry configuration="Debug" build="True" name="JavaBinding" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
       <Entry configuration="Debug" build="True" name="NemerleBinding" />
-      <Entry configuration="Debug" build="True" name="prj2make" />
-      <Entry configuration="Debug" build="True" name="VBNetBinding" />
       <Entry configuration="Debug" build="True" name="MonoDevelop.GtkCore" />
+      <Entry configuration="Debug" build="True" name="WelcomePage" />
+      <Entry configuration="Debug" build="True" name="prj2make-sharp-lib" />
+      <Entry configuration="" build="True" name="VBNetBinding" />
+      <Entry configuration="Debug" build="True" name="MonoDevelop.Debugger" />
+      <Entry configuration="Debug" build="True" name="ChangeLogAddIn" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">
@@ -42,9 +48,12 @@
     <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="MonoDevelop.SourceEditor" />
     <Execute type="None" entry="NemerleBinding" />
-    <Execute type="None" entry="prj2make" />
-    <Execute type="None" entry="VBNetBinding" />
     <Execute type="None" entry="MonoDevelop.GtkCore" />
+    <Execute type="None" entry="WelcomePage" />
+    <Execute type="None" entry="prj2make-sharp-lib" />
+    <Execute type="None" entry="VBNetBinding" />
+    <Execute type="None" entry="MonoDevelop.Debugger" />
+    <Execute type="None" entry="ChangeLogAddIn" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -57,8 +66,11 @@
     <Entry filename="./JavaBinding/JavaBinding.mdp" />
     <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />
     <Entry filename="./NemerleBinding/NemerleBinding.mdp" />
-    <Entry filename="./prj2make-sharp-lib/prj2make.mdp" />
-    <Entry filename="./VBNetBinding/VBNetBinding.mdp" />
     <Entry filename="./MonoDevelop.GtkCore/MonoDevelop.GtkCore.mdp" />
+    <Entry filename="./WelcomePage/WelcomePage.mdp" />
+    <Entry filename="./prj2make-sharp-lib/prj2make-sharp-lib.mdp" />
+    <Entry filename="./VBNetBinding/VBNetBinding.mds" />
+    <Entry filename="./DebuggerAddIn/MonoDevelop.Debugger.mdp" />
+    <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
   </Entries>
 </Combine>
