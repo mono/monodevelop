@@ -5,15 +5,15 @@
        url       = ""
        description = "Generates MonoDevelop solutions from Visual Studio .NET solutions files"
 	   category    = "IDE extensions"
-       version   = "0.9">
+       version   = "0.10">
 
 	<Runtime>
 		<Import assembly="prj2make-sharp-lib.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
-		<AddIn id="CSharpBinding" version="0.6"/>
+		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
+		<AddIn id="CSharpBinding" version="0.7"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Commands">

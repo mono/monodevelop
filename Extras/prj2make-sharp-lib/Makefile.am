@@ -3,13 +3,15 @@ ADDIN = prj2make-sharp-lib.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/prj2makesharp
 ASSEMBLY = $(ADDIN_BUILD)/prj2make-sharp-lib.dll
 
-DLLS = $(GTK_SHARP_LIBS) \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll
+REFS =	-r:System \
+	-r:System.Xml \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll
 
 
 FILES = \
@@ -37,7 +39,7 @@ $(ADDIN_BUILD)/$(ADDIN):
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_sources) $(DLLS)
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)
 assembly_DATA = $(ASSEMBLY) $(ADDIN)
