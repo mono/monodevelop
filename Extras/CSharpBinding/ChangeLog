@@ -1,3 +1,11 @@
+2006-03-24  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* Test:
+	* Test/Test.cs:
+	* Makefile.am:
+	Added an initial test which validates that the resolver
+	can resolve namespaces.
+
 2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* Parser/Parser.cs:

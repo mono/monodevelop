@@ -74,6 +74,14 @@ icons/C\#.Project.WebProject
 
 ADDIN = CSharpBinding.addin.xml
 
+TESTFILES = \
+	Test/Test.cs
+
+TESTDLLS = \
+	/r:nunit.framework.dll
+
+TESTASSEMBLY = $(top_builddir)/build/bin/CSharpBinding.Test.dll
+
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
@@ -84,6 +92,13 @@ $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(DLLS) \
 		$(RES:%=/resource:%) $(build_sources)
+
+check: all $(TESTASSEMBLY)	
+	MONO_PATH=../../build/AddIns nunit-console $(TESTASSEMBLY)
+
+$(TESTASSEMBLY) : $(build_test_sources) $(RES)
+	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) /r:$(ASSEMBLY) \
+	$(monodoc_libflags) $(RES:%=/resource:%) $(build_test_sources)
 
 parse: $(PARSE)
 
