@@ -1,3 +1,6 @@
+
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
+
 FILES= \
 MonoDevelop.Core/AbstractService.cs \
 MonoDevelop.Core/FileUtilityService.cs \
@@ -123,17 +126,20 @@ MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
 MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs
 
-build_sources = $(addprefix $(srcdir)/, $(FILES)) MonoDevelop.Core/GettextCatalog.cs AssemblyInfo.cs
+GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
+		  AssemblyInfo.cs
 
-DLL = $(top_builddir)/build/bin/MonoDevelop.Core.dll
+RES =
 
-REFS = -r:Mono.Posix.dll \
+REFS =	-r:System \
+	-r:Mono.Posix \
+	-r:System.Xml \
 	-r:System.Runtime.Remoting \
 	-r:ICSharpCode.SharpZipLib.dll \
 	-r:$(top_builddir)/build/bin/log4net.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll
 
-all: $(DLL) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
 MonoDevelop.Core/GettextCatalog.cs: $(srcdir)/MonoDevelop.Core/GettextCatalog.cs.in
 	mkdir -p MonoDevelop.Core
@@ -148,16 +154,18 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(DLL): $(build_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
+$(ASSEMBLY): $(build_sources) $(RES)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources) 
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = MonoDevelop.Core/GettextCatalog.cs
 
 EXTRA_DIST = $(FILES) $(ADDIN) MonoDevelop.Core/GettextCatalog.cs.in
+
+include $(top_srcdir)/Makefile.include

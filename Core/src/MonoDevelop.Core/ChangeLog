@@ -1,3 +1,13 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: When checking add-in
+	  dependencies, check compatible versions if exact versions are
+	  not found.
+	* MonoDevelop.Core.addin.xml: Updated add-in version.
+
 2006-03-24  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Core.AddIns/AddInTreeSingleton.cs:

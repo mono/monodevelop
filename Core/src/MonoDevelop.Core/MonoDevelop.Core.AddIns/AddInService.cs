@@ -193,9 +193,9 @@ namespace MonoDevelop.Core.AddIns
 				throw new InvalidOperationException ("A cyclic addin dependency has been detected.");
 
 			depCheck.Push (id);
-			
-			AddinSetupInfo iad = Runtime.SetupService.GetInstalledAddin (id, version);
-			if (iad == null)
+
+			AddinSetupInfo iad = Runtime.SetupService.GetInstalledAddin (id);
+			if (iad == null || (version != null && !iad.Addin.SupportsVersion (version)))
 				throw new ArgumentException ("The addin '" + id + "' v" + version + " is not installed.");
 			
 			// If this addin has already been requested, bring it to the head

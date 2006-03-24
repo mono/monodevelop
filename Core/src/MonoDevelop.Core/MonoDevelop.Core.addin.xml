@@ -5,7 +5,8 @@
        url         = "http://www.monodevelop.com"
        description = "Provides the core services of the MonoDevelop platform"
 	   category    = "MonoDevelop Core"
-       version     = "0.9.0">
+       version     = "0.10.0"
+       compatVersion = "0.9.0">
 
 	<Runtime>
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
