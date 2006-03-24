@@ -1,8 +1,8 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/ChangeLogAddIn
 ASSEMBLY = $(ADDIN_BUILD)/ChangeLogAddIn.dll
 
-DLLS = /r:nunit.framework.dll \
-	/r:nunit.core.dll \
+REFS =	-r:nunit.framework \
+	-r:nunit.core \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
@@ -28,7 +28,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(FILES)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(DLLS) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/ChangeLogAddIn
 assembly_DATA = $(ASSEMBLY) $(ADDIN)

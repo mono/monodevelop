@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* ChangeLogAddIn.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* ChangeLogAddIn.addin.xml: Updated add-in versions.
+
 2006-02-28  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 	* ChangeLogAddIn.addin.xml:
 	* ChangeLogAddInOptionsPanel.cs:
