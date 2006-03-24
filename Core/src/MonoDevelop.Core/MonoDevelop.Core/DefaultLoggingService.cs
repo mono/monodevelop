@@ -16,7 +16,7 @@ namespace MonoDevelop.Core
 
 		public DefaultLoggingService()
 		{
-			if (File.Exists (Assembly.GetEntryAssembly().Location + ".config"))
+			if (Assembly.GetEntryAssembly() != null && File.Exists(Assembly.GetEntryAssembly().Location + ".config"))
 				XmlConfigurator.Configure ();
 			else
 				BasicConfigurator.Configure ();

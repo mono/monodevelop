@@ -71,8 +71,12 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return addInDirs; }
 		}
 		
-		string BinPath {
-			get { return Path.GetDirectoryName (Assembly.GetEntryAssembly().Location); } 
+		string BinPath
+		{
+			get
+			{
+				return PropertyService.EntryAssemblyDirectory;
+			} 
 		}
 		
 		string UserConfigPath {

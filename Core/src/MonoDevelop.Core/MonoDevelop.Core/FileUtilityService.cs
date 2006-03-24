@@ -33,7 +33,7 @@ namespace MonoDevelop.Core
 		
 		public FileUtilityService()
 		{
-			sharpDevelopRootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "..";
+			sharpDevelopRootPath = PropertyService.EntryAssemblyDirectory + Path.DirectorySeparatorChar + "..";
 		}
 		
 		public override void UnloadService()

@@ -1,3 +1,12 @@
+2006-03-24  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Core.AddIns/AddInTreeSingleton.cs:
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
+	* MonoDevelop.Core/DefaultLoggingService.cs:
+	* MonoDevelop.Core/FileUtilityService.cs:
+	* MonoDevelop.Core/PropertyService.cs:
+	Use AppDomain.CurrentDomain.BaseDirectory in case Assembly.GetEntryAssembly() is null.
+
 2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Load the assembly

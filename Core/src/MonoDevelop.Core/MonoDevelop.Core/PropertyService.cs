@@ -36,10 +36,8 @@ namespace MonoDevelop.Core
 			
 			if (confDataDirectory != null) {
 				dataDirectory = confDataDirectory;
-			} else {
-				dataDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + 
-				                                       Path.DirectorySeparatorChar + ".." +
-				                                       Path.DirectorySeparatorChar + "data";
+			} else {				
+				dataDirectory = EntryAssemblyDirectory + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "data";
 			}
 
 			configDirectory = Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
@@ -66,6 +64,17 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		public static string EntryAssemblyDirectory
+		{
+			get
+			{
+				if (Assembly.GetEntryAssembly() != null)
+					return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+				return AppDomain.CurrentDomain.BaseDirectory;
+			}
+		}
+
 		public PropertyService()
 		{
 			try {

@@ -20,11 +20,9 @@ namespace MonoDevelop.Core.AddIns
 	/// </summary>
 	public class AddInTreeSingleton
 	{
-		static DefaultAddInTree addInTree = null;
-		readonly static string defaultCoreDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + // DON'T REPLACE
-		Path.DirectorySeparatorChar + ".." +
-		Path.DirectorySeparatorChar + "AddIns";
-		
+		static DefaultAddInTree addInTree = null;		
+		readonly static string defaultCoreDirectory = 
+			PropertyService.EntryAssemblyDirectory + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "AddIns";			
 		static bool ignoreDefaultCoreDirectory = false;
 		static string[] addInDirectories       = null;
 		
