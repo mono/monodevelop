@@ -1,7 +1,9 @@
 
-DLL = $(top_builddir)/build/AddIns/MonoDevelop.Components.dll
+ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Components.dll
 
-REFERENCES = -r:System.Drawing.dll \
+REFS = -r:System \
+       -r:System.Drawing \
+       -r:System.Xml \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GECKO_SHARP_LIBS) \
@@ -89,15 +91,15 @@ icons/MonoDevelop.Close.png
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-all: $(DLL)
+all: $(ASSEMBLY)
 
-$(DLL): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFERENCES) $(RES:%=/resource:%) $(build_sources)
+$(ASSEMBLY): $(build_sources) $(RES)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES) $(RES)
 
