@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* ILAsmBinding.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* ILAsmBinding.addin.xml: Updated add-in versions.
+
 2005-12-13  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* ILAsmLanguageBinding.cs: Implemented the new methods in
