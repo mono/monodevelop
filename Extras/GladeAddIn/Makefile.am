@@ -3,15 +3,16 @@ ADDIN = GladeAddIn.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/GladeAddIn
 ASSEMBLY = $(ADDIN_BUILD)/GladeAddIn.dll
 
-DLLS = $(GTK_SHARP_LIBS) \
+REFS =	-r:System \
+	$(GTK_SHARP_LIBS) \
 	$(GLADEUI_LIBS) \
-	-pkg:gconf-sharp-2.0 \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
+	$(GCONF_SHARP_LIBS) \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
 
 FILES = \
 Metacity/ButtonFunction.cs \
@@ -54,8 +55,6 @@ if ENABLE_GLADE
 
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $@
@@ -63,7 +62,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
-	$(RES:%=/resource:%) $(build_sources) $(DLLS)
+	$(RES:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/GladeAddIn
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN)
@@ -74,3 +73,5 @@ else
 all:
 
 endif
+
+include $(top_srcdir)/Makefile.include

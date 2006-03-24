@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* GladeAddIn.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* GladeAddIn.addin.xml: Updated add-in versions.
+
 2006-02-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* GladeAddIn.Gui/GladeService.cs: Catch errors while creating
