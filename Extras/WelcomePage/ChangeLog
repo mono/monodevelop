@@ -1,3 +1,8 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* WelcomePage.addin.xml: Updated add-in versions.
+
 2005-12-13  David MakovskA <yakeen@sannyas-on.net>
 
 	* WelcomePageView.cs:
