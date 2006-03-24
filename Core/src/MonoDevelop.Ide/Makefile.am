@@ -1,16 +1,20 @@
-DLLS = /r:System.Drawing /r:ICSharpCode.SharpZipLib.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
-	/r:System.Data.dll /r:System.Web.Services.dll \
-	/r:Mono.Posix.dll \
-	/r:Mono.GetOptions.dll \
-	/r:System.Runtime.Remoting \
-	/r:$(top_builddir)/build/bin/log4net.dll \
+REFS =	-r:System \
+	-r:System.Drawing \
+	-r:System.Xml \
+	-r:ICSharpCode.SharpZipLib \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
+	-r:System.Data \
+	-r:System.Web.Services \
+	-r:Mono.Posix \
+	-r:Mono.GetOptions \
+	-r:System.Runtime.Remoting \
+	-r:$(top_builddir)/build/bin/log4net.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
@@ -257,8 +261,7 @@ options/TipsOfTheDay.xml
 
 build_OPTIONS = $(addprefix $(top_builddir)/build/data/options/, $(notdir $(OPTIONS)))
 
-DLLNAME = MonoDevelop.Ide.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
 
 ADDIN = MonoDevelop.Ide.addin.xml
 
@@ -275,7 +278,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) \
+	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) \
 		$(monodoc_libflags) $(RES:%=/resource:%) $(build_sources)
 
 assemblydir = $(MD_ADDIN_DIR)
