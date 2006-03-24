@@ -2,14 +2,15 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/DiffWidget.dll
 
-DLLS = 
+REFS = -r:$(ADDIN_BUILD)/Diff.dll \
+	$(GTK_SHARP_LIBS)
 FILES = widget.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(build_sources) -out:$@ -target:library -r:$(ADDIN_BUILD)/Diff.dll $(GTK_SHARP_LIBS)
+	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES)

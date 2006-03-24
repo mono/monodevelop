@@ -1,3 +1,17 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* VersionControl.mds:
+	* DiffWidget/DiffWidget.mdp:
+	* VersionControl/VersionControl.mdp:
+	* Diff/Diff.mdp: Updated.
+	* Makefile.am:
+	* Diff/Makefile.am:
+	* DiffWidget/Makefile.am:
+	* VersionControl/Makefile.am: Use an unified format. 
+	  Patch by Matze Braun.
+	
+	* VersionControl.addin.xml: Updated add-in versions.
+
 2006-03-21  Wade Berrier <wberrier@novell.com> 
 
 	* AddIn/Makefile.am: Fix 'make dist' to include missing png files

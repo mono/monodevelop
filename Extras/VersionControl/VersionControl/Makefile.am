@@ -2,14 +2,14 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/VersionControl.dll
 
-DLLS = 
+REFS = 
 FILES = Subversion.cs VersionControl.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES)
