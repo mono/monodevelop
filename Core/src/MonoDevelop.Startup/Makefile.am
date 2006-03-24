@@ -10,7 +10,7 @@ MonoDevelop.Startup.glade
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-all: $(ASSEMBLY $(ASSEMBLY).config
+all: $(ASSEMBLY) $(ASSEMBLY).config
 
 REFS = \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
