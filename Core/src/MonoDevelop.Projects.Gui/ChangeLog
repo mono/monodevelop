@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelop.Projects.Gui.addin.xml: Updated add-in versions.
+
 2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:

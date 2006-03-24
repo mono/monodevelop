@@ -1,14 +1,15 @@
 
-DLL = $(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll
+ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll
 
-REFERENCES = \
+REFS =  -r:System \
+	-r:System.Xml \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 FILES= \
 MonoDevelop.Projects.Gui/IconService.cs \
@@ -45,22 +46,22 @@ ADDIN = MonoDevelop.Projects.Gui.addin.xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-all: $(DLL) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(DLL): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFERENCES) $(RES:%=/resource:%) $(build_sources)
+$(ASSEMBLY): $(build_sources) $(RES)
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) $(RES:%=/resource:%) $(build_sources)
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
 

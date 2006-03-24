@@ -5,16 +5,16 @@
        url         = "http://www.icsharpcode.net"
        description = "Provides GUI resources for managing MonoDevelop projects"
 	   category    = "MonoDevelop Core"
-       version     = "0.9.0">
+       version     = "0.10.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.Gui.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.9.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.9.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.10.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
