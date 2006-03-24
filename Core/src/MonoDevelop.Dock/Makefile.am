@@ -1,5 +1,5 @@
 RUNTIME = mono
-DOCK = $(top_builddir)/build/AddIns/MonoDevelop.Dock.dll
+ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Dock.dll
 TEST = $(top_builddir)/build/bin/dock-test.exe
 
 GLADE = layout.glade
@@ -13,9 +13,9 @@ RESOURCES = \
 	-resource:$(srcdir)/stock-menu-right-12.png,stock-menu-right-12.png
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(DOCK)
+assembly_DATA = $(ASSEMBLY)
 
-REFS = -r:Mono.Posix.dll $(GTK_SHARP_LIBS) $(GLADE_SHARP_LIBS)
+REFS = -r:System.Xml -r:Mono.Posix.dll $(GTK_SHARP_LIBS) $(GLADE_SHARP_LIBS)
 
 FILES = AssemblyInfo.cs \
 	DockedHandler.cs \
@@ -41,17 +41,17 @@ FILES = AssemblyInfo.cs \
 
 TEST_FILES = $(srcdir)/GdlDockTest.cs
 
-all: $(DOCK)
+all: $(ASSEMBLY)
 
-CLEANFILES = $(DOCK) $(DOCK).mdb $(TEST) $(TEST).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(TEST) $(TEST).mdb
 EXTRA_DIST = $(FILES) $(GLADE) $(IMAGES) $(TEST_FILES)
 
-$(DOCK): $(build_sources) $(GLADE) $(IMAGES)
+$(ASSEMBLY): $(build_sources) $(GLADE) $(IMAGES)
 	mkdir -p $(top_builddir)/build/bin/
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(build_sources) $(RESOURCES) $(REFS)
 
-$(TEST) : $(TEST_FILES) $(DOCK)
-	$(CSC) $(CSC_FLAGS) -out:$@ -r:$(DOCK) -pkg:gtk-sharp-2.0 $(TEST_FILES) -codepage:utf8
+$(TEST) : $(TEST_FILES) $(ASSEMBLY)
+	$(CSC) $(CSC_FLAGS) -out:$@ -r:$(ASSEMBLY) -pkg:gtk-sharp-2.0 $(TEST_FILES) -codepage:utf8
 
 run-test: $(TEST)
 	$(RUNTIME) $(TEST)

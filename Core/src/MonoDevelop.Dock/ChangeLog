@@ -1,3 +1,8 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Dock.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+
 2006-03-16  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* DockItem.cs: Added setter to the Iconified property.	
