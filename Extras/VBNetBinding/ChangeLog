@@ -1,3 +1,13 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* VBNetBinding.mdp:
+	* MonoQuery/MonoQuery.mdp: Updated.
+	* Makefile.am:
+	* SharpRefactoryVB/Makefile.am: Use an unified format. 
+	  Patch by Matze Braun.
+	
+	* VBNetBinding.addin.xml: Updated add-in versions.
+
 2006-03-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* Parser/Parser.cs:

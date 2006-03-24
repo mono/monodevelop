@@ -5,7 +5,7 @@
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
 	   category    = "Language bindings"
-       version     = "0.1">
+       version     = "0.2">
 
   <Runtime>
     <Import assembly = "VBNetBinding.dll"/>
@@ -13,7 +13,7 @@
   </Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">

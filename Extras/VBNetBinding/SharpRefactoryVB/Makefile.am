@@ -101,27 +101,27 @@ src/Parser/generated/Modifiers.cs \
 src/Parser/generated/ParamModifiers.cs \
 src/Parser/generated/Parser.cs
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
+ASSEMBLY = $(top_builddir)/build/AddIns/BackendBindings/ICSharpCode.SharpRefactory.VB.dll
 
-DLL = $(top_builddir)/build/AddIns/BackendBindings/ICSharpCode.SharpRefactory.VB.dll
+REFS =	-r:System \
+	-r:System.Drawing
 
-REFS = /r:System.Drawing.dll
+all: $(ASSEMBLY)
 
-all: $(DLL)
+$(ASSEMBLY): $(FILES)
+	$(CSC) $(CSC_FLAGS) -out:$(ASSEMBLY) -target:library $(REFS) $(build_sources)
 
-$(DLL): $(FILES)
-	$(CSC) $(CSC_FLAGS) /out:$(DLL) /target:library $(REFS) $(build_sources)
-
-test-parser.exe : $(DLL) src/Main.cs
-	$(CSC) /out:$@ /r:$(DLL) src/Main.cs
+test-parser.exe : $(ASSEMBLY) src/Main.cs
+	$(CSC) -out:$@ -r:$(ASSEMBLY) src/Main.cs
 
 run : test-parser.exe
-	MONO_PATH=`dirname $(DLL)` $(RUNTIME) test-parser.exe $(TEST_SOURCE)
+	MONO_PATH=`dirname $(ASSEMBLY)` $(RUNTIME) test-parser.exe $(TEST_SOURCE)
 
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES)
 
+include $(top_srcdir)/Makefile.include
