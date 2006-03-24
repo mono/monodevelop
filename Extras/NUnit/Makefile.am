@@ -2,8 +2,10 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/NUnit
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
 
-DLLS = /r:nunit.framework.dll \
-	/r:nunit.core.dll \
+REFS = -r:System \
+       -r:System.Xml \
+       -r:nunit.framework \
+	-r:nunit.core \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
@@ -77,7 +79,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(DLLS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 if ENABLE_NUNIT
 assemblydir = $(MD_ADDIN_DIR)/NUnit
