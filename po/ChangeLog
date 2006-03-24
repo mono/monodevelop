@@ -1,3 +1,7 @@
+2006-03-24  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added svn:ignore for monodevelop.pot.
+
 2006-03-23  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* es.po: Updated. Thanks to Alejandro Serrano <trupill@yahoo.es>.
