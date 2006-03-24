@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Visualizers/Makefile.am:
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelopDebugger.addin.xml: Updated add-in versions.
+
 2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelopDebugger.addin.xml: Fixed addin header information.

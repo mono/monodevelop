@@ -5,14 +5,14 @@
        url       = ""
        description = ""
 	   category    = "IDE extensions"
-       version   = "0.3">
+       version   = "0.10">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Debugger.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
 	<Extension path="/Workspace/Services">

@@ -3,9 +3,8 @@ ASSEMBLY_NAME = MonoDevelop.Visualizers
 ADDIN_BUILD = $(top_builddir)/build/AddIns/DebuggerAddIn
 ASSEMBLY = $(ADDIN_BUILD)/$(ASSEMBLY_NAME).dll
 
-DLLS = $(GTK_SHARP_LIBS) \
+REFS =	$(GTK_SHARP_LIBS) \
 	$(MONO_DEBUGGER_LIBS)
-
 
 FILES = \
 	DialogDebuggerVisualizer.cs \
@@ -24,12 +23,10 @@ if ENABLE_DEBUGGER
 
 noinst_DATA= $(ASSEMBLY)
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -g $(DEFINES) -keyfile:$(srcdir)/visualizer.snk -out:$@ -target:library \
-	$(build_sources) $(DLLS)
+	$(build_sources) $(REFS)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
@@ -40,3 +37,5 @@ else
 all:
 
 endif
+
+include $(top_srcdir)/Makefile.include

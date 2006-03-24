@@ -3,14 +3,14 @@ ADDIN = MonoDevelopDebugger.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/DebuggerAddIn
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
 
-DLLS = $(GTK_SHARP_LIBS) \
+REFS =	$(GTK_SHARP_LIBS) \
 	$(MONO_DEBUGGER_LIBS) \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-        /r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+        -r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll
 
 FILES = \
 DebuggingService.cs \
@@ -24,14 +24,12 @@ Gui/Pads/LocalsPad.cs \
 Gui/Pads/StackTracePad.cs \
 Gui/Pads/ThreadPad.cs
 
-
-EXTRA_DIST = $(FILES) $(ADDIN) DebuggerPaths.cs.in
+GENERATED_FILES = DebuggerPaths.cs
+EXTRA_DIST = $(FILES) $(ADDIN) $(GENERATED_FILES)
 
 if ENABLE_DEBUGGER
 
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-
-build_sources = $(addprefix $(srcdir)/, $(FILES)) DebuggerPaths.cs
 
 DebuggerPaths.cs: $(srcdir)/DebuggerPaths.cs.in
 	sed -e 's,@''pkglibdir@,$(pkglibdir),g' $(srcdir)/DebuggerPaths.cs.in > $@.tmp
@@ -43,8 +41,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
-	$(build_sources) $(DLLS)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/DebuggerAddIn
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN)
