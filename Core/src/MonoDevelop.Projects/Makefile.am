@@ -1,12 +1,14 @@
 
-DLL = $(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
-
-REFERENCES = \
-	/r:System.Drawing.dll \
-	/r:Mono.Posix.dll \
-	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(MONODOC_LIBS)
+ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
+  
+REFS = \
+ 	-r:System \
+ 	-r:System.Xml \
+ 	-r:System.Drawing \
+ 	-r:Mono.Posix \
+ 	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
+ 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+ 	$(MONODOC_LIBS)
 
 FILES= \
 MonoDevelop.Projects.Ambience/AbstractAmbience.cs \
@@ -218,22 +220,22 @@ ADDIN = MonoDevelop.Projects.addin.xml
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 
-all: $(DLL) $(ADDIN_BUILD)/$(ADDIN)
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(DLL): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFERENCES) $(build_sources)
+$(ASSEMBLY): $(build_sources)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(DLL)
+assembly_DATA = $(ASSEMBLY)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES) $(ADDIN)
 

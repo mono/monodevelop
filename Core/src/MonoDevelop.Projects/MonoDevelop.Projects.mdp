@@ -1,16 +1,16 @@
 <Project name="MonoDevelop.Projects" fileversion="2.0" language="C#" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Projects" />
-      <Build debugmode="True" target="Exe" />
+      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects" />
+      <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../../../build/AddIns" assembly="MonoDevelop.Projects" />
-      <Build debugmode="False" target="Exe" />
+      <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects" />
+      <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <DeploymentInformation strategy="File">
@@ -18,75 +18,86 @@
   </DeploymentInformation>
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AssemblyInfo.cs.in" subtype="Code" buildaction="Nothing" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Projects.addin.xml" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Projects/AbstractConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/AbstractProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/AssemblyDeploy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/BuildTool.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CmbxFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/Combine.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineEntryCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineEntryEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CombineExecuteDefinition.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ConfigurationCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ConfigurationEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ConvertXml.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/CyclicBuildOrderException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/DeployInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/DotNetProject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/DotNetProjectBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/DotNetProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/FileDeploy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/FileFormatManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IConfiguration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IDeploymentStrategy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ILanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/IProjectService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/Language.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/LanguageBindingService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/LanguageService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/MdpFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/MdsFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/NoStartupCombineDefinedException.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/PrjxFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/Project.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectCompileEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectFileCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectFileEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectReference.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectReferenceCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectReferenceEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectRenameEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectsServices.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ScriptDeploy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/AbstractAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/AmbienceReflectionDecorator.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/AmbienceService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/IAmbience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/NetAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/Language.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/LanguageService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/LanguageBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AssemblyInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassProxy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassProxyCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/FileEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IParserService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ParseInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ILanguageItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/LanguageItemCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/LocalVariable.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/FileFormatManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IProjectService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectRenameEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/FileFormatCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Utility/Comparers.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Utility/DiffUtility.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Utility/SortUtility.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Utility/SortUtilityBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Utility/PriorityQueue.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/Comment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IComment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ICompilationUnitBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IDecoration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IExpressionFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IField.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IIndexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IRegion.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IUsing.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ModifierEnum.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/Namespace.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ParameterModifier.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/Tag.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AttributeCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/AttributeSectionCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ClassCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/CommentCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/EventCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/FieldCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IUsingCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/MethodCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/ParameterCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/PropertyCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/TagCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/TypedCSharpCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractComment.cs" subtype="Code" buildaction="Compile" />
@@ -102,52 +113,9 @@
     <File name="./MonoDevelop.Projects.Parser/AbstractProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractReturnType.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AssemblyInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AttributeCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AttributeSectionCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassProxy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassProxyCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/Comment.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/CommentCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/DefaultParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/DefaultRegion.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/EventCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/FieldCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/FileEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IComment.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ICompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ICompilationUnitBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IDecoration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IExpressionFinder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IField.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IIndexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IParseInformationListener.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IParserService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IRegion.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IUsing.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/IUsingCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/MethodCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ModifierEnum.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/NamespaceEntry.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ParameterCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ParameterModifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ParseInformation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/PersistentAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/PersistentAttributeSection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentField.cs" subtype="Code" buildaction="Compile" />
@@ -156,9 +124,6 @@
     <File name="./MonoDevelop.Projects.Parser/PersistentParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/PropertyCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ReferenceEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReflectionClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReflectionEvent.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReflectionField.cs" subtype="Code" buildaction="Compile" />
@@ -167,19 +132,43 @@
     <File name="./MonoDevelop.Projects.Parser/ReflectionParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReflectionProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReflectionReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyField.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyIndexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/Tag.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/TagCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/TypedCSharpCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CmbxFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/MdpFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/MdsFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/PrjxFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/Combine.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineEntryEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineExecuteDefinition.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CyclicBuildOrderException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/NoStartupCombineDefinedException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/AbstractConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/AbstractProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ConvertXml.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/DotNetProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/DotNetProjectBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/DotNetProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IBuildStep.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/Project.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectCompileEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectFileEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectReferenceEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectFileCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectReferenceCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/AssemblyDeploy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/DeployInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/FileDeploy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IDeploymentStrategy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ScriptDeploy.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/ArrayHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/ArrayListHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/ClassDataType.cs" subtype="Code" buildaction="Compile" />
@@ -203,42 +192,40 @@
     <File name="./MonoDevelop.Projects.Serialization/PrimitiveDataType.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/SerializationContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/XmlDataSerializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Utility/Comparers.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Utility/DiffUtility.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Utility/PriorityQueue.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Utility/SortUtility.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Utility/SortUtilityBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/PersistentAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/PersistentAttributeSection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Text" subtype="Directory" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Text/ITextFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Text/TextFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Text/IEditableTextFile.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration" subtype="Directory" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/IRefactorer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Text/ITextFileProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/IParseInformationListener.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ILanguageItem.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/LocalVariable.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/IRefactorer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Text/IEditableTextFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Text/ITextFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Text/ITextFileProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Text/TextFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Extensions/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ILanguageBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/IDotNetLanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ExpressionContext.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/Namespace.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/LanguageItemCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Projects/IBuildStep.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/CombineEntryCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ConfigurationCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ConfigurationEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/BuildTool.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectsServices.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/AddIns/ICSharpCode.SharpRefactory.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
   </References>
 </Project>
