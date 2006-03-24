@@ -2,13 +2,15 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/NemerleBinding.dll
 
-DLLS = /r:System.Drawing.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+REFS = -r:System \
+       -r:System.Xml \
+	-r:System.Drawing \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
 
@@ -40,7 +42,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(FILES) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(DLLS) $(RES:%=/resource:%) \
+	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) \
 		$(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings/
