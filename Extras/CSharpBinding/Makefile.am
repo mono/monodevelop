@@ -3,14 +3,16 @@ ASSEMBLY = $(ADDIN_BUILD)/CSharpBinding.dll
 
 PARSE = parse.exe
 
-DLLS = /r:System.Drawing.dll \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	/r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
+REFS = -r:System \
+       -r:System.Xml \
+	-r:System.Drawing \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
 
@@ -90,7 +92,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(DLLS) \
+	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) $(build_sources)
 
 check: all $(TESTASSEMBLY)	
@@ -103,7 +105,7 @@ $(TESTASSEMBLY) : $(build_test_sources) $(RES)
 parse: $(PARSE)
 
 $(PARSE): parse.cs $(ASSEMBLY)
-	$(CSC) -out:$@ parse.cs $(DLLS) -r:$(ASSEMBLY)
+	$(CSC) -out:$@ parse.cs $(REFS) -r:$(ASSEMBLY)
 
 run-parse-test: $(PARSE)
 	MONO_PATH=../../../../../build/AddIns/BackendBindings/:../../../../../build/bin/ mono $(PARSE) .

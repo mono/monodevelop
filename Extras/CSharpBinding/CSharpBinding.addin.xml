@@ -5,16 +5,16 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
 	   category    = "Language bindings"
-       version     = "0.6">
+       version     = "0.7">
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.SourceEditor" version="0.9.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.9.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.10.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">

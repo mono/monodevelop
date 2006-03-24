@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* CSharpBinding.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* CSharpBinding.addin.xml: Updated add-in versions.
+
 2006-03-24  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* Test:
