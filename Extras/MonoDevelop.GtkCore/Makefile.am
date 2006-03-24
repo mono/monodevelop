@@ -3,18 +3,20 @@ ADDIN = MonoDevelop.GtkCore.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
-DLLS = $(GTK_SHARP_LIBS) \
+REFS =	-r:System \
+	-r:System.Xml \
+	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
-	-r:lib/libstetic.dll \
-	-r:lib/libsteticui.dll \
-	-pkg:gconf-sharp-2.0 \
-	/r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	/r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	/r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
+	$(GCONF_SHARP_LIBS) \
+	-r:$(srcdir)/lib/libstetic.dll \
+	-r:$(srcdir)/lib/libsteticui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
 
 FILES = \
 MonoDevelop.GtkCore/GtkCoreService.cs \
@@ -79,8 +81,6 @@ update-stetic:
 	mkdir -p lib
 	cp $(LIBDIR_STETIC_FILES) lib 
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $@
@@ -92,9 +92,11 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
-	$(RES:%=/resource:%) $(build_sources) $(DLLS)
+	$(RES:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN) $(SRC_STETIC_FILES) 
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN) $(BUILD_STETIC_FILES)
+
+include $(top_srcdir)/Makefile.include

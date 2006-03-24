@@ -1,3 +1,8 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelop.GtkCore.addin.xml: Updated add-in versions.
+
 2006-03-22 Lluis Sanchez Gual  <lluis@novell.com>    
 
 	* MonoDevelop.GtkCore.addin.xml:
