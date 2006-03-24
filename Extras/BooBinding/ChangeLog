@@ -1,3 +1,7 @@
+2006-03-24 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* BooShell/: Added Makefile and Makefile.in to svn:ignore.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* BooShell/BooShell.mdp:
