@@ -249,6 +249,7 @@ Core/src/Tools/mdhost/Makefile
 Core/src/Tools/mdrun/Makefile
 Core/src/Tools/SharpCoco/Makefile
 Extras/BooBinding/Makefile
+Extras/BooBinding/BooShell/Makefile
 Extras/JavaBinding/Makefile
 Extras/Makefile
 Extras/MonoDeveloperExtensions/Makefile

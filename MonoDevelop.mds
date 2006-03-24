@@ -1,5 +1,14 @@
-<Combine name="MonoDevelop" fileversion="2.0">
-  <Configurations />
+<Combine name="MonoDevelop" fileversion="2.0" outputpath="./build/bin/">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry configuration="Debug" build="True" name="Core" />
+      <Entry configuration="Debug" build="True" name="Extras" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry configuration="Release" build="True" name="Core" />
+      <Entry configuration="Release" build="True" name="Extras" />
+    </Configuration>
+  </Configurations>
   <StartMode startupentry="Core" single="True">
     <Execute type="None" entry="Core" />
     <Execute type="None" entry="Extras" />
