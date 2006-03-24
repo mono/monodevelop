@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* JavaBinding.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* JavaBinding.addin.xml: Updated add-in versions.
+
 2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * Java.glade: Marking some strings not to be translated. Not include balast in pot file.
