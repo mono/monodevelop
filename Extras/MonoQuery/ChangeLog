@@ -1,3 +1,13 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Mono.Data.Sql/Mono.Data.Sql.mdp:
+	* MonoQuery/MonoQuery.mdp:
+	* MonoQuery/Makefile.am:
+	* Mono.Data.Sql/Makefile.am: Use an unified format. 
+	  Patch by Matze Braun.
+	
+	* MonoQuery/MonoQuery.addin.xml: Updated add-in versions.
+
 2006-02-24  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery/MonoQuery.mdp: Updated references.

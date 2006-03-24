@@ -35,8 +35,6 @@ Providers/SybaseDbProvider.cs \
 Providers/SqlDbProvider.cs \
 AssemblyInfo.cs
 
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
 REFS = \
 -r:System.Data \
 -r:Npgsql \
@@ -48,17 +46,19 @@ REFS = \
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 
-DLL = $(ADDIN_BUILD)/Mono.Data.Sql.dll
+ASSEMBLY = $(ADDIN_BUILD)/Mono.Data.Sql.dll
 
-all: $(DLL)
+all: $(ASSEMBLY)
 
-$(DLL): $(FILES)
+$(ASSEMBLY): $(FILES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(SCS_FLAGS) -target:library -out:$@ $(build_sources) $(REFS)
 
-CLEANFILES = $(DLL) $(DLL).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES)
 
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
-monoquery_DATA = $(DLL)
+monoquery_DATA = $(ASSEMBLY)
+
+include $(top_srcdir)/Makefile.include

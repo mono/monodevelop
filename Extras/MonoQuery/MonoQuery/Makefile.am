@@ -62,38 +62,38 @@ icons/MonoQuery.Providers \
 icons/MonoQuery.Blob \
 icons/MonoQuery.SqlQueryView
 
-
-build_sources = $(addprefix $(srcdir)/, $(FILES))
-
-DLL = $(ADDIN_BUILD)/MonoQuery.dll
+ASSEMBLY = $(ADDIN_BUILD)/MonoQuery.dll
 ADDIN = MonoQuery.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 
-REFS = /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-       /r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-       /r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-       /r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-       /r:$(top_builddir)/build/AddIns/MonoQuery/Mono.Data.Sql.dll \
-       /r:System.Data.dll \
-       $(GTK_SHARP_LIBS) \
-       $(GLADE_SHARP_LIBS) \
-       $(GTKSOURCEVIEW_SHARP_LIBS)
+REFS =	-r:System \
+	-r:System.Xml \
+	-r:System.Data \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoQuery/Mono.Data.Sql.dll \
+	$(GTK_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
+	$(GTKSOURCEVIEW_SHARP_LIBS)
 
-all: $(ADDIN_BUILD)/$(ADDIN) $(DLL)
+all: $(ADDIN_BUILD)/$(ADDIN) $(ASSEMBLY)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(DLL): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS) \
 	$(RES:%=/resource:%)
 
-CLEANFILES = $(DLL) $(DLL).mdb $(ADDIN_BUILD)/$(ADDIN)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
 
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
-monoquery_DATA = $(DLL) $(ADDIN_BUILD)/$(ADDIN)
+monoquery_DATA = $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 
+include $(top_srcdir)/Makefile.include

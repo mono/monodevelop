@@ -5,7 +5,7 @@
 		url         = "http://www.dronestudios.com"
 		description = "Database Management Module"
 	    category    = "IDE extensions"
-		version     = "0.2.0">
+		version     = "0.3.0">
 
 	<Runtime>
 		<Import assembly="Mono.Data.Sql.dll"/>
@@ -13,7 +13,7 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
 	<Extension path = "/Workspace/Services">
