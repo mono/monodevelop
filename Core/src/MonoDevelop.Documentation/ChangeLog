@@ -1,3 +1,9 @@
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Documentation.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelop.Documentation.addin.xml: Updated add-in versions.
+
 2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
 
 	* Makefile.am: Fixed rename.
