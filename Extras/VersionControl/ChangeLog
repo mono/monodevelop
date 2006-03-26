@@ -1,3 +1,8 @@
+2006-03-26 Joshua Tauberer  <tauberer@for.net>
+
+	* AddIn/Task.cs, Statuses.cs, Logs.cs: Prevent unhandled
+	  exceptions if a library couldn't be found.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* VersionControl.mds:

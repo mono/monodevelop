@@ -39,6 +39,8 @@ namespace VersionControlPlugin {
 			try {
 				Run();
 				tracker.ReportSuccess("Done.");
+			} catch (DllNotFoundException e) {
+				tracker.ReportError("The operation could not be completed because a shared library is missing: " + e.Message, null);
 			} catch (Exception e) {
 				tracker.ReportError(e.Message, null);
 				Console.Error.WriteLine(e);

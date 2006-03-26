@@ -278,6 +278,7 @@ namespace VersionControlPlugin {
 			}
 		
 			protected override void Finished() {
+				if (view.statuses == null) return;
 				view.Update();
 			}
 		}

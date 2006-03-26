@@ -53,6 +53,7 @@ namespace VersionControlPlugin {
 			}
 		
 			protected override void Finished() {
+				if (history == null) return;
 				LogView d = new LogView(filepath, isDirectory, history, vc);
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 			}
@@ -203,6 +204,7 @@ namespace VersionControlPlugin {
 			}
 		
 			protected override void Finished() {
+				if (text1 == null || text2 == null) return;
 				DiffView.Show(name + " " + revision.ToString(), text1, text2);
 			}
 		}
@@ -263,6 +265,7 @@ namespace VersionControlPlugin {
 			}
 		
 			protected override void Finished() {
+				if (text == null) return;
 				HistoricalFileView.Show(name, file, text);
 			}
 		}
