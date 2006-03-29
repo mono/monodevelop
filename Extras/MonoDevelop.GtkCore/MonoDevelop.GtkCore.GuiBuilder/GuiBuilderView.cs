@@ -464,11 +464,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		protected override void AddWidgetCommands (Stetic.Wrapper.Widget widget)
 		{
-			ToolButton bindButton = new ToolButton (null, GettextCatalog.GetString ("Bind to Field"));
-			bindButton.IsImportant = true;
-			bindButton.Clicked += new EventHandler (OnBindWidget);
-			bindButton.Show ();
-			Insert (bindButton, -1);
+			if (widget != RootWidget) {
+				// Show the Bind to Field button only for children of the root container.
+				ToolButton bindButton = new ToolButton (null, GettextCatalog.GetString ("Bind to Field"));
+				bindButton.IsImportant = true;
+				bindButton.Clicked += new EventHandler (OnBindWidget);
+				bindButton.Show ();
+				Insert (bindButton, -1);
+			}
 			base.AddWidgetCommands (widget);
 		}
 		

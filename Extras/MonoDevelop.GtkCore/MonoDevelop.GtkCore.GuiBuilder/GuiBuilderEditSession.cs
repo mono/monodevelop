@@ -148,6 +148,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		public bool UpdateBindings (string fileName)
 		{
 			IParseInformation pi = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (window.Project.Project, fileName, null);
+			if (pi == null) return false;
 			
 			foreach (IClass cls in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
 				if (cls.Name == className && cls.Region.FileName == className) {

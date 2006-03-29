@@ -1,3 +1,12 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	  Don't crash if no parse info is available for the file
+	  being edited. Should fix #77885.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Don't show
+	  the bind to field button for the root container.
+	* lib/*: Updated.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Makefile.am: Use an unified format. Patch by Matze Braun.
