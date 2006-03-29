@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Text;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
@@ -84,9 +85,17 @@ namespace MonoDeveloper
 				monitor.EndTask ();
 				return project;
 			} else {
-				string subdirs = mkfile.GetVariable ("common_dirs");
-				if (subdirs == null)
-					subdirs = mkfile.GetVariable ("SUBDIRS");
+				string subdirs;
+				StringBuilder subdirsBuilder = new StringBuilder ();
+				subdirsBuilder.Append (mkfile.GetVariable ("common_dirs"));
+				if (subdirsBuilder.Length != 0) {
+					subdirsBuilder.Append ("\t");
+					subdirsBuilder.Append (mkfile.GetVariable ("net_2_0_dirs"));
+				}
+				if (subdirsBuilder.Length == 0)
+					subdirsBuilder.Append (mkfile.GetVariable ("SUBDIRS"));
+
+				subdirs = subdirsBuilder.ToString ();
 				if (subdirs != null && (subdirs = subdirs.Trim (' ','\t')) != "")
 				{
 					Combine combine = new MonoCombine ();

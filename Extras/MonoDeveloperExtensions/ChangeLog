@@ -1,3 +1,8 @@
+2006-03-26 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDeveloperExtensions/MonoMakefileFormat.cs: Include 2.0
+	  directories in the solution. Patch by Marek Sieradzki.
+
 2006-03-29 Grzegorz Sobanski  <silk@boktor.net>  
 
 	* Makefile.am: removed unneeded references to nunit.
