@@ -59,6 +59,11 @@ namespace MonoDevelop.Core
 			initialized = true;
 			AddInService.Initialize ();
 		}
+		
+		public static void Shutdown ()
+		{
+			ServiceManager.UnloadAllServices ();
+		}
 	
 		public static ProcessService ProcessService {
 			get {

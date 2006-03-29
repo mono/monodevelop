@@ -71,9 +71,7 @@ namespace MonoDevelop.Core.Execution
 				starting = true;
 				exitRequestEvent.Reset ();
 				
-				IChannel ch = ChannelServices.GetChannel ("tcp");
-				if (ch == null)
-					ChannelServices.RegisterChannel (new TcpChannel (0));
+				string chId = Runtime.ProcessService.RegisterRemotingChannel ();
 				
 				BinaryFormatter bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (this);
@@ -90,6 +88,7 @@ namespace MonoDevelop.Core.Execution
 					process.StartInfo.RedirectStandardInput = true;
 					process.EnableRaisingEvents = true;
 					process.Start ();
+					process.StandardInput.WriteLine (chId);
 					process.StandardInput.WriteLine (sref);
 					process.StandardInput.Flush ();
 				} catch (Exception ex) {
@@ -98,7 +97,7 @@ namespace MonoDevelop.Core.Execution
 				}
 			}
 		}
-		
+
 		void ProcessExited (object sender, EventArgs args)
 		{
 			lock (this) {

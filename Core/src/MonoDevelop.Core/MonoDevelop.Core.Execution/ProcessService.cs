@@ -4,6 +4,10 @@ using System.IO;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
+using Mono.Remoting.Channels.Unix;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -14,6 +18,8 @@ namespace MonoDevelop.Core.Execution
 	{
 		ProcessHostController externalProcess;
 		ExecutionHandlerCodon[] executionHandlers;
+		string remotingChannel = "unix";
+		string unixRemotingFile;
 		
 		public override void InitializeService ()
 		{
@@ -140,6 +146,37 @@ namespace MonoDevelop.Core.Execution
 		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, bool shared)
 		{
 			return GetHost (typeName, shared).CreateInstance (assemblyPath, typeName);
+		}
+		
+		public string ExternalProcessRemotingChannel {
+			get { return remotingChannel; }
+			set { 
+				if (value != "tcp" && value != "unix")
+					throw new InvalidOperationException ("Channel not supported: " + value);
+				remotingChannel = value; 
+			}
+		}
+		
+		internal string RegisterRemotingChannel ()
+		{
+			if (remotingChannel == "tcp") {
+				IChannel ch = ChannelServices.GetChannel ("tcp");
+				if (ch == null)
+					ChannelServices.RegisterChannel (new TcpChannel (0));
+			} else {
+				IChannel ch = ChannelServices.GetChannel ("unix");
+				if (ch == null) {
+					unixRemotingFile = Path.GetTempFileName ();
+					ChannelServices.RegisterChannel (new UnixChannel (unixRemotingFile));
+				}
+			}
+			return remotingChannel;
+		}
+		
+		public override void UnloadService ()
+		{
+			if (unixRemotingFile != null)
+				File.Delete (unixRemotingFile);
 		}
 	}
 	
