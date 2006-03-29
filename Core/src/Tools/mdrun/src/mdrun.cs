@@ -52,6 +52,12 @@ public class MonoDevelopProcessHost
 		} catch (Exception ex) {
 			Console.WriteLine (ex);
 			return -1;
+		} finally {
+			try {
+				Runtime.Shutdown ();
+			} catch {
+				// Ignore shutdown exceptions
+			}
 		}
 	}
 }
