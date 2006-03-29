@@ -12,7 +12,11 @@ namespace MonoDevelop.Startup
 		{
 			Runtime.Initialize ();
 			Runtime.AddInService.CheckAssemblyLoadConflicts = true;
-			return Runtime.AddInService.StartApplication ("IDE", args);
+			try {
+				return Runtime.AddInService.StartApplication ("IDE", args);
+			} finally {
+				Runtime.Shutdown ();
+			}
 		}
 	}
 }
