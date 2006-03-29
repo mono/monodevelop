@@ -65,6 +65,8 @@ MonoDevelop.Components/GladeWidgetExtract.cs \
 MonoDevelop.Components/IconView.cs \
 MonoDevelop.Components/Navbar.cs \
 MonoDevelop.Components/TabLabel.cs \
+MonoDevelop.Components/CellRendererComboBox.cs \
+MonoDevelop.Components/TreeViewCellContainer.cs \
 MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
 MonoDevelop.Components.Commands/CommandRouterContainer.cs \
 MonoDevelop.Components.Chart/Axis.cs \

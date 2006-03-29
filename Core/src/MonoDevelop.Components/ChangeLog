@@ -1,3 +1,11 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Components/CellRendererComboBox.cs:
+	* MonoDevelop.Components/TreeViewCellContainer.cs: New files.
+	
+	* MonoDevelop.Components.mdp:
+	* Makefile.am: Updated.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components.mdp: Updated.
