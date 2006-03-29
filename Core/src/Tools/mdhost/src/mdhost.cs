@@ -38,16 +38,28 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting.Lifetime;
 using System.Reflection;
 using System.Collections;
+using Mono.Remoting.Channels.Unix;
 
 public class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
 		try {
-			Hashtable props = new Hashtable ();
-			props ["port"] = 0;
-			props ["name"] = "__internal_tcp";
-			ChannelServices.RegisterChannel (new TcpChannel (props, null, null));
+			string channel = Console.In.ReadLine ();
+			
+			string unixPath = null;
+			if (channel == "unix") {
+				unixPath = System.IO.Path.GetTempFileName ();
+				Hashtable props = new Hashtable ();
+				props ["path"] = unixPath;
+				props ["name"] = "__internal_unix";
+				ChannelServices.RegisterChannel (new UnixChannel (props, null, null));
+			} else {
+				Hashtable props = new Hashtable ();
+				props ["port"] = 0;
+				props ["name"] = "__internal_tcp";
+				ChannelServices.RegisterChannel (new TcpChannel (props, null, null));
+			}
 			
 			string sref = Console.In.ReadLine ();
 			byte[] data = Convert.FromBase64String (sref);
@@ -62,6 +74,9 @@ public class MonoDevelopProcessHost
 			} catch {
 			}
 			rp.Dispose ();
+			
+			if (unixPath != null)
+				File.Delete (unixPath);
 			
 		} catch (Exception ex) {
 		}

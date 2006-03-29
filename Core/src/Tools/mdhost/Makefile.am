@@ -6,7 +6,9 @@ src/mdhost.cs
 
 all: $(ASSEMBLY)
 
-REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll /r:System.Runtime.Remoting
+REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \ 
+	/r:System.Runtime.Remoting \
+	/r:Mono.Posix
 	
 $(ASSEMBLY): $(build_sources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) -out:$(ASSEMBLY)

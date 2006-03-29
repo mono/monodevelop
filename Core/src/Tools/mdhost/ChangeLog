@@ -1,3 +1,11 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* src/mdhost.cs: Support the Unix channel for comunication
+	  with the main process.
+
+	* mdhost.mdp:
+	* Makefile.am: Added Mono.Posix reference.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* mdhost.mdp: Updated.
