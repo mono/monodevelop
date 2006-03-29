@@ -56,7 +56,6 @@
     <Entry filename="./MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.mdp" />
     <Entry filename="./Tools/Tools.mds" />
     <Entry filename="./ICSharpCode.SharpRefactory/ICSharpCode.SharpRefactory.mdp" />
-    <Entry filename="./MonoDevelop.Startup/MonoDevelop.mdp" />
     <Entry filename="./MonoDevelop.Startup/MonoDevelop.Startup.mdp" />
   </Entries>
 </Combine>
