@@ -27,7 +27,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				configuration = (CombineConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
 				configData = (ConfigurationData)((IProperties)CustomizationObject).GetProperty("CombineConfigData");
 				
-				store = new TreeStore (typeof(object), typeof(string), typeof(bool), typeof(string));
+				store = new TreeStore (typeof(object), typeof(string), typeof(bool));
 				configsList.Model = store;
 				configsList.HeadersVisible = true;
 				
@@ -43,10 +43,25 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				tt.Activatable = true;
 				tt.Toggled += new ToggledHandler (OnBuildToggled);
 				configsList.AppendColumn ("Build", tt, "active", 2);
-				configsList.AppendColumn ("Configuration", new CellRendererText (), "text", 3);
 				
-				foreach (CombineConfigurationEntry ce in configuration.Entries)
-					store.AppendValues (ce, ce.Entry.Name, ce.Build, ce.ConfigurationName);
+				CellRendererComboBox comboCell = new CellRendererComboBox ();
+				comboCell.Changed += new ComboSelectionChangedHandler (OnConfigSelectionChanged);
+				configsList.AppendColumn ("Configuration", comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
+				
+				foreach (CombineConfigurationEntry ce in configuration.Entries) {
+					store.AppendValues (ce, ce.Entry.Name, ce.Build);
+				}
+			}
+			
+			void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+			{
+				CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
+				string[] values = new string [entry.Entry.Configurations.Count];
+				for (int n=0; n<values.Length; n++)
+					values [n] = entry.Entry.Configurations [n].Name;
+				CellRendererComboBox comboCell = (CellRendererComboBox) cell;
+				comboCell.Values = values;
+				comboCell.Text = entry.ConfigurationName;
 			}
 			
 			void OnBuildToggled (object sender, ToggledArgs args)
@@ -56,6 +71,18 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
 					entry.Build = !entry.Build;
 					store.SetValue (iter, 2, entry.Build);
+				}
+			}
+			
+			void OnConfigSelectionChanged (object s, ComboSelectionChangedArgs args)
+			{
+				TreeIter iter;
+				if (store.GetIter (out iter, new TreePath (args.Path))) {
+					CombineConfigurationEntry entry = (CombineConfigurationEntry) store.GetValue (iter, 0);
+					if (args.Active != -1)
+						entry.ConfigurationName = entry.Entry.Configurations [args.Active].Name;
+					else
+						entry.ConfigurationName = null;
 				}
 			}
 			
