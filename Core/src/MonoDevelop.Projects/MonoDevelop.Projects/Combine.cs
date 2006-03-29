@@ -158,13 +158,18 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnActiveConfigurationChanged (ConfigurationEventArgs args)
 		{
+			UpdateActiveConfigurationTree ();
+			base.OnActiveConfigurationChanged  (args);
+		}
+		
+		internal void UpdateActiveConfigurationTree ()
+		{
 			if (ActiveConfiguration != null && !deserializing) {
 				foreach (CombineConfigurationEntry cce in ((CombineConfiguration)ActiveConfiguration).Entries) {
 					IConfiguration conf = cce.Entry.GetConfiguration (cce.ConfigurationName);
 					cce.Entry.ActiveConfiguration = conf;
 				}
 			}
-			base.OnActiveConfigurationChanged  (args);
 		}
 		
 		internal void NotifyEntryAdded (CombineEntry entry)
@@ -246,6 +251,7 @@ namespace MonoDevelop.Projects
 					conf.SetCombine (this);
 			} finally {
 				deserializing = false;
+				UpdateActiveConfigurationTree ();
 			}
 		}
 

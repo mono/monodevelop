@@ -25,6 +25,7 @@ namespace MonoDevelop.Projects
 		[ExpandedCollection]
 		[ItemProperty ("Entry", ValueType=typeof(CombineConfigurationEntry))]
 		ArrayList configurations = new ArrayList();
+		Combine combine;
 		
 		public CombineConfiguration ()
 		{
@@ -37,11 +38,14 @@ namespace MonoDevelop.Projects
 		
 		internal void SetCombine (Combine combine)
 		{
+			this.combine = combine;
 			foreach (CombineConfigurationEntry conf in configurations) {
 				conf.SetCombine (combine);
 				if (conf.ConfigurationName == null)
 					conf.ConfigurationName = Name;
 			}
+			if (combine != null)
+				combine.UpdateActiveConfigurationTree ();
 		}
 		
 		public ICollection Entries {
@@ -57,13 +61,16 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public CombineConfigurationEntry AddEntry (CombineEntry combine)
+		public CombineConfigurationEntry AddEntry (CombineEntry combineEntry)
 		{
 			CombineConfigurationEntry conf = new CombineConfigurationEntry();
-			conf.Entry = combine;
-			conf.ConfigurationName = combine.ActiveConfiguration != null ? combine.ActiveConfiguration.Name : String.Empty;
+			conf.SetCombine (combine);
+			conf.Entry = combineEntry;
+			conf.ConfigurationName = combineEntry.ActiveConfiguration != null ? combineEntry.ActiveConfiguration.Name : String.Empty;
 			conf.Build = true;
 			configurations.Add(conf);
+			if (combine != null)
+				combine.UpdateActiveConfigurationTree ();
 			return conf;
 		}
 		
@@ -90,11 +97,14 @@ namespace MonoDevelop.Projects
 			configurations.Clear ();
 			foreach (CombineConfigurationEntry cce in conf.configurations) {
 				CombineConfigurationEntry nc = new CombineConfigurationEntry ();
+				nc.SetCombine (combine);
 				nc.Entry = cce.Entry;
 				nc.ConfigurationName = cce.ConfigurationName;
 				nc.Build = cce.Build;
 				configurations.Add (nc);
 			}
+			if (combine != null)
+				combine.UpdateActiveConfigurationTree ();
 		}
 	}
 	
@@ -102,6 +112,8 @@ namespace MonoDevelop.Projects
 	public class CombineConfigurationEntry 
 	{
 		string entryName;
+		string configName;
+		Combine combine;
 		
 		[ItemProperty ("name")]
 		internal string EntryName {
@@ -112,7 +124,14 @@ namespace MonoDevelop.Projects
 		public CombineEntry entry;
 		
 		[ItemProperty ("configuration")]
-		public string ConfigurationName;
+		public string ConfigurationName {
+			get { return configName; }
+			set { 
+				configName = value;
+				if (Entry != null && combine != null)
+					combine.UpdateActiveConfigurationTree ();
+			}
+		}
 		
 		[ItemProperty ("build")]
 		public bool Build;
@@ -124,7 +143,8 @@ namespace MonoDevelop.Projects
 		
 		internal void SetCombine (Combine combine)
 		{
-			if (entryName != null)
+			this.combine = combine;
+			if (entryName != null && combine != null)
 				Entry = combine.Entries [entryName];
 		}
 	}

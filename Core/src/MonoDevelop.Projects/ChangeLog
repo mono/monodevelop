@@ -1,3 +1,10 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/CombineConfiguration.cs:
+	* MonoDevelop.Projects/Combine.cs: Update the active
+	  configuration of projects when the configuration
+	  structure changes.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects.mdp: Updated.
