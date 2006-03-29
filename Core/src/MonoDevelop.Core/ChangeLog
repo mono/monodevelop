@@ -1,3 +1,8 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Core/MonoDevelop.Core.addin.xml: Break backwards
+	  compatibility.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.mdp: Updated.
