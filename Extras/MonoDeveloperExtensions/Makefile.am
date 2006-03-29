@@ -17,7 +17,6 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
-	-r:nunit.core \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GCONF_SHARP_LIBS) \
