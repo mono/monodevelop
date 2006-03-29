@@ -1,3 +1,12 @@
+2006-03-29  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.mdp:
+	* Makefile.am:
+	* MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs:
+	Added a startup handler to ensure that the tip of the day
+	window is showed at startup if configured to do so.
+
 2006-03-23 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: ProjectReference

@@ -47,6 +47,7 @@
 
 	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
+		<Class class = "MonoDevelop.Ide.Gui.TipOfTheDayStartupHandler"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
