@@ -1,9 +1,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/ChangeLogAddIn
 ASSEMBLY = $(ADDIN_BUILD)/ChangeLogAddIn.dll
 
-REFS =	-r:nunit.framework \
-	-r:nunit.core \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+REFS =	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \

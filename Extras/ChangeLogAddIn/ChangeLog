@@ -1,3 +1,7 @@
+2006-03-24 Grzegorz Sobanski  <silk@boktor.net>  
+
+	* Makefile.am: removed unneeded references to nunit.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* ChangeLogAddIn.mdp: Updated.
