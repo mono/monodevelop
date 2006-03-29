@@ -39,11 +39,22 @@ namespace MonoDevelop.Core.AddIns
 		
 		internal void Initialize ()
 		{
-			bool ignoreDefaultPath = false;
-			string [] addInDirs = GetAddInDirectories (out ignoreDefaultPath);
-			AddInTreeSingleton.Initialize ();
-			AddInTreeSingleton.SetAddInDirectories (addInDirs, ignoreDefaultPath);
-			Runtime.SetupService.Initialize (addInDirs, ignoreDefaultPath);
+			try {
+				bool ignoreDefaultPath = false;
+				string [] addInDirs = GetAddInDirectories (out ignoreDefaultPath);
+				AddInTreeSingleton.Initialize ();
+				AddInTreeSingleton.SetAddInDirectories (addInDirs, ignoreDefaultPath);
+				Runtime.SetupService.Initialize (addInDirs, ignoreDefaultPath);
+			} catch (Exception ex) {
+				if (ex.ToString().IndexOf ("System.DllNotFoundException: intl") != -1) {
+					// Don't translate this:
+					Console.WriteLine (new string ('#',70));
+					Console.WriteLine ("A configuration problem has been detected. Make sure the 'intl' library");
+					Console.WriteLine ("is mapped to 'libc.so' in the /etc/mono/config file.");
+					Console.WriteLine (new string ('#',70));
+				}
+				throw;
+			}
 		}
 		
 		// Enables or disables conflict checking while loading assemblies.

@@ -1,3 +1,8 @@
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: Improved error message
+	  for a know error.
+
 2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core/MonoDevelop.Core.addin.xml: Break backwards
