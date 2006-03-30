@@ -1,3 +1,7 @@
+2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.addin.xml: Updated references.
+	
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* Makefile.am: Use an unified format. Patch by Matze Braun.
