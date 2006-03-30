@@ -1,3 +1,9 @@
+2006-03-30 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects/Combine.cs: Added null check for
+	  combine configuration entries. It may happen in
+	  projects with inconsistent data.
+
 2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Projects/CombineConfiguration.cs:

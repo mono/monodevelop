@@ -166,8 +166,10 @@ namespace MonoDevelop.Projects
 		{
 			if (ActiveConfiguration != null && !deserializing) {
 				foreach (CombineConfigurationEntry cce in ((CombineConfiguration)ActiveConfiguration).Entries) {
-					IConfiguration conf = cce.Entry.GetConfiguration (cce.ConfigurationName);
-					cce.Entry.ActiveConfiguration = conf;
+					if (cce.Entry != null) {
+						IConfiguration conf = cce.Entry.GetConfiguration (cce.ConfigurationName);
+						cce.Entry.ActiveConfiguration = conf;
+					}
 				}
 			}
 		}
