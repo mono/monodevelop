@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		[Glade.Widget] Image imageError;
 		[Glade.Widget] Image imageInfo;
 		[Glade.Widget] Image imageInstall;
-		[Glade.Widget] CheckButton checkShowUpdates;
+		[Glade.Widget] ComboBox filterComboBox;
 		
 		ListStore repoStore;
 		AddinTreeWidget tree;
@@ -62,6 +62,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			CellRendererText crt = new CellRendererText ();
 			repoCombo.PackStart (crt, true);
 			repoCombo.AddAttribute (crt, "text", 0);
+			filterComboBox.Active = 1;
 			
 			imageInstall.Stock = "md-software-update";
 			imageInstall.IconSize = (int)IconSize.Dialog;
@@ -96,7 +97,10 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (!repoCombo.GetActiveIter (out iter))
 				return;
 				
-			bool showUpdates = checkShowUpdates.Active;
+			bool showUpdates = filterComboBox.Active >= 1;
+			bool showNotInstalled = filterComboBox.Active <= 1;
+			Console.WriteLine ("showUpdates:" + showUpdates + " showNotInstalled:" + showNotInstalled);
+			
 			string rep = (string) repoStore.GetValue (iter, 1);
 			
 			AddinRepositoryEntry[] reps;
@@ -107,17 +111,23 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			
 			foreach (AddinRepositoryEntry arep in reps) {
 				AddinSetupInfo sinfo = Runtime.SetupService.GetInstalledAddin (arep.Addin.Id);
-				if (sinfo == null || AddinInfo.CompareVersions (sinfo.Addin.Version, arep.Addin.Version) != 0) {
-					if (showUpdates) {
-						if (sinfo != null && AddinInfo.CompareVersions (sinfo.Addin.Version, arep.Addin.Version) == 1)
-							tree.AddAddin (arep.Addin, arep, true);
-					} else
+				
+				if (sinfo == null) {
+					if (showNotInstalled)
 						tree.AddAddin (arep.Addin, arep, true);
+					continue;
 				}
+				
+				if (showUpdates && AddinInfo.CompareVersions (sinfo.Addin.Version, arep.Addin.Version) <= 0)
+					continue;
+				
+				tree.AddAddin (arep.Addin, arep, true);
 			}
 			FillAddinInfo ();
-			btnSelectAll.Visible = checkShowUpdates.Active;
-			btnUnselectAll.Visible = checkShowUpdates.Active;
+			
+			// Only show the select all button when "Show updates only" is selected
+			btnSelectAll.Visible = filterComboBox.Active == 2;
+			btnUnselectAll.Visible = filterComboBox.Active == 2;
 			
 			tree.RestoreStatus (s);
 		}
@@ -256,7 +266,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 
-		protected void OnShowUpdates (object sender, EventArgs e)
+		protected void OnFilterChanged (object sender, EventArgs e)
 		{
 			LoadAddins ();
 			UpdateAddinSelection ();

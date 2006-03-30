@@ -1414,17 +1414,14 @@
 			  <property name="spacing">6</property>
 
 			  <child>
-			    <widget class="GtkCheckButton" id="checkShowUpdates">
+			    <widget class="GtkComboBox" id="filterComboBox">
 			      <property name="visible">True</property>
-			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">Sh_ow updates only</property>
-			      <property name="use_underline">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="items" translatable="yes">Show all packages
+Show new versions only
+Show updates only</property>
+			      <property name="add_tearoffs">False</property>
 			      <property name="focus_on_click">True</property>
-			      <property name="active">False</property>
-			      <property name="inconsistent">False</property>
-			      <property name="draw_indicator">True</property>
-			      <signal name="toggled" handler="OnShowUpdates" last_modification_time="Tue, 11 Oct 2005 09:54:52 GMT"/>
+			      <signal name="changed" handler="OnFilterChanged" last_modification_time="Thu, 30 Mar 2006 16:47:43 GMT"/>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>

@@ -1,3 +1,11 @@
+2006-03-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Base.glade:
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs: Added a combo
+	  to select the filter to apply to the list. Now it can show all
+	  packages, only packages not installed or with newer versions,
+	  or only updates.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.Gui.mdp: Updated.
