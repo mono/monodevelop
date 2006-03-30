@@ -1,3 +1,7 @@
+2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.addin.xml: Updated references.
+
 2006-03-26 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDeveloperExtensions/MonoMakefileFormat.cs: Include 2.0
