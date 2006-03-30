@@ -50,7 +50,12 @@ namespace MonoDevelop.Core.AddIns.Setup
 		}
 		
 		public override string Name {
-			get { return fullName + " (provided by " + package + ")"; }
+			get {
+				if (package != null && package.Length > 0)
+					return fullName + " " + GettextCatalog.GetString ("(provided by {0})", package);
+				else
+					return fullName;
+			}
 		}
 		
 		public override bool CheckInstalled (SetupService service)
