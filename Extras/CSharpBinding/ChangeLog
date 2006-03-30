@@ -1,3 +1,7 @@
+2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml: Updated references.
+
 2006-03-24  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* templates/ConsoleProject.xpt.xml: Added namespace clause.
