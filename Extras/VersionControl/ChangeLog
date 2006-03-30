@@ -1,3 +1,8 @@
+2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AddIn/Makefile.am:
+	* AddIn/VersionControl.addin.xml: Updated references.
+
 2006-03-26 Joshua Tauberer  <tauberer@for.net>
 
 	* AddIn/Task.cs, Statuses.cs, Logs.cs: Prevent unhandled
