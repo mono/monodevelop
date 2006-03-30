@@ -1,3 +1,8 @@
+2006-03-30 Lluis Sanchez Gual <lluis@novell.com>
+
+	* MonoDevelop.NUnit.addin.xml: Added info about the
+	  nunit dependency.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.addin.xml: Updated references.

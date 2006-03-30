@@ -17,7 +17,7 @@
 	    <AddIn id="MonoDevelop.Projects" version="0.10.0"/>
 	    <AddIn id="MonoDevelop.Projects.Gui" version="0.10.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
-		<Assembly name="nunit.framework, Version=2.2.0.0" />
+		<Assembly name="nunit.framework, Version=2.2.0.0" package="nunit or mono-nunit"/>
 	</Dependencies>
 
 	<Extension path="/Workspace/Services">
