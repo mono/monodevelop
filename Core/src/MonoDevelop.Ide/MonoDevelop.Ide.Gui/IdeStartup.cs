@@ -101,16 +101,19 @@ namespace MonoDevelop.Ide.Gui
 			if (!CheckBug77135 ())
 				return 1;
 
-			// Remoting check
-			try {
-				Dns.GetHostByName (Dns.GetHostName ());
-			} catch {
-				using (ErrorDialog dialog = new ErrorDialog (null)) {
-					dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
-					dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
-					dialog.Run ();
+			if (options.ipc_tcp) {
+				Runtime.ProcessService.ExternalProcessRemotingChannel = "tcp";
+				// Remoting check
+				try {
+					Dns.GetHostByName (Dns.GetHostName ());
+				} catch {
+					using (ErrorDialog dialog = new ErrorDialog (null)) {
+						dialog.Message = GettextCatalog.GetString ("MonoDevelop failed to start. Local hostname cannot be resolved.");
+						dialog.AddDetails (GettextCatalog.GetString ("Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."), true);
+						dialog.Run ();
+					}
+					return 1;
 				}
-				return 1;
 			}
 		
 			StartupInfo.SetCommandLineArgs (remainingArgs);
@@ -306,5 +309,8 @@ namespace MonoDevelop.Ide.Gui
 
 		[Option ("Do not display splash screen.")]
 		public bool nologo;
+		
+		[Option ("Use the Tcp channel for inter-process comunication.", "ipc-tcp")]
+		public bool ipc_tcp;
 	}	
 }

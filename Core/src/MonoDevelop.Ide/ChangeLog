@@ -1,3 +1,8 @@
+2006-03-30 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added option for
+	  using the tcp channel for IPC, instead of the unix channel. 
+
 2006-03-29  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.addin.xml:
