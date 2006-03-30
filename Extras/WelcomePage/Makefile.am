@@ -6,7 +6,6 @@ REFS = -r:System.Xml \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	$(GECKO_SHARP_LIBS) \
