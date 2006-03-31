@@ -1,3 +1,8 @@
+2006-03-31 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.addin.xml: Break compatibility
+	  with old versions.
+
 2006-03-30 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Added option for
