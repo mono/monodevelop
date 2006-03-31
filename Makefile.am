@@ -44,6 +44,8 @@ PACKAGES = \
 	build/AddIns/NUnit/MonoDevelopNUnit.addin.xml \
 	build/AddIns/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml \
 	build/AddIns/prj2makesharp/prj2make-sharp-lib.addin.xml \
+	build/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml \
+	build/AddIns/ChangeLogAddIn/ChangeLogAddIn.addin.xml \
 	build/AddIns/WelcomePage/WelcomePage.addin.xml
 
 

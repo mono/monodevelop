@@ -1,3 +1,7 @@
+2006-03-31 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* Makefile.am: Added GtkCore and ChangeLog addins.
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* configure.in: Added missing makefile.
