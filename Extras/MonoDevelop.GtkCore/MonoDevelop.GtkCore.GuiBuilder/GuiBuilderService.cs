@@ -63,11 +63,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			EmptyProject = new Stetic.Project ();
 			
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (OnOpenCombine);
-			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCloseCombine);
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.EndBuild += projectCompileHandler;
-			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += new AssemblyInformationEventHandler (OnAssemblyInfoChanged);
+			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 		}
 		
 		internal static GuiBuilderProjectPad WidgetTreePad {

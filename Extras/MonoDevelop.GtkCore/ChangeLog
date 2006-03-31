@@ -1,3 +1,12 @@
+2006-03-31 Lluis Sanchez Gual <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Get open
+	  combine events in the GUI thread.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs: Properly
+	  delete signals for which there isn't a handler. Half fixed field
+	  renaming.
+	* lib/*: Updated.
+
 2006-03-31 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml: Fix ID and

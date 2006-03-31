@@ -126,7 +126,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void OnModifiedChanged (object s, EventArgs a)
 		{
-//			Console.WriteLine (Environment.StackTrace);
 			if (ModifiedChanged != null)
 				ModifiedChanged (this, a);
 		}
@@ -147,11 +146,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		public bool UpdateBindings (string fileName)
 		{
-			IParseInformation pi = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (window.Project.Project, fileName, null);
-			if (pi == null) return false;
-			
-			foreach (IClass cls in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
-				if (cls.Name == className && cls.Region.FileName == className) {
+			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (window.Project.Project, fileName, null);
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (window.Project.Project);
+			foreach (IClass cls in ctx.GetFileContents (fileName)) {
+				if (cls.FullyQualifiedName == className && cls.Region.FileName == fileName) {
 					UpdateBindings (cls);
 					return true;
 				}
@@ -173,8 +171,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			widget.Signals.CopyTo (signals, 0);
 			
 			foreach (Stetic.Wrapper.Signal signal in signals) {
-				if (FindSignalHandler (cls, signal) == null)
+				if (FindSignalHandler (cls, signal) == null) {
 					widget.Signals.Remove (signal);
+				}
 			}
 
 			Stetic.Wrapper.Container container = widget as Stetic.Wrapper.Container;
@@ -234,7 +233,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void OnWidgetNameChanged (object s, Stetic.Wrapper.WidgetNameChangedArgs args)
 		{
-			Console.WriteLine ("CHANGED " + args.OldName + " -> " + args.Widget.Wrapped.Name);
 			Stetic.Wrapper.Widget widget = args.Widget;
 			string oldName = args.OldName;
 
@@ -247,11 +245,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			else
 				cls = window.GetClass (rootWidget.Wrapped.Name);
 				
-			Console.WriteLine ("LF: " + rootWidget.Wrapped.Name + " " + cls);
-			
 			if (cls != null) {
 				IField f = ClassUtils.FindWidgetField (cls, oldName);
-				Console.WriteLine ("  FF:" + f);
 				if (f != null) {
 					if (widget == rootWidget) {
 						// Renaming the dialog
@@ -260,10 +255,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 							cr.RenameClass (new NullProgressMonitor (), cls, widget.Wrapped.Name, RefactoryScope.File);
 					}
 					else if (f.Name == oldName && widget.Wrapped.Name != "") {
-						// Rename the field and update the Widget attribute
-						f = (IField) cr.RenameMember (new NullProgressMonitor (), cls, f, widget.Wrapped.Name, RefactoryScope.File);
-						if (f == null) return;
-						cr.ReplaceMember (cls, f, GetFieldCode (widget));
+						// Rename the field
+						cr.RenameMember (new NullProgressMonitor (), cls, f, widget.Wrapped.Name, RefactoryScope.File);
 					} else {
 						// Update the Widget attribute only. Keep the old var name.
 						CodeMemberField cmf = GetFieldCode (widget);
