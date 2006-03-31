@@ -5,7 +5,8 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
-       version     = "0.10.0">
+       version     = "0.10.0"
+       compatVersion = "0.10.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Core.Gui.dll"/>
