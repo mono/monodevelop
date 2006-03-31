@@ -343,7 +343,7 @@ msgid ""
 "<b>The following packages will be installed:</b>\n"
 "\n"
 msgstr ""
-"<b>Los paquetes siguientes se desinstalarán:</b>\n"
+"<b>Los paquetes siguientes se instalarán:</b>\n"
 "\n"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:378
