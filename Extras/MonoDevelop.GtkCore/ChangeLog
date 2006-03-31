@@ -1,3 +1,8 @@
+2006-03-31 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml: Fix ID and
+	  description. Added stetic config files to add-in package.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Updated references.

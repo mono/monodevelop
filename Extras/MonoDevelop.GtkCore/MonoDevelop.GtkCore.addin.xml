@@ -1,15 +1,17 @@
-<AddIn id = "SteticAddIn"
-       name	= "Stetic Form Editor"
+<AddIn id = "MonoDevelop.GtkCore"
+       name	= "GTK# Visual Designer"
        author	 = "Lluis Sanchez Gual"
        copyright = "X11"
        url       = ""
-       description = ""
+       description = "Provides support for visual design of GTK# windows, dialogs and widgets."
 	   category    = "IDE extensions"
-       version   = "0.1">
+       version   = "0.1.0">
 
 	<Runtime>
 		<Import assembly="libstetic.dll"/>
+		<Import file="libstetic.dll.config"/>
 		<Import assembly="libsteticui.dll"/>
+		<Import file="libsteticui.dll.config"/>
 		<Import assembly="MonoDevelop.GtkCore.dll"/>
 	</Runtime>
 
