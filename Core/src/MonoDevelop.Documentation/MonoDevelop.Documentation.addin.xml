@@ -5,7 +5,8 @@
        url         = "http://www.monodevelop.com"
        description = "Integrates the Mono documentation browser (Monodoc) into the MonoDevelop IDE"
 	   category    = "IDE extensions"
-       version     = "0.10.0">
+       version     = "0.10.0"
+       compatVersion = "0.10.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Documentation.dll"/>
