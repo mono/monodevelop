@@ -3,204 +3,296 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-22 07:43+0900\n"
-"PO-Revision-Date: 2006-03-03 14:56+0800\n"
+"POT-Creation-Date: 2006-04-02 07:35+0800\n"
+"PO-Revision-Date: 2006-04-02 10:09+0800\n"
 "Last-Translator: ellery <elleryq@gmail.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit"
 
-msgid "\n"
-msgstr "\n"
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs:23
+msgid "_Browse..."
+msgstr "瀏覽... (_B)"
 
-msgid "   "
-msgstr "   "
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
+#: ../Extras/WelcomePage/WelcomePageView.cs:145
+#, csharp-format
+msgid "Could not open the url {0}"
+msgstr "無法開啟此位址 '{0}' "
 
-msgid "    "
-msgstr "    "
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/FileSelector.cs:14
+msgid "Open file ..."
+msgstr "開啟檔案..."
 
-msgid " (in user directory)"
-msgstr " (在使用者目錄)"
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:34
+msgid "Go back"
+msgstr "上一步"
 
-msgid " > "
-msgstr " > "
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:35
+msgid "Go forward"
+msgstr "下一步"
 
-msgid "&"
-msgstr "&"
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:36
+msgid "Stop loading"
+msgstr "停止載入"
 
-msgid "(Active)"
-msgstr "(當前)"
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:37
+msgid "Address"
+msgstr "位址"
 
-msgid "*"
-msgstr "*"
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:38
+msgid "Load address"
+msgstr "載入位置"
 
-msgid "* Zero or more of any character"
-msgstr "* 0個以上的任意字元"
-
-msgid "-"
-msgstr "-"
-
-msgid "---------------------- Done ----------------------"
-msgstr "---------------------- 完成 ----------------------"
-
-msgid "..."
-msgstr "..."
-
-msgid ".Net Assembly"
-msgstr ".NET組件"
-
-msgid "</span></b>\n"
-msgstr "</span></b>\n"
-
-msgid "<b><span foreground=\"red\">"
-msgstr "<b><span foreground=\"red\">"
-
-msgid "<b><span foreground=\"red\">The selected add-ins can't be installed because there are dependency conflicts.</span></b>\n"
-msgstr "<b><span foreground=\"red\">選定的增益集無法安裝,因為有相依性衝突.</span></b>\n"
-
-msgid "<b>Advanced</b>"
-msgstr "<b>進階</b>"
-
-msgid "<b>Behavior</b>"
-msgstr "<b>動作</b>"
-
-msgid "<b>Code Generation</b>"
-msgstr "<b>代碼生成</b>"
-
-msgid "<b>Code generation options</b>"
-msgstr "<b>代碼生成選項</b>"
-
-msgid "<b>Comment generation options</b>"
-msgstr "<b>註解生成選項</b>"
-
-msgid "<b>Elements</b>"
-msgstr "<b>要素</b>"
-
-msgid "<b>Execute scripts </b>"
-msgstr "<b>執行腳本</b>"
-
-msgid "<b>File encoding</b>"
-msgstr "<b>檔案編碼</b>"
-
-msgid "<b>Font</b>"
-msgstr "<b>字型</b>"
-
-msgid "<b>General Options</b>"
-msgstr "<b>一般選項</b>"
-
-msgid "<b>Include</b>"
-msgstr "<b>含括</b>"
-
-msgid "<b>Load</b>"
-msgstr "<b>載入</b>"
-
-msgid "<b>Location</b>"
-msgstr "<b>位置</b>"
-
-msgid "<b>Markers</b>"
-msgstr "<b>標記</b>"
-
-msgid "<b>On Project Load</b>"
-msgstr "<b>在專案載入時</b>"
-
-msgid "<b>Optimizations</b>"
-msgstr "<b>最適化</b>"
-
-msgid "<b>Output Directory</b>"
-msgstr "<b>輸出目錄</b>"
-
-msgid "<b>Output</b>"
-msgstr "<b>輸出</b>"
-
-msgid "<b>Project Information</b>"
-msgstr "<b>專案資訊</b>"
-
-msgid "<b>Rulers</b>"
-msgstr "<b>標尺</b>"
-
-msgid "<b>Save</b>"
-msgstr "<b>儲存</b>"
-
-msgid "<b>Select the addins to install and click on Next</b>"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
+msgid "<b>Select the add-ins to install and click on Next</b>"
 msgstr "<b>選擇增益集進行安裝並按下下一步</b>"
 
-msgid "<b>Tabs</b>"
-msgstr "<b>頁籤</b>"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
+msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
+msgstr "<big><b>MonoDevelop增益集管理員</b></big>"
 
-msgid "<b>Template</b>"
-msgstr "<b>樣板</b>"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:3
+msgid "Add New Repository"
+msgstr "添加新庫"
 
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:4
+msgid "Add-in Installation"
+msgstr "增益集安裝"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:5
+msgid "Add-in Repository Management"
+msgstr "增益集庫管理管理"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:6
+msgid "Cat_egories:"
+msgstr "分類(_e)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:7
+msgid "Details"
+msgstr "詳細"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:8
+msgid "Disable"
+msgstr "無効"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:9
+msgid "Downloading add-ins..."
+msgstr "正在下載增益集 ..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:10
+msgid "Enable"
+msgstr "致能"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:11
+msgid "Install from:"
+msgstr "安裝來源:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:12
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:194
+msgid "Loading..."
+msgstr "正在載入..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:13
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:33
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
+msgid "MonoDevelop"
+msgstr "MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:14
+msgid "MonoDevelop Add-in Manager"
+msgstr "MonoDevelop 增益集管理員"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:15
+msgid "MonoDevelop Package"
+msgstr "MonoDevelop 套件"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:16
+msgid "Options"
+msgstr "選項"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:17
+msgid "Overall Progress:"
+msgstr "整體進度:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:18
+msgid "Path:"
+msgstr "路徑:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:19
+msgid "Register a local repository"
+msgstr "註冊為本地庫"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:20
+msgid "Register an on-line repository"
+msgstr "註冊為線上庫"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
+msgid "Select _All"
+msgstr "選擇全部 (_A)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:22
+msgid "Select the location of the repository you want to register:"
+msgstr "選擇你想要登錄的庫位置:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:23
 msgid ""
-"<b>The following addins will be installed:</b>\n"
-"\n"
-"C# language binding\n"
-"C# language IDE extension\n"
-"\n"
-"<b>The following addins are required by the selected addins</b>\n"
-"\n"
-"NUnit addin\n"
-"NAnt addin\n"
-"\n"
-"asd\n"
-"asd\n"
-"a\n"
-"sd\n"
-"asd\n"
-"asd\n"
-"a\n"
-"sda\n"
-"sd\n"
-"as\n"
-"da\n"
-"sd\n"
-"asd\n"
-msgstr ""
-"<b>以下增益集將會安裝:</b>\n"
-"\n"
-"C# 語言繫結\n"
-"C# 語言IDE擴充套件\n"
-"\n"
-"<b>選定的增益集需要以下增益集</b>\n"
-"\n"
-"NUnit 增益集\n"
-"NAnt 增益集\n"
-"\n"
-"asd\n"
-"asd\n"
-"a\n"
-"sd\n"
-"asd\n"
-"asd\n"
-"a\n"
-"sda\n"
-"sd\n"
-"as\n"
-"da\n"
-"sd\n"
-"asd\n"
+"Show all packages\n"
+"Show new versions only\n"
+"Show updates only"
+msgstr "顯示所有套件"
+"只顯示新版本"
+"只顯示更新"
 
-msgid ""
-"<b>The following dependencies could not be resolved:</b>\n"
-"\n"
-msgstr ""
-"<b>以下依存關係無法解決:</b>\n"
-"\n"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:26
+msgid "The following add-ins are currently installed:"
+msgstr "下列增益集已經安裝："
 
-msgid ""
-"<b>The following packages need to be uninstalled:</b>\n"
-"\n"
-msgstr ""
-"<b>以下套件需要先行移除:</b>\n"
-"\n"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:27
+msgid "Url:"
+msgstr "Url:"
 
-msgid ""
-"<b>The following packages will be installed:</b>\n"
-"\n"
-msgstr ""
-"<b>以下套件將會安裝:</b>\n"
-"\n"
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:28
+msgid "_Install Add-ins..."
+msgstr "安裝增益集...(_I)"
 
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
+msgid "_Repositories..."
+msgstr "庫...(_R)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
+msgid "_Uninstall..."
+msgstr "反安裝...(_U)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
+msgid "_Unselect All"
+msgstr "甚麼都不選(_U)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:67
+msgid "Go up one level"
+msgstr "上一層"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:72
+msgid "Home"
+msgstr "首頁"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:91
+msgid "Location"
+msgstr "位置"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:173
+msgid "Directories"
+msgstr "目錄"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:208
+msgid "Access denied"
+msgstr "存取遭到拒絕"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:210
+msgid "Could not access to directory: "
+msgstr "無法存取目錄: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
+msgid "Open with file browser"
+msgstr "以檔案瀏覽器開啟"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
+msgid "Open with terminal"
+msgstr "以終端機開啟"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:313
+msgid "Rename"
+msgstr "更名"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
+msgid "Delete"
+msgstr "刪除"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:254
+msgid "Create new folder"
+msgstr "建立新資料夾"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:322
+#, csharp-format
+msgid "Cannot enter '{0}' folder"
+msgstr "無法進入 '{0}' 資料夾"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:357
+#, csharp-format
+msgid "Could not rename folder '{0}' to '{1}'"
+msgstr "無法將 {0} 更名為 {1} "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:375
+#, csharp-format
+msgid "Could not create new folder '{0}'"
+msgstr "無法建立新資料夾 '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Are you sure you want to delete this folder?"
+msgstr "確定要刪除此資料夾?"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Delete folder"
+msgstr "刪除資料夾"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:407
+#, csharp-format
+msgid "Could not delete folder '{0}'"
+msgstr "無法刪除資料夾 '{0}' "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:40
+#, csharp-format
+msgid "Can't remove directory {0}"
+msgstr "無法移除目錄 {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:48
+#, csharp-format
+msgid "Can't remove file {0}"
+msgstr "無法移除檔案 {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:62
+#, csharp-format
+msgid "Can't rename directory {0}"
+msgstr "無法為目錄 {0} 更名"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:70
+#, csharp-format
+msgid "Can't rename file {0}"
+msgstr "無法為檔案 {0} 更名"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:76
+msgid "Version:"
+msgstr "版本:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:79
+msgid "Author:"
+msgstr "作者:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:82
+msgid "Copyright:"
+msgstr "著作権:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:85
+msgid "Add-in Dependencies:"
+msgstr "增益集依存關係:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:82
+msgid "All registered repositories"
+msgstr "所有已登錄的庫"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:182
+msgid "Are you sure you want to cancel the installation?"
+msgstr "確定要中斷安裝程序?"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:294
 msgid ""
 "<b>The following packages will be uninstalled:</b>\n"
 "\n"
@@ -208,512 +300,143 @@ msgstr ""
 "<b>以下套件將會移除:</b>\n"
 "\n"
 
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:299
 msgid ""
-"<b>There are other add-ins that depend on the previous ones which will also be uninstalled:</b>\n"
+"<b>There are other add-ins that depend on the previous ones which will also "
+"be uninstalled:</b>\n"
 "\n"
 msgstr "<b>其他依存於之前版本的增益集也將會被移除:</b>\n"
 
-msgid "<b>Warnings</b>"
-msgstr "<b>警告</b>"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:370
+msgid ""
+"<b><span foreground=\"red\">The selected add-ins can't be installed because "
+"there are dependency conflicts.</span></b>\n"
+msgstr ""
+"<b><span foreground=\"red\">選定的增益集無法安裝,因為有相依性衝突.</span></"
+"b>\n"
 
-msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
-msgstr "<big><b>MonoDevelop增益集管理員</b></big>"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:372
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:379
+msgid "<b><span foreground=\"red\">"
+msgstr "<b><span foreground=\"red\">"
 
-msgid "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new connection</span></span>"
-msgstr "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">建立新連線</span></span>"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:372
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:379
+msgid "</span></b>\n"
+msgstr "</span></b>\n"
 
-msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
-msgstr "<span weight=\"bold\" size=\"x-large\">標題</span>"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:384
+msgid ""
+"<b>The following packages will be installed:</b>\n"
+"\n"
+msgstr ""
+"<b>以下套件將會安裝:</b>\n"
+"\n"
 
-msgid ">"
-msgstr ">"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:388
+msgid " (in user directory)"
+msgstr " (在使用者目錄)"
 
-msgid "? Any single character"
-msgstr "? 任意一個字元"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:394
+msgid ""
+"<b>The following packages need to be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>以下套件需要先行移除:</b>\n"
+"\n"
 
-msgid "A Project with that name is already in your Project Space"
-msgstr "以此命名的專案已經存在於你的專案空間"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:402
+msgid ""
+"<b>The following dependencies could not be resolved:</b>\n"
+"\n"
+msgstr ""
+"<b>以下依存關係無法解決:</b>\n"
+"\n"
 
-msgid "A blank solution"
-msgstr "空白方案"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:426
+msgid "The installation has been successfully completed."
+msgstr "安裝成功地完成。"
 
-msgid "A configuration with the name '{0}' already exists."
-msgstr "以 '{0}' 為名的設定已經存在"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:427
+msgid "The instalation failed!"
+msgstr "安裝失敗!"
 
-msgid "AWT Applet"
-msgstr "AWT Applet"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:430
+msgid "The uninstallation has been successfully completed."
+msgstr "反安裝順利完成"
 
-msgid "AWT Application"
-msgstr "AWT 應用程式"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:431
+msgid "The uninstallation failed!"
+msgstr "反安裝失敗!"
 
-msgid "AWT Frame"
-msgstr "AWT Frame"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:447
+msgid "You need to restart MonoDevelop for the changes to take effect."
+msgstr "你需要重新啟動 MonoDevelop 使這些變更生效"
 
-msgid "AWT OK Dialog"
-msgstr "AWT OK對話盒"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:527
+msgid "Repository"
+msgstr "庫"
 
-msgid "AWT Panel"
-msgstr "AWT Panel"
-
-msgid "AWT Project"
-msgstr "AWT專案"
-
-msgid "A_uto insert curly braces"
-msgstr "自動安插中括號 (_u)"
-
-msgid "About MonoDevelop"
-msgstr "關於MonoDevelop"
-
-msgid "Access denied"
-msgstr "存取遭到拒絕"
-
-msgid "Action"
-msgstr "動作"
-
-msgid "Activate this window"
-msgstr "活化此視窗"
-
-msgid "Active Configuration"
-msgstr "當前配置"
-
-msgid "Add"
-msgstr "添加"
-
-msgid "Add Files"
-msgstr "添加檔案"
-
-msgid "Add Group"
-msgstr "添加群組"
-
-msgid "Add New Project..."
-msgstr "添加新專案..."
-
-msgid "Add New Repository"
-msgstr "添加新庫"
-
-msgid "Add New Solution..."
-msgstr "添加新方案..."
-
-msgid "Add Resource"
-msgstr "添加資源"
-
-msgid "Add assembly ..."
-msgstr "添加組件 ..."
-
-msgid "Add existing Solution"
-msgstr "添加既存方案"
-
-msgid "Add existing _Project"
-msgstr "添加既存專案 (_P)"
-
-msgid "Add files"
-msgstr "添加多檔"
-
-msgid "Add to Solution"
-msgstr "添加到方案"
-
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:56
 msgid "Add-in"
 msgstr "增益集"
 
-msgid "Add-in Dependencies:"
-msgstr "增益集依存關係:"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:45
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:27
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:53
+msgid "Version"
+msgstr "版本"
 
-msgid "Add-in Manager ..."
-msgstr "增益集管理員 ..."
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:127
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:7
+msgid "Other"
+msgstr "其他"
 
-msgid "Add-in Manager..."
-msgstr "增益集管理員 ..."
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:24
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:52
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:6
+msgid "Name"
+msgstr "名稱"
 
-msgid "Add-in Repository Management"
-msgstr "增益集庫管理管理"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:25
+msgid "Url"
+msgstr "Url"
 
-msgid "Add-ins"
-msgstr "增益集"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:185
+msgid "Operation completed with errors."
+msgstr "運行完畢，有錯誤產生。"
 
-msgid "AddInsOptionsPanel"
-msgstr "AddInsOptionsPanel"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:187
+msgid "Operation completed with warnings."
+msgstr "運行完畢，有警告產生。"
 
-msgid "Addin Installation"
-msgstr "增益集安裝"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:189
+msgid "Operation successfully completed."
+msgstr "成功地運行完畢。"
 
-msgid "Address"
-msgstr "位址"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs:66
+msgid "Steps"
+msgstr "追蹤"
 
-msgid "Aggregates"
-msgstr "集合"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:179
+msgid "MonoDevelop options"
+msgstr "MonoDevelop 選項"
 
-msgid "All Files"
-msgstr "所有檔案"
-
-msgid "All Open Files"
-msgstr "所有開啟的檔案"
-
-msgid "All open files"
-msgstr "所有開啟的檔案"
-
-msgid "All registered repositories"
-msgstr "所有已登錄的庫"
-
-msgid "Allow '_unsafe' code"
-msgstr "允許使用 '_unsafe' "
-
-msgid "Always create backup copy"
-msgstr "總是建立備份"
-
-msgid "An error occurred while attempt to move/copy that file. Please check your permissions."
-msgstr "當試著移動/複製檔案時發生錯誤. 請檢查你的權限."
-
-msgid "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
-msgstr "已丟出例外 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
-
-msgid "Application Configuration File"
-msgstr "應用程式配置檔案"
-
-msgid "Application to Debug"
-msgstr "要被除錯的應用程式"
-
-msgid "Are you sure that you want to reload the file?"
-msgstr "確定要重新載入檔案?"
-
-msgid "Are you sure you want to cancel the installation?"
-msgstr "確定要中斷安裝程序?"
-
-msgid "Are you sure you want to clear recent files list?"
-msgstr "確定要清除當前檔案列表?"
-
-msgid "Are you sure you want to clear recent projects list?"
-msgstr "確定要清除當前專案列表?"
-
-msgid "Are you sure you want to delete the active layout?"
-msgstr "確定要刪除當前配置?"
-
-msgid "Are you sure you want to delete this configuration?"
-msgstr "確定要刪除此設定?"
-
-msgid "Are you sure you want to delete this file?"
-msgstr "確定要刪除此檔案?"
-
-msgid "Are you sure you want to delete this folder?"
-msgstr "確定要刪除此資料夾?"
-
-msgid "Are you sure you want to permanently delete the file {0}?"
-msgstr "確定要永久刪除此檔案{0}?"
-
-msgid "Are you sure you want to remove file {0} from project {1}?"
-msgstr "確定要從專案裡移除此檔案 {0}?"
-
-msgid "Assemblies"
-msgstr "組件"
-
-msgid "Assembly _name:"
-msgstr "組件名稱 (_n):"
-
-msgid "Assembly name"
-msgstr "組件名稱"
-
-msgid "Assembly reference could not be imported: "
-msgstr "無法匯入組件參考: "
-
-msgid "Author:"
-msgstr "作者:"
-
-msgid "Automatic"
-msgstr "自動"
-
-msgid "Automatically _include found files"
-msgstr "自動含括發現的檔案 (_i)"
-
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:281
 msgid "Back"
 msgstr "上一步"
 
-msgid "Background:"
-msgstr "背景:"
-
-msgid "Behavior"
-msgstr "行為"
-
-msgid "BehaviorTextEditorPanel"
-msgstr "BehaviorTextEditorPanel"
-
-msgid "Blank Solution"
-msgstr "空白方案"
-
-msgid "Boolean constant matching optimization"
-msgstr "Boolean constant matching 最適化"
-
-msgid "Buffer Options"
-msgstr "緩衝選項"
-
-msgid "Buil_d"
-msgstr "建立 (_d)"
-
-msgid "Buil_d Solution"
-msgstr "建立方案 (_d)"
-
-msgid "Build"
-msgstr "建立"
-
-msgid "Build Project {0}"
-msgstr "建立專案 {0} "
-
-msgid "Build Properties"
-msgstr "建立屬性"
-
-msgid "Build Solution {0}"
-msgstr "建立方案 {0} "
-
-msgid "Build and run options"
-msgstr "建立並執行選項"
-
-msgid "Build complete -- {0} errors, {1} warnings"
-msgstr "建立完成 -- 錯誤 {0} 個, 警告 {1} 個"
-
-msgid "Build failed."
-msgstr "建立失敗。"
-
-msgid "Build successful."
-msgstr "建立成功"
-
-msgid "Build {0}"
-msgstr "建立 {0} "
-
-msgid "Build: {0} errors, {1} warnings."
-msgstr "建立: 錯誤 {0} 個, 警告 {1} 個"
-
-msgid "BuildPanel"
-msgstr "BuildPanel"
-
-msgid "Building Project: {0} Configuration: {1}"
-msgstr "建立專案: {0}  配置: {1}"
-
-msgid "Building Solution {0}"
-msgstr "建立方案 {0} "
-
-msgid "C#"
-msgstr "C#"
-
-msgid "C# Corner"
-msgstr "C# Corner"
-
-msgid "C# Help"
-msgstr "C# Help"
-
-msgid "C_omment Line(s)"
-msgstr "註解 (_C)"
-
-msgid "C_onvert Tabs to Spaces"
-msgstr "將 Tabs 轉換為空白 (_o)"
-
-msgid "Can't create project with type : {0}"
-msgstr "無法建立帶有 {0} 類型的專案"
-
-msgid "Can't deploy: no deployment target set"
-msgstr "無法派送: 沒有派送目標。"
-
-msgid "Can't deploy: you forgot to specify a deployment script"
-msgstr "無法派送: 你忘了指定派送腳本。"
-
-msgid "Can't import file: "
-msgstr "無法匯入檔案: "
-
-msgid "Can't load bitmap {0} using default"
-msgstr "無法載入圖片 {0}, 使用預設"
-
-msgid "Can't load external tools configuration file"
-msgstr "無法載入外部工具設定檔"
-
-msgid "Can't load templates configuration file"
-msgstr "無法載入範本設定檔"
-
-msgid "Can't open file {0} as project"
-msgstr "無法開啟檔案 {0} 為專案"
-
-msgid "Can't remove directory {0}"
-msgstr "無法移除目錄 {0}"
-
-msgid "Can't remove file {0}"
-msgstr "無法移除檔案 {0}"
-
-msgid "Can't rename directory {0}"
-msgstr "無法為目錄 {0} 更名"
-
-msgid "Can't rename file {0}"
-msgstr "無法為檔案 {0} 更名"
-
-msgid "Cannot enter '{0}' folder"
-msgstr "無法進入 '{0}' 資料夾"
-
-msgid "Case sensitive"
-msgstr "區分大小寫"
-
-msgid "Cat_egories:"
-msgstr "分類(_e)"
-
-msgid "Categories:"
-msgstr "分類:"
-
-msgid "Change me"
-msgstr "Change me"
-
-msgid "Chars"
-msgstr "字元"
-
-msgid "Choose Location"
-msgstr "選擇位置"
-
-msgid "Choose _encoding"
-msgstr "選擇編碼 (_e)"
-
-msgid "Classes"
-msgstr "類別"
-
-msgid "Clean"
-msgstr "清除"
-
-msgid "Clean Solution"
-msgstr "清空方案"
-
-msgid "Clean {0}"
-msgstr "清空 {0} "
-
-msgid "Clear All Breakpoints"
-msgstr "清除所有中斷點"
-
-msgid "Clear Bookmarks"
-msgstr "清除書籤"
-
-msgid "Clear recent files"
-msgstr "清除當前檔案列表"
-
-msgid "Clear recent projects"
-msgstr "清除當前專案列表"
-
-msgid "Close All"
-msgstr "關閉全部"
-
-msgid "Close Sol_ution"
-msgstr "關閉方案 (_U)"
-
-msgid "Code Generation"
-msgstr "代碼生成"
-
-msgid "Code Templates"
-msgstr "代碼範本"
-
-msgid "CodeGenerationPanel"
-msgstr "產生代碼面板"
-
-msgid "CodeTemplatePane"
-msgstr "代碼樣版面版"
-
-msgid "Coding"
-msgstr "編程中"
-
-msgid "Color:"
-msgstr "色:"
-
-msgid "Column"
-msgstr "列"
-
-msgid "Columns"
-msgstr "列"
-
-msgid "Combine Location"
-msgstr "方案位置"
-
-msgid "Combine Options"
-msgstr "方案選項"
-
-msgid "Combine loaded."
-msgstr "方案已載入."
-
-msgid "Combine saved."
-msgstr "方案已保存."
-
-msgid "CombineStartupPanel"
-msgstr "方案起始面板"
-
-msgid "Command Arguments for {0}"
-msgstr "{0} 所需的命令引數"
-
-msgid "Common"
-msgstr "共通項目"
-
-msgid "Compilation _target"
-msgstr "編輯目標(_T)"
-
-msgid "Compile"
-msgstr "編譯"
-
-msgid "Compile _Target"
-msgstr "編譯目標(_T)"
-
-msgid "Compile _Target:"
-msgstr "編譯目標: (_T)"
-
-msgid "CompileFileOptionsPanel"
-msgstr "CompileFileOptionsPanel"
-
-msgid "Compiler:"
-msgstr "編譯器:"
-
-msgid "Configuration"
-msgstr "配置"
-
-msgid "Configurations"
-msgstr "配置"
-
-msgid "Connection String"
-msgstr "連接字串"
-
-msgid "Console Project"
-msgstr "控制模式(Console)專案"
-
-msgid "Constraint"
-msgstr "制約"
-
-msgid "Constraints"
-msgstr "制約"
-
-msgid "Control not found!"
-msgstr "找不到控制項"
-
-msgid "Copying files ..."
-msgstr "複製檔案..."
-
-msgid "Copying files..."
-msgstr "複製檔案..."
-
-msgid "Copyright:"
-msgstr "著作権:"
-
-msgid "Could not access to directory: "
-msgstr "無法存取目錄: "
-
-msgid "Could not create directory '{0}'."
-msgstr "無法建立目錄 '{0}'"
-
-msgid "Could not create directory {0}. File already exists."
-msgstr "無法建立目錄 {0}. 檔案已經存在。"
-
-msgid "Could not create new folder '{0}'"
-msgstr "無法建立新資料夾 '{0}'"
-
-msgid "Could not delete folder '{0}'"
-msgstr "無法刪除資料夾 '{0}' "
-
-msgid "Could not get any file from '{0}'."
-msgstr "無法由 '{0}' 取得任何檔案。"
-
-msgid "Could not get information from repository"
-msgstr "無法由庫取得資訊"
-
-msgid "Could not import project:"
-msgstr "無法匯入專案:"
-
-msgid "Could not load project: {0}"
-msgstr "無法匯入專案: {0}"
-
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:284
+msgid "Next"
+msgstr "下個"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:287
+msgid "Finish"
+msgstr "完成"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs:28
+#, csharp-format
 msgid ""
 "Could not load the {0} '{1}'.\n"
 "\n"
@@ -722,431 +445,1222 @@ msgstr ""
 "無法載入此 {0} '{1}' \n"
 "{2}"
 
-msgid "Could not open the url {0}"
-msgstr "無法開啟此位址 '{0}' "
-
-msgid "Could not rename folder '{0}' to '{1}'"
-msgstr "無法將 {0} 更名為 {1} "
-
-msgid "Could not save combine: {0}"
-msgstr "無法保存方案: {0}"
-
-msgid "Could not save project: {0}"
-msgstr "無法保存專案: {0}"
-
-msgid "Create Database"
-msgstr "建立資料庫"
-
-msgid "Create a Glade# Java project with IKVM"
-msgstr "建立以 IKVM 為基礎的 Glade# Java 專案"
-
-msgid "Create a Gnome# Java project with IKVM"
-msgstr "建立以 IKVM 為基礎的 Gnome# Java 專案"
-
-msgid "Create a Gtk# Java project with IKVM"
-msgstr "建立以 IKVM 為基礎的 Gtk# Java 專案"
-
-msgid "Create a console Java project"
-msgstr "建立控制模式(Console)的 Java 專案"
-
-msgid "Create a console Java project with IKVM"
-msgstr "建立以 IKVM 為主的控制模式(Console)Java 專案"
-
-msgid "Create a console VB.Net project"
-msgstr "建立控制模式(Console)VB.Net 專案"
-
-msgid "Create configurations for all solution items"
-msgstr "為所有解決方案項目建立設定"
-
-msgid "Create new folder"
-msgstr "建立新資料夾"
-
-msgid "Create seperate _Solution subdirectory"
-msgstr "建立分開的解決方案子目錄 (_S)"
-
-msgid "Creates a .NET application configuration file."
-msgstr "建立 .NET 應用程式設定檔案。"
-
-msgid "Creates a C# Web Service."
-msgstr "建立 c# Web Service."
-
-msgid "Creates a Gnome# program."
-msgstr "建立 Gnome# 程序."
-
-msgid "Creates a Gnome# project"
-msgstr "建立 Gnome# 專案"
-
-msgid "Creates a Gtk# project."
-msgstr "建立 Gtk# 專案"
-
-msgid "Creates a Java AWT Applet"
-msgstr "建立 Java AWT Applet"
-
-msgid "Creates a Java AWT Frame"
-msgstr "建立 Java AWT Frame"
-
-msgid "Creates a Java AWT OK Dialog."
-msgstr "建立 Java AWT OK 對話盒"
-
-msgid "Creates a Java AWT application."
-msgstr "建立 Java AWT 應用程式"
-
-msgid "Creates a Java AWT panel."
-msgstr "建立 Java AWT panel"
-
-msgid "Creates a Java AWT project."
-msgstr "建立 Java AWT 專案"
-
-msgid "Creates a Nemerle/Gnome# project"
-msgstr "建立 Nemerle/Gnome# 專案"
-
-msgid "Creates a Nemerle/Gtk# project"
-msgstr "建立 Nemerle/Gtk# 專案"
-
-msgid "Creates a new C# Project"
-msgstr "建立新 C# 專案"
-
-msgid "Creates a new C# console project."
-msgstr "建立新 C# console 專案"
-
-msgid "Creates a secure C# Web Service, using SessionState"
-msgstr "以 SessionState 建立安全的 C# Web service"
-
-msgid "Creates a top-level Gtk# window"
-msgstr "建立 top-level Gtk# 視窗"
-
-msgid "Creates a top-level Gtk# window."
-msgstr "建立 top-level Gtk# 視窗."
-
-msgid "Creates an AWT dialog."
-msgstr "建立 AWT 對話盒."
-
-msgid "Creates an empty C# class library"
-msgstr "建立空白 C# 類別函式庫"
-
-msgid "Creates an empty C# file."
-msgstr "建立空白 C# 檔案"
-
-msgid "Creates an empty C# project."
-msgstr "建立空白 C# 專案."
-
-msgid "Creates an empty HTML file."
-msgstr "建立空白 HTML 檔案"
-
-msgid "Creates an empty Java file."
-msgstr "建立空白 Java 檔案"
-
-msgid "Creates an empty Java solution."
-msgstr "建立空白 Java 方案."
-
-msgid "Creates an empty Nemerle file"
-msgstr "建立空白 Numerle 檔案"
-
-msgid "Creates an empty Nemerle project"
-msgstr "建立空白 Numerle 專案"
-
-msgid "Creates an empty VB.Net file."
-msgstr "建立空白 VB.Net 檔案"
-
-msgid "Creates an empty VB.Net solution."
-msgstr "建立空白 VB.Net 方案"
-
-msgid "Creates an empty XML file."
-msgstr "建立空白 XML 檔案"
-
-msgid "Creates an empty resource file."
-msgstr "建立空白資源檔案"
-
-msgid "Creates an empty text file."
-msgstr "建立空白文字檔"
-
-msgid "Cu_t"
-msgstr "剪下 (_T)"
-
-msgid "Current File"
-msgstr "目前檔案"
-
-msgid "Current column"
-msgstr "目前欄"
-
-msgid "Current file"
-msgstr "目前檔案"
-
-msgid "Current line"
-msgstr "目前行"
-
-msgid "Current text"
-msgstr "目前文字"
-
-msgid ""
-"Cyclic dependencies can not be built with this version.\n"
-"But we are working on it."
-msgstr ""
-"此版本無法建立循環依存。\n"
-"但我們正在開發中。"
-
-msgid "Database"
-msgstr "資料庫"
-
-msgid "Database Connections"
-msgstr "資料庫連接"
-
-msgid "Debug"
-msgstr "除錯"
-
-msgid "Debug Application..."
-msgstr "除錯應用程式"
-
-msgid "Default _Solution location"
-msgstr "預設方案位置 (_S)"
-
-msgid "Define S_ymbols"
-msgstr "定義符號 (_Y)"
-
-msgid "Define S_ymbols:"
-msgstr "定義符號: (_y)"
-
-msgid "Delete"
-msgstr "刪除"
-
-msgid "Delete Configuration"
-msgstr "刪除配置"
-
-msgid "Delete also configurations in solution items"
-msgstr "在方案項目中也刪除設定"
-
-msgid "Delete file"
-msgstr "刪除檔案"
-
-msgid "Delete files"
-msgstr "刪除檔案"
-
-msgid "Delete folder"
-msgstr "刪除資料夾"
-
-msgid "Deploy"
-msgstr "佈署"
-
-msgid "Deploy script doesn't exists"
-msgstr "佈署腳本不存在"
-
-msgid "DeployFileOptionsPanel"
-msgstr "佈署檔案選項面板"
-
-msgid "Description"
-msgstr "説明"
-
-msgid "Details"
-msgstr "詳細"
-
-msgid "Did you know that you can design lots of cool things with glade?"
-msgstr "你知道可以用 glade 來設計許多有趣的東西嗎?"
-
-msgid "Did you know?"
-msgstr "你知道嗎?"
-
-msgid "Didnt match on mimetype: {0}, trying filename"
-msgstr "不符合 mimetype: {0} ,嘗試以檔案處理。"
-
-msgid "Directories"
-msgstr "目錄"
-
-msgid "Directory"
-msgstr "目錄"
-
-msgid "Directory '{0}' could not be deleted."
-msgstr "目錄 '{0}' 無法被刪除。"
-
-msgid "Directory:"
-msgstr "目錄:"
-
-msgid "Disable"
-msgstr "無効"
-
-msgid "Display Options"
-msgstr "顯示選項"
-
-msgid "Display Options List"
-msgstr "顯示選項列表"
-
-msgid "Do not load standard library"
-msgstr "不載入標準函式庫"
-
-msgid "Do not load standard macros"
-msgstr "不載入標準巨集"
-
-msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
-msgstr "你真的要複製此資料夾 '{0}' 到這個資料夾 '{1}'?"
-
-msgid "Do you really want to copy the folder '{0}' to the root folder of project '{1}'?"
-msgstr "你真的要複製此資料夾 '{0}' 到專案 '{1}' 的根資料夾?"
-
-msgid "Do you really want to discard your changes ?"
-msgstr "你真的要放棄此次變更?"
-
-msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
-msgstr "你真的要搬移此資料夾 '{0}' 到這個資料夾 '{1}' ?"
-
-msgid "Do you really want to move the folder '{0}' to the root folder of project '{1}'?"
-msgstr "你真的要搬移此資料夾 '{0}' 到專案 '{1}' 的根資料夾?"
-
-msgid "Do you really want to remove project {0} from solution {1}"
-msgstr "你真的要從方案 {1} 移除專案 {0} ?"
-
-msgid "Do you really want to remove solution {0} from solution {1}?"
-msgstr "你真的要從方案 {1} 移除 {0} ?"
-
-msgid "Do you want to remove folder {0}?"
-msgstr "是否移除此資料夾 {0}?"
-
-msgid "Do you want to save the current changes?"
-msgstr "是否保存當前變更?"
-
-msgid "Do you want to save the file '{0}' before the copy operation?"
-msgstr "在複製動作開始前,是否要保存檔案 '{0}'?"
-
-msgid "Do you want to save the file '{0}' before the move operation?"
-msgstr "在搬移動作開始前,是否要保存檔案 '{0}'?"
-
-msgid ""
-"Do you want to save the following files before the copy operation?\n"
-"\n"
-"{0}"
-msgstr ""
-"在複製動作開始前,是否要保存下列檔案?\n"
-"\n"
-"{0}"
-
-msgid ""
-"Do you want to save the following files before the move operation?\n"
-"\n"
-"{0}"
-msgstr ""
-"在搬移動作開始前,是否要保存下列檔案?\n"
-"\n"
-"{0}"
-
-msgid "Documentation"
-msgstr "文件"
-
-msgid "Don't apply any filter"
-msgstr "無法套用任何filter"
-
-msgid "Done."
-msgstr "終了"
-
-msgid "Downloading addins ..."
-msgstr "正在下載增益集 ..."
-
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:81
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:95
+#, csharp-format
+msgid "Exception occurred: {0}"
+msgstr "異常發生於: {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:145
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:188
+msgid "Question"
+msgstr "問題"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:125
+msgid "WARNING: "
+msgstr "警告: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:147
 msgid "ERROR: "
 msgstr "錯誤: "
 
-msgid "Edit "
-msgstr "編輯"
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs:20
+#, csharp-format
+msgid "Resource not found: {0}"
+msgstr "找不到資源: {0}"
 
-msgid "Edit Group"
-msgstr "編輯群組"
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:144
+msgid "Loading Add-ins"
+msgstr "正在載入增益集 ..."
 
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:168
+msgid "Loading Addins"
+msgstr "正在載入增益集 ..."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:176
+#, csharp-format
+msgid "Loading {0} add-in"
+msgstr "正在載入 {0} 增益集"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
+#, csharp-format
+msgid "The add-in '{0}' is not installed."
+msgstr "增益集 '{0}' 未安裝。"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:126
+msgid "Not all dependencies could be resolved."
+msgstr ""
+"有些依存關係無法解決。"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:134
+msgid "Installing add-ins..."
+msgstr "正在安裝增益集..."
+
+#. Prepare install
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:138
+msgid "Initializing installation"
+msgstr "正在初始安裝"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:172
+msgid "Installing"
+msgstr "安裝中"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:216
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:236
+msgid "Finishing installation"
+msgstr "完成安裝"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:393
+#, csharp-format
+msgid "The package '{0}' could not be found in any repository"
+msgstr "無法在任何庫找到此套件 '{0}' "
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:458
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:465
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:473
+msgid "Can't install two versions of the same add-in: '"
+msgstr "同個增益集無法安裝兩個版本:"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:694
+msgid "The repository could not be registered"
+msgstr "無法註冊這個庫"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:798
+msgid "Could not get information from repository"
+msgstr "無法由庫取得資訊"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1068
+msgid "Requesting "
+msgstr "需求"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1074
+msgid "Downloading "
+msgstr "下載中。"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1154
+#, csharp-format
+msgid ""
+"The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
+msgstr "增益集'{0} v{1}' 無法以現在使用者的權限反安裝。"
+
+#. Hide menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:773
+msgid "Hide"
+msgstr "隱藏"
+
+#. Lock menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:778
+msgid "Lock"
+msgstr "鎖定"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:1
+msgid "   "
+msgstr "   "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:2
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:1
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:3
+#: ../Extras/NemerleBinding/Nemerle.glade.h:1
+#: ../Extras/VBNetBinding/VB.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:3
+msgid "<b>Code generation options</b>"
+msgstr "<b>代碼生成選項</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:4
+msgid "<b>Comment generation options</b>"
+msgstr "<b>註解生成選項</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:5
+msgid "<b>Load</b>"
+msgstr "<b>載入</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:6
+msgid "<b>Location</b>"
+msgstr "<b>位置</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:7
+msgid "<b>Save</b>"
+msgstr "<b>儲存</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:8
+msgid "<b>Template</b>"
+msgstr "<b>樣板</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:9
+msgid "Add-in Manager ..."
+msgstr "增益集管理員 ..."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:10
+msgid "All Files"
+msgstr "所有檔案"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:11
+msgid "Always create backup copy"
+msgstr "總是建立備份"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:12
+msgid "Build and run options"
+msgstr "建立並執行選項"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:13
+msgid "Case sensitive"
+msgstr "區分大小寫"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:14
+msgid "Create separate _Solution subdirectory"
+msgstr "建立分開的方案子目錄 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:15
+msgid "Creates a new C# Project"
+msgstr "建立新 C# 專案"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:16
+msgid ""
+"Days\n"
+"Months"
+msgstr "日\n"
+"月"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:18
+msgid "Default _Solution location"
+msgstr "預設方案位置 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:19
+msgid "Did you know that you can design lots of cool things with glade?"
+msgstr "你知道可以用 glade 來設計許多有趣的東西嗎?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:20
+msgid "Did you know...?"
+msgstr "你知道嗎...?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:21
+msgid "Directory:"
+msgstr "目錄:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
 msgid "Edit References"
 msgstr "編輯參考"
 
-msgid "Emit _debugging information"
-msgstr "省略除錯資訊 (_D)"
-
-msgid "Empty File"
-msgstr "空白檔案"
-
-msgid "Empty HTML File"
-msgstr "空白HTML檔案"
-
-msgid "Empty Project"
-msgstr "空白專案"
-
-msgid "Empty Resource File"
-msgstr "空白資源檔案"
-
-msgid "Empty Text File"
-msgstr "空白文字檔案"
-
-msgid "Empty XML File"
-msgstr "空白XML檔案"
-
-msgid "Empty file"
-msgstr "空白檔案"
-
-msgid "Enable"
-msgstr "致能"
-
-msgid "Enable _optimizations"
-msgstr "打開最佳化 (_O)"
-
-msgid "Enable _viewstate"
-msgstr "啟用 ViewState (_v)"
-
-msgid "Enable code _completion"
-msgstr "啟用代碼自動完成 (_c)"
-
-msgid "Enable code _folding"
-msgstr "啟用代碼折疊 (_f)"
-
-msgid "Enable syntax highlighting"
-msgstr "啟用語法高亮度"
-
-msgid "Enter any arguments you want to use while launching tool, {0}:"
-msgstr "輸入起用工具的參數 {0}:"
-
-msgid "Entire Project"
-msgstr "整個專案"
-
-msgid "Error : {0}"
-msgstr "錯誤: {0}"
-
-msgid "Error loading template from resource {0}"
-msgstr "從資源 {0} 載入樣板時發生錯誤"
-
-msgid "Error while executing deploy script"
-msgstr "當執行散佈腳本時發生錯誤"
-
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:23
 msgid "Every"
 msgstr "每"
 
-msgid "Exclude the following categories"
-msgstr "不包含下列分類"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:24
+msgid "Filemask:"
+msgstr "檔案遮罩:"
 
-msgid "Exclude the following categories: "
-msgstr "不包含下列分類: "
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:25
+msgid "Find Dialog"
+msgstr "尋找對話盒"
 
-msgid "Execuing sql query on"
-msgstr "執行 sql 查詢 "
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:26
+msgid "Find:"
+msgstr "尋找:"
 
-msgid "Executable"
-msgstr "可執行的"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:27
+msgid "Generate _additional comments"
+msgstr "產生額外註解(_a)"
 
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:28
+msgid "Generate _documentation comments"
+msgstr "產生文件註解 (_d)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:29
+msgid "Include Found Files"
+msgstr "含括找到的檔案"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:30
+msgid "Layout name:"
+msgstr "配置名稱:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:31
+msgid "Load user-specific settings with the document"
+msgstr "載入使用者指定文件的設定"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:32
+msgid "Look for add-in updates at startup, with the following periodicity:"
+msgstr "以下列週期,在啟動時尋找增益集更新:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
 msgid ""
-"Executable\n"
-"Library"
-msgstr ""
-"可執行的\n"
-"函式庫"
+"MonoDevelop can run without these add-ins, but the functionality they "
+"provide will be missing."
+msgstr "MonoDevelop可以不需要這些增益集而執行,但將會失去他們所提供的功能。"
 
-msgid "Execute"
-msgstr "執行"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:35
+msgid "MonoDevelop cannot start because a fatal error has been detected."
+msgstr "MonoDevelop無法啟動,因為偵測到致命性的錯誤"
 
-msgid "Execute co_mmand:"
-msgstr "執行命令 (_m):"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:36
+msgid "New Files"
+msgstr "開新檔案"
 
-msgid "Executing: {0}"
-msgstr "執行中: {0}"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:37
+msgid "New Files Only"
+msgstr "只開新檔案"
 
-msgid "Execution failed."
-msgstr "執行失敗。"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:38
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Solution"
+msgstr "開新方案"
 
-msgid "Extension"
-msgstr "擴充套件"
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:39
+msgid "New layout"
+msgstr "新配置"
 
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+msgid "R_eplace All"
+msgstr "取代全部 (_e)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
+msgid "Recurse subdirectories"
+msgstr "處理所有子目錄"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
+msgid "Remove"
+msgstr "移除"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:43
+msgid "Replace Dialog"
+msgstr "取代對話盒"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:44
+msgid "Replace:"
+msgstr "取代:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:45
+msgid "Search in:"
+msgstr "搜索對象:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
+msgid "Select command"
+msgstr "選擇指令"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
+msgid "Select default location"
+msgstr "選擇預設位置"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:49
+msgid "Selected references"
+msgstr "選定的參照"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
+msgid "Show _output pad when build starts"
+msgstr "當開始建置時顯示輸出面板 (_o)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
+msgid "Show _task list pad if build finished with errors"
+msgstr "如果建立完成後有錯誤，顯示任務列表面板 (_t)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
+msgid "Show extensions in project scout"
+msgstr "在專案斥侯中顯示擴充套件"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:53
+msgid "Show hidden files and directories"
+msgstr "顯示隱藏的檔案與目錄"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
+msgid "The following add-ins could not be started:"
+msgstr "下列增益集無法啟動:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:55
+msgid "Tip of the day"
+msgstr "每日小秘訣"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:56
+msgid "Use _Output Window"
+msgstr "使用輸出視窗 (_O)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:57
+msgid "Use special search strategy:"
+msgstr "使用特別的搜索策略:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:58
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewNodeBuilder.cs:57
+msgid "View"
+msgstr "檢視"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:59
+msgid "Whole word only"
+msgstr "只有整個單字"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:60
+msgid "Whole words only"
+msgstr "只有整個單字"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:61
+msgid ""
+"You can start MonoDevelop without these add-ins, but the functionality they "
+"provide will be missing. Do you wish to continue?"
+msgstr "你可以不使用這些增益集而啟動，但將會失去這些功能。你要繼續嗎？"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
+msgid "_Arguments:"
+msgstr "引數 (_A):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
+msgid "_Command:"
+msgstr "命令 (_C):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:64
+msgid "_Don't save changes to open documents "
+msgstr "不儲存變更到開啟的文件 (_D) "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:65
+msgid "_Else on same line as closing bracket"
+msgstr "Else像括弧一樣放在同一行 (_E)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:66
+msgid "_Insert blank lines between members"
+msgstr "在成員之間安插空白行 (_I)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:67
+msgid "_Load previous solution on startup"
+msgstr "在啟動時載入上次的方案 (_L)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
+msgid "_Location:"
+msgstr "位置(_L):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
+msgid "_Mark All"
+msgstr "標記全部 (_M)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:70
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
+msgid "_Name:"
+msgstr "名稱 (_N):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:71
+msgid "_Next Tip"
+msgstr "下個秘訣 (_N)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:72
+msgid "_Prompt for arguments"
+msgstr "詢問引數 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:73
+msgid "_Prompt to save changes to open documents"
+msgstr "詢問是否儲存變更到開啟文件 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:74
+msgid "_Replace"
+msgstr "取代 (_R)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:75
+msgid "_Save Changes to open documents"
+msgstr "儲存變更到開啟文件 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:76
+msgid "_Show at startup"
+msgstr "在開啟時顯示 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:77
+msgid "_Solution name:"
+msgstr "方案檔名(_S):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:78
+msgid "_Start code block on the same line"
+msgstr "起始代碼區塊放在同一行 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:79
+msgid "_Title:"
+msgstr "標題 (_T):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:80
+msgid "_Use full type names"
+msgstr "使用完整型態名稱 (_U)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:81
+msgid "_Working Directory:"
+msgstr "工作目錄 (_W):"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:1
+msgid "# Any single digit"
+msgstr "# 任意單一數字"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:2
+msgid "* Zero or more of any character"
+msgstr "* 0個以上的任意字元"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:3
+msgid "? Any single character"
+msgstr "? 任意一個字元"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:4
+msgid "Active Configuration"
+msgstr "當前配置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:5
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:308
+msgid "Add"
+msgstr "添加"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:6
+msgid "Add Files..."
+msgstr "添加檔案..."
+
+#. ProjectCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:8
+msgid "Add New Project..."
+msgstr "添加新專案..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:9
+msgid "Add New Solution..."
+msgstr "添加新方案..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:10
+msgid "Add Resource"
+msgstr "添加資源"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:11
+msgid "Add existing Solution"
+msgstr "添加既存方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:12
+msgid "Add existing _Project"
+msgstr "添加既存專案 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:13
+msgid "Add-ins"
+msgstr "增益集"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:14
+msgid "Buil_d"
+msgstr "建立 (_d)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:15
+msgid "Buil_d Solution"
+msgstr "建立方案 (_d)"
+
+#. i8n the file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:17
+msgid "Build"
+msgstr "建立"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:18
+msgid "Build the solution"
+msgstr "建立方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:19
+msgid "C#"
+msgstr "C#"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:20
+msgid "C# Corner"
+msgstr "C# Corner"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:21
+msgid "C# Help"
+msgstr "C# Help"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:22
+msgid "C_omment Line(s)"
+msgstr "註解 (_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:23
+msgid "Choose Location"
+msgstr "選擇位置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:24
+msgid "Classes"
+msgstr "類別"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:25
+msgid "Clean"
+msgstr "清除"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:26
+msgid "Clean Solution"
+msgstr "清空方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:27
+msgid "Clear All Breakpoints"
+msgstr "清除所有中斷點"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:28
+msgid "Close All"
+msgstr "關閉全部"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:29
+msgid "Close Sol_ution"
+msgstr "關閉方案 (_U)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:30
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:2
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:1
+msgid "Code Generation"
+msgstr "代碼生成"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:31
+msgid "Coding"
+msgstr "編程中"
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:33
+msgid "Copy the selection"
+msgstr "複製選擇區域"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:34
+msgid "Create Database"
+msgstr "建立資料庫"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:35
+msgid "Create a new file"
+msgstr "建立新檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:36
+msgid "Cu_t"
+msgstr "剪下 (_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:37
+msgid "Cut the selection"
+msgstr "剪下選擇區域"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:38
+msgid "Debug"
+msgstr "除錯"
+
+#. DebugCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:40
+msgid "Debug Application..."
+msgstr "除錯應用程式"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:41
+msgid "Delete the selection"
+msgstr "刪除選擇區域"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:42
+msgid "Deploy"
+msgstr "佈署"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:43
+msgid "Display Options List"
+msgstr "顯示選項列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
+msgid "Edit References..."
+msgstr "編輯參考..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
 msgid "External Tools"
 msgstr "外部工具"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
+msgid "F_ind In Files..."
+msgstr "在多檔中進行檢索... (_I)"
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:48
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:190
+msgid "Find"
+msgstr "尋找"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
+msgid "Find Next Selection"
+msgstr "尋找下個選定項目"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+msgid "Find _Next"
+msgstr "尋找下一個 (_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
+msgid "Find _Previous"
+msgstr "尋找上一個 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
+msgid "Find _Previous Selection"
+msgstr "尋找上個選定項目 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
+msgid "Find next"
+msgstr "尋找下一個"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
+msgid "Finished"
+msgstr "完成了"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
+msgid "GotDotNet"
+msgstr "GotDotNet"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
+msgid "Group members by access"
+msgstr "以存取來分組成員"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
+msgid "Group members by member type"
+msgstr "以型態來分組成員"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
+msgid "Include"
+msgstr "含括"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
+msgid "Include To Project"
+msgstr "含括到專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
+msgid "Layout List"
+msgstr "配置清單"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
+msgid "Load/Save"
+msgstr "載入/保存"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
+msgid "Local Copy Reference"
+msgstr "本地複本參照"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
+msgid "Mono Project"
+msgstr "Mono 專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
+msgid "MonoDevelop Options"
+msgstr "MonoDevelop 選項"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
+msgid "N_ew Project..."
+msgstr "開新專案...(_e)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
+msgid "Nested namespaces"
+msgstr "巢狀命名空間"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
+msgid "New File..."
+msgstr "開新檔案..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:344
+msgid "New Folder"
+msgstr "開新資料夾"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
+msgid "New _File..."
+msgstr "開新檔案...(_F)"
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
+msgid "O_pen..."
+msgstr "開啟...(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
+msgid "Open"
+msgstr "開啟"
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:75
+msgid "Open file or solution"
+msgstr "開啟檔案或方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
+msgid "Options..."
+msgstr "選項..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+msgid "Paste"
+msgstr "貼上"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+msgid "Pause"
+msgstr "暫停"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+msgid "Pre_ferences..."
+msgstr "偏好...(_f)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+msgid "R_eplace In Files..."
+msgstr "在多檔中進行取代... (_E)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+msgid "Re_name"
+msgstr "更名 (_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
+msgid "Rebuild"
+msgstr "重建"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+msgid "Rebuild Solution"
+msgstr "重建方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+msgid "Recent Files"
+msgstr "最近開啟過的檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+msgid "Recent Projects"
+msgstr "最近開啟過的專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
+msgid "Recent Solu_tions"
+msgstr "最近開啟過的方案 (_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
+msgid "Recent _Files"
+msgstr "最近開啟過的檔案 (_F)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+msgid "Redo last undone action"
+msgstr "重作最後未完成動作"
+
+#. RefactoryCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+msgid "Refactory Operations"
+msgstr "重整動作"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
+msgid "Replace"
+msgstr "取代"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
+msgid "Reset Options"
+msgstr "重置選項"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+msgid "Run"
+msgstr "執行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+msgid "Save"
+msgstr "存檔"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+msgid "Save All"
+msgstr "儲存全部"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+msgid "Save _As..."
+msgstr "另存新檔 (_A)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+msgid "Save all open files"
+msgstr "儲存所有開啟的檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+msgid "Save the active document"
+msgstr "儲存目前編輯中文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+msgid "Set As Startup Project"
+msgstr "設為起始專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
+msgid "Setup"
+msgstr "設置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
+msgid "Show All Files"
+msgstr "顯示所有檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
+msgid "Show project structure"
+msgstr "顯示專案結構"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+msgid "Show public members only"
+msgstr "只顯示公用成員"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+msgid "Solution"
+msgstr "方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+msgid "Standard"
+msgstr "標準"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+msgid "Step Into"
+msgstr "追蹤"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+msgid "Step Out"
+msgstr "跳出"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+msgid "Step Over"
+msgstr "單步追蹤"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+msgid "Stop"
+msgstr "停止"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+msgid "Stop current build or application execution"
+msgstr "停止目前的建置或應用程式執行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+msgid "Toggle Breakpoint"
+msgstr "切換中斷點"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+msgid "Tool List"
+msgstr "工具列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+msgid "Toolbars"
+msgstr "工具列"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+msgid "Tools"
+msgstr "工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+msgid "Undo last action"
+msgstr "取消最後一次動作"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+msgid "Use Existing File"
+msgstr "使用已存在的檔案"
+
+#. ViewCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+msgid "View List"
+msgstr "檢視列表"
+
+#. <DialogPanel id = "SelectCulture"
+#. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+#. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
+msgid "Visual style"
+msgstr "視覺風格"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
+msgid "Window List"
+msgstr "視窗列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
+msgid "[!] Any one character not in the set"
+msgstr "[!] 任何不在此集合中的字元"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+msgid "[] Any one character in the set"
+msgstr "[] 任何在此集合中的字元"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+msgid "_About..."
+msgstr "關於...(_A)"
+
+#. ToolCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+msgid "_Add-in Manager..."
+msgstr "增益集管理員...(_A)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
+msgid "_Clear Recent Files"
+msgstr "清除開啟檔案紀錄 (_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+msgid "_Clear Recent Solutions"
+msgstr "清除開啟方案紀錄 (_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+msgid "_Close File"
+msgstr "關閉檔案 (_C)"
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+msgid "_Copy"
+msgstr "複製 (_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+msgid "_Delete"
+msgstr "刪除 (_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:136
+msgid "_Delete Current Layout"
+msgstr "刪除目前配置 (_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:137
+msgid "_Edit"
+msgstr "編輯 (_E)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+msgid "_File"
+msgstr "檔案 (_F)"
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+msgid "_Find..."
+msgstr "搜索... (_F)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+msgid "_Full Screen"
+msgstr "全螢幕 (_F)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+msgid "_Help"
+msgstr "求助 (_H)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
+msgid "_Indent Selection"
+msgstr "縮排選擇的文字 (_I)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+msgid "_Layouts"
+msgstr "配置 (_L)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+msgid "_New Layout..."
+msgstr "新配置...(_N)"
+
+#. WindowCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+msgid "_Next Window"
+msgstr "下個視窗 (_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+msgid "_Paste"
+msgstr "貼上 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
+msgid "_Previous Window"
+msgstr "上個視窗 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
+msgid "_Quit"
+msgstr "離開 (_Q)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
+msgid "_Redo"
+msgstr "重作 (_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+msgid "_Reload File"
+msgstr "重新載入檔案 (_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
+msgid "_Remove From Project"
+msgstr "從專案中移除 (_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+msgid "_Replace..."
+msgstr "取代... (_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
+msgid "_Run"
+msgstr "執行 (_R)"
+
+#. HelpCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+msgid "_Tip of the Day..."
+msgstr "每日秘訣(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
+msgid "_Tools"
+msgstr "工具(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+msgid "_Uncomment Line(s)"
+msgstr "取消註解 (_U)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
+msgid "_Undo"
+msgstr "復原(_U)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
+msgid "_Unindent Selection"
+msgstr "反縮排選擇範圍"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+msgid "_View"
+msgstr "檢視 (_V)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
+msgid "_Web"
+msgstr "Web (_W)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
+msgid "_Window"
+msgstr "視窗(_W)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
+msgid "_Word Count..."
+msgstr "字詞數(_W)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
+msgid "cshrp.net"
+msgstr "csharp.net"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs:103
+msgid "Can't load templates configuration file"
+msgstr "無法載入範本設定檔"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/DebugCommands.cs:28
+msgid "Application to Debug"
+msgstr "要被除錯的應用程式"
+
+#. string[] fileFilters  = (string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#. bool foundFilter      = false;
+#. search filter like in the current selected project
+#.
+#. IProjectService projectService = (IProjectService)MonoDevelop.Core.ServiceManager.GetService(typeof(IProjectService));
+#.
+#. if (projectService.CurrentSelectedProject != null) {
+#. LanguageBindingService languageBindingService = (LanguageBindingService)MonoDevelop.Core.ServiceManager.GetService(typeof(LanguageBindingService));
+#.
+#. LanguageBindingCodon languageCodon = languageBindingService.GetCodonPerLanguageName(projectService.CurrentSelectedProject.ProjectType);
+#. for (int i = 0; !foundFilter && i < fileFilters.Length; ++i) {
+#. for (int j = 0; !foundFilter && j < languageCodon.Supportedextensions.Length; ++j) {
+#. if (fileFilters[i].IndexOf(languageCodon.Supportedextensions[j]) >= 0) {
+#. break;
+#. }
+#. }
+#. }
+#. }
+#.
+#. // search filter like in the current open file
+#. if (!foundFilter) {
+#. IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+#. if (window != null) {
+#. for (int i = 0; i < fileFilters.Length; ++i) {
+#. if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#. break;
+#. }
+#. }
+#. }
+#. }
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:125
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:24
+msgid "File to Open"
+msgstr "欲開啟的檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+msgid "Are you sure you want to clear recent files list?"
+msgstr "確定要清除當前檔案列表?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+msgid "Clear recent files"
+msgstr "清除當前檔案列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+msgid "Are you sure you want to clear recent projects list?"
+msgstr "確定要清除當前專案列表?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+msgid "Clear recent projects"
+msgstr "清除當前專案列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:282
+#, csharp-format
+msgid "load solution {0}"
+msgstr "載入方案 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:150
+msgid "Resume"
+msgstr "繼續"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:227
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:241
+#, csharp-format
+msgid "Build {0}"
+msgstr "建立 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:229
+#, csharp-format
+msgid "Build Solution {0}"
+msgstr "建立方案 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:231
+#, csharp-format
+msgid "Build Project {0}"
+msgstr "建立專案 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:270
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:278
+#, csharp-format
+msgid "Rebuild {0}"
+msgstr "重建 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:338
+#, csharp-format
+msgid "Clean {0}"
+msgstr "清空 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:108
+msgid "Go to declaration"
+msgstr "前往定義"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:112
+msgid "Find references"
+msgstr "找尋參考"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:116
+#, csharp-format
+msgid "Class {0}"
+msgstr "類別 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+msgid "Go to base"
+msgstr "到基底"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:118
+msgid "Find derived classes"
+msgstr "尋找子類別"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+#, csharp-format
+msgid "Field {0} : {1}"
+msgstr "欄位 {0} : {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:124
+#, csharp-format
+msgid "Property {0} : {1}"
+msgstr "屬性 {0} : {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+#, csharp-format
+msgid "Event {0}"
+msgstr "事件 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
+#, csharp-format
+msgid "Method {0}"
+msgstr "方法 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:131
+#, csharp-format
+msgid "Indexer {0}"
+msgstr "索引子 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+#, csharp-format
+msgid "Parameter {0}"
+msgstr "參數 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+#, csharp-format
+msgid "Variable {0}"
+msgstr "變數 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:46
+msgid "Start tool"
+msgstr "啟動工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+#, csharp-format
+msgid "Enter any arguments you want to use while launching tool, {0}:"
+msgstr "輸入起用工具的參數 {0}:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+#, csharp-format
+msgid "Command Arguments for {0}"
+msgstr "{0} 所需的命令引數"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:103
+#, csharp-format
 msgid ""
 "External program execution failed.\n"
 "Error while starting:\n"
@@ -1156,209 +1670,150 @@ msgstr ""
 "開始執行時發生錯誤:\n"
 "'{0} {1}'"
 
-msgid "ExternalToolPanel"
-msgstr "外部工具面板"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:58
+msgid "Are you sure you want to delete the active layout?"
+msgstr "確定要刪除當前配置?"
 
-msgid "F_ind In Files..."
-msgstr "在多檔中進行檢索... (_I)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:69
+msgid "Activate this window"
+msgstr "活化此視窗"
 
-msgid "File"
-msgstr "檔案"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:23
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:280
+msgid "New Tool"
+msgstr "增加工具"
 
-msgid "File '{0}' could not be created."
-msgstr "無法建立檔案 '{0}'"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ToolLoader.cs:83
+msgid "Can't load external tools configuration file"
+msgstr "無法載入外部工具設定檔"
 
-msgid "File '{0}' could not be deleted."
-msgstr "無法刪除檔案 '{0}'。"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:35
+msgid "Abstract Content"
+msgstr "萃取內容"
 
-msgid "File already exists"
-msgstr "檔案已存在"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractViewContent.cs:25
+msgid "Change me"
+msgstr "Change me"
 
-msgid "File name {0} is invalid"
-msgstr "檔名 {0} 無效"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:105
+msgid "New add-in updates are available:"
+msgstr "有可用的增益集更新:"
 
-msgid "File not found: {0}"
-msgstr "找不到檔案: {0}"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:42
+msgid "Web Browser"
+msgstr "Web瀏覽器"
 
-msgid "File or directory name is already in use, choose a different one."
-msgstr "檔案或目錄名已被使用,請選別的名字。"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:207
+msgid "Done."
+msgstr "終了"
 
-msgid "File to Open"
-msgstr "欲開啟的檔案"
-
-msgid ""
-"File {0} already exists, do you want to overwrite\n"
-"the existing file ?"
-msgstr ""
-"檔案 {0} 已經存在,是否要覆寫\n"
-"這個存在的檔案?"
-
-msgid "File {0} already exists.  Overwrite?"
-msgstr "檔案 {0} 已經存在.要覆寫嗎?"
-
-msgid "File {0} could not be written."
-msgstr "無法寫入檔案 {0} ."
-
-msgid "File {0} is not a valid .Net Assembly"
-msgstr "檔案 {0} 不是一個合法的 .Net 組件"
-
-msgid "File {0} not found in {1}."
-msgstr "無法在 {1} 找到 {0}"
-
-msgid "Filemask:"
-msgstr "檔案遮罩:"
-
-msgid "Files"
-msgstr "檔案"
-
-msgid "Find"
-msgstr "尋找"
-
-msgid "Find Dialog"
-msgstr "尋找對話盒"
-
-msgid "Find Next Selection"
-msgstr "尋找下個選定項目"
-
-msgid "Find _Next"
-msgstr "尋找下一個 (_N)"
-
-msgid "Find _Previous"
-msgstr "尋找上一個 (_P)"
-
-msgid "Find _Previous Selection"
-msgstr "尋找上個選定項目 (_P)"
-
-msgid "Find:"
-msgstr "尋找:"
-
-msgid "Finish"
-msgstr "完成"
-
-msgid "Finished"
-msgstr "完成了"
-
-msgid "Finishing installation"
-msgstr "完成安裝"
-
-msgid "Found new files in {0}"
-msgstr "在 {0} 找到新檔案"
-
-msgid "Gcj"
-msgstr "Gcj"
-
-msgid "General"
-msgstr "一般"
-
-msgid "General tail call optimization"
-msgstr "一般 tail call 最佳化"
-
-msgid "GeneralProjectOptionsPanel"
-msgstr "一般專案選項面板"
-
-msgid "GeneralTextEditorPanel"
-msgstr "一般文字編輯面板"
-
-msgid "Generate _additional comments"
-msgstr "產生額外註解(_a)"
-
-msgid "Generate _documentation comments"
-msgstr "產生文件註解 (_d)"
-
-msgid "Generate _xml documentation"
-msgstr "產生 _xml 文件"
-
-msgid "Generating database"
-msgstr "產生資料庫"
-
-msgid "Glade# Project"
-msgstr "Glade# 專案"
-
-msgid "Global Assembly Cache"
-msgstr "全域組件快取"
-
-msgid "Gnome# Program"
-msgstr "Gnome#程式"
-
-msgid "Gnome# Project"
-msgstr "Gnome#專案"
-
-msgid "Go back"
-msgstr "上一步"
-
-msgid "Go forward"
-msgstr "下一步"
-
-msgid "Go to Line"
-msgstr "到指定行"
-
-msgid "Go up one level"
-msgstr "上一層"
-
-msgid "GotDotNet"
-msgstr "GotDotNet"
-
-msgid "Goto Matching _Brace"
-msgstr "到對應的括弧 (_B)"
-
-msgid "Group members by access"
-msgstr "以存取來分組成員"
-
-msgid "Group members by member type"
-msgstr "以型態來分組成員"
-
-msgid "Groups"
-msgstr "群組"
-
-msgid "Gtk# Project"
-msgstr "Gtk#專案"
-
-msgid "Gtk# Window"
-msgstr "Gtk#視窗"
-
-msgid "Help"
-msgstr "求助"
-
-msgid "Highlight _matching bracket"
-msgstr "高亮度對應的括弧 (_m)"
-
-msgid "Highlighting Mode"
-msgstr "高亮度模式"
-
-msgid "Home"
-msgstr "首頁"
-
-msgid "IKVM Console Project"
-msgstr "IKVM Console 專案"
-
-msgid "IKVM Glade# Project"
-msgstr "IKVM Glade# 專案"
-
-msgid "IKVM Gnome# Project"
-msgstr "IKVM Gnome# 專案"
-
-msgid "IKVM Gtk# Project"
-msgstr "IKVM Gtk# 專案"
-
-msgid "ILAsm Console Project"
-msgstr "ILAsm Console 專案"
-
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
 msgid "INS"
 msgstr "INS"
 
-msgid "I_ndentation"
-msgstr "縮排 (_n)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
+msgid "OVR"
+msgstr "複寫"
 
-msgid "Ignore warnings"
-msgstr "忽略警告"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:35
+msgid "Assemblies"
+msgstr "組件"
 
+#. FIXME: il8n this
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:75
+#, csharp-format
+msgid "File {0} is not a valid .Net Assembly"
+msgstr "檔案 {0} 不是一個合法的 .Net 組件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:70
+msgid "<b>Ported and developed by:</b>\n"
+msgstr "<b>移植與開發</b>\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:78
+msgid "translator-credits"
+msgstr "翻譯者榮譽"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:81
 msgid ""
-"Illegal project name.\n"
-"Only use letters, digits, space, '.' or '_'."
-msgstr ""
-"非法的專案名稱。\n"
-"只能使用字母,數字,空白, '.' 或是 '_'。"
+"\n"
+"\n"
+"<b>Translated by:</b>\n"
+msgstr "\n"
+"\n"
+"<b>轉換:</b>\n"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:142
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:152
+msgid "About MonoDevelop"
+msgstr "關於MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:154
+msgid "Version Info"
+msgstr "版本資訊"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:22
+msgid "Save Files"
+msgstr "儲存檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:29
+#, csharp-format
+msgid "Solution: {0}"
+msgstr "方案: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:45
+#, csharp-format
+msgid "Project: {0}"
+msgstr "專案: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:85
+msgid "_Save and Quit"
+msgstr "儲存並離開 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:60
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:171
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:167
+msgid "_Description"
+msgstr "描述 (_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:61
+msgid "_Template"
+msgstr "範本 (_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:33
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:89
+msgid "Reference Name"
+msgstr "參照名稱"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:46
+msgid "Package"
+msgstr "套件"
+
+#. set up dialog title
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:51
+#, csharp-format
+msgid "Found new files in {0}"
+msgstr "在 {0} 找到新檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:92
+#, csharp-format
+msgid "Can't load bitmap {0} using default"
+msgstr "無法載入圖片 {0}, 使用預設"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:466
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
+msgid "Name:"
+msgstr "名稱:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Project"
+msgstr "開新專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:264
+msgid "Project will be saved at"
+msgstr "專案將會儲存在"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:307
 msgid ""
 "Illegal project name. \n"
 "Only use letters, digits, space, '.' or '_'."
@@ -1366,726 +1821,848 @@ msgstr ""
 "非法的專案名稱。\n"
 "只能使用字母,數字,空白, '.' 或是 '_'"
 
-msgid "Importing project: "
-msgstr "正在匯入專案: "
-
-msgid "Importing solution"
-msgstr "正在匯入解決方案"
-
-msgid "Include"
-msgstr "含括"
-
-msgid "Include Found Files"
-msgstr "含括找到的檔案"
-
-msgid "Include To Project"
-msgstr "含括到專案"
-
-msgid "Include debug information"
-msgstr "包含除錯資訊(_I)"
-
-msgid "Include the following categories"
-msgstr "含括下列分類"
-
-msgid "Include the following categories: "
-msgstr "含括下列分類: "
-
-msgid "Initializing installation"
-msgstr "正在初始安裝"
-
-msgid "Install Addins..."
-msgstr "安裝增益集..."
-
-msgid "Install from:"
-msgstr "安裝來源:"
-
-msgid "Installing"
-msgstr "安裝中"
-
-msgid "Installing addins..."
-msgstr "正在安裝增益集..."
-
-msgid "Invalid assembly name specified"
-msgstr "指定了不合法的組件名稱"
-
-msgid "Invalid deploy script specified"
-msgstr "指定了不合法的派送腳本"
-
-msgid "Invalid deploy target specified"
-msgstr "指定了不合法的派送目標"
-
-msgid "Invalid directory name: {0}"
-msgstr "不合法的目錄名稱: {0}"
-
-msgid "Invalid file mask: {0}"
-msgstr "不合法的檔案遮罩: {0}"
-
-msgid "Invalid file name"
-msgstr "不合法的檔案名稱"
-
-msgid "Invalid output directory specified"
-msgstr "指定了不合法的輸出目錄"
-
-msgid "Invalid select query"
-msgstr "不合法的 select 查詢"
-
-msgid "Item Path"
-msgstr "項目路徑"
-
-msgid "Item extension"
-msgstr "項目擴充套件"
-
-msgid "Item file name"
-msgstr "項目檔案名稱"
-
-msgid "Java AWT Dialog"
-msgstr "Java AWT 對話盒"
-
-msgid "Javac"
-msgstr "Javac"
-
-msgid "Languages"
-msgstr "語言"
-
-msgid "Last modified"
-msgstr "最後更新日期"
-
-msgid "Layout List"
-msgstr "配置清單"
-
-msgid "Layout name:"
-msgstr "配置名稱:"
-
-msgid "Library"
-msgstr "函式庫"
-
-msgid "Line"
-msgstr "行"
-
-msgid "Lines"
-msgstr "行"
-
-msgid "Load address"
-msgstr "載入位置"
-
-msgid "Load user-specific settings with the document"
-msgstr "載入使用者指定文件的設定"
-
-msgid "Load/Save"
-msgstr "載入/保存"
-
-msgid "LoadSavePanel"
-msgstr "載入保存面板"
-
-msgid "Loading Workbench"
-msgstr "正在載入工作台"
-
-msgid "Loading combine: {0}"
-msgstr "正在載入方案: {0}"
-
-msgid "Loading project: {0}"
-msgstr "正在載入專案: {0}"
-
-msgid "Loading..."
-msgstr "正在載入..."
-
-msgid "Local Copy Reference"
-msgstr "本地複本參照"
-
-msgid "Location"
-msgstr "位置"
-
-msgid "Look for add-in updates at startup, with the following periodicity:"
-msgstr "以下列週期,在啟動時尋找增益集更新:"
-
-msgid "Looking for '{0}' in {1}."
-msgstr "在 {1} 中找尋 {0} "
-
-msgid "Mark all completed"
-msgstr "標示全部已完成"
-
-msgid "Markers And Rulers"
-msgstr "標記與尺"
-
-msgid "Markers and Rulers"
-msgstr "標記與尺"
-
-msgid "MarkersTextEditorPanel"
-msgstr "標記文字編輯器面板"
-
-msgid "Match at offset {0}"
-msgstr "匹配在偏移 {0}"
-
-msgid "Module"
-msgstr "模組"
-
-msgid "Mono Documentation"
-msgstr "Mono 文件集"
-
-msgid "Mono Project"
-msgstr "Mono 專案"
-
-msgid "MonoDevelop"
-msgstr "MonoDevelop"
-
-msgid "MonoDevelop Addin Manager"
-msgstr "MonoDevelop 增益集管理員"
-
-msgid "MonoDevelop Options"
-msgstr "MonoDevelop 選項"
-
-msgid "MonoDevelop Package"
-msgstr "MonoDevelop 套件"
-
-msgid "MonoDevelop Startup Directory"
-msgstr "MonoDevelop啟動目錄"
-
-msgid "MonoDevelop can run without these addins, but the functionality they provide will be missing."
-msgstr "MonoDevelop可以不需要這些增益集而執行,但將會失去他們所提供的功能。"
-
-msgid "MonoDevelop cannot start because a fatal error has been detected."
-msgstr "MonoDevelop無法啟動,因為偵測到致命性的錯誤"
-
-msgid "MonoDevelop options"
-msgstr "MonoDevelop 選項"
-
-msgid "NUnit Categories"
-msgstr "NUnit分類"
-
-msgid "NUnit Options"
-msgstr "NUnit 選項"
-
-msgid "NUnit options"
-msgstr "NUnit 選項"
-
-msgid "N_ew Solution/Project..."
-msgstr "開新方案/專案... (_E)"
-
-msgid "Name"
-msgstr "名稱"
-
-msgid "Name:"
-msgstr "名稱:"
-
-msgid "Nested namespaces"
-msgstr "巢狀命名空間"
-
-msgid "New "
-msgstr "開新 "
-
-msgid "New Configuration"
-msgstr "開新配置"
-
-msgid "New File"
-msgstr "開新檔案"
-
-msgid "New Files"
-msgstr "開新檔案"
-
-msgid "New Files Only"
-msgstr "只開新檔案"
-
-msgid "New Folder"
-msgstr "開新資料夾"
-
-msgid "New Solution"
-msgstr "開新方案"
-
-msgid "New Tool"
-msgstr "增加工具"
-
-msgid "New _File"
-msgstr "開新檔案 (_F)"
-
-msgid "New add-in updates are available:"
-msgstr "有可用的增益集更新:"
-
-msgid "New layout"
-msgstr "新配置"
-
-msgid "New name:"
-msgstr "新名稱:"
-
-msgid "Next"
-msgstr "下個"
-
-msgid "Next Bookmark"
-msgstr "下個書籤"
-
-msgid "No runnable executable found."
-msgstr "沒找到可執行的檔案。"
-
-msgid "None"
-msgstr "無"
-
-msgid "OVR"
-msgstr "複寫"
-
-msgid "O_pen"
-msgstr "開啟 (_P)"
-
-msgid "Open"
-msgstr "開啟"
-
-msgid "Open file ..."
-msgstr "開啟檔案..."
-
-msgid "Open with file browser"
-msgstr "以檔案瀏覽器開啟"
-
-msgid "Open with terminal"
-msgstr "以終端機開啟"
-
-msgid "Opening {0}"
-msgstr "正在開啟{0}"
-
-msgid "Operation completed with errors."
-msgstr "運行完畢，有錯誤產生。"
-
-msgid "Operation completed with warnings."
-msgstr "運行完畢，有警告產生。"
-
-msgid "Operation successfully completed."
-msgstr "成功地運行完畢。"
-
-msgid "Operators"
-msgstr "運算子"
-
-msgid "Options"
-msgstr "選項"
-
-msgid "Ordinal constant matching optimization"
-msgstr "依序常數配對最佳化"
-
-msgid "Other"
-msgstr "其他"
-
-msgid "Output"
-msgstr "輸出"
-
-msgid "Output _path:"
-msgstr "輸出路徑 (_p):"
-
-msgid "Output directory '{0}' can't be mapped to a local directory. The directory '{1}' will be used instead"
-msgstr "輸出目錄 '{0}' 無法被對應到本地目錄。將會以此目錄 '{1}' 代替"
-
-msgid "Output path"
-msgstr "輸出路徑"
-
-msgid "OutputOptionsPanel"
-msgstr "輸出選項面板"
-
-msgid "Overall Progress:"
-msgstr "整體進度:"
-
-msgid "Paramet_ers:"
-msgstr "參數 (_e):"
-
-msgid "Parameters"
-msgstr "參數"
-
-msgid "Password"
-msgstr "密碼"
-
-msgid "Path"
-msgstr "路徑"
-
-msgid "Path:"
-msgstr "路徑:"
-
-msgid "Pause"
-msgstr "暫停"
-
-msgid "Pause _console output"
-msgstr "暫停輸出至終端機 (_c)"
-
-msgid "Performing main compilation..."
-msgstr "進行主要編寫中..."
-
-msgid "Please enter a valid configuration name."
-msgstr "請輸入有效的設定名稱。"
-
-msgid "Previous Bookmark"
-msgstr "前個書籤"
-
-msgid "Procedure"
-msgstr "程序"
-
-msgid "Procedures"
-msgstr "程序"
-
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:315
+msgid ""
+"Illegal project name.\n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"非法的專案名稱。\n"
+"只能使用字母,數字,空白, '.' 或是 '_'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:320
+msgid "A Project with that name is already in your Project Space"
+msgstr "以此命名的專案已經存在於你的專案空間"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:337
+#, csharp-format
+msgid "Could not create directory {0}. File already exists."
+msgstr "無法建立目錄 {0}. 檔案已經存在。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:342
+#, csharp-format
+msgid "You do not have permission to create to {0}"
+msgstr "你沒有權限去建立 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:362
+msgid "The project could not be created"
+msgstr "無法建立此專案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:437
+msgid "Solution Location"
+msgstr "方案位置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:35
 msgid "Project"
 msgstr "專案"
 
-msgid "Project Options"
-msgstr "專案選項"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:51
+msgid "Directory"
+msgstr "目錄"
 
-msgid "Project file name"
-msgstr "專案檔名"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:164
+msgid "Wildcards"
+msgstr "通配符"
 
-msgid "Project file not found: "
-msgstr "沒找到專案檔: "
-
-msgid ""
-"Project file {0} already exists, do you want to overwrite\n"
-"the existing file ?"
-msgstr ""
-"專案檔 {0} 已經存在, 你想要複寫這個檔案嗎?"
-
-msgid "Project name may not contain any of the following characters: {0}"
-msgstr "專案名稱不應該包含這些字元: {0}"
-
-msgid "Project options"
-msgstr "專案選項"
-
-msgid "Project will be saved at"
-msgstr "專案將會儲存在"
-
-msgid "Project will be saved in: /dev/null"
-msgstr "專案將會儲存在 /dev/null "
-
-msgid "Project: {0}"
-msgstr "專案: {0}"
-
-msgid "Projects"
-msgstr "專案"
-
-msgid "Proportional time scale"
-msgstr "相稱的時間刻度"
-
-msgid "Provider"
-msgstr "提供者"
-
-msgid "Query results received"
-msgstr "收到的查詢結果"
-
-msgid "Query sent, waiting for response."
-msgstr "已送出查詢, 正在等待回應。"
-
-msgid "Question"
-msgstr "問題"
-
-msgid "R_eplace All"
-msgstr "取代全部 (_e)"
-
-msgid "R_eplace In Files..."
-msgstr "在多檔中進行取代... (_E)"
-
-msgid "Re_name"
-msgstr "更名 (_N)"
-
-msgid "Ready"
-msgstr "準備完成"
-
-msgid "Rebuild"
-msgstr "重建"
-
-msgid "Rebuild Solution"
-msgstr "重建方案"
-
-msgid "Rebuild {0}"
-msgstr "重建 {0} "
-
-msgid "Recent Files"
-msgstr "最近開啟過的檔案"
-
-msgid "Recent Projects"
-msgstr "最近開啟過的專案"
-
-msgid "Recent Solu_tions"
-msgstr "最近開啟過的方案 (_T)"
-
-msgid "Recent _Files"
-msgstr "最近開啟過的檔案 (_F)"
-
-msgid "Recurse subdirectories"
-msgstr "處理所有子目錄"
-
-msgid "Reference Name"
-msgstr "參照名稱"
-
-msgid "References"
-msgstr "參照"
-
-msgid "Register a local repository"
-msgstr "註冊為本地庫"
-
-msgid "Register an on-line repository"
-msgstr "註冊為線上庫"
-
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:165
 msgid "Regular Expressions"
 msgstr "正規表現式"
 
-msgid "Released under the GNU General Public license."
-msgstr "在 GNU GPL 授權下發行"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:157
+msgid "Current File"
+msgstr "目前檔案"
 
-msgid "Remove"
-msgstr "移除"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:158
+msgid "All Open Files"
+msgstr "所有開啟的檔案"
 
-msgid "Remove Group"
-msgstr "移除群組"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:159
+msgid "Entire Project"
+msgstr "整個專案"
 
-msgid "Rename"
-msgstr "更名"
-
-msgid "Rename Configuration"
-msgstr "更改設定名稱"
-
-msgid "Rename configurations in all solution items"
-msgstr "在所有方案項目中更改設定名稱"
-
-msgid "Rename file"
-msgstr "更改檔名"
-
-msgid "Replace"
-msgstr "取代"
-
-msgid "Replace Dialog"
-msgstr "取代對話盒"
-
-msgid "Replace all finished. {0} matches found."
-msgstr "已完成取代所有。共發現 {0} 個相符項目。"
-
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:102
 msgid "Replace in Files"
 msgstr "在多檔中進行取代..."
 
-msgid "Replace:"
-msgstr "取代:"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:174
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:303
+msgid "All open files"
+msgstr "所有開啟的檔案"
 
-msgid "Replacing '{0}' in {1}."
-msgstr "在 {1} 裡進行取代 {0} "
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:175
+msgid "Whole project"
+msgstr "整個專案"
 
-msgid "Repositories..."
-msgstr "庫..."
-
-msgid "Repository"
-msgstr "庫"
-
-msgid "Reset Options"
-msgstr "重置選項"
-
-msgid "Resource file '{0}' does not exist"
-msgstr "資源檔 '{0}' 不存在"
-
-msgid "Resource not found: {0}"
-msgstr "找不到資源: {0}"
-
-msgid "Resources"
-msgstr "資源"
-
-msgid "Restore default"
-msgstr "回存預設值"
-
-msgid "Results chart"
-msgstr "結果圖表"
-
-msgid "Resume"
-msgstr "繼續"
-
-msgid "Roles"
-msgstr "角色"
-
-msgid "Rules"
-msgstr "尺規"
-
-msgid "Run"
-msgstr "執行"
-
-msgid "Run Test"
-msgstr "執行測試"
-
-msgid "Run on e_xternal console"
-msgstr "在外部終端機下執行 (_x)"
-
-msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
-msgstr "以設定 <b>{1}</b> 為 <b>{0}</b> 執行測試"
-
-msgid "Runtime:"
-msgstr "執行時期:"
-
-msgid "SQL Definition"
-msgstr "SQL 定義"
-
-msgid "Save"
-msgstr "存檔"
-
-msgid "Save All"
-msgstr "儲存全部"
-
-msgid "Save Files"
-msgstr "儲存檔案"
-
-msgid "Save _As..."
-msgstr "另存新檔 (_A)"
-
-msgid "Save as..."
-msgstr "儲存為..."
-
-msgid "Save changed files?"
-msgstr "保存已變更的檔案?"
-
-msgid "Save failed."
-msgstr "儲存失敗。"
-
-msgid "Save operation failed."
-msgstr "儲存動作失敗。"
-
-msgid "Saving combine: {0}"
-msgstr "儲存方案中: {0}"
-
-msgid "Saving project: {0}"
-msgstr "儲存專案中: {0}"
-
-msgid "Search Results"
-msgstr "搜索結果"
-
-msgid "Search cancelled."
-msgstr "搜索被中斷。"
-
-msgid "Search completed. {0} matches found in {1} files."
-msgstr "搜索完成。在 {1} 個檔案中找到 {0} 個相符。"
-
-msgid "Search for new _files on load"
-msgstr "在載入時搜索新的檔案 (_f)"
-
-msgid "Search in:"
-msgstr "搜索對象:"
-
-msgid "Search pattern is invalid"
-msgstr "搜索範本無效"
-
-msgid "Search string not Found:"
-msgstr "找不到指定的字串:"
-
-msgid "Search time: {0} seconds."
-msgstr "搜索時間: {0}秒"
-
-msgid "Secure Web Service"
-msgstr "安全 Web Service"
-
-msgid "Select All"
-msgstr "選擇全部"
-
-msgid "Select _All"
-msgstr "選擇全部 (_A)"
-
-msgid "Select a target configuration for each solution item:"
-msgstr "為每個方案項目選擇目標設定:"
-
-msgid "Select command"
-msgstr "選擇指令"
-
-msgid "Select default location"
-msgstr "選擇預設位置"
-
-msgid "Select deploy script"
-msgstr "選擇散佈腳本"
-
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:266
 msgid "Select directory"
 msgstr "選擇目錄"
 
-msgid "Select output directory"
-msgstr "選擇輸出目錄"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:325
+msgid "Empty search pattern"
+msgstr "空白的搜索樣式"
 
-msgid "Select output path"
-msgstr "選擇輸出路徑"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:332
+msgid "Empty directory name"
+msgstr "空白的目錄名稱"
 
-msgid "Select target location"
-msgstr "選擇目標位置"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:337
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
+#, csharp-format
+msgid "Invalid directory name: {0}"
+msgstr "不合法的目錄名稱: {0}"
 
-msgid "Select test in tree"
-msgstr "在樹狀檢視中選擇測試"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:347
+#, csharp-format
+msgid "Invalid file mask: {0}"
+msgstr "不合法的檔案遮罩: {0}"
 
-msgid "Select the location of the repository you want to register:"
-msgstr "選擇你想要登錄的庫位置:"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:90
+msgid "Type"
+msgstr "型"
 
-msgid "Selected references"
-msgstr "選定的參照"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:98
+msgid "Packages"
+msgstr "套件"
 
-msgid "Sequences"
-msgstr "順序"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:99
+msgid "Projects"
+msgstr "專案"
 
-msgid "Server"
-msgstr "伺服器"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:100
+msgid ".Net Assembly"
+msgstr ".NET組件"
 
-msgid "Set As Startup Project"
-msgstr "設為起始專案"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:32
+#, csharp-format
+msgid ""
+"<b>License</b>\n"
+"    {0}"
+msgstr "<b>許可</b>\n"
+"    {0}"
 
-msgid "Set as active"
-msgstr "設為活化"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:32
+msgid "Released under the GNU General Public license."
+msgstr "在 GNU GPL 授權下發行"
 
-msgid "Setup"
-msgstr "設置"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:36
+msgid ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
+msgstr "<b>版權</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
 
-msgid "Show All Files"
-msgstr "顯示所有檔案"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:54
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:217
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:250
+msgid "Path"
+msgstr "路徑"
 
-msgid "Show Test Counters"
-msgstr "顯示測試計數"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:74
+msgid "dynamic"
+msgstr "動態"
 
-msgid "Show Test Time"
-msgstr "顯示測試時間"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:133
+msgid "total"
+msgstr "共計"
 
-msgid "Show _column ruler,"
-msgstr "顯示欄尺規 (_c)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:110
+msgid "You must save the file"
+msgstr "你必須儲存此檔案"
 
-msgid "Show _line numbers"
-msgstr "顯示行號 (_l)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:123
+msgid "Unsaved changed to open files were not included in counting"
+msgstr "已變更但尚未儲存的已開啟檔案不包括在計數之中。"
 
-msgid "Show _output pad when build starts"
-msgstr "當開始建置時顯示輸出面板 (_o)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:130
+msgid "You must be in project mode"
+msgstr "你必須在專案模式下"
 
-msgid "Show _task list pad if build finished with errors"
-msgstr "如果建立完成後有錯誤，顯示任務列表面板 (_t)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:232
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:278
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:215
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:246
+msgid "File"
+msgstr "檔案"
 
-msgid "Show extensions in project scout"
-msgstr "在專案斥侯中顯示擴充套件"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:233
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:282
+msgid "Chars"
+msgstr "字元"
 
-msgid "Show failed tests"
-msgstr "顯示已經失敗的測試"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:286
+msgid "Words"
+msgstr "單字"
 
-msgid "Show hidden files and directories"
-msgstr "顯示隱藏的檔案與目錄"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:290
+msgid "Lines"
+msgstr "行"
 
-msgid "Show ignored tests"
-msgstr "顯示忽略的測試"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:261
+msgid "Word Count"
+msgstr "單字數"
 
-msgid "Show one result per day"
-msgstr "以一天一筆結果的方式顯示"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:298
+msgid "_Count where"
+msgstr "計數何處 (_C)"
 
-msgid "Show project structure"
-msgstr "顯示專案結構"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:302
+msgid "Current file"
+msgstr "目前檔案"
 
-msgid "Show public members only"
-msgstr "只顯示公用成員"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:304
+msgid "Whole solution"
+msgstr "整個方案"
 
-msgid "Show results pad"
-msgstr "顯示結果面板"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:137
+msgid "Save as..."
+msgstr "儲存為..."
 
-msgid "Show successful tests"
-msgstr "顯示成功的測試"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:147
+#, csharp-format
+msgid "File name {0} is invalid"
+msgstr "檔名 {0} 無效"
 
-msgid "Show test source code"
-msgstr "顯示測試源碼"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:152
+#, csharp-format
+msgid "File {0} already exists.  Overwrite?"
+msgstr "檔案 {0} 已經存在.要覆寫嗎?"
 
-msgid "Show updates only"
-msgstr "只顯示更新"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs:28
+msgid "Documentation"
+msgstr "文件"
 
-msgid "Show welcome page on startup"
-msgstr "啟動時顯示歡迎頁面"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:89
+msgid "Loading Workbench"
+msgstr "正在載入工作台"
 
-msgid "Size"
-msgstr "大小"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:92
+msgid ""
+"MonoDevelop failed to start.\n"
+"If you installed MonoDevelop using a binary instaler, take a look at \n"
+"http://www.mono-project.com/InstallerInstructions for more info about "
+"possible\n"
+"causes of this error."
+msgstr "無法啟動 MonoDevelop。\n"
+"如果你以二進位安裝程式安裝，請參照\n"
+"http://www.mono-project.com/InstannerInstructions 以取得更多關於此錯誤成因的資訊。"
 
-msgid "Smart"
-msgstr "聰明的"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:111
+msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
+msgstr "無法啟動 MonoDevelop。無法解析本地機器名稱。"
 
-msgid "Solution"
-msgstr "方案"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:112
+msgid ""
+"Your network may be misconfigured. Make sure the hostname of your system is "
+"added to the /etc/hosts file."
+msgstr "你的網路可能設置錯誤。請確定你系統的機器名稱已經加到 /etc/hosts 檔案中。"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:127
+msgid "Initializing MonoDevelop"
+msgstr "初始化 MonoDevelop 中"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:170
+msgid "MonoDevelop failed to start. The following error has been reported: "
+msgstr "MonoDevelop無法啟動,已回報下列錯誤:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:278
+msgid ""
+"Some packages installed in your system are not compatible with MonoDevelop:\n"
+msgstr "某些安裝在你系統上的套件與 MonoDevelop 不相容：\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:280
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:282
+#, csharp-format
+msgid "version required: {0}"
+msgstr "需求版本：{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:284
+msgid "You need to upgrade the previous packages to start using MonoDevelop."
+msgstr "你需要升級之前的套件才能開始使用 MonoDevelop。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:42
+msgid "Item Path"
+msgstr "項目路徑"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:66
+msgid "_Item Directory"
+msgstr "項目目錄 (_I)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:44
+msgid "Item file name"
+msgstr "項目檔案名稱"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:45
+msgid "Item extension"
+msgstr "項目擴充套件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:47
+msgid "Current line"
+msgstr "目前行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:48
+msgid "Current column"
+msgstr "目前欄"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:49
+msgid "Current text"
+msgstr "目前文字"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:51
+msgid "Target Path"
+msgstr "目標路徑"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:68
+msgid "_Target Directory"
+msgstr "目標目錄 (_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:69
+msgid "Target Name"
+msgstr "目標名稱"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:54
+msgid "Target Extension"
+msgstr "目標擴充套件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:71
+msgid "_Project Directory"
+msgstr "專案目錄 (_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:57
+msgid "Project file name"
+msgstr "專案檔名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:73
+msgid "_Solution Directory"
+msgstr "方案目錄 (_S)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:60
 msgid "Solution File Name"
 msgstr "方案檔名"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:75
+msgid "MonoDevelop Startup Directory"
+msgstr "MonoDevelop啟動目錄"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:319
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:150
+msgid "Control not found!"
+msgstr "找不到控制項"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:340
+#, csharp-format
+msgid "The command of tool \"{0}\" is invalid."
+msgstr "此工具 \"{0}\" 的命令無效"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:346
+#, csharp-format
+msgid "The working directory of tool \"{0}\" is invalid."
+msgstr "此工具 \"{0}\" 的工作目錄無效"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs:63
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:83
+#, csharp-format
+msgid "Solution {0}"
+msgstr "方案 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:40
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs:14
+msgid "Files"
+msgstr "檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:43
+msgid "Size"
+msgstr "大小"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:46
+msgid "Last modified"
+msgstr "最後更新日期"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Are you sure you want to delete this file?"
+msgstr "確定要刪除此檔案?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Delete files"
+msgstr "刪除檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:184
+msgid "Delete file"
+msgstr "刪除檔案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:187
+msgid "Rename file"
+msgstr "更改檔名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:28
+msgid "Help"
+msgstr "求助"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:37
+msgid "Mono Documentation"
+msgstr "Mono 文件集"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:43
+msgid "Task List"
+msgstr "任務清單"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:82
+msgid "Show Errors"
+msgstr "顯示錯誤"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:93
+msgid "Show Warnings"
+msgstr "顯示警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:104
+msgid "Show Messages"
+msgstr "顯示訊息"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:212
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:245
+msgid "Line"
+msgstr "行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:213
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:108
+msgid "Description"
+msgstr "説明"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:383
+#, csharp-format
+msgid "{0} Error"
+msgstr "{0} 錯誤"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:388
+#, csharp-format
+msgid "{0} Warning"
+msgstr "{0} 警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:393
+#, csharp-format
+msgid "{0} Message"
+msgstr "{0} 訊息"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:86
+#, csharp-format
+msgid "Solution {0} (1 entry)"
+msgstr "方案 {0} (1 條目)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:89
+#, csharp-format
+msgid "Solution {0} ({1} entries)"
+msgstr "方案 {0} ({1} 條目)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:169
+#, csharp-format
+msgid "Solution name may not contain any of the following characters: {0}"
+msgstr "方案名稱不應該包含下列任何字元: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:199
+#, csharp-format
+msgid "Do you really want to remove solution {0} from solution {1}?"
+msgstr "你真的要從方案 {1} 移除 {0} ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:167
+#, csharp-format
+msgid ""
+"Do you really want to move the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr "你真的要搬移此資料夾 '{0}' 到專案 '{1}' 的根資料夾?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:169
+#, csharp-format
+msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
+msgstr "你真的要搬移此資料夾 '{0}' 到這個資料夾 '{1}' ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:173
+#, csharp-format
+msgid ""
+"Do you really want to copy the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr "你真的要複製此資料夾 '{0}' 到專案 '{1}' 的根資料夾?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:175
+#, csharp-format
+msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
+msgstr "你真的要複製此資料夾 '{0}' 到這個資料夾 '{1}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:199
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the move operation?"
+msgstr "在搬移動作開始前,是否要保存檔案 '{0}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:201
+#, csharp-format
+msgid ""
+"Do you want to save the following files before the move operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"在搬移動作開始前,是否要保存下列檔案?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the copy operation?"
+msgstr "在複製動作開始前,是否要保存檔案 '{0}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
+#, csharp-format
+msgid ""
+"Do you want to save the following files before the copy operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"在複製動作開始前,是否要保存下列檔案?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:218
+msgid "Save operation failed."
+msgstr "儲存動作失敗。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:335
+msgid "Copying files ..."
+msgstr "複製檔案..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
+#: ../Extras/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:117
+msgid "Add files"
+msgstr "添加多檔"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:255
+#, csharp-format
+msgid "{0} is outside the project directory, what should I do?"
+msgstr "{0} 在專案目錄之外,我該作些什麼?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:259
+msgid "Use the same action for all selected files."
+msgstr "對所有已選的檔案使用相同動作"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:263
+msgid "_Move"
+msgstr "移動 (_M)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:281
+msgid ""
+"An error occurred while attempt to move/copy that file. Please check your "
+"permissions."
+msgstr "當試著移動/複製檔案時發生錯誤. 請檢查你的權限."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+#, csharp-format
+msgid "The file '{0}' already exists. Do you want to replace it?"
+msgstr "此檔案 {0} 已經存在。你想要取代他嗎？"
+
+#. assume duplicate file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:102
+msgid "File or directory name is already in use, choose a different one."
+msgstr "檔案或目錄名已被使用,請選別的名字。"
+
+#. new file name with wildcard (*, ?) characters in it
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:104
+msgid ""
+"The file name you have chosen contains illegal characters. Please choose a "
+"different file name."
+msgstr "你選擇的檔名包含了非法的字元。請指定別的檔名。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:140
+#, csharp-format
+msgid "Are you sure you want to remove file {0} from project {1}?"
+msgstr "確定要從專案 {1} 裡移除此檔案 {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:169
+#, csharp-format
+msgid "Do you want to remove folder {0}?"
+msgstr "是否移除此資料夾 {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:263
+#, csharp-format
+msgid "Project name may not contain any of the following characters: {0}"
+msgstr "專案名稱不應該包含這些字元: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:307
+#, csharp-format
+msgid "Do you really want to remove project {0} from solution {1}"
+msgstr "你真的要從方案 {1} 移除專案 {0} ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:80
+msgid "References"
+msgstr "參照"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
+msgid "Resources"
+msgstr "資源"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:143
+#, csharp-format
+msgid "Resource file '{0}' does not exist"
+msgstr "資源檔 '{0}' 不存在"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
+#, csharp-format
+msgid "Are you sure you want to permanently delete the file {0}?"
+msgstr "確定要永久刪除此檔案{0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:126
+#, csharp-format
+msgid "The file {0} could not be deleted"
+msgstr "無法刪除此檔案 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:132
+msgid "Search Results"
+msgstr "搜索結果"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:248
+msgid "Text"
+msgstr "文字"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:997
+msgid "Display Options"
+msgstr "顯示選項"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:240
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:416
+#, csharp-format
+msgid "File not found: {0}"
+msgstr "找不到檔案: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:283
+msgid "Solution loaded."
+msgstr "方案已載入。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:350
+msgid "Solution saved."
+msgstr "方案已儲存。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:352
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:365
+msgid "Save failed."
+msgstr "儲存失敗。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:363
+msgid "Project saved."
+msgstr "專案已儲存。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:451
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:476
+#, csharp-format
+msgid "The file '{0}' could not be loaded."
+msgstr "無法載入此檔案 '{0}' 。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:467
+msgid "Add to Solution"
+msgstr "添加到方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:670
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:703
+msgid "Execution failed."
+msgstr "執行失敗。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:720
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:779
+msgid "No runnable executable found."
+msgstr "沒找到可執行的檔案。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:764
+#, csharp-format
+msgid "The file {0} can't be compiled."
+msgstr "無法編譯此檔案 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:815
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:875
+msgid "Build failed."
+msgstr "建立失敗。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:831
+msgid "Save changed files?"
+msgstr "保存已變更的檔案?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:859
+#, csharp-format
+msgid "---------------------- Done ----------------------"
+msgstr "---------------------- 完成 ----------------------"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:865
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:331
+#, csharp-format
+msgid "{0} error"
+msgstr "{0} 錯誤"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:866
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:332
+#, csharp-format
+msgid "{0} warning"
+msgstr "{0} 警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:869
+msgid "Build successful."
+msgstr "建立成功"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:871
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:873
+msgid "Build: "
+msgstr "建立:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:908
+#, csharp-format
+msgid "Could not get any file from '{0}'."
+msgstr "無法由 '{0}' 取得任何檔案。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:920
+#, csharp-format
+msgid "Could not create directory '{0}'."
+msgstr "無法建立目錄 '{0}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:927
+msgid "Copying files..."
+msgstr "複製檔案..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:939
+#, csharp-format
+msgid "File '{0}' could not be created."
+msgstr "無法建立檔案 '{0}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:961
+#, csharp-format
+msgid "File '{0}' could not be deleted."
+msgstr "無法刪除檔案 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:976
+#, csharp-format
+msgid "Directory '{0}' could not be deleted."
+msgstr "目錄 '{0}' 無法被刪除。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
+#, csharp-format
+msgid "Error : {0}"
+msgstr "錯誤: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
+#, csharp-format
+msgid ""
+" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
+"{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
+msgstr " 在 <span font_family='fixed'>{0,-4}</span>  欄 <span font_family='fixed'>"
+"{1,-3}</span>  字元 <span font_family='fixed'>{2,-3}</span> "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:73
+#, csharp-format
+msgid "Match at offset {0}"
+msgstr "匹配在偏移 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:198
+msgid "Search pattern is invalid"
+msgstr "搜索範本無效"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:108
+#, csharp-format
+msgid "The search could not be finished: {0}"
+msgstr "無法完成此搜索: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:110
+msgid "Search cancelled."
+msgstr "搜索被中斷。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:112
+#, csharp-format
+msgid "Search completed. {0} matches found in {1} files."
+msgstr "搜索完成。在 {1} 個檔案中找到 {0} 個相符。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:117
+#, csharp-format
+msgid "Search time: {0} seconds."
+msgstr "搜索時間: {0}秒"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:172
+msgid "There is a search already in progress. Do you want to cancel it?"
+msgstr "正在進行檢索。你要中斷它嗎？"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:135
+#, csharp-format
+msgid "Replacing '{0}' in {1}."
+msgstr "在 {1} 裡進行取代 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:181
+#, csharp-format
+msgid "Looking for '{0}' in {1}."
+msgstr "在 {1} 中找尋 {0} "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:125
+msgid "Mark all completed"
+msgstr "標示全部已完成"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:151
+#, csharp-format
+msgid "Replace all finished. {0} matches found."
+msgstr "已完成取代所有。共發現 {0} 個相符項目。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:211
+msgid "Search string not found:"
+msgstr "找不到指定的字串："
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:95
+msgid "Ready"
+msgstr "準備完成"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:107
+msgid "Are you sure that you want to reload the file?"
+msgstr "確定要重新載入檔案?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
+msgid "Initializing Main Window"
+msgstr "初始化主視窗中"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:246
+#, csharp-format
+msgid "Opening {0}"
+msgstr "正在開啟{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:336
+msgid "Do you want to save the current changes?"
+msgstr "是否保存當前變更?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:348
+msgid "Do you really want to discard your changes ?"
+msgstr "你真的要放棄此次變更?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:380
+msgid "Invalid file name"
+msgstr "不合法的檔案名稱"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:400
+#, csharp-format
+msgid "{0} is a directory"
+msgstr "{0} 是個目錄"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:81
+#, csharp-format
 msgid ""
 "Solution file {0} already exists, do you want to overwrite\n"
 "the existing file ?"
@@ -2093,654 +2670,1973 @@ msgstr ""
 "方案檔案 {0} 已經存在，你要覆寫已存在的檔案嗎？\n"
 " "
 
-msgid "Solution name may not contain any of the following characters: {0}"
-msgstr "方案名稱不應該包含下列任何字元: {0}"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:68
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:83
+#, csharp-format
+msgid "Can't create project with type : {0}"
+msgstr "無法建立帶有 {0} 類型的專案"
 
-msgid "Solution {0}"
-msgstr "方案 {0}"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+#, csharp-format
+msgid ""
+"Project file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr "專案檔 {0} 已經存在, 你想要複寫這個檔案嗎?"
 
-msgid "Solution {0} (1 entry)"
-msgstr "方案 {0} (1 條目)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+msgid "File already exists"
+msgstr "檔案已存在"
 
-msgid "Solution {0} ({1} entries)"
-msgstr "方案 {0} ({1} 條目)"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:160
+msgid "_Name"
+msgstr "名稱 (_N)"
 
-msgid "Solution: {0}"
-msgstr "方案: {0}"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:207
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:231
+#, csharp-format
+msgid "Error loading template from resource {0}"
+msgstr "從資源 {0} 載入樣板時發生錯誤"
 
-msgid "Source Editor"
-msgstr "源碼編輯器"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:120
+#, csharp-format
+msgid "File {0} could not be written."
+msgstr "無法寫入檔案 {0} ."
 
-msgid "Standard"
-msgstr "標準"
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:1
+msgid "Application Configuration File"
+msgstr "應用程式配置檔案"
 
-msgid "Start tool"
-msgstr "啟動工具"
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:2
+msgid "Creates a .NET application configuration file."
+msgstr "建立 .NET 應用程式設定檔案。"
 
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:1
+msgid "A blank solution"
+msgstr "空白方案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:2
+msgid "Blank Solution"
+msgstr "空白方案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:1
+msgid "Creates an empty class."
+msgstr "建立空白類別"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:2
+msgid "Empty Class"
+msgstr "空白類別"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:1
+msgid "Creates an empty interface."
+msgstr "建立空白介面"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:2
+msgid "Empty Enumeration"
+msgstr "空白的列舉"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:1
+msgid "Creates an empty HTML file."
+msgstr "建立空白 HTML 檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:2
+msgid "Empty HTML File"
+msgstr "空白HTML檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:2
+msgid "Empty Interface"
+msgstr "空白介面"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:1
+msgid "Creates an empty resource file."
+msgstr "建立空白資源檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:2
+msgid "Empty Resource File"
+msgstr "空白資源檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:2
+msgid "Empty Struct"
+msgstr "空白結構"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:1
+msgid "Creates an empty text file."
+msgstr "建立空白文字檔"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:2
+msgid "Empty Text File"
+msgstr "空白文字檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:1
+msgid "Creates an empty XML file."
+msgstr "建立空白 XML 檔案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:2
+msgid "Empty XML File"
+msgstr "空白XML檔案"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
+msgid "<b>Execute scripts </b>"
+msgstr "<b>執行腳本</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
+msgid "<b>Include</b>"
+msgstr "<b>含括</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:4
+msgid "<b>On Project Load</b>"
+msgstr "<b>在專案載入時</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:5
+msgid "<b>Output Directory</b>"
+msgstr "<b>輸出目錄</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:6
+msgid "<b>Output</b>"
+msgstr "<b>輸出</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:7
+msgid "<b>Project Information</b>"
+msgstr "<b>專案資訊</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
+msgid "Action"
+msgstr "動作"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
+msgid "Are you sure you want to delete this configuration?"
+msgstr "確定要刪除此設定?"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
+msgid "Assembly _name:"
+msgstr "組件名稱 (_n):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
+msgid "Automatically _include found files"
+msgstr "自動含括發現的檔案 (_i)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
+msgid "Compilation _target"
+msgstr "編輯目標(_T)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
+msgid "Create configurations for all solution items"
+msgstr "為所有解決方案項目建立設定"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
+msgid "Delete Configuration"
+msgstr "刪除配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
+msgid "Delete also configurations in solution items"
+msgstr "在方案項目中也刪除設定"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
+msgid "Enable _viewstate"
+msgstr "啟用 ViewState (_v)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
+msgid "Execute co_mmand:"
+msgstr "執行命令 (_m):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:19
+msgid "New Configuration"
+msgstr "開新配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:20
+msgid "New name:"
+msgstr "新名稱:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
+msgid "Output _path:"
+msgstr "輸出路徑 (_p):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
+msgid "Paramet_ers:"
+msgstr "參數 (_e):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
+msgid "Pause _console output"
+msgstr "暫停輸出至終端機 (_c)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:25
+msgid "Rename Configuration"
+msgstr "更改設定名稱"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
+msgid "Rename configurations in all solution items"
+msgstr "在所有方案項目中更改設定名稱"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
+msgid "Run on e_xternal console"
+msgstr "在外部終端機下執行 (_x)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
+msgid "Search for new _files on load"
+msgstr "在載入時搜索新的檔案 (_f)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
+msgid "Select a target configuration for each solution item:"
+msgstr "為每個方案項目選擇目標設定:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
+msgid "Select deploy script"
+msgstr "選擇散佈腳本"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
+msgid "Select output directory"
+msgstr "選擇輸出目錄"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
+msgid "Select output path"
+msgstr "選擇輸出路徑"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
+msgid "Select target location"
+msgstr "選擇目標位置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
+msgid "With _scriptfile"
+msgstr "以腳本檔案(_s)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
+msgid "_After build:"
+msgstr "建置之後 (_A):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
+msgid "_Before build:"
+msgstr "建置之前 (_B):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
+msgid "_Deploy target:"
+msgstr "發佈目標 (_D):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
+msgid "_Description:"
+msgstr "描述 (_D):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
+msgid "_Include files in compile run"
+msgstr "在編譯執行時含括檔案 (_I)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
+msgid "_Multiple Startup Project"
+msgstr "多重啟動專案 (_M)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
+msgid "_Project Files"
+msgstr "專案檔案 (_P)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
+msgid "_Single Startup Project"
+msgstr "單一啟動專案 (_S)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:1
+msgid "Build Properties"
+msgstr "建立屬性"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:2
+msgid "Common"
+msgstr "共通項目"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:3
+msgid "Compile"
+msgstr "編譯"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
+msgid "Configurations"
+msgstr "配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:3
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:5
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:1
+msgid "General"
+msgstr "一般"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:6
+msgid "Project options"
+msgstr "專案選項"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
 msgid "Startup Properties"
 msgstr "起始屬性"
 
-msgid "Step Into"
-msgstr "追蹤"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
+msgid "Solution Options"
+msgstr "方案選項"
 
-msgid "Step Out"
-msgstr "跳出"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:72
+msgid "Configuration"
+msgstr "配置"
 
-msgid "Step Over"
-msgstr "單步追蹤"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:108
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:165
+msgid "Please enter a valid configuration name."
+msgstr "請輸入有效的設定名稱。"
 
-msgid "Steps"
-msgstr "追蹤"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:110
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:167
+#, csharp-format
+msgid "A configuration with the name '{0}' already exists."
+msgstr "以 '{0}' 為名的設定已經存在"
 
-msgid "Stop"
-msgstr "停止"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:132
+msgid "There must be at least one configuration."
+msgstr "至少要有一個設定。"
 
-msgid "Stop loading"
-msgstr "停止載入"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:71
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:200
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:27
+msgid "None"
+msgstr "無"
 
-msgid "String constant matching optimization"
-msgstr "字串常數匹配最佳化"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:72
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+msgid "Execute"
+msgstr "執行"
 
-msgid "Syntax highlighting"
-msgstr "語法高亮度"
+#. tell the user we encountered and worked around an issue
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:105
+msgid ""
+"The Solution Execute Definitions for this Solution were invalid. A new empty "
+"set of Execute Definitions has been created."
+msgstr "此方案的執行定義無效。已經建立一個新的空白執行定義。"
 
-msgid "Table"
-msgstr "表格"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
+#, csharp-format
+msgid "File {0} not found in {1}."
+msgstr "無法在 {1} 找到 {0}"
 
-msgid "Table dropped"
-msgstr "表格已丟棄"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:101
+msgid "Invalid deploy target specified"
+msgstr "指定了不合法的派送目標"
 
-msgid "Table emptied"
-msgstr "表格已清空"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:108
+msgid "Invalid deploy script specified"
+msgstr "指定了不合法的派送腳本"
 
-msgid "Tables"
-msgstr "表格"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:114
+msgid "Deploy script doesn't exist"
+msgstr "佈署腳本不存在。"
 
-msgid "Target Extension"
-msgstr "目標擴充套件"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:62
+msgid "Invalid assembly name specified"
+msgstr "指定了不合法的組件名稱"
 
-msgid "Target Name"
-msgstr "目標名稱"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:67
+msgid "Invalid output directory specified"
+msgstr "指定了不合法的輸出目錄"
 
-msgid "Target Path"
-msgstr "目標路徑"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:45
+msgid "Project Options"
+msgstr "專案選項"
 
-msgid "Target options"
-msgstr "目標選項"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:70
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:184
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:219
+msgid "(Active)"
+msgstr "(當前)"
 
-msgid "Task List"
-msgstr "任務清單"
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
+msgid "Set as active"
+msgstr "設為活化"
 
-msgid "Template"
-msgstr "樣板"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/AssemblyDeploy.cs:26
+msgid "Can't deploy: no deployment target set"
+msgstr "無法派送: 沒有派送目標。"
 
-msgid "Text"
-msgstr "文字"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
+#, csharp-format
+msgid "Saving solution: {0}"
+msgstr "儲存方案: {0}"
 
-msgid "Text Editor"
-msgstr "文字編輯器"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
+#, csharp-format
+msgid "Could not save solution: {0}"
+msgstr "無法儲存方案: {0}"
 
-msgid "The Combine Execute Definitions for this Combine were invalid. A new empty set of Execute Definitions has been created."
-msgstr "此方案的執行定義無效。將會建立一個新的空白執行定義。"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
+#, csharp-format
+msgid ""
+"The file '{0}' is using an old solution file format. It will be "
+"automatically converted to the current format."
+msgstr "此檔案 '{0}' 使用了較舊的方案檔案格式。他將會被自動轉換為目前格式。"
 
-msgid "The addin '{0} v{1}' can't be uninstalled with the current user permissions."
-msgstr "增益集'{0} v{1}' 無法以現在使用者的權限反安裝。"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:213
+#, csharp-format
+msgid "Loading solution: {0}"
+msgstr "載入方案: {0} "
 
-msgid "The addin '{0}' is not installed."
-msgstr "增益集 '{0}' 未安裝。"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:571
+msgid "The solution does not have an active configuration."
+msgstr "此方案沒有活化的設定。"
 
-msgid "The command of tool \"{0}\" is invalid."
-msgstr "此工具 \"{0}\" 的命令無效"
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:575
+#, csharp-format
+msgid "Building Solution {0}"
+msgstr "建立方案 {0} "
 
-msgid "The file '{0}' already exists. Do you want to replace it?"
-msgstr "此檔案 {0} 已經存在。你想要取代他嗎？"
-
-msgid "The file '{0}' could not be loaded."
-msgstr "無法載入此檔案 '{0}' 。"
-
-msgid "The file '{0}' has an unknown format version (version '{1}')'."
-msgstr "此檔案 '{0}'帶有未知格式的版本資訊(版本：'{1}')。"
-
-msgid "The file '{0}' is using an old combine file format. It will be automatically converted to the current format."
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:582
+msgid ""
+"Cyclic dependencies can not be built with this version.\n"
+"But we are working on it."
 msgstr ""
-"此檔案 '{0}' 使用了較舊的方案檔案格式。他將會被自動轉換為目前格式。"
+"此版本無法建立循環依存。\n"
+"但我們正在開發中。"
 
-msgid "The file '{0}' is using an old project file format. It will be automatically converted to the current format."
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/FileDeploy.cs:20
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ScriptDeploy.cs:20
+msgid "Can't deploy: you forgot to specify a deployment script"
+msgstr "無法派送: 你忘了指定派送腳本。"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
+#, csharp-format
+msgid "Saving project: {0}"
+msgstr "儲存專案中: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
+#, csharp-format
+msgid "Could not save project: {0}"
+msgstr "無法保存專案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:115
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
+#, csharp-format
+msgid ""
+"The file '{0}' is using an old project file format. It will be automatically "
+"converted to the current format."
 msgstr ""
 "此檔案 '{0}' 使用了較舊的專案檔案格式。\n"
 "他將會被自動轉換為目前格式。"
 
-msgid "The file name you have chosen contains illegal characters. Please choose a different file name."
-msgstr "你選擇的檔名包含了非法的字元。請指定別的檔名。"
-
-msgid "The file {0} can't be compiled."
-msgstr "無法編譯此檔案 {0} "
-
-msgid "The file {0} could not be deleted"
-msgstr "無法刪除此檔案 {0} "
-
-msgid "The file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"
-msgstr "此檔案 {0} 已被其他應用程式變更。你確定要覆寫他嗎？"
-
-msgid "The following add-ins are currently installed:"
-msgstr "下列增益集已經安裝："
-
-msgid "The following addins could not be started:"
-msgstr "下列增益集無法啟動:"
-
-msgid "The following filter will be applied when running the tests:"
-msgstr "當執行測試時，將會套用下列過濾條件："
-
-msgid "The instalation failed!"
-msgstr "安裝失敗!"
-
-msgid "The installation has been successfully completed."
-msgstr "安裝成功地完成。"
-
-msgid "The package '{0}' could not be found in any repository"
-msgstr "無法在任何庫找到此套件 '{0}' "
-
-msgid "The project could not be created"
-msgstr "無法建立此專案"
-
-msgid "The search could not be finished: {0}"
-msgstr "無法完成此搜索: {0}"
-
-msgid "The solution could not be imported."
-msgstr "無法匯入此方案。"
-
-msgid "The solution does not have an active configuration."
-msgstr "此方案沒有活化的設定。"
-
-msgid "The uninstallation failed!"
-msgstr "反安裝失敗!"
-
-msgid "The uninstallation has been successfully completed."
-msgstr "反安裝順利完成"
-
-msgid "The working directory of tool \"{0}\" is invalid."
-msgstr "此工具 \"{0}\" 的工作目錄無效"
-
-msgid "There is a search already in progress. Do you want to cancel it?"
-msgstr "正在進行檢索。你要中斷它嗎？"
-
-msgid "There must be at least one configuration."
-msgstr "至少要有一個設定。"
-
-msgid "There was an error connecting to the database server."
-msgstr "連接到資料庫伺服器時發生錯誤。"
-
-msgid "This file has been changed outside of MonoDevelop"
-msgstr "此檔案已被其他應用程式變更。"
-
-msgid "Time chart"
-msgstr "時間圖"
-
-msgid "Tip of the day"
-msgstr "每日小秘訣"
-
-msgid "Toggle Bookmark"
-msgstr "切換書籤"
-
-msgid "Toggle Breakpoint"
-msgstr "切換中斷點"
-
-msgid "Tool List"
-msgstr "工具列表"
-
-msgid "Toolbars"
-msgstr "工具列"
-
-msgid "Tools"
-msgstr "工具"
-
-msgid "Treat warnings as _errors"
-msgstr "把警告當成錯誤 (_E)"
-
-msgid "Triggers"
-msgstr "觸發條件"
-
-msgid "Type"
-msgstr "型"
-
-msgid "Types"
-msgstr "型"
-
-msgid "Uninstall..."
-msgstr "反安裝..."
-
-msgid "Unit Test Options"
-msgstr "單元測試選項"
-
-msgid "Unit Tests"
-msgstr "單元測試"
-
-msgid "Unsaved changed to open files were not included in counting"
-msgstr "已變更但尚未儲存的已開啟檔案不包括在計數之中。"
-
-msgid "Unselect All"
-msgstr "甚麼都不選"
-
-msgid "Url"
-msgstr "Url"
-
-msgid "Url:"
-msgstr "Url:"
-
-msgid "Use Existing File"
-msgstr "使用已存在的檔案"
-
-msgid "Use _Output Window"
-msgstr "使用輸出視窗 (_O)"
-
-msgid "Use default _monospace font"
-msgstr "使用預設 _monospace 字型"
-
-msgid "Use default _sans-serif font"
-msgstr "使用預設 _sans-serif 字型"
-
-msgid "Use parent test settings"
-msgstr "使用父代測試設定"
-
-msgid "Use special search strategy:"
-msgstr "使用特別的搜索策略:"
-
-msgid "Use the same action for all selected files."
-msgstr "對所有已選的檔案使用相同動作"
-
-msgid "User"
-msgstr "使用者"
-
-msgid "User ID"
-msgstr "使用者ID"
-
-msgid "Users"
-msgstr "使用者"
-
-msgid "Version"
-msgstr "版本"
-
-msgid "Version Info"
-msgstr "版本資訊"
-
-msgid "Version:"
-msgstr "版本:"
-
-msgid "View"
-msgstr "檢視"
-
-msgid "View List"
-msgstr "檢視列表"
-
-msgid "Views"
-msgstr "檢視"
-
-msgid "Visual style"
-msgstr "視覺風格"
-
-msgid "WARNING: "
-msgstr "警告: "
-
-msgid "Web Browser"
-msgstr "Web瀏覽器"
-
-msgid "Web Service"
-msgstr "Web Service"
-
-msgid "Whole project"
-msgstr "整個專案"
-
-msgid "Whole solution"
-msgstr "整個方案"
-
-msgid "Whole word only"
-msgstr "只有整個單字"
-
-msgid "Whole words only"
-msgstr "只有整個單字"
-
-msgid "Wildcards"
-msgstr "通配符"
-
-msgid "WinEXE"
-msgstr "WinEXE"
-
-msgid "Window List"
-msgstr "視窗列表"
-
-msgid "Word Count"
-msgstr "單字數"
-
-msgid "Words"
-msgstr "單字"
-
-msgid "You can start MonoDevelop without these addins, but the functionality they provide will be missing. Do you wish to continue?"
-msgstr "你可以不使用這些增益集而啟動，但將會失去這些功能。你要繼續嗎？"
-
-msgid "You do not have permission to create to {0}"
-msgstr "你沒有權限去建立 {0}"
-
-msgid "You must be in project mode"
-msgstr "你必須在專案模式下"
-
-msgid "You must save the file"
-msgstr "你必須儲存此檔案"
-
-msgid ""
-"You need to restart MonoDevelop\n"
-"sdfsdf\n"
-"sdfsf"
-msgstr ""
-"你需要重新啟動 MonoDevelop\n"
-"sdfsdf\n"
-"sdfsf"
-
-msgid "You need to restart MonoDevelop for the changes to take effect."
-msgstr "你需要重新啟動 MonoDevelop 使這些變更生效"
-
-msgid "[!] Any one character not in the set"
-msgstr "[!] 任何不在此集合中的字元"
-
-msgid "[] Any one character in the set"
-msgstr "[] 任何在此集合中的字元"
-
-msgid "_After build:"
-msgstr "建置之後 (_A):"
-
-msgid "_Arguments:"
-msgstr "引數 (_A):"
-
-msgid "_Automatic template insertion"
-msgstr "自動範本安插 (_A)"
-
-msgid "_Before build:"
-msgstr "建置之前 (_B):"
-
-msgid "_Browse..."
-msgstr "瀏覽... (_B)"
-
-msgid "_Clear Recent Files"
-msgstr "清除開啟檔案紀錄 (_C)"
-
-msgid "_Clear Recent Solutions"
-msgstr "清除開啟方案紀錄 (_C)"
-
-msgid "_Close File"
-msgstr "關閉檔案 (_C)"
-
-msgid "_Command:"
-msgstr "命令 (_C):"
-
-msgid "_Copy"
-msgstr "複製 (_C)"
-
-msgid "_Count where"
-msgstr "計數何處 (_C)"
-
-msgid "_Delete"
-msgstr "刪除 (_D)"
-
-msgid "_Delete Current Layout"
-msgstr "刪除目前配置 (_D)"
-
-msgid "_Deploy target:"
-msgstr "發佈目標 (_D):"
-
-msgid "_Description"
-msgstr "描述 (_D)"
-
-msgid "_Description:"
-msgstr "描述 (_D):"
-
-msgid "_Don't save changes to open documents "
-msgstr "不儲存變更到開啟的文件 (_D) "
-
-msgid "_Edit"
-msgstr "編輯 (_E)"
-
-msgid "_Else on same line as closing bracket"
-msgstr "Else像括弧一樣放在同一行 (_E)"
-
-msgid "_File"
-msgstr "檔案 (_F)"
-
-msgid "_Find..."
-msgstr "搜索... (_F)"
-
-msgid "_Full Screen"
-msgstr "全螢幕 (_F)"
-
-msgid "_Generate overflow checks"
-msgstr "產生溢位檢查 (_G)"
-
-msgid "_Go to Line"
-msgstr "到指定行 (_G)"
-
-msgid "_Goto Line..."
-msgstr "到指定行 ... (_G)"
-
-msgid "_Help"
-msgstr "求助 (_H)"
-
-msgid "_Import Visual Studio .NET Project"
-msgstr "匯入 Visual Studio .NET 專案 (_I)"
-
-msgid "_Include files in compile run"
-msgstr "在編譯執行時含括檔案 (_I)"
-
-msgid "_Indent Selection"
-msgstr "縮排選擇的文字 (_I)"
-
-msgid "_Indentation size:"
-msgstr "縮排大小: (_I)"
-
-msgid "_Insert blank lines between members"
-msgstr "在成員之間安插空白行 (_I)"
-
-msgid "_Item Directory"
-msgstr "項目目錄 (_I)"
-
-msgid "_Layouts"
-msgstr "配置 (_L)"
-
-msgid "_Line Number:"
-msgstr "行號 (_L):"
-
-msgid "_Load previous solution on startup"
-msgstr "在啟動時載入上次的方案 (_L)"
-
-msgid "_Location:"
-msgstr "位置(_L):"
-
-msgid "_Main Class"
-msgstr "主類別 (_M)"
-
-msgid "_Main Class:"
-msgstr "主類別 (_M) :"
-
-msgid "_Mark All"
-msgstr "標記全部 (_M)"
-
-msgid "_Move"
-msgstr "移動 (_M)"
-
-msgid "_Multiple Startup Project"
-msgstr "多重啟動專案 (_M)"
-
-msgid "_Name"
-msgstr "名稱 (_N)"
-
-msgid "_Name:"
-msgstr "名稱 (_N):"
-
-msgid "_New Layout"
-msgstr "新配置 (_N)"
-
-msgid "_Next Tip"
-msgstr "下個秘訣 (_N)"
-
-msgid "_Next Window"
-msgstr "下個視窗 (_N)"
-
-msgid "_Paste"
-msgstr "貼上 (_P)"
-
-msgid "_Preferences"
-msgstr "偏好 (_P)"
-
-msgid "_Previous Window"
-msgstr "上個視窗 (_P)"
-
-msgid "_Project Directory"
-msgstr "專案目錄 (_P)"
-
-msgid "_Project Files"
-msgstr "專案檔案 (_P)"
-
-msgid "_Prompt for arguments"
-msgstr "詢問引數 (_P)"
-
-msgid "_Prompt to save changes to open documents"
-msgstr "詢問是否儲存變更到開啟文件 (_P)"
-
-msgid "_Quit"
-msgstr "離開 (_Q)"
-
-msgid "_Redo"
-msgstr "重作 (_R)"
-
-msgid "_Reload File"
-msgstr "重新載入檔案 (_R)"
-
-msgid "_Remove From Project"
-msgstr "從專案中移除 (_R)"
-
-msgid "_Replace"
-msgstr "取代 (_R)"
-
-msgid "_Replace..."
-msgstr "取代... (_R)"
-
-msgid "_Run"
-msgstr "執行 (_R)"
-
-msgid "_Save Changes to open documents"
-msgstr "儲存變更到開啟文件 (_S)"
-
-msgid "_Save and Quit"
-msgstr "儲存並離開 (_S)"
-
-msgid "_Search"
-msgstr "搜索 (_S)"
-
-msgid "_Show at startup"
-msgstr "在開啟時顯示 (_S)"
-
-msgid "_Single Startup Project"
-msgstr "單一啟動專案 (_S)"
-
-msgid "_Solution Directory"
-msgstr "方案目錄 (_S)"
-
-msgid "_Start code block on the same line"
-msgstr "起始代碼區塊放在同一行 (_S)"
-
-msgid "_Subdirectory:"
-msgstr "子目錄 (_S):"
-
-msgid "_Tab size"
-msgstr "Tab 大小 (_T)"
-
-msgid "_Target Directory"
-msgstr "目標目錄 (_T)"
-
-msgid "_Template"
-msgstr "範本 (_T)"
-
-msgid "_Tip of the Day..."
-msgstr "每日秘訣(_T)"
-
-msgid "_Title:"
-msgstr "標題 (_T):"
-
-msgid "_Tools"
-msgstr "工具(_T)"
-
-msgid "_Uncomment Line(s)"
-msgstr "取消註解 (_U)"
-
-msgid "_Underline errors"
-msgstr "錯誤以底線表示 (_U)"
-
-msgid "_Undo"
-msgstr "復原(_U)"
-
-msgid "_Unindent Selection"
-msgstr "反縮排選擇範圍"
-
-msgid "_Use custom font:"
-msgstr "使用自訂字型 (_U):"
-
-msgid "_Use full type names"
-msgstr "使用完整型態名稱 (_U)"
-
-msgid "_View"
-msgstr "檢視 (_V)"
-
-msgid "_Warning Level"
-msgstr "警告等級"
-
-msgid "_Warning Level:"
-msgstr "警告等級(_W)"
-
-msgid "_Web"
-msgstr "Web (_W)"
-
-msgid "_Window"
-msgstr "視窗(_W)"
-
-msgid "_Word Count..."
-msgstr "字詞數(_W)"
-
-msgid "_Working Directory:"
-msgstr "工作目錄 (_W):"
-
-msgid "a Glade# project with one window and button"
-msgstr "一個帶有視窗與按鈕的 Glade# 專案"
-
-msgid "at column:"
-msgstr "列: "
-
-msgid "bogus_label"
-msgstr "假標籤 (_l)"
-
-msgid "cmbBuildOptions"
-msgstr "cmbBuildOptions"
-
-msgid "cshrp.net"
-msgstr "csharp.net"
-
-msgid "dynamic"
-msgstr "動態"
-
-msgid "load solution {0}"
-msgstr "載入方案 {0} "
-
-msgid "total"
-msgstr "共計"
-
-msgid "translator-credits"
-msgstr "翻譯者榮譽"
-
-msgid "{0} Code Group"
-msgstr "代碼群組 {0}"
-
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:117
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
+#, csharp-format
+msgid "Loading project: {0}"
+msgstr "正在載入專案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:123
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
+#, csharp-format
+msgid "Could not load project: {0}"
+msgstr "無法匯入專案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:491
+msgid "Generating database"
+msgstr "產生資料庫"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:309
+#, csharp-format
+msgid "Building Project: {0} Configuration: {1}"
+msgstr "建立專案: {0}  配置: {1}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:334
+msgid "Build complete -- "
+msgstr "建立完成"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:386
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:407
+#, csharp-format
+msgid "Executing: {0}"
+msgstr "執行中: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:633
+#, csharp-format
+msgid "Performing main compilation..."
+msgstr "進行主要編寫中..."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ScriptDeploy.cs:29
+msgid "Error while executing deploy script"
+msgstr "當執行散佈腳本時發生錯誤"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs:16
+#, csharp-format
+msgid "The file '{0}' has an unknown format version (version '{1}')'."
+msgstr "此檔案 '{0}'帶有未知格式的版本資訊(版本：'{1}')。"
+
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:1
+msgid "Boo Shell"
+msgstr "Boo Shell"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:1
+msgid "ChangeLog"
+msgstr "ChangeLog"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:2
+msgid "ChangeLog Add-in"
+msgstr "ChangeLog 增益集"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:4
+msgid "Insert Entry"
+msgstr "安插條目"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:5
+msgid "Insert Header"
+msgstr "安插表頭"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:36
+msgid "Specify personal information used in ChangeLog entries"
+msgstr "在 ChangeLog 條目內指定個人資訊"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:40
+msgid "Full Name:"
+msgstr "完整名稱:"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:44
+msgid "Email Address:"
+msgstr "郵件信箱:"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:131
+msgid "Output"
+msgstr "輸出"
+
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:54
+#, csharp-format
 msgid "{0} could not be found or is invalid."
 msgstr "{0} 無法找到或是無效。"
 
-msgid "{0} is a directory"
-msgstr "{0} 是個目錄"
+#: ../Extras/CSharpBinding/CSharp.glade.h:1
+#: ../Extras/JavaBinding/Java.glade.h:1
+#: ../Extras/NemerleBinding/Nemerle.glade.h:2
+#: ../Extras/VBNetBinding/VB.glade.h:2
+msgid "<b>Code Generation</b>"
+msgstr "<b>代碼生成</b>"
 
-msgid "{0} is outside the project directory, what should I do?"
-msgstr "{0} 在專案目錄之外,我該作些什麼?"
+#: ../Extras/CSharpBinding/CSharp.glade.h:2
+#: ../Extras/JavaBinding/Java.glade.h:4 ../Extras/VBNetBinding/VB.glade.h:3
+msgid "<b>Warnings</b>"
+msgstr "<b>警告</b>"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:3
+#: ../Extras/VBNetBinding/VB.glade.h:4
+msgid "Allow '_unsafe' code"
+msgstr "允許使用 '_unsafe' "
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:4
+#: ../Extras/JavaBinding/Java.glade.h:6
+msgid "Compile _Target:"
+msgstr "編譯目標: (_T)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:5
+#: ../Extras/JavaBinding/Java.glade.h:8
+msgid "Define S_ymbols:"
+msgstr "定義符號: (_y)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:6
+#: ../Extras/JavaBinding/Java.glade.h:9
+msgid "Emit _debugging information"
+msgstr "省略除錯資訊 (_D)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:7
+#: ../Extras/JavaBinding/Java.glade.h:10 ../Extras/VBNetBinding/VB.glade.h:7
+msgid "Enable _optimizations"
+msgstr "打開最佳化 (_O)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:8
+#: ../Extras/VBNetBinding/VB.glade.h:8
+msgid "Generate _xml documentation"
+msgstr "產生 _xml 文件"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:9
+#: ../Extras/JavaBinding/Java.glade.h:15 ../Extras/VBNetBinding/VB.glade.h:9
+msgid "Treat warnings as _errors"
+msgstr "把警告當成錯誤 (_E)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:10
+#: ../Extras/VBNetBinding/VB.glade.h:10
+msgid "_Generate overflow checks"
+msgstr "產生溢位檢查 (_G)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:11
+#: ../Extras/JavaBinding/Java.glade.h:16
+msgid "_Main Class:"
+msgstr "主類別 (_M) :"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:12
+msgid "_Warning Level:"
+msgstr "警告等級(_W)"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:58
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:50
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:148
+msgid "Executable"
+msgstr "可執行的"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:59
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:2
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:51
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:150
+msgid "Library"
+msgstr "函式庫"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:1
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
+msgid "Console Project"
+msgstr "控制模式(Console)專案"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
+msgid "Creates a new C# console project."
+msgstr "建立新 C# console 專案"
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
+msgid "Creates a secure C# Web Service, using SessionState"
+msgstr "以 SessionState 建立安全的 C# Web service"
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:2
+msgid "Secure Web Service"
+msgstr "安全 Web Service"
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:1
+msgid "Creates a C# Web Service."
+msgstr "建立 c# Web Service."
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:2
+msgid "Web Service"
+msgstr "Web Service"
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
+msgid "Creates an empty C# file."
+msgstr "建立空白 C# 檔案"
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:2
+msgid "Empty File"
+msgstr "空白檔案"
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:1
+msgid "Creates an empty C# project."
+msgstr "建立空白 C# 專案."
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:2
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:2
+msgid "Empty Project"
+msgstr "空白專案"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:1
+msgid "Glade# 2.0 Project"
+msgstr "Glade# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:2
+msgid "a Glade# 2.0 project with one window and button"
+msgstr "一個帶有視窗與按鈕的 Glade# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
+msgid "Glade# 1.0 Project"
+msgstr "Glade# 1.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
+msgid "a Glade# project with one window and button"
+msgstr "一個帶有視窗與按鈕的 Glade# 專案"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:1
+msgid "Creates a Gnome# 2.0 project"
+msgstr "建立 Gnome# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:2
+msgid "Gnome# 2.0 Project"
+msgstr "Gnome# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:1
+msgid "Creates a Gnome# program."
+msgstr "建立 Gnome# 程序."
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:2
+msgid "Gnome# Program"
+msgstr "Gnome#程式"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Gnome# project"
+msgstr "建立 Gnome# 專案"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# 1.0 Project"
+msgstr "Gnome# 1.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:1
+msgid "Creates a Gtk# 2.0 project."
+msgstr "建立 Gtk# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:2
+msgid "Gtk# 2.0 Project"
+msgstr "Gtk# 2.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
+msgid "Creates a Gtk# project."
+msgstr "建立 Gtk# 專案"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
+msgid "Gtk# 1.0 Project"
+msgstr "Gtk# 1.0 專案"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window."
+msgstr "建立 top-level Gtk# 視窗."
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:2
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:2
+msgid "Gtk# Window"
+msgstr "Gtk#視窗"
+
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:1
+msgid "Creates an empty C# class library"
+msgstr "建立空白 C# 類別函式庫"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
+msgid "Include debug information"
+msgstr "包含除錯資訊(_I)"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:59
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:51
+msgid "Output path"
+msgstr "輸出路徑"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
+msgid "Assembly name"
+msgstr "組件名稱"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
+msgid "Target options"
+msgstr "目標選項"
+
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:2
+msgid "ILAsm Console Project"
+msgstr "ILAsm Console 專案"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:30
+msgid "Javac"
+msgstr "Javac"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:31
+msgid "Gcj"
+msgstr "Gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:2
+msgid "<b>Compiler</b>"
+msgstr "<b>編譯器</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:3
+msgid "<b>Options</b>"
+msgstr "<b>選項</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:5
+msgid "Classpath:"
+msgstr "Classpath："
+
+#: ../Extras/JavaBinding/Java.glade.h:7
+msgid "Compiler command:"
+msgstr "編譯器指令:"
+
+#: ../Extras/JavaBinding/Java.glade.h:11
+msgid "Enable deprecation warnings"
+msgstr "啟用反對警告"
+
+#: ../Extras/JavaBinding/Java.glade.h:12
+msgid "Generate warnings"
+msgstr "產生警告"
+
+#: ../Extras/JavaBinding/Java.glade.h:13
+msgid "IKVM path:"
+msgstr "IKVM 路徑："
+
+#: ../Extras/JavaBinding/Java.glade.h:14
+msgid "Java compiler:"
+msgstr "Java編譯器:"
+
+#: ../Extras/JavaBinding/Java.glade.h:17
+msgid "gcj"
+msgstr "gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:18
+msgid "javac"
+msgstr "javac"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:1
+msgid "Creates an empty Java file."
+msgstr "建立空白 Java 檔案"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:1
+msgid "Creates an empty Java solution."
+msgstr "建立空白 Java 方案."
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project with IKVM"
+msgstr "建立以 IKVM 為主的控制模式(Console)Java 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
+msgid "IKVM Console Project"
+msgstr "IKVM Console 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:1
+msgid "Create a Glade# Java project with IKVM"
+msgstr "建立以 IKVM 為基礎的 Glade# Java 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:2
+msgid "IKVM Glade# Project"
+msgstr "IKVM Glade# 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "建立以 IKVM 為基礎的 Gnome# Java 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
+msgid "IKVM Gnome# Project"
+msgstr "IKVM Gnome# 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:1
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "建立以 IKVM 為基礎的 Gtk# Java 專案"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:2
+msgid "IKVM Gtk# Project"
+msgstr "IKVM Gtk# 專案"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:1
+msgid "AWT Applet"
+msgstr "AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:2
+msgid "Creates a Java AWT Applet"
+msgstr "建立 Java AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:1
+msgid "AWT Project"
+msgstr "AWT專案"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:2
+msgid "Creates a Java AWT project."
+msgstr "建立 Java AWT 專案"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:1
+msgid "AWT Application"
+msgstr "AWT 應用程式"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:2
+msgid "Creates a Java AWT application."
+msgstr "建立 Java AWT 應用程式"
+
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console Java project"
+msgstr "建立控制模式(Console)的 Java 專案"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:1
+msgid "Creates an AWT dialog."
+msgstr "建立 AWT 對話盒."
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:2
+msgid "Java AWT Dialog"
+msgstr "Java AWT 對話盒"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:1
+msgid "AWT Frame"
+msgstr "AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:2
+msgid "Creates a Java AWT Frame"
+msgstr "建立 Java AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:1
+msgid "AWT OK Dialog"
+msgstr "AWT OK對話盒"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:2
+msgid "Creates a Java AWT OK Dialog."
+msgstr "建立 Java AWT OK 對話盒"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:1
+msgid "AWT Panel"
+msgstr "AWT Panel"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:2
+msgid "Creates a Java AWT panel."
+msgstr "建立 Java AWT panel"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:1
+msgid "\n"
+msgstr "\n"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:4
+msgid "&"
+msgstr "&"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:5
+msgid "<b>Behavior</b>"
+msgstr "<b>動作</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:6
+msgid "<b>Elements</b>"
+msgstr "<b>要素</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:7
+msgid "<b>File encoding</b>"
+msgstr "<b>檔案編碼</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:8
+msgid "<b>Font</b>"
+msgstr "<b>字型</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:9
+msgid "<b>General Options</b>"
+msgstr "<b>一般選項</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:10
+msgid "<b>Markers</b>"
+msgstr "<b>標記</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:11
+msgid "<b>Rulers</b>"
+msgstr "<b>標尺</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:12
+msgid "<b>Tabs</b>"
+msgstr "<b>頁籤</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:13
+msgid "A_uto insert curly braces"
+msgstr "自動安插中括號 (_u)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:14
+msgid "Add Group"
+msgstr "添加群組"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:15
+msgid "Automatic"
+msgstr "自動"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:16
+msgid "Background:"
+msgstr "背景:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:17
+msgid "C_onvert Tabs to Spaces"
+msgstr "將 Tabs 轉換為空白 (_o)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:18
+msgid "Choose _encoding"
+msgstr "選擇編碼 (_e)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:19
+msgid "Color:"
+msgstr "色:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:20
+msgid "Edit Group"
+msgstr "編輯群組"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:21
+msgid "Enable code _completion"
+msgstr "啟用代碼自動完成 (_c)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:22
+msgid "Enable code _folding"
+msgstr "啟用代碼折疊 (_f)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:23
+msgid "Enable syntax highlighting"
+msgstr "啟用語法高亮度"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:24
+msgid "Extension"
+msgstr "擴充套件"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:25
+msgid "Highlight _matching bracket"
+msgstr "高亮度對應的括弧 (_m)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:26
+msgid "I_ndentation"
+msgstr "縮排 (_n)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
+msgid "Remove Group"
+msgstr "移除群組"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:29
+msgid "Restore default"
+msgstr "回存預設值"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:30
+msgid "Show _column ruler,"
+msgstr "顯示欄尺規 (_c)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:31
+msgid "Show _line numbers"
+msgstr "顯示行號 (_l)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:32
+msgid "Smart"
+msgstr "聰明的"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:33
+msgid "Use default _monospace font"
+msgstr "使用預設 _monospace 字型"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:34
+msgid "Use default _sans-serif font"
+msgstr "使用預設 _sans-serif 字型"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:35
+msgid "_Automatic template insertion"
+msgstr "自動範本安插 (_A)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
+msgid "_Indentation size:"
+msgstr "縮排大小: (_I)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
+msgid "_Tab size"
+msgstr "Tab 大小 (_T)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:38
+msgid "_Underline errors"
+msgstr "錯誤以底線表示 (_U)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:39
+msgid "_Use custom font:"
+msgstr "使用自訂字型 (_U):"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:40
+msgid "at column:"
+msgstr "列: "
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:1
+msgid "Behavior"
+msgstr "行為"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
+msgid "Buffer Options"
+msgstr "緩衝選項"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
+msgid "Clear Bookmarks"
+msgstr "清除書籤"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:4
+msgid "Code Templates"
+msgstr "代碼範本"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
+msgid "Goto Matching _Brace"
+msgstr "到對應的括弧 (_B)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
+msgid "Markers And Rulers"
+msgstr "標記與尺"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
+msgid "Markers and Rulers"
+msgstr "標記與尺"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:9
+msgid "Next Bookmark"
+msgstr "下個書籤"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:10
+msgid "Previous Bookmark"
+msgstr "前個書籤"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:11
+msgid "Print Previe_w"
+msgstr "預覽列印(_w)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:12
+msgid "Search"
+msgstr "搜索"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:13
+msgid "Syntax highlighting"
+msgstr "語法高亮度"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:14
+msgid "Text Editor"
+msgstr "文字編輯器"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:15
+msgid "Toggle Bookmark"
+msgstr "切換書籤"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:16
+msgid "_Goto Line..."
+msgstr "到指定行 ... (_G)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
+msgid "_Print..."
+msgstr "列印...(_P)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:18
+msgid "_Search"
+msgstr "搜索 (_S)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:19
+msgid "bogus_label"
+msgstr "假標籤 (_l)"
+
+#. FIXME: make this a resource in the resource file
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs:56
+#, csharp-format
+msgid "{0} Code Group"
+msgstr "代碼群組 {0}"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:104
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:118
+msgid "Template"
+msgstr "樣板"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:170
+msgid "New "
+msgstr "開新 "
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:183
+msgid "Edit "
+msgstr "編輯"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:146
+msgid "Source Editor"
+msgstr "源碼編輯器"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:259
+#, csharp-format
+msgid ""
+"This file {0} has been changed outside of MonoDevelop. Are you sure you want "
+"to overwrite the file?"
+msgstr "此檔案 {0} 已被其他應用程式變更。你確定要覆寫他嗎？"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:341
+msgid "This file has been changed outside of MonoDevelop"
+msgstr "此檔案已被其他應用程式變更。"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:345
+msgid "Reload"
+msgstr "重新載入"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:349
+msgid "Ignore"
+msgstr "忽略"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:1
+msgid "Go to Line"
+msgstr "到指定行"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:2
+msgid "_Go to Line"
+msgstr "到指定行 (_G)"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:3
+msgid "_Line Number:"
+msgstr "行號 (_L):"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:56
+msgid "Aggregates"
+msgstr "集合"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnNodeBuilder.cs:52
+msgid "Column"
+msgstr "列"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:56
+msgid "Columns"
+msgstr "列"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintNodeBuilder.cs:57
+msgid "Constraint"
+msgstr "制約"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:57
+msgid "Constraints"
+msgstr "制約"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:74
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:74
+msgid "There was an error connecting to the database server."
+msgstr "連接到資料庫伺服器時發生錯誤。"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:56
+msgid "Groups"
+msgstr "群組"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:56
+msgid "Languages"
+msgstr "語言"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:56
+msgid "Operators"
+msgstr "運算子"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:56
+msgid "Parameters"
+msgstr "參數"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProcedureNodeBuilder.cs:61
+msgid "Procedure"
+msgstr "程序"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:61
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:66
+msgid "Procedures"
+msgstr "程序"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:57
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:62
+msgid "Database Connections"
+msgstr "資料庫連接"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:56
+msgid "Roles"
+msgstr "角色"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:56
+msgid "Rules"
+msgstr "尺規"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:56
+msgid "Sequences"
+msgstr "順序"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:70
+msgid "Table"
+msgstr "表格"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:155
+msgid "Table emptied"
+msgstr "表格已清空"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:165
+msgid "Table dropped"
+msgstr "表格已丟棄"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:80
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:85
+msgid "Tables"
+msgstr "表格"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:56
+msgid "Triggers"
+msgstr "觸發條件"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:56
+msgid "Types"
+msgstr "型"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UserNodeBuilder.cs:57
+msgid "User"
+msgstr "使用者"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:56
+msgid "Users"
+msgstr "使用者"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:57
+msgid "Views"
+msgstr "檢視"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:222
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:259
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:469
+msgid "Executing sql query on"
+msgstr "執行 sql 查詢"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:227
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:264
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:311
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:479
+msgid "Query sent, waiting for response."
+msgstr "已送出查詢, 正在等待回應。"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:283
+msgid "Query results received"
+msgstr "收到的查詢結果"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:289
+msgid "Invalid select query"
+msgstr "不合法的 select 查詢"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:1
+msgid "Add connection"
+msgstr "新增連結"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:2
+msgid "Database Browser"
+msgstr "資料庫瀏覽器"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:3
+msgid "Disconnect"
+msgstr "中斷連結"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:4
+msgid "Drop table"
+msgstr "丟棄表格"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:5
+msgid "Empty table"
+msgstr "空白表格"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
+msgid "Refresh"
+msgstr "重新整理"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:8
+msgid "SQL Query Editor"
+msgstr "SQL查詢編輯器"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:9
+msgid "Show System Objects"
+msgstr "顯示系統物件"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:1
+msgid "<b>Advanced</b>"
+msgstr "<b>進階</b>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:2
+msgid ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new "
+"connection</span></span>"
+msgstr ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">建立新連線</"
+"span></span>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:3
+msgid "Connection String"
+msgstr "連接字串"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:4
+msgid "Database"
+msgstr "資料庫"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:8
+msgid "Password"
+msgstr "密碼"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:9
+msgid "Provider"
+msgstr "提供者"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:10
+msgid "Server"
+msgstr "伺服器"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:11
+msgid "User ID"
+msgstr "使用者ID"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:1
+msgid "Creates an empty Nemerle file"
+msgstr "建立空白 Numerle 檔案"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:2
+msgid "Empty file"
+msgstr "空白檔案"
+
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:1
+msgid "Creates an empty Nemerle project"
+msgstr "建立空白 Numerle 專案"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:3
+msgid "<b>Optimizations</b>"
+msgstr "<b>最適化</b>"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:4
+msgid "Boolean constant matching optimization"
+msgstr "Boolean constant matching 最適化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:5
+#: ../Extras/VBNetBinding/VB.glade.h:5
+msgid "Compile _Target"
+msgstr "編譯目標(_T)"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:6
+msgid "Do not load standard library"
+msgstr "不載入標準函式庫"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:7
+msgid "Do not load standard macros"
+msgstr "不載入標準巨集"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:8
+msgid ""
+"Executable\n"
+"Library"
+msgstr ""
+"可執行的\n"
+"函式庫"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:10
+msgid "General tail call optimization"
+msgstr "一般 tail call 最佳化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:11
+msgid "Ignore warnings"
+msgstr "忽略警告"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:12
+msgid "Ordinal constant matching optimization"
+msgstr "依序常數配對最佳化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:13
+msgid "String constant matching optimization"
+msgstr "字串常數匹配最佳化"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gnome# project"
+msgstr "建立 Nemerle/Gnome# 專案"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Gnome#專案"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gtk# project"
+msgstr "建立 Nemerle/Gtk# 專案"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Gtk#專案"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window"
+msgstr "建立 top-level Gtk# 視窗"
+
+#. <Icon>Java.Project.DOSProject</Icon>
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:2
+msgid "Create an NUnit assembly test collection"
+msgstr "建立 NUnit 組件測試 collection"
+
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:3
+msgid "NUnit assembly test collection"
+msgstr "NUnit 組件測試 collection"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:53
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:271
+msgid "<b>Failed</b>: "
+msgstr "<b>失敗</b>:"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:54
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:272
+msgid "<b>Ignored</b>: "
+msgstr "<b>忽略</b>:"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:104
+msgid "Successful Tests"
+msgstr "成功的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:109
+msgid "Show Successful Tests"
+msgstr "顯示成功的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:113
+msgid "Failed Tests"
+msgstr "失敗的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:118
+msgid "Show Failed Tests"
+msgstr "顯示已經失敗的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:122
+msgid "Ignored Tests"
+msgstr "已忽略的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:127
+msgid "Show Ignored Tests"
+msgstr "顯示已忽略的測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:136
+msgid "Show Output"
+msgstr "顯示輸出"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:218
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:251
+msgid "Test results"
+msgstr "測試結果"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:309
+#, csharp-format
+msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
+msgstr "以設定 <b>{1}</b> 為 <b>{0}</b> 執行測試"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:322
+msgid "Internal error"
+msgstr "內部錯誤"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:329
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:460
+msgid "Stack Trace"
+msgstr "堆疊跟蹤"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "<b>Tests</b>: "
+msgstr "<b>測試</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Failed</b>: "
+msgstr "<b>失敗</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Ignored</b>: "
+msgstr "<b>忽略</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:354
+msgid "Test execution cancelled."
+msgstr "測試執行已取消。"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+msgid "Running "
+msgstr "執行中"
+
+#: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
+msgid "Unit Test Options"
+msgstr "單元測試選項"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
+msgid "Add assembly ..."
+msgstr "添加組件 ..."
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
+msgid "NUnit Categories"
+msgstr "NUnit分類"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
+msgid "NUnit options"
+msgstr "NUnit 選項"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
+msgid "Proportional time scale"
+msgstr "相稱的時間刻度"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
+msgid "Results chart"
+msgstr "結果圖表"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
+msgid "Run Test"
+msgstr "執行測試"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
+msgid "Select test in tree"
+msgstr "在樹狀檢視中選擇測試"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
+msgid "Show Test Counters"
+msgstr "顯示測試計數"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
+msgid "Show Test Time"
+msgstr "顯示測試時間"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
+msgid "Show failed tests"
+msgstr "顯示已經失敗的測試"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
+msgid "Show ignored tests"
+msgstr "顯示忽略的測試"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
+msgid "Show one result per day"
+msgstr "以一天一筆結果的方式顯示"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
+msgid "Show results pad"
+msgstr "顯示結果面板"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
+msgid "Show successful tests"
+msgstr "顯示成功的測試"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
+msgid "Show test source code"
+msgstr "顯示測試源碼"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
+msgid "Time chart"
+msgstr "時間圖"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
+msgid "Unit Tests"
+msgstr "單元測試"
+
+#: ../Extras/NUnit/nunit.glade.h:1
+msgid "Categories:"
+msgstr "分類:"
+
+#: ../Extras/NUnit/nunit.glade.h:2
+msgid "Don't apply any filter"
+msgstr "無法套用任何filter"
+
+#: ../Extras/NUnit/nunit.glade.h:3
+msgid "Exclude the following categories"
+msgstr "不包含下列分類"
+
+#: ../Extras/NUnit/nunit.glade.h:4
+msgid "Include the following categories"
+msgstr "含括下列分類"
+
+#: ../Extras/NUnit/nunit.glade.h:5
+msgid "NUnit Options"
+msgstr "NUnit 選項"
+
+#: ../Extras/NUnit/nunit.glade.h:6
+msgid "The following filter will be applied when running the tests:"
+msgstr "當執行測試時，將會套用下列過濾條件："
+
+#: ../Extras/NUnit/nunit.glade.h:7
+msgid "Use parent test settings"
+msgstr "使用父代測試設定"
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:80
+msgid "Exclude the following categories: "
+msgstr "不包含下列分類: "
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:82
+msgid "Include the following categories: "
+msgstr "含括下列分類: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:456
+msgid "Importing project: "
+msgstr "正在匯入專案: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:504
+msgid "Could not import project:"
+msgstr "無法匯入專案:"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:519
+msgid "Importing solution"
+msgstr "正在匯入解決方案"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:533
+msgid "Project file not found: "
+msgstr "沒找到專案檔: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:554
+msgid "The solution could not be imported."
+msgstr "無法匯入此方案。"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:619
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:655
+msgid "Assembly reference could not be imported: "
+msgstr "無法匯入組件參考: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:700
+msgid "Can't import file: "
+msgstr "無法匯入檔案: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:746
+#, csharp-format
+msgid ""
+"Output directory '{0}' can't be mapped to a local directory. The directory "
+"'{1}' will be used instead"
+msgstr "輸出目錄 '{0}' 無法被對應到本地目錄。將會以此目錄 '{1}' 代替"
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
+msgid "_Import Visual Studio .NET Project..."
+msgstr "匯入 Visual Studio .NET 專案..."
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:52
+#, csharp-format
+msgid "Can't open file {0} as project"
+msgstr "無法開啟檔案 {0} 為專案"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:37
+msgid "Compiler:"
+msgstr "編譯器:"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:38
+msgid "Runtime:"
+msgstr "執行時期:"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:149
+msgid "WinEXE"
+msgstr "WinEXE"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:151
+msgid "Module"
+msgstr "模組"
+
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:1
+msgid "Creates an empty VB.Net file."
+msgstr "建立空白 VB.Net 檔案"
+
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:1
+msgid "Creates an empty VB.Net solution."
+msgstr "建立空白 VB.Net 方案"
+
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console VB.Net project"
+msgstr "建立控制模式(Console)VB.Net 專案"
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# project."
+msgstr "建立 VB.Net Gtk# 專案"
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# 2.0 project."
+msgstr "建立 VB.Net Gtk# 2.0 專案"
+
+#: ../Extras/VBNetBinding/VB.glade.h:6
+msgid "Define S_ymbols"
+msgstr "定義符號 (_Y)"
+
+#: ../Extras/VBNetBinding/VB.glade.h:11
+msgid "_Main Class"
+msgstr "主類別 (_M)"
+
+#: ../Extras/VBNetBinding/VB.glade.h:12
+msgid "_Warning Level"
+msgstr "警告等級"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:1
+msgid "Diff"
+msgstr "差異"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:2
+msgid "Log"
+msgstr "日誌"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:3
+msgid "Show version control overlay icons"
+msgstr "顯示版本控制覆蓋圖示"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:4
+msgid "Status/Commit..."
+msgstr "狀態/提交..."
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:5
+msgid "Update"
+msgstr "更新"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:6
+msgid "Version Control"
+msgstr "版本控制"
+
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:2
+msgid "Welcome Page"
+msgstr "歡迎頁面"
+
+#: ../Extras/WelcomePage/WelcomePageOptionPanel.cs:17
+msgid "Show welcome page on startup"
+msgstr "啟動時顯示歡迎頁面"
+
+#, fuzzy
+#~ msgid "Sh_ow updates only"
+#~ msgstr "只顯示更新"
+
+#~ msgid "Global Assembly Cache"
+#~ msgstr "全域組件快取"
+
+#~ msgid " > "
+#~ msgstr " > "
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "-"
+#~ msgstr "-"
+
+#~ msgid "..."
+#~ msgstr "..."
+
+#~ msgid ""
+#~ "<b>The following addins will be installed:</b>\n"
+#~ "\n"
+#~ "C# language binding\n"
+#~ "C# language IDE extension\n"
+#~ "\n"
+#~ "<b>The following addins are required by the selected addins</b>\n"
+#~ "\n"
+#~ "NUnit addin\n"
+#~ "NAnt addin\n"
+#~ "\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sda\n"
+#~ "sd\n"
+#~ "as\n"
+#~ "da\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ msgstr ""
+#~ "<b>以下增益集將會安裝:</b>\n"
+#~ "\n"
+#~ "C# 語言繫結\n"
+#~ "C# 語言IDE擴充套件\n"
+#~ "\n"
+#~ "<b>選定的增益集需要以下增益集</b>\n"
+#~ "\n"
+#~ "NUnit 增益集\n"
+#~ "NAnt 增益集\n"
+#~ "\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sda\n"
+#~ "sd\n"
+#~ "as\n"
+#~ "da\n"
+#~ "sd\n"
+#~ "asd\n"
+
+#~ msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
+#~ msgstr "<span weight=\"bold\" size=\"x-large\">標題</span>"
+
+#~ msgid ">"
+#~ msgstr ">"
+
+#~ msgid "AddInsOptionsPanel"
+#~ msgstr "AddInsOptionsPanel"
+
+#~ msgid "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
+#~ msgstr "已丟出例外 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
+
+#~ msgid "BehaviorTextEditorPanel"
+#~ msgstr "BehaviorTextEditorPanel"
+
+#~ msgid "Build complete -- {0} errors, {1} warnings"
+#~ msgstr "建立完成 -- 錯誤 {0} 個, 警告 {1} 個"
+
+#~ msgid "Build: {0} errors, {1} warnings."
+#~ msgstr "建立: 錯誤 {0} 個, 警告 {1} 個"
+
+#~ msgid "BuildPanel"
+#~ msgstr "BuildPanel"
+
+#~ msgid "CodeGenerationPanel"
+#~ msgstr "產生代碼面板"
+
+#~ msgid "CodeTemplatePane"
+#~ msgstr "代碼樣版面版"
+
+#~ msgid "Combine Location"
+#~ msgstr "方案位置"
+
+#~ msgid "Combine saved."
+#~ msgstr "方案已保存."
+
+#~ msgid "CombineStartupPanel"
+#~ msgstr "方案起始面板"
+
+#~ msgid "CompileFileOptionsPanel"
+#~ msgstr "CompileFileOptionsPanel"
+
+#~ msgid "DeployFileOptionsPanel"
+#~ msgstr "佈署檔案選項面板"
+
+#~ msgid "Didnt match on mimetype: {0}, trying filename"
+#~ msgstr "不符合 mimetype: {0} ,嘗試以檔案處理。"
+
+#~ msgid "ExternalToolPanel"
+#~ msgstr "外部工具面板"
+
+#~ msgid ""
+#~ "File {0} already exists, do you want to overwrite\n"
+#~ "the existing file ?"
+#~ msgstr ""
+#~ "檔案 {0} 已經存在,是否要覆寫\n"
+#~ "這個存在的檔案?"
+
+#~ msgid "GeneralProjectOptionsPanel"
+#~ msgstr "一般專案選項面板"
+
+#~ msgid "GeneralTextEditorPanel"
+#~ msgstr "一般文字編輯面板"
+
+#~ msgid "Highlighting Mode"
+#~ msgstr "高亮度模式"
+
+#~ msgid "LoadSavePanel"
+#~ msgstr "載入保存面板"
+
+#~ msgid "Loading combine: {0}"
+#~ msgstr "正在載入方案: {0}"
+
+#~ msgid "MarkersTextEditorPanel"
+#~ msgstr "標記文字編輯器面板"
+
+#~ msgid "N_ew Solution/Project..."
+#~ msgstr "開新方案/專案... (_E)"
+
+#~ msgid "OutputOptionsPanel"
+#~ msgstr "輸出選項面板"
+
+#~ msgid "Project will be saved in: /dev/null"
+#~ msgstr "專案將會儲存在 /dev/null "
+
+#~ msgid "SQL Definition"
+#~ msgstr "SQL 定義"
+
+#~ msgid "Saving combine: {0}"
+#~ msgstr "儲存方案中: {0}"
+
+#~ msgid "Select All"
+#~ msgstr "選擇全部"
+
+#~ msgid ""
+#~ "You need to restart MonoDevelop\n"
+#~ "sdfsdf\n"
+#~ "sdfsf"
+#~ msgstr ""
+#~ "你需要重新啟動 MonoDevelop\n"
+#~ "sdfsdf\n"
+#~ "sdfsf"
+
+#~ msgid "_Subdirectory:"
+#~ msgstr "子目錄 (_S):"
+
+#~ msgid "cmbBuildOptions"
+#~ msgstr "cmbBuildOptions"
+
 
