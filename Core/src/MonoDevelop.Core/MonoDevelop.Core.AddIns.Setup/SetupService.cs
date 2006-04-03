@@ -569,6 +569,12 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 		}
 		
+		public bool CheckInstalledAddin (string id, string version)
+		{
+			AddinSetupInfo addin = GetInstalledAddin (id);
+			return addin.Addin.SupportsVersion (version);
+		}
+		
 		public AddinSetupInfo[] GetInstalledAddins ()
 		{
 			ArrayList list = InternalGetInstalledAddins ();

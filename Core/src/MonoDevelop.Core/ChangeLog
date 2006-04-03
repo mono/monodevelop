@@ -1,3 +1,8 @@
+2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Added
+	  CheckInstalledAddin helper method.
+
 2006-03-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs: Improve
