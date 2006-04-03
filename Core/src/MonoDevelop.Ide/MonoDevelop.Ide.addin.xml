@@ -853,13 +853,12 @@
 			<SeparatorItem id = "Separator2" />
 			<ItemSet id = "Web" _label = "_Web">
 				<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
+				<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
 				<ItemSet id = "C#" _label = "C#">
-					<LinkItem id = "cshrp.net" _label = "cshrp.net" link = "http://www.cshrp.net/" />
 					<LinkItem id = "C# Help" _label = "C# Help" link = "http://www.csharphelp.com" />
 					<LinkItem id = "C# Corner" _label = "C# Corner" link = "http://www.c-sharpcorner.com" />
 					<LinkItem id = "GotDotNet" _label = "GotDotNet" description = "Visit one of the best NET sites on the web" link = "http://www.gotdotnet.com/" />
 				</ItemSet>
-				<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
 			</ItemSet>
 			<SeparatorItem id = "Separator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.About" />
