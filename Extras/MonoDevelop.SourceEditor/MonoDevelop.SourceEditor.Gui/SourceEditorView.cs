@@ -504,7 +504,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
 
 			// preserve offset in line
-			int offset = iter.LineOffset;
+			int offset = 0;
 			int chars = fmtr.IndentLine (this, iter.Line);
 			offset += chars;
 

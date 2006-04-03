@@ -1,3 +1,8 @@
+2006-04-03 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Fix for
+	  bug #77945.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Updated references.
