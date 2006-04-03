@@ -19,6 +19,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		public AboutMonoDevelopTabPage ()
 		{
+			BorderWidth = 6;
 			Label versionLabel = new Label ();
 			Label licenseLabel = new Label ();
 			Label copyrightLabel = new Label ();
@@ -47,14 +48,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		public VersionInformationTabPage ()
 		{
+			BorderWidth = 6;
 			TreeView listView = new TreeView ();
 			listView.RulesHint = true;
 			listView.AppendColumn (GettextCatalog.GetString ("Name"), new CellRendererText (), "text", 0);
 			listView.AppendColumn (GettextCatalog.GetString ("Version"), new CellRendererText (), "text", 1);
 			listView.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), "text", 2);
+			listView.Columns [0].Sizing = TreeViewColumnSizing.Fixed;
+			listView.Columns [0].FixedWidth = 200;
+			listView.Columns [0].Resizable = true;
 			
 			listView.Model = FillListView ();
 			ScrolledWindow sw = new ScrolledWindow ();
+			sw.ShadowType = Gtk.ShadowType.In;
 			sw.Add (listView);
 			this.PackStart (sw, true, true, 0);
 		}

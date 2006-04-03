@@ -1,3 +1,16 @@
+2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:
+	  Add some spacing and make the first column of the
+	  assembly list rezisable.
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Embed the
+	  progress bar into the bitmap.
+	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Improved.
+	* Makefile.am: Added new bitmap.
+	* icons/Icons.AboutImage:
+	* icons/SplashScreen.png: Use the current logo for the about
+	  box and splash window.
+
 2006-03-31 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Ide.addin.xml: Break compatibility

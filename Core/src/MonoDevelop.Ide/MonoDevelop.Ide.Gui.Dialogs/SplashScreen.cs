@@ -15,6 +15,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		static ProgressBar progress;
 		static VBox vbox;
 		ProgressTracker tracker = new ProgressTracker ();
+		Gdk.Pixbuf bitmap;
+		static Gtk.Label label;
 		
 		public static SplashScreenForm SplashScreen {
 			get {
@@ -24,24 +26,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		public SplashScreenForm () : base (Gtk.WindowType.Popup)
 		{
+			AppPaintable = true;
 			this.Decorated = false;
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
-			Gdk.Pixbuf bitmap = new Gdk.Pixbuf(Assembly.GetCallingAssembly(), "SplashScreen.png");
-			Gtk.Image image = new Gtk.Image (bitmap);
-			image.Show ();
+			bitmap = new Gdk.Pixbuf(Assembly.GetCallingAssembly(), "SplashScreen.png");
 
-			HBox hbox = new HBox();
 			progress = new ProgressBar();
 			progress.Fraction = 0.00;
-			hbox.PackStart (progress, true, true, 5);
-			hbox.ShowAll();
+			progress.HeightRequest = 6;
 
 			vbox = new VBox();
-			vbox.PackStart(image, true, true, 0);
-			vbox.PackStart(hbox, false, true, 5);
-
+			vbox.BorderWidth = 12;
+			label = new Gtk.Label ();
+			label.UseMarkup = true;
+			label.Xalign = 0;
+			vbox.PackEnd (progress, false, true, 0);
+			vbox.PackEnd (label, false, true, 3);
 			this.Add (vbox);
+			
+			this.Resize (bitmap.Width, bitmap.Height);
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evt)
+		{
+			Gdk.GC gc = Style.LightGC (StateType.Normal);
+			GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
+			return base.OnExposeEvent (evt);
 		}
 
 		public static void SetProgress (double Percentage)
@@ -52,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 		public static void SetMessage (string Message)
 		{
-			progress.Text = Message;
+			label.Markup = "<span size='small' foreground='#707070'>" + Message + "</span>";
 			RunMainLoop ();
 		}
 		

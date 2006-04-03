@@ -248,6 +248,7 @@ templates/EmptyTextFile.xft.xml \
 templates/EmptyXMLFile.xft.xml \
 Base.glade \
 icons/SplashScreen.png \
+icons/mono-powered.png \
 icons/Icons.AboutImage
 
 GENERATED_FILES = \
