@@ -56,44 +56,52 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public bool MoveForward() 
 		{
-			int curIndex =  GetCurIndex();
-			if (curIndex < 0) {
-				return false;
-			}
+			do {
+				int curIndex =  GetCurIndex();
+				if (curIndex < 0) {
+					return false;
+				}
+				
+				if (resetted) {
+					resetted = false;
+					continue;
+				}
+				
+				int nextIndex = (curIndex + 1) % IdeApp.Workbench.Documents.Count;
+				if (nextIndex == startIndex) {
+					return false;
+				}
+				IdeApp.Workbench.Documents [nextIndex].Select ();
+			} 
+			while (Current == null);
 			
-			if (resetted) {
-				resetted = false;
-				return true;
-			}
-			
-			int nextIndex = (curIndex + 1) % IdeApp.Workbench.Documents.Count;
-			if (nextIndex == startIndex) {
-				return false;
-			}
-			IdeApp.Workbench.Documents [nextIndex].Select ();
 			return true;
 		}
 		
 		public bool MoveBackward()
 		{
-			int curIndex =  GetCurIndex();
-			if (curIndex < 0) {
-				return false;
-			}
-			if (resetted) {
-				resetted = false;
-				return true;
-			}
-			
-			if (curIndex == 0)
-				curIndex = IdeApp.Workbench.Documents.Count - 1;
-			else
-				curIndex--;
-			
-			if (curIndex == startIndex)
-				return false;
+			do {
+				int curIndex =  GetCurIndex();
+				if (curIndex < 0) {
+					return false;
+				}
+				if (resetted) {
+					resetted = false;
+					continue;
+				}
+				
+				if (curIndex == 0)
+					curIndex = IdeApp.Workbench.Documents.Count - 1;
+				else
+					curIndex--;
+				
+				if (curIndex == startIndex)
+					return false;
 
-			IdeApp.Workbench.Documents [curIndex].Select ();
+				IdeApp.Workbench.Documents [curIndex].Select ();
+			}
+			while (Current == null);
+			
 			return true;
 		}
 		

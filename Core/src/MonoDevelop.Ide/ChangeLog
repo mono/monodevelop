@@ -1,3 +1,9 @@
+2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs:
+	  Skip documents which are not text buffers while iterating
+	  through all open files.
+
 2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Ide.addin.xml: Removed cshrp.net.
