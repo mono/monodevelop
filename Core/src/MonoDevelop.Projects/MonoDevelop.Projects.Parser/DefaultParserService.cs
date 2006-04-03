@@ -307,7 +307,7 @@ namespace MonoDevelop.Projects.Parser
 					IClass c =  GetEnclosingClass (line, col, cls.InnerClasses);
 					if (c != null) return c;
 				}
-				if (cls.Region.IsInside (line, col) || cls.BodyRegion.IsInside (line, col))
+				if (cls.Region.IsInside (line, col) || (cls.BodyRegion != null && cls.BodyRegion.IsInside (line, col)))
 					return cls;
 			}
 			return null;
