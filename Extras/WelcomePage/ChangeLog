@@ -1,3 +1,7 @@
+2006-04-04 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.xsl: Removed cshrp.net.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am:

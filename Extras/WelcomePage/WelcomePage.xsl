@@ -100,7 +100,6 @@
 												<p />
 												<h1>Development Links</h1>
 												<ul>
-													<li><a href="http://www.cshrp.net/">CShrp.Net</a> - A C# Development community with news, tutorials, and references.</li>
 													<li><a href="http://www.csharphelp.com/">C# Help</a> - A site with articles on common C# problems.</li>
 													<li><a href="http://www.c-sharpcorner.com/">C# Corner</a> - Another C# community with articles and forums.</li>
 													<li><a href="http://www.gotdotnet.com/">Got Dot Net</a> - A .NET framework community featuring user blogs, message boards, and code samples.</li>
