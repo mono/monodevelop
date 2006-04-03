@@ -53,8 +53,8 @@ namespace MonoDevelop.NUnit
 		public override void InitializeService ()
 		{
 			RegisterTestProvider (new SystemTestProvider ());
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (OnOpenCombine);
-			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (OnCloseCombine);
+			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
+			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			
 			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));

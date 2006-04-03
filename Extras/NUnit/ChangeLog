@@ -1,3 +1,8 @@
+2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnit/Services/NUnitService.cs: Use a GUI thread safe
+	  subscription to CombineOpened event.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com>
 
 	* MonoDevelop.NUnit.addin.xml: Added info about the
