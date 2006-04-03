@@ -65,9 +65,14 @@ namespace MonoDevelop.Core.Gui
 			foreach (StockIconCodon icon in icons) {
 				foreach (Assembly a in icon.AddIn.RuntimeLibraries.Values) {
 					try {
-						Gdk.Pixbuf px = new Gdk.Pixbuf (a, icon.Resource);
-						AddToIconFactory (icon.StockId, px, icon.IconSize);
-						break;
+						System.IO.Stream s = a.GetManifestResourceStream (icon.Resource);
+						if (s != null) {
+							using (s) {
+								Gdk.Pixbuf px = new Gdk.Pixbuf (s);
+								AddToIconFactory (icon.StockId, px, icon.IconSize);
+							}
+							break;
+						}
 					} catch {}
 				}
 			}
@@ -293,9 +298,14 @@ namespace MonoDevelop.Core.Gui
 			if (!hash.Contains (sid)) {
 				foreach (Assembly asm in addin.RuntimeLibraries.Values) {
 					try {
-						Gdk.Pixbuf pix = new Gdk.Pixbuf (asm, id);
-						AddToIconFactory (sid, pix, Gtk.IconSize.Invalid);
-						break;
+						System.IO.Stream s = asm.GetManifestResourceStream (id);
+						if (s != null) {
+							using (s) {
+								Gdk.Pixbuf pix = new Gdk.Pixbuf (s);
+								AddToIconFactory (sid, pix, Gtk.IconSize.Invalid);
+								break;
+							}
+						}
 					} catch {}
 				}
 				hash [sid] = sid;

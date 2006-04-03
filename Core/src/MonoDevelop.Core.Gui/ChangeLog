@@ -1,3 +1,8 @@
+2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/ResourceService.cs: Check that
+	  icon resources exist before trying to add them.
+
 2006-03-31 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Core.Gui.addin.xml: Break compatibility
