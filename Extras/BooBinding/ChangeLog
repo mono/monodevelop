@@ -1,3 +1,7 @@
+2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BooBinding.addin.xml: Add boo assembly dependency.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.addin.xml: Updated references.

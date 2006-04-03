@@ -19,6 +19,7 @@
     <AddIn id="MonoDevelop.Projects.Gui" version="0.10.0"/>
     <AddIn id="MonoDevelop.Ide" version="0.10.0"/>
     <AddIn id="MonoDevelop.SourceEditor" version="0.10.0"/>
+    <Assembly name="Boo.Lang.Compiler, Version=1.0.0.0" package="Boo" />
   </Dependencies>
 
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
