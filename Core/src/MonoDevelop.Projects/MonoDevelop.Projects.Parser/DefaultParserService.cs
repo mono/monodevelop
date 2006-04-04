@@ -286,10 +286,10 @@ namespace MonoDevelop.Projects.Parser
 				if (f.Region != null && f.Region.IsInside (caretLineNumber, caretColumn))
 					return f;
 			foreach (IMethod m in cls.Methods)
-				if (m.Region != null && (m.Region.IsInside (caretLineNumber, caretColumn) || m.BodyRegion.IsInside (caretLineNumber, caretColumn)))
+				if ((m.Region != null && (m.Region.IsInside (caretLineNumber, caretColumn)) || (m.BodyRegion != null && m.BodyRegion.IsInside (caretLineNumber, caretColumn))))
 					return m;
 			foreach (IProperty m in cls.Properties)
-				if (m.Region != null && (m.Region.IsInside (caretLineNumber, caretColumn) || m.BodyRegion.IsInside (caretLineNumber, caretColumn)))
+				if ((m.Region != null && (m.Region.IsInside (caretLineNumber, caretColumn)) || (m.BodyRegion != null && m.BodyRegion.IsInside (caretLineNumber, caretColumn))))
 					return m;
 			foreach (IEvent m in cls.Events)
 				if (m.Region != null && m.Region.IsInside (caretLineNumber, caretColumn))
