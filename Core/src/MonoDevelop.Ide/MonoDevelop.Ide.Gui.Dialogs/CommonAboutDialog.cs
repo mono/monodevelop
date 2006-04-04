@@ -165,6 +165,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public CommonAboutDialog ()
 		{
+			HasSeparator = false;
+			this.VBox.BorderWidth = 0;
+			
 			AllowGrow = false;
 			this.Title = GettextCatalog.GetString ("About MonoDevelop");
 			this.TransientFor = IdeApp.Workbench.RootWindow;
@@ -173,7 +176,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.VBox.PackStart (aboutPictureScrollBox, false, false, 0);
 		
 			Notebook nb = new Notebook ();
-			nb.BorderWidth = 3;
+			nb.BorderWidth = 6;
 			nb.SetSizeRequest (440, 240);
 			this.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
 			nb.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 255));
