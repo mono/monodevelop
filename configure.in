@@ -1,11 +1,11 @@
-AC_INIT([monodevelop], 0.9, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop], 0.10, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
 AC_PROG_INTLTOOL([0.25])
 
-ASSEMBLY_VERSION=0.9.0.0
+ASSEMBLY_VERSION=0.10.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, mcs)
@@ -140,13 +140,18 @@ if test "x$enable_boo" = "xyes" ; then
 	AC_PATH_PROG(BOOC, booc)
 fi
 
+dnl nunit
 MONO_NUNIT_REQUIRED_VERSION=1.1.8
+NUNIT_REQUIRED_VERSION=2.2.0
 AC_ARG_ENABLE(nunit,
-	AC_HELP_STRING([--enable-nunit],
-		[enable support for NUnit [default=yes]]),
-	[PKG_CHECK_MODULES(MONO_NUNIT, mono-nunit >= $MONO_NUNIT_REQUIRED_VERSION, enable_nunit=${enableval}, enable_nunit=no)],
-	enable_nunit=yes)
-
+    AC_HELP_STRING([--enable-nunit],[enable support for NUnit [default=yes]]),
+	enable_nunit=${enableval}, enable_nunit=yes)
+if test "x$enable_nunit" = "xyes"; then
+	PKG_CHECK_MODULES(NUNIT, nunit >= 2.2.0, [],
+	[PKG_CHECK_MODULES(MONO_NUNIT, mono-nunit >= 1.1.9)
+		NUNIT_LIBS="$MONO_NUNIT_LIBS"
+	])
+fi
 AM_CONDITIONAL(ENABLE_NUNIT, test x$enable_nunit = xyes)
 
 AC_ARG_ENABLE(monoextensions,
@@ -168,15 +173,6 @@ AC_ARG_ENABLE(versioncontrol,
 		enable_versioncontrol=yes, enable_versioncontrol=no)
 
 AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
-
-GLADEUI_REQUIRED_VERSION=0.1
-AC_ARG_ENABLE(glade,
-	AC_HELP_STRING([--enable-glade],
-		[enable support for Glade-3 [default=no]]),
-		[PKG_CHECK_MODULES(GLADEUI, gladeui-sharp >= $GLADEUI_REQUIRED_VERSION, enable_glade=yes, enable_glade=no)],
-		enable_glade=no)
-
-AM_CONDITIONAL(ENABLE_GLADE, test x$enable_glade = xyes)
 
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
 AC_SUBST(MOZILLA_HOME)
@@ -275,7 +271,6 @@ Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.dll.config
 Extras/prj2make-sharp-lib/AssemblyInfo.cs
 Extras/prj2make-sharp-lib/Makefile
 Extras/WelcomePage/Makefile
-Extras/GladeAddIn/Makefile
 Extras/ChangeLogAddIn/Makefile
 Extras/MonoDevelop.GtkCore/Makefile
 Makefile
@@ -302,5 +297,4 @@ echo "   * boo support: $enable_boo"
 echo "   * NUnit support: $enable_nunit"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
-echo "   * Glade-3 support: $enable_glade"
 echo ""
