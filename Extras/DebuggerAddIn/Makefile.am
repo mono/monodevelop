@@ -25,7 +25,7 @@ Gui/Pads/StackTracePad.cs \
 Gui/Pads/ThreadPad.cs
 
 GENERATED_FILES = DebuggerPaths.cs
-EXTRA_DIST = $(FILES) $(ADDIN) $(GENERATED_FILES)
+EXTRA_DIST = $(FILES) $(ADDIN) DebuggerPaths.cs.in
 
 if ENABLE_DEBUGGER
 
