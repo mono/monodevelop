@@ -4,8 +4,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
 
 REFS = -r:System \
        -r:System.Xml \
-       -r:nunit.framework \
-	-r:nunit.core \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
@@ -13,7 +11,8 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	$(GLADE_SHARP_LIBS) \
+	$(NUNIT_LIBS)
 
 FILES = \
 AssemblyInfo.cs \
