@@ -80,7 +80,7 @@ TESTFILES = \
 	Test/Test.cs
 
 TESTDLLS = \
-	/r:nunit.framework.dll
+	$(NUNIT_LIBS)
 
 TESTASSEMBLY = $(top_builddir)/build/bin/CSharpBinding.Test.dll
 
