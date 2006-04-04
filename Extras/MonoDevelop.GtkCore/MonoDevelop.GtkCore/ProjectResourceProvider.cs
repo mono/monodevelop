@@ -63,6 +63,7 @@ namespace MonoDevelop.GtkCore
 		public Stetic.ResourceInfo AddResource (string fileName)
 		{
 			project.AddFile (fileName, BuildAction.EmbedAsResource);
+			project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
 			return new Stetic.ResourceInfo (Path.GetFileName (fileName), fileName);
 		}
 		
@@ -71,6 +72,7 @@ namespace MonoDevelop.GtkCore
 			foreach (ProjectFile file in project.ProjectFiles) {
 				if (resourceName == Path.GetFileName (file.Name)) {
 					project.ProjectFiles.Remove (file);
+					project.Save (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor());
 					return;
 				}
 			}

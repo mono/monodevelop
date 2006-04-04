@@ -1,3 +1,8 @@
+2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: Save the project
+	  after adding or removing a resource.
+
 2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/*: Updated.
