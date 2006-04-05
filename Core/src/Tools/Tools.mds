@@ -1,12 +1,12 @@
 <Combine name="Tools" fileversion="2.0">
-  <Configurations active="Debug">
+  <Configurations>
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="mdhost" />
-      <Entry configuration="Debug" build="True" name="mdrun" />
+      <Entry build="True" name="mdhost" configuration="Debug" />
+      <Entry build="True" name="mdrun" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="mdhost" />
-      <Entry configuration="Debug" build="True" name="mdrun" />
+      <Entry build="True" name="mdhost" configuration="Debug" />
+      <Entry build="True" name="mdrun" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="dbgen" single="True">

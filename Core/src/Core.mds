@@ -1,34 +1,34 @@
 <Combine name="Core" fileversion="2.0">
-  <Configurations active="Debug">
+  <Configurations active="Release">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Core.Gui" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Components" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Documentation" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
-      <Entry configuration="Debug" build="True" />
-      <Entry configuration="" build="True" name="Tools" />
-      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpRefactory" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry build="True" name="MonoDevelop.Core" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Components" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Dock" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Documentation" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
+      <Entry build="True" configuration="Debug" />
+      <Entry build="True" name="Tools" configuration="" />
+      <Entry build="True" name="ICSharpCode.SharpRefactory" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Core" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Core.Gui" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Components" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Dock" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Documentation" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Ide" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Projects.Gui" />
-      <Entry configuration="Debug" build="True" />
-      <Entry configuration="" build="True" name="Tools" />
-      <Entry configuration="Debug" build="True" name="ICSharpCode.SharpRefactory" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Startup" />
+      <Entry build="True" name="MonoDevelop.Core" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Components" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Dock" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Documentation" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
+      <Entry build="True" configuration="Debug" />
+      <Entry build="True" name="Tools" configuration="" />
+      <Entry build="True" name="ICSharpCode.SharpRefactory" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.Core" single="True">

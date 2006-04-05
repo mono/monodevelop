@@ -24,10 +24,7 @@
     <File name="./MonoDevelopMain.cs.rej" subtype="Code" buildaction="Nothing" />
     <File name="./SharpDevelop.exe.manifest" subtype="Code" buildaction="Nothing" />
     <File name="./app.config" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.Startup/AddInTreeSettingsHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Startup/ExceptionBox.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Startup/MonoDevelopMain.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Startup/MonoDevelopOptions.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
