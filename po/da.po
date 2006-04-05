@@ -3740,7 +3740,7 @@ msgstr "Beskrivelse"
 msgid "{0} Error"
 msgid_plural "{0} Errors"
 msgstr[0] "{0} fejl"
-msgstr[1] "{1} fejl"
+msgstr[1] "{0} fejl"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:379
 #, csharp-format
