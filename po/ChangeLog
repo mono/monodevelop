@@ -1,3 +1,7 @@
+2006-04-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* da.po: Fix incorrect format string.
+
 2006-04-02  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* zh_TW.po: Updated. Thanks to Yan-ren Tsai <elleryq@gmail.com>.
