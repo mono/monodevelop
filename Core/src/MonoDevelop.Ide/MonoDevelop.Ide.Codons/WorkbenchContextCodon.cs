@@ -31,10 +31,13 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A workbench context.")]
+	[Category ("ContextPad")]
 	[CodonNameAttribute ("WorkbenchContext")]
 	internal class WorkbenchContextCodon : AbstractCodon
 	{

@@ -8,15 +8,18 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
 	[CodonNameAttribute("DisplayBinding")]
-	internal class DisplayBindingCodon : AbstractCodon
+	internal class DisplayBindingCodon : ClassCodon
 	{
+		[Description ("Unused.")]
 		[XmlMemberArrayAttribute("supportedformats")]
 		string[] supportedFormats;
 		

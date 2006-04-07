@@ -8,14 +8,17 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A project template.")]
 	[CodonNameAttribute("ProjectTemplate")]
 	internal class ProjectTemplateCodon : AbstractCodon
 	{
+		[Description ("Name of the resource where the template is stored.")]
 		[XmlMemberAttribute("resource", IsRequired = true)]
 		string resource;
 		

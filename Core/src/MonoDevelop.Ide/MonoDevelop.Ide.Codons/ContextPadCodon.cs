@@ -31,11 +31,13 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("ContextPad")]
+	[Description ("Makes a pad available in workbench context. The id property is the id of a registered pad.")]
 	internal class ContextPadCodon : AbstractCodon
 	{
 //		[XmlMemberAttribute ("defaultVisible")]

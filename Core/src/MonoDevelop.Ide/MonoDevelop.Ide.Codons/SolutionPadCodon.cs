@@ -35,15 +35,24 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("SolutionPad")]
+	[Description ("Registers a pad which shows information about a project in a tree view.")]
+	[Category ("NodeBuilder, PadOption")]
 	internal class SolutionPadCodon : PadCodon
 	{
 		NodeBuilder[] builders;
 		TreePadOption[] options;
 		
+		[Description (	"Default placement of the pad inside the workbench. " +
+						"It can be: left, right, top, bottom, or a relative position, for example: 'ProjectPad/left'" +
+						"would show the pad at the left side of the project pad. When using " +
+						"relative placements several positions can be provided. If the " +
+						"pad can be placed in the first position, the next one will be " +
+						"tried. For example 'ProjectPad/left; bottom'.")]
 		[XmlMemberAttribute("defaultPlacement")]
 		string placement = null;
 

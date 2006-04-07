@@ -30,14 +30,17 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A file template type. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileDescriptionTemplate")]
 	[CodonNameAttribute("FileTemplateType")]
-	internal class FileTemplateTypeCodon : AbstractCodon
+	internal class FileTemplateTypeCodon : ClassCodon
 	{
+		[Description ("Name to use to reference this template type in a file template.")]
 		[XmlMemberAttribute("name", IsRequired = true)]
 		string name;
 		Type cls;

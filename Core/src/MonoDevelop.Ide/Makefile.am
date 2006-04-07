@@ -208,7 +208,6 @@ MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \
 MonoDevelop.Ide.Codons/PadCodon.cs \
 MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
-MonoDevelop.Ide.Codons/ToolbarItemCodon.cs \
 MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
 MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs \
 MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \

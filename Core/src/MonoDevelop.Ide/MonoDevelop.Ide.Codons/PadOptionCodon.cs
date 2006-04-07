@@ -31,18 +31,22 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A display option of a solution pad.")]
 	[CodonNameAttribute ("PadOption")]
 	internal class PadOptionCodon : AbstractCodon
 	{
+		[Description ("Display name of the option")]
 		[XmlMemberAttribute("_label", IsRequired=true)]
 		string label = null;
 		
+		[Description ("Default value of the option")]
 		[XmlMemberAttribute("defaultValue")]
 		bool defaultValue;
 		

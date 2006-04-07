@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
@@ -39,16 +40,20 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("Pad")]
+	[Description ("Registers a pad to be shown in the workbench.")]
 	internal class PadCodon : AbstractCodon
 	{
 		IPadContent content;
 		
+		[Description ("Unused.")]
 		[XmlMemberAttribute("context")]
 		string context = null;
 		
+		[Description ("Display name of the pad.")]
 		[XmlMemberAttribute("_label")]
 		string label = null;
 		
+		[Description ("Icon of the pad. It can be a stock icon or a resource icon (use 'res:' as prefix in the last case).")]
 		[XmlMemberAttribute("icon")]
 		string icon = null;
 

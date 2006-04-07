@@ -8,14 +8,17 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Ide.Codons
 {
+	[Description ("A file template.")]
 	[CodonNameAttribute("FileTemplate")]
 	internal class FileTemplateCodon : AbstractCodon
 	{
+		[Description ("Resource name where the template is stored.")]
 		[XmlMemberAttribute("resource", IsRequired = true)]
 		string resource;
 		
