@@ -1,0 +1,4 @@
+2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* PythonBinding.addin.xml: Added "/SharpDevelop/Workbench/FileFilter" extension
+

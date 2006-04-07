@@ -15,6 +15,12 @@
 		<AddIn id="MonoDevelop.Ide" version="0.9.0"/>
 	</Dependencies>
 	
+	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Python"
+		            _label = "Python Files"
+		            extensions = "*.py"/>
+	</Extension>
+	
   <Extension path = "/MonoDevelop/ProjectTemplates">
     <ProjectTemplate id = "PythonConsoleProject"
                      resource = "templates/PythonConsoleProject.xpt.xml"/>
