@@ -22,7 +22,7 @@
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
     <FileFilter id = "VBNet"
                 insertbefore = "AllFiles"
-                name = "VB.NET Files (*.vb)"
+                _label = "VB.NET Files"
                 extensions = "*.vb"/>
   </Extension>
 
