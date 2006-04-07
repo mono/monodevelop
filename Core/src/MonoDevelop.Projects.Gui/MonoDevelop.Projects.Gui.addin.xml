@@ -17,7 +17,7 @@
 		<AddIn id="MonoDevelop.Projects" version="0.10.0"/>
 	</Dependencies>
 
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for project options.">
 		<DialogPanel id    = "Common"
 		             _label = "General">
 			<DialogPanel id = "GeneralProjectPanel"
@@ -32,7 +32,10 @@
 		</DialogPanel>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties" extension-nodes="DialogPanel" description="Dialog panels for project configuration options.">
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for solution options.">
 		<DialogPanel id    = "Common"
 		             _label = "Common">
 			<DialogPanel id = "Startup"
@@ -53,12 +56,11 @@
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanel"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties" extension-nodes="DialogPanel" description="Dialog panels for solution configuration options.">
 		<DialogPanel id = "EntryConfigurations"
 			             _label = "Configurations"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
 	</Extension>
-
 
 
 </AddIn>

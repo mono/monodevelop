@@ -1,3 +1,7 @@
+2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Add documentation.
+
 2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:
