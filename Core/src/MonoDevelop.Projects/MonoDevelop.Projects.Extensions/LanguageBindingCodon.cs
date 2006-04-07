@@ -8,15 +8,18 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
+	[Description ("A lenguage binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
 	[CodonNameAttribute("LanguageBinding")]
-	internal class LanguageBindingCodon : AbstractCodon
+	internal class LanguageBindingCodon : ClassCodon
 	{
+		[Description ("File extensions supported by this binding (to be shown in the Open File dialog)")]
 		[XmlMemberArrayAttribute("supportedextensions")]
 		string[] supportedExtensions;
 		

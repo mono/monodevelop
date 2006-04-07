@@ -28,16 +28,20 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Projects
 {
+	[Description ("A custom property. The type specified in the 'class' property is the type to which the property has to be added. Only types which implement IExtendedDataItem can be extended in this way.")]
 	[CodonNameAttribute("ItemProperty")]
-	public class ItemPropertyCodon: AbstractCodon
+	public class ItemPropertyCodon: ClassCodon
 	{
+		[Description ("Name of the property.")]
 		[XmlMemberAttribute("name", IsRequired=true)]
 		string propName;
 		
+		[Description ("Full name of the property type.")]
 		[XmlMemberAttribute("type", IsRequired=true)]
 		string propType;
 		

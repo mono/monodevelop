@@ -31,14 +31,16 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
+	[Description ("A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.")]
 	[CodonNameAttribute ("ProjectBinding")]
-	internal class ProjectBindingCodon : AbstractCodon
+	internal class ProjectBindingCodon : ClassCodon
 	{
 		IProjectBinding projectBinding;
 		

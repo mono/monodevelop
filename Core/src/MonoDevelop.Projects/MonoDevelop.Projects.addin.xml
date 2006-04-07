@@ -34,33 +34,33 @@
 		<Class id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Ambiences">
+	<Extension path = "/SharpDevelop/Workbench/Ambiences" extension-nodes="Class" description="Language ambiences.|Specified classes must implement IAmbience.">
 		<Class id    = ".NET"
 		       class = "MonoDevelop.Services.NetAmbience"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+	<Extension path = "/SharpDevelop/Workbench/ProjectBindings" extension-nodes="ProjectBinding" description="Project bindings.">
 		<ProjectBinding id = "DotNet"
 						class = "MonoDevelop.Projects.DotNetProjectBinding" />
 	</Extension>
 	  
-	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
+	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats" extension-nodes="FileFormat" description="File format handlers for projects and solutions.">
 		<FileFormat id="PrjxFileFormat"
 		            class="MonoDevelop.Projects.PrjxFileFormat"/>
 		<FileFormat id="CmbxFileFormat"
 		            class="MonoDevelop.Projects.CmbxFileFormat"/>
 	</Extension>
 	  
-	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses" extension-nodes="Class" description="Classes to be registered for serialization.">
 		<Class class = "MonoDevelop.Projects.Combine" />
 		<Class class = "MonoDevelop.Projects.Project" />
 		<Class class = "MonoDevelop.Projects.DotNetProject" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties" extension-nodes="ItemProperty" description="Custom properties for projects and other types.">
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
+	<Extension path = "/SharpDevelop/Workbench/BuildPipeline" extension-nodes="Class" description="Custom build steps. Specified classes must implement IBuildStep">
 		<Class id = "PreBuildStep" class = "MonoDevelop.Projects.Project+PreBuildStep" />
 		<Class id = "MainBuildStep" class = "MonoDevelop.Projects.Project+MainBuildStep" />
 		<Class id = "PostBuildStep" class = "MonoDevelop.Projects.Project+PostBuildStep" />

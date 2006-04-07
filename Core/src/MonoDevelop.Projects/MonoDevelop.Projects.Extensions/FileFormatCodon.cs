@@ -31,14 +31,16 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
+	[Description ("A file format handler. The specified class must implement MonoDevelop.Projects.IFileFormat.")]
 	[CodonNameAttribute ("FileFormat")]
-	internal class FileFormatCodon : AbstractCodon
+	internal class FileFormatCodon : ClassCodon
 	{
 		IFileFormat fileFormat;
 		

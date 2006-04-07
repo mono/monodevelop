@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
@@ -14,13 +15,15 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	// FIXME: Unused
 	[CodonNameAttribute("FileFilter")]
+	[Description ("A file filter to be used in the Open File dialog.")]
 	internal class FileFilterCodon : AbstractCodon
 	{
+		[Description ("Display name of the filter.")]
 		[XmlMemberAttribute("name", IsRequired=true)]
 		string filtername       = null;
 		
+		[Description ("Extensions to use as filter.")]
 		[XmlMemberArrayAttribute("extensions", IsRequired=true)]
 		string[] extensions = null;
 		

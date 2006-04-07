@@ -1,3 +1,12 @@
+2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Extensions/FileFormatCodon.cs:
+	* MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs:
+	* MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs:
+	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs:
+	* MonoDevelop.Projects.Extensions/FileFilterCodon.cs:
+	* MonoDevelop.Projects.addin.xml: Add documentation.
+
 2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: More
