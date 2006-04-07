@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -38,12 +39,15 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("A menu or toolbar item that opens an URL when activated")]
 	[CodonNameAttribute ("LinkItem")]
 	internal class LinkItemCodon : AbstractCodon
 	{
+		[Description ("Label of the item.")]
 		[XmlMemberAttribute ("_label")]
 		string label;
 		
+		[Description ("URL to open.")]
 		[XmlMemberAttribute("link")]
 		string link;
 		

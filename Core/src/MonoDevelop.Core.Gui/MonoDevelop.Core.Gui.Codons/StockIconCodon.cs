@@ -31,19 +31,24 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("A stock icon. It is possible to register several icons with the same 'id' and different sizes.")]
 	[CodonNameAttribute ("StockIcon")]
 	internal class StockIconCodon : AbstractCodon
 	{
+		[Description ("Id of the stock icon.")]
 		[XmlMemberAttribute ("stockid", IsRequired = true)]
 		string stockid;
 		
+		[Description ("Size of the icon.")]
 		[XmlMemberAttribute ("size")]
 		Gtk.IconSize size = Gtk.IconSize.Invalid;
 		
+		[Description ("Name of the resource where the icon is stored.")]
 		[XmlMemberAttribute ("resource")]
 		string resource;
 		

@@ -1,3 +1,15 @@
+2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Codons/LocalCommandItemCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/LinkItemCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/StockIconCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/CommandCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs:
+	* MonoDevelop.Core.Gui.Codons/SeparatorItemCodon.cs:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs: Add documentation.
+
 2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/ResourceService.cs: Check that

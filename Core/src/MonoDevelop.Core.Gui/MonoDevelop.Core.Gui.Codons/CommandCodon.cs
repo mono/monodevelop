@@ -35,36 +35,47 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.AddIns;
+using System.ComponentModel;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("An user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as id for the command by just using '@' as prefix for the string.")]
 	[CodonNameAttribute ("Command")]
 	internal class CommandCodon : AbstractCodon
 	{
+		[Description ("Label")]
 		[XmlMemberAttribute ("_label", IsRequired=true)]
 		string label;
 		
+		[Description ("Description of the command")]
 		[XmlMemberAttribute ("_description")]
 		string _description;
 		
+		[Description ("Obsolete. Do not use.")]
 		[XmlMemberAttribute ("description")]
 		string description;
 		
+		[Description ("Key combination that triggers the command. Control and Alt modifiers can be specified using '|' as separator. For example 'Control|d'")]
 		[XmlMemberAttribute ("shortcut")]
 		string shortcut;
 		
+		[Description ("Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		[XmlMemberAttribute("icon")]
 		string icon;
 		
+		[Description ("Set to 'false' if the command has to be hidden when disabled. 'true' by default.")]
 		[XmlMemberAttribute("disabledVisible")]
 		bool disabledVisible = true;
 		
+		[Description ("Type of the command. It can be: normal (the default), check, radio or array.")]
 		[XmlMemberAttribute("type")]
 		string type = "normal";
 		
+		[Description ("Class of the widget to create when type is 'custom'.")]
 		[XmlMemberAttribute("widget")]
 		string widget = null;
 		
+		[Description ("Class that handles this command. This property is optional.")]
 		[XmlMemberAttribute("defaultHandler")]
 		string defaultHandler;
 		

@@ -32,7 +32,7 @@
 		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+	<Extension path = "/SharpDevelop/Workbench/StockIcons" extension-nodes="StockIcon" description="Stock icons|Available from MonoDevelop.Core.Gui.Services.Resources.">
 		<StockIcon stockid = "md-break-point" resource = "BreakPoint.png" />
 		<StockIcon stockid = "md-build-combine" resource = "Icons.16x16.BuildCombine" />
 		<StockIcon stockid = "md-build-current-selected-project" resource = "Icons.16x16.BuildCurrentSelectedProject" />

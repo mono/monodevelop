@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
@@ -38,6 +39,7 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("Allows the definition of a complete command item inside a menu or toolbar description")]
 	[CodonNameAttribute ("LocalCommandItem")]
 	internal class LocalCommandItemCodon : CommandCodon
 	{

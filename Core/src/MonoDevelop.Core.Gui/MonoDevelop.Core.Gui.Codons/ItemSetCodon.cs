@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
@@ -38,12 +39,16 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("A submenu")]
+	[Category ("CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem")]
 	[CodonNameAttribute ("ItemSet")]
 	internal class ItemSetCodon : AbstractCodon
 	{
+		[Description ("Label of the submenu")]
 		[XmlMemberAttribute ("_label")]
 		string label;
 		
+		[Description ("Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		[XmlMemberAttribute("icon")]
 		string icon;
 		

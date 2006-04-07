@@ -31,11 +31,13 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("A separator menu or toolbar item")]
 	[CodonNameAttribute ("SeparatorItem")]
 	internal class SeparatorItemCodon : AbstractCodon
 	{

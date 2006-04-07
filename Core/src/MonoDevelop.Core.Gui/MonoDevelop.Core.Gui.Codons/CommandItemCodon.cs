@@ -31,11 +31,13 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
+	[Description ("A command menu or toolbar item. The id of the element must match the id of a registered command.")]
 	[CodonNameAttribute ("CommandItem")]
 	internal class CommandItemCodon : AbstractCodon
 	{

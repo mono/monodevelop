@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -15,8 +16,10 @@ using MonoDevelop.Core.Gui.Dialogs;
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[CodonNameAttribute("DialogPanel")]
-	internal class DialogPanelCodon : AbstractCodon
+	[Description ("A dialog panel to be shown in an options dialog. The specified class must implement MonoDevelop.Core.Gui.Dialogs.IDialogPanel.")]
+	internal class DialogPanelCodon : ClassCodon
 	{
+		[Description ("A dialog panel to be shown in an options dialog.")]
 		[XmlMemberAttribute("_label", IsRequired=true)]
 		string label       = null;
 		
