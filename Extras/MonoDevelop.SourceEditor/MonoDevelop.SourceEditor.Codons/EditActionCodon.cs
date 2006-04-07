@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Properties;
@@ -17,8 +18,10 @@ using MonoDevelop.SourceEditor.Actions;
 namespace MonoDevelop.SourceEditor.Codons
 {
 	[CodonNameAttribute("EditAction")]
-	public class EditActionCodon : AbstractCodon
+	[Description ("A custom editor action. The provided class must implement IEditAction.")]
+	public class EditActionCodon : ClassCodon
 	{
+		[Description ("Key combinations that trigger the edit action (for example Control|k).")]
 		[XmlMemberArrayAttribute("keys", IsRequired=true)]
 		string[] keys = null;
 

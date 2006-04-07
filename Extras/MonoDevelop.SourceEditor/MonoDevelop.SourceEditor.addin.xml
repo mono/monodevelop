@@ -110,7 +110,7 @@
 				shortcut = "Shift|Control|P" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for the editor">
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
@@ -174,20 +174,6 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 	</Extension>
-	
-	<!--
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Window">
-		<Conditional activewindow="MonoDevelop.SourceEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-			<MenuItem id = "SplitTextEditor"
-			          insertafter="NxtPrvSeparator"
-			          insertbefore="CloseAll"
-			          _label = "${res:XML.MainMenu.WindowMenu.Split}"
-			          icon  = "Icons.16x16.SplitWindow"
-			          description = "${res:XML.MainMenu.WindowMenu.Split.Description}"
-			          class ="MonoDevelop.SourceEditor.EditorCommands.SplitTextEditor"/>
-		</Conditional> 
-	</Extension>
-	-->
 	
 	<!-- <Extension path = "/SharpDevelop/Workbench/MainMenu/Edit">
                 <MenuItem insertafter = "Delete" insertbefore = "SelectAll" id = "Separator2" _label = "-" />
@@ -327,7 +313,7 @@
 	</Extension>
 -->	
 	
-	<Extension path = "/AddIns/DefaultTextEditor/EditActions">
+	<Extension path = "/AddIns/DefaultTextEditor/EditActions" extension-nodes="EditAction" description="Custom edit actions.">
 		<!-- these are the default editor actions -->
 		<EditAction id = "ControlSpace" class = "MonoDevelop.SourceEditor.Actions.ControlSpace" keys = "Control|space"/>
 		<EditAction id = "DeleteLine" class = "MonoDevelop.SourceEditor.Actions.DeleteLine" keys = "Control|k" />
