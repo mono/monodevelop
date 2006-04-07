@@ -46,25 +46,25 @@
 	<Extension path = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "CSharp"
 		            insertbefore="AllFiles"
-		            name = "${res:SharpDevelop.FileFilter.CSharpFiles}"
+		            _label = "CSharp Files"
 			    extensions = "*.cs"/>
 		<FileFilter id = "Assemblies"
 		            insertbefore="AllFiles"
-		            name = "${res:SharpDevelop.FileFilter.AssemblyFiles}"
+		            _label = "Assemblies"
 		            extensions = "*.exe,*.dll"/>
 			    
 		<FileFilter id = "Html"
 		            insertbefore="AllFiles"
-		            name = "${res:SharpDevelop.FileFilter.WebFiles}"
+		            _label = "Web Files"
 		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp"/>
 			    
 		<FileFilter id = "Xml"
 		            insertbefore="AllFiles"
-		            name = "${res:SharpDevelop.FileFilter.XmlFiles}"
+		            _label = "Xml Files"
 		            extensions = "*.xml"/>
 		<FileFilter id = "Resources"
 		            insertbefore="AllFiles"
-		            name = "${res:SharpDevelop.FileFilter.ResourceFiles}"
+		            _label = "Resource Files"
 		            extensions = "*.resources,*.resx"/>
 	</Extension>
 
