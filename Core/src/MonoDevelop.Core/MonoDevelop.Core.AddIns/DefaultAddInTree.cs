@@ -105,17 +105,25 @@ namespace MonoDevelop.Core.AddIns
 			ShowCodonTree(root, "");
 		}
 		
-		void AddExtensions(AddIn.Extension extension)
+		void AddExtensions (AddIn addIn, AddIn.Extension extension)
 		{
 			DefaultAddInTreeNode localRoot = CreatePath(root, extension.Path);
+			if (extension.AllowedChildNodes != null && extension.AllowedChildNodes.Length > 0) {
+				localRoot.AllowedChildNodes = extension.AllowedChildNodes;
+				localRoot.OwnerAddIn = addIn;
+			}
+			if (extension.Description != null)
+				localRoot.Description = extension.Description;
 			
 			foreach (ICodon codon in extension.CodonCollection) {
 				DefaultAddInTreeNode localPath = CreatePath(localRoot, codon.ID);
 				if (localPath.Codon != null) {
 					throw new DuplicateCodonException(codon.GetType().Name, codon.ID);
 				}
-				localPath.Codon              = codon;
+				localPath.Codon = codon;
 				localPath.ConditionCollection = (ConditionCollection)extension.Conditions[codon.ID];
+				localPath.AllowedChildNodes = CodonBuilder.GetAllowedChildNodes (codon.GetType ());
+//				localPath.Description = CodonBuilder.GetDescription (codon.GetType ());
 			}
 		}
 		
@@ -126,7 +134,7 @@ namespace MonoDevelop.Core.AddIns
 		{
 			addIns.Add(addIn);
 			foreach (AddIn.Extension extension in addIn.Extensions) {
-				AddExtensions(extension);
+				AddExtensions (addIn, extension);
 			}
 		}
 		

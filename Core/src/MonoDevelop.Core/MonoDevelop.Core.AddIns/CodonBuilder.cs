@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace MonoDevelop.Core.AddIns
 {
@@ -18,6 +20,10 @@ namespace MonoDevelop.Core.AddIns
 		Assembly assembly;
 		string className;
 		string codonName;
+		
+		static Hashtable allowedChildNodes = new Hashtable ();
+		static Hashtable descriptions = new Hashtable ();
+		static string[] emptyArray = new string [0];
 		
 		/// <summary>
 		/// Initializes a new CodonBuilder instance with beeing
@@ -40,6 +46,12 @@ namespace MonoDevelop.Core.AddIns
 		public string ClassName {
 			get {
 				return className;
+			}
+		}
+		
+		internal Type CodonType {
+			get {
+				return assembly.GetType (ClassName);
 			}
 		}
 		
@@ -71,5 +83,38 @@ namespace MonoDevelop.Core.AddIns
 			return codon;
 		}
 		
+		internal static string[] GetAllowedChildNodes (Type type)
+		{
+			string[] nodes = (string[]) allowedChildNodes [type];
+			if (nodes != null)
+				return nodes;
+
+			object[] ats = type.GetCustomAttributes (typeof(CategoryAttribute), false);
+			if (ats.Length > 0) {
+				nodes = ((CategoryAttribute)ats[0]).Category.Split (',');
+				for (int n=0; n<nodes.Length; n++)
+					nodes [n] = nodes [n].Trim ();
+				return nodes;
+			} else
+				nodes = emptyArray;
+				
+			allowedChildNodes [type] = nodes;
+			return nodes;
+		}
+		
+		internal static string GetDescription (Type type)
+		{
+			string desc = (string) descriptions [type];
+			if (desc != null)
+				return desc;
+			
+			object[] dats = type.GetCustomAttributes (typeof(DescriptionAttribute), false);
+			if (dats.Length > 0)
+				desc = ((DescriptionAttribute)dats[0]).Description;
+			else
+				desc = "";
+			descriptions [type] = desc;
+			return desc;
+		}
 	}
 }

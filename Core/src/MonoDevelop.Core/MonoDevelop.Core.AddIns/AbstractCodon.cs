@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace MonoDevelop.Core.AddIns
 {
@@ -16,10 +17,12 @@ namespace MonoDevelop.Core.AddIns
 	/// </summary>
 	public abstract class AbstractCodon : ICodon
 	{
+		[Description ("Identifier of the item")]
 		[XmlMemberAttribute("id")]
 		string id = null;
 		
 		[XmlMemberAttributeAttribute("class")]
+		[Description ("Full name of the class.")]
 		string myClass = null;
 		
 		[XmlMemberArrayAttribute("insertafter")]

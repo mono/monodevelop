@@ -63,5 +63,12 @@ namespace MonoDevelop.Core.AddIns
 		/// <code>childItemID</code> will be build.
 		/// </remarks>
 		object    BuildChildItem(string childItemID, object caller);
+		
+		string[] AllowedChildNodes { get; }
+		
+		string Description { get; }
+		
+		/// The add-in that declares this extension point
+		AddIn OwnerAddIn { get; }
 	}
 }

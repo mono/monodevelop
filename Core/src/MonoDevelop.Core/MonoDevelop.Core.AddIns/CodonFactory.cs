@@ -48,5 +48,10 @@ namespace MonoDevelop.Core.AddIns
 			
 			throw new CodonNotFoundException(String.Format("no codon builder found for <{0}>", codonNode.Name));
 		}
+		
+		internal ICollection GetAllBuilders ()
+		{
+			return codonHashtable.Values;
+		}
 	}
 }

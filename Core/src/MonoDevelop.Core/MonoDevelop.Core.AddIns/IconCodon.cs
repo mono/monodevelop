@@ -8,24 +8,30 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.ComponentModel;
 
 using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core.AddIns
 {
 	[CodonNameAttribute("Icon")]
+	[Description ("An icon bound to a language or file extension.")]
 	public class IconCodon : AbstractCodon
 	{
+		[Description ("Obsolete. Do not use.")]
 		[PathAttribute()]
 		[XmlMemberAttribute("location")]
 		string location = null;
 		
+		[Description ("Name of the language represented by this icon. Optional.")]
 		[XmlMemberAttributeAttribute("language")]
 		string language  = null;
 		
+		[Description ("Resource name.")]
 		[XmlMemberAttributeAttribute("resource")]
 		string resource  = null;
 		
+		[Description ("File extensions represented by this icon. Optional.")]
 		[XmlMemberArrayAttribute("extensions")]
 		string[] extensions = null;
 		

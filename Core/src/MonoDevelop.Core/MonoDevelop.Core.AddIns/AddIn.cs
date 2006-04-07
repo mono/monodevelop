@@ -264,9 +264,18 @@ namespace MonoDevelop.Core.AddIns
 					switch (dep.LocalName) {
 						case "AddIn": {
 							string aname = dep.GetAttribute ("id");
+							string aversion = dep.GetAttribute ("version");
+							if (aversion == "")
+								throw new InvalidOperationException ("Missing version attribute in AddIn dependency element");
+
 							AddIn addin = AddInTreeSingleton.AddInTree.AddIns [aname];
 							if (addin == null)
 								throw new MissingDependencyException ("Required add-in not found: " + aname);
+								
+							// Make sure the installed version is the required one.
+							if (!Runtime.SetupService.CheckInstalledAddin (aname, aversion))
+								throw new MissingDependencyException ("Required add-in not found: " + aname + " v" + aversion);
+								
 							list.Add (addin);
 							break;
 						}
@@ -403,6 +412,17 @@ namespace MonoDevelop.Core.AddIns
 		
 		void AddCodonsToExtension(Extension e, XmlElement el, ConditionCollection conditions)
 		{
+			string childs = el.GetAttribute ("extension-nodes");
+			if (childs.Length > 0) {
+				string[] nodes = childs.Split (',');
+				for (int n=0; n<nodes.Length; n++)
+					nodes [n] = nodes [n].Trim ();
+				e.AllowedChildNodes = nodes;
+			}
+			string desc = el.GetAttribute ("description");
+			if (desc.Length > 0)
+				e.Description = desc;
+
 			foreach (object o in el.ChildNodes) {
 				if (!(o is XmlElement)) {
 					continue;
@@ -517,6 +537,8 @@ namespace MonoDevelop.Core.AddIns
 			string    path;
 			ArrayList codonCollection = new ArrayList();
 			Hashtable conditions       = new Hashtable();
+			string[] allowedChildNodes;
+			string description;
 			
 			/// <summary>
 			/// returns the path in which the underlying codons are inserted
@@ -551,6 +573,16 @@ namespace MonoDevelop.Core.AddIns
 				set {
 					codonCollection = value;
 				}
+			}
+			
+			public string[] AllowedChildNodes {
+				get { return allowedChildNodes; }
+				set { allowedChildNodes = value; }
+			}
+			
+			public string Description {
+				get { return description; }
+				set { description = value; }
 			}
 			
 			/// <summary>

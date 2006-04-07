@@ -24,6 +24,9 @@ namespace MonoDevelop.Core.AddIns
 		bool needsResort;
 		ICodon    codon      = null;
 		ConditionCollection conditionCollection = null;
+		string[] allowedChildNodes;
+		string description;
+		AddIn ownerAddIn;
 		
 		/// <summary>
 		/// Returns a hashtable containing the child nodes. Where the key is the
@@ -58,6 +61,21 @@ namespace MonoDevelop.Core.AddIns
 			set {
 				conditionCollection = value;
 			}
+		}
+		
+		public string[] AllowedChildNodes {
+			get { return allowedChildNodes; }
+			set { allowedChildNodes = value; }
+		}
+		
+		public string Description {
+			get { return description; }
+			set { description = value; }
+		}
+		
+		public AddIn OwnerAddIn {
+			get { return ownerAddIn; }
+			set { ownerAddIn = value; }
 		}
 		
 		internal void AddNode (string id, DefaultAddInTreeNode child)

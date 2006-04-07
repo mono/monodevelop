@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
@@ -39,11 +40,13 @@ using MonoDevelop.Core.Execution;
 namespace MonoDevelop.Core.AddIns
 {
 	[CodonNameAttribute ("ExecutionHandler")]
+	[Description ("Registers an IExecutionHandler type.")]
 	class ExecutionHandlerCodon : AbstractCodon
 	{
 		IExecutionHandler handler;
 		
 		[XmlMemberAttribute ("platform", IsRequired = true)]
+		[Description ("Platform supported by this execution handler. The core platforms are Mono, Mint and Native. Add-ins may define additional platforms.")]
 		string platform = null;
 		
 		public IExecutionHandler ExecutionHandler {

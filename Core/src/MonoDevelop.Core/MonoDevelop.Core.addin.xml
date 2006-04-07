@@ -12,19 +12,21 @@
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
 	</Runtime>
 
-	<Extension path = "/Workspace/Services">
+	<Extension path = "/Workspace/Services" extension-nodes="Class" description="Services|Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService">
 		<Class id    = "SystemAssemblyService"
 		       class = "MonoDevelop.Core.SystemAssemblyService"/>
 		<Class id    = "ProcessService"
 		       class = "MonoDevelop.Core.Execution.ProcessService"/>
 	</Extension>
 	
-	<Extension path = "/Workspace/Applications">
+	<Extension path = "/Workspace/Applications" extension-nodes="Class" description="Applications|Applications managed by the runtime. Registered applications can be started using the mdtool command. Specified classes must implement MonoDevelop.Core.AddIns.IApplication.">
 		<Class id    = "setup"
 		       class = "MonoDevelop.Core.AddIns.Setup.SetupTool"/>
+		<Class id    = "dump-addin-tree"
+		       class = "MonoDevelop.Core.AddIns.DumpAddinInfoApp"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">
+	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers" extension-nodes="ExecutionHandler" description="Default execution handlers.">
 		<ExecutionHandler id="Mono"
 					platform = "Mono"
 		            class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>

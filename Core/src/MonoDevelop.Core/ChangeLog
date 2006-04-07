@@ -1,3 +1,31 @@
+2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Core.AddIns/ClassCodon.cs
+	* MonoDevelop.Core.AddIns/AbstractCodon.cs:
+	* MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs:
+	* MonoDevelop.Core.AddIns/IconCodon.cs: Added documentation.
+	
+	* MonoDevelop.Core.AddIns/IAddInTreeNode.cs: Add new
+	  properties to be able to get more information about
+	  an extension point.
+	* MonoDevelop.Core.AddIns/AddIn.cs: When checking dependencies,
+	  make sure the required version of an add-in is installed.
+	  Read the new extension-nodes and description attributes for
+	  extensions.
+	* MonoDevelop.Core.AddIns/CodonFactory.cs: Added helper method.
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs: Add documentation
+	  from extensions into the tree.
+	* MonoDevelop.Core.AddIns/CodonBuilder.cs: Added some helper
+	  methods for getting codon documentation.
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs: Added properties
+	  for storing extension point documentation.
+	* MonoDevelop.Core.AddIns/DumpAddinInfoApp.cs: New command-line 
+	  application which writes the extension tree in an xml file.
+	  
+	* MonoDevelop.Core.mdp:
+	* Makefile.am: Updated.
+
 2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Added

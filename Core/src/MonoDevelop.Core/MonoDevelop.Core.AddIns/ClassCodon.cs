@@ -8,9 +8,11 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace MonoDevelop.Core.AddIns
 {
+	[Description ("A class description.")]
 	[CodonNameAttribute("Class")]
 	public class ClassCodon : AbstractCodon
 	{

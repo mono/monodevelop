@@ -27,6 +27,7 @@ MonoDevelop.Core.AddIns/AddInTreeSingleton.cs \
 MonoDevelop.Core.AddIns/AddInService.cs \
 MonoDevelop.Core.AddIns/DefaultAddInTree.cs \
 MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs \
+MonoDevelop.Core.AddIns/DumpAddinInfoApp.cs \
 MonoDevelop.Core.AddIns/IAddInTree.cs \
 MonoDevelop.Core.AddIns/IAddInTreeNode.cs \
 MonoDevelop.Core.AddIns/IApplication.cs \
