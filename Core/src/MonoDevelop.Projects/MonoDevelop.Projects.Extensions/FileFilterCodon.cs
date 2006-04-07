@@ -20,7 +20,7 @@ namespace MonoDevelop.Projects.Extensions
 	internal class FileFilterCodon : AbstractCodon
 	{
 		[Description ("Display name of the filter.")]
-		[XmlMemberAttribute("name", IsRequired=true)]
+		[XmlMemberAttribute ("_label", IsRequired=true)]
 		string filtername       = null;
 		
 		[Description ("Extensions to use as filter.")]
