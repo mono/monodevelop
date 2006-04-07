@@ -84,37 +84,37 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			//string[] fileFilters  = (string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
-			//bool foundFilter      = false;
-			// search filter like in the current selected project
-			/*
-			IProjectService projectService = (IProjectService)MonoDevelop.Core.ServiceManager.GetService(typeof(IProjectService));
-			
-			if (projectService.CurrentSelectedProject != null) {
-				LanguageBindingService languageBindingService = (LanguageBindingService)MonoDevelop.Core.ServiceManager.GetService(typeof(LanguageBindingService));
-				
-				LanguageBindingCodon languageCodon = languageBindingService.GetCodonPerLanguageName(projectService.CurrentSelectedProject.ProjectType);
-				for (int i = 0; !foundFilter && i < fileFilters.Length; ++i) {
-					for (int j = 0; !foundFilter && j < languageCodon.Supportedextensions.Length; ++j) {
-						if (fileFilters[i].IndexOf(languageCodon.Supportedextensions[j]) >= 0) {
-							break;
-						}
-					}
-				}
+			ArrayList filters = new ArrayList ();
+			filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/Combine/FileFilter").BuildChildItems (this));
+			try
+			{
+				filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/FileFilter").BuildChildItems (this));
+			}
+			catch
+			{
+				//nothing there..	
 			}
 			
-			// search filter like in the current open file
-			if (!foundFilter) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if (window != null) {
-					for (int i = 0; i < fileFilters.Length; ++i) {
-						if (fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
-							break;
-						}
-					}
-				}
-			}*/
 			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"))) {
+				
+				foreach (string filterStr in filters)
+				{
+					string[] parts = filterStr.Split ('|');
+					Gtk.FileFilter filter = new Gtk.FileFilter ();
+					filter.Name = parts[0];
+					foreach (string ext in parts[1].Split (';'))
+					{
+						filter.AddPattern (ext);
+					}
+					fs.AddFilter (filter);
+				}
+				
+				//Add All Files
+				Gtk.FileFilter allFilter = new Gtk.FileFilter ();
+                allFilter.Name = GettextCatalog.GetString ("All Files");
+                allFilter.AddPattern ("*");
+                fs.AddFilter (allFilter);
+
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Commands
 					if (ps.IsCombineEntryFile (name))
 						IdeApp.ProjectOperations.OpenCombine (name);
 					else
-						IdeApp.Workbench.OpenDocument(name);
+						IdeApp.Workbench.OpenDocument (name);
 				}	
 			}
 		}
