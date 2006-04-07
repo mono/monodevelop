@@ -25,7 +25,7 @@
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
     <FileFilter id = "Boo"
                 insertbefore = "AllFiles"
-                name = "Boo Files (*.boo)"
+                _label = "Boo Files"
                 extensions = "*.boo"/>
   </Extension>
 

@@ -1,3 +1,7 @@
+2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* BooBinding.addin.xml: renamed attribute in FileFilter Extension
+
 2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.addin.xml: Add boo assembly dependency.
