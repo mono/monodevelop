@@ -22,6 +22,12 @@
     <ProjectTemplate id = "ILAsmConsoleProject"
                      resource = "ILAsmConsoleProject.xpt.xml"/>
   </Extension>
+  
+  <Extension path = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "ILAsm Files"
+		            _label = "ILAsm Files"
+		            extensions = "*.il"/>
+	</Extension>
 
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
     <Conditional activelanguage = "ILAsm">
