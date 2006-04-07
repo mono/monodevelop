@@ -21,7 +21,7 @@
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
     <FileFilter id = "Java"
                 insertbefore = "AllFiles"
-                name = "Java Files (*.java)"
+                _label = "Java Files"
                 extensions = "*.java"/>
   </Extension>
 
