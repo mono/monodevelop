@@ -1,3 +1,7 @@
+2006-04-06  Rafael Teixeira <rafaelteixeirabr@hotmail.com> 
+	* pt_BR.po: Updated Brazilian Portuguese translation.
+	* POTFILES.in: Commented '#' first line '[encoding: UTF-8]' to avoid generating a broken Makefile
+		
 2006-04-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* da.po: Fix incorrect format string.
