@@ -1,3 +1,6 @@
+2006-04-10  Rafael Teixeira <rafaelteixeirabr@hotmail.com> 
+	* POTFILES.in: Added some more source files to be scanned
+
 2006-04-06  Rafael Teixeira <rafaelteixeirabr@hotmail.com> 
 	* pt_BR.po: Updated Brazilian Portuguese translation.
 	* POTFILES.in: Commented '#' first line '[encoding: UTF-8]' to avoid generating a broken Makefile
