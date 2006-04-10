@@ -1,3 +1,7 @@
+2006-04-10 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libs/*: Fix nullref in some themes.
+
 2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: Save the project
