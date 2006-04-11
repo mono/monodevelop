@@ -1,3 +1,8 @@
+2006-04-11 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TextFile.cs: In InsertText, insert the text in the text
+	  field, not in the text parameter. Patch by Tom Stephenson.
+
 2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Extensions/FileFormatCodon.cs: Renamed XML attribute

@@ -97,9 +97,9 @@ namespace MonoDevelop.Projects.Text
 			column = col;
 		}
 		
-		public void InsertText (int position, string text)
+		public void InsertText (int position, string textIn)
 		{
-			text.Insert (position, text);
+			text.Insert (position, textIn);
 			modified = true;
 		}
 		
