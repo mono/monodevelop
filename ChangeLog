@@ -1,3 +1,8 @@
+2006-04-17  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* configure.in: Added zh_CN translation. Thanks to
+	Yu Lindong <shinjidev@163.com>.
+
 2006-04-03 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* configure.in: Removed old glade3 stuff. Change version to 0.10.

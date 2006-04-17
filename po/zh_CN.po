@@ -1,0 +1,4522 @@
+# MonoDevelop zh_CN translation
+# Copyright(C) 2006 Yu Lindong
+# This file is distributed under the same license as the PACKAGE package.
+# Yu Lindong <shinjidev@163.com>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop 0.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-04-13 19:26+0800\n"
+"PO-Revision-Date: 2006-04-17 18:48+0800\n"
+"Last-Translator: Yu Lindong <shinjidev@163.com>\n"
+"Language-Team: Yu Lindong <shinjidev@163.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs:23
+msgid "_Browse..."
+msgstr "浏览(_B)..."
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
+#: ../Extras/WelcomePage/WelcomePageView.cs:145
+msgid "Could not open the url {0}"
+msgstr "无法打开url: {0}"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/FileSelector.cs:14
+msgid "Open file ..."
+msgstr "打开文件..."
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:34
+msgid "Go back"
+msgstr "后退"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:35
+msgid "Go forward"
+msgstr "前进"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:36
+msgid "Stop loading"
+msgstr "停止读取"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:37
+msgid "Address"
+msgstr "地址"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:38
+msgid "Load address"
+msgstr "读取地址"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
+msgid "<b>Select the add-ins to install and click on Next</b>"
+msgstr "<b>选择要安装的插件,然后点击Next</b>"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
+msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
+msgstr "<big><b>MonoDevelop插件管理器</b></big>"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:3
+msgid "Add New Repository"
+msgstr "添加新的仓库"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:4
+msgid "Add-in Installation"
+msgstr "插件安装"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:5
+msgid "Add-in Repository Management"
+msgstr "插件仓库管理"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:6
+msgid "Cat_egories:"
+msgstr "分类(_e):"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:7
+msgid "Details"
+msgstr "细节"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:8
+msgid "Disable"
+msgstr "禁止"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:9
+msgid "Downloading add-ins..."
+msgstr "正在下载插件..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:10
+msgid "Enable"
+msgstr "允许"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:11
+msgid "Install from:"
+msgstr "安装来自:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:12
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:194
+msgid "Loading..."
+msgstr "正在读取..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:13
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:33
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
+msgid "MonoDevelop"
+msgstr "MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:14
+msgid "MonoDevelop Add-in Manager"
+msgstr "MonoDevelop插件管理器"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:15
+msgid "MonoDevelop Package"
+msgstr "MonoDevelop Package"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:16
+msgid "Options"
+msgstr "选项"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:17
+msgid "Overall Progress:"
+msgstr "整体进度:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:18
+msgid "Path:"
+msgstr "路径:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:19
+msgid "Register a local repository"
+msgstr "注册一个本地仓库"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:20
+msgid "Register an on-line repository"
+msgstr "注册一个远程仓库"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+msgid "Select _All"
+msgstr "全部选择(_A)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:22
+msgid "Select the location of the repository you want to register:"
+msgstr "选择您将注册的仓库的位置:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:23
+msgid ""
+"Show all packages\n"
+"Show new versions only\n"
+"Show updates only"
+msgstr ""
+"显示所有的包\n"
+"只显示新版本\n"
+"只显示升级版本"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:26
+msgid "The following add-ins are currently installed:"
+msgstr "以下的插件已经安装:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:27
+msgid "Url:"
+msgstr "Url:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:28
+msgid "_Install Add-ins..."
+msgstr "安装插件(_I)..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
+msgid "_Repositories..."
+msgstr "仓库(_R)..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
+msgid "_Uninstall..."
+msgstr "卸载(_U)..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
+msgid "_Unselect All"
+msgstr "取消全部选择(_U)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:67
+msgid "Go up one level"
+msgstr "向上"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:72
+msgid "Home"
+msgstr "主文件夹"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:91
+msgid "Location"
+msgstr "位置"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:173
+msgid "Directories"
+msgstr "目录"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:208
+msgid "Access denied"
+msgstr "拒绝访问"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:210
+msgid "Could not access to directory: "
+msgstr "无法访问目录"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
+msgid "Open with file browser"
+msgstr "打开文件浏览器"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
+msgid "Open with terminal"
+msgstr "打开终端程序"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:313
+msgid "Rename"
+msgstr "重命名"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
+msgid "Delete"
+msgstr "删除"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:254
+msgid "Create new folder"
+msgstr "建立新文件夹"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:322
+msgid "Cannot enter '{0}' folder"
+msgstr "无法进入文件夹 '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:357
+msgid "Could not rename folder '{0}' to '{1}'"
+msgstr "无法将文件夹 {0} 重命名为 {1} "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:375
+msgid "Could not create new folder '{0}'"
+msgstr "无法建立新的文件夹 '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Are you sure you want to delete this folder?"
+msgstr "你确认要删除此文件夹吗?"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Delete folder"
+msgstr "删除文件夹"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:407
+msgid "Could not delete folder '{0}'"
+msgstr "无法删除文件夹 '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:40
+msgid "Can't remove directory {0}"
+msgstr "无法移除目录{0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:48
+msgid "Can't remove file {0}"
+msgstr "无法移除文件{0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:62
+msgid "Can't rename directory {0}"
+msgstr "无法重命名目录{0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:70
+msgid "Can't rename file {0}"
+msgstr "无法重命名文件{0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:76
+msgid "Version:"
+msgstr "版本:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:79
+msgid "Author:"
+msgstr "作者:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:82
+msgid "Copyright:"
+msgstr "版权:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:85
+msgid "Add-in Dependencies:"
+msgstr "插件依赖关系:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:82
+msgid "All registered repositories"
+msgstr "所有注册的仓库"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:182
+msgid "Are you sure you want to cancel the installation?"
+msgstr "你是否确定要取消此次安装"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:294
+msgid ""
+"<b>The following packages will be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>以下的包将被卸载</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:299
+msgid ""
+"<b>There are other add-ins that depend on the previous ones which will also be uninstalled:</b>\n"
+"\n"
+msgstr "<b>存在其他的插件依赖于以上将被卸载的插件:</b>\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:370
+msgid "<b><span foreground=\"red\">The selected add-ins can't be installed because there are dependency conflicts.</span></b>\n"
+msgstr "<b><span foreground=\"red\">由于依赖冲突,被选的插件无法被安装。</span></b>\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:372
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:379
+msgid "<b><span foreground=\"red\">"
+msgstr "<b><span foreground=\"red\">"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:372
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:379
+msgid "</span></b>\n"
+msgstr "</span></b>\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:384
+msgid ""
+"<b>The following packages will be installed:</b>\n"
+"\n"
+msgstr ""
+"<b>以下的包将被安装:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:388
+msgid " (in user directory)"
+msgstr " (在用户目录中)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:394
+msgid ""
+"<b>The following packages need to be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>以下的包需要卸载:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:402
+msgid ""
+"<b>The following dependencies could not be resolved:</b>\n"
+"\n"
+msgstr ""
+"<b>以下的依赖关系无法解除:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:426
+msgid "The installation has been successfully completed."
+msgstr "安装已经成功完成。"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:427
+msgid "The instalation failed!"
+msgstr "安装失败!"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:430
+msgid "The uninstallation has been successfully completed."
+msgstr "卸载已经成功完成"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:431
+msgid "The uninstallation failed!"
+msgstr "卸载失败!"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:447
+msgid "You need to restart MonoDevelop for the changes to take effect."
+msgstr "为了使修改生效,你需要重启MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:527
+msgid "Repository"
+msgstr "仓库"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:56
+msgid "Add-in"
+msgstr "插件"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:45
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:28
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:55
+msgid "Version"
+msgstr "版本"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:127
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:7
+msgid "Other"
+msgstr "其他"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:24
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:54
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:6
+msgid "Name"
+msgstr "名称"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:25
+msgid "Url"
+msgstr "Url"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:185
+msgid "Operation completed with errors."
+msgstr "操作完成,但出现错误。"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:187
+msgid "Operation completed with warnings."
+msgstr "操作完成,出现警告信息。"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:189
+msgid "Operation successfully completed."
+msgstr "操作成功完成。"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs:66
+msgid "Steps"
+msgstr "单步调试"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:179
+msgid "MonoDevelop options"
+msgstr "MonoDevelop 选项"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:281
+msgid "Back"
+msgstr "后退"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:284
+msgid "Next"
+msgstr "前进"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:287
+msgid "Finish"
+msgstr "完成"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs:28
+msgid ""
+"Could not load the {0} '{1}'.\n"
+"\n"
+"{2}"
+msgstr ""
+"无法读取{0} '{1}'.\n"
+"\n"
+"{2}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:81
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:95
+msgid "Exception occurred: {0}"
+msgstr "发生异常: {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:145
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:188
+msgid "Question"
+msgstr "问题"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:125
+msgid "WARNING: "
+msgstr "警告: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:147
+msgid "ERROR: "
+msgstr "错误: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs:20
+msgid "Resource not found: {0}"
+msgstr "没被找到的资源: {0}"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:144
+msgid "Loading Add-ins"
+msgstr "正在读取插件"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:168
+msgid "Loading Addins"
+msgstr "正在读取插件"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:176
+msgid "Loading {0} add-in"
+msgstr "正在读取插件 {0}"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
+msgid "The add-in '{0}' is not installed."
+msgstr "没有安装插件 {0}."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs:55
+msgid "(provided by {0})"
+msgstr "(由{0}提供)"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:126
+msgid "Not all dependencies could be resolved."
+msgstr "不是所有的依赖关系都能解除"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:134
+msgid "Installing add-ins..."
+msgstr "正在安装插件..."
+
+#. Prepare install
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:138
+msgid "Initializing installation"
+msgstr "正在初始化安装"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:172
+msgid "Installing"
+msgstr "正在安装"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:216
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:236
+msgid "Finishing installation"
+msgstr "安装完成"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:393
+msgid "The package '{0}' could not be found in any repository"
+msgstr "任何仓库中都找不到包'{0}'"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:458
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:465
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:473
+msgid "Can't install two versions of the same add-in: '"
+msgstr "不能安装同一插件的不同版本: '"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:700
+msgid "The repository could not be registered"
+msgstr "无法注册此仓库"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:804
+msgid "Could not get information from repository"
+msgstr "无法从仓库中得到信息"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1074
+msgid "Requesting "
+msgstr "正在发出请求"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1080
+msgid "Downloading "
+msgstr "正在下载"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1160
+msgid "The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
+msgstr "当前用户权限,无法卸载插件'{0} v{1}'。"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:207
+msgid "Initializing service: "
+msgstr "正在初始化服务:"
+
+#. Hide menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:773
+msgid "Hide"
+msgstr "隐藏"
+
+#. Lock menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:778
+msgid "Lock"
+msgstr "锁定"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:84
+msgid "Iconify"
+msgstr "缩隐"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:84
+msgid "Iconify this dock"
+msgstr "缩隐此停靠窗口"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:85
+msgid "Close"
+msgstr "关闭"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:85
+msgid "Close this dock"
+msgstr "关闭此停靠窗口"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:1
+msgid "   "
+msgstr "   "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:2
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:1
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:3
+#: ../Extras/NemerleBinding/Nemerle.glade.h:1
+#: ../Extras/VBNetBinding/VB.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:3
+msgid "<b>Code generation options</b>"
+msgstr "<b>代码自动生成选项</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:4
+msgid "<b>Comment generation options</b>"
+msgstr "<b>注释自动生成选项</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:5
+msgid "<b>Load</b>"
+msgstr "<b>读取</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:6
+msgid "<b>Location</b>"
+msgstr "<b>位置</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:7
+msgid "<b>Save</b>"
+msgstr "<b>保存</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:8
+msgid "<b>Template</b>"
+msgstr "<b>模板</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:9
+msgid "Add-in Manager ..."
+msgstr "插件管理器..."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:10
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:114
+msgid "All Files"
+msgstr "所有文件"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:11
+msgid "Always create backup copy"
+msgstr "总是建立一个备份"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:12
+msgid "Build and run options"
+msgstr "构建和运行选项"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:13
+msgid "Case sensitive"
+msgstr "区别大小写"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:14
+msgid "Create separate _Solution subdirectory"
+msgstr "创建独立的解决方案子目录(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:15
+msgid "Creates a new C# Project"
+msgstr "创建一个新的C#工程"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:16
+msgid ""
+"Days\n"
+"Months"
+msgstr ""
+"天\n"
+"月"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:18
+msgid "Default _Solution location"
+msgstr "解决方案缺省位置(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:19
+msgid "Did you know that you can design lots of cool things with glade?"
+msgstr "你知道吗,你可以使用glade设计很多很酷的东西?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:20
+msgid "Did you know...?"
+msgstr "你知道吗..."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:21
+msgid "Directory:"
+msgstr "目录："
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
+msgid "Edit References"
+msgstr "编辑引用"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:23
+msgid "Every"
+msgstr "每"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:24
+msgid "Filemask:"
+msgstr "文件掩码:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:25
+msgid "Find Dialog"
+msgstr "查找对话框"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:26
+msgid "Find:"
+msgstr "查找:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:27
+msgid "Generate _additional comments"
+msgstr "通用附加注释(_a)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:28
+msgid "Generate _documentation comments"
+msgstr "生成文档注释(_d)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:29
+msgid "Include Found Files"
+msgstr "包括找到的文件"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:30
+msgid "Layout name:"
+msgstr "布局名称:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:31
+msgid "Load user-specific settings with the document"
+msgstr "读取文档的用户自定义设置"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:32
+msgid "Look for add-in updates at startup, with the following periodicity:"
+msgstr "启动时使用以下的周期检查插件的升级版本:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
+msgid "MonoDevelop can run without these add-ins, but the functionality they provide will be missing."
+msgstr "MonoDevelop 可以启动无需这些插件, 但其提供的功能将丢失."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:35
+msgid "MonoDevelop cannot start because a fatal error has been detected."
+msgstr "MonoDevelop 无法启动, 一个致命错误被发现。"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:36
+msgid "New Files"
+msgstr "新文件"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:37
+msgid "New Files Only"
+msgstr "仅有新文件"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:38
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Solution"
+msgstr "新建解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:39
+msgid "New layout"
+msgstr "新建布局"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+msgid "R_eplace All"
+msgstr "全部替换(_e)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
+msgid "Recurse subdirectories"
+msgstr "包含子目录"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
+msgid "Remove"
+msgstr "移除"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:43
+msgid "Replace Dialog"
+msgstr "替换对话框"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:44
+msgid "Replace:"
+msgstr "替换:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:45
+msgid "Search in:"
+msgstr "查找对象:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
+msgid "Select command"
+msgstr "选择指令"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
+msgid "Select default location"
+msgstr "选择缺省位置"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:49
+msgid "Selected references"
+msgstr "选择的引用"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
+msgid "Show _output pad when build starts"
+msgstr "编译时显示输出面板(_o)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
+msgid "Show _task list pad if build finished with errors"
+msgstr "编译出错时显示任务列表(_t)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
+msgid "Show extensions in project scout"
+msgstr "显示扩展名"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:53
+msgid "Show hidden files and directories"
+msgstr "显示隐藏的文件和目录"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
+msgid "The following add-ins could not be started:"
+msgstr "以下的插件无法启动:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:55
+msgid "Tip of the day"
+msgstr "每日一帖"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:56
+msgid "Use _Output Window"
+msgstr "使用输出窗口(_O)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:57
+msgid "Use special search strategy:"
+msgstr "使用特别的搜索方法:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:58
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewNodeBuilder.cs:57
+msgid "View"
+msgstr "视图"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:59
+msgid "Whole word only"
+msgstr "仅完整匹配的词"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:60
+msgid "Whole words only"
+msgstr "仅完整匹配的值"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:61
+msgid "You can start MonoDevelop without these add-ins, but the functionality they provide will be missing. Do you wish to continue?"
+msgstr "MoneDevelop可以启动无需此插件,但其提供的功能将丢失。是否继续?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
+msgid "_Arguments:"
+msgstr "参数(_A):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
+msgid "_Command:"
+msgstr "命令(_C):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:64
+msgid "_Don't save changes to open documents "
+msgstr "不保存对打开文档的修改(_D)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:65
+msgid "_Else on same line as closing bracket"
+msgstr "Else与结束括号在同一行(_E)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:66
+msgid "_Insert blank lines between members"
+msgstr "在成员之间插入空行(_I)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:67
+msgid "_Load previous solution on startup"
+msgstr "启动时打开上次的解决方案(_L)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
+msgid "_Location:"
+msgstr "位置(_L):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
+msgid "_Mark All"
+msgstr "全部标记(_M)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:70
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
+msgid "_Name:"
+msgstr "名字(_N):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:71
+msgid "_Next Tip"
+msgstr "下一帖(_N)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:72
+msgid "_Prompt for arguments"
+msgstr "参数提示(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:73
+msgid "_Prompt to save changes to open documents"
+msgstr "提示保存对打开文档的修改(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:74
+msgid "_Replace"
+msgstr "替换(_R)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:75
+msgid "_Save Changes to open documents"
+msgstr "保存对打开文档的修改(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:76
+msgid "_Show at startup"
+msgstr "启动时显示(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:77
+msgid "_Solution name:"
+msgstr "解决方案名(_S):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:78
+msgid "_Start code block on the same line"
+msgstr "在同一行放置程序块的开始符(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:79
+msgid "_Title:"
+msgstr "标题(_T):"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:80
+msgid "_Use full type names"
+msgstr "使用完整的类型名(_U)"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:81
+msgid "_Working Directory:"
+msgstr "工作目录(_W):"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:1
+msgid "# Any single digit"
+msgstr "# 任意的单个数字"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:2
+msgid "* Zero or more of any character"
+msgstr "* 0个以上的任意字符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:3
+msgid "? Any single character"
+msgstr "? 任意一个字符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:4
+msgid "Active Configuration"
+msgstr "活动配置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:5
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:308
+msgid "Add"
+msgstr "添加"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:6
+msgid "Add Files..."
+msgstr "添加文件..."
+
+#. ProjectCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:8
+msgid "Add New Project..."
+msgstr "添加新的工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:9
+msgid "Add New Solution..."
+msgstr "添加新的解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:10
+msgid "Add Resource"
+msgstr "添加资源"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:11
+msgid "Add existing Solution"
+msgstr "添加已存在的解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:12
+msgid "Add existing _Project"
+msgstr "添加已存在的工程(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:13
+msgid "Add-ins"
+msgstr "插件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:14
+msgid "Buil_d"
+msgstr "构建(_d)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:15
+msgid "Buil_d Solution"
+msgstr "构建解决方案(_d)"
+
+#. i8n the file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:17
+msgid "Build"
+msgstr "构建"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:18
+msgid "Build the solution"
+msgstr "构建解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:19
+msgid "C#"
+msgstr "C#"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:20
+msgid "C# Corner"
+msgstr "C# Corner"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:21
+msgid "C# Help"
+msgstr "C# Help"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:22
+msgid "C_omment Line(s)"
+msgstr "注释行(_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:23
+msgid "Classes"
+msgstr "类"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:24
+msgid "Clean"
+msgstr "清理"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:25
+msgid "Clean Solution"
+msgstr "清理解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:26
+msgid "Clear All Breakpoints"
+msgstr "清除所有断点"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:27
+msgid "Close All"
+msgstr "全部关闭"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:28
+msgid "Close Sol_ution"
+msgstr "关闭解决方案(_U)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:29
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:3
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:3
+msgid "Code Generation"
+msgstr "代码生成"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:30
+msgid "Coding"
+msgstr "编码"
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:32
+msgid "Copy the selection"
+msgstr "复制选中内容"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:33
+msgid "Create a new file"
+msgstr "创建新文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:34
+msgid "Cu_t"
+msgstr "剪切(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:35
+msgid "Cut the selection"
+msgstr "剪切选中内容"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:36
+msgid "Debug"
+msgstr "调试"
+
+#. DebugCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:38
+msgid "Debug Application..."
+msgstr "调试应用程序..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:39
+msgid "Delete the selection"
+msgstr "删除选中区域"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:40
+msgid "Deploy"
+msgstr "部署"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:41
+msgid "Display Options List"
+msgstr "显示选项列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:42
+msgid "Edit References..."
+msgstr "编辑引用..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:43
+msgid "External Tools"
+msgstr "外部工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
+msgid "F_ind In Files..."
+msgstr "在文件中查找(_I)"
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:190
+msgid "Find"
+msgstr "查找"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:47
+msgid "Find Next Selection"
+msgstr "查找同选择的下一个"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:48
+msgid "Find _Next"
+msgstr "查找下一个(_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
+msgid "Find _Previous"
+msgstr "查找上一个(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+msgid "Find _Previous Selection"
+msgstr "查找同选择的上一个(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
+msgid "Find next"
+msgstr "查找下一个"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
+msgid "GotDotNet"
+msgstr "GotDotNet"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
+msgid "Group members by access"
+msgstr "按访问对成员分组"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
+msgid "Group members by member type"
+msgstr "按成员类型对成员分组"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
+msgid "Include"
+msgstr "包含"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
+msgid "Include To Project"
+msgstr "包含进工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
+msgid "Layout List"
+msgstr "布局列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
+msgid "Load/Save"
+msgstr "读取/保存"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
+msgid "Local Copy Reference"
+msgstr "本地拷贝引用"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
+msgid "Mono Project"
+msgstr "Mono工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
+msgid "MonoDevelop Options"
+msgstr "MonoDevelop 选项"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
+msgid "N_ew Project..."
+msgstr "新建工程(_e)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
+msgid "Nested namespaces"
+msgstr "嵌套的名字空间"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
+msgid "New File..."
+msgstr "新建文件..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:344
+msgid "New Folder"
+msgstr "新建目录"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
+msgid "New _File..."
+msgstr "新建文件(_F)..."
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
+msgid "O_pen..."
+msgstr "打开(_p)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
+msgid "Open"
+msgstr "打开"
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
+msgid "Open file or solution"
+msgstr "打开文件或解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
+msgid "Options..."
+msgstr "选项..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
+msgid "Paste"
+msgstr "粘贴"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:75
+msgid "Pause"
+msgstr "暂停"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
+msgid "Pre_ferences..."
+msgstr "参数选择(_f)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+msgid "Project Files"
+msgstr "工程文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+msgid "R_eplace In Files..."
+msgstr "在此文件中进行替换(_E)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+msgid "Re_name"
+msgstr "重命名(_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+msgid "Rebuild"
+msgstr "重新构建"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+msgid "Rebuild Solution"
+msgstr "重新构建解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
+msgid "Recent Files"
+msgstr "最近打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+msgid "Recent Projects"
+msgstr "最近打开的工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+msgid "Recent Solu_tions"
+msgstr "最近打开的解决方案(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+msgid "Recent _Files"
+msgstr "最近打开的文件(_F)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
+msgid "Redo last undone action"
+msgstr "重做先前撤消的更改"
+
+#. RefactoryCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+msgid "Refactory Operations"
+msgstr "重构操作"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
+msgid "Replace"
+msgstr "替换"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+msgid "Reset Options"
+msgstr "重置选项"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
+msgid "Run"
+msgstr "执行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
+msgid "Save"
+msgstr "保存"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+msgid "Save All"
+msgstr "全部保存"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+msgid "Save _As..."
+msgstr "另存为(_A)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+msgid "Save all open files"
+msgstr "保存所有打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+msgid "Save the active document"
+msgstr "保存活动的文档"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+msgid "Set As Startup Project"
+msgstr "设为启动工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
+msgid "Show All Files"
+msgstr "显示所有文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+msgid "Show project structure"
+msgstr "显示工程结构"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
+msgid "Show public members only"
+msgstr "只显示public成员"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
+msgid "Solution"
+msgstr "解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
+msgid "Solution Files"
+msgstr "解决方案文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+msgid "Standard"
+msgstr "标准"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+msgid "Step Into"
+msgstr "单步执行逐语句"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+msgid "Step Out"
+msgstr "跳出"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+msgid "Step Over"
+msgstr "单步执行逐过程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+msgid "Stop"
+msgstr "停止"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+msgid "Stop current build or application execution"
+msgstr "停止正在进行的构建及执行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+msgid "Toggle Breakpoint"
+msgstr "设定/取消 断点"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+msgid "Tool List"
+msgstr "工具列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+msgid "Toolbars"
+msgstr "工具栏"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+msgid "Tools"
+msgstr "工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+msgid "Undo last action"
+msgstr "撤消最后的操作"
+
+#. ViewCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+msgid "View List"
+msgstr "显示列表"
+
+#. <DialogPanel id = "SelectCulture"
+#. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+#. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
+msgid "Visual style"
+msgstr "显示样式"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
+msgid "Window List"
+msgstr "窗口列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
+msgid "[!] Any one character not in the set"
+msgstr "[!] 在此集合外的任意一个字符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
+msgid "[] Any one character in the set"
+msgstr "[] 在此集合内的任意一个字符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
+msgid "_About..."
+msgstr "关于(_A)..."
+
+#. ToolCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+msgid "_Add-in Manager..."
+msgstr "插件管理器(_A)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+msgid "_Clear Recent Files"
+msgstr "清楚最近打开文件的历史记录(_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+msgid "_Clear Recent Solutions"
+msgstr "清楚最近打开解决方案的历史记录(_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+msgid "_Close File"
+msgstr "关闭文件(_C)"
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+msgid "_Copy"
+msgstr "复制(_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+msgid "_Delete"
+msgstr "删除(_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
+msgid "_Delete Current Layout"
+msgstr "删除当前布局(_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+msgid "_Edit"
+msgstr "编辑(_E)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+msgid "_File"
+msgstr "文件(_F)"
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:137
+msgid "_Find..."
+msgstr "查找(_F)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+msgid "_Full Screen"
+msgstr "全屏(_F)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+msgid "_Help"
+msgstr "帮助(_H)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+msgid "_Indent Selection"
+msgstr "缩进所选的代码(_I)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+msgid "_Layouts"
+msgstr "布局(_L)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+msgid "_New Layout..."
+msgstr "新建布局(_N)..."
+
+#. WindowCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+msgid "_Next Window"
+msgstr "下一个窗口(_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+msgid "_Paste"
+msgstr "粘贴(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
+msgid "_Previous Window"
+msgstr "上一个窗口(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+msgid "_Quit"
+msgstr "退出(_Q)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+msgid "_Redo"
+msgstr "重做(_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
+msgid "_Reload File"
+msgstr "重读文件(_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
+msgid "_Remove From Project"
+msgstr "从工程中移除(_R)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
+msgid "_Replace..."
+msgstr "替换(_R)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+msgid "_Run"
+msgstr "执行(_R)"
+
+#. HelpCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+msgid "_Tip of the Day..."
+msgstr "每日一帖(_T)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
+msgid "_Tools"
+msgstr "工具(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
+msgid "_Uncomment Line(s)"
+msgstr "取消注释行(_N)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+msgid "_Undo"
+msgstr "撤消(_U)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+msgid "_Unindent Selection"
+msgstr "取消缩进所选的代码"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+msgid "_View"
+msgstr "视图(_V)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
+msgid "_Web"
+msgstr "Web(_W)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
+msgid "_Window"
+msgstr "窗口(_W)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+msgid "_Word Count..."
+msgstr "字数统计(_W)..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs:103
+msgid "Can't load templates configuration file"
+msgstr "无法读取模板配置文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/DebugCommands.cs:28
+msgid "Application to Debug"
+msgstr "用于调试的应用程序"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:125
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:24
+msgid "File to Open"
+msgstr "要打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+msgid "Are you sure you want to clear recent files list?"
+msgstr "确定要清空最近打开的文件列表?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+msgid "Clear recent files"
+msgstr "清楚最近打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+msgid "Are you sure you want to clear recent projects list?"
+msgstr "确定要清空最近打开的工程列表?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+msgid "Clear recent projects"
+msgstr "清楚最近打开的工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:282
+msgid "load solution {0}"
+msgstr "读取解决方案 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:150
+msgid "Resume"
+msgstr "暂停"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:227
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:241
+msgid "Build {0}"
+msgstr "构建 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:229
+msgid "Build Solution {0}"
+msgstr "构建解决方案 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:231
+msgid "Build Project {0}"
+msgstr "构建工程 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:270
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:278
+msgid "Rebuild {0}"
+msgstr "重新构建 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:338
+msgid "Clean {0}"
+msgstr "清理 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:108
+msgid "Go to declaration"
+msgstr "移动到定义"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:112
+msgid "Find references"
+msgstr "查找引用"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:116
+msgid "Class {0}"
+msgstr "类 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+msgid "Go to base"
+msgstr "移动到底部"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:118
+msgid "Find derived classes"
+msgstr "查找派生类"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+msgid "Field {0} : {1}"
+msgstr "字段 {0} : {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:124
+msgid "Property {0} : {1}"
+msgstr "属性 {0} : {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+msgid "Event {0}"
+msgstr "事件 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
+msgid "Method {0}"
+msgstr "方法 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:131
+msgid "Indexer {0}"
+msgstr "索引 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+msgid "Parameter {0}"
+msgstr "参数 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+msgid "Variable {0}"
+msgstr "变量 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:46
+msgid "Start tool"
+msgstr "启动工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+msgid "Enter any arguments you want to use while launching tool, {0}:"
+msgstr "启动工具时,指定的参数:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+msgid "Command Arguments for {0}"
+msgstr "{0} 的命令行参数"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:103
+msgid ""
+"External program execution failed.\n"
+"Error while starting:\n"
+" '{0} {1}'"
+msgstr ""
+"外部程序执行失败。\n"
+"启动时出错:\n"
+"'{0} {1}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:58
+msgid "Are you sure you want to delete the active layout?"
+msgstr "确认要删除活动的布局?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:69
+msgid "Activate this window"
+msgstr "使窗口成为活动窗口"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:23
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:280
+msgid "New Tool"
+msgstr "新建工具"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ToolLoader.cs:83
+msgid "Can't load external tools configuration file"
+msgstr "无法读取外部程序配置文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:35
+msgid "Abstract Content"
+msgstr "抽象内容"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractViewContent.cs:25
+msgid "Change me"
+msgstr "Change me"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:105
+msgid "New add-in updates are available:"
+msgstr "存在以下插件的升级版本:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:42
+msgid "Web Browser"
+msgstr "Web浏览器"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:207
+msgid "Done."
+msgstr "完成."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
+msgid "INS"
+msgstr "INS"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
+msgid "OVR"
+msgstr "OVR"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:35
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:1
+msgid "Assemblies"
+msgstr "程序集"
+
+#  FIXME: il8n this
+#  FIXME: il8n this
+#. FIXME: il8n this
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:75
+msgid "File {0} is not a valid .Net Assembly"
+msgstr "文件 {0} 不是一个有效的.NET程序集"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:76
+msgid "<b>Ported and developed by:</b>\n"
+msgstr "<b>由以下人员开发和移植:</b>\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:84
+msgid "translator-credits"
+msgstr "翻译者-credits"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:87
+msgid ""
+"\n"
+"\n"
+"<b>Translated by:</b>\n"
+msgstr ""
+"\n"
+"\n"
+"<b>由以下人员翻译:</b>\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:172
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:185
+msgid "About MonoDevelop"
+msgstr "关于MonoDevelop"
+
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:187
+msgid "Version Info"
+msgstr "版本信息"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:22
+msgid "Save Files"
+msgstr "保存文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:29
+msgid "Solution: {0}"
+msgstr "解决方案: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:45
+msgid "Project: {0}"
+msgstr "工程: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:85
+msgid "_Save and Quit"
+msgstr "保存并退出(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:60
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:171
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:167
+msgid "_Description"
+msgstr "描述(_D)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:61
+msgid "_Template"
+msgstr "模板(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:33
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:89
+msgid "Reference Name"
+msgstr "引用名称"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:46
+msgid "Package"
+msgstr "包"
+
+#  set up dialog title
+#. set up dialog title
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:51
+msgid "Found new files in {0}"
+msgstr "在{0} 中发现新文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:92
+msgid "Can't load bitmap {0} using default"
+msgstr "缺省下无法读取位图 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:466
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
+msgid "Name:"
+msgstr "名称:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Project"
+msgstr "新建工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:264
+msgid "Project will be saved at"
+msgstr "工程将被保存在"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:307
+msgid ""
+"Illegal project name. \n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"非法的工程名。\n"
+"只有字母、数字、空格、'.' 和 '_'是允许的。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:315
+msgid ""
+"Illegal project name.\n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"非法的工程名。\n"
+"只有字母、数字、空格、'.' 和 '_'是允许的。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:320
+msgid "A Project with that name is already in your Project Space"
+msgstr "已经存在一个同名的工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:337
+msgid "Could not create directory {0}. File already exists."
+msgstr "无法建立目录 {0} ,文件已经存在。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:342
+msgid "You do not have permission to create to {0}"
+msgstr "你无权在{0}下建立"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:362
+msgid "The project could not be created"
+msgstr "工程无法建立"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:437
+msgid "Solution Location"
+msgstr "解决方案位置"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:35
+msgid "Project"
+msgstr "工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:51
+msgid "Directory"
+msgstr "目录"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:164
+msgid "Wildcards"
+msgstr "通配符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:165
+msgid "Regular Expressions"
+msgstr "正则表达式"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:157
+msgid "Current File"
+msgstr "当前文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:158
+msgid "All Open Files"
+msgstr "所有打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:159
+msgid "Entire Project"
+msgstr "整个工程"
+
+#  set the label properties
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:102
+msgid "Replace in Files"
+msgstr "替换在文件内..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:174
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:303
+msgid "All open files"
+msgstr "所有打开的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:175
+msgid "Whole project"
+msgstr "整个工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:266
+msgid "Select directory"
+msgstr "选择目录"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:325
+msgid "Empty search pattern"
+msgstr "空的查找文本模式"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:332
+msgid "Empty directory name"
+msgstr "空的目录名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:337
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
+msgid "Invalid directory name: {0}"
+msgstr "无效的目录名: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:347
+msgid "Invalid file mask: {0}"
+msgstr "无效的文件遮码: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:90
+msgid "Type"
+msgstr "类型"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:98
+msgid "Packages"
+msgstr "包"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:99
+msgid "Projects"
+msgstr "工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:100
+msgid ".Net Assembly"
+msgstr ".NET程序集"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
+msgid ""
+"<b>License</b>\n"
+"    {0}"
+msgstr ""
+"<b>许可证</b>\n"
+"    {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
+msgid "Released under the GNU General Public license."
+msgstr "在GNU通用许可证下发放"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:37
+msgid ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
+msgstr ""
+"<b>版权所有</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:217
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:250
+msgid "Path"
+msgstr "路径"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:80
+msgid "dynamic"
+msgstr "动态的"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:133
+msgid "total"
+msgstr "总数"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:110
+msgid "You must save the file"
+msgstr "你必须保存此文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:123
+msgid "Unsaved changed to open files were not included in counting"
+msgstr "被打开的文件修改后没有保存是不会被包括进计数中"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:130
+msgid "You must be in project mode"
+msgstr "必须在工程模式下"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:232
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:278
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:215
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:246
+msgid "File"
+msgstr "文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:233
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:282
+msgid "Chars"
+msgstr "字符"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:286
+msgid "Words"
+msgstr "单词"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:290
+msgid "Lines"
+msgstr "行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:261
+msgid "Word Count"
+msgstr "字数统计"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:298
+msgid "_Count where"
+msgstr "统计范围(_C)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:302
+msgid "Current file"
+msgstr "当前文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:304
+msgid "Whole solution"
+msgstr "整个解决方案"
+
+#  using(SaveFileDialog fdiag = new SaveFileDialog()) {
+#  fdiag.OverwritePrompt = true;
+#  fdiag.AddExtension    = true;
+#  string[] fileFilters  =(string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#  fdiag.Filter          = String.Join("|", fileFilters);
+#  for(int i = 0; i < fileFilters.Length; ++i) {
+#  if(fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#  fdiag.FilterIndex = i + 1;
+#  break;
+#  }
+#  }
+#  using(SaveFileDialog fdiag = new SaveFileDialog()) {
+#  fdiag.OverwritePrompt = true;
+#  fdiag.AddExtension    = true;
+#  string[] fileFilters  =(string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#  fdiag.Filter          = String.Join("|", fileFilters);
+#  for(int i = 0; i < fileFilters.Length; ++i) {
+#  if(fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#  fdiag.FilterIndex = i + 1;
+#  break;
+#  }
+#  }
+#  using(SaveFileDialog fdiag = new SaveFileDialog()) {
+#  fdiag.OverwritePrompt = true;
+#  fdiag.AddExtension    = true;
+#  string[] fileFilters  =(string[])(AddInTreeSingleton.AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+#  fdiag.Filter          = String.Join("|", fileFilters);
+#  for(int i = 0; i < fileFilters.Length; ++i) {
+#  if(fileFilters[i].IndexOf(Path.GetExtension(window.ViewContent.ContentName == null ? window.ViewContent.UntitledName : window.ViewContent.ContentName)) >= 0) {
+#  fdiag.FilterIndex = i + 1;
+#  break;
+#  }
+#  }
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:137
+msgid "Save as..."
+msgstr "另存为..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:147
+msgid "File name {0} is invalid"
+msgstr "无效的文件名 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:152
+msgid "File {0} already exists.  Overwrite?"
+msgstr "文件 {0} 已经存在。是否覆盖?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs:28
+msgid "Documentation"
+msgstr "文档"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:89
+msgid "Loading Workbench"
+msgstr "加载Workbench"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:92
+msgid ""
+"MonoDevelop failed to start.\n"
+"If you installed MonoDevelop using a binary instaler, take a look at \n"
+"http://www.mono-project.com/InstallerInstructions for more info about possible\n"
+"causes of this error."
+msgstr ""
+"MonoDevelop启动失败.\n"
+"如果你使用二进制安装程序安装的MonoDevelop, 根多的错误可能请查看 \n"
+"http://www.mono-project.com/InstallerInstructions\n"
+" "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:111
+msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
+msgstr "MonoDevelop启动失败. 无法解析本地主机名."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:112
+msgid "Your network may be misconfigured. Make sure the hostname of your system is added to the /etc/hosts file."
+msgstr "你的网络缺少配置. 确认你系统的主机名被添加到文件 /etc/hosts 中."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:127
+msgid "Initializing MonoDevelop"
+msgstr "正在初始化MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:170
+msgid "MonoDevelop failed to start. The following error has been reported: "
+msgstr "MonoDevelop启动失败. 出现以下的错误:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:278
+msgid "Some packages installed in your system are not compatible with MonoDevelop:\n"
+msgstr "以下安装的一些包与MonoDevelop不相容:\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:280
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:282
+msgid "version required: {0}"
+msgstr "需要的版本: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:284
+msgid "You need to upgrade the previous packages to start using MonoDevelop."
+msgstr "需要升级以上的包以便使用MonoDevelop."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:42
+msgid "Item Path"
+msgstr "项目路径"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:66
+msgid "_Item Directory"
+msgstr "项目目录(_I)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:44
+msgid "Item file name"
+msgstr "项目文件名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:45
+msgid "Item extension"
+msgstr "项目扩展名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:47
+msgid "Current line"
+msgstr "当前行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:48
+msgid "Current column"
+msgstr "当前列"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:49
+msgid "Current text"
+msgstr "当前文本"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:51
+msgid "Target Path"
+msgstr "目标路径"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:68
+msgid "_Target Directory"
+msgstr "目标目录(_T)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:69
+msgid "Target Name"
+msgstr "目标名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:54
+msgid "Target Extension"
+msgstr "目标扩展名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:71
+msgid "_Project Directory"
+msgstr "工程目录(_P)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:57
+msgid "Project file name"
+msgstr "工程文件名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:73
+msgid "_Solution Directory"
+msgstr "解决方案目录(_S)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:60
+msgid "Solution File Name"
+msgstr "解决方案文件名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:75
+msgid "MonoDevelop Startup Directory"
+msgstr "MonoDevelop启动目录"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:319
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:150
+msgid "Control not found!"
+msgstr "找不到控制项!"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:340
+msgid "The command of tool \"{0}\" is invalid."
+msgstr "工具 \"{0}\" 的命令串无效"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:346
+msgid "The working directory of tool \"{0}\" is invalid."
+msgstr "工具 \"{0}\" 的工作目录无效"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs:63
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:83
+msgid "Solution {0}"
+msgstr "解决方案 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:40
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs:14
+msgid "Files"
+msgstr "文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:43
+msgid "Size"
+msgstr "大小"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:46
+msgid "Last modified"
+msgstr "最后修改时间"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Are you sure you want to delete this file?"
+msgstr "确定要删除此文件?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Delete files"
+msgstr "删除文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:184
+msgid "Delete file"
+msgstr "删除文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:187
+msgid "Rename file"
+msgstr "重命名文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:28
+msgid "Help"
+msgstr "文档"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:37
+msgid "Mono Documentation"
+msgstr "Mono 文档"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:43
+msgid "Task List"
+msgstr "任务列表"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:82
+msgid "Show Errors"
+msgstr "显示错误"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:93
+msgid "Show Warnings"
+msgstr "显示警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:104
+msgid "Show Messages"
+msgstr "显示信息"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:212
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:245
+msgid "Line"
+msgstr "行"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:213
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:108
+msgid "Description"
+msgstr "描述"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:383
+msgid "{0} Error"
+msgid_plural "{0} Errors"
+msgstr[0] "{0} 错误"
+msgstr[1] "{0} 错误"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:388
+msgid "{0} Warning"
+msgid_plural "{0} Warnings"
+msgstr[0] "{0} 警告"
+msgstr[1] "{0} 警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:393
+msgid "{0} Message"
+msgid_plural "{0} Messages"
+msgstr[0] "{0} 消息"
+msgstr[1] "{0} 消息"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:86
+msgid "Solution {0} (1 entry)"
+msgstr "解决方案 {0} (单入口)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:89
+msgid "Solution {0} ({1} entries)"
+msgstr "解决方案 {0} ({1} 个入口)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:169
+msgid "Solution name may not contain any of the following characters: {0}"
+msgstr "解决方案名不能包含任何以下的字符: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:199
+msgid "Do you really want to remove solution {0} from solution {1}?"
+msgstr "确认将解决方案 {0} 从解决方案 {1} 中移除?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:167
+msgid "Do you really want to move the folder '{0}' to the root folder of project '{1}'?"
+msgstr "确认将文件夹 '{0}' 移动到工程 '{1}' 根文件夹中?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:169
+msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
+msgstr "确认将文件夹 {0} 移动到文件夹 {1} 中?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:173
+msgid "Do you really want to copy the folder '{0}' to the root folder of project '{1}'?"
+msgstr "确认将文件夹 '{0}' 复制到工程'{1}' 的根文件夹下?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:175
+msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
+msgstr "确认将文件夹 '{0}' 复制到文件夹 '{1}' 下?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:199
+msgid "Do you want to save the file '{0}' before the move operation?"
+msgstr "是否在移动前保存文件 {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:201
+msgid ""
+"Do you want to save the following files before the move operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"移动前是否要保存以下的文件?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
+msgid "Do you want to save the file '{0}' before the copy operation?"
+msgstr "是否在复制前保存文件 '{0}' ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
+msgid ""
+"Do you want to save the following files before the copy operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"复制前是否保存以下的文件?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:218
+msgid "Save operation failed."
+msgstr "保存操作失败。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:335
+msgid "Copying files ..."
+msgstr "复制文件..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
+#: ../Extras/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:117
+msgid "Add files"
+msgstr "添加文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:255
+msgid "{0} is outside the project directory, what should I do?"
+msgstr "{0} 不在工程目录下。将如何处理?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:259
+msgid "Use the same action for all selected files."
+msgstr "相同的行为使用于所有选择的文件"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:263
+msgid "_Move"
+msgstr "移动(_M)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:281
+msgid "An error occurred while attempt to move/copy that file. Please check your permissions."
+msgstr "移动/复制时出现错误。请检查你的权限。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:305
+msgid "The file '{0}' already exists. Do you want to replace it?"
+msgstr "文件 {0} 已经存在。是否替换它?"
+
+#. assume duplicate file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:102
+msgid "File or directory name is already in use, choose a different one."
+msgstr "已经存在同名的文件或目录, 请选择一个不同的名称。"
+
+#  new file name with wildcard(*, ?) characters in it
+#. new file name with wildcard (*, ?) characters in it
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:104
+msgid "The file name you have chosen contains illegal characters. Please choose a different file name."
+msgstr "选择的文件名包含无效的字符, 请选择一个其他的文件名。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:140
+msgid "Are you sure you want to remove file {0} from project {1}?"
+msgstr "确认要将文件 {0} 从工程 {1} 中移除?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:169
+msgid "Do you want to remove folder {0}?"
+msgstr "确认要移除文件夹 {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:263
+msgid "Project name may not contain any of the following characters: {0}"
+msgstr "工程名不能包含任何以下的字符: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:307
+msgid "Do you really want to remove project {0} from solution {1}"
+msgstr "确认要将工程 {0} 从解决方案 {1} 中移除?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:80
+msgid "References"
+msgstr "引用"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
+msgid "Resources"
+msgstr "资源"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:143
+msgid "Resource file '{0}' does not exist"
+msgstr "资源文件 '{0}' 不存在"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:120
+msgid "Are you sure you want to permanently delete the file {0}?"
+msgstr "确定要永久删除文件 {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:126
+msgid "The file {0} could not be deleted"
+msgstr "无法删除文件 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:132
+msgid "Search Results"
+msgstr "查找结构"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:248
+msgid "Text"
+msgstr "文本"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:997
+msgid "Display Options"
+msgstr "显示选项"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:240
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:416
+msgid "File not found: {0}"
+msgstr "找不到文件: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:283
+msgid "Solution loaded."
+msgstr "完成读取解决方案."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:350
+msgid "Solution saved."
+msgstr "完成保存解决方案."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:352
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:365
+msgid "Save failed."
+msgstr "保存失败"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:363
+msgid "Project saved."
+msgstr "完成保存工程."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:451
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:476
+msgid "The file '{0}' could not be loaded."
+msgstr "无法读取文件 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:467
+msgid "Add to Solution"
+msgstr "添加进解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:670
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:703
+msgid "Execution failed."
+msgstr "执行失败。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:720
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:779
+msgid "No runnable executable found."
+msgstr "无可运行的可执行文件。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:764
+msgid "The file {0} can't be compiled."
+msgstr "无法编译文件 {0}。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:815
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:875
+msgid "Build failed."
+msgstr "构建失败。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:831
+msgid "Save changed files?"
+msgstr "是否保存修改过的文件?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:859
+msgid "---------------------- Done ----------------------"
+msgstr "---------------------- 完成 ----------------------"
+
+#  FIXME: make this a resource in the resource file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:865
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:331
+msgid "{0} error"
+msgid_plural "{0} errors"
+msgstr[0] "{0} 错误"
+msgstr[1] "{0} 错误"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:866
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:332
+msgid "{0} warning"
+msgid_plural "{0} warnings"
+msgstr[0] "{0} 警告"
+msgstr[1] "{0} 警告"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:869
+msgid "Build successful."
+msgstr "构建成功"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:871
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:873
+msgid "Build: "
+msgstr "构建:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:908
+msgid "Could not get any file from '{0}'."
+msgstr "在'{0}'中无法得到任何文件。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:920
+msgid "Could not create directory '{0}'."
+msgstr "无法建立目录 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:927
+msgid "Copying files..."
+msgstr "复制文件..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:939
+msgid "File '{0}' could not be created."
+msgstr "无法建立文件 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:961
+msgid "File '{0}' could not be deleted."
+msgstr "无法删除文件 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:976
+msgid "Directory '{0}' could not be deleted."
+msgstr "无法删除目录 '{0}'。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
+msgid "Error : {0}"
+msgstr "错误: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
+msgid " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
+msgstr " 行 <span font_family='fixed'>{0,-4}</span>  列 <span font_family='fixed'>{1,-3}</span>  字符 <span font_family='fixed'>{2,-3}</span> "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:73
+msgid "Match at offset {0}"
+msgstr "从 {0} 开始匹配"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:198
+msgid "Search pattern is invalid"
+msgstr "无效的查找文本模式"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:108
+msgid "The search could not be finished: {0}"
+msgstr "查找无法完成: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:110
+msgid "Search cancelled."
+msgstr "查找取消。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:112
+msgid "Search completed. {0} matches found in {1} files."
+msgstr "查找完成。{1} 个文件中共找到 {0} 个匹配。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:117
+msgid "Search time: {0} seconds."
+msgstr "查找时间: {0}秒"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:172
+msgid "There is a search already in progress. Do you want to cancel it?"
+msgstr "已经有一个查找正在处理, 是否取消它?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:135
+msgid "Replacing '{0}' in {1}."
+msgstr "在 {1} 中 替换 {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:181
+msgid "Looking for '{0}' in {1}."
+msgstr "在 {1} 中 搜索 {0}"
+
+#  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Mark all done", "Finished");
+#  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Mark all done", "Finished");
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:125
+msgid "Mark all completed"
+msgstr "标记所有完成"
+
+#  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
+#  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
+#  MessageBox.Show((Form)WorkbenchSingleton.Workbench, "Replace all done", "Finished");
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:151
+msgid "Replace all finished. {0} matches found."
+msgstr "全部替换完成。{0} 个匹配被找到。"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:211
+msgid "Search string not found:"
+msgstr "查找的字符串没有找到:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:95
+msgid "Ready"
+msgstr "准备完成"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:107
+msgid "Are you sure that you want to reload the file?"
+msgstr "是否确定重新读取文件?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
+msgid "Initializing Main Window"
+msgstr "初始化主窗口"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:246
+msgid "Opening {0}"
+msgstr "正在打开 '{0}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:336
+msgid "Do you want to save the current changes?"
+msgstr "是否保存当前的修改?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:348
+msgid "Do you really want to discard your changes ?"
+msgstr "确认要放弃当前的修改?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:380
+msgid "Invalid file name"
+msgstr "无效的文件名"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:400
+msgid "{0} is a directory"
+msgstr "{0}是一个目录"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:81
+msgid ""
+"Solution file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"解决方案文件 {0} 已经存在。\n"
+"是否覆盖存在的文件?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:68
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:83
+msgid "Can't create project with type : {0}"
+msgstr "无法建立{0}类型的工程"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+msgid ""
+"Project file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"工程文件 {0} 已经存在。\n"
+"是否要覆盖存在的文件?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:86
+msgid "File already exists"
+msgstr "文件已经存在"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:160
+msgid "_Name"
+msgstr "名称(_N)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:207
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:231
+msgid "Error loading template from resource {0}"
+msgstr "从资源中读取模板出错"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:120
+msgid "File {0} could not be written."
+msgstr "无法写入文件 {0}."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:64
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:143
+msgid "The file '{0}' already exists in the project."
+msgstr "工程中已经存在文件 {0}."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:86
+msgid ""
+"File {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"文件 {0} 已经存在。\n"
+"是否覆盖存在的文件?"
+
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:1
+msgid "Application Configuration File"
+msgstr "应用程序配置文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:2
+msgid "Creates a .NET application configuration file."
+msgstr "建立一个.NET应用程序配置文件。"
+
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:1
+msgid "A blank solution"
+msgstr "空解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:2
+msgid "Blank Solution"
+msgstr "空解决方案"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:1
+msgid "Creates an empty class."
+msgstr "建立一个空类"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:2
+msgid "Empty Class"
+msgstr "空类"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:1
+msgid "Creates an empty interface."
+msgstr "建立一个空接口"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:2
+msgid "Empty Enumeration"
+msgstr "空枚举"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:1
+msgid "Creates an empty HTML file."
+msgstr "建立一个空HTML文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:2
+msgid "Empty HTML File"
+msgstr "空HTML文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:2
+msgid "Empty Interface"
+msgstr "空接口"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:1
+msgid "Creates an empty resource file."
+msgstr "建立一个空资源文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:2
+msgid "Empty Resource File"
+msgstr "空资源文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:2
+msgid "Empty Struct"
+msgstr "空结构"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:1
+msgid "Creates an empty text file."
+msgstr "建立一个空文本文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:2
+msgid "Empty Text File"
+msgstr "空文本文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:1
+msgid "Creates an empty XML file."
+msgstr "建立一个空XML文件"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:2
+msgid "Empty XML File"
+msgstr "空XML文件"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
+msgid "<b>Execute scripts </b>"
+msgstr "<b>执行脚本</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
+msgid "<b>Include</b>"
+msgstr "<b>包含</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:4
+msgid "<b>On Project Load</b>"
+msgstr "<b>读取工程时</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:5
+msgid "<b>Output Directory</b>"
+msgstr "<b>输出目录</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:6
+msgid "<b>Output</b>"
+msgstr "<b>输出</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:7
+msgid "<b>Project Information</b>"
+msgstr "<b>工程信息</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
+msgid "Action"
+msgstr "动作"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
+msgid "Are you sure you want to delete this configuration?"
+msgstr "确定要删除此配置吗?"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
+msgid "Assembly _name:"
+msgstr "程序集名称(_n):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
+msgid "Automatically _include found files"
+msgstr "自动包括找到的文件:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
+msgid "Compilation _target"
+msgstr "编译目标(_T)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
+msgid "Create configurations for all solution items"
+msgstr "为解决方案中的每项建立配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
+msgid "Delete Configuration"
+msgstr "删除配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
+msgid "Delete also configurations in solution items"
+msgstr "同时删除解决方案中每项的配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
+msgid "Enable _viewstate"
+msgstr "使用 Viewstate(_v)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
+msgid "Execute co_mmand:"
+msgstr "执行命令(_m):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:19
+msgid "New Configuration"
+msgstr "新建配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:20
+msgid "New name:"
+msgstr "新名称:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
+msgid "Output _path:"
+msgstr "输出路径(_p):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
+msgid "Paramet_ers:"
+msgstr "参数(_e):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
+msgid "Pause _console output"
+msgstr "暂停控制台输出(_c)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:25
+msgid "Rename Configuration"
+msgstr "重命名配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
+msgid "Rename configurations in all solution items"
+msgstr "重命名解决方案中所有项的配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
+msgid "Run on e_xternal console"
+msgstr "运行于外部控制台(_x)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
+msgid "Search for new _files on load"
+msgstr "读取时搜索新文件(_f)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
+msgid "Select a target configuration for each solution item:"
+msgstr "为解决方案中每项选择一个目标配置:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
+msgid "Select deploy script"
+msgstr "选择部署脚本"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
+msgid "Select output directory"
+msgstr "选择输出目录"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
+msgid "Select output path"
+msgstr "选择输出路径"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
+msgid "Select target location"
+msgstr "选择目标位置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
+msgid "With _scriptfile"
+msgstr "用脚本文件(_s)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
+msgid "_After build:"
+msgstr "构建后(_A):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
+msgid "_Before build:"
+msgstr "构建前(_B):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
+msgid "_Deploy target:"
+msgstr "部署目标(_D):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
+msgid "_Description:"
+msgstr "描述(_D):"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
+msgid "_Include files in compile run"
+msgstr "要编译文件文件(_I)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
+msgid "_Multiple Startup Project"
+msgstr "多启动工程(_M)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
+msgid "_Project Files"
+msgstr "工程文件(_P)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
+msgid "_Single Startup Project"
+msgstr "单启动工程(_S)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:1
+msgid "Build Properties"
+msgstr "构建属性"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:2
+msgid "Common"
+msgstr "共通項目"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:3
+msgid "Compile"
+msgstr "编译"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
+msgid "Configurations"
+msgstr "配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:4
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:5
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:1
+msgid "General"
+msgstr "通用"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:6
+msgid "Project options"
+msgstr "工程选项"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
+msgid "Startup Properties"
+msgstr "启动属性"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
+msgid "Solution Options"
+msgstr "解决方案选项"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:72
+msgid "Configuration"
+msgstr "配置"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:108
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:165
+msgid "Please enter a valid configuration name."
+msgstr "请输入一个有效的配置名。"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:110
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:167
+msgid "A configuration with the name '{0}' already exists."
+msgstr "已经存在一个名称为'{0}' 的配置。"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:132
+msgid "There must be at least one configuration."
+msgstr "必须有至少一个配置。"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:71
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:200
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:27
+msgid "None"
+msgstr "无"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:72
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+msgid "Execute"
+msgstr "执行"
+
+#. tell the user we encountered and worked around an issue
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:105
+msgid "The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."
+msgstr "解决方案的执行定义对此解决方案无效。一个新的执行定义空集合被建立。"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
+msgid "File {0} not found in {1}."
+msgstr "{1} 中找不到文件 {0}。"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:101
+msgid "Invalid deploy target specified"
+msgstr "无效的指定的部署目标"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:108
+msgid "Invalid deploy script specified"
+msgstr "无效的指定的部署脚本"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:114
+msgid "Deploy script doesn't exist"
+msgstr "部署脚本不存在"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:62
+msgid "Invalid assembly name specified"
+msgstr "无效的指定的程序集名称"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:67
+msgid "Invalid output directory specified"
+msgstr "无效的指定的输出目录"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:45
+msgid "Project Options"
+msgstr "工程选项"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:70
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:184
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:219
+msgid "(Active)"
+msgstr "(活动)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
+msgid "Set as active"
+msgstr "设为活动的"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/AssemblyDeploy.cs:26
+msgid "Can't deploy: no deployment target set"
+msgstr "无法部署:没有部署目标集。"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
+msgid "Saving solution: {0}"
+msgstr "正在保存解决方案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
+msgid "Could not save solution: {0}"
+msgstr "无法保存解决方案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
+msgid "The file '{0}' is using an old solution file format. It will be automatically converted to the current format."
+msgstr "此文件 '{0}' 使用了老的解决方案文件格式, 它将自动被转换成新的格式."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:213
+msgid "Loading solution: {0}"
+msgstr "正在读取解决方案: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:211
+msgid "Refactoring project {0}"
+msgstr "正在重构工程 {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:571
+msgid "The solution does not have an active configuration."
+msgstr "此解决方案没有一个活动的配置。"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:575
+msgid "Building Solution {0}"
+msgstr "解决方案 {0} 正在构建中"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:582
+msgid ""
+"Cyclic dependencies can not be built with this version.\n"
+"But we are working on it."
+msgstr ""
+"当前版本无法完成有循环依赖关系的构建。\n"
+"これは現在開発中です。"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:87
+msgid "Unknown language: {0}"
+msgstr "未知语言: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:87
+msgid "You may need to install an additional add-in to support projects for the language '{0}'"
+msgstr "你可能需要安装一个附加的插件用以支持语言'{0}'相关的工程"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/FileDeploy.cs:20
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ScriptDeploy.cs:20
+msgid "Can't deploy: you forgot to specify a deployment script"
+msgstr "无法部署: 你忘记规定一个部署脚本。"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
+msgid "Saving project: {0}"
+msgstr "正在保存工程: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
+msgid "Could not save project: {0}"
+msgstr "无法保存工程: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:115
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
+msgid "The file '{0}' is using an old project file format. It will be automatically converted to the current format."
+msgstr "此文件 '{0}' 使用了老的工程文件格式, 它将自动被转换城新的格式."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:117
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
+msgid "Loading project: {0}"
+msgstr "正在读取工程: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:123
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
+msgid "Could not load project: {0}"
+msgstr "无法读取工程: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:491
+msgid "Generating database"
+msgstr "生成数据库"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:309
+msgid "Building Project: {0} Configuration: {1}"
+msgstr "正在构建工程: {0}  配置: {1}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:334
+msgid "Build complete -- "
+msgstr "构建完成 --"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:386
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:407
+msgid "Executing: {0}"
+msgstr "正在执行: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:633
+msgid "Performing main compilation..."
+msgstr "正在执行主编译..."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ScriptDeploy.cs:29
+msgid "Error while executing deploy script"
+msgstr "执行部署脚本使出现错误"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs:16
+msgid "The file '{0}' has an unknown format version (version '{1}')'."
+msgstr "此文件 '{0}'使用未知的格式版本(版本 '{1}')."
+
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:1
+msgid "Boo Files"
+msgstr "Boo 文件"
+
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:2
+msgid "Boo Shell"
+msgstr "Boo Shell"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:1
+msgid "ChangeLog"
+msgstr "ChangeLog"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:2
+msgid "ChangeLog Add-in"
+msgstr "ChangeLog插件"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:4
+msgid "Insert Entry"
+msgstr "插入条目"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:5
+msgid "Insert Header"
+msgstr "插入头"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:36
+msgid "Specify personal information used in ChangeLog entries"
+msgstr "ChangeLog 条目里使用了特定的个人信息"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:40
+msgid "Full Name:"
+msgstr "全称:"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:44
+msgid "Email Address:"
+msgstr "电子邮件地址:"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
+msgid "CSharp Files"
+msgstr "C#文件"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:4
+#: ../Extras/NUnit/Gui/TestPad.cs:289
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:131
+msgid "Output"
+msgstr "输出"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:5
+msgid "Resource Files"
+msgstr "资源文件"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:6
+msgid "Web Files"
+msgstr "Web文件"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:7
+msgid "Xml Files"
+msgstr "Xml文件"
+
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:54
+msgid "{0} could not be found or is invalid."
+msgstr "无法找到 {0}, 或其是无效的"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:1
+#: ../Extras/JavaBinding/Java.glade.h:1
+#: ../Extras/NemerleBinding/Nemerle.glade.h:2
+#: ../Extras/VBNetBinding/VB.glade.h:2
+msgid "<b>Code Generation</b>"
+msgstr "<b>代码生成</b>"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:2
+#: ../Extras/JavaBinding/Java.glade.h:4
+#: ../Extras/VBNetBinding/VB.glade.h:3
+msgid "<b>Warnings</b>"
+msgstr "<b>警告</b>"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:3
+#: ../Extras/VBNetBinding/VB.glade.h:4
+msgid "Allow '_unsafe' code"
+msgstr "允许'_unsafe'的代码"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:4
+#: ../Extras/JavaBinding/Java.glade.h:6
+msgid "Compile _Target:"
+msgstr "编译目标:(_T)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:5
+#: ../Extras/JavaBinding/Java.glade.h:8
+msgid "Define S_ymbols:"
+msgstr "定义符号:(_y)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:6
+#: ../Extras/JavaBinding/Java.glade.h:9
+msgid "Emit _debugging information"
+msgstr "嵌入调试信息(_D)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:7
+#: ../Extras/JavaBinding/Java.glade.h:10
+#: ../Extras/VBNetBinding/VB.glade.h:7
+msgid "Enable _optimizations"
+msgstr "允许优化(_O)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:8
+#: ../Extras/VBNetBinding/VB.glade.h:8
+msgid "Generate _xml documentation"
+msgstr "生成XML文档(_x)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:9
+#: ../Extras/JavaBinding/Java.glade.h:15
+#: ../Extras/VBNetBinding/VB.glade.h:9
+msgid "Treat warnings as _errors"
+msgstr "将警告作为错误处理(_e)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:10
+#: ../Extras/VBNetBinding/VB.glade.h:10
+msgid "_Generate overflow checks"
+msgstr "生成溢出检查(_G)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:11
+#: ../Extras/JavaBinding/Java.glade.h:16
+msgid "_Main Class:"
+msgstr "Main类:(_M)"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:12
+msgid "_Warning Level:"
+msgstr "警告级别:(_W)"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:58
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:50
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:148
+msgid "Executable"
+msgstr "可执行文件"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:59
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:2
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:51
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:150
+msgid "Library"
+msgstr "库"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:1
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
+msgid "Console Project"
+msgstr "控制台工程"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
+msgid "Creates a new C# console project."
+msgstr "创建一个新的C#控制台工程"
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
+msgid "Creates a secure C# Web Service, using SessionState"
+msgstr "使用SessionState创建一个安全的C# Web Service"
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:2
+msgid "Secure Web Service"
+msgstr "安全的Web Service"
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:1
+msgid "Creates a C# Web Service."
+msgstr "创建一个C# Web Service"
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:2
+msgid "Web Service"
+msgstr "Web Service"
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
+msgid "Creates an empty C# file."
+msgstr "创建一个空的C#文件"
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:2
+msgid "Empty File"
+msgstr "空文件"
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:1
+msgid "Creates an empty C# project."
+msgstr "建立一个空C#工程"
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:2
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:2
+msgid "Empty Project"
+msgstr "空的工程"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:1
+msgid "Glade# 2.0 Project"
+msgstr "Glade#2.0 工程"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:2
+msgid "a Glade# 2.0 project with one window and button"
+msgstr "带有一个包含按钮的窗口的Glade# 2.0工程"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
+msgid "Glade# 1.0 Project"
+msgstr "Glade 1.0工程"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
+msgid "a Glade# project with one window and button"
+msgstr "带有一个包含按钮的窗口的Glade#工程"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:1
+msgid "Creates a Gnome# 2.0 project"
+msgstr "建立一个Gnome# 2.0工程"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:2
+msgid "Gnome# 2.0 Project"
+msgstr "Gnome# 2.0工程"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:1
+msgid "Creates a Gnome# program."
+msgstr "建立一个Gnome#程序"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:2
+msgid "Gnome# Program"
+msgstr "Gnome#程序"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Gnome# project"
+msgstr "建立一个Gnome#工程"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# 1.0 Project"
+msgstr "Gnome# 1.0工程"
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:1
+msgid "Creates a Gtk# 2.0 project."
+msgstr "建立一个Gtk# 2.0工程"
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:2
+msgid "Gtk# 2.0 Project"
+msgstr "Gtk# 2.0工程"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
+msgid "Creates a Gtk# project."
+msgstr "建立一个Gtk#工程"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
+msgid "Gtk# 1.0 Project"
+msgstr "Gtk# 1.0工程"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window."
+msgstr "建立一个top-level Gtk#窗口"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:2
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:2
+msgid "Gtk# Window"
+msgstr "Gtk#窗口"
+
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:1
+msgid "Creates an empty C# class library"
+msgstr "建立一个空C#类库"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:77
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:87
+msgid "Source Code"
+msgstr "源代码"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:82
+msgid "Window Designer"
+msgstr "窗口设计器"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/WindowsFolderNodeBuilder.cs:63
+msgid "Windows and Dialogs"
+msgstr "窗口及对话框"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
+msgid "Include debug information"
+msgstr "包含调试信息(_I)"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:59
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:51
+msgid "Output path"
+msgstr "输出路径"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
+msgid "Assembly name"
+msgstr "程序集名称"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
+msgid "Target options"
+msgstr "目标选项"
+
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:2
+msgid "ILAsm Console Project"
+msgstr "ILAsm控制台工程"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:30
+msgid "Javac"
+msgstr "Javac"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:31
+msgid "Gcj"
+msgstr "Gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:2
+msgid "<b>Compiler</b>"
+msgstr "<b>编译器</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:3
+msgid "<b>Options</b>"
+msgstr "<b>选项</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:5
+msgid "Classpath:"
+msgstr "Classpath:"
+
+#: ../Extras/JavaBinding/Java.glade.h:7
+msgid "Compiler command:"
+msgstr "编译器命令:"
+
+#: ../Extras/JavaBinding/Java.glade.h:11
+msgid "Enable deprecation warnings"
+msgstr "允许反对警告"
+
+#: ../Extras/JavaBinding/Java.glade.h:12
+msgid "Generate warnings"
+msgstr "生成警告"
+
+#: ../Extras/JavaBinding/Java.glade.h:13
+msgid "IKVM path:"
+msgstr "IKVM路进:"
+
+#: ../Extras/JavaBinding/Java.glade.h:14
+msgid "Java compiler:"
+msgstr "Java编译器:"
+
+#: ../Extras/JavaBinding/Java.glade.h:17
+msgid "gcj"
+msgstr "gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:18
+msgid "javac"
+msgstr "javac"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:1
+msgid "Creates an empty Java file."
+msgstr "建立一个空的Java文件"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:1
+msgid "Creates an empty Java solution."
+msgstr "建立一个空的Java解决方案"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project with IKVM"
+msgstr "建立一个基于IKVM的Java控制台工程"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
+msgid "IKVM Console Project"
+msgstr "IKVM控制台工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:1
+msgid "Create a Glade# Java project with IKVM"
+msgstr "建立一个基于IKVM的Java Glade#工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:2
+msgid "IKVM Glade# Project"
+msgstr "IKVM Glade#工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "建立一个基于IKVM的Java Gnome#工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
+msgid "IKVM Gnome# Project"
+msgstr "IKVM Gnome#工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:1
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "建立一个基于IKVM的Java Gtk#工程"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:2
+msgid "IKVM Gtk# Project"
+msgstr "IKVM Gtk#工程"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:1
+msgid "AWT Applet"
+msgstr "AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:2
+msgid "Creates a Java AWT Applet"
+msgstr "建立一个Java AWT Applet"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:1
+msgid "AWT Project"
+msgstr "AWT工程"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:2
+msgid "Creates a Java AWT project."
+msgstr "建立一个Java AWT工程"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:1
+msgid "AWT Application"
+msgstr "AWT应用程序"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:2
+msgid "Creates a Java AWT application."
+msgstr "建立一个Java AWT应用程序"
+
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console Java project"
+msgstr "建立一个Java控制台工程"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:1
+msgid "Creates an AWT dialog."
+msgstr "建立一个AWT对话框"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:2
+msgid "Java AWT Dialog"
+msgstr "Java AWT对话框"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:1
+msgid "AWT Frame"
+msgstr "AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:2
+msgid "Creates a Java AWT Frame"
+msgstr "建立一个Java AWT Frame"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:1
+msgid "AWT OK Dialog"
+msgstr "AWT OK对话框"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:2
+msgid "Creates a Java AWT OK Dialog."
+msgstr "建立一个Java AWT OK对话框"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:1
+msgid "AWT Panel"
+msgstr "AWT Panel"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:2
+msgid "Creates a Java AWT panel."
+msgstr "建立一个Java AWT Panel"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:58
+msgid "The widget design {0} is not currently bound to a class."
+msgstr "此窗口的设计 {0} 没有绑定到某个类."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:48
+msgid "Are you sure you want to delete the widget '{0}'?"
+msgstr "你确认要删除此窗口吗?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:50
+msgid "Are you sure you want to delete the window '{0}'?"
+msgstr "你确认要删除此窗口吗?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:223
+msgid "The form designer could not be loaded"
+msgstr "无法加载窗口设计器"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:57
+msgid "Properties"
+msgstr "属性"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:61
+msgid "Signals"
+msgstr "信号"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:92
+msgid "Designer"
+msgstr "设计器"
+
+#. Show the Bind to Field button only for children of the root container.
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:469
+msgid "Bind to Field"
+msgstr "绑定到字段"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:72
+msgid "User Interface"
+msgstr "用户界面"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:1
+msgid "\n"
+msgstr "\n"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:4
+msgid "&"
+msgstr "&"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:5
+msgid "<b>Behavior</b>"
+msgstr "<b>行为</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:6
+msgid "<b>Elements</b>"
+msgstr "<b>元素</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:7
+msgid "<b>File encoding</b>"
+msgstr "<b>文件编码</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:8
+msgid "<b>Font</b>"
+msgstr "<b>字体</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:9
+msgid "<b>General Options</b>"
+msgstr "<b>通用选项</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:10
+msgid "<b>Markers</b>"
+msgstr "<b>标记</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:11
+msgid "<b>Rulers</b>"
+msgstr "<b>标尺</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:12
+msgid "<b>Tabs</b>"
+msgstr "<b>Tabs</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:13
+msgid "A_uto insert curly braces"
+msgstr "自动插入花括号(_u)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:14
+msgid "Add Group"
+msgstr "添加组"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:15
+msgid "Automatic"
+msgstr "自动"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:16
+msgid "Background:"
+msgstr "背景:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:17
+msgid "C_onvert Tabs to Spaces"
+msgstr "将Tabs转换为空格(_o)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:18
+msgid "Choose _encoding"
+msgstr "选择编码(_e)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:19
+msgid "Color:"
+msgstr "颜色:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:20
+msgid "Edit Group"
+msgstr "编辑组"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:21
+msgid "Enable code _completion"
+msgstr "允许code completion(_c)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:22
+msgid "Enable code _folding"
+msgstr "允许code folding(_f)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:23
+msgid "Enable syntax highlighting"
+msgstr "允许语法高亮"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:24
+msgid "Extension"
+msgstr "扩展名"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:25
+msgid "Highlight _matching bracket"
+msgstr "高亮花括号匹配"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:26
+msgid "I_ndentation"
+msgstr "缩进(_n)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
+msgid "Remove Group"
+msgstr "移除组"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:29
+msgid "Restore default"
+msgstr "恢复缺省值"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:30
+msgid "Show _column ruler,"
+msgstr "显示列标尺(_c)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:31
+msgid "Show _line numbers"
+msgstr "显示行号(_l)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:32
+msgid "Smart"
+msgstr "智能"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:33
+msgid "Use default _monospace font"
+msgstr "使用缺省的monospace字体(_m)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:34
+msgid "Use default _sans-serif font"
+msgstr "使用缺省sans-serif字体(_s)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:35
+msgid "_Automatic template insertion"
+msgstr "自动插入模板(_A)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
+msgid "_Indentation size:"
+msgstr "缩进大小:(_I)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
+msgid "_Tab size"
+msgstr "Tab 大小(_T)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:38
+msgid "_Underline errors"
+msgstr "下划线错误(_U)"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:39
+msgid "_Use custom font:"
+msgstr "使用用户自定义字体(_U):"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:40
+msgid "at column:"
+msgstr "列: "
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:1
+msgid "Behavior"
+msgstr "行为"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
+msgid "Buffer Options"
+msgstr "缓存选项"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
+msgid "Clear Bookmarks"
+msgstr "清空书签"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:4
+msgid "Code Templates"
+msgstr "代码模板"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
+msgid "Goto Matching _Brace"
+msgstr "移动相匹配的花括号(_B)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
+msgid "Markers And Rulers"
+msgstr "标记与标尺"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
+msgid "Markers and Rulers"
+msgstr "标记与标尺"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:9
+msgid "Next Bookmark"
+msgstr "下一个书签"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:10
+msgid "Previous Bookmark"
+msgstr "上一个书签"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:11
+msgid "Print Previe_w"
+msgstr "打印预览(_w)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:12
+msgid "Search"
+msgstr "查找"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:13
+msgid "Syntax highlighting"
+msgstr "语法高亮"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:14
+msgid "Text Editor"
+msgstr "文本编辑器"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:15
+msgid "Toggle Bookmark"
+msgstr "设定/取消 书签"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:16
+msgid "_Goto Line..."
+msgstr "移动到指定行(_G)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
+msgid "_Print..."
+msgstr "打印(_P)..."
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:18
+msgid "_Search"
+msgstr "查找(_S)"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:19
+msgid "bogus_label"
+msgstr "假标签(_l)"
+
+#  FIXME: make this a resource in the resource file
+#. FIXME: make this a resource in the resource file
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs:56
+msgid "{0} Code Group"
+msgstr "代码组 {0}"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:104
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:118
+msgid "Template"
+msgstr "模板"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:170
+msgid "New "
+msgstr "新建"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:183
+msgid "Edit "
+msgstr "编辑"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:146
+msgid "Source Editor"
+msgstr "源代码编辑"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:259
+msgid "This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"
+msgstr "文件 {0} 已被MonoDevelop以外的程序修改。是否要覆盖此文件?"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:341
+msgid "This file has been changed outside of MonoDevelop"
+msgstr "文件已被MonoDevelop以外的程序修改"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:345
+msgid "Reload"
+msgstr "重新读取"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:349
+msgid "Ignore"
+msgstr "忽略"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:171
+msgid "File:"
+msgstr "文件:"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+msgid "Page"
+msgstr "页"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:185
+msgid "Print Source Code"
+msgstr "打印源代码"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:227
+msgid "Print Preview - Source Code"
+msgstr "打印预览 - 源代码"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:1
+msgid "Go to Line"
+msgstr "移动到指定行"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:2
+msgid "_Go to Line"
+msgstr "移动到指定行(_G)"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:3
+msgid "_Line Number:"
+msgstr "行号(_L):"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:56
+msgid "Aggregates"
+msgstr "聚合"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnNodeBuilder.cs:52
+msgid "Column"
+msgstr "列"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:56
+msgid "Columns"
+msgstr "列"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintNodeBuilder.cs:57
+msgid "Constraint"
+msgstr "约束"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:57
+msgid "Constraints"
+msgstr "约束"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:74
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:74
+msgid "There was an error connecting to the database server."
+msgstr "连接数据库服务器出现错误。"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:56
+msgid "Groups"
+msgstr "组"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:56
+msgid "Languages"
+msgstr "语言"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:56
+msgid "Operators"
+msgstr "操作符"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:56
+msgid "Parameters"
+msgstr "参数"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProcedureNodeBuilder.cs:61
+msgid "Procedure"
+msgstr "存储过程"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:61
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:66
+msgid "Procedures"
+msgstr "存储过程"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:57
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:62
+msgid "Database Connections"
+msgstr "数据库连接"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:56
+msgid "Roles"
+msgstr "角色"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:56
+msgid "Rules"
+msgstr "规则"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:56
+msgid "Sequences"
+msgstr "序列"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:70
+msgid "Table"
+msgstr "表"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:155
+msgid "Table emptied"
+msgstr "空表"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:165
+msgid "Table dropped"
+msgstr "被删除的表"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:80
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:85
+msgid "Tables"
+msgstr "表"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:56
+msgid "Triggers"
+msgstr "触发器"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:56
+msgid "Types"
+msgstr "类型"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UserNodeBuilder.cs:57
+msgid "User"
+msgstr "用户"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:56
+msgid "Users"
+msgstr "用户"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:57
+msgid "Views"
+msgstr "视图"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:222
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:259
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:469
+msgid "Executing sql query on"
+msgstr "执行SQL查询在"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:227
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:264
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:311
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:479
+msgid "Query sent, waiting for response."
+msgstr "查询信息已发送,正在等待反馈信息。"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:283
+msgid "Query results received"
+msgstr "得到查询结果"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:289
+msgid "Invalid select query"
+msgstr "无效的select查询"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:1
+msgid "Add connection"
+msgstr "添加连接"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:2
+msgid "Database Browser"
+msgstr "数据库浏览器"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:3
+msgid "Disconnect"
+msgstr "断开连接"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:4
+msgid "Drop table"
+msgstr "删除表"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:5
+msgid "Empty table"
+msgstr "空表"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
+msgid "Refresh"
+msgstr "刷新"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:8
+msgid "SQL Query Editor"
+msgstr "SQL查询编辑器"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:9
+msgid "Show System Objects"
+msgstr "显示系统对象"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:1
+msgid "<b>Advanced</b>"
+msgstr "<b>高级</b>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:2
+msgid "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new connection</span></span>"
+msgstr "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">建立新连接</span></span>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:3
+msgid "Connection String"
+msgstr "连接字符串"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:4
+msgid "Database"
+msgstr "数据库"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:8
+msgid "Password"
+msgstr "密码"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:9
+msgid "Provider"
+msgstr "Provider"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:10
+msgid "Server"
+msgstr "服务器"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:11
+msgid "User ID"
+msgstr "用户ID"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:1
+msgid "Creates an empty Nemerle file"
+msgstr "建立一个空Nemerle文件"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:2
+msgid "Empty file"
+msgstr "空文件"
+
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:1
+msgid "Creates an empty Nemerle project"
+msgstr "建立一个空Nemerle工程"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:3
+msgid "<b>Optimizations</b>"
+msgstr "<b>优化</b>"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:4
+msgid "Boolean constant matching optimization"
+msgstr "Boolean常数匹配优化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:5
+#: ../Extras/VBNetBinding/VB.glade.h:5
+msgid "Compile _Target"
+msgstr "编译目标(_T)"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:6
+msgid "Do not load standard library"
+msgstr "不读取标准库"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:7
+msgid "Do not load standard macros"
+msgstr "不读取标准宏"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:8
+msgid ""
+"Executable\n"
+"Library"
+msgstr ""
+"可执行的\n"
+"库"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:10
+msgid "General tail call optimization"
+msgstr "生成尾部调用优化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:11
+msgid "Ignore warnings"
+msgstr "忽略警告"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:12
+msgid "Ordinal constant matching optimization"
+msgstr "顺序常数匹配优化"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:13
+msgid "String constant matching optimization"
+msgstr "字符串常数匹配优化"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gnome# project"
+msgstr "建立一个Nemerle/Gnome#工程"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Gnome#工程"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gtk# project"
+msgstr "建立一个Nemerle/Gtk#工程"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Gtk#工程"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window"
+msgstr "建立一个top-level Gtk#窗口"
+
+#: ../Extras/NUnit/Gui/NUnitOptionsPanel.cs:78
+msgid "Category"
+msgstr "类目"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:86
+msgid " (Loading)"
+msgstr "(正在读取)"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:90
+msgid " (Load failed)"
+msgstr "(读取失败)"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:114
+msgid " ({0} success, {1} failed, {2} ignored)"
+msgstr " ({0} 成功, {1} 失败, {2} 忽略)"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:217
+msgid "Summary"
+msgstr "摘要"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:242
+msgid "Regressions"
+msgstr "回归"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:267
+msgid "Failed tests"
+msgstr "失败的测试"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:278
+msgid "Result"
+msgstr "结果"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:506
+msgid "No regressions found."
+msgstr "没有回归被发现"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:515
+msgid "No failed tests found."
+msgstr "没有失败的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:53
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:271
+msgid "<b>Failed</b>: "
+msgstr "<b>失败</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:54
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:272
+msgid "<b>Ignored</b>: "
+msgstr "<b>忽略</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:104
+msgid "Successful Tests"
+msgstr "成功的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:109
+msgid "Show Successful Tests"
+msgstr "显示成功的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:113
+msgid "Failed Tests"
+msgstr "失败的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:118
+msgid "Show Failed Tests"
+msgstr "显示失败的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:122
+msgid "Ignored Tests"
+msgstr "被忽略的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:127
+msgid "Show Ignored Tests"
+msgstr "显示被忽略的测试"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:136
+msgid "Show Output"
+msgstr "显示输出"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:218
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:251
+msgid "Test results"
+msgstr "测试结果"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:309
+msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
+msgstr "执行 <b>{0}</b> 的测试，使用配置 <b>{1}</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:322
+msgid "Internal error"
+msgstr "类不错误"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:329
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:460
+msgid "Stack Trace"
+msgstr "堆栈跟踪"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "<b>Tests</b>: "
+msgstr "<b>测试</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Failed</b>: "
+msgstr "  <b>失败</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Ignored</b>: "
+msgstr "  <b>忽略</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:354
+msgid "Test execution cancelled."
+msgstr "测试执行被取消"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+msgid "Running "
+msgstr "正在运行"
+
+#: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
+msgid "Unit Test Options"
+msgstr "单元测试选项"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
+msgid "Add assembly ..."
+msgstr "添加程序集..."
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
+msgid "NUnit Categories"
+msgstr "NUnit类目"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
+msgid "NUnit options"
+msgstr "NUnit 选项"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
+msgid "Proportional time scale"
+msgstr "相称的时间刻度"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
+msgid "Results chart"
+msgstr "结果图"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
+msgid "Run Test"
+msgstr "执行测试"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
+msgid "Select test in tree"
+msgstr "在树中选择测试"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
+msgid "Show Test Counters"
+msgstr "显示测试计数"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
+msgid "Show Test Time"
+msgstr "显示测试时间"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
+msgid "Show failed tests"
+msgstr "显示失败的测试"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
+msgid "Show ignored tests"
+msgstr "显示忽略的测试"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
+msgid "Show one result per day"
+msgstr "每天显示一个结果"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
+msgid "Show results pad"
+msgstr "显示结果面板"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
+msgid "Show successful tests"
+msgstr "显示成功的测试"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
+msgid "Show test source code"
+msgstr "显示测试源代码"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
+msgid "Time chart"
+msgstr "时间图"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
+msgid "Unit Tests"
+msgstr "单元测试"
+
+#: ../Extras/NUnit/nunit.glade.h:1
+msgid "Categories:"
+msgstr "类目:"
+
+#: ../Extras/NUnit/nunit.glade.h:2
+msgid "Don't apply any filter"
+msgstr "不应用任何过滤器"
+
+#: ../Extras/NUnit/nunit.glade.h:3
+msgid "Exclude the following categories"
+msgstr "以下类目除外"
+
+#: ../Extras/NUnit/nunit.glade.h:4
+msgid "Include the following categories"
+msgstr "包含以下类目"
+
+#: ../Extras/NUnit/nunit.glade.h:5
+msgid "NUnit Options"
+msgstr "NUnit 选项"
+
+#: ../Extras/NUnit/nunit.glade.h:6
+msgid "The following filter will be applied when running the tests:"
+msgstr "执行测试时应用以下的过滤器"
+
+#: ../Extras/NUnit/nunit.glade.h:7
+msgid "Use parent test settings"
+msgstr "使用父测试集"
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:80
+msgid "Exclude the following categories: "
+msgstr "以下类目除外: "
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:82
+msgid "Include the following categories: "
+msgstr "包含以下类目: "
+
+#. <Icon>Java.Project.DOSProject</Icon>
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:2
+msgid "Create an NUnit assembly test collection"
+msgstr "建立一个NUnit测试程序集"
+
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:3
+msgid "NUnit assembly test collection"
+msgstr "NUnit"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:456
+msgid "Importing project: "
+msgstr "导入工程: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:504
+msgid "Could not import project:"
+msgstr "无法导入工程:"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:519
+msgid "Importing solution"
+msgstr "导入解决方案"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:533
+msgid "Project file not found: "
+msgstr "无法找到工程文件:"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:554
+msgid "The solution could not be imported."
+msgstr "无法导入解决方案。"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:619
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:655
+msgid "Assembly reference could not be imported: "
+msgstr "无法导入程序集引用: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:700
+msgid "Can't import file: "
+msgstr "无法导入文件: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:746
+msgid "Output directory '{0}' can't be mapped to a local directory. The directory '{1}' will be used instead"
+msgstr "输出目录 '{0}' 无法定位到本地目录。将使用目录 '{1}' 代替"
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
+msgid "_Import Visual Studio .NET Project..."
+msgstr "导入 Visual Studio .NET 工程 (_I)"
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:52
+msgid "Can't open file {0} as project"
+msgstr "无法打开文件 {0} 作为工程"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:37
+msgid "Compiler:"
+msgstr "编译器:"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:38
+msgid "Runtime:"
+msgstr "运行时:"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:149
+msgid "WinEXE"
+msgstr "WinEXE"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:151
+msgid "Module"
+msgstr "模块"
+
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:1
+msgid "Creates an empty VB.Net file."
+msgstr "建立一个空的VB.Net文件"
+
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:1
+msgid "Creates an empty VB.Net solution."
+msgstr "建立一个空的VB.Net解决方案"
+
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console VB.Net project"
+msgstr "建立一个VB.Net控制台工程"
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# 2.0 project."
+msgstr "建立一个VB.Net Gtk# 2.0工程."
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# project."
+msgstr "建立一个VB.Net Gtk#工程."
+
+#: ../Extras/VBNetBinding/VB.glade.h:6
+msgid "Define S_ymbols"
+msgstr "定义符号(_y)"
+
+#: ../Extras/VBNetBinding/VB.glade.h:11
+msgid "_Main Class"
+msgstr "Main类:(_M)"
+
+#: ../Extras/VBNetBinding/VB.glade.h:12
+msgid "_Warning Level"
+msgstr "警告级别:(_W)"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:1
+msgid "Diff"
+msgstr "差异比较"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:2
+msgid "Log"
+msgstr "日志"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:3
+msgid "Show version control overlay icons"
+msgstr "显示版本控制覆盖图标"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:4
+msgid "Status/Commit..."
+msgstr "状态/提交..."
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:5
+msgid "Update"
+msgstr "更新"
+
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#  nb.AppendPage(aatp, new Label("Authors"));
+#  nb.AppendPage(changelog, new Label("ChangeLog"));
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:6
+msgid "Version Control"
+msgstr "版本控制"
+
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:2
+msgid "Welcome Page"
+msgstr "欢迎页"
+
+#: ../Extras/WelcomePage/WelcomePageOptionPanel.cs:17
+msgid "Show welcome page on startup"
+msgstr "启动时显示欢迎页"
+

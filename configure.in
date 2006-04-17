@@ -190,7 +190,7 @@ AC_ARG_ENABLE(update-desktopdb,
    AM_CONDITIONAL(ENABLE_UPDATE_DESKTOPDB, test x$enable_update_desktopdb = xyes)
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja_JP pt_BR tr pl it zh_TW"
+ALL_LINGUAS="cs da de es fr ja_JP pt_BR tr pl it zh_TW zh_CN"
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
