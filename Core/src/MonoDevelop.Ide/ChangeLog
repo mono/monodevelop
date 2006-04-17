@@ -1,3 +1,7 @@
+2006-04-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* Base.glade: Fixed typo.
+
 2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Added filtering in File dialog

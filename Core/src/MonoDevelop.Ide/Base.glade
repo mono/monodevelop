@@ -1553,7 +1553,7 @@
 
 <widget class="GtkWindow" id="tipOfTheDayWindow">
   <property name="border_width">5</property>
-  <property name="title" translatable="yes">Tip of the day</property>
+  <property name="title" translatable="yes">Tip of the Day</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
