@@ -1,3 +1,7 @@
+2006-04-18  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* da.po: Added Plural-Forms entry.
+
 2006-04-17  Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* POTFILES.in: Added missing file from GtkCore addin.
