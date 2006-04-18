@@ -1,3 +1,9 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  If the template provides a file name with extension, don't
+	  replace it. Fixes bug #78040.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Don't create the

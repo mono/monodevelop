@@ -115,9 +115,9 @@ namespace MonoDevelop.Ide.Templates
 			string fileName = entryName;
 			string defaultName = name;
 			
-			if (language != "") {
+			if (language != null && language.Length > 0 && Path.GetExtension (defaultName).Length == 0) {
 				IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
-				defaultName = languageBinding.GetFileName (Path.GetFileNameWithoutExtension (defaultName));
+				defaultName = languageBinding.GetFileName (defaultName);
 			}
 			
 			if (fileName != null) {
