@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 	
 	public class SplashScreenForm : Gtk.Window, IProgressMonitor
 	{
-		static SplashScreenForm splashScreen = new SplashScreenForm();
+		static SplashScreenForm splashScreen;
 		static ProgressBar progress;
 		static VBox vbox;
 		ProgressTracker tracker = new ProgressTracker ();
@@ -20,6 +20,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		public static SplashScreenForm SplashScreen {
 			get {
+				if (splashScreen == null)
+					splashScreen = new SplashScreenForm();
 				return splashScreen;
 			}
 		}

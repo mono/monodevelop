@@ -1,3 +1,9 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Don't create the
+	  splash window in the static initializer, since it may be created
+	  before GTK is initialized.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
