@@ -37,6 +37,10 @@ namespace MonoDevelop.NUnit
 	abstract class CircleImage
 	{
 		CircleImage () {}
+		
+		static CircleImage ()
+		{
+		}
 
 		internal static Gdk.Pixbuf Running = Gdk.Pixbuf.LoadFromResource("NUnit.Running.png");
 		internal static Gdk.Pixbuf Failure = Gdk.Pixbuf.LoadFromResource("NUnit.Failed.png");

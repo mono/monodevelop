@@ -1,3 +1,9 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/CircleImage.cs: Added static constructor to get
+	strict "beforefieldinit" semantics, so that the images
+	are loaded after GTK is initialized.
+
 2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Reference nunit libraries using $(NUNIT_LIBS).
