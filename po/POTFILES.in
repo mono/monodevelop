@@ -190,6 +190,7 @@ Extras/JavaBinding/templates/JavaDialog.xft.xml
 Extras/JavaBinding/templates/JavaFrame.xft.xml
 Extras/JavaBinding/templates/JavaOKDialog.xft.xml
 Extras/JavaBinding/templates/JavaPanel.xft.xml
+Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs

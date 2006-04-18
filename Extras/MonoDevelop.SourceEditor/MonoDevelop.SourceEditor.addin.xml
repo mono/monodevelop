@@ -100,12 +100,12 @@
 				shortcut = "Control|B" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 				_label = "_Print..." 
-				description = "Print current document" 
+				_description = "Print current document" 
 				icon  = "gtk-print"
 				shortcut = "Control|P" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintPreviewDocument"
 				_label = "Print Previe_w" 
-				description = "Print current document" 
+				description = "Show print preview" 
 				icon  = "gtk-print-preview"
 				shortcut = "Shift|Control|P" />
 	</Extension>

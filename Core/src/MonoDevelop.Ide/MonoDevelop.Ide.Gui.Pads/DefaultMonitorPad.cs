@@ -62,12 +62,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
-			buttonStop.SetTooltip (tips, "Stop", "Stop");
+			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), GettextCatalog.GetString ("Stop"));
 			toolbar.Insert (buttonStop, -1);
 
 			ToolButton buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
-			buttonClear.SetTooltip (tips, "Clear console", "Clear console");
+			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear console"), GettextCatalog.GetString ("Clear console"));
 			toolbar.Insert (buttonClear, -1);
 
 			hbox = new HBox (false, 5);

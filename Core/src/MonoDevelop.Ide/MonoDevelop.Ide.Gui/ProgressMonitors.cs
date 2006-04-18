@@ -51,29 +51,29 @@ namespace MonoDevelop.Ide.Gui
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
 			bool front = (bool) Runtime.Properties.GetProperty ("SharpDevelop.ShowOutputWindowAtBuild", true);
-			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor ("Build Output", MonoDevelop.Core.Gui.Stock.BuildCombine, front, true));
-			mon.AddSlaveMonitor (GetStatusProgressMonitor ("Building...", MonoDevelop.Core.Gui.Stock.BuildCombine, false));
+			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor (GettextCatalog.GetString ("Build Output"), MonoDevelop.Core.Gui.Stock.BuildCombine, front, true));
+			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), MonoDevelop.Core.Gui.Stock.BuildCombine, false));
 			return mon;
 		}
 		
 		public IProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor ("Application Output", MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+			return GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
 		}
 		
 		public IProgressMonitor GetLoadProgressMonitor ()
 		{
-			return GetStatusProgressMonitor ("Loading...", Stock.OpenFileIcon, true);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.OpenFileIcon, true);
 		}
 		
 		public IProgressMonitor GetSaveProgressMonitor ()
 		{
-			return GetStatusProgressMonitor ("Saving...", Stock.SaveIcon, true);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true);
 		}
 		
 		public IConsole CreateConsole (bool closeOnDispose)
 		{
-			return (IConsole) GetOutputProgressMonitor ("Application Output", MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+			return (IConsole) GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
 		}
 		
 		/******************************/
