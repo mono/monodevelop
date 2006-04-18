@@ -46,7 +46,7 @@ namespace MonoDevelop.GtkCore
 		XmlElement steticTemplate;
 		
 		public override string Name {
-			get { return "Widgtet"; }
+			get { return "Widget"; }
 		}
 		
 		public override void Load (XmlElement filenode)

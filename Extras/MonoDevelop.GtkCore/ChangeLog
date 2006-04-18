@@ -1,6 +1,11 @@
-2006-04-10 Lluis Sanchez Gual  <lluis@novell.com>
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libs/*: Fix nullref in some themes.
+
+2006-04-10 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Fix typo.
+	* libs/*: Fix for #78111, #78092 and #78090.
 
 2006-04-04 Lluis Sanchez Gual  <lluis@novell.com>
 
