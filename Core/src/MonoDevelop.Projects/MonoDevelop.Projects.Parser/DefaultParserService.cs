@@ -1238,7 +1238,7 @@ namespace MonoDevelop.Projects.Parser
 				string aliasString = entry.Key.ToString();
 				if (caseSensitive ? partitialNamespaceName.StartsWith(aliasString) : partitialNamespaceName.ToLower().StartsWith(aliasString.ToLower())) {
 					if (aliasString.Length >= 0) {
-						string nsName = nsName = String.Concat(entry.Value.ToString(), partitialNamespaceName.Remove(0, aliasString.Length));
+						string nsName = String.Concat(entry.Value.ToString(), partitialNamespaceName.Remove(0, aliasString.Length));
 						if (NamespaceExists (db, nsName, caseSensitive)) {
 							return nsName;
 						}

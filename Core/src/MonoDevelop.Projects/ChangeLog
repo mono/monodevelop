@@ -1,3 +1,8 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Fix warning.
+	* MonoDevelop.Projects.mdp: Removed unneeded dependency.
+
 2006-04-11 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TextFile.cs: In InsertText, insert the text in the text
