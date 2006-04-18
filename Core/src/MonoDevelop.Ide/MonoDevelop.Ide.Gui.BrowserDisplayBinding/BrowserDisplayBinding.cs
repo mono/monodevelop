@@ -50,6 +50,8 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		public bool CanAttachTo (IViewContent parent)
 		{
 			string filename = parent.ContentName;
+			if (filename == null)
+				return false;
 			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (filename);
 			if (mimetype == "text/html")
 				return true;

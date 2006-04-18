@@ -1,3 +1,8 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Fix null ref exception in Ububtu. Fix by Sebastian Dröge.
+
 2006-04-17  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* Base.glade: Fixed typo.
