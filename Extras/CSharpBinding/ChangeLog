@@ -1,3 +1,9 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/GladeSharpProject.xpt.xml:
+	* templates/GladeSharp2Project.xpt.xml: Remove gnome dependency
+	  from the glade file template. Fix by Sebastian Dröge.
+
 2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* CSharpBinding.addin.xml: renamed attributes in FileFilter Extension
