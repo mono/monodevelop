@@ -238,13 +238,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			using (FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"))) {
 				fdiag.SelectMultiple = true;
 				
+				IProgressMonitor monitor = null;
 				int result = fdiag.Run ();
 				try {
 					if (result != (int) ResponseType.Ok)
 						return;
 					
 					int action = -1;
+					
+					if (fdiag.Filenames.Length > 10) {
+						monitor = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true);
+						monitor.BeginTask (GettextCatalog.GetString("Adding files..."), fdiag.Filenames.Length);
+					}
+					
 					foreach (string file in fdiag.Filenames) {
+						if (monitor != null)
+							monitor.Log.WriteLine (file);
 						if (file.StartsWith (project.BaseDirectory)) {
 							MoveCopyFile (project, CurrentNode, file, true, true);
 						} else {
@@ -268,7 +277,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 								if (action < 0) {
 									ret = md.Run ();
 									md.Hide ();
-									if (ret < 0) return;
+									if (ret < 0) {
+										IdeApp.ProjectOperations.SaveCombine();
+										return;
+									}
 									if (remember != null && remember.Active) action = ret;
 								} else {
 									ret = action;
@@ -282,14 +294,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 								}
 							}
 						}
+						if (monitor != null)
+							monitor.Step (1);
 					}
+					IdeApp.ProjectOperations.SaveCombine();
 				} finally {
 					fdiag.Hide ();
+					if (monitor != null)
+						monitor.Dispose ();
 				}
 			}
 		}
 		
-		public static void MoveCopyFile (Project project, ITreeNavigator nav, string filename, bool move, bool alreadyInPlace)
+		static void MoveCopyFile (Project project, ITreeNavigator nav, string filename, bool move, bool alreadyInPlace)
 		{
 			if (Runtime.FileUtilityService.IsDirectory (filename))
 			    return;
@@ -315,8 +332,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} else {
 				project.AddFile (newfilename, BuildAction.Nothing);
 			}
-
-			IdeApp.ProjectOperations.SaveCombine();
 		}		
 
 		[CommandHandler (ProjectCommands.AddNewFiles)]

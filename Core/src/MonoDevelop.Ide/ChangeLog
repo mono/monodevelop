@@ -1,3 +1,10 @@
+2006-04-19 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs: When
+	  adding files to a project, don't save the project until
+	  all files have been added. Also show a progress monitor
+	  when adding many files.
+
 2006-04-19 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Fixed crash after
