@@ -73,6 +73,7 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs

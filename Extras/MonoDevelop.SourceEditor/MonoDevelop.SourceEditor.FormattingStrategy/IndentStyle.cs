@@ -10,12 +10,12 @@ namespace MonoDevelop.SourceEditor.FormattingStrategy {
 		
 		/// <summary>
 		/// The indentation from the line above will be
-		/// taken to indent the curent line
+		/// taken to indent the current line
 		/// </summary>
 		Auto, 
 		
 		/// <summary>
-		/// Inteligent, context sensitive indentation will occur
+		/// Intelligent, context sensitive indentation will occur
 		/// </summary>
 		Smart
 	}

@@ -1,3 +1,8 @@
+2006-04-19  Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* es.po: Added Plural-Forms entry, and updated.
+	* POTFILES.in: Added missing file from MonoDevelop.Ide.
+
 2006-04-18  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* da.po: Added Plural-Forms entry.
