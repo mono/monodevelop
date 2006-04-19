@@ -1,3 +1,10 @@
+2006-04-19 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs: When
+	  creating a widget from a widget design, remove the signals since
+	  those signals reference handlers in the widget class, not the
+	  widget container class.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libs/*: Fix nullref in some themes.

@@ -97,10 +97,17 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		void MakeChildrenUnselectable (Gtk.Widget w)
 		{
+			// Remove the registered signals, since those signals are bound
+			// to the custom widget class, not the widget container class.
+			Stetic.Wrapper.Widget ww = Stetic.Wrapper.Widget.Lookup (w);
+			ww.Signals.Clear ();
+			
 			foreach (Gtk.Widget child in (Gtk.Container)w) {
 				Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (child);
-				if (wrapper != null)
+				if (wrapper != null) {
+					wrapper.Signals.Clear ();
 					wrapper.Unselectable = true;
+				}
 				if (child is Gtk.Container)
 					MakeChildrenUnselectable (child);
 			}
