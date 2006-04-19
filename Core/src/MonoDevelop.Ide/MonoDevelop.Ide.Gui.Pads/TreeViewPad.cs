@@ -660,6 +660,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 			}
 			
+			// Get the iter again since the tree node may have been replaced.
+			if (!store.GetIterFromString (out iter, e.Path))
+				return;
+
 			ITreeBuilder builder = new TreeBuilder (this, iter);
 			builder.Update ();
 		}
