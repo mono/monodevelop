@@ -534,70 +534,62 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Combine combine = (Combine) data;
 			string combinefilename = combine.FileName;
-			string directory = Runtime.Properties.ConfigDirectory + "CombinePreferences";
-
-			if (!Directory.Exists(directory)) {
+			string combinepath = Path.GetDirectoryName(combinefilename);
+			string preferencesFileName = Path.Combine(combinepath, combine.Name + ".userprefs");
+	
+			if (!File.Exists(preferencesFileName))
+				return;
+			
+			XmlDocument doc = new XmlDocument();
+			try {
+				doc.Load(preferencesFileName);
+			} catch (Exception) {
 				return;
 			}
-			
-			string[] files = Directory.GetFiles(directory, combine.Name + "*.xml");
-			
-			if (files.Length > 0) {
-				XmlDocument doc = new XmlDocument();
-				try {
-					doc.Load(files[0]);
-				} catch (Exception) {
-					return;
-				}
-				XmlElement root = doc.DocumentElement;
-				string combinepath = Path.GetDirectoryName(combinefilename);
-				if (root["Files"] != null) {
-					foreach (XmlElement el in root["Files"].ChildNodes) {
-						string fileName = Runtime.FileUtilityService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
-						if (File.Exists(fileName)) {
-							IdeApp.Workbench.OpenDocument (fileName, false);
-						}
+
+			XmlElement root = doc.DocumentElement;
+			if (root["Files"] != null) {
+				foreach (XmlElement el in root["Files"].ChildNodes) {
+					string fileName = Runtime.FileUtilityService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
+					if (File.Exists(fileName)) {
+						IdeApp.Workbench.OpenDocument (fileName, false);
 					}
 				}
+			}
 				
-				if (root["Views"] != null) {
-					foreach (XmlElement el in root["Views"].ChildNodes) {
-						foreach (Pad pad in IdeApp.Workbench.Pads) {
-							if (el.GetAttribute ("Id") == pad.Id && pad.Content is IMementoCapable && el.ChildNodes.Count > 0) {
-								IMementoCapable m = (IMementoCapable) pad.Content; 
-								m.SetMemento((IXmlConvertable)m.CreateMemento().FromXmlElement((XmlElement)el.ChildNodes[0]));
-							}
+			if (root["Views"] != null) {
+				foreach (XmlElement el in root["Views"].ChildNodes) {
+					foreach (Pad pad in IdeApp.Workbench.Pads) {
+						if (el.GetAttribute ("Id") == pad.Id && pad.Content is IMementoCapable && el.ChildNodes.Count > 0) {
+							IMementoCapable m = (IMementoCapable) pad.Content; 
+							m.SetMemento((IXmlConvertable)m.CreateMemento().FromXmlElement((XmlElement)el.ChildNodes[0]));
 						}
 					}
 				}
+			}
 				
-				if (root["Properties"] != null) {
-					IProperties properties = (IProperties)new DefaultProperties().FromXmlElement((XmlElement)root["Properties"].ChildNodes[0]);
-					string name = properties.GetProperty("ActiveWindow", "");
-					foreach (Document document in IdeApp.Workbench.Documents) {
-						if (document.FileName != null &&
-							document.FileName == name) {
-							Services.DispatchService.GuiDispatch (new MessageHandler (document.Select));
-							break;
-						}
+			if (root["Properties"] != null) {
+				IProperties properties = (IProperties)new DefaultProperties().FromXmlElement((XmlElement)root["Properties"].ChildNodes[0]);
+				string name = properties.GetProperty("ActiveWindow", "");
+				foreach (Document document in IdeApp.Workbench.Documents) {
+					if (document.FileName != null &&
+						document.FileName == name) {
+						Services.DispatchService.GuiDispatch (new MessageHandler (document.Select));
+						break;
 					}
-					name = properties.GetProperty("ActiveConfiguration", "");
-					IConfiguration conf = combine.GetConfiguration (name);
-					if (conf != null)
-						combine.ActiveConfiguration = conf;
 				}
-			} 
-		}
+				name = properties.GetProperty("ActiveConfiguration", "");
+				IConfiguration conf = combine.GetConfiguration (name);
+				if (conf != null)
+					combine.ActiveConfiguration = conf;
+			}
+		} 
 		
 		void SaveCombinePreferences (Combine combine)
 		{
 			string combinefilename = combine.FileName;
-			string directory = Runtime.Properties.ConfigDirectory + "CombinePreferences";
-
-			if (!Directory.Exists(directory)) {
-				Services.FileService.CreateDirectory(directory);
-			}
 			string combinepath = Path.GetDirectoryName(combinefilename);
+
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml("<?xml version=\"1.0\"?>\n<UserCombinePreferences/>");
 			
@@ -642,7 +634,16 @@ namespace MonoDevelop.Ide.Gui
 			
 			propertynode.AppendChild(properties.ToXmlElement(doc));
 			
-			doc.Save (directory + Path.DirectorySeparatorChar + combine.Name + ".xml");
+			string fileToSave = combinepath + Path.DirectorySeparatorChar + combine.Name + ".userprefs";
+
+			try
+			{
+				doc.Save (fileToSave);
+			}
+			catch (Exception e)
+			{
+				Runtime.LoggingService.Warn("Could not save solution preferences: " + fileToSave as object, e);
+			}
 		}
 
 		public IAsyncOperation Execute (CombineEntry entry)

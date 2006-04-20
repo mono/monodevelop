@@ -1,3 +1,9 @@
+2006-04-20  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Save solution
+	preferences in the actual solution directory instead of in
+	.config/MonoDevelop/CombinePreferences. Fixed bug #78036.
+
 2006-04-19 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* Base.glade: improved string.
