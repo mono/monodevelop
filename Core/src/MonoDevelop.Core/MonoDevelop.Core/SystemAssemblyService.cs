@@ -15,6 +15,8 @@ namespace MonoDevelop.Core
 		object initLock = new object ();
 		bool initialized;
 		
+		ClrVersion currentVersion;
+		
 		public override void InitializeService ()
 		{
 			// Initialize the service in a background thread.
@@ -22,13 +24,30 @@ namespace MonoDevelop.Core
 			t.IsBackground = true;
 			t.Start ();
 		}
-
-		public ICollection AssemblyPaths
+		
+		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			get {
-				Initialize ();
-				return assemblyPathToPackage.Keys;
+			return new ClrVersion [] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+		}
+
+		// Returns the list of installed assemblies for the given runtime version.
+		public ICollection GetAssemblyPaths (ClrVersion clrVersion)
+		{
+			Initialize ();
+			
+			if (clrVersion == ClrVersion.Default)
+				clrVersion = currentVersion;
+
+			string systemPackage = "MONO-SYSTEM-" + clrVersion;
+			
+			ArrayList list = new ArrayList ();
+			foreach (DictionaryEntry e in assemblyPathToPackage) {
+				string val = ((string)e.Value);
+				if (val.StartsWith ("MONO-SYSTEM") && val != systemPackage)
+					continue;
+				list.Add (e.Key);
 			}
+			return list;
 		}
 
 		public string GetPackageFromFullName (string fullname)
@@ -40,7 +59,13 @@ namespace MonoDevelop.Core
 				return String.Empty;
 
 			string pkg = (string)assemblyPathToPackage[path];
-			return pkg != null ? pkg : String.Empty;
+			if (pkg != null) {
+				if (pkg.StartsWith ("MONO-SYSTEM-"))
+					return "MONO-SYSTEM";
+				else
+					return pkg;
+			} else
+				return String.Empty;
 		}
 	
 		// Returns the installed version of the given assembly name
@@ -64,6 +89,10 @@ namespace MonoDevelop.Core
 	
 		public string GetAssemblyLocation (string assemblyName)
 		{
+			string path = (string)assemblyFullNameToPath [assemblyName];
+			if (path != null)
+				return path;
+
 			if (assemblyName == "mscorlib")
 				return typeof(object).Assembly.Location;
 
@@ -73,8 +102,30 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		// Given the full name of an assembly, returns the corresponding full assembly name
+		// in the specified target CLR version, or null if it doesn't exist in that version.
+		public string GetAssemblyNameForVersion (string fullName, ClrVersion targetVersion)
+		{
+			string package = GetPackageFromFullName (fullName);
+			if (package != "MONO-SYSTEM")
+				return fullName;
+			
+			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);
+			string targetPackage = "MONO-SYSTEM-" + targetVersion;
+			foreach (DictionaryEntry e in assemblyFullNameToPath) {
+				string rpack = (string) assemblyPathToPackage [e.Value];
+				if (rpack == targetPackage && Path.GetFileName ((string)e.Value) == fname)
+					return (string) e.Key;
+			}
+			return null;
+		}
+		
 		public string GetAssemblyFullName (string assemblyName)
 		{
+			// Fast path for known assemblies.
+			if (assemblyFullNameToPath.Contains (assemblyName))
+				return assemblyName;
+
 			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
 			using (locator) {
 				return locator.GetFullName (assemblyName);
@@ -103,15 +154,27 @@ namespace MonoDevelop.Core
 		
 		void RunInitialization ()
 		{
+			string versionDir;
+			
+			if (Environment.Version.Major == 1) {
+				versionDir = "1.0";
+				currentVersion = ClrVersion.Net_1_1;
+			} else {
+				versionDir = "2.0";
+				currentVersion = ClrVersion.Net_2_0;
+			}
+
 			//Pull up assemblies from the installed mono system.
 			string prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
-			if (prefix.IndexOf ("mono/1.0") == -1) {
-				prefix = Path.Combine (Path.Combine (prefix, "mono"), "1.0");
-			}
-			foreach (string assembly in Directory.GetFiles (prefix, "*.dll")) {
-				AddAssembly (assembly, "MONO-SYSTEM");
-			}
-	
+			
+			if (prefix.IndexOf ("mono/" + versionDir) == -1)
+				prefix = Path.Combine (prefix, "mono");
+			else
+				prefix = Path.GetDirectoryName (prefix);
+			
+			RegisterSystemAssemblies (prefix, "1.0", ClrVersion.Net_1_1);
+			RegisterSystemAssemblies (prefix, "2.0", ClrVersion.Net_2_0);
+
 			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
 			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
 			if (libpath == null || libpath.Length == 0) {
@@ -147,6 +210,13 @@ namespace MonoDevelop.Core
 			}
 		}
 	
+		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
+		{
+			string dir = Path.Combine (prefix, version);
+			foreach (string assembly in Directory.GetFiles (dir, "*.dll"))
+				AddAssembly (assembly, "MONO-SYSTEM-" + ver);
+		}
+		
 		private void ParsePCFile (string pcfile)
 		{
 			ArrayList fullassemblies = null;

@@ -3,6 +3,7 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 FILES= \
 MonoDevelop.Core/AbstractService.cs \
+MonoDevelop.Core/ClrVersion.cs \
 MonoDevelop.Core/FileUtilityService.cs \
 MonoDevelop.Core/IService.cs \
 MonoDevelop.Core/IStringTagProvider.cs \

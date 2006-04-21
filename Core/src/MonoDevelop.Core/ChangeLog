@@ -1,3 +1,13 @@
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Implemented support for
+	  2.0 assemblies.
+	* MonoDevelop.Core/ClrVersion.cs: New enum which represents the target
+	  runtime version.
+	
+	* MonoDevelop.Core.mdp:
+	* Makefile.am: added ClrVersion.cs.
+
 2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.addin.xml:
