@@ -105,6 +105,11 @@ namespace JavaBinding
 		public IRefactorer Refactorer {
 			get { return null; }
 		}
+		
+		public ClrVersion[] GetSupportedClrVersions ()
+		{
+			return new ClrVersion[] { ClrVersion.Net_1_1 };
+		}
 	}
 	
 	public class GlobalProperties

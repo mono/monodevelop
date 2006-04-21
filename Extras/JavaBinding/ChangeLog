@@ -1,3 +1,7 @@
+2006-04-21 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaLanguageBinding.cs: Implement GetSupportedClrVersions.
+
 2006-04-07  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* JavaBinding.addin.xml: renamed attribute in FileFilter Extension
