@@ -81,5 +81,10 @@ namespace VBBinding
 		public IRefactorer Refactorer {
 			get { return null; }
 		}
+		
+		public ClrVersion[] GetSupportedClrVersions ()
+		{
+			return new ClrVersion[] { ClrVersion.Net_1_1 };
+		}
 	}
 }
