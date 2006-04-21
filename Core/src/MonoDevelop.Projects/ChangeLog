@@ -1,3 +1,8 @@
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fix hang
+	  when adding a new line.
+
 2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Added property

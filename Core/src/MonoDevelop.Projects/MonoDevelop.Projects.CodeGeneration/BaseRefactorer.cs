@@ -474,6 +474,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					buffer.InsertText (pos, "\n\n");
 					return pos + 1;
 				}
+				pos++;
 			}
 			return pos;
 		}
