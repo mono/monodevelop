@@ -26,9 +26,6 @@
 			<DialogPanel id = "Compile"
 			             _label = "Compile"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileProjectOptions"/>
-<!--			<DialogPanel id = "Deploy"
-			             _label = "${res:Dialog.Options.PrjOptions.DeployFile.PanelName}"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeployFileProjectOptions"/> -->
 		</DialogPanel>
 	</Extension>
 	
@@ -44,11 +41,6 @@
 			<DialogPanel id = "Build"
 						_label = "Build Properties"
 						class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptions"/>
-
-<!-- 		<DialogPanel id = "Dependency"
-			             _label = "${res:Dialog.Options.CombineOptions.Dependencies.PanelName}"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineDependencyPanel"/> -->
-
 		</DialogPanel>
 
 		<DialogPanel id = "Configurations"

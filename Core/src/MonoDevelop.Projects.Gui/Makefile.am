@@ -21,6 +21,7 @@ MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
+MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs \
 MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs \
 MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs \

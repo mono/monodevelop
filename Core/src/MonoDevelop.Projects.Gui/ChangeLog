@@ -1,3 +1,11 @@
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Removed unused stuff.
+	* Base.glade: Added RuntimeOptionsPanel design.
+	
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Added RuntimeOptionsPanel.cs.
+
 2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Add documentation.
