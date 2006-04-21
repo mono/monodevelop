@@ -180,10 +180,11 @@ namespace CSharpBinding
 			string output = String.Empty;
 			string error  = String.Empty;
 			
-			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName() : System.Environment.GetEnvironmentVariable("ComSpec") + " /c mcs";
+			string mcs = configuration.ClrVersion == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
+			
+			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName (configuration.ClrVersion) : System.Environment.GetEnvironmentVariable("ComSpec") + " /c " + mcs;
 			string outstr = compilerName + " @" + responseFileName;
 			TempFileCollection tf = new TempFileCollection();
-			
 			
 			//StreamReader t = File.OpenText(responseFileName);
 			
@@ -459,22 +460,18 @@ namespace CSharpBinding
 			stream.Close ();
 		}
 		
-		string compilerName = String.Empty;
-		string GetCompilerName()
+		string GetCompilerName (ClrVersion version)
 		{
-			if (compilerName == String.Empty)
-			{
-				string runtimeDir = fileUtilityService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
-				// The following regex foo gets the index of the
-				// last match of lib/lib32/lib64 and uses
-				// the text before that as the 'prefix' in order
-				// to find the right mcs to use.
-				Regex regex = new Regex ("lib[32 64]?");
-				MatchCollection matches = regex.Matches(runtimeDir);
-				Match match = matches[matches.Count - 1];
-				compilerName = runtimeDir.Substring(0, match.Index) + Path.Combine("bin", "mcs");
-			}
-
+			string runtimeDir = fileUtilityService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+			// The following regex foo gets the index of the
+			// last match of lib/lib32/lib64 and uses
+			// the text before that as the 'prefix' in order
+			// to find the right mcs to use.
+			Regex regex = new Regex ("lib[32 64]?");
+			MatchCollection matches = regex.Matches(runtimeDir);
+			Match match = matches[matches.Count - 1];
+			string mcs = version == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
+			string compilerName = runtimeDir.Substring(0, match.Index) + Path.Combine("bin", mcs);
 			return compilerName;
 		}
 		

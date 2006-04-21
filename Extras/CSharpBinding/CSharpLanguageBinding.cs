@@ -87,5 +87,10 @@ namespace CSharpBinding
 		public IRefactorer Refactorer {
 			get { return refactorer; }
 		}
+		
+		public ClrVersion[] GetSupportedClrVersions ()
+		{
+			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
+		}
 	}
 }

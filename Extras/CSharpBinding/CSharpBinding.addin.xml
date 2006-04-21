@@ -83,6 +83,15 @@
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
 		</Conditional>
 	</Extension>
+	
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+		<Conditional activelanguage="C#">
+				<DialogPanel id = "RuntimeOptionsPanel"
+				             _label = "Runtime Options"
+				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
+		</Conditional>
+	</Extension>
 		
 	<Extension path = "/AddIns/DefaultTextEditor/Formatter/C#">
 		<Class id ="CSharpFormattingStrategy" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />

@@ -1,3 +1,13 @@
+2006-04-21 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpLanguageBinding.cs: Implement GetSupportedClrVersions.
+	* CSharpBinding.addin.xml: Added panel por selecting the target
+	  runtime version.
+	* CSharpBindingCompilerManager.cs: Support compilation for .net 2.0.
+	
+	* Parser/ExpressionFinder.cs:
+	* Parser/LanguageItemVisitor.cs: Fixed warnings.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/GladeSharpProject.xpt.xml:

@@ -92,7 +92,6 @@ namespace CSharpBinding.Parser
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
 					resolver.ShowStatic = true;
 					return resolver.SearchType (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference.SystemType, resolver.CompilationUnit);
-					return null;
 				}
 			}
 			TypeVisitor tv = new TypeVisitor (resolver);
