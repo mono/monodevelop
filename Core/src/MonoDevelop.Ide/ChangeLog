@@ -1,3 +1,10 @@
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs: 
+	  Show only assemblies valid for the target runtime version
+	  of the project.
+
 2006-04-20  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Save solution

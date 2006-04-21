@@ -18,9 +18,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal class GacReferencePanel : VBox, IReferencePanel
 	{
 		SelectReferenceDialog selectDialog;
+		ClrVersion version;
 
 		TreeStore store;
-		TreeView  treeView;
+		TreeView treeView;
 		
 		public GacReferencePanel(SelectReferenceDialog selectDialog)
 		{
@@ -48,13 +49,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store.SetSortColumnId (0, SortType.Ascending);
 			store.SetSortFunc (0, new TreeIterCompareFunc (SortTree));
 			
-			PrintCache();
 			ScrolledWindow sc = new ScrolledWindow ();
 			sc.ShadowType = Gtk.ShadowType.In;
 			sc.Add (treeView);
 			this.PackStart (sc, true, true, 0);
 			ShowAll ();
 			BorderWidth = 6;
+		}
+		
+		public void SetProject (Project prj)
+		{
+			DotNetProject netProject = prj as DotNetProject;
+			if (netProject != null)
+				version = ((DotNetProjectConfiguration)netProject.ActiveConfiguration).ClrVersion;
 		}
 		
 		int SortTree (TreeModel model, TreeIter first, TreeIter second)
@@ -116,12 +123,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void PrintCache()
 		{
-			foreach (string assemblyPath in Runtime.SystemAssemblyService.AssemblyPaths) {
+			foreach (string assemblyPath in Runtime.SystemAssemblyService.GetAssemblyPaths (version)) {
 				try {
 					System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyPath);
 					string package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
 					if (package == "MONO-SYSTEM")
-						package = "mono";
+						package = "Mono";
 					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, package);
 				}catch {
 				}

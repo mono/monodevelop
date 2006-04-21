@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			((TreeStore) ReferencesTreeView.Model).Clear ();
 
 			projectRefPanel.SetProject (configureProject);
+			gacRefPanel.SetProject (configureProject);
 			gacRefPanel.Reset ();
 
 			foreach (ProjectReference refInfo in configureProject.ProjectReferences) {
