@@ -5,30 +5,32 @@
 //     <version value="$version"/>
 // </file>
 using System;
-using System.Reflection;
 using System.Xml;
+using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	internal class ReflectionParameter : AbstractParameter
 	{
-		public ReflectionParameter(ParameterInfo parameterInfo, XmlNode methodNode)
+		public ReflectionParameter (ParameterDefinition parameterInfo, XmlNode methodNode)
 		{
 			name       = parameterInfo.Name;
 			returnType = new ReflectionReturnType(parameterInfo.ParameterType);
 			
-			if (parameterInfo.IsOut) {
+			TypeReference type = parameterInfo.ParameterType;
+			if (type is ArrayType && type.FullName != "System.Array") {
+				foreach (CustomAttribute att in parameterInfo.CustomAttributes)
+					if (att.Constructor.DeclaringType.FullName == "System.ParamArrayAttribute") {
+						modifier |= ParameterModifier.Params;
+						break;
+					}
+			}
+			
+			if ((parameterInfo.Attributes & ParamAttributes.Out) != 0) {
 				modifier |= ParameterModifier.Out;
-			}
-			
-			Type type = parameterInfo.ParameterType;
-			if (type.IsArray && type != typeof(Array) && Attribute.IsDefined(parameterInfo, typeof(ParamArrayAttribute), true)) {
-				modifier |= ParameterModifier.Params;
-			}
-			
-			// seems there is no other way to determine a ref parameter
-			if (type.Name.EndsWith("&")) {
+			} else if (type.Name.EndsWith("&")) {
+				// seems there is no other way to determine a ref parameter
 				modifier |= ParameterModifier.Ref;
 			}
 			

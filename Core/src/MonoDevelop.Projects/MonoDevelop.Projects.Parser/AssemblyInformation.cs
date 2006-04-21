@@ -11,12 +11,12 @@ using System.Collections;
 using System.Threading;
 using System.Xml;
 using MonoDevelop.Projects.Parser;
+using Mono.Cecil;
 
 //using ICSharpCode.SharpAssembly.Metadata.Rows;
 //using ICSharpCode.SharpAssembly.Metadata;
 //using ICSharpCode.SharpAssembly.PE;
 //using ICSharpCode.SharpAssembly;
-using System.Reflection;
 using MonoDevelop.Core;
 
 
@@ -106,19 +106,17 @@ namespace MonoDevelop.Projects.Parser {
 			
 			this.fileName = fileName;
 			
-			Assembly asm = null;		
+			AssemblyDefinition asm = null;		
 			try {
-				asm = Assembly.LoadFrom (fileName);
-				if (asm == null)
-					asm = Assembly.LoadWithPartialName (Path.GetFileNameWithoutExtension (fileName));
+				asm = AssemblyFactory.GetAssembly (fileName);
 			} catch {
-			}
-			if(asm == null) {
 				Runtime.LoggingService.ErrorFormat ("Unable to load {0}", fileName);
 				return;
 			}
-			foreach (Type type in asm.GetTypes()) {
-				if (!type.FullName.StartsWith("<") && !type.IsSpecialName && type.IsPublic) {
+			
+			foreach (TypeDefinition type in asm.MainModule.Types) {
+				TypeAttributes vis = type.Attributes & TypeAttributes.VisibilityMask;
+				if (!type.FullName.StartsWith("<") && !type.IsSpecialName && (vis == TypeAttributes.Public || vis == TypeAttributes.NestedPublic)) {
 					classes.Add(new ReflectionClass(type));
 				}
 			}

@@ -76,6 +76,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				description = value;
+				NotifyModified ();
 			}
 		}
 		
@@ -105,6 +106,7 @@ namespace MonoDevelop.Projects
 
 			set {
 				newFileSearch = value;
+				NotifyModified ();
 			}
 		}
 		
@@ -115,6 +117,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				enableViewState = value;
+				NotifyModified ();
 			}
 		}
 		
@@ -182,8 +185,7 @@ namespace MonoDevelop.Projects
 			
 			foreach (ProjectReference pr in toBeRemoved) {
 				this.ProjectReferences.Remove(pr);
-				ProjectReference prNew = (ProjectReference)pr.Clone();
-				prNew.Reference = newName;
+				ProjectReference prNew = new ProjectReference (ReferenceType.Project, newName);
 				this.ProjectReferences.Add(prNew);
 			}			
 		}
@@ -536,36 +538,42 @@ namespace MonoDevelop.Projects
 		
  		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
 		{
+			NotifyModified ();
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileRemovedFromProject (ProjectFile file)
 		{
 			isDirty = true;
+			NotifyModified ();
 			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileAddedToProject (ProjectFile file)
 		{
 			isDirty = true;
+			NotifyModified ();
 			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
 		}
 		
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			isDirty = true;
+			NotifyModified ();
 			OnFileRenamedInProject (args);
 		}
 		
 		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
 		{
 			isDirty = true;
+			NotifyModified ();
 			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		
 		internal void NotifyReferenceAddedToProject (ProjectReference reference)
 		{
 			isDirty = true;
+			NotifyModified ();
 			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}
 		

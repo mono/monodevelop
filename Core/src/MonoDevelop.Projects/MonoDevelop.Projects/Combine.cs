@@ -56,6 +56,8 @@ namespace MonoDevelop.Projects
 		ProjectFileEventHandler fileChangedInProjectHandler;
 		ProjectFileEventHandler filePropertyChangedInProjectHandler;
 		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
+		CombineEntryEventHandler entryModifiedHandler;
+		CombineEntryEventHandler entrySavedHandler;
 
 		ProjectReferenceEventHandler referenceAddedToProjectHandler;
 		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
@@ -78,6 +80,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				startupEntry = value;
+				NotifyModified ();
 				OnStartupPropertyChanged(null);
 			}
 		}
@@ -89,6 +92,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				singleStartup = value;
+				NotifyModified ();
 				OnStartupPropertyChanged(null);
 			}
 		}
@@ -108,6 +112,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (value == DefaultOutputDirectory) outputdir = null;
 				else outputdir = value;
+				NotifyModified ();
 			}
 		}
 		
@@ -124,6 +129,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				description = value;
+				NotifyModified ();
 			}
 		}
 		
@@ -147,6 +153,8 @@ namespace MonoDevelop.Projects
 			fileRenamedInProjectHandler = new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
 			referenceAddedToProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
 			referenceRemovedFromProjectHandler = new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject);
+			entryModifiedHandler = new CombineEntryEventHandler (NotifyEntryModified);
+			entrySavedHandler = new CombineEntryEventHandler (NotifyEntrySaved);
 		}
 		
 		public override IConfiguration CreateConfiguration (string name)
@@ -199,8 +207,10 @@ namespace MonoDevelop.Projects
 			
 			combineExecuteDefinitions.Add (new CombineExecuteDefinition (entry, EntryExecuteType.None));
 			
-			if (eventsAllowed)
+			if (eventsAllowed) {
+				NotifyModified ();
 				OnEntryAdded (new CombineEntryEventArgs (entry));
+			}
 
 			if (entry is Project)
 			{
@@ -224,6 +234,8 @@ namespace MonoDevelop.Projects
 				combine.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
 				combine.ReferenceAddedToProject += referenceAddedToProjectHandler;
 			}
+			entry.Modified += entryModifiedHandler;
+			entry.Saved += entrySavedHandler;
 		}
 		
 		public override DataCollection Serialize (ITypeSerializer handler)
@@ -265,7 +277,6 @@ namespace MonoDevelop.Projects
 				if (entry is Combine || entry is Project)
 					entry.Save (monitor);
 			}
-			//GenerateMakefiles ();
 		}
 
 		public CombineEntry AddEntry (string filename, IProgressMonitor monitor)
@@ -300,6 +311,8 @@ namespace MonoDevelop.Projects
 					cce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
 				}
 			}
+			entry.Modified -= entryModifiedHandler;
+			entry.Saved -= entrySavedHandler;
 
 			// remove execute definition
 			CombineExecuteDefinition removeExDef = null;
@@ -315,6 +328,7 @@ namespace MonoDevelop.Projects
 			foreach (CombineConfiguration dentry in Configurations)
 				dentry.RemoveEntry (entry);
 
+			NotifyModified ();
 			OnEntryRemoved (new CombineEntryEventArgs (entry));
 		}
 		
@@ -808,6 +822,16 @@ namespace MonoDevelop.Projects
 			OnReferenceAddedToProject (e);
 		}
 		
+		internal void NotifyEntryModified (object sender, CombineEntryEventArgs e)
+		{
+			OnEntryModified (e);
+		}
+		
+		internal void NotifyEntrySaved (object sender, CombineEntryEventArgs e)
+		{
+			OnEntrySaved (e);
+		}
+		
 		protected virtual void OnStartupPropertyChanged(EventArgs e)
 		{
 			if (StartupPropertyChanged != null) {
@@ -878,6 +902,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		protected virtual void OnEntryModified (CombineEntryEventArgs e)
+		{
+			if (EntryModified != null)
+				EntryModified (this, e);
+		}
+		
+		protected virtual void OnEntrySaved (CombineEntryEventArgs e)
+		{
+			if (EntrySaved != null)
+				EntrySaved (this, e);
+		}
+		
 		public event EventHandler StartupPropertyChanged;
 		public event CombineEntryEventHandler EntryAdded;
 		public event CombineEntryEventHandler EntryRemoved;
@@ -888,6 +924,8 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
+		public event CombineEntryEventHandler EntryModified;
+		public event CombineEntryEventHandler EntrySaved;
 	}
 	
 	public class CombineActiveConfigurationTypeConverter : TypeConverter

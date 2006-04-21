@@ -31,6 +31,8 @@ namespace MonoDevelop.Projects
 
 		// Optional. Return null if not supported.
 		CodeDomProvider GetCodeDomProvider ();
+		
+		ClrVersion[] GetSupportedClrVersions ();
 	}
 	
 }

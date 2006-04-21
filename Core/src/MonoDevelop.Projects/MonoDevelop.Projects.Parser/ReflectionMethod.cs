@@ -7,8 +7,8 @@
 using System;
 using System.Text;
 using System.Collections;
-using System.Reflection;
 using System.Xml;
+using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -32,17 +32,17 @@ namespace MonoDevelop.Projects.Parser
 			return propertyName.ToString();
 		}
 */
-		XmlNode FindMatch (XmlNodeList nodes, MethodBase methodBase)
+		XmlNode FindMatch (XmlNodeList nodes, MethodDefinition methodBase)
 		{
-			ParameterInfo[] p = methodBase.GetParameters ();
+			ParameterDefinitionCollection p = methodBase.Parameters;
 			string s = "";
 			foreach (XmlNode node in nodes) {
 				XmlNodeList paramList = node.SelectNodes ("Parameters/*");
-				s += paramList.Count + " - " + p.Length + "\n";
-				if (p.Length == 0 && paramList.Count == 0) return node;
-				if (p.Length != paramList.Count) continue;
+				s += paramList.Count + " - " + p.Count + "\n";
+				if (p.Count == 0 && paramList.Count == 0) return node;
+				if (p.Count != paramList.Count) continue;
 				bool matched = true;
-				for (int i = 0; i < p.Length; i++) {
+				for (int i = 0; i < p.Count; i++) {
 					if (p[i].ParameterType.ToString () != paramList[i].Attributes["Type"].Value) {
 						matched = false;
 					}
@@ -53,11 +53,11 @@ namespace MonoDevelop.Projects.Parser
 			return null;
 		}
 		
-		public ReflectionMethod(MethodBase methodBase, XmlDocument docs)
+		public ReflectionMethod (MethodDefinition methodBase, XmlDocument docs)
 		{
 			string name = methodBase.Name;
 			
-			if (methodBase is ConstructorInfo) {
+			if (methodBase.IsConstructor) {
 				name = ".ctor";
 			}
 			FullyQualifiedName = String.Concat(methodBase.DeclaringType.FullName, ".", name);
@@ -81,25 +81,7 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}	
 			
-			modifiers = ModifierEnum.None;
-			if (methodBase.IsStatic) {
-				modifiers |= ModifierEnum.Static;
-			}
-			if (methodBase.IsAssembly) {
-				modifiers |= ModifierEnum.Internal;
-			}
-			if (methodBase.IsPrivate) { // I assume that private is used most and public last (at least should be)
-				modifiers |= ModifierEnum.Private;
-			} else if (methodBase.IsFamily) {
-				modifiers |= ModifierEnum.Protected;
-			} else if (methodBase.IsPublic) {
-				modifiers |= ModifierEnum.Public;
-			} else if (methodBase.IsFamilyOrAssembly) {
-				modifiers |= ModifierEnum.ProtectedOrInternal;
-			} else if (methodBase.IsFamilyAndAssembly) {
-				modifiers |= ModifierEnum.Protected;
-				modifiers |= ModifierEnum.Internal;
-			}
+			modifiers = GetModifiers (methodBase.Attributes);
 			
 			if (methodBase.IsVirtual) {
 				modifiers |= ModifierEnum.Virtual;
@@ -108,15 +90,37 @@ namespace MonoDevelop.Projects.Parser
 				modifiers |= ModifierEnum.Abstract;
 			}
 			
-			foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
+			foreach (ParameterDefinition paramInfo in methodBase.Parameters) {
 				parameters.Add(new ReflectionParameter(paramInfo, node));
 			}
 			
-			if (methodBase is MethodInfo) {
-				returnType = new ReflectionReturnType(((MethodInfo)methodBase).ReturnType);
-			} else {
-				returnType = null;
+			returnType = new ReflectionReturnType (methodBase.ReturnType.ReturnType);
+		}
+		
+		public static ModifierEnum GetModifiers (MethodAttributes attributes)
+		{
+			ModifierEnum modifiers = ModifierEnum.None;
+			
+			if ((attributes & MethodAttributes.Static) != 0)
+				modifiers |= ModifierEnum.Static;
+			
+			MethodAttributes access = attributes & MethodAttributes.MemberAccessMask;
+			
+			if (access == MethodAttributes.Private) { // I assume that private is used most and public last (at least should be)
+				modifiers |= ModifierEnum.Private;
+			} else if (access == MethodAttributes.Family) {
+				modifiers |= ModifierEnum.Protected;
+			} else if (access == MethodAttributes.Public) {
+				modifiers |= ModifierEnum.Public;
+			} else if (access == MethodAttributes.Assem) {
+				modifiers |= ModifierEnum.Internal;
+			} else if (access == MethodAttributes.FamORAssem) {
+				modifiers |= ModifierEnum.ProtectedOrInternal;
+			} else if (access == MethodAttributes.FamANDAssem) {
+				modifiers |= ModifierEnum.Protected | ModifierEnum.Internal;
 			}
+			
+			return modifiers;
 		}
 	}
 }

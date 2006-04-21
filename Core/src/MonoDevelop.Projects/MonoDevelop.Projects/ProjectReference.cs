@@ -82,11 +82,6 @@ namespace MonoDevelop.Projects
 			get {
 				return reference;
 			}
-			set {
-				reference = value;
-				UpdateGacReference ();
-				OnReferenceChanged(EventArgs.Empty);
-			}
 		}
 		
 		[DefaultValue(true)]
@@ -112,7 +107,7 @@ namespace MonoDevelop.Projects
 					return reference;
 				
 				case ReferenceType.Gac:
-					string file = Runtime.SystemAssemblyService.GetAssemblyLocation (GetPathToGACAssembly (this));
+					string file = Runtime.SystemAssemblyService.GetAssemblyLocation (Reference);
 					return file == null ? reference : file;
 				case ReferenceType.Project:
 					if (ownerProject != null) {
@@ -158,37 +153,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		/// <summary>
-		/// This method returns the absolute path to an GAC assembly.
-		/// </summary>
-		/// <param name ="refInfo">
-		/// The reference information containing a GAC reference information.
-		/// </param>
-		/// <returns>
-		/// the absolute path to the GAC assembly which refInfo points to.
-		/// </returns>
-		static string GetPathToGACAssembly(ProjectReference refInfo)
-		{ // HACK : Only works on windows.
-			Debug.Assert(refInfo.ReferenceType == ReferenceType.Gac);
-			string[] info = refInfo.Reference.Split(',');
-			
-			//if (info.Length < 4) {
-			return info[0];
-			//	}
-			
-			/*string aName      = info[0];
-			string aVersion   = info[1].Substring(info[1].LastIndexOf('=') + 1);
-			string aPublicKey = info[3].Substring(info[3].LastIndexOf('=') + 1);
-			
-			return System.Environment.GetFolderPath(Environment.SpecialFolder.System) + 
-			       Path.DirectorySeparatorChar + ".." +
-			       Path.DirectorySeparatorChar + "assembly" +
-			       Path.DirectorySeparatorChar + "GAC" +
-			       Path.DirectorySeparatorChar + aName +
-			       Path.DirectorySeparatorChar + aVersion + "__" + aPublicKey +
-			       Path.DirectorySeparatorChar + aName + ".dll";*/
-		}
-		
 		void UpdateGacReference ()
 		{
 			if (referenceType == ReferenceType.Gac) {
@@ -218,14 +182,5 @@ namespace MonoDevelop.Projects
 		{
 			return reference.GetHashCode ();
 		}
-		
-		protected virtual void OnReferenceChanged(EventArgs e) 
-		{
-			if (ReferenceChanged != null) {
-				ReferenceChanged(this, e);
-			}
-		}
-		
-		public event EventHandler ReferenceChanged;
 	}
 }

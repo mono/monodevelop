@@ -226,5 +226,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Cecil.dll" />
   </References>
 </Project>

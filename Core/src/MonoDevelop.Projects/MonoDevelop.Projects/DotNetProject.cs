@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -22,6 +23,7 @@ namespace MonoDevelop.Projects
 	{
 		[ItemProperty]
 		string language;
+		ClrVersion clrVersion = ClrVersion.Net_1_1; 
 		
 		IDotNetLanguageBinding languageBinding;
 		
@@ -31,6 +33,30 @@ namespace MonoDevelop.Projects
 		
 		public string LanguageName {
 			get { return language; }
+		}
+		
+		public IDotNetLanguageBinding LanguageBinding {
+			get { return languageBinding; }
+		}
+		
+		[ItemProperty ("clr-version")]
+		public ClrVersion ClrVersion {
+			get {
+				return (clrVersion == ClrVersion.Default) ? ClrVersion.Net_1_1 : clrVersion;
+			}
+			set {
+				if (clrVersion == value)
+					return;
+				clrVersion = value;
+				
+				// Propagate the clr version to configurations. We don't support
+				// per-project clr versions right now, but we might support it
+				// in the future.
+				foreach (DotNetProjectConfiguration conf in Configurations)
+					conf.ClrVersion = clrVersion;
+
+				UpdateSystemReferences ();
+			}
 		}
 		
 		internal DotNetProject ()
@@ -192,6 +218,31 @@ namespace MonoDevelop.Projects
 		public virtual string GetDefaultNamespace (string fileName)
 		{
 			return Name;
+		}
+		
+		// Make sure that the project references are valid for the target clr version.
+		void UpdateSystemReferences ()
+		{
+			ArrayList toDelete = new ArrayList ();
+			ArrayList toAdd = new ArrayList ();
+			
+			foreach (ProjectReference pref in ProjectReferences) {
+				if (pref.ReferenceType == ReferenceType.Gac) {
+					string newRef = Runtime.SystemAssemblyService.GetAssemblyNameForVersion (pref.Reference, this.ClrVersion);
+					if (newRef == null)
+						toDelete.Add (pref);
+					else if (newRef != pref.Reference) {
+						toDelete.Add (pref);
+						toAdd.Add (new ProjectReference (ReferenceType.Gac, newRef));
+					}
+				}
+			}
+			foreach (ProjectReference pref in toDelete) {
+				ProjectReferences.Remove (pref);
+			}
+			foreach (ProjectReference pref in toAdd) {
+				ProjectReferences.Add (pref);
+			}
 		}
 	}
 }

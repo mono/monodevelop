@@ -6,13 +6,14 @@
 // </file>
 using System;
 using System.Collections;
+using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	internal class ReflectionReturnType : AbstractReturnType
 	{
-		public ReflectionReturnType(Type type)
+		public ReflectionReturnType(TypeReference type)
 		{
 			string fullyQualifiedName = type.FullName.Replace("+", ".").Trim('&');
 			
@@ -30,18 +31,20 @@ namespace MonoDevelop.Projects.Parser
 		}
 		
 		ArrayList arrays = new ArrayList();
-		void SetArrayDimensions(Type type)
+		void SetArrayDimensions(TypeReference type)
 		{
-			if (type.IsArray && type != typeof(Array)) {
-				SetArrayDimensions(type.GetElementType());
-				arrays.Insert(0, type.GetArrayRank());
+			if (type is ArrayType) {
+				ArrayType at = (ArrayType) type;
+				SetArrayDimensions (at.ElementType);
+				arrays.Insert(0, at.Rank);
 			}
 		}
 		
-		void SetPointerNestingLevel(Type type)
+		void SetPointerNestingLevel(TypeReference type)
 		{
-			if (type.IsPointer) {
-				SetPointerNestingLevel(type.GetElementType());
+			if (type is PointerType) {
+				PointerType pt = (PointerType) type;
+				SetPointerNestingLevel (pt.ElementType);
 				++pointerNestingLevel;
 			}
 		}

@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using Mono.Cecil;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
@@ -52,11 +53,8 @@ namespace MonoDevelop.Projects.Parser
 			string[] refUris;
 			string name;
 			
-			using (AssemblyDatabaseHelper helper = GetExternalHelper (true))
-			{
-				if (!helper.GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name, out refUris))
-					return;
-			}
+			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name, out refUris))
+				return;
 			
 			this.baseDir = baseDir;
 			
@@ -89,10 +87,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static string GetFullAssemblyName (string s)
 		{
-			using (AssemblyDatabaseHelper helper = GetExternalHelper (true))
-			{
-				return helper.GetFullAssemblyName (s);
-			}
+			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
 		}
 		
 		protected override void ParseFile (string fileName, IProgressMonitor parentMonitor)
@@ -162,27 +157,6 @@ namespace MonoDevelop.Projects.Parser
 				return new DatabaseGenerator ();
 		}
 		
-		static AssemblyDatabaseHelper GetExternalHelper (bool share)
-		{
-			if (Runtime.ProcessService != null)
-				return (AssemblyDatabaseHelper) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyDatabaseHelper), share);
-			else
-				return new AssemblyDatabaseHelper ();
-		}
-	}
-	
-	[AddinDependency ("MonoDevelop.Documentation")]
-	internal class DatabaseGenerator: RemoteProcessObject
-	{
-		public void GenerateDatabase (string baseDir, string assemblyName)
-		{
-			DefaultParserService parserService = new DefaultParserService ();
-			parserService.GenerateAssemblyDatabase (baseDir, assemblyName);
-		}
-	}
-	
-	internal class AssemblyDatabaseHelper: RemoteProcessObject
-	{
 		public bool GetAssemblyInfo (string assemblyName, out string realAssemblyName, out string assemblyFile, out string name, out string[] references)
 		{
 			name = null;
@@ -190,7 +164,7 @@ namespace MonoDevelop.Projects.Parser
 			realAssemblyName = null;
 			references = null;
 			
-			Assembly asm = null;
+			AssemblyDefinition asm = null;
 			
 			if (assemblyName.ToLower().EndsWith (".dll")) 
 			{
@@ -198,7 +172,7 @@ namespace MonoDevelop.Projects.Parser
 				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
 				assemblyFile = assemblyName;
 				try {
-					asm = Assembly.LoadFrom (assemblyFile);
+					asm = AssemblyFactory.GetAssembly (assemblyFile);
 				}
 				catch {}
 				
@@ -209,61 +183,31 @@ namespace MonoDevelop.Projects.Parser
 			}
 			else 
 			{
-				asm = FindAssembly (assemblyName);
+				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+				asm = AssemblyFactory.GetAssembly (assemblyFile);
 				
 				if (asm == null) {
 					Console.WriteLine ("Could not load assembly: " + assemblyName);
 					return false;
 				}
 				
-				assemblyName = asm.GetName().FullName;
+				assemblyName = asm.Name.FullName;
 				name = EncodeGacAssemblyName (assemblyName);
-				assemblyFile = asm.Location;
 			}
 			
 			realAssemblyName = assemblyName;
-
+			
 			// Update references to other assemblies
 			
-			AssemblyName[] names = asm.GetReferencedAssemblies ();
-			references = new string [names.Length];
+			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
+			references = new string [names.Count];
 
-			for (int n=0; n<names.Length; n++)
-				references [n] = "Assembly:" + names [n].ToString();
-				
-			return true;
-		}	
-	
-		public string GetFullAssemblyName (string s)
-		{
-			if (s.ToLower().EndsWith (".dll")) 
-				return s;
-				
-			Assembly asm = FindAssembly (s);
+			for (int n=0; n<names.Count; n++)
+				references [n] = "Assembly:" + names [n].FullName;
 			
-			if (asm != null)
-				return asm.GetName().FullName;
-			else
-				return s;
+			return true;
 		}
 		
-		Assembly FindAssembly (string name)
-		{
-			Assembly asm = null;
-			try {
-				asm = Assembly.Load (name);
-			}
-			catch {}
-			
-			if (asm == null) {
-				try {
-					asm = Assembly.LoadWithPartialName (name);
-				}
-				catch {}
-			}
-			return asm;
-		}
-
 		string EncodeGacAssemblyName (string assemblyName)
 		{
 			string[] assemblyPieces = assemblyName.Split(',');
@@ -279,4 +223,13 @@ namespace MonoDevelop.Projects.Parser
 		}
 	}
 	
+	[AddinDependency ("MonoDevelop.Documentation")]
+	internal class DatabaseGenerator: RemoteProcessObject
+	{
+		public void GenerateDatabase (string baseDir, string assemblyName)
+		{
+			DefaultParserService parserService = new DefaultParserService ();
+			parserService.GenerateAssemblyDatabase (baseDir, assemblyName);
+		}
+	}
 }

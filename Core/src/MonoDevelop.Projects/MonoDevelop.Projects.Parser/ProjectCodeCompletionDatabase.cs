@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		Project project;
 		bool initialFileCheck;
+		ClrVersion lastVersion;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase parserDatabase)
 		: base (parserDatabase)
@@ -58,6 +59,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject += new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
+			project.Modified += new CombineEntryEventHandler (OnProjectModified);
 		}
 		
 		public Project Project {
@@ -70,6 +72,7 @@ namespace MonoDevelop.Projects.Parser
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject -= new ProjectFileRenamedEventHandler (OnFileRenamed);
+			project.Modified -= new CombineEntryEventHandler (OnProjectModified);
 		}
 		
 		public override void CheckModifiedFiles ()
@@ -114,6 +117,11 @@ namespace MonoDevelop.Projects.Parser
 				QueueParseJob (file);
 			}
 		}
+		
+		void OnProjectModified (object s, CombineEntryEventArgs args)
+		{
+			UpdateCorlibReference ();
+		}
 
 		public void UpdateFromProject ()
 		{
@@ -148,6 +156,44 @@ namespace MonoDevelop.Projects.Parser
 			{
 				if (!fs.Contains (re.Uri))
 					RemoveReference (re.Uri);
+			}
+			UpdateCorlibReference ();
+		}
+		
+		void UpdateCorlibReference ()
+		{
+			// Creates a reference to the correct version of mscorlib, depending
+			// on the target runtime version
+			
+			DotNetProject prj = project as DotNetProject;
+			if (prj == null) return;
+			
+			if (prj.ClrVersion == lastVersion)
+				return;
+			
+			// Look for an existing mscorlib reference
+			string currentRefUri = null;
+			foreach (ReferenceEntry re in References) {
+				if (re.Uri.StartsWith ("Assembly:mscorlib")) {
+					currentRefUri = re.Uri;
+					break;
+				}
+			}
+			
+			// Gets the name and version of the mscorlib assembly required by the project
+			string requiredRefUri = "Assembly:";
+			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), prj.ClrVersion);
+			
+			// Replace the old reference if the target version has changed
+			if (currentRefUri != null) {
+				if (currentRefUri != requiredRefUri) {
+					RemoveReference (currentRefUri);
+					AddReference (requiredRefUri);
+					parserDatabase.NotifyReferencesChanged (this);
+				}
+			} else {
+				AddReference (requiredRefUri);
+				parserDatabase.NotifyReferencesChanged (this);
 			}
 		}
 		

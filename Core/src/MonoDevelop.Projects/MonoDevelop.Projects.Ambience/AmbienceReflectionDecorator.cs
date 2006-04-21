@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Ambience
 			this.conv = conv;
 		}
 		
-		public string Convert(Type type)
+/*		public string Convert(Type type)
 		{
 			return conv.Convert(new ReflectionClass(type));
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects.Ambience
 		{
 			return conv.Convert(new ReflectionParameter(param, null));
 		}
-		
+*/		
 		public ArrayList LinkArrayList {
 			get {
 				return conv.LinkArrayList;

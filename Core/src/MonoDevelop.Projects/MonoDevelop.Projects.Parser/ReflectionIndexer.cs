@@ -7,8 +7,8 @@
 using System;
 using System.Collections;
 using System.Text;
-using System.Reflection;
 using System.Xml;
+using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -29,19 +29,19 @@ namespace MonoDevelop.Projects.Parser
 			return propertyName.ToString();
 		}
 */
-		public ReflectionIndexer(PropertyInfo propertyInfo, XmlDocument docs)
+		public ReflectionIndexer(PropertyDefinition propertyInfo, XmlDocument docs)
 		{
 			// indexers does have the same name as the object that declare the indexers
 			FullyQualifiedName = propertyInfo.DeclaringType.FullName;
 			
 			// show the abstract layer that we have getter & setters
-			if (propertyInfo.CanRead) {
+			if (propertyInfo.GetMethod != null) {
 				getterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				getterRegion = null;
 			}
 			
-			if (propertyInfo.CanWrite) {
+			if (propertyInfo.SetMethod != null) {
 				setterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				setterRegion = null;
@@ -60,44 +60,25 @@ namespace MonoDevelop.Projects.Parser
 			
 			returnType = new ReflectionReturnType(propertyInfo.PropertyType);
 			
-			MethodInfo methodBase = null;
+			MethodDefinition methodBase = null;
 			try {
-				methodBase = propertyInfo.GetGetMethod(true);
+				methodBase = propertyInfo.GetMethod;
 			} catch (Exception) {}
 			
 			if (methodBase == null) {
 				try {
-					methodBase = propertyInfo.GetSetMethod(true);
+					methodBase = propertyInfo.SetMethod;
 				} catch (Exception) {}
 			}
 			
 			if (methodBase != null) {
-				if (methodBase.IsStatic) {
-					modifiers |= ModifierEnum.Static;
-				}
-				
-				if (methodBase.IsAssembly) {
-					modifiers |= ModifierEnum.Internal;
-				}
-				
-				if (methodBase.IsPrivate) { // I assume that private is used most and public last (at least should be)
-					modifiers |= ModifierEnum.Private;
-				} else if (methodBase.IsFamily) {
-					modifiers |= ModifierEnum.Protected;
-				} else if (methodBase.IsPublic) {
-					modifiers |= ModifierEnum.Public;
-				} else if (methodBase.IsFamilyOrAssembly) {
-					modifiers |= ModifierEnum.ProtectedOrInternal;
-				} else if (methodBase.IsFamilyAndAssembly) {
-					modifiers |= ModifierEnum.Protected;
-					modifiers |= ModifierEnum.Internal;
-				}
+				modifiers |= ReflectionMethod.GetModifiers (methodBase.Attributes);
 			} else { // assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}
 			
-			ParameterInfo[] p = propertyInfo.GetIndexParameters();
-			foreach (ParameterInfo parameterInfo in p) {
+			ParameterDefinitionCollection p = propertyInfo.Parameters;
+			foreach (ParameterDefinition parameterInfo in p) {
 				parameters.Add(new ReflectionParameter(parameterInfo, node));
 			}
 		}

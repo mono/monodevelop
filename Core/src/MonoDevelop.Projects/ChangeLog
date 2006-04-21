@@ -1,3 +1,41 @@
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Added property
+	  for ClrVersion.
+	* MonoDevelop.Projects/ProjectReference.cs: Removed setter for the
+	  Reference property, and the ReferenceChanged event. Removed also
+	  some unused code.
+	* MonoDevelop.Projects/CombineEntry.cs: Added Modified and Saved
+	  events.
+	* MonoDevelop.Projects/Combine.cs: Fire change events when the combine
+	  changes. Chain on entrie's Modified and Saved events.
+	* MonoDevelop.Projects/DotNetProject.cs: Added property
+	  for ClrVersion.
+	* MonoDevelop.Projects/Project.cs: Fire change events when the project
+	  changes.
+	* MonoDevelop.Projects.Ambience/AmbienceReflectionDecorator.cs: Commented
+	  unused code.
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Use Cecil
+	  and SystemAssemblyService to get information about assemblies.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Added some null
+	  checks. Factorized some code.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Added support
+	  for different CLR versions.
+	  
+	* MonoDevelop.Projects.Parser/ReflectionClass.cs:
+	* MonoDevelop.Projects.Parser/ReflectionParameter.cs:
+	* MonoDevelop.Projects.Parser/ReflectionEvent.cs:
+	* MonoDevelop.Projects.Parser/ReflectionMethod.cs:
+	* MonoDevelop.Projects.Parser/ReflectionProperty.cs:
+	* MonoDevelop.Projects.Parser/ReflectionIndexer.cs:
+	* MonoDevelop.Projects.Parser/ReflectionField.cs:
+	* MonoDevelop.Projects.Parser/ReflectionReturnType.cs:
+	* MonoDevelop.Projects.Parser/AssemblyInformation.cs: Use Cecil instead of
+	  reflection to read assembly data.
+	  
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Added reference to Mono.Cecil.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Fix warning.

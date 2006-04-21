@@ -24,6 +24,7 @@ namespace MonoDevelop.Projects
 	{
 		ConfigurationCollection configurations;
 		Hashtable extendedProperties;
+		CombineEntryEventArgs thisCombineArgs;
 
 		Combine parentCombine;
 		IConfiguration activeConfiguration;
@@ -37,6 +38,7 @@ namespace MonoDevelop.Projects
 			configurations = new ConfigurationCollection ();
 			configurations.ConfigurationAdded += new ConfigurationEventHandler (OnConfigurationAddedToCollection);
 			configurations.ConfigurationRemoved += new ConfigurationEventHandler (OnConfigurationRemovedFromCollection);
+			thisCombineArgs = new CombineEntryEventArgs (this);
 		}
 		
 		public virtual void InitializeFromTemplate (XmlElement template)
@@ -60,6 +62,7 @@ namespace MonoDevelop.Projects
 				if (name != value && value != null && value.Length > 0) {
 					string oldName = name;
 					name = value;
+					NotifyModified ();
 					OnNameChanged (new CombineEntryRenamedEventArgs (this, oldName, name));
 				}
 			}
@@ -79,6 +82,7 @@ namespace MonoDevelop.Projects
 					path = value;
 				if (fileFormat != null)
 					path = fileFormat.GetValidFormatName (FileName);
+				NotifyModified ();
 			}
 		}
 		
@@ -87,6 +91,7 @@ namespace MonoDevelop.Projects
 			set {
 				fileFormat = value;
 				FileName = fileFormat.GetValidFormatName (FileName);
+				NotifyModified ();
 			}
 		}
 		
@@ -126,6 +131,7 @@ namespace MonoDevelop.Projects
 		public virtual void Save (IProgressMonitor monitor)
 		{
 			Services.ProjectService.WriteFile (FileName, this, monitor);
+			OnSaved (thisCombineArgs);
 		}
 		
 		internal void SetParentCombine (Combine combine)
@@ -151,6 +157,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
+					NotifyModified ();
 					OnActiveConfigurationChanged (new ConfigurationEventArgs (this, value));
 				}
 			}
@@ -224,6 +231,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
+			NotifyModified ();
 			if (NameChanged != null) {
 				NameChanged (this, e);
 			}
@@ -231,6 +239,7 @@ namespace MonoDevelop.Projects
 		
 		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
 		{
+			NotifyModified ();
 			OnConfigurationAdded (new ConfigurationEventArgs (this, args.Configuration));
 			if (activeConfiguration == null)
 				ActiveConfiguration = args.Configuration;
@@ -244,7 +253,25 @@ namespace MonoDevelop.Projects
 				else
 					ActiveConfiguration = null;
 			}
+			NotifyModified ();
 			OnConfigurationRemoved (new ConfigurationEventArgs (this, args.Configuration));
+		}
+		
+		protected void NotifyModified ()
+		{
+			OnModified (thisCombineArgs);
+		}
+		
+		protected virtual void OnModified (CombineEntryEventArgs args)
+		{
+			if (Modified != null)
+				Modified (this, args);
+		}
+		
+		protected virtual void OnSaved (CombineEntryEventArgs args)
+		{
+			if (Saved != null)
+				Saved (this, args);
 		}
 		
 		protected virtual void OnActiveConfigurationChanged (ConfigurationEventArgs args)
@@ -278,5 +305,7 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler ActiveConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
+		public event CombineEntryEventHandler Modified;
+		public event CombineEntryEventHandler Saved;
 	}
 }

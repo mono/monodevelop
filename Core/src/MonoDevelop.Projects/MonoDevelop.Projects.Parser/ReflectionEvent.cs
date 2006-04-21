@@ -6,15 +6,15 @@
 // </file>
 using System;
 using System.Collections;
-using System.Reflection;
 using System.Xml;
+using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
 	internal class ReflectionEvent : AbstractEvent
 	{
-		public ReflectionEvent(EventInfo eventInfo, XmlDocument docs)
+		public ReflectionEvent(EventDefinition eventInfo, XmlDocument docs)
 		{
 			FullyQualifiedName = String.Concat(eventInfo.DeclaringType.FullName, ".", eventInfo.Name);
 
@@ -26,43 +26,24 @@ namespace MonoDevelop.Projects.Parser
 			}
 
 			// get modifiers
-			MethodInfo methodBase = null;
+			MethodDefinition methodBase = null;
 			try {
-				methodBase = eventInfo.GetAddMethod(true);
+				methodBase = eventInfo.AddMethod;
 			} catch (Exception) {}
 			
 			if (methodBase == null) {
 				try {
-					methodBase = eventInfo.GetRemoveMethod(true);
+					methodBase = eventInfo.RemoveMethod;
 				} catch (Exception) {}
 			}
 			
 			if (methodBase != null) {
-				if (methodBase.IsStatic) {
-					modifiers |= ModifierEnum.Static;
-				}
-				
-				if (methodBase.IsAssembly) {
-					modifiers |= ModifierEnum.Internal;
-				}
-				
-				if (methodBase.IsPrivate) { // I assume that private is used most and public last (at least should be)
-					modifiers |= ModifierEnum.Private;
-				} else if (methodBase.IsFamily) {
-					modifiers |= ModifierEnum.Protected;
-				} else if (methodBase.IsPublic) {
-					modifiers |= ModifierEnum.Public;
-				} else if (methodBase.IsFamilyOrAssembly) {
-					modifiers |= ModifierEnum.ProtectedOrInternal;
-				} else if (methodBase.IsFamilyAndAssembly) {
-					modifiers |= ModifierEnum.Protected;
-					modifiers |= ModifierEnum.Internal;
-				}
+				modifiers |= ReflectionMethod.GetModifiers (methodBase.Attributes);
 			} else { // assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}
 			
-			returnType = new ReflectionReturnType(eventInfo.EventHandlerType );			
+			returnType = new ReflectionReturnType (eventInfo.EventType);			
 		}
 	}
 }

@@ -577,11 +577,14 @@ namespace MonoDevelop.Projects.Parser
 					if (uri.StartsWith ("Assembly:"))
 					{
 						string file = uri.Substring (9);
+						string realUri = uri;
 						
 						// We may be trying to load an assembly db using a partial name.
 						// In this case we get the full name to avoid database conflicts
-						file = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
-						string realUri = "Assembly:" + file;
+						string fname = AssemblyCodeCompletionDatabase.GetFullAssemblyName (file);
+						if (fname != null)
+							realUri = "Assembly:" + fname;
+							
 						db = (CodeCompletionDatabase) databases [realUri];
 						if (db != null) {
 							databases [uri] = db;
@@ -813,16 +816,21 @@ namespace MonoDevelop.Projects.Parser
 			CleanUnusedDatabases ();
 		}
 		
+		internal void NotifyReferencesChanged (CodeCompletionDatabase db)
+		{
+			foreach (ReferenceEntry re in db.References) {
+				// Make sure the db is loaded
+				GetDatabase (re.Uri);
+			}
+			CleanUnusedDatabases ();
+		}
+		
 		void OnProjectReferencesChanged (object sender, ProjectReferenceEventArgs args)
 		{
 			ProjectCodeCompletionDatabase db = GetProjectDatabase (args.Project);
 			if (db != null) {
 				db.UpdateFromProject ();
-				foreach (ReferenceEntry re in db.References)
-				{
-					// Make sure the db is loaded
-					GetDatabase (re.Uri);
-				}
+				NotifyReferencesChanged (db);
 			}
 		}
 		
@@ -1008,8 +1016,10 @@ namespace MonoDevelop.Projects.Parser
 					
 					if (project != null) {
 						ProjectCodeCompletionDatabase db = GetProjectDatabase (project);
-						ClassUpdateInformation res = db.UpdateFromParseInfo (parseInformation, fileName);
-						if (res != null) NotifyParseInfoChange (fileName, res, project);
+						if (db != null) {
+							ClassUpdateInformation res = db.UpdateFromParseInfo (parseInformation, fileName);
+							if (res != null) NotifyParseInfoChange (fileName, res, project);
+						}
 					}
 					else {
 						SimpleCodeCompletionDatabase db = GetSingleFileDatabase (fileName);

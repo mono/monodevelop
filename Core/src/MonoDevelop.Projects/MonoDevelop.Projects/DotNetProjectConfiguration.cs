@@ -53,6 +53,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Execution/runtime")]
 		NetRuntime netRuntime = NetRuntime.MsNet;
 		
+		[ItemProperty ("Execution/clr-version")]
+		MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Net_1_1;
+		
 		[ItemProperty ("Build/target")]
 		CompileTarget compiletarget = CompileTarget.Exe;
 		
@@ -74,6 +77,11 @@ namespace MonoDevelop.Projects
 		public CompileTarget CompileTarget {
 			get { return compiletarget; }
 			set { compiletarget = value; }
+		}
+		
+		public MonoDevelop.Core.ClrVersion ClrVersion {
+			get { return (clrVersion == MonoDevelop.Core.ClrVersion.Default) ? MonoDevelop.Core.ClrVersion.Net_1_1 : clrVersion; }
+			set { clrVersion = value; }
 		}
 		
 		public ICloneable CompilationParameters {
@@ -99,6 +107,7 @@ namespace MonoDevelop.Projects
 			netRuntime = conf.netRuntime;
 			compiletarget = conf.compiletarget;
 			sourcePath = conf.sourcePath;
+			clrVersion = conf.clrVersion;
 			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;
 		}
 	}
