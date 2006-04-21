@@ -1,12 +1,12 @@
 <Combine name="BooBinding" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="BooBinding" />
-      <Entry configuration="Debug" build="True" name="BooShell" />
+      <Entry build="True" name="BooBinding" configuration="Debug" />
+      <Entry build="True" name="BooShell" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="BooBinding" />
-      <Entry configuration="Debug" build="True" name="BooShell" />
+      <Entry build="True" name="BooBinding" configuration="Release" />
+      <Entry build="True" name="BooShell" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">

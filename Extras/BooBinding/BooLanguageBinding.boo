@@ -72,6 +72,9 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 	public def GetCodeDomProvider () as CodeDomProvider:
 		return provider
 	
+	public def GetSupportedClrVersions () as (ClrVersion):
+		return array(ClrVersion, (ClrVersion.Net_1_1,))
+	
 	public def GetFileName (baseName as string) as string:
 		return baseName + ".boo"
 	
