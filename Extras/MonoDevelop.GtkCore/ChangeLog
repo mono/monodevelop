@@ -1,3 +1,8 @@
+2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libs/*: Updated from stetic module. Fixed construction of
+	  scales and scrollbars.
+
 2006-04-19 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs: When
