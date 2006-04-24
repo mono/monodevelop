@@ -1,3 +1,9 @@
+2006-04-24 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Don't
+	  crash if a stetic project can't be loaded. Fixes bug #78169.
+	* lib/libstetic.dll: Updated from Stetic module. Fixes bug #78167.
+
 2006-04-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libs/*: Updated from stetic module. Fixed construction of

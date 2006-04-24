@@ -50,6 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Project project;
 		string fileName;
 		internal bool UpdatingWindow;
+		bool hasError;
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
@@ -59,7 +60,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.fileName = fileName;
 			
 			gproject = new Stetic.Project ();
-			gproject.Load (fileName);
+			try {
+				gproject.Load (fileName);
+			} catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex, "The GUI designer project file '" + fileName + "' could not be loaded.");
+				hasError = true;
+			}
 			 
 			this.project = project;
 			gproject.WidgetAdded += new Stetic.Wrapper.WidgetEventHandler (OnAddWidget);
@@ -78,7 +84,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Save ()
 		{
-			gproject.Save (fileName);
+			if (!hasError)
+				gproject.Save (fileName);
 		}
 		
 		public string File {
