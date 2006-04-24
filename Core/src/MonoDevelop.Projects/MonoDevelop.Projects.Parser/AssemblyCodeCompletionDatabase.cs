@@ -184,7 +184,8 @@ namespace MonoDevelop.Projects.Parser
 			else 
 			{
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
-				asm = AssemblyFactory.GetAssembly (assemblyFile);
+				if (assemblyFile != null)
+					asm = AssemblyFactory.GetAssembly (assemblyFile);
 				
 				if (asm == null) {
 					Console.WriteLine ("Could not load assembly: " + assemblyName);

@@ -1,3 +1,11 @@
+2006-04-24 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Don't crash if an assembly can't be found. It can be a dependency
+	  not yet installed. Fixes bug #78172.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Log some
+	  exceptions.
+
 2006-04-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fix hang

@@ -235,7 +235,8 @@ namespace MonoDevelop.Projects.Parser
 					return parser.Resolve (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
 				}
 				return null;
-			} catch {
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				return null;
 			}
 		}
@@ -248,7 +249,8 @@ namespace MonoDevelop.Projects.Parser
 					return parser.IsAsResolve (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
 				}
 				return null;
-			} catch {
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				return null;
 			}
 		}
@@ -270,7 +272,8 @@ namespace MonoDevelop.Projects.Parser
 					return parser.ResolveIdentifier (this, id, caretLineNumber, caretColumn, fileName, fileContent);
 				}
 				return null;
-			} catch {
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 				return null;
 			}
 		}
