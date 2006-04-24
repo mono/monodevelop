@@ -1,3 +1,8 @@
+2006-04-24 Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Fix nullref caused by delegates not having
+	  a region or bodyRegion. Fixes bug #78143.
+
 2006-04-21 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpLanguageBinding.cs: Implement GetSupportedClrVersions.

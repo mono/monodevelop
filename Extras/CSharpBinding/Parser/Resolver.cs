@@ -933,9 +933,9 @@ namespace CSharpBinding.Parser
 				return GetResolvedClass (curClass);
 			}
 			foreach (IClass c in curClass.InnerClasses) {
-				if (c != null && c.Region != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (c != null && ((c.Region != null && c.Region.IsInside(caretLine, caretColumn)) ||
+					              (c.BodyRegion != null && c.BodyRegion.IsInside(caretLine, caretColumn))))
 					return GetInnermostClass(c);
-				}
 			}
 			return GetResolvedClass (curClass);
 		}
