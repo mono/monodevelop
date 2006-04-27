@@ -1,3 +1,7 @@
+2006-04-27 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* configure.in: Added russian translation and missing file.
+
 2006-04-17  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in: Added zh_CN translation. Thanks to
