@@ -6,7 +6,7 @@ src/mdhost.cs
 
 all: $(ASSEMBLY)
 
-REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \ 
+REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	/r:System.Runtime.Remoting \
 	/r:Mono.Posix
 	
