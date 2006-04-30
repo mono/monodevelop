@@ -1,3 +1,10 @@
+2006-04-30  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Dock.mdp
+	* Makefile.am
+	* DragNotebook.cs: added - moved from MonoDevelop.Components, fixes
+	* DockNotebook.cs: use DragNotebook 
+
 2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Dock.mdp: Updated.

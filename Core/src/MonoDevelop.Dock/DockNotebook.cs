@@ -58,7 +58,7 @@ namespace Gdl
 		
 		public DockNotebook ()
 		{
-			Child = new Notebook ();
+			Child = new DragNotebook ();
 			Child.Parent = this;
 			((Notebook)Child).TabPos = PositionType.Bottom;
 			// FIXME: enable these if we do a DockTabLabel

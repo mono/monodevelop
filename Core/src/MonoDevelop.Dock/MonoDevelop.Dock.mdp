@@ -38,6 +38,7 @@
     <File name="./DockItemBehavior.cs" subtype="Code" buildaction="Compile" />
     <File name="./ExportAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./AfterAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DragNotebook.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -37,7 +37,8 @@ FILES = AssemblyInfo.cs \
 	DockPaned.cs \
 	DockItemBehavior.cs \
 	ExportAttribute.cs \
-	AfterAttribute.cs
+	AfterAttribute.cs\
+	DragNotebook.cs
 
 TEST_FILES = $(srcdir)/GdlDockTest.cs
 
