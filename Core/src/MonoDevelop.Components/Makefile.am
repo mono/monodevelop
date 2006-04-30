@@ -55,7 +55,6 @@ MonoDevelop.Components.DockToolbars/FloatingDock.cs \
 MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
 MonoDevelop.Components.DockToolbars/IDockBar.cs \
 MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
-MonoDevelop.Components/DragNotebook.cs \
 MonoDevelop.Components/FileSelector.cs \
 MonoDevelop.Components/BaseFileEntry.cs \
 MonoDevelop.Components/FileEntry.cs \

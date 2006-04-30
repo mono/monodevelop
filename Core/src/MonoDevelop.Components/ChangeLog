@@ -1,3 +1,9 @@
+2006-04-30  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Components.mdp
+	* Makefile.am
+	* MonoDevelop.Components/DragNotebook.cs: removed (moved into Gdl) 
+	
 2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* MonoDevelop.Components/CellRendererComboBox.cs:
