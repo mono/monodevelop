@@ -214,7 +214,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			editSession.AddCurrentWidgetToClass ();
 		}
 		
-		public void JumpToSignalHandler (Stetic.Wrapper.Signal signal)
+		public void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			IClass cls = editSession.GetClass ();
 			foreach (IMethod met in cls.Methods) {

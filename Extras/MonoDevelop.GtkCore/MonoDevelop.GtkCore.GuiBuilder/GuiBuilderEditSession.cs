@@ -69,9 +69,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			gproject.WidgetNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			gproject.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			
-			gproject.SignalAdded += new Stetic.Wrapper.SignalEventHandler (OnSignalAdded);
-			gproject.SignalRemoved += new Stetic.Wrapper.SignalEventHandler (OnSignalRemoved);
-			gproject.SignalChanged += new Stetic.Wrapper.SignalChangedEventHandler (OnSignalChanged);
+			gproject.SignalAdded += new Stetic.SignalEventHandler (OnSignalAdded);
+			gproject.SignalRemoved += new Stetic.SignalEventHandler (OnSignalRemoved);
+			gproject.SignalChanged += new Stetic.SignalChangedEventHandler (OnSignalChanged);
 			
 			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
 			
@@ -167,10 +167,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void UpdateBindings (Stetic.Wrapper.Widget widget, IClass cls)
 		{
-			Stetic.Wrapper.Signal[] signals = new Stetic.Wrapper.Signal [widget.Signals.Count];
+			Stetic.Signal[] signals = new Stetic.Signal [widget.Signals.Count];
 			widget.Signals.CopyTo (signals, 0);
 			
-			foreach (Stetic.Wrapper.Signal signal in signals) {
+			foreach (Stetic.Signal signal in signals) {
 				if (FindSignalHandler (cls, signal) == null) {
 					widget.Signals.Remove (signal);
 				}
@@ -186,7 +186,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			}
 		}
 		
-		IMethod FindSignalHandler (IClass cls, Stetic.Wrapper.Signal signal)
+		IMethod FindSignalHandler (IClass cls, Stetic.Signal signal)
 		{
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == signal.Handler) {
@@ -267,16 +267,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			}
 		}
 		
-		void OnSignalAdded (object sender, Stetic.Wrapper.SignalEventArgs args)
+		void OnSignalAdded (object sender, Stetic.SignalEventArgs args)
 		{
-			AddSignal ((Stetic.Wrapper.Widget) args.Widget, args.Signal);
+			AddSignal ((Stetic.Wrapper.Widget) args.Wrapper, args.Signal);
 		}
 
-		void OnSignalRemoved (object sender, Stetic.Wrapper.SignalEventArgs args)
+		void OnSignalRemoved (object sender, Stetic.SignalEventArgs args)
 		{
 		}
 
-		void OnSignalChanged (object sender, Stetic.Wrapper.SignalChangedEventArgs args)
+		void OnSignalChanged (object sender, Stetic.SignalChangedEventArgs args)
 		{
 			if (args.OldSignal.Handler == args.Signal.Handler)
 				return;
@@ -291,7 +291,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			gen.RenameMember (new NullProgressMonitor (), cls, met, args.Signal.Handler, RefactoryScope.File);
 		}
 		
-		public void AddSignal (Stetic.Wrapper.Widget childWidget, Stetic.Wrapper.Signal signal)
+		public void AddSignal (Stetic.Wrapper.Widget childWidget, Stetic.Signal signal)
 		{
 			IClass cls = GetClass ();
 			if (cls == null)

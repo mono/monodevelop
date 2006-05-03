@@ -288,7 +288,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal static void JumpToSignalHandler (Stetic.Wrapper.Signal signal)
+		internal static void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;

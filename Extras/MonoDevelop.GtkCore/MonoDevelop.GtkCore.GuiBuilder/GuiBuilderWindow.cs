@@ -226,7 +226,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Add signal handlers
 			
-			foreach (Stetic.Wrapper.Signal signal in rootWidget.Signals) {
+			foreach (Stetic.Signal signal in rootWidget.Signals) {
 				CodeMemberMethod met = new CodeMemberMethod ();
 				met.Name = signal.Handler;
 				met.Attributes = MemberAttributes.Family;

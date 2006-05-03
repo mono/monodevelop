@@ -1,3 +1,14 @@
+2006-05-03 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/*: Updated from Stetic module. Includes fixes for
+	  bugs #78266, #78240 and #78276.
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track changes
+	  in the Stetic API.
+
 2006-04-24 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Don't
