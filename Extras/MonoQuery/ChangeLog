@@ -1,3 +1,10 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Data.Sql.mds: Updated.
+	* tests/Mono.Data.Sql.Tests.mdp: Updated.
+	* Mono.Data.Sql/Mono.Data.Sql.mdp: Updated.
+	* MonoQuery/MonoQuery.mdp: Updated.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.addin.xml: Updated references.

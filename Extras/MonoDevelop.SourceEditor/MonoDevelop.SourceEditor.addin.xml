@@ -5,7 +5,7 @@
        url         = ""
        description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView"
        category    = "IDE extensions"
-       version     = "0.10.0">
+       version     = "0.11.0">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor.dll"/>
@@ -16,7 +16,7 @@
 	<Dependencies>
 	    <AddIn id="MonoDevelop.Core" version="0.10.0"/>
 	    <AddIn id="MonoDevelop.Core.Gui" version="0.10.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.10.0"/>
+	    <AddIn id="MonoDevelop.Projects" version="0.11.0"/>
 	    <AddIn id="MonoDevelop.Projects.Gui" version="0.10.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>

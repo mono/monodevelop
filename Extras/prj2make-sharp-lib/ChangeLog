@@ -1,3 +1,8 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* prj2make-sharp-lib.addin.xml: Updated versions.
+	* prj2make-sharp-lib.mdp: Updated.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Updated references.

@@ -5,7 +5,7 @@
 	   url         = "http://salmonsalvo.net/"
 	   description = "Welcome Page for MonoDevelop"
 	   category    = "IDE extensions"	   
-       version     = "0.2.0">
+       version     = "0.3.0">
 	
 	<Runtime>
 		<Import assembly="WelcomePage.dll"/>
@@ -18,7 +18,7 @@
 	<Dependencies>
 	    <AddIn id="MonoDevelop.Core" version="0.10.0"/>
 	    <AddIn id="MonoDevelop.Core.Gui" version="0.10.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.10.0"/>
+	    <AddIn id="MonoDevelop.Projects" version="0.11.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	

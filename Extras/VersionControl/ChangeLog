@@ -1,3 +1,12 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn/VersionControl.addin.xml: Updated versions.
+	* AddIn/VersionControlAddIn.mdp: Updated.
+	* VersionControl/VersionControl.mdp: Updated.
+	* Diff/Diff.mdp: Updated.
+	* VersionControl/VersionControl.mds: Updated.
+	* DiffWidget/DiffWidget.mdp: Updated.
+
 2006-03-30 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddIn/Makefile.am:

@@ -1,3 +1,8 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmBinding.addin.xml: Updated versions.
+	* ILAsmBinding.mdp: Updated.
+
 2006-04-21 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ILAsmLanguageBinding.cs: Implement GetSupportedClrVersions.

@@ -1,16 +1,16 @@
 <Combine name="VersionControl" fileversion="2.0" outputpath="../../build/AddIns/VersionControl">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="VersionControl" />
-      <Entry configuration="Debug" build="True" name="Diff" />
-      <Entry configuration="Debug" build="True" name="DiffWidget" />
-      <Entry configuration="Debug" build="True" name="VersionControlAddIn" />
+      <Entry build="True" name="VersionControl" configuration="Debug" />
+      <Entry build="True" name="Diff" configuration="Debug" />
+      <Entry build="True" name="DiffWidget" configuration="Debug" />
+      <Entry build="True" name="VersionControlAddIn" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="VersionControl" />
-      <Entry configuration="Release" build="True" name="Diff" />
-      <Entry configuration="Release" build="True" name="DiffWidget" />
-      <Entry configuration="Debug" build="True" name="VersionControlAddIn" />
+      <Entry build="True" name="VersionControl" configuration="Release" />
+      <Entry build="True" name="Diff" configuration="Release" />
+      <Entry build="True" name="DiffWidget" configuration="Release" />
+      <Entry build="True" name="VersionControlAddIn" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="VersionControl" single="True">

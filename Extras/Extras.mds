@@ -1,40 +1,40 @@
 <Combine name="Extras" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
-      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
-      <Entry configuration="Debug" build="True" name="CSharpBinding" />
-      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
-      <Entry configuration="Debug" build="True" name="MonoQuery" />
-      <Entry configuration="Debug" build="True" name="BooBinding" />
-      <Entry configuration="Debug" build="True" name="VersionControl" />
-      <Entry configuration="Debug" build="True" name="JavaBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
-      <Entry configuration="Debug" build="True" name="NemerleBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.GtkCore" />
-      <Entry configuration="Debug" build="True" name="WelcomePage" />
-      <Entry configuration="Debug" build="True" name="prj2make-sharp-lib" />
-      <Entry configuration="" build="True" name="VBNetBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Debugger" />
-      <Entry configuration="Debug" build="True" name="ChangeLogAddIn" />
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
+      <Entry build="True" name="CSharpBinding" configuration="Debug" />
+      <Entry build="True" name="ILAsmBinding" configuration="Debug" />
+      <Entry build="True" name="MonoQuery" configuration="Debug" />
+      <Entry build="True" name="BooBinding" configuration="Debug" />
+      <Entry build="True" name="VersionControl" configuration="Debug" />
+      <Entry build="True" name="JavaBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
+      <Entry build="True" name="NemerleBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
+      <Entry build="True" name="WelcomePage" configuration="Debug" />
+      <Entry build="True" name="prj2make-sharp-lib" configuration="Debug" />
+      <Entry build="True" name="VBNetBinding" configuration="" />
+      <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
+      <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="True" name="MonoDevelop.NUnit" />
-      <Entry configuration="Debug" build="True" name="MonoDeveloperExtensions" />
-      <Entry configuration="Debug" build="True" name="CSharpBinding" />
-      <Entry configuration="Debug" build="True" name="ILAsmBinding" />
-      <Entry configuration="Debug" build="True" name="MonoQuery" />
-      <Entry configuration="Debug" build="True" name="BooBinding" />
-      <Entry configuration="Debug" build="True" name="VersionControl" />
-      <Entry configuration="Debug" build="True" name="JavaBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.SourceEditor" />
-      <Entry configuration="Debug" build="True" name="NemerleBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.GtkCore" />
-      <Entry configuration="Debug" build="True" name="WelcomePage" />
-      <Entry configuration="Debug" build="True" name="prj2make-sharp-lib" />
-      <Entry configuration="" build="True" name="VBNetBinding" />
-      <Entry configuration="Debug" build="True" name="MonoDevelop.Debugger" />
-      <Entry configuration="Debug" build="True" name="ChangeLogAddIn" />
+      <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
+      <Entry build="True" name="CSharpBinding" configuration="Debug" />
+      <Entry build="True" name="ILAsmBinding" configuration="Debug" />
+      <Entry build="True" name="MonoQuery" configuration="Debug" />
+      <Entry build="True" name="BooBinding" configuration="Debug" />
+      <Entry build="True" name="VersionControl" configuration="Debug" />
+      <Entry build="True" name="JavaBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
+      <Entry build="True" name="NemerleBinding" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
+      <Entry build="True" name="WelcomePage" configuration="Debug" />
+      <Entry build="True" name="prj2make-sharp-lib" configuration="Debug" />
+      <Entry build="True" name="VBNetBinding" configuration="" />
+      <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
+      <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">

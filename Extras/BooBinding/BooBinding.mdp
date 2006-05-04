@@ -1,15 +1,15 @@
-<Project name="BooBinding" fileversion="2.0" language="Boo" ctype="DotNetProject">
+<Project name="BooBinding" fileversion="2.0" language="Boo" clr-version="Net_1_1" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../build/AddIns/BackendBindings/" assembly="BooBinding" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../build/AddIns/BackendBindings/" assembly="BooBinding" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
   </Configurations>

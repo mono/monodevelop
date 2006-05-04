@@ -1,3 +1,8 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.addin.xml: Updated versions.
+	* MonoDevelop.GtkCore.mdp: Updated.
+
 2006-05-03 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/*: Updated from Stetic module. Includes fixes for

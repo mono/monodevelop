@@ -1,14 +1,14 @@
 <Combine name="MonoQuery" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Debug" build="False" name="Mono.Data.Sql" />
-      <Entry configuration="Debug" build="True" name="Mono.Data.Sql.Tests" />
-      <Entry configuration="Debug" build="True" name="MonoQuery" />
+      <Entry build="False" name="Mono.Data.Sql" configuration="Debug" />
+      <Entry build="True" name="Mono.Data.Sql.Tests" configuration="Debug" />
+      <Entry build="True" name="MonoQuery" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="False" name="Mono.Data.Sql" />
-      <Entry configuration="Release" build="True" name="Mono.Data.Sql.Tests" />
-      <Entry configuration="Release" build="True" name="MonoQuery" />
+      <Entry build="False" name="Mono.Data.Sql" configuration="Release" />
+      <Entry build="True" name="Mono.Data.Sql.Tests" configuration="Release" />
+      <Entry build="True" name="MonoQuery" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Mono.Data.Sql" single="True">

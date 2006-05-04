@@ -1,3 +1,8 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NemerleBinding.addin.xml: Updated versions.
+	* NemerleBinding.mdp: Updated.
+
 2006-04-21 Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NemerleLanguageBinding.cs: Implement GetSupportedClrVersions.
