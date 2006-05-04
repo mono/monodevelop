@@ -1,3 +1,7 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Combine.cs: Fix nullref in Clean.
+
 2006-04-24 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:

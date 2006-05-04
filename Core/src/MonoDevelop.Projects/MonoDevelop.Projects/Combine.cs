@@ -575,6 +575,8 @@ namespace MonoDevelop.Projects
 		
 		public override void Clean ()
 		{
+			if (ActiveConfiguration == null)
+				return;
 			foreach (CombineConfigurationEntry cce in ((CombineConfiguration)ActiveConfiguration).Entries)
 				cce.Entry.Clean ();
 		}
