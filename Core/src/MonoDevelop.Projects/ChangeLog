@@ -1,3 +1,8 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.addin.xml: Updated versions.
+	* MonoDevelop.Projects.mdp: Updated.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Fix nullref in Clean.

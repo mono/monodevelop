@@ -5,15 +5,15 @@
        url         = "http://www.monodevelop.com"
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"
-       version     = "0.10.0"
-       compatVersion = "0.10.0">
+       version     = "0.11.0"
+       compatVersion = "0.11.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.11.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Services">

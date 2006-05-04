@@ -42,14 +42,12 @@ namespace MonoDevelop.Components.Commands
 		
 		protected override void OnClicked ()
 		{
-			Console.WriteLine ("ccc");
 			base.OnClicked ();
 		}
 		
 		[GLib.ConnectBeforeAttribute]
 		void OnButtonPress (object sender, Gtk.ButtonPressEventArgs e)
 		{
-			Console.WriteLine ("aaa");
 			menu.Popup (null, null, new Gtk.MenuPositionFunc (OnPosition), 3, Gtk.Global.CurrentEventTime);
 			e.RetVal = true;
 		}

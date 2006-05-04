@@ -1,3 +1,7 @@
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mdrun.mdp: Updated.
+	
 2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>   
 
 	* src/mdrun.cs: Shutdown the runtime before exiting.

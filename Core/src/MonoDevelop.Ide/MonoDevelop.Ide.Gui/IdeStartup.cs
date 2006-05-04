@@ -256,6 +256,14 @@ namespace MonoDevelop.Ide.Gui
 				if (!File.Exists (path))
 					return true;
 					
+				// Only run the check for SUSE 10
+				StreamReader sr = File.OpenText (path);
+				string txt = sr.ReadToEnd ();
+				sr.Close ();
+				
+				if (txt.IndexOf ("SUSE LINUX 10") == -1)
+					return true;
+					
 				string current_libgda;
 				string current_gnomevfs;
 				string required_libgda = "1.3.91.5.4";
