@@ -1,3 +1,14 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Added
+	  LoadError error property, which is set to true if the assembly
+	  can't be found.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	  In GenerateAssemblyDatabase, throw an exception if the assembly
+	  can't be found. This avoids an infinite reparsing loop.
+	* MonoDevelop.Projects.Parser/AssemblyInformation.cs: Don't catch
+	  exceptions, since they are cached by the caller.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.addin.xml: Updated versions.

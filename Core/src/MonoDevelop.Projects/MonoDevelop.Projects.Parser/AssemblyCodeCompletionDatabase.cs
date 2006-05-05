@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Parser
 		bool useExternalProcess = true;
 		string baseDir;
 		string assemblyName;
+		bool loadError;
 		
 		public AssemblyCodeCompletionDatabase (string baseDir, string assemblyName, ParserDatabase parserDatabase)
 		: base (parserDatabase)
@@ -53,9 +54,11 @@ namespace MonoDevelop.Projects.Parser
 			string[] refUris;
 			string name;
 			
-			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name, out refUris))
+			if (!GetAssemblyInfo (assemblyName, out this.assemblyName, out assemblyFile, out name, out refUris)) {
+				loadError = true;
 				return;
-			
+			}
+				
 			this.baseDir = baseDir;
 			
 			SetLocation (baseDir, name);
@@ -88,6 +91,10 @@ namespace MonoDevelop.Projects.Parser
 		public static string GetFullAssemblyName (string s)
 		{
 			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
+		}
+		
+		internal bool LoadError {
+			get { return loadError; }
 		}
 		
 		protected override void ParseFile (string fileName, IProgressMonitor parentMonitor)
@@ -184,6 +191,7 @@ namespace MonoDevelop.Projects.Parser
 			else 
 			{
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
+
 				if (assemblyFile != null)
 					asm = AssemblyFactory.GetAssembly (assemblyFile);
 				

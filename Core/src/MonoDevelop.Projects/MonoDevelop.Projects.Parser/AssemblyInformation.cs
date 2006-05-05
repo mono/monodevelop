@@ -106,13 +106,7 @@ namespace MonoDevelop.Projects.Parser {
 			
 			this.fileName = fileName;
 			
-			AssemblyDefinition asm = null;		
-			try {
-				asm = AssemblyFactory.GetAssembly (fileName);
-			} catch {
-				Runtime.LoggingService.ErrorFormat ("Unable to load {0}", fileName);
-				return;
-			}
+			AssemblyDefinition asm = AssemblyFactory.GetAssembly (fileName);
 			
 			foreach (TypeDefinition type in asm.MainModule.Types) {
 				TypeAttributes vis = type.Attributes & TypeAttributes.VisibilityMask;

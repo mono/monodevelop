@@ -59,6 +59,12 @@ namespace MonoDevelop.Projects.Parser
 		public string GenerateAssemblyDatabase (string baseDir, string name)
 		{
 			AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (baseDir, name, (ParserDatabase) CreateParserDatabase());
+			
+			// This exception is needed to inform to the main process that the assembly
+			// could not be found, so it can stop retrying to parse.
+			if (db.LoadError)
+				throw new InvalidOperationException ("Could find assembly: " + name);
+				
 			db.ParseInExternalProcess = false;
 			db.ParseAll ();
 			db.Write ();
