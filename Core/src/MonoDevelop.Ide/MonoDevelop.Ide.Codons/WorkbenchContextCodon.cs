@@ -37,7 +37,7 @@ using MonoDevelop.Core.AddIns;
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A workbench context.")]
-	[Category ("ContextPad")]
+	[ChildCodons ("ContextPad")]
 	[CodonNameAttribute ("WorkbenchContext")]
 	internal class WorkbenchContextCodon : AbstractCodon
 	{

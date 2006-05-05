@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Codons
 {
 	[CodonNameAttribute ("SolutionPad")]
 	[Description ("Registers a pad which shows information about a project in a tree view.")]
-	[Category ("NodeBuilder, PadOption")]
+	[ChildCodons ("NodeBuilder","PadOption")]
 	internal class SolutionPadCodon : PadCodon
 	{
 		NodeBuilder[] builders;

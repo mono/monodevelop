@@ -23,6 +23,7 @@
 
 	<Extension path = "/Workspace/Applications">
 		<Class id    = "IDE"
+		       description = "The MonoDevelop IDE"
 		       class = "MonoDevelop.Ide.Gui.IdeStartup"/>
 	</Extension>
 	
