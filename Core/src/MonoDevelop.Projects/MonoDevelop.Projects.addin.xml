@@ -30,8 +30,8 @@
 	</Extension>
 	
 	<Extension path = "/Workspace/Applications">
-		<Class id = "build" class = "MonoDevelop.Projects.BuildTool"/>
-		<Class id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool"/>
+		<Class id = "build" class = "MonoDevelop.Projects.BuildTool" description = "Project build tool"/>
+		<Class id = "dbgen" class = "MonoDevelop.Projects.Parser.DatabaseGeneratorTool" description = "Parser database generation tool"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences" extension-nodes="Class" description="Language ambiences.|Specified classes must implement IAmbience.">

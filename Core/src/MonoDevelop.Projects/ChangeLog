@@ -1,3 +1,9 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Use GetAssemblyManifest instead of GetAssembly, which is faster.
+	* MonoDevelop.Projects.addin.xml: Added some descriptions.
+
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Added

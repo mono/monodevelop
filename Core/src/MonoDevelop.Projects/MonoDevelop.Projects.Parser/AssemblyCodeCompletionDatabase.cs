@@ -179,7 +179,7 @@ namespace MonoDevelop.Projects.Parser
 				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
 				assemblyFile = assemblyName;
 				try {
-					asm = AssemblyFactory.GetAssembly (assemblyFile);
+					asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 				}
 				catch {}
 				
@@ -193,7 +193,7 @@ namespace MonoDevelop.Projects.Parser
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 
 				if (assemblyFile != null)
-					asm = AssemblyFactory.GetAssembly (assemblyFile);
+					asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 				
 				if (asm == null) {
 					Console.WriteLine ("Could not load assembly: " + assemblyName);
