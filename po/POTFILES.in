@@ -1,4 +1,4 @@
-#[encoding: UTF-8]
+[encoding: UTF-8]
 Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs
 Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs
 Core/src/MonoDevelop.Components/MonoDevelop.Components/FileSelector.cs

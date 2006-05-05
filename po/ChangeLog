@@ -1,3 +1,8 @@
+2006-05-05  Wade Berrier <wberrier@novell.com> 
+
+	* POTFILES.in: Uncommented '[encoding: UTF-8]' for make dist to succeed
+	(Otherwise I get this: http://lists.ximian.com/pipermail/monodevelop-list/2006-April/003667.html)
+
 2006-04-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ru.po: Russian translation by Maxim Krentovskiy.
