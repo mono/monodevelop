@@ -29,6 +29,7 @@
 
 	<Extension path = "/Workspace/Applications">
 		<Class id    = "gsetup"
+		       description = "Graphical add-in setup utility"
 		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
 

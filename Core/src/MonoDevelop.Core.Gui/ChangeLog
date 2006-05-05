@@ -1,3 +1,11 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs: Use the new ChildCodons
+	  attribute instead of Category.
+	* MonoDevelop.Core.Gui.Utils/FileIconLoader.cs: Added workaround for
+	  crash in LookupSync.
+	* MonoDevelop.Core.Gui.addin.xml: Added description.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Updated versions.

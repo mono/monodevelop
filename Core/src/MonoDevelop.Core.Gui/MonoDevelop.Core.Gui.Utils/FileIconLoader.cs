@@ -38,6 +38,12 @@ namespace MonoDevelop.Core.Gui.Utils
 			} else if (Directory.Exists (filename)) {
 				return GetPixbufForType ("gnome-fs-directory", size);
 			} else if (File.Exists (filename)) {
+				foreach (char c in filename) {
+					// FIXME: This is a temporary workaround. In some systems, files with
+					// accented characters make LookupSync crash. Still trying to find out why.
+					if ((int)c < 32 || (int)c > 127)
+						return GetPixbufForType ("gnome-fs-regular", size);
+				}
 				filename = filename.Replace ("%", "%25");
 				filename = filename.Replace ("#", "%23");
 				filename = filename.Replace ("?", "%3F");

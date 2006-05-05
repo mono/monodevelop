@@ -40,7 +40,7 @@ using MonoDevelop.Core.AddIns;
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A submenu")]
-	[Category ("CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem")]
+	[ChildCodons ("CommandItem","SeparatorItem","ItemSet","LinkItem","LocalCommandItem")]
 	[CodonNameAttribute ("ItemSet")]
 	internal class ItemSetCodon : AbstractCodon
 	{
