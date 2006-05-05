@@ -101,7 +101,7 @@ namespace MonoDevelop.Core.AddIns
 			}
 			
 			if (addin == null)
-				throw new ArgumentException ("Application '" + addinId + "' not found.");
+				throw new UserException ("Application '" + addinId + "' not found.");
 			
 			PreloadAddin (null, addin);
 			
@@ -113,6 +113,12 @@ namespace MonoDevelop.Core.AddIns
 				Console.WriteLine (ex);
 				return -1;
 			}
+		}
+		
+		public IApplicationInfo[] GetApplications ()
+		{
+			AddInStatus ads = Runtime.SetupService.GetAddInStatus ();
+			return (IApplicationInfo[]) ads.Applications;
 		}
 		
 		public bool IsAddinLoaded (string id)
@@ -260,5 +266,12 @@ namespace MonoDevelop.Core.AddIns
 			PreloadAddins (null, path);
 			return AddInTreeSingleton.AddInTree.GetTreeNode (path);
 		}
+	}
+	
+	
+	public interface IApplicationInfo
+	{
+		string Id { get; }
+		string Description { get; }
 	}
 }

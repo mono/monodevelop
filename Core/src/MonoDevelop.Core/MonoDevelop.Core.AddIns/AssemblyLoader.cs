@@ -94,7 +94,7 @@ namespace MonoDevelop.Core.AddIns
 		{
 			if (!checkAssemblyConflicts) return;
 			
-			IAssemblyDefinition asm = AssemblyFactory.GetAssembly (assemblyFile);
+			IAssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 			CheckAssemblyVersion (asm.Name.FullName, asm, Path.GetDirectoryName (assemblyFile));
 		}
 		
@@ -135,7 +135,7 @@ namespace MonoDevelop.Core.AddIns
 				if (file == null)
 					return;
 					
-				asm = AssemblyFactory.GetAssembly (file);
+				asm = AssemblyFactory.GetAssemblyManifest (file);
 				baseDirectory = Path.GetDirectoryName (file);
 			}
 			

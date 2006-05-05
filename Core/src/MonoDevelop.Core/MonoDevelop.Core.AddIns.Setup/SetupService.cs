@@ -389,9 +389,17 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 			
 			if (unresolved.Count != 0) {
+				// If MonoDevelop.Core can't be resolved, it means that a new MonoDevelop release is required.
 				foreach (PackageDependency dep in unresolved) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("The package '{0}' could not be found in any repository"), dep.Name), null);
+					if (dep.Name.StartsWith ("MonoDevelop.Core v")) {
+						monitor.ReportError (string.Format (GettextCatalog.GetString ("The selected packages require MonoDevelop {0}"), dep.Name.Substring (18)), null);
+						return false;
+					}
 				}
+				
+				foreach (PackageDependency dep in unresolved)
+					monitor.ReportError (string.Format (GettextCatalog.GetString ("The package '{0}' could not be found in any repository"), dep.Name), null);
+					
 				return false;
 			}
 			
@@ -628,6 +636,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				foreach (XmlElement elem in conf.Content.SelectNodes ("AddIn/Extension[@path='/Workspace/Applications']/Class")) {
 					ApplicationRecord arec = new ApplicationRecord ();
 					arec.Id = elem.GetAttribute ("id");
+					arec.Description = elem.GetAttribute ("description");
 					arec.AddIn = ia.Addin.Id;
 					apps.Add (arec);
 				}
@@ -1176,11 +1185,28 @@ namespace MonoDevelop.Core.AddIns.Setup
 		public string[] AddIns;
 	}
 	
-	public class ApplicationRecord
+	public class ApplicationRecord: IApplicationInfo
 	{
+		public string id;
+		public string addIn;
+		public string description;
+		
 		[XmlAttribute]
-		public string Id;
+		public string Id {
+			get { return id; }
+			set { id = value; }
+		}
+		
 		[XmlAttribute]
-		public string AddIn;
+		public string AddIn {
+			get { return addIn; }
+			set { addIn = value; }
+		}
+		
+		[XmlAttribute]
+		public string Description {
+			get { return description; }
+			set { description = value; }
+		}
 	}
 }

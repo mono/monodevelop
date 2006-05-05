@@ -43,6 +43,7 @@ MonoDevelop.Core.AddIns/ClassCodon.cs \
 MonoDevelop.Core.AddIns/CodonBuilder.cs \
 MonoDevelop.Core.AddIns/CodonFactory.cs \
 MonoDevelop.Core.AddIns/CodonNameAttribute.cs \
+MonoDevelop.Core.AddIns/ChildCodonsAttribute.cs \
 MonoDevelop.Core.AddIns/CodonNotFoundException.cs \
 MonoDevelop.Core.AddIns/DuplicateCodonException.cs \
 MonoDevelop.Core.AddIns/ICodon.cs \

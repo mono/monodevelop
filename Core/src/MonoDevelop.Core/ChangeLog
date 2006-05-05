@@ -1,3 +1,22 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: Throw an UserException if
+	  StartApplication can't find the provided application.
+	  Implemented GetApplications().
+	* MonoDevelop.Core.AddIns/AssemblyLoader.cs: Use GetAssemblyManifest
+	  instead of GetAssembly to get the referenced assemblies, since it
+	  is much faster.
+	* MonoDevelop.Core.AddIns/CodonBuilder.cs: Use the new ChildCodonsAttribute
+	  instead of CategoryAttribute.
+	* MonoDevelop.Core.addin.xml: Added some descriptions.
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: When resolving dependencies,
+	  if one of the unresolved dep is MonoDevelop.Core, just report that a
+	  new MD version is required. Make ApplicationRecord implement
+	  IApplicationInfo.
+
+	* MonoDevelop.Core.mdp:
+	* Makefile.am: Added ChildCodonsAttribute.cs.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.addin.xml: Updated versions.

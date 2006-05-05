@@ -21,8 +21,10 @@
 	
 	<Extension path = "/Workspace/Applications" extension-nodes="Class" description="Applications|Applications managed by the runtime. Registered applications can be started using the mdtool command. Specified classes must implement MonoDevelop.Core.AddIns.IApplication.">
 		<Class id    = "setup"
+		       description = "Add-in setup utility"
 		       class = "MonoDevelop.Core.AddIns.Setup.SetupTool"/>
 		<Class id    = "dump-addin-tree"
+		       description = "Dumps the add-in extension tree to an XML file."
 		       class = "MonoDevelop.Core.AddIns.DumpAddinInfoApp"/>
 	</Extension>
 	

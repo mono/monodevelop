@@ -89,12 +89,9 @@ namespace MonoDevelop.Core.AddIns
 			if (nodes != null)
 				return nodes;
 
-			object[] ats = type.GetCustomAttributes (typeof(CategoryAttribute), false);
+			object[] ats = type.GetCustomAttributes (typeof(ChildCodonsAttribute), false);
 			if (ats.Length > 0) {
-				nodes = ((CategoryAttribute)ats[0]).Category.Split (',');
-				for (int n=0; n<nodes.Length; n++)
-					nodes [n] = nodes [n].Trim ();
-				return nodes;
+				return ((ChildCodonsAttribute)ats[0]).CodonNames;
 			} else
 				nodes = emptyArray;
 				
