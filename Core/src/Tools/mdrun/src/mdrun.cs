@@ -30,6 +30,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.AddIns;
 using System.IO;
 using System.Collections;
 
@@ -37,18 +38,34 @@ public class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
-		if (args.Length == 0) {
+		if (args.Length == 0 || args [0] == "--help") {
 			Console.WriteLine ("MonoDevelop Application Runner");
-			Console.WriteLine ("Usage: mdrun <applicationId> ...");
+			Console.WriteLine ("Usage: mdrun <applicationId> ... : Runs an application.");
+			Console.WriteLine ("       mdrun -q : Lists available applications.");
 			return 0;
 		}
 		
 		try {
 			Runtime.Initialize ();
 			
+			if (args [0] == "-q") {
+				Console.WriteLine ("Available applications:");
+				foreach (IApplicationInfo ainfo in Runtime.AddInService.GetApplications ()) {
+					Console.Write ("- " + ainfo.Id);
+					if (ainfo.Description != null && ainfo.Description.Length > 0)
+						Console.WriteLine (": " + ainfo.Description);
+					else
+						Console.WriteLine ();
+				}
+				return 0;
+			}
+			
 			string[] newArgs = new string [args.Length - 1];
 			Array.Copy (args, 1, newArgs, 0, args.Length - 1);
 			return Runtime.AddInService.StartApplication (args[0], newArgs);
+		} catch (UserException ex) {
+			Console.WriteLine (ex.Message);
+			return -1;
 		} catch (Exception ex) {
 			Console.WriteLine (ex);
 			return -1;

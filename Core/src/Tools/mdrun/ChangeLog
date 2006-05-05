@@ -1,3 +1,7 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* src/mdrun.cs: Added parameter for querying the available apps.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdrun.mdp: Updated.
