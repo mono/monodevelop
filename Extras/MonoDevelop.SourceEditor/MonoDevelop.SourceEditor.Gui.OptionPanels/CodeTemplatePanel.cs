@@ -41,6 +41,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			TextBuffer templateTextBuffer = new TextBuffer(null);
 			[Glade.Widget] Gtk.TextView templateTextView;
 			[Glade.Widget] ComboBox groupCombo;
+			ListStore groupStore = new ListStore (typeof (string));
 			
 			public CodeTemplateGroup CurrentTemplateGroup {
 				get {
@@ -69,6 +70,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				templateListView.Selection.Mode = SelectionMode.Multiple;
 				templateListView.Model = templateListViewStore;
 				
+				// set up group combobox
+				groupCombo.Model = groupStore;
+				CellRendererText cr = new CellRendererText ();
+				groupCombo.PackStart (cr, true);
+				groupCombo.AddAttribute (cr, "text", 0);
+
 				// set up the text view
 				templateTextView.Buffer = templateTextBuffer;
 				//templateTextView.Font = new System.Drawing.Font("Courier New", 10f);
@@ -295,20 +302,15 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				EditEvent(sender, System.EventArgs.Empty);
 			}
 	#endregion
-			
+
 			void FillGroupOptionMenu()
 			{
 				groupCombo.Changed -= new EventHandler(SetGroupSelection);
 				
-				ListStore store = new ListStore (typeof (string));
-				
+				groupStore.Clear();
+
 				foreach (CodeTemplateGroup templateGroup in templateGroups)
-					store.AppendValues (String.Join (";", templateGroup.ExtensionStrings));
-				
-				groupCombo.Model = store;
-				CellRendererText cr = new CellRendererText ();
-				groupCombo.PackStart (cr, true);
-				groupCombo.AddAttribute (cr, "text", 0);
+					groupStore.AppendValues (String.Join (";", templateGroup.ExtensionStrings));
 
 				if (currentSelectedGroup >= 0)
 					groupCombo.Active = (int) currentSelectedGroup;

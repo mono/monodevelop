@@ -1,3 +1,9 @@
+2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:
+	  Code Template Combobox was adding a new column to store after
+	  each action. Fix for bug #78082 by Chris Wilson.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Updated versions.
