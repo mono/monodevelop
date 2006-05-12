@@ -371,7 +371,7 @@ namespace MonoDevelop.Ide.Gui
 		public void MarkFileDirty (string filename)
 		{
 			if (openCombine != null) {
-				Project entry = openCombine.GetProjectEntryContaining (filename);
+				Project entry = openCombine.GetProjectContainingFile (filename);
 				if (entry != null) {
 					entry.NeedsBuilding = true;
 				}
