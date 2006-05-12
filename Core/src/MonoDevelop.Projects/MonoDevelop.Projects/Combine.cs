@@ -513,7 +513,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public Project GetProjectEntryContaining (string fileName) 
+		public Project GetProjectContainingFile (string fileName) 
 		{
 			CombineEntryCollection projects = GetAllProjects ();
 			foreach (Project projectEntry in projects) {
