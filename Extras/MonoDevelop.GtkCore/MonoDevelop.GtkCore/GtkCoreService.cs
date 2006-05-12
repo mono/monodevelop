@@ -67,7 +67,7 @@ namespace MonoDevelop.GtkCore
 		{
 			GtkDesignInfo info = GetGtkInfo (project);
 			if (info != null)
-				return null;
+				return info;
 
 			info = new GtkDesignInfo ((DotNetProject) project);
 			info.UpdateGtkFolder ();

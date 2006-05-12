@@ -49,22 +49,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		Stetic.Project gproject;
 		Stetic.Wrapper.Container rootWidget;
 		Stetic.PreviewBox widget;
-		ITextFileProvider textFileProvider;
-		string className;
-		string classFile;
+		CodeBinder codeBinder;
 		
 		public event EventHandler ModifiedChanged;
 		public event EventHandler RootWidgetChanged;
 		
 		public GuiBuilderEditSession (GuiBuilderWindow win, ITextFileProvider textFileProvider)
 		{
-			this.textFileProvider = textFileProvider;
 			this.window = win;
 			gproject = new Stetic.Project ();
+			gproject.ActionGroups = win.Project.SteticProject.ActionGroups;
 			XmlElement data = Stetic.WidgetUtils.ExportWidget (win.RootWidget.Wrapped);
 			Gtk.Widget w = Stetic.WidgetUtils.ImportWidget (gproject, data);
 			gproject.AddWidget (w);
 			rootWidget = Stetic.Wrapper.Container.Lookup (w);
+			
+			codeBinder = new CodeBinder (win.Project.Project, textFileProvider, rootWidget);
 			
 			gproject.WidgetNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			gproject.ModifiedChanged += new EventHandler (OnModifiedChanged);
@@ -72,12 +72,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			gproject.SignalAdded += new Stetic.SignalEventHandler (OnSignalAdded);
 			gproject.SignalRemoved += new Stetic.SignalEventHandler (OnSignalRemoved);
 			gproject.SignalChanged += new Stetic.SignalChangedEventHandler (OnSignalChanged);
-			
 			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
-			
-			IClass cls = win.GetClass (); 
-			className = cls.FullyQualifiedName;
-			classFile = cls.Region.FileName;
 			
 			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (win.Project.Project).ResourceProvider;
 		}
@@ -138,62 +133,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 				rootWidget.DesignWidth = widget.DesignWidth;
 		}
 		
-		public void AddCurrentWidgetToClass ()
+		public void BindCurrentWidget ()
 		{
 			if (gproject.Selection != null)
-				AddWidgetField (Stetic.Wrapper.Widget.Lookup (gproject.Selection));
+				codeBinder.BindToField (Stetic.Wrapper.Widget.Lookup (gproject.Selection));
 		}
 		
-		public bool UpdateBindings (string fileName)
+		public void BindAction (Stetic.Wrapper.Action action)
 		{
-			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (window.Project.Project, fileName, null);
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (window.Project.Project);
-			foreach (IClass cls in ctx.GetFileContents (fileName)) {
-				if (cls.FullyQualifiedName == className && cls.Region.FileName == fileName) {
-					UpdateBindings (cls);
-					return true;
-				}
-			}
-			
-			// The class may have been renamed
-			
-			return (GetClass () != null);
+			codeBinder.BindToField (action);
 		}
 		
-		void UpdateBindings (IClass cls)
+		public void UpdateBindings (string fileName)
 		{
-			UpdateBindings (rootWidget, cls);
-		}
-		
-		void UpdateBindings (Stetic.Wrapper.Widget widget, IClass cls)
-		{
-			Stetic.Signal[] signals = new Stetic.Signal [widget.Signals.Count];
-			widget.Signals.CopyTo (signals, 0);
-			
-			foreach (Stetic.Signal signal in signals) {
-				if (FindSignalHandler (cls, signal) == null) {
-					widget.Signals.Remove (signal);
-				}
-			}
-
-			Stetic.Wrapper.Container container = widget as Stetic.Wrapper.Container;
-			if (container != null) {
-				foreach (Gtk.Widget cw in container.RealChildren) {
-					Stetic.Wrapper.Widget gw = Stetic.Wrapper.Widget.Lookup (cw);
-					if (gw != null)
-						UpdateBindings (gw, cls);
-				}
-			}
-		}
-		
-		IMethod FindSignalHandler (IClass cls, Stetic.Signal signal)
-		{
-			foreach (IMethod met in cls.Methods) {
-				if (met.Name == signal.Handler) {
-					return met;
-				}
-			}
-			return null;
+			codeBinder.UpdateBindings (fileName);
 		}
 		
 		void OnProjectReloaded (object s, EventArgs a)
@@ -202,6 +155,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			if (tops.Length > 0) {
 				rootWidget = Stetic.Wrapper.Container.Lookup (tops[0]);
 				if (rootWidget != null) {
+					codeBinder.TargetObject = rootWidget;
 					if (widget != null) {
 						widget.DesignSizeChanged -= new EventHandler (OnDesignSizeChanged);
 						widget = null;
@@ -233,43 +187,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void OnWidgetNameChanged (object s, Stetic.Wrapper.WidgetNameChangedArgs args)
 		{
-			Stetic.Wrapper.Widget widget = args.Widget;
-			string oldName = args.OldName;
-
-			CodeRefactorer cr = GetCodeGenerator ();
-			
-			IClass cls;
-			
-			if (widget == rootWidget)
-				return;	// The root widget name can only be changed internally.
-			else
-				cls = window.GetClass (rootWidget.Wrapped.Name);
-				
-			if (cls != null) {
-				IField f = ClassUtils.FindWidgetField (cls, oldName);
-				if (f != null) {
-					if (widget == rootWidget) {
-						// Renaming the dialog
-						cr.ReplaceMember (cls, f, GetFieldCode (widget, "dialog"));
-						if (cls.Name == oldName && widget.Wrapped.Name != "")
-							cr.RenameClass (new NullProgressMonitor (), cls, widget.Wrapped.Name, RefactoryScope.File);
-					}
-					else if (f.Name == oldName && widget.Wrapped.Name != "") {
-						// Rename the field
-						cr.RenameMember (new NullProgressMonitor (), cls, f, widget.Wrapped.Name, RefactoryScope.File);
-					} else {
-						// Update the Widget attribute only. Keep the old var name.
-						CodeMemberField cmf = GetFieldCode (widget);
-						cmf.Name = f.Name;
-						cr.ReplaceMember (cls, f, cmf);
-					}
-				}
-			}
+			codeBinder.UpdateField (args.Widget, args.OldName);
 		}
 		
 		void OnSignalAdded (object sender, Stetic.SignalEventArgs args)
 		{
-			AddSignal ((Stetic.Wrapper.Widget) args.Wrapper, args.Signal);
+			codeBinder.BindSignal (args.Signal);
 		}
 
 		void OnSignalRemoved (object sender, Stetic.SignalEventArgs args)
@@ -278,129 +201,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 
 		void OnSignalChanged (object sender, Stetic.SignalChangedEventArgs args)
 		{
-			if (args.OldSignal.Handler == args.Signal.Handler)
-				return;
-
-			IClass cls = GetClass ();
-			if (cls == null) return;
-
-			IMethod met = FindSignalHandler (cls, args.OldSignal);
-			if (met == null) return;
-			
-			CodeRefactorer gen = GetCodeGenerator ();
-			gen.RenameMember (new NullProgressMonitor (), cls, met, args.Signal.Handler, RefactoryScope.File);
-		}
-		
-		public void AddSignal (Stetic.Wrapper.Widget childWidget, Stetic.Signal signal)
-		{
-			IClass cls = GetClass ();
-			if (cls == null)
-				return;
-			
-			if (FindSignalHandler (cls, signal) != null)
-				return;
-
-			CodeMemberMethod met = new CodeMemberMethod ();
-			met.Name = signal.Handler;
-			met.Attributes = MemberAttributes.Family;
-			met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
-			
-			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-				met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
-			
-			CodeRefactorer gen = GetCodeGenerator ();
-			gen.AddMember (cls, met);
-		}
-
-		public void AddWidgetField (Stetic.Wrapper.Widget widget)
-		{
-			IClass cls = GetClass ();
-			
-			if (FindWidgetField (cls, widget) != null)
-				return;
-
-			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
-			
-			IEditableTextFile editor = doc.Content as IEditableTextFile;
-			if (editor != null) {
-				CodeRefactorer gen = GetCodeGenerator ();
-				gen.AddMember (cls, GetFieldCode (widget));
-			}
-		}
-		
-		CodeMemberField GetFieldCode (Stetic.Wrapper.Widget widget)
-		{
-			return GetFieldCode (widget, null);
-		}
-		
-		CodeMemberField GetFieldCode (Stetic.Wrapper.Widget widget, string name)
-		{
-			if (name == null) name = widget.Wrapped.Name;
-			string type = widget.ClassDescriptor.WrappedTypeName;
-			CodeMemberField field = new CodeMemberField (type, name);
-			field.Attributes = MemberAttributes.Family;
-			return field;
-		}
-		
-		IField FindWidgetField (IClass cls, Stetic.Wrapper.Widget w)
-		{
-			foreach (IField field in cls.Fields)
-				if (field.Name == w.Wrapped.Name)
-					return field;
-			return null;
-		}
-		
-		CodeRefactorer GetCodeGenerator ()
-		{
-			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
-			cr.TextFileProvider = textFileProvider;
-			return cr;
+			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
 		public IClass GetClass ()
 		{
-			IClass cls = window.GetClass (className);
-			if (cls != null)
-				return cls;
-				
-			// The class name may have changed. Try to guess the new name.
-			
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (window.Project.Project);
-			IParseInformation pi = ctx.ParseFile (classFile);
-			
-			ArrayList matches = new ArrayList ();
-			ClassCollection classes = ((ICompilationUnit)pi.BestCompilationUnit).Classes;
-			foreach (IClass fcls in classes) {
-				if (window.IsValidClass (ctx, fcls))
-					matches.Add (fcls);
-			}
-			
-			// If found the class, just return it
-			if (matches.Count == 1) {
-				cls = (IClass) matches [0];
-				className = cls.FullyQualifiedName;
-				((Gtk.Widget)rootWidget.Wrapped).Name = className;
-				return cls;
-			}
-			
-			// If not found, warn the user.
-			
-			if (classes.Count > 0) {
-				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (classes)) {
-					if (dialog.Run ()) {
-						className = dialog.SelectedClass;
-						if (className == null)
-							return null;
-						else {
-							((Gtk.Widget)rootWidget.Wrapped).Name = className;
-							return window.GetClass (className);
-						}
-					}
-				}
-			} else {
-			}
-			
-			return null;
+			return codeBinder.GetClass ();
 		}
 	}
 }

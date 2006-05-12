@@ -43,68 +43,47 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : AbstractViewContent, IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation
+	public class GuiBuilderView : CombinedDesignView
 	{
-		IViewContent content;
-		Gtk.Notebook notebook;
 		GuiBuilderEditSession editSession;
 		Gtk.EventBox designerPage;
-		VBox box;
-		ToggleToolButton codeButton;
-		ToggleToolButton designerButton;
 		VBox designerBox;
-		
-		Gtk.Widget currentDesigner;
+		VBox actionsBox;
+		Stetic.Editor.ActionGroupEditor agroupEditor;
+		MonoDevelopActionGroupToolbar groupToolbar;
 		MonoDevelopWidgetActionBar widgetBar;
 		
-		public GuiBuilderView (IViewContent content, GuiBuilderWindow window)
+		Gtk.Widget currentDesigner;
+		
+		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
 			editSession = window.CreateEditSession (new OpenDocumentFileProvider ());
-			this.content = content;
-			
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
-			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			editSession.ModifiedChanged += new EventHandler (OnWindowChanged);
 			
-			notebook = new Gtk.Notebook ();
 			designerPage = new Gtk.EventBox ();
 			designerPage.Show ();
-			notebook.AppendPage (content.Control, new Gtk.Label ());
-			notebook.AppendPage (designerPage, new Gtk.Label ());
-			notebook.TabPos = Gtk.PositionType.Bottom;
-			notebook.ShowTabs = false;
-			notebook.Show ();
-			box = new VBox ();
+			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
 			
-			// Bottom toolbar
+			// Actions designer
 			
-			Toolbar hbox = new Toolbar ();
-			hbox.IconSize = IconSize.SmallToolbar;
-			hbox.ToolbarStyle = ToolbarStyle.BothHoriz;
-			hbox.ShowArrow = false;
-			codeButton = new ToggleToolButton ();
-			codeButton.Label = GettextCatalog.GetString ("Source Code");
-			codeButton.IsImportant = true;
-			codeButton.Active = true;
-			codeButton.Clicked += new EventHandler (OnToggledCode);
-			designerButton = new ToggleToolButton ();
-			designerButton.Label = GettextCatalog.GetString ("Designer");
-			designerButton.IsImportant = true;
-			designerButton.Clicked += new EventHandler (OnToggledDesigner);
+			actionsBox = new Gtk.VBox ();
+			agroupEditor = new Stetic.Editor.ActionGroupEditor ();
+			agroupEditor.Project = editSession.SteticProject;
+			Gtk.Widget groupDesign = Stetic.EmbedWindow.Wrap (agroupEditor, -1, -1);
+			groupToolbar = new MonoDevelopActionGroupToolbar (editSession.RootWidget.LocalActionGroups);
+			groupToolbar.Bind (agroupEditor);
+			groupToolbar.BindField += new EventHandler (OnBindActionField);
+			actionsBox.BorderWidth = 3;
+			actionsBox.PackStart (groupToolbar, false, false, 0);
+			actionsBox.PackStart (groupDesign, true, true, 3);
+			actionsBox.ShowAll ();
 			
-			hbox.Insert (codeButton, -1);
-			hbox.Insert (designerButton, -1);
-			hbox.ShowAll ();
-			
-			box.PackStart (notebook, true, true, 0);
-			box.PackStart (hbox, false, false, 0);
-			
-			box.Show ();
+			AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
 			
 			// Widget toolbar
 			widgetBar = new MonoDevelopWidgetActionBar (editSession.RootWidget);
 			widgetBar.BorderWidth = 3;
+			widgetBar.BindField += new EventHandler (OnBindWidgetField);
 			
 			// Designer page
 			designerBox = new VBox ();
@@ -119,12 +98,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			editSession.RootWidgetChanged += new EventHandler (OnRootWidgetChanged);
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
-			get { return base.Project; }
-			set { 
-				base.Project = value; 
-				content.Project = value; 
-			}
+		void OnWindowChanged (object s, EventArgs args)
+		{
+			OnContentChanged (args);
+			OnDirtyChanged (args);
 		}
 		
 		void OnRootWidgetChanged (object o, EventArgs a)
@@ -134,93 +111,56 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designerBox.PackStart (currentDesigner, true, true, 0);
 			widgetBar.RootWidget = editSession.RootWidget;
 			editSession.WrapperWidget.ShowAll ();
+			groupToolbar.ActionGroups = editSession.RootWidget.LocalActionGroups;
 		}
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		void OnBindWidgetField (object o, EventArgs a)
 		{
-			base.OnWorkbenchWindowChanged (e);
-			content.WorkbenchWindow = WorkbenchWindow;
+			editSession.BindCurrentWidget ();
+		}
+		
+		void OnBindActionField (object o, EventArgs a)
+		{
+			if (agroupEditor.SelectedAction != null)
+				editSession.BindAction (agroupEditor.SelectedAction);
 		}
 		
 		public GuiBuilderEditSession EditSession {
 			get { return editSession; }
 		}
 		
-		void OnToggledCode (object s, EventArgs args)
-		{
-			if (codeButton.Active) {
-				notebook.CurrentPage = 0;
-				designerButton.Active = false;
-			}
-			else if (!designerButton.Active)
-				codeButton.Active = true;
-		}
-		
-		void OnToggledDesigner (object s, EventArgs args)
-		{
-			if (designerButton.Active) {
-				notebook.CurrentPage = 1;
-				codeButton.Active = false;
-			}
-			else if (!codeButton.Active)
-				designerButton.Active = true;
-		}
-		
 		public override void Dispose ()
 		{
+			agroupEditor.Dispose ();
+			groupToolbar.Dispose ();
 			widgetBar.Dispose ();
 			designerPage.Remove (editSession.WrapperWidget);
 			editSession.Dispose ();
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
-			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			base.Dispose ();
-		}
-		
-		public override void Load (string fileName)
-		{
-			ContentName = fileName;
-			content.Load (fileName);
-		}
-		
-		public override Gtk.Widget Control {
-			get { return box; }
 		}
 		
 		public override void Save (string fileName)
 		{
-			content.Save (fileName);
+			base.Save (fileName);
 			editSession.UpdateBindings (fileName);
 			editSession.Save ();
 		}
 		
 		public override bool IsDirty {
 			get {
-				return content.IsDirty || editSession.Modified;
+				return base.IsDirty || editSession.Modified;
 			}
 			set {
-				content.IsDirty = value;
+				base.IsDirty = value;
 			}
 		}
 		
-		public override bool IsReadOnly
-		{
-			get {
-				return content.IsReadOnly;
-			}
-		}
-		
-		public void AddCurrentWidgetToClass ()
-		{
-			editSession.AddCurrentWidgetToClass ();
-		}
-		
-		public void JumpToSignalHandler (Stetic.Signal signal)
+		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			IClass cls = editSession.GetClass ();
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == signal.Handler) {
-					if (!codeButton.Active)
-						codeButton.Active = true;
+					ShowPage (1);
 					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
 					break;
 				}
@@ -229,23 +169,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void ShowDesignerView ()
 		{
-			designerButton.Active = true;
-		}
-		
-		void OnWindowChanged (object s, EventArgs args)
-		{
-			OnContentChanged (args);
-			OnDirtyChanged (args);
-		}
-		
-		void OnTextContentChanged (object s, EventArgs args)
-		{
-			OnContentChanged (args);
-		}
-		
-		void OnTextDirtyChanged (object s, EventArgs args)
-		{
-			OnDirtyChanged (args);
+			ShowPage (1);
 		}
 		
 		/* Commands *********************************/
@@ -279,207 +203,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (editSession.SteticProject.Selection != null)
 				Stetic.Clipboard.Cut (editSession.SteticProject.Selection as Stetic.Placeholder);
 		}
-		
-		/* IEditableTextBuffer **********************/
-		
-		public IClipboardHandler ClipboardHandler {
-			get { return ((IEditableTextBuffer)content).ClipboardHandler; }
-		}
-		
-		public void Undo()
-		{
-			((IEditableTextBuffer)content).Undo ();
-		}
-		
-		public void Redo()
-		{
-			((IEditableTextBuffer)content).Redo ();
-		}
-		
-		public string SelectedText {
-			get { return ((IEditableTextBuffer)content).SelectedText; } 
-			set { ((IEditableTextBuffer)content).SelectedText = value; }
-		}
-		
-		public event EventHandler TextChanged {
-			add { ((IEditableTextBuffer)content).TextChanged += value; }
-			remove { ((IEditableTextBuffer)content).TextChanged -= value; }
-		}
-		
-		public void InsertText (int position, string text)
-		{
-			((IEditableTextBuffer)content).InsertText (position, text);
-		}
-		
-		public void DeleteText (int position, int length)
-		{
-			((IEditableTextBuffer)content).DeleteText (position, length);
-		}
-		
-		/* ITextBuffer **********************/
-		
-		public string Name {
-			get { return ((ITextFile)content).Name; } 
-		}
-		
-		public int Length {
-			get { return ((ITextFile)content).Length; } 
-		}
-		
-		public string Text {
-			get { return ((IEditableTextFile)content).Text; }
-			set { ((IEditableTextFile)content).Text = value; }
-		}
-		
-		public int CursorPosition {
-			get { return ((ITextBuffer)content).CursorPosition; } 
-			set { ((ITextBuffer)content).CursorPosition = value; }
-		}
-
-		public int SelectionStartPosition {
-			get { return ((ITextBuffer)content).SelectionStartPosition; } 
-		}
-		public int SelectionEndPosition {
-			get { return ((ITextBuffer)content).SelectionEndPosition; } 
-		}
-		
-		public string GetText (int startPosition, int endPosition)
-		{
-			return ((ITextBuffer)content).GetText (startPosition, endPosition);
-		}
-		
-		public void Select (int startPosition, int endPosition)
-		{
-			((ITextBuffer)content).Select (startPosition, endPosition);
-		}
-		
-		public void ShowPosition (int position)
-		{
-			((ITextBuffer)content).ShowPosition (position);
-		}
-		
-		public int GetPositionFromLineColumn (int line, int column)
-		{
-			return ((ITextBuffer)content).GetPositionFromLineColumn (line, column);
-		}
-		
-		public void GetLineColumnFromPosition (int position, out int line, out int column)
-		{
-			((ITextBuffer)content).GetLineColumnFromPosition (position, out line, out column);
-		}
-		
-		/* IPositionable **********************/
-		
-		public void JumpTo(int line, int column)
-		{
-			if (!codeButton.Active)
-				codeButton.Active = true;
-			((IPositionable)content).JumpTo (line, column);
-		}
-		
-		/* IBookmarkBuffer **********************/
-		
-		public void SetBookmarked (int position, bool mark)
-		{
-			((IBookmarkBuffer)content).SetBookmarked (position, mark);
-		}
-		
-		public bool IsBookmarked (int position)
-		{
-			return ((IBookmarkBuffer)content).IsBookmarked (position);
-		}
-		
-		public void PrevBookmark ()
-		{
-			((IBookmarkBuffer)content).PrevBookmark ();
-		}
-		
-		public void NextBookmark ()
-		{
-			((IBookmarkBuffer)content).NextBookmark ();
-		}
-		
-		public void ClearBookmarks ()
-		{
-			((IBookmarkBuffer)content).ClearBookmarks ();
-		}
-		
-		/* IDebuggableEditor **********************/
-		
-		public void ExecutingAt (int lineNumber)
-		{
-			((IDebuggableEditor)content).ExecutingAt (lineNumber);
-		}
-		
-		public void ClearExecutingAt (int lineNumber)
-		{
-			((IDebuggableEditor)content).ExecutingAt (lineNumber);
-		}
-		
-		/* ICodeStyleOperations **********************/
-		
-		public void CommentCode ()
-		{
-			((ICodeStyleOperations)content).CommentCode ();
-		}
-		
-		public void UncommentCode ()
-		{
-			((ICodeStyleOperations)content).UncommentCode ();
-		}
-		
-		public void IndentSelection ()
-		{
-			((ICodeStyleOperations)content).IndentSelection ();
-		}
-		
-		public void UnIndentSelection ()
-		{
-			((ICodeStyleOperations)content).UnIndentSelection ();
-		}
-		
-		
-		/* IDocumentInformation **********************/
-		
-		public string FileName {
-			get { return ((IDocumentInformation)content).FileName; }
-		}
-		
-		public ITextIterator GetTextIterator ()
-		{
-			return ((IDocumentInformation)content).GetTextIterator ();
-		}
-		
-		public string GetLineTextAtOffset (int offset)
-		{
-			return ((IDocumentInformation)content).GetLineTextAtOffset (offset);
-		}
 	}
-	
-	class MonoDevelopWidgetActionBar: Stetic.WidgetActionBar
-	{
-		public MonoDevelopWidgetActionBar (Stetic.Wrapper.Widget widget): base (widget)
-		{
-		}
-		
-		protected override void AddWidgetCommands (Stetic.Wrapper.Widget widget)
-		{
-			if (widget != RootWidget) {
-				// Show the Bind to Field button only for children of the root container.
-				ToolButton bindButton = new ToolButton (null, GettextCatalog.GetString ("Bind to Field"));
-				bindButton.IsImportant = true;
-				bindButton.Clicked += new EventHandler (OnBindWidget);
-				bindButton.Show ();
-				Insert (bindButton, -1);
-			}
-			base.AddWidgetCommands (widget);
-		}
-		
-		void OnBindWidget (object o, EventArgs a)
-		{
-			GuiBuilderService.AddCurrentWidgetToClass ();
-		}
-	}
-	
 }
 

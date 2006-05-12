@@ -1,3 +1,37 @@
+2006-05-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/*: Updated from Stetic module.
+	* MonoDevelop.GtkCore.addin.xml: Register a node builder and and
+	  display binding for action groups.
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: Update
+	  the folder when action groups change.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Fix nullref.
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs: Factorized
+	  some code into CodeBinder.cs
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Factorized some
+	  code into CombinedDesignView.cs.
+	
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: New node
+	  builder for action groups.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs: New display
+	  binding for editing global action groups.
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs: Moved from
+	  GuiBuilderView.cs.
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs: A new
+	  toolbar for the action group designer.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: A view for editing
+	  global action groups.
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Moved here some code
+	  from GuiBuilderEditSession.cs.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Moved here some
+	  code from GuiBuilderView.cs.
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.mdp: Added new files.
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track api changes.
+	
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/libstetic.dll: Updated from Stetic module. Includes

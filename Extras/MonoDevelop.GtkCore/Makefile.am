@@ -36,11 +36,16 @@ MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
 MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
 MonoDevelop.GtkCore.Commands/GladeCommands.cs \
+MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
 MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs \
 MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
 MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs \
 MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs \
 MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs \
+MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
+MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs \
+MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs \
+MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs \
@@ -50,6 +55,8 @@ MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs \
+MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs \
+MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs \
 MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs
 
 RES = \

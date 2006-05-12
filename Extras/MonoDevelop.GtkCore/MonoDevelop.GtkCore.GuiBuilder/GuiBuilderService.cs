@@ -264,7 +264,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get {
 				Document doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-					Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectEntryContaining (doc.FileName);
+					Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (doc.FileName);
 					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 					if (info != null)
 						return info.GetReferencedWidgetLibraries ();
