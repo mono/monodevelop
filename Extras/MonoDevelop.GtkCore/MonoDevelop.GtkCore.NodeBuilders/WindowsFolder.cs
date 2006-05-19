@@ -26,8 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
+using System;
 using MonoDevelop.Projects;
+using MonoDevelop.GtkCore.GuiBuilder;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -35,9 +36,41 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		Project project;
 		
+		public event EventHandler Changed;
+		
 		public WindowsFolder (Project project)
 		{
 			this.project = project;
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			WindowEventHandler updateDelegate = new WindowEventHandler (OnUpdateFiles);
+			info.GuiBuilderProject.WindowAdded += updateDelegate;
+			info.GuiBuilderProject.WindowRemoved += updateDelegate;
+			
+			Stetic.Wrapper.ActionGroupEventHandler updateDelegate2 = new Stetic.Wrapper.ActionGroupEventHandler (OnUpdateFiles);
+			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded += updateDelegate2;
+			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved += updateDelegate2;
+		}
+		
+		public void Dispose ()
+		{
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			WindowEventHandler updateDelegate = new WindowEventHandler (OnUpdateFiles);
+			info.GuiBuilderProject.WindowAdded -= updateDelegate;
+			info.GuiBuilderProject.WindowRemoved -= updateDelegate;
+			
+			Stetic.Wrapper.ActionGroupEventHandler updateDelegate2 = new Stetic.Wrapper.ActionGroupEventHandler (OnUpdateFiles);
+			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded -= updateDelegate2;
+			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved -= updateDelegate2;
+		}
+		
+		void OnUpdateFiles (object s, WindowEventArgs args)
+		{
+			if (Changed != null) Changed (this, EventArgs.Empty);
+		}
+		
+		void OnUpdateFiles (object s, Stetic.Wrapper.ActionGroupEventArgs args)
+		{
+			if (Changed != null) Changed (this, EventArgs.Empty);
 		}
 		
 		public Project Project {

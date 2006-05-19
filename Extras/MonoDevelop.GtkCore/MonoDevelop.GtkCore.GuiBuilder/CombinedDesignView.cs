@@ -84,6 +84,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			box.PackStart (toolbar, false, false, 0);
 			
 			box.Show ();
+			
+			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
 		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
@@ -143,6 +145,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
+			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			base.Dispose ();
 		}
 		
@@ -193,6 +196,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
 			OnDirtyChanged (args);
+		}
+		
+		void OnActiveDocumentChanged (object s, EventArgs args)
+		{
+			if (IdeApp.Workbench.ActiveDocument.Content == this)
+				OnDocumentActivated ();
+		}
+		
+		protected virtual void OnDocumentActivated ()
+		{
 		}
 		
 		/* IEditableTextBuffer **********************/

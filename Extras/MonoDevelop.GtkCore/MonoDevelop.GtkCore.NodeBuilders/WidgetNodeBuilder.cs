@@ -44,6 +44,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WidgetNodeBuilder: TypeNodeBuilder
 	{
+		WindowEventHandler onChanged;
+		
+		public WidgetNodeBuilder ()
+		{
+			onChanged = new WindowEventHandler (OnChanged);
+		}
+		
 		public override Type CommandHandlerType {
 			get { return typeof(GladeWindowCommandHandler); }
 		}
@@ -74,23 +81,37 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget");
 		}
 		
+		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			foreach (Stetic.Wrapper.ActionGroup agroup in win.RootWidget.LocalActionGroups) {
+				builder.AddChild (agroup);
+			}
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			return win.RootWidget.LocalActionGroups.Count > 0;
+		}
+		
 		public override void OnNodeAdded (object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			win.NameChanged += new WindowEventHandler (OnNameChanged);
+			win.Changed += onChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			win.NameChanged -= new WindowEventHandler (OnNameChanged);
+			win.Changed -= onChanged;
 		}
 		
-		void OnNameChanged (object s, WindowEventArgs a)
+		void OnChanged (object s, WindowEventArgs a)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (a.Window);
 			if (tb != null)
-				tb.Update ();
+				tb.UpdateAll ();
 		}
 	}
 	

@@ -43,13 +43,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WindowsFolderNodeBuilder: TypeNodeBuilder
 	{
-		WindowEventHandler updateDelegate;
-		Stetic.Wrapper.ActionGroupEventHandler updateDelegate2;
+		EventHandler updateDelegate;
 		
 		public WindowsFolderNodeBuilder ()
 		{
-			updateDelegate = (WindowEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new WindowEventHandler (OnUpdateFiles));
-			updateDelegate2 = (Stetic.Wrapper.ActionGroupEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new Stetic.Wrapper.ActionGroupEventHandler (OnUpdateFiles));
+			updateDelegate = (EventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
 		}
 		
 		public override Type NodeDataType {
@@ -105,39 +103,21 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			Project p = ((WindowsFolder)dataObject).Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-			info.GuiBuilderProject.WindowAdded += updateDelegate;
-			info.GuiBuilderProject.WindowRemoved += updateDelegate;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded += updateDelegate2;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved += updateDelegate2;
+			WindowsFolder w = (WindowsFolder) dataObject;
+			w.Changed += updateDelegate;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Project p = ((WindowsFolder)dataObject).Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-			info.GuiBuilderProject.WindowAdded -= updateDelegate;
-			info.GuiBuilderProject.WindowRemoved -= updateDelegate;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded -= updateDelegate2;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved -= updateDelegate2;
+			WindowsFolder w = (WindowsFolder)dataObject;
+			w.Changed -= updateDelegate;
+			w.Dispose ();
 		}
 		
-		void OnUpdateFiles (object s, WindowEventArgs args)
+		void OnUpdateFiles (object s, EventArgs args)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (args.Window.Project.Project);
+			ITreeBuilder tb = Context.GetTreeBuilder (s);
 			if (tb != null) {
-				if (tb.MoveToChild ("UserInterface", typeof(WindowsFolder))) {
-					tb.UpdateAll ();
-				}
-			}
-		}
-		
-		void OnUpdateFiles (object s, Stetic.Wrapper.ActionGroupEventArgs args)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder (args.ActionGroup);
-			if (tb != null) {
-				tb.MoveToParent ();
 				tb.UpdateAll ();
 			}
 		}

@@ -38,7 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class ActionGroupView: CombinedDesignView
 	{
 		Stetic.Editor.ActionGroupEditor editor;
-		Gtk.Widget designer;
+		Stetic.PreviewBox designer;
 		Hashtable actionCopyMap = new Hashtable ();
 		Stetic.Wrapper.ActionGroup groupCopy;
 		Stetic.Wrapper.ActionGroup group;
@@ -53,7 +53,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.project = project;
 			
 			vbox = new Gtk.VBox ();
-			toolbar = new MonoDevelopActionGroupToolbar (group);
+			toolbar = new MonoDevelopActionGroupToolbar (true);
 			toolbar.BindField += new EventHandler (OnBindField);
 			vbox.PackStart (toolbar, false, false, 0);
 			vbox.ShowAll ();
@@ -64,13 +64,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			AddButton (GettextCatalog.GetString ("Actions"), vbox);
 			
 			editor = new Stetic.Editor.ActionGroupEditor ();
-			toolbar.Bind (editor);
 			
-			designer = Stetic.EmbedWindow.Wrap (editor, 1, 1);
+			designer = Stetic.EmbedWindow.Wrap (editor, -1, -1);
 			b.Add (designer);
+			toolbar.Bind (editor);
 			Load (group);
 			editor.GroupModified += new EventHandler (OnGroupModified);
-			
+
 			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), groupCopy);
 		}
 		
@@ -95,7 +95,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			groupCopy.Changed += new EventHandler (UpdateName);
 			groupCopy.SignalAdded += new Stetic.SignalEventHandler (OnSignalAdded);
 			groupCopy.SignalChanged += new Stetic.SignalChangedEventHandler (OnSignalChanged);
-			editor.ActionGroup = groupCopy;
+			toolbar.ActiveGroup = groupCopy;
 		}
 		
 		public override void Save (string fileName)
@@ -141,6 +141,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ShowDesignerView ()
 		{
 			ShowPage (1);
+		}
+		
+		public void SelectAction (Stetic.Wrapper.Action action)
+		{
+			foreach (DictionaryEntry e in actionCopyMap) {
+				if (e.Value == action)
+					editor.SelectedAction = (Stetic.Wrapper.Action) e.Key;
+			}
+		}
+		
+		protected override void OnDocumentActivated ()
+		{
+			designer.UpdateObjectViewers ();
 		}
 		
 		void UpdateName (object s, EventArgs a)

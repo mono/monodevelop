@@ -75,12 +75,30 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set { widgetTreePad = value; }
 		}
 		
+		public static ActionGroupView OpenActionGroup (Project project, Stetic.Wrapper.ActionGroup group)
+		{
+			string file = CodeBinder.GetSourceCodeFile (project, group);
+			if (file == null) {
+				file = ActionGroupDisplayBinding.BindToClass (project, group);
+			}
+			
+			Document doc = IdeApp.Workbench.OpenDocument (file, true);
+			if (doc != null) {
+				ActionGroupView view = doc.Content as ActionGroupView;
+				if (view != null) {
+					view.ShowDesignerView ();
+					return view;
+				}
+			}
+			return null;
+		}
+		
 		static void OnActiveDocumentChanged (object s, EventArgs args)
 		{
 			NotifyWidgetLibraryChange ();
 
 			if (IdeApp.Workbench.ActiveDocument == null) {
-				ActiveProject = EmptyProject;
+				ActiveProject = null;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
 				RestoreLayout ();
@@ -95,7 +113,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				SetDesignerLayout ();
 			}
 			else {
-				ActiveProject = EmptyProject;
+				ActiveProject = null;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
 				RestoreLayout ();
@@ -252,8 +270,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return activeProject; }
 			set {
 				activeProject = value;
-				if (activeProject == null)
-					activeProject = EmptyProject;
+//				if (activeProject == null)
+//					activeProject = EmptyProject;
 
 				if (ActiveProjectChanged != null)
 					ActiveProjectChanged (null, null);
@@ -271,6 +289,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 				return new Stetic.WidgetLibrary [0];
 			}
+		}
+		
+		public static Project GetProjectFromDesign (Stetic.Project project)
+		{
+			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+				return null;
+				
+			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
+				if (info != null && info.GuiBuilderProject != null && info.GuiBuilderProject.SteticProject == project)
+					return prj;
+			}
+			return null;
 		}
 		
 		public static void NotifyWidgetLibraryChange ()

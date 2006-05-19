@@ -53,6 +53,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		GuiBuilderProject fproject;
 		
 		public event WindowEventHandler NameChanged;
+		public event WindowEventHandler Changed;
 		
 		internal GuiBuilderWindow (GuiBuilderProject fproject, Stetic.Project gproject, Stetic.Wrapper.Widget rootWidget)
 		{
@@ -61,6 +62,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.gproject = gproject;
 			gproject.WidgetNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
+			rootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
+			rootWidget.LocalActionGroups.ActionGroupRemoved += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
 		}
 		
 		void OnProjectReloaded (object s, EventArgs a)
@@ -104,11 +107,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			fproject.UpdatingWindow = true;
 			string oldName = rootWidget.Wrapped.Name;
+			rootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
+			rootWidget.LocalActionGroups.ActionGroupRemoved -= new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
 			
 			try {
 				rootWidget.Delete ();
 				Gtk.Widget w = Stetic.WidgetUtils.ImportWidget (gproject, data);
 				rootWidget = Stetic.Wrapper.Container.Lookup (w);
+				rootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
+				rootWidget.LocalActionGroups.ActionGroupRemoved += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
 				gproject.AddWidget ((Gtk.Widget) rootWidget.Wrapped);
 			} finally {
 				fproject.UpdatingWindow = false;
@@ -134,8 +141,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (!InsideWindow (args.Widget))
 				return;
 			
-			if (args.Widget == rootWidget && NameChanged != null)
+			if (args.Widget == rootWidget && NameChanged != null) {
 				NameChanged (this, new WindowEventArgs (this));
+			}
+			OnChanged ();
+		}
+		
+		void OnGroupsChanged (object s, Stetic.Wrapper.ActionGroupEventArgs args)
+		{
+			OnChanged ();
+		}
+		
+		protected virtual void OnChanged ()
+		{
+			if (Changed != null)
+				Changed (this, new WindowEventArgs (this));
 		}
 		
 		public IClass GetClass ()

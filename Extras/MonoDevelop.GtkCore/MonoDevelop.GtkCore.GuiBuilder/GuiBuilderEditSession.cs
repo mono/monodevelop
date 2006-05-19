@@ -57,8 +57,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		public GuiBuilderEditSession (GuiBuilderWindow win, ITextFileProvider textFileProvider)
 		{
 			this.window = win;
+			
+			// Create a local project and load into it the widget being edited.
+			// When saving the file, this project will be merged with the main project.
 			gproject = new Stetic.Project ();
+			
+			// Reuse the action groups and icon factory of the main project
 			gproject.ActionGroups = win.Project.SteticProject.ActionGroups;
+			gproject.IconFactory = win.Project.SteticProject.IconFactory;
+			
 			XmlElement data = Stetic.WidgetUtils.ExportWidget (win.RootWidget.Wrapped);
 			Gtk.Widget w = Stetic.WidgetUtils.ImportWidget (gproject, data);
 			gproject.AddWidget (w);
@@ -66,7 +73,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			
 			codeBinder = new CodeBinder (win.Project.Project, textFileProvider, rootWidget);
 			
-			gproject.WidgetNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
+			gproject.WidgetMemberNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			gproject.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			
 			gproject.SignalAdded += new Stetic.SignalEventHandler (OnSignalAdded);
@@ -110,9 +117,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		public void Dispose ()
 		{
-			gproject.WidgetNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
+			gproject.WidgetMemberNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			GuiBuilderService.ActiveProject = null;
 			gproject.Dispose ();
+		}
+		
+		public void SetDesignerActive ()
+		{
+			widget.UpdateObjectViewers ();
 		}
 		
 		public bool Modified {
@@ -135,8 +147,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		public void BindCurrentWidget ()
 		{
-			if (gproject.Selection != null)
-				codeBinder.BindToField (Stetic.Wrapper.Widget.Lookup (gproject.Selection));
+			if (gproject.Selection != null) {
+				Stetic.Wrapper.Widget w = Stetic.Wrapper.Widget.Lookup (gproject.Selection);
+				if (w.MemberName.Length == 0)
+					w.MemberName = w.Wrapped.Name;
+				codeBinder.BindToField (w);
+			}
 		}
 		
 		public void BindAction (Stetic.Wrapper.Action action)

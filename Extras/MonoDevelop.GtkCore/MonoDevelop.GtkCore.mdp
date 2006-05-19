@@ -70,6 +70,7 @@
     <File name="./MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="./templates/ActionGroup.xft.xml" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

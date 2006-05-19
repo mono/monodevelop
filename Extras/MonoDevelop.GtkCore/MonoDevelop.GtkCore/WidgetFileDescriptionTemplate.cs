@@ -97,22 +97,39 @@ namespace MonoDevelop.GtkCore
 			};
 
 			XmlElement widgetElem = steticTemplate ["widget"];
-			if (widgetElem == null)
-				throw new InvalidOperationException ("Widget element not found in widget template.");
-
-			string content = widgetElem.OuterXml;
-			content = sps.Parse (content, tags);
+			if (widgetElem != null) {
+				string content = widgetElem.OuterXml;
+				content = sps.Parse (content, tags);
+				
+				XmlDocument doc = new XmlDocument ();
+				doc.LoadXml (content);
+				
+				Gtk.Widget widget = Stetic.WidgetUtils.ImportWidget (gproject.SteticProject, doc.DocumentElement);
+				
+				gproject.SteticProject.AddWidget (widget);
+				gproject.Save ();
+				
+				if (!(widget is Gtk.Window))
+					info.AddExportedWidget (fullName);
+				return;
+			}
 			
-			XmlDocument doc = new XmlDocument ();
-			doc.LoadXml (content);
+			widgetElem = steticTemplate ["action-group"];
+			if (widgetElem != null) {
+				string content = widgetElem.OuterXml;
+				content = sps.Parse (content, tags);
+				
+				XmlDocument doc = new XmlDocument ();
+				doc.LoadXml (content);
+				
+				Stetic.Wrapper.ActionGroup group = new Stetic.Wrapper.ActionGroup ();
+				group.Read (gproject.SteticProject, doc.DocumentElement);
+				gproject.SteticProject.ActionGroups.Add (group);
+				gproject.Save ();
+				return;
+			}
 			
-			Gtk.Widget widget = Stetic.WidgetUtils.ImportWidget (gproject.SteticProject, doc.DocumentElement);
-			
-			gproject.SteticProject.AddWidget (widget);
-			gproject.Save ();
-			
-			if (!(widget is Gtk.Window))
-				info.AddExportedWidget (fullName);
+			throw new InvalidOperationException ("<widget> or <action-group> element not found in widget template.");
 		}
 		
 		public override void Show ()

@@ -47,6 +47,7 @@
 		<FileTemplate id = "DialogFileTemplate" resource = "Dialog.xft.xml"/>
 		<FileTemplate id = "WindowFileTemplate" resource = "Window.xft.xml"/>
 		<FileTemplate id = "WidgetFileTemplate" resource = "Widget.xft.xml"/>
+		<FileTemplate id = "ActionGroupFileTemplate" resource = "ActionGroup.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/GladeFileNodeBuilder/ContextMenu">
@@ -74,8 +75,13 @@
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget"
 				icon = "md-gtkcore-widget"
 				_label = "New Widget..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup"
+				icon = "md-gtkcore-actiongroup"
+				_label = "New Action Group..." />
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.ImportGladeFile"
 				_label = "Import Glade file..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.EditIcons"
+				_label = "Edit Project Icons..." />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
@@ -83,6 +89,7 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode/Add">
@@ -90,13 +97,16 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode">
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWindow" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewWidget" />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup" />
 		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" />
 	</Extension>
 	
@@ -136,6 +146,7 @@
 		<StockIcon stockid = "md-gtkcore-window" resource = "window.png" />
 		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
 		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
+		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
 	</Extension>
 </AddIn>
 

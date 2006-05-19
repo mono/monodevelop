@@ -33,6 +33,8 @@ namespace MonoDevelop.GtkCore
 		AddNewDialog,
 		AddNewWindow,
 		AddNewWidget,
-		ImportGladeFile
+		AddNewActionGroup,
+		ImportGladeFile,
+		EditIcons,
 	}
 }

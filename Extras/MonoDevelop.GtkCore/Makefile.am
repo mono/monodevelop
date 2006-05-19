@@ -64,6 +64,8 @@ gui.glade \
 icons/dialog.png \
 icons/widget.png \
 icons/window.png \
+icons/actiongroup.png \
+templates/ActionGroup.xft.xml \
 templates/Window.xft.xml \
 templates/Widget.xft.xml \
 templates/Dialog.xft.xml

@@ -84,11 +84,27 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			AddNewWindow ("WidgetFileTemplate");
 		}
 		
+		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
+		public void AddNewActionGroupToProject()
+		{
+			AddNewWindow ("ActionGroupFileTemplate");
+		}
+		
 		[CommandHandler (GtkCommands.ImportGladeFile)]
 		protected void OnImportGladeFile ()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			GuiBuilderService.ImportGladeFile (project);
+		}
+		
+		[CommandHandler (GtkCommands.EditIcons)]
+		protected void OnEditIcons ()
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			Stetic.Project sp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject.SteticProject;
+			using (Stetic.Editor.EditIconFactoryDialog dlg = new Stetic.Editor.EditIconFactoryDialog (null, sp, sp.IconFactory)) {
+				dlg.Run ();
+			}
 		}
 		
 		public void AddNewWindow (string id)

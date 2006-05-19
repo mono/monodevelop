@@ -59,7 +59,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			Stetic.Wrapper.ActionGroup group = (Stetic.Wrapper.ActionGroup) dataObject;
 			label = group.Name;
-			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget");
+			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-actiongroup");
 		}
 		
 		public override void OnNodeAdded (object dataObject)
@@ -86,19 +86,22 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override void ActivateItem ()
 		{
-			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-			
-			Stetic.Wrapper.ActionGroup group = (Stetic.Wrapper.ActionGroup) CurrentNode.DataItem;
-			string file = CodeBinder.GetSourceCodeFile (project, group);
-			if (file == null) {
-				file = ActionGroupDisplayBinding.BindToClass (project, group);
+			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			if (w != null) {
+				if (w.SourceCodeFile == null && !w.BindToClass ())
+					return;
+				
+				Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
+				if (doc != null) {
+					GuiBuilderView view = doc.Content as GuiBuilderView;
+					if (view != null)
+						view.ShowActionDesignerView (((Stetic.Wrapper.ActionGroup) CurrentNode.DataItem).Name);
+				}
 			}
-			
-			Document doc = IdeApp.Workbench.OpenDocument (file, true);
-			if (doc != null) {
-				ActionGroupView view = doc.Content as ActionGroupView;
-				if (view != null)
-					view.ShowDesignerView ();
+			else {
+				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+				Stetic.Wrapper.ActionGroup group = (Stetic.Wrapper.ActionGroup) CurrentNode.DataItem;
+				GuiBuilderService.OpenActionGroup (project, group);
 			}
 		}
 	}

@@ -37,7 +37,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		public event EventHandler BindField;
 		
-		public MonoDevelopActionGroupToolbar (Stetic.Wrapper.ActionGroup actionGroup): base (actionGroup)
+		public MonoDevelopActionGroupToolbar (bool singleMode): base (singleMode)
 		{
 		}
 		

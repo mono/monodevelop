@@ -78,8 +78,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			actionsBox.PackStart (groupDesign, true, true, 3);
 			actionsBox.ShowAll ();
 			
-			AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
-			
 			// Widget toolbar
 			widgetBar = new MonoDevelopWidgetActionBar (editSession.RootWidget);
 			widgetBar.BorderWidth = 3;
@@ -95,7 +93,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			currentDesigner = editSession.WrapperWidget;
 			
+			if (editSession.RootWidget.LocalActionGroups.Count > 0)
+				AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
+			else {
+				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
+			}
+			
 			editSession.RootWidgetChanged += new EventHandler (OnRootWidgetChanged);
+		}
+		
+		protected override void OnDocumentActivated ()
+		{
+			editSession.SetDesignerActive ();
+		}
+		
+		void OnActionGroupAdded (object s, Stetic.Wrapper.ActionGroupEventArgs args)
+		{
+			AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
+			editSession.RootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
 		}
 		
 		void OnWindowChanged (object s, EventArgs args)
@@ -170,6 +185,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ShowDesignerView ()
 		{
 			ShowPage (1);
+		}
+		
+		public void ShowActionDesignerView (string name)
+		{
+			ShowPage (2);
+			foreach (Stetic.Wrapper.ActionGroup grp in editSession.RootWidget.LocalActionGroups) {
+				if (grp.Name == name)
+					groupToolbar.ActiveGroup = grp;
+			}
 		}
 		
 		/* Commands *********************************/

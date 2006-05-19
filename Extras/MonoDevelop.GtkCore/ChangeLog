@@ -1,5 +1,49 @@
+2006-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.Commands/GladeCommands.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	* MonoDevelop.GtkCore.addin.xml: Added commands for creating
+	  an action group and editing the project icons.
+	  
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs: Show local
+	  action groups as children of the window node.
+	
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs: Moved
+	  some event subscriptions to WindowsFolder.cs
+	
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: 
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: Open the
+	  corresponding file when clicking on local action groups.
+	  
+	* Makefile.am:
+	* MonoDevelop.GtkCore.mdp: Added action group template.
+	
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Added support for
+	  action group file templates.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs: Notify changes in
+	  local action groups.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Don't show the actions
+	  tab until there is at least one action group.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs: Don't show
+	  properties or signals for global actions.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Added virtual method
+	  OnActiveDocumentChanged, which is called when the view is brought to front.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Use the new MemberName
+	  field when binding fields.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: Several minor fixes.
+	  
+	* lib/*: Updated.
+	  
+
 2006-05-12 Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Initial support for the menu editor. Still very unstable!!
+	
 	* lib/*: Updated from Stetic module.
 	* MonoDevelop.GtkCore.addin.xml: Register a node builder and and
 	  display binding for action groups.

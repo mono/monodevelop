@@ -183,7 +183,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		/// Adds a field to the class
 		public void BindToField (Stetic.ObjectWrapper obj)
 		{
-			string name = GetObjectName (obj);
+			string name = GetMemberName (obj);
 			IClass cls = GetClass ();
 			
 			if (FindField (cls, name) != null)
@@ -323,6 +323,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return GetObjectName (obj);
 		}
 		
+		public static string GetMemberName (object obj)
+		{
+			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
+			if (w != null)
+				return w.MemberName;
+			else
+				return GetObjectName (obj);
+		}
+		
 		public static string GetObjectName (object obj)
 		{
 			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
@@ -338,6 +347,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			else {
 				return null;
 			}
+		}
+		
+		public static void SetMemberName (object obj, string name)
+		{
+			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
+			if (w != null) {
+				w.Wrapped.Name = name;
+			} else
+				SetObjectName (obj, name);
 		}
 		
 		public static void SetObjectName (object obj, string name)
