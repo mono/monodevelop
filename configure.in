@@ -8,7 +8,7 @@ AC_PROG_INTLTOOL([0.25])
 ASSEMBLY_VERSION=0.11.0.0
 
 AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(MCS, mcs)
+AC_PATH_PROG(MCS, gmcs)
 
 if test "x$MONO" = "x" ; then
   AC_PATH_PROG(MINT, mint)
@@ -18,7 +18,7 @@ if test "x$MONO" = "x" ; then
 fi
 
 if test "x$MCS" = "x" ; then
-  AC_MSG_ERROR([Can't find "mcs" in your PATH])
+  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
 fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
@@ -50,19 +50,19 @@ fi
 if test "x$has_mono" = "xtrue"; then
     if test `uname -s` = "Darwin"; then
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=
 	LIB_SUFFIX=.dylib
     else
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
 else
     if test "x$has_mint" = "xtrue"; then
 	AC_PATH_PROG(RUNTIME, mint, no)
-	AC_PATH_PROG(CSC, mcs, no)
+	AC_PATH_PROG(CSC, gmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
@@ -196,7 +196,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 AM_GLIB_GNU_GETTEXT
 
-CSC_FLAGS='-langversion:ISO-1'
+CSC_FLAGS=
 
 AC_SUBST(LIB_SUFFIX)
 AC_SUBST(LIB_PREFIX)
@@ -220,7 +220,7 @@ build/data/resources/Makefile
 build/Makefile
 contrib/Makefile
 Core/Makefile
-Core/src/ICSharpCode.SharpRefactory/Makefile
+Core/src/NRefactory/Makefile
 Core/src/Makefile
 Core/src/MonoDevelop.Core/AssemblyInfo.cs
 Core/src/MonoDevelop.Core/Makefile
