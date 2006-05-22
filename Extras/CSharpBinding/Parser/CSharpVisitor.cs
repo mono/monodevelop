@@ -5,11 +5,12 @@ using System.Diagnostics;
 using System.Collections;
 using System.CodeDom;
 
-using RefParser = ICSharpCode.SharpRefactory.Parser;
-using AST = ICSharpCode.SharpRefactory.Parser.AST;
+using RefParser = ICSharpCode.NRefactory.Parser;
+using AST = ICSharpCode.NRefactory.Parser.AST;
 using MonoDevelop.Projects.Parser;
 using CSharpBinding.Parser.SharpDevelopTree;
-using ModifierFlags = ICSharpCode.SharpRefactory.Parser.ModifierFlags;
+using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace CSharpBinding.Parser
 {
@@ -17,12 +18,12 @@ namespace CSharpBinding.Parser
 	{
 	}
 	
-	public class CSharpVisitor : RefParser.AbstractASTVisitor
+	public class CSharpVisitor : RefParser.AbstractAstVisitor
 	{
 		CompilationUnit cu = new CompilationUnit();
 		Stack currentNamespace = new Stack();
 		Stack currentClass = new Stack();
-		static ICSharpCode.SharpRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.SharpRefactory.Parser.CodeDOMVisitor ();
+		static ICSharpCode.NRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.NRefactory.Parser.CodeDOMVisitor ();
 		
 		public CompilationUnit Cu {
 			get {
@@ -37,18 +38,13 @@ namespace CSharpBinding.Parser
 			return cu;
 		}
 		
-		public override object Visit(AST.UsingDeclaration usingDeclaration, object data)
+		public override object Visit(AST.Using usingDeclaration, object data)
 		{
 			Using u = new Using();
-			u.Usings.Add(usingDeclaration.Namespace);
-			cu.Usings.Add(u);
-			return data;
-		}
-		
-		public override object Visit(AST.UsingAliasDeclaration usingAliasDeclaration, object data)
-		{
-			Using u = new Using();
-			u.Aliases[usingAliasDeclaration.Alias] = usingAliasDeclaration.Namespace;
+			if (usingDeclaration.IsAlias)
+				u.Aliases[usingDeclaration.Alias.Type] = usingDeclaration.Name;
+			else
+				u.Usings.Add(usingDeclaration.Name);
 			cu.Usings.Add(u);
 			return data;
 		}
@@ -81,7 +77,7 @@ namespace CSharpBinding.Parser
 			}
 		} 
 		
-		void FillAttributes (IDecoration decoration, ArrayList attributes)
+		void FillAttributes (IDecoration decoration, IEnumerable attributes)
 		{
 			// TODO Expressions???
 			foreach (AST.AttributeSection section in attributes) {
@@ -95,8 +91,8 @@ namespace CSharpBinding.Parser
 					
 					NamedAttributeArgument[] named = new NamedAttributeArgument [attribute.NamedArguments.Count];
 					for (int n=0; n<attribute.NamedArguments.Count; n++) {
-						ICSharpCode.SharpRefactory.Parser.AST.NamedArgument arg = (ICSharpCode.SharpRefactory.Parser.AST.NamedArgument) attribute.NamedArguments [n];
-						named [n] = new NamedAttributeArgument (arg.Name, GetDomExpression (arg.Expr));
+						ICSharpCode.NRefactory.Parser.AST.NamedArgumentExpression arg = (ICSharpCode.NRefactory.Parser.AST.NamedArgumentExpression) attribute.NamedArguments [n];
+						named [n] = new NamedAttributeArgument (arg.Name, GetDomExpression (arg.Expression));
 					}
 					
 					CSharpBinding.Parser.SharpDevelopTree.Attribute resultAttribute = new CSharpBinding.Parser.SharpDevelopTree.Attribute (attribute.Name, positionals, named, GetRegion (attribute.StartLocation, attribute.EndLocation));
@@ -109,10 +105,10 @@ namespace CSharpBinding.Parser
 		
 		CodeExpression GetDomExpression (object ob)
 		{
-			return (CodeExpression) ((ICSharpCode.SharpRefactory.Parser.AST.Expression)ob).AcceptVisitor (domVisitor, null);
+			return (CodeExpression) ((ICSharpCode.NRefactory.Parser.AST.Expression)ob).AcceptVisitor (domVisitor, null);
 		}
 		
-//		ModifierEnum VisitModifier(ICSharpCode.SharpRefactory.Parser.Modifier m)
+//		ModifierEnum VisitModifier(ICSharpCode.NRefactory.Parser.Modifier m)
 //		{
 //			return (ModifierEnum)m;
 //		}
@@ -121,9 +117,9 @@ namespace CSharpBinding.Parser
 		{
 			string name;
 			if (currentNamespace.Count == 0) {
-				name = namespaceDeclaration.NameSpace;
+				name = namespaceDeclaration.Name;
 			} else {
-				name = String.Concat((string)currentNamespace.Peek(), '.', namespaceDeclaration.NameSpace);
+				name = String.Concat((string)currentNamespace.Peek(), '.', namespaceDeclaration.Name);
 			}
 			currentNamespace.Push(name);
 			object ret = namespaceDeclaration.AcceptChildren(this, data);
@@ -131,16 +127,16 @@ namespace CSharpBinding.Parser
 			return ret;
 		}
 		
-		ClassType TranslateClassType(RefParser.Types type)
+		ClassType TranslateClassType(RefParser.AST.ClassType type)
 		{
 			switch (type) {
-				case RefParser.Types.Class:
+				case RefParser.AST.ClassType.Class:
 					return ClassType.Class;
-				case RefParser.Types.Enum:
+				case RefParser.AST.ClassType.Enum:
 					return ClassType.Enum;
-				case RefParser.Types.Interface:
+				case RefParser.AST.ClassType.Interface:
 					return ClassType.Interface;
-				case RefParser.Types.Struct:
+				case RefParser.AST.ClassType.Struct:
 					return ClassType.Struct;
 			}
 			return ClassType.Class;
@@ -149,8 +145,8 @@ namespace CSharpBinding.Parser
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion bodyRegion = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			DefaultRegion declarationRegion = GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
-			ModifierFlags mf = typeDeclaration.Modifiers != null ? typeDeclaration.Modifiers.Code : ModifierFlags.None;
+			DefaultRegion declarationRegion = bodyRegion; //GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
+			ModifierFlags mf = typeDeclaration.Modifier;
 			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), mf, declarationRegion, bodyRegion);
 			
 			FillAttributes (c, typeDeclaration.Attributes);
@@ -168,8 +164,8 @@ namespace CSharpBinding.Parser
 				cu.Classes.Add(c);
 			}
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (string type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(type);
+				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference type in typeDeclaration.BaseTypes) {
+					c.BaseTypes.Add(type.Type);
 				}
 			}
 			currentClass.Push(c);
@@ -181,8 +177,8 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(AST.DelegateDeclaration typeDeclaration, object data)
 		{
-			DefaultRegion declarationRegion = GetRegion (typeDeclaration.DeclarationStartLocation, typeDeclaration.DeclarationEndLocation);
-			ModifierFlags mf = typeDeclaration.Modifiers != null ? typeDeclaration.Modifiers.Code : ModifierFlags.None;
+			DefaultRegion declarationRegion = GetRegion (typeDeclaration.StartLocation, typeDeclaration.EndLocation);
+			ModifierFlags mf = typeDeclaration.Modifier;
 			Class c = new Class (cu, ClassType.Delegate, mf, declarationRegion, null);
 			
 			FillAttributes (c, typeDeclaration.Attributes);
@@ -235,7 +231,7 @@ namespace CSharpBinding.Parser
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = methodDeclaration.Modifiers != null ? methodDeclaration.Modifiers.Code : ModifierFlags.None;
+			ModifierFlags mf = methodDeclaration.Modifier;
 			Method method = new Method (c, String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (methodDeclaration.Parameters != null) {
@@ -259,7 +255,7 @@ namespace CSharpBinding.Parser
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = constructorDeclaration.Modifiers != null ? constructorDeclaration.Modifiers.Code : ModifierFlags.None;
+			ModifierFlags mf = constructorDeclaration.Modifier;
 			Constructor constructor = new Constructor (c, mf, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
@@ -284,7 +280,7 @@ namespace CSharpBinding.Parser
 			
 			Class c       = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = destructorDeclaration.Modifiers != null ? destructorDeclaration.Modifiers.Code : ModifierFlags.None;
+			ModifierFlags mf = destructorDeclaration.Modifier;
 			Destructor destructor = new Destructor (c, c.Name, mf, region, bodyRegion);
 			
 			FillAttributes (destructor, destructorDeclaration.Attributes);
@@ -306,15 +302,8 @@ namespace CSharpBinding.Parser
 			}
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
-					ModifierFlags mf = fieldDeclaration.Modifiers != null ? fieldDeclaration.Modifiers.Code : ModifierFlags.None;
-
 					Field f;
-
-					if (fieldDeclaration.Modifiers == null)
-						f = new Field (c, type, field.Name, RefParser.ModifierFlags.None, region);	
-					else
-						f = new Field (c, type, field.Name, fieldDeclaration.Modifiers.Code, region);	
-
+					f = new Field (c, type, field.Name, fieldDeclaration.Modifier, region);	
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
 				}
@@ -331,7 +320,7 @@ namespace CSharpBinding.Parser
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
 			
-			ModifierFlags mf = propertyDeclaration.Modifiers != null ? propertyDeclaration.Modifiers.Code : ModifierFlags.None;
+			ModifierFlags mf = propertyDeclaration.Modifier;
 			Property property = new Property (c, propertyDeclaration.Name, type, mf, region, bodyRegion);
 			
 			FillAttributes (property, propertyDeclaration.Attributes);
@@ -353,19 +342,19 @@ namespace CSharpBinding.Parser
 			Class c = (Class)currentClass.Peek();
 			Event e = null;
 			
-			if (eventDeclaration.VariableDeclarators != null) {
-				foreach (ICSharpCode.SharpRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					ModifierFlags mf = eventDeclaration.Modifiers != null ? eventDeclaration.Modifiers.Code : ModifierFlags.None;
+/*			if (eventDeclaration.VariableDeclarators != null) {
+				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
+					ModifierFlags mf = eventDeclaration.Modifier;
 					e = new Event (c, varDecl.Name, type, mf, region, bodyRegion);
 					FillAttributes (e, eventDeclaration.Attributes);
 					c.Events.Add(e);
 				}
 			} else {
-				ModifierFlags mf = eventDeclaration.Modifiers != null ? eventDeclaration.Modifiers.Code : ModifierFlags.None;
+*/				ModifierFlags mf = eventDeclaration.Modifier;
 				e = new Event (c, eventDeclaration.Name, type, mf, region, bodyRegion);
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
-			}
+//			}
 			return null;
 		}
 		
@@ -375,7 +364,7 @@ namespace CSharpBinding.Parser
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			ParameterCollection parameters = new ParameterCollection();
 			Class c = (Class)currentClass.Peek();
-			ModifierFlags mf = indexerDeclaration.Modifiers != null ? indexerDeclaration.Modifiers.Code : ModifierFlags.None;
+			ModifierFlags mf = indexerDeclaration.Modifier;
 			Indexer i = new Indexer (c, new ReturnType(indexerDeclaration.TypeReference), parameters, mf, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {

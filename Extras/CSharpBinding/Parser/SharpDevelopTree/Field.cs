@@ -1,7 +1,8 @@
 // created on 04.08.2003 at 18:06
 
 using MonoDevelop.Projects.Parser;
-using ICSharpCode.SharpRefactory.Parser;
+using ICSharpCode.NRefactory.Parser;
+using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {

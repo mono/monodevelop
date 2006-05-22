@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-using ICSharpCode.SharpRefactory.Parser;
+using ICSharpCode.NRefactory.Parser;
 using CSharpBinding.Parser;
 
 // print out parsing errors

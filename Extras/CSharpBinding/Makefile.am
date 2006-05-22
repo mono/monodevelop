@@ -11,7 +11,7 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
+	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
@@ -92,7 +92,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) $(build_sources)
 
 check: all $(TESTASSEMBLY)	

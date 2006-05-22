@@ -5,17 +5,18 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.IO;
 using System.Drawing;
 using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using CSharpBinding.Parser.SharpDevelopTree;
-using ICSharpCode.SharpRefactory.Parser;
+using ICSharpCode.NRefactory.Parser;
 
 namespace CSharpBinding.Parser
 {
-	public class TParser : IParser
+	public class TParser : MonoDevelop.Projects.Parser.IParser
 	{
 		///<summary>IParser Interface</summary> 
 		string[] lexerTags;
@@ -55,7 +56,7 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.Start, new Point(nextDirective.End.X - 2, nextDirective.End.Y))));
+											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.StartPosition, new Point(nextDirective.EndPosition.X - 2, nextDirective.EndPosition.Y))));
 											goto end;
 										}
 										break;
@@ -70,15 +71,13 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			ICSharpCode.SharpRefactory.Parser.Parser p = new ICSharpCode.SharpRefactory.Parser.Parser();
-			
-			Lexer lexer = new Lexer(new FileReader(fileName));
-			p.Parse(lexer);
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StreamReader(fileName));
+			p.Parse ();
 			
 			CSharpVisitor visitor = new CSharpVisitor();
-			visitor.Visit(p.compilationUnit, null);
+			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			RetrieveRegions(visitor.Cu, lexer.SpecialTracker);
+			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			return visitor.Cu;
@@ -86,17 +85,16 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.SharpRefactory.Parser.Parser p = new ICSharpCode.SharpRefactory.Parser.Parser();
-			
-			Lexer lexer = new Lexer(new StringReader(fileContent));
-			p.Parse(lexer);
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(fileContent));
+			p.Parse ();
 			
 			CSharpVisitor visitor = new CSharpVisitor();
-			visitor.Visit(p.compilationUnit, null);
+			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			visitor.Cu.Tag = p.compilationUnit;
-			visitor.Cu.ErrorInformation = p.Errors.ErrorInformation;
-			RetrieveRegions(visitor.Cu, lexer.SpecialTracker);
+			visitor.Cu.Tag = p.CompilationUnit;
+			// FIXME: track api changes
+			//visitor.Cu.ErrorInformation = p.Errors.ErrorInformation;
+			RetrieveRegions (visitor.Cu, p.Lexer.SpecialTracker);
 			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
 			return visitor.Cu;

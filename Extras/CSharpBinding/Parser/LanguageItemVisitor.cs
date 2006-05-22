@@ -3,15 +3,15 @@
 using System;
 using System.Collections;
 
-using ICSharpCode.SharpRefactory.Parser;
-using ICSharpCode.SharpRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 using CSharpBinding.Parser.SharpDevelopTree;
 
 using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {
-	internal class LanguageItemVisitor : AbstractASTVisitor
+	internal class LanguageItemVisitor : AbstractAstVisitor
 	{
 		Resolver resolver;
 		
@@ -72,7 +72,7 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CompilationUnit);
-			if (c.ClassType == ClassType.Delegate) {
+			if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Delegate) {
 				ArrayList methods = resolver.SearchMethod(t, "invoke");
 				if (methods.Count <= 0) {
 					return null;
@@ -118,7 +118,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			ReturnType type = pointerReferenceExpression.Expression.AcceptVisitor(this, data) as ReturnType;
+			ReturnType type = pointerReferenceExpression.TargetObject.AcceptVisitor(this, data) as ReturnType;
 			if (type == null) {
 				return null;
 			}

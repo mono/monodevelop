@@ -41,13 +41,74 @@ namespace CSharpBinding.Parser
 		ExpressionContext GetCreationContext()
 		{
 			return null;
+/*			UnGetToken();
+			if (GetNextNonWhiteSpace() == '=') { // was: "= new"
+				ReadNextToken();
+				if (curTokenType == Ident) {     // was: "ident = new"
+					int typeEnd = offset;
+					ReadNextToken();
+					int typeStart = -1;
+					while (curTokenType == Ident) {
+						typeStart = offset + 1;
+						ReadNextToken();
+						if (curTokenType == Dot) {
+							ReadNextToken();
+						} else {
+							break;
+						}
+					}
+					if (typeStart >= 0) {
+						string className = text.Substring(typeStart, typeEnd - typeStart);
+						int pos = className.IndexOf('<');
+						string nonGenericClassName, genericPart;
+						int typeParameterCount = 0;
+						if (pos > 0) {
+							nonGenericClassName = className.Substring(0, pos);
+							genericPart = className.Substring(pos);
+							pos = 0;
+							do {
+								typeParameterCount += 1;
+								pos = genericPart.IndexOf(',', pos + 1);
+							} while (pos > 0);
+						} else {
+							nonGenericClassName = className;
+							genericPart = null;
+						}
+						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
+						IReturnType t = finder.SearchType(nonGenericClassName, typeParameterCount);
+						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
+						if (c != null) {
+							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
+							if (context.ShowEntry(c)) {
+								if (genericPart != null) {
+									DefaultClass genericClass = new DefaultClass(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType);
+									genericClass.FullyQualifiedName = c.FullyQualifiedName + genericPart;
+									genericClass.Documentation = c.Documentation;
+									context.SuggestedItem = genericClass;
+								} else {
+									context.SuggestedItem = c;
+								}
+							}
+							return context;
+						}
+					}
+				}
+			} else {
+				UnGet();
+				ReadNextToken();
+				if (curTokenType == Ident && lastIdentifier == "throw") {
+					return ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true);
+				}
+			}
+			return ExpressionContext.ObjectCreation;
+*/
 		}
 		
 		bool IsInAttribute(string txt, int offset)
 		{
 			// Get line start:
 			int lineStart = offset;
-			while (--lineStart > 0 && txt[lineStart] != '\n') { }
+			while (--lineStart > 0 && txt[lineStart] != '\n');
 			
 			bool inAttribute = false;
 			int parens = 0;
@@ -212,7 +273,7 @@ namespace CSharpBinding.Parser
 						break;
 				}
 				if (b.Length > 0) {
-					if (ICSharpCode.SharpRefactory.Parser.Keywords.GetToken(b.ToString()) < 0) {
+					if (ICSharpCode.NRefactory.Parser.CSharp.Keywords.GetToken(b.ToString()) < 0) {
 						res.Context = ExpressionContext.Type;
 					}
 				}

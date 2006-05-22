@@ -3,15 +3,16 @@
 using System;
 using System.Collections;
 
-using ICSharpCode.SharpRefactory.Parser;
-using ICSharpCode.SharpRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 using CSharpBinding.Parser.SharpDevelopTree;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {
-	internal class TypeVisitor : AbstractASTVisitor
+	internal class TypeVisitor : AbstractAstVisitor
 	{
 		Resolver resolver;
 		
@@ -121,7 +122,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
-			ReturnType type = pointerReferenceExpression.Expression.AcceptVisitor(this, data) as ReturnType;
+			ReturnType type = pointerReferenceExpression.TargetObject.AcceptVisitor(this, data) as ReturnType;
 			if (type == null) {
 				return null;
 			}
@@ -223,7 +224,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(StackAllocExpression stackAllocExpression, object data)
 		{
-			ReturnType returnType = new ReturnType(stackAllocExpression.Type);
+			ReturnType returnType = new ReturnType(stackAllocExpression.TypeReference);
 			++returnType.PointerNestingLevel;
 			return returnType;
 		}
@@ -297,9 +298,9 @@ namespace CSharpBinding.Parser
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			ReturnType type = new ReturnType(arrayCreateExpression.CreateType);
-			if (arrayCreateExpression.Parameters != null && arrayCreateExpression.Parameters.Count > 0) {
-				int[] newRank = new int[arrayCreateExpression.Rank.Length + 1];
-				newRank[0] = arrayCreateExpression.Parameters.Count - 1;
+			if (arrayCreateExpression.Arguments != null && arrayCreateExpression.Arguments.Count > 0) {
+				int[] newRank = new int[arrayCreateExpression.CreateType.RankSpecifier.Length + 1];
+				newRank[0] = arrayCreateExpression.Arguments.Count - 1;
 				Array.Copy(type.ArrayDimensions, 0, newRank, 1, type.ArrayDimensions.Length);
 				type.ArrayDimensions = newRank;
 			}

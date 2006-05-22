@@ -34,8 +34,8 @@ using System.IO;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
-using ICSharpCode.SharpRefactory.Parser;
-using ICSharpCode.SharpRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 using System.Drawing;
 using System.Text.RegularExpressions;
 
@@ -141,7 +141,7 @@ namespace CSharpBinding.Parser
 		}
 	}
 	
-	class MemberRefactoryVisitor: AbstractASTVisitor
+	class MemberRefactoryVisitor: AbstractAstVisitor
 	{
 		IClass declaringType;
 		ILanguageItem member;
@@ -252,10 +252,10 @@ namespace CSharpBinding.Parser
 			if (member is IClass && typeDeclaration.BaseTypes != null) {
 				string fname = declaringType.FullyQualifiedName;
 				
-				foreach (string bc in typeDeclaration.BaseTypes) {
-					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
+				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
+					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc.Type, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
 					if (bclass != null && bclass.FullyQualifiedName == fname)
-						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc));
+						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc.Type));
 				}
 			}
 			return base.Visit (typeDeclaration, data);

@@ -1,3 +1,24 @@
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Parser.cs:
+	* Parser/CSharpVisitor.cs: 
+	* Parser/Resolver.cs:
+	* Parser/TypeVisitor.cs:
+	* Parser/CodeGenerator.cs:
+	* Parser/LanguageItemVisitor.cs:
+	* Parser/ExpressionFinder.cs:
+	* Parser/SharpDevelopTree/Destructor.cs:
+	* Parser/SharpDevelopTree/Indexer.cs:
+	* Parser/SharpDevelopTree/Method.cs:
+	* Parser/SharpDevelopTree/Event.cs:
+	* Parser/SharpDevelopTree/ReturnType.cs:
+	* Parser/SharpDevelopTree/Field.cs:
+	* Parser/SharpDevelopTree/Property.cs:
+	* Parser/SharpDevelopTree/Class.cs:
+	* Parser/SharpDevelopTree/Constructor.cs:
+	* parse.cs:
+	* Makefile.am: Use the new NRefactory library.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CSharpBinding.addin.xml: Updated versions.
