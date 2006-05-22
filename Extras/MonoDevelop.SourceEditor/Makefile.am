@@ -47,7 +47,6 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \

@@ -1,3 +1,9 @@
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: Removed
+	  ICSharpCode.SharpRefactory dependency.
+
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:

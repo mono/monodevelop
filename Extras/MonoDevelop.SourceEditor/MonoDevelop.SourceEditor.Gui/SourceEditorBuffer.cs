@@ -15,7 +15,6 @@ using System.IO;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-using ICSharpCode.SharpRefactory.Parser;
 using GtkSourceView;
 	
 namespace MonoDevelop.SourceEditor.Gui
