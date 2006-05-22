@@ -13,7 +13,6 @@ REFS =	-r:System.Drawing \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/BooShell.dll \
 	$(BOO_LIBS) \
 	$(GTK_SHARP_LIBS) \

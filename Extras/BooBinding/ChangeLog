@@ -1,3 +1,8 @@
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* BooBinding.mdp: Removed SharpRefactory reference.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.addin.xml: Updated versions.
