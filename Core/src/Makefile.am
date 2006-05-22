@@ -1,1 +1,1 @@
-SUBDIRS = MonoDevelop.Dock ICSharpCode.SharpRefactory MonoDevelop.Core MonoDevelop.Components MonoDevelop.Core.Gui  MonoDevelop.Projects MonoDevelop.Documentation MonoDevelop.Projects.Gui MonoDevelop.Ide MonoDevelop.Startup Tools
+SUBDIRS = MonoDevelop.Dock NRefactory MonoDevelop.Core MonoDevelop.Components MonoDevelop.Core.Gui  MonoDevelop.Projects MonoDevelop.Documentation MonoDevelop.Projects.Gui MonoDevelop.Ide MonoDevelop.Startup Tools
