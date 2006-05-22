@@ -1,3 +1,7 @@
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Makefile.am: Install the assembly in the right place.
+
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	Imported from SharpDevelop.
