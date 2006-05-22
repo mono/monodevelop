@@ -1,3 +1,9 @@
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Parser/ICompilationUnitBase.cs:
+	* MonoDevelop.Projects.Parser/AbstractCompilationUnit.cs:
+	* Makefile.am: Removed ICSharpCode.SharpRefactory dependency.
+
 2006-05-12 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Combine.cs: Renamed GetProjectEntryContaining

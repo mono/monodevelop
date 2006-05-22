@@ -7,7 +7,6 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-using ICSharpCode.SharpRefactory.Parser;
 
 namespace MonoDevelop.Projects.Parser
 {

@@ -7,7 +7,6 @@ REFS = \
  	-r:System.Drawing \
  	-r:Mono.Posix \
  	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
- 	-r:$(top_builddir)/build/AddIns/ICSharpCode.SharpRefactory.dll \
  	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
  	$(MONODOC_LIBS)
 
