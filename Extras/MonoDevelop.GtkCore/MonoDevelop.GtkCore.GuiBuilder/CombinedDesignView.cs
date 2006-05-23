@@ -365,6 +365,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			((ICodeStyleOperations)content).UnIndentSelection ();
 		}
 		
+		public void LowercaseSelection ()
+		{
+			((ICodeStyleOperations)content).LowercaseSelection ();
+		}
+		
+		public void UppercaseSelection ()
+		{
+			((ICodeStyleOperations)content).UppercaseSelection ();
+		}
 		
 		/* IDocumentInformation **********************/
 		

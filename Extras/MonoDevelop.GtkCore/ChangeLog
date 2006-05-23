@@ -1,3 +1,7 @@
+2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: track api changes
+	
 2006-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.Commands/GladeCommands.cs:
