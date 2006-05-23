@@ -1,3 +1,10 @@
+2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs: enhanced interface for new editor actions
+	* MonoDevelop.Ide.Commands/EditCommands.cs: added new enum members for these actions
+	* MonoDevelop.Ide.addin.xml: included in edit menu
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: default handlers
+
 2006-05-12 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Track api changes.

@@ -292,5 +292,33 @@ namespace MonoDevelop.Ide.Gui
 		{
 			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
 		}
+		
+		[CommandHandler (EditCommands.UppercaseSelection)]
+		public void OnUppercaseSelection ()
+		{
+			ICodeStyleOperations styling = window.ActiveViewContent as ICodeStyleOperations;
+			if (styling != null)
+				styling.UppercaseSelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
+		protected void OnUppercaseSelection (CommandInfo info)
+		{
+			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+		}
+		
+		[CommandHandler (EditCommands.LowercaseSelection)]
+		public void OnLowercaseSelection ()
+		{
+			ICodeStyleOperations styling = window.ActiveViewContent as ICodeStyleOperations;
+			if (styling != null)
+				styling.LowercaseSelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
+		protected void OnLowercaseSelection (CommandInfo info)
+		{
+			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+		}
 	}
 }

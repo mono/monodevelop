@@ -107,6 +107,14 @@
 				description = "Unindent selected lines of code" 
 				_label = "_Unindent Selection"
 				icon = "gtk-unindent" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection"
+				shortcut = "Control|Shift|U"
+				description = "Uppecase code" 
+				_label = "_Uppercase Selection" />
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection"
+				shortcut = "Control|Shift|L"
+				description = "Lowecase code" 
+				_label = "_Lowercase Selection" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
 				_label = "_Word Count..." 
 				description = "Count words in a text file"/>
@@ -770,6 +778,10 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+			<ItemSet id = "Advanced" _label = "_Advanced">
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
+			</ItemSet>
 			
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />

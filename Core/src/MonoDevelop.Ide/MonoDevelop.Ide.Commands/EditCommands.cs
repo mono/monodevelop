@@ -23,6 +23,8 @@ namespace MonoDevelop.Ide.Commands
 		UncommentCode,
 		IndentSelection,
 		UnIndentSelection,
+		UppercaseSelection,
+		LowercaseSelection,
 		WordCount,
 		MonodevelopPreferences
 	}
