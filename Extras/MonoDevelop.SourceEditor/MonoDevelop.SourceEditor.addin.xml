@@ -120,6 +120,10 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UncommentCode" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+		<ItemSet id = "Advanced" _label = "_Advanced">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
+		</ItemSet>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/ToolBar">

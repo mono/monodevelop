@@ -597,6 +597,16 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			se.View.IndentSelection (true);
 		}
+		
+		void ICodeStyleOperations.UppercaseSelection ()
+		{
+			se.Buffer.UppercaseCode ();
+		}
+		
+		void ICodeStyleOperations.LowercaseSelection ()
+		{
+			se.Buffer.LowercaseCode ();
+		}
 #endregion 
 
 		public int CursorPosition {

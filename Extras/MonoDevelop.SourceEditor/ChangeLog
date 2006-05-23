@@ -1,3 +1,9 @@
+2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: implementation of uppercase and lowercase actions
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: update interface implementation
+	* Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml: include these actions in context menu
+
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
