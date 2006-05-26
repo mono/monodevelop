@@ -1,3 +1,7 @@
+2006-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libs/*: Updated from stetic module. Adds support for toolbars.
+
 2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: track api changes
