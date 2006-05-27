@@ -1,3 +1,7 @@
+2006-05-27  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* pl.po: Updated.
+
 2006-05-05  Wade Berrier <wberrier@novell.com> 
 
 	* POTFILES.in: Uncommented '[encoding: UTF-8]' for make dist to succeed
