@@ -1,3 +1,8 @@
+2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: 
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: reverted changes - implemented in MonoDevelop.Ide
+
 2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: implementation of uppercase and lowercase actions

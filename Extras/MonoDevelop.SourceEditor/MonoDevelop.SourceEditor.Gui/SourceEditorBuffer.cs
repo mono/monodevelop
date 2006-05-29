@@ -827,46 +827,6 @@ namespace MonoDevelop.SourceEditor.Gui
 				}			
 			}			
 		}
-		
-		public void UppercaseCode ()
-		{
-			TextIter textStart;
-			TextIter textEnd;
-			GetSelectionBounds (out textStart, out textEnd);
-			if (textStart.Offset == textEnd.Offset) //no selection
-			{
-				this.Replace (textStart.Offset, 1, Char.ToUpper (textStart.Char[0]).ToString ());
-			} else
-			{
-				StringBuilder newText = new StringBuilder (); 
-				foreach (char ch in GetText (textStart, textEnd, true))
-				{
-					newText.Append (Char.ToUpper (ch));
-				}
-				Replace (textStart.Offset, newText.Length, newText.ToString ()); 
-				GotoSelectionEnd ();
-			}
-		}
-		
-		public void LowercaseCode ()
-		{
-			TextIter textStart;
-			TextIter textEnd;
-			GetSelectionBounds (out textStart, out textEnd);
-			if (textStart.Offset == textEnd.Offset) //no selection
-			{
-				Replace (textStart.Offset, 1, Char.ToLower (textStart.Char[0]).ToString ());
-			} else
-			{
-				StringBuilder newText = new StringBuilder (); 
-				foreach (char ch in GetText (textStart, textEnd, true))
-				{
-					newText.Append (Char.ToLower (ch));
-				}
-				Replace (textStart.Offset, newText.Length, newText.ToString ()); 
-				GotoSelectionEnd ();
-			}
-		}
 #endregion
 		
 		public bool GotoSelectionEnd ()
