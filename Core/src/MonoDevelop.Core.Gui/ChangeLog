@@ -1,3 +1,7 @@
+2006-05-25  Mark Howard <mh@tildemh.com> 
+
+	* Base.glade: Make error message text selectable (and hence copy-able)
+	
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs: Use the new ChildCodons
