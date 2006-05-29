@@ -6,7 +6,5 @@ namespace MonoDevelop.Ide.Gui.Content
 		void UncommentCode ();
 		void IndentSelection ();
 		void UnIndentSelection ();
-		void UppercaseSelection ();
-		void LowercaseSelection ();
 	}
 }

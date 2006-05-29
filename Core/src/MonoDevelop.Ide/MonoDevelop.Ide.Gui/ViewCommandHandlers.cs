@@ -296,29 +296,59 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.UppercaseSelection)]
 		public void OnUppercaseSelection ()
 		{
-			ICodeStyleOperations styling = window.ActiveViewContent as ICodeStyleOperations;
-			if (styling != null)
-				styling.UppercaseSelection ();
+			IEditableTextBuffer buffer = window.ActiveViewContent as IEditableTextBuffer;
+			if (buffer != null)
+			{
+				if (buffer.SelectedText == String.Empty)
+				{
+					int pos = buffer.CursorPosition;
+					string ch = buffer.GetText (pos, pos + 1);
+					buffer.DeleteText (pos, 1);
+					buffer.InsertText (pos, ch.ToUpper ());
+					buffer.CursorPosition = pos + 1;
+				} else
+				{
+					string newText = buffer.SelectedText.ToUpper ();
+					int startPos = buffer.SelectionStartPosition;
+					buffer.DeleteText (startPos, buffer.SelectedText.Length);
+					buffer.InsertText (startPos, newText);
+				}
+			}
 		}
 		
 		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
 		protected void OnUppercaseSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
 		{
-			ICodeStyleOperations styling = window.ActiveViewContent as ICodeStyleOperations;
-			if (styling != null)
-				styling.LowercaseSelection ();
+			IEditableTextBuffer buffer = window.ActiveViewContent as IEditableTextBuffer;
+			if (buffer != null)
+			{
+				if (buffer.SelectedText == String.Empty)
+				{
+					int pos = buffer.CursorPosition;
+					string ch = buffer.GetText (pos, pos + 1);
+					buffer.DeleteText (pos, 1);
+					buffer.InsertText (pos, ch.ToLower ());
+					buffer.CursorPosition = pos + 1;
+				} else
+				{
+					string newText = buffer.SelectedText.ToLower ();
+					int startPos = buffer.SelectionStartPosition;
+					buffer.DeleteText (startPos, buffer.SelectedText.Length);
+					buffer.InsertText (startPos, newText);
+				}
+			}
 		}
 		
 		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
 		}
 	}
 }

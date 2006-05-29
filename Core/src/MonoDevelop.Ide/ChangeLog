@@ -1,3 +1,8 @@
+2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs: reverted interface changes
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: implemented upper/lower functionality here
+
 2006-05-23  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs: enhanced interface for new editor actions
