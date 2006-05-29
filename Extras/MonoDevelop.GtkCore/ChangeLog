@@ -1,5 +1,9 @@
 2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: reverted interface changes - missing file change
+	
+2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: reverted interface changes
 
 2006-05-26  Lluis Sanchez Gual  <lluis@novell.com>
