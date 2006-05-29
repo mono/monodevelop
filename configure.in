@@ -140,6 +140,20 @@ if test "x$enable_boo" = "xyes" ; then
 	AC_PATH_PROG(BOOC, booc)
 fi
 
+NEMERLE_REQUIRED_VERSION=0.9.3.99
+AC_ARG_ENABLE(nemerle,
+	AC_HELP_STRING([--enable-nemerle],
+		[enable support for Nemerle [default=no]]),
+		[PKG_CHECK_MODULES(NEMERLE, nemerle >= $NEMERLE_REQUIRED_VERSION, enable_nemerle=yes, enable_nemerle=no)],
+		enable_nemerle=no)
+
+AM_CONDITIONAL(ENABLE_NEMERLE, test x$enable_nemerle = xyes)
+AC_SUBST(NEMERLE_LIBS)
+
+if test "x$enable_nemerle" = "xyes" ; then
+	AC_PATH_PROG(NCC, ncc)
+fi
+
 dnl nunit
 MONO_NUNIT_REQUIRED_VERSION=1.1.8
 NUNIT_REQUIRED_VERSION=2.2.0
@@ -295,6 +309,7 @@ echo "   *   Oracle:       yes"
 echo "   *   SQL Server:   yes"
 echo "   * java support: $enable_java"
 echo "   * boo support: $enable_boo"
+echo "   * Nemerle support: $enable_nemerle"
 echo "   * NUnit support: $enable_nunit"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"

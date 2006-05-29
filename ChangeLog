@@ -1,5 +1,10 @@
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
+	* configure.in: Added option for optionally enabling
+	  the nemerle add-in. Patch by Alejandro Serrano.
+
+2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
+
 	* configure.in: Use gmcs instead of mcs. Added NRefactory
 	  to the build.
 
