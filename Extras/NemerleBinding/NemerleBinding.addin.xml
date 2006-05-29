@@ -1,11 +1,11 @@
 <AddIn id          = "NemerleBinding"
        name        = "Nemerle Language Binding"
-       author      = "Todd Berman"
+       author      = "Todd Berman and Alejandro Serrano"
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "Nemerle Language Binding"
 	   category    = "Language bindings"
-       version     = "0.8">
+       version     = "0.9">
 
   <Runtime>
     <Import assembly = "NemerleBinding.dll"/>
@@ -23,6 +23,11 @@
                 insertbefore = "AllFiles"
                 _label = "Nemerle Files"
                 extensions = "*.n"/>
+  </Extension>
+  
+  <Extension path = "/SharpDevelop/Workbench/Ambiences">
+	<Class id    = "Nemerle"
+	       class = "NemerleBinding.NemerleAmbience"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/FileTemplates">
@@ -65,4 +70,14 @@
                      supportedextensions = ".n"
                      class = "NemerleBinding.NemerleLanguageBinding" />
   </Extension>
+
+  <Extension path = "/Workspace/Parser">
+	<Class id    = "NemerleParser" 
+	       class = "NemerleBinding.Parser.TParser"/>
+  </Extension>
+
+  <Extension path = "/AddIns/DefaultTextEditor/Formatter/Nemerle">
+	<Class id ="NemerleFormattingStrategy" class = "NemerleBinding.FormattingStrategy.NemerleFormattingStrategy" />
+  </Extension>
+
 </AddIn>

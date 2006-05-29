@@ -21,7 +21,7 @@ namespace NemerleBinding
 			
 			bool SetErrorType(CompilerError error, string t)
 			{
-				switch(t)
+				switch(t.Trim ())
 				{
 					case "error":
 						error.IsWarning = false;
@@ -31,7 +31,6 @@ namespace NemerleBinding
 						return true;
 					case "hint":
 						error.IsWarning = true;
-						error.ErrorNumber = "COMMENT";
 						return true;
 					default:
 						return false;
@@ -44,11 +43,35 @@ namespace NemerleBinding
 				error.ErrorNumber = String.Empty;
 
 				char [] delim = {':'};
-				string [] s = l.Split(delim, 5);
+				string [] s = l.Split(delim, 7);
 				
-				if (SetErrorType(error, s[0]))
+				try
 				{
-					error.ErrorText = l.Substring(l.IndexOf(s[0]+": ") + s[0].Length+2);
+				    SetErrorType (error, s[5]);
+				    if (s[6].StartsWith ("N") && s[6].Contains (": "))
+				    {
+				        string[] e = s[6].Split (delim, 2);
+				        error.ErrorNumber = s[0];
+				        error.ErrorText = s[1].Trim ();
+				    }
+				    else
+				        error.ErrorText = s[6].Trim ();
+				    error.FileName = s[0];
+				    error.Line = int.Parse(s[1]);
+				    error.Column = int.Parse(s[2]);
+				}
+				catch
+				{
+				    SetErrorType (error, s[0]);
+				    error.ErrorText = s[1].Trim ();
+				    error.FileName = "";
+				    error.Line = 0;
+				    error.Column = 0;
+				}
+				
+				/*if (SetErrorType(error, s[5]))
+				{
+					error.ErrorText = s[6]; // l.Substring(l.IndexOf(s[0]+": ") + s[0].Length+2);
 					error.FileName  = "";
 					error.Line      = 0;
 					error.Column    = 0;
@@ -66,7 +89,7 @@ namespace NemerleBinding
 					error.Line      = 0;
 					error.Column    = 0;
 					error.IsWarning = false;					
-				}
+				}*/
 				Errors.Add(error);
 			}
 
@@ -88,12 +111,10 @@ namespace NemerleBinding
 				options += " -no-stdlib";
 			if (cp.Ot)
 				options += " -Ot";
-			if (cp.Obcm)
-				options += " -Obcm";
-			if (cp.Oocm)
-				options += " -Oocm";
-			if (cp.Oscm)
-				options += " -Oscm";
+			if (cp.Greedy)
+				options += " -greedy";
+			if (cp.Pedantic)
+				options += " -pedantic-lexer";
 			if (configuration.CompileTarget == CompileTarget.Library)
 				options += " -tdll";
 				
@@ -102,7 +123,7 @@ namespace NemerleBinding
 
 		public bool CanCompile(string fileName)
 		{
-			return Path.GetExtension(fileName) == ".n";
+			return (Path.GetExtension(fileName).ToLower() == ".n");
 		} 
 
 		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection projectReferences, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
@@ -205,7 +226,7 @@ namespace NemerleBinding
 					switch (finfo.BuildAction) {
 					case BuildAction.Compile:
 						string rel_path = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, Path.GetDirectoryName (finfo.Name));
-						if (CanCompile (finfo.Name));
+						if (CanCompile (finfo.Name)) ;
 						compile_files.Add (Path.Combine (rel_path, Path.GetFileName (finfo.Name)));
 						break;
 					}

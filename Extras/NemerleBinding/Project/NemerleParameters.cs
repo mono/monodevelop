@@ -18,14 +18,11 @@ namespace NemerleBinding
 		[ItemProperty("ot")]
 		public bool ot = false;
 
-		[ItemProperty("obcm")]
-		public bool obcm = true;
+		[ItemProperty("greedy")]
+		public bool greedy = true;
 
-		[ItemProperty("oocm")]
-		public bool oocm = true;
-
-		[ItemProperty("oscm")]
-		public bool oscm = true;
+		[ItemProperty("pedantic")]
+		public bool pedantic = true;
 
 		[ItemProperty("parameters")]
 		public string parameters = String.Empty;
@@ -50,20 +47,15 @@ namespace NemerleBinding
 			get { return ot; }
 			set { ot = value; }
 		}
-		public bool Obcm
+		public bool Greedy
 		{
-			get { return obcm; }
-			set { obcm = value; }
+			get { return greedy; }
+			set { greedy = value; }
 		}
-		public bool Oocm
+		public bool Pedantic
 		{
-			get { return oocm; }
-			set { oocm = value; }
-		}
-		public bool Oscm
-		{
-			get { return oscm; }
-			set { oscm = value; }
+			get { return pedantic; }
+			set { pedantic = value; }
 		}
 		
 		public string Parameters

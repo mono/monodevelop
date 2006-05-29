@@ -12,6 +12,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 
+using NemerleBinding.Parser;
+using Nemerle.Compiler;
+
 namespace NemerleBinding
 {
 	/// <summary>
@@ -20,6 +23,7 @@ namespace NemerleBinding
 	public class NemerleLanguageBinding : IDotNetLanguageBinding
 	{
 		public const string LanguageName = "Nemerle";
+		NemerleCodeProvider provider = new NemerleCodeProvider();
 		
 		NemerleBindingCompilerServices   compilerServices  = new NemerleBindingCompilerServices();
 		
@@ -55,25 +59,28 @@ namespace NemerleBinding
 		
 		public CodeDomProvider GetCodeDomProvider ()
 		{
-			return null;
+			return provider;
 		}
 		
 		public string GetFileName (string baseName)
 		{
 			return baseName + ".n";
 		}
+
+        TParser parser = new TParser();
+        NemerleRefactorer refactorer = new NemerleRefactorer();
 		
 		public IParser Parser {
-			get { return null; }
+			get { return parser; }
 		}
 		
 		public IRefactorer Refactorer {
-			get { return null; }
+			get { return refactorer; }
 		}
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { ClrVersion.Net_1_1 };
+			return new ClrVersion[] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
 		}
 	}
 }

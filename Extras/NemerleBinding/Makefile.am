@@ -11,13 +11,30 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	$(GLADE_SHARP_LIBS) \
+	$(NEMERLE_LIBS)
 
 FILES = \
 Gui/CodeGenerationPanel.cs \
 Project/NemerleParameters.cs \
 NemerleBindingCompilerServices.cs \
-NemerleLanguageBinding.cs 
+NemerleLanguageBinding.cs \
+NemerleAmbience.cs \
+Parser/SharpDevelopTree/Event.cs \
+Parser/SharpDevelopTree/Indexer.cs \
+Parser/SharpDevelopTree/Constructor.cs \
+Parser/SharpDevelopTree/Method.cs \
+Parser/SharpDevelopTree/Class.cs \
+Parser/SharpDevelopTree/Parameter.cs \
+Parser/SharpDevelopTree/AttributeSection.cs \
+Parser/SharpDevelopTree/CompilationUnit.cs \
+Parser/SharpDevelopTree/Property.cs \
+Parser/SharpDevelopTree/Field.cs \
+Parser/SharpDevelopTree/ReturnType.cs \
+Parser/SharpDevelopTree/Modifier.cs \
+Parser/Parser.cs \
+Parser/ExpressionFinder.cs \
+Parser/CodeGeneration.cs
 
 RES = \
 Nemerle.glade \
@@ -35,6 +52,12 @@ icons/Nemerle.ProjectIcon
 
 ADDIN = NemerleBinding.addin.xml
 
+if ENABLE_NEMERLE
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+else
+all:
+endif
+
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
@@ -44,8 +67,11 @@ $(ASSEMBLY): $(FILES) $(RES)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) \
 		$(build_sources) -out:$@ -target:library
 
+if ENABLE_NEMERLE
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings/
 assembly_DATA = $(ASSEMBLY) $(ADDIN)
+
+endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)

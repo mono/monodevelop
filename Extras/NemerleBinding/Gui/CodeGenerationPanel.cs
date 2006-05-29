@@ -22,9 +22,8 @@ namespace NemerleBinding
 			[Glade.Widget] CheckButton nostdlib;
 			[Glade.Widget] CheckButton ignorewarnings;
  			[Glade.Widget] CheckButton ot;
- 			[Glade.Widget] CheckButton obcm;
- 			[Glade.Widget] CheckButton oocm;
- 			[Glade.Widget] CheckButton oscm;
+ 			[Glade.Widget] CheckButton greedy;
+ 			[Glade.Widget] CheckButton pedantic;
  			
 			NemerleParameters compilerParameters = null;
 			DotNetProjectConfiguration configuration;
@@ -40,9 +39,8 @@ namespace NemerleBinding
 				nostdlib.Active    = compilerParameters.Nostdlib;
 				ignorewarnings.Active = configuration.RunWithWarnings;
 				ot.Active          = compilerParameters.Ot;
-				obcm.Active        = compilerParameters.Obcm;
-				oocm.Active        = compilerParameters.Oocm;
-				oscm.Active        = compilerParameters.Oscm;
+				greedy.Active      = compilerParameters.Greedy;
+				pedantic.Active    = compilerParameters.Pedantic;
  			}
 
 			public bool Store ()
@@ -52,9 +50,8 @@ namespace NemerleBinding
 				compilerParameters.Nostdlib = nostdlib.Active;
 				configuration.RunWithWarnings = ignorewarnings.Active;
 				compilerParameters.Ot = ot.Active;
-				compilerParameters.Obcm = obcm.Active;
-				compilerParameters.Oocm = oocm.Active;
-				compilerParameters.Oscm = oscm.Active;
+				compilerParameters.Greedy = greedy.Active;
+				compilerParameters.Pedantic = pedantic.Active;
 				return true;
 			}
 		}
