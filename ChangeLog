@@ -1,3 +1,8 @@
+2006-05-29 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* monodevelop.pc.in: Replace old SharpRefactory reference by
+	  an NRefactory reference.
+
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Added option for optionally enabling
