@@ -18,6 +18,7 @@ FILES= \
 MonoDevelop.Core.Gui/IMessageService.cs \
 MonoDevelop.Core.Gui.Components/FileBrowser.cs \
 MonoDevelop.Core.Gui.Utils/FileIconLoader.cs \
+MonoDevelop.Core.Gui.Utils/DesktopApplication.cs \
 MonoDevelop.Core.Gui/MessageService.cs \
 MonoDevelop.Core.Gui/ResourceNotFoundException.cs \
 MonoDevelop.Core.Gui.Dialogs/ResourceService.cs \

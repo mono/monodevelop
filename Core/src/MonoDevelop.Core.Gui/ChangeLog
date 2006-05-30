@@ -1,3 +1,10 @@
+2006-05-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.mdp:
+	* Makefile.am: Added DesktopApplication.cs.
+	* MonoDevelop.Core.Gui.Utils/DesktopApplication.cs: Wrapper for
+	  MimeApplication. Implementes some missing properties.
+
 2006-05-25  Mark Howard <mh@tildemh.com> 
 
 	* Base.glade: Make error message text selectable (and hence copy-able)
