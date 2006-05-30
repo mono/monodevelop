@@ -32,6 +32,10 @@ namespace MonoDevelop.SourceEditor.Gui
 			GtkSourceViewManager.Init ();
 		}
 
+		public string DisplayName {
+			get { return "Source Code Editor"; }
+		}
+		
 		public virtual bool CanCreateContentForFile (string fileName)
 		{
 			return false;
@@ -49,6 +53,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				return true;
 			if (mimetype == "application/x-aspx")
 				return true;
+
+			// If gedit can open the file, this editor also can do it
+			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimetype))
+				if (app.Command == "gedit")
+					return true;
+				
 			return false;
 		}
 		
