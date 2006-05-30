@@ -53,12 +53,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				//if there is only one matching result we take it by default
 				if (wnd.IsUniqueMatch)
 				{	
+					wnd.UpdateWord ();
 					wnd.Hide ();
 				}
 				
-				wnd.UpdateWord ();
-				
-				wnd.PartialWord = wnd.CompleteWord;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
