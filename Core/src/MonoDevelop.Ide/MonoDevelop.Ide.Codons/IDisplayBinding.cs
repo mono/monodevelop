@@ -19,6 +19,10 @@ namespace MonoDevelop.Ide.Codons
 	/// </summary>
 	public interface IDisplayBinding
 	{
+		// Display name of the binding, to be shown when there are several
+		// options for opening a file.
+		string DisplayName { get; }
+		
 		/// <remarks>
 		/// This function determines, if this display binding is able to create
 		/// an IViewContent for the file given by fileName.

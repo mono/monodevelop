@@ -1,3 +1,23 @@
+2006-05-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	  Implemented OpenWith command for project files.
+	  
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs: Implemented GetFileViewers
+	  command, which returns all available viewers (internal or
+	  external) for a file.
+	  
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Added DisplayName property to IDisplayBinding.
+	
+	* MonoDevelop.Ide.mdp:
+	* Makefile.am: Updated.
+	
 2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs: reverted interface changes

@@ -52,6 +52,17 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
+		public IDisplayBinding[] GetBindingsForMimeType (string mimeType)
+		{
+			ArrayList list = new ArrayList ();
+			foreach (DisplayBindingCodon binding in bindings) {
+				if (binding.DisplayBinding != null && binding.DisplayBinding.CanCreateContentForMimeType (mimeType)) {
+					list.Add (binding.DisplayBinding);
+				}
+			}
+			return (IDisplayBinding[]) list.ToArray (typeof(IDisplayBinding));
+		}
+		
 		internal DisplayBindingCodon GetCodonPerFileName(string filename)
 		{
 			string vfsname = filename;

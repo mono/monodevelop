@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -191,6 +192,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				project.DeployInformation.AddExcludedFile (finfo.Name);
 			}
 			IdeApp.ProjectOperations.SaveProject (finfo.Project);
+		}
+		
+		[CommandHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWith (object ob)
+		{
+			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			((FileViewer)ob).OpenFile (finfo.Name);
+		}
+		
+		[CommandUpdateHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWithUpdate (CommandArrayInfo info)
+		{
+			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
+			FileViewer prev = null; 
+			foreach (FileViewer fv in IdeApp.Workbench.GetFileViewers (finfo.Name)) {
+				if (prev != null && fv.IsExternal != prev.IsExternal)
+					info.AddSeparator ();
+				info.Add (fv.Title, fv);
+				prev = fv;
+			}
 		}
 	}
 }

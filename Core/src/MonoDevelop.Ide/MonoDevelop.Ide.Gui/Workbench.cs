@@ -38,6 +38,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Gui.Utils;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -220,6 +221,23 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 		
+		public FileViewer[] GetFileViewers (string fileName)
+		{
+			ArrayList list = new ArrayList ();
+			
+			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fileName);
+
+			IDisplayBinding[] bindings = Services.DisplayBindings.GetBindingsForMimeType (mimeType);
+			foreach (IDisplayBinding bin in bindings)
+				list.Add (new FileViewer (bin));
+
+			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimeType))
+				if (app.Command != "monodevelop")
+					list.Add (new FileViewer (app));
+				
+			return (FileViewer[]) list.ToArray (typeof(FileViewer));
+		}
+		
 		public Document OpenDocument (string fileName)
 		{
 			return OpenDocument (fileName, true);
@@ -231,6 +249,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public Document OpenDocument (string fileName, int line, int column, bool bringToFront)
+		{
+			return OpenDocument (fileName, line, column, bringToFront, null);
+		}
+		
+		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, IDisplayBinding binding)
 		{
 			foreach (Document doc in Documents) {
 				if (doc.FileName == fileName) {
@@ -250,6 +273,7 @@ namespace MonoDevelop.Ide.Gui
 			openFileInfo.BringToFront = bringToFront;
 			openFileInfo.Line = line;
 			openFileInfo.Column = column;
+			openFileInfo.DisplayBinding = binding;
 			RealOpenFile (openFileInfo);
 			
 			if (!pm.AsyncOperation.Success)
@@ -431,7 +455,11 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				IDisplayBinding binding = Services.DisplayBindings.GetBindingPerFileName(fileName);
+				IDisplayBinding binding;
+				if (oFileInfo.DisplayBinding != null)
+					binding = oFileInfo.DisplayBinding;
+				else
+					binding = Services.DisplayBindings.GetBindingPerFileName(fileName);
 				
 				if (binding != null) {
 					Project project = null;
@@ -516,6 +544,7 @@ namespace MonoDevelop.Ide.Gui
 		public bool BringToFront;
 		public int Line;
 		public int Column;
+		public IDisplayBinding DisplayBinding;
 		public IViewContent NewContent;
 	}
 	

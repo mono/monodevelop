@@ -18,6 +18,10 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 {
 	public class BrowserDisplayBinding : IDisplayBinding, ISecondaryDisplayBinding
 	{
+		public string DisplayName {
+			get { return "Web Browser"; }
+		}
+		
 
 		public bool CanCreateContentForFile(string fileName)
 		{

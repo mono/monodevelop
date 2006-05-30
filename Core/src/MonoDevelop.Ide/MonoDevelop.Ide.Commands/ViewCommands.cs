@@ -29,6 +29,7 @@ namespace MonoDevelop.Ide.Commands
 		DeleteCurrentLayout,
 		FullScreen,
 		Open,
+		OpenWithList,
 		TreeDisplayOptionList,
 		ResetTreeDisplayOptions
 	}

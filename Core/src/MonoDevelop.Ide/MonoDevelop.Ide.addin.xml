@@ -343,6 +343,9 @@
 				_label = "Display Options List" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ResetTreeDisplayOptions"
 				_label = "Reset Options" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
+				type = "array"
+				_label = "OpenWidthList" />
 
 		<!-- ToolCommands -->
 		
@@ -505,6 +508,9 @@
         
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a project file in the solution pad.">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<ItemSet id = "OpenWith" _label = "Open With">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
+		</ItemSet>
 		<SeparatorItem id = "OpenSeparator" />
 		<ItemSet id = "Add" _label = "Add">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
@@ -526,6 +532,9 @@
 		
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode"  extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a file (not belonging to a project) in the solution pad.">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<ItemSet id = "OpenWith" _label = "Open With">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
+		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
 		<SeparatorItem id = "IncludeToProjectSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
