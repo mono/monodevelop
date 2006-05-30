@@ -1,3 +1,9 @@
+2006-05-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	  Added DisplayName property.
+
 2006-05-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: reverted interface changes - missing file change

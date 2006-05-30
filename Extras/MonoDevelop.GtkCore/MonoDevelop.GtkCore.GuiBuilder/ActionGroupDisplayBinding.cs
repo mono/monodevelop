@@ -46,6 +46,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		bool excludeThis = false;
 		
+		public string DisplayName {
+			get { return "Action Group Editor"; }
+		}
+		
 		public virtual bool CanCreateContentForFile (string fileName)
 		{
 			if (excludeThis)
