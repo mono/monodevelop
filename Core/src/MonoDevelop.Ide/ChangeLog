@@ -1,3 +1,9 @@
+2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Moved field initialization to
+	  the Initialize method, to make sure child objects are
+	  not created before the whole infrastructure is ready.
+
 2006-05-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/ViewCommands.cs:

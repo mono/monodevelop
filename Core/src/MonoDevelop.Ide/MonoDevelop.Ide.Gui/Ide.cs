@@ -54,11 +54,11 @@ namespace MonoDevelop.Ide.Gui
 {
 	public abstract class IdeApp
 	{
-		static Workbench workbench = new Workbench ();
-		static ProjectOperations projectOperations = new ProjectOperations ();
-		static HelpOperations helpOperations = new HelpOperations ();
-		static CommandService commandService = new CommandService ();
-		static IdeServices ideServices = new IdeServices ();
+		static Workbench workbench;
+		static ProjectOperations projectOperations;
+		static HelpOperations helpOperations;
+		static CommandService commandService;
+		static IdeServices ideServices;
 		
 		IdeApp ()
 		{
@@ -86,6 +86,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
+			workbench = new Workbench ();
+			projectOperations = new ProjectOperations ();
+			helpOperations = new HelpOperations ();
+			commandService = new CommandService ();
+			ideServices = new IdeServices ();
+		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			
 			commandService.LoadCommands ("/SharpDevelop/Commands");
