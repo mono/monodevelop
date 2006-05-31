@@ -21,10 +21,6 @@ namespace MonoDevelop.Core.AddIns
 	public class AddInTreeSingleton
 	{
 		static DefaultAddInTree addInTree = null;		
-		readonly static string defaultCoreDirectory = 
-			PropertyService.EntryAssemblyDirectory + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "AddIns";			
-		static bool ignoreDefaultCoreDirectory = false;
-		static string[] addInDirectories       = null;
 		
 		/// <summary>
 		/// Returns an <see cref="IAddInTree"/> object.
@@ -47,28 +43,9 @@ namespace MonoDevelop.Core.AddIns
 				// something went wrong
 				return false;
 			}
-			AddInTreeSingleton.addInDirectories = addInDirectories;
-			AddInTreeSingleton.ignoreDefaultCoreDirectory = ignoreDefaultCoreDirectory;
 			return true;
 		}
-		
-		static StringCollection InsertAddIns (StringCollection addInFiles, out AddinError[] errors)
-		{
-			StringCollection retryList  = new StringCollection();
-			ArrayList list = new ArrayList ();
-			
-			foreach (string addInFile in addInFiles) {
-				AddinError error = InsertAddIn (addInFile);
-				if (error != null) {
-					retryList.Add (addInFile);
-					list.Add (error);
-				} 
-			}
-			
-			errors = (AddinError[]) list.ToArray (typeof(AddinError));
-			return retryList;
-		}
-		
+
 		internal static AddinError InsertAddIn (string addInFile)
 		{
 			AddIn addIn = new AddIn();
@@ -97,57 +74,6 @@ namespace MonoDevelop.Core.AddIns
 			addInTree = new DefaultAddInTree (loader);
 		}
 		
-		public static AddinError[] InitializeAddins ()
-		{
-			AssemblyLoader loader = new AssemblyLoader();
-			
-			try {
-				loader.CheckAssembly (Assembly.GetEntryAssembly ());
-			} catch (Exception ex) {
-				AddinError err = new AddinError (Assembly.GetEntryAssembly ().Location, ex, true);
-				return new AddinError[] { err };
-			}
-			
-			AddinError[] errors = null;
-			addInTree = new DefaultAddInTree (loader);
-			
-			FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-			
-			StringCollection addInFiles = null;
-			StringCollection retryList  = null;
-			
-			if (ignoreDefaultCoreDirectory == false) {
-				addInFiles = fileUtilityService.SearchDirectory(defaultCoreDirectory, "*.addin.xml");
-				retryList  = InsertAddIns (addInFiles, out errors);
-			}
-			else
-				retryList = new StringCollection();
-			
-			if (addInDirectories != null) {
-				foreach(string path in addInDirectories) {
-					addInFiles = fileUtilityService.SearchDirectory(path, "*.addin.xml");
-					StringCollection partialRetryList  = InsertAddIns (addInFiles, out errors);
-					if (partialRetryList.Count != 0) {
-						string [] retryListArray = new string[partialRetryList.Count];
-						partialRetryList.CopyTo(retryListArray, 0);
-						retryList.AddRange(retryListArray);
-					}
-				}
-			}
-			
-			while (retryList.Count > 0) {
-				StringCollection newRetryList = InsertAddIns (retryList, out errors);
-				
-				// break if no add-in could be inserted.
-				if (newRetryList.Count == retryList.Count) {
-					break;
-				}
-				
-				retryList = newRetryList;
-			}
-			
-			return errors;
-		}
 	}
 	
 	public class AddinError

@@ -620,6 +620,25 @@ namespace MonoDevelop.Core.AddIns.Setup
 			return addinSetupInfos;
 		}
 		
+		internal bool IsAddinEnabled (string id)
+		{
+			return !Configuration.DisabledAddins.Contains (id);
+		}
+		
+		internal void EnableAddin (string id)
+		{
+			Configuration.DisabledAddins.Remove (id);
+			SaveConfiguration ();
+		}
+		
+		internal void DisableAddin (string id)
+		{
+			if (IsAddinEnabled (id)) {
+				Configuration.DisabledAddins.Add (id);
+				SaveConfiguration ();
+			}
+		}
+		
 		internal AddInStatus GetAddInStatus ()
 		{
 			if (addinStatus != null) return addinStatus;
@@ -629,17 +648,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			
 			foreach (AddinSetupInfo ia in InternalGetInstalledAddins ()) {
 				AddinConfiguration conf = ia.GetConfiguration ();
-				foreach (XmlElement elem in conf.Content.SelectNodes ("AddIn/Extension")) {
-					string path = elem.GetAttribute ("path");
-					AddChildExtensions (ia.Addin.Id, hash, path, elem);
-				}
-				foreach (XmlElement elem in conf.Content.SelectNodes ("AddIn/Extension[@path='/Workspace/Applications']/Class")) {
-					ApplicationRecord arec = new ApplicationRecord ();
-					arec.Id = elem.GetAttribute ("id");
-					arec.Description = elem.GetAttribute ("description");
-					arec.AddIn = ia.Addin.Id;
-					apps.Add (arec);
-				}
+				CollectExtensionData (conf.Content.DocumentElement, ia, hash, apps);
 			}
 			addinStatus = new AddInStatus ();
 			ExtensionRelation[] rels = new ExtensionRelation [hash.Count];
@@ -654,6 +663,24 @@ namespace MonoDevelop.Core.AddIns.Setup
 			addinStatus.Applications = (ApplicationRecord[]) apps.ToArray (typeof(ApplicationRecord));
 			
 			return addinStatus;
+		}
+		
+		void CollectExtensionData (XmlElement rootElem, AddinSetupInfo ia, Hashtable hash, ArrayList apps)
+		{
+			foreach (XmlElement elem in rootElem.SelectNodes ("Extension")) {
+				string path = elem.GetAttribute ("path");
+				AddChildExtensions (ia.Addin.Id, hash, path, elem);
+			}
+			foreach (XmlElement elem in rootElem.SelectNodes ("Extension[@path='/Workspace/Applications']/Class")) {
+				ApplicationRecord arec = new ApplicationRecord ();
+				arec.Id = elem.GetAttribute ("id");
+				arec.Description = elem.GetAttribute ("description");
+				arec.AddIn = ia.Addin.Id;
+				apps.Add (arec);
+			}
+			foreach (XmlElement elem in rootElem.SelectNodes ("Module")) {
+				CollectExtensionData (elem, ia, hash, apps);
+			}
 		}
 		
 		void AddChildExtensions (string addin, Hashtable hash, string path, XmlElement elem)

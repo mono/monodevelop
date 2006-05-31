@@ -46,10 +46,12 @@ namespace MonoDevelop.Core.AddIns.Setup
 		string description = "";
 		string category = "";
 		PackageDependencyCollection dependencies;
+		PackageDependencyCollection optionalDependencies;
 		
 		public AddinInfo ()
 		{
 			dependencies = new PackageDependencyCollection ();
+			optionalDependencies = new PackageDependencyCollection ();
 		}
 		
 		public string Id {
@@ -104,6 +106,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return dependencies; }
 		}
 		
+		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
+		[XmlArrayItem ("NativeDependency", typeof(NativeDependency))]
+		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
+		public PackageDependencyCollection OptionalDependencies {
+			get { return optionalDependencies; }
+		}
+		
 		public static AddinInfo ReadFromAddinFile (StreamReader r)
 		{
 			XmlDocument doc = new XmlDocument ();
@@ -121,24 +130,32 @@ namespace MonoDevelop.Core.AddIns.Setup
 			info.description = doc.DocumentElement.GetAttribute ("description");
 			info.category = doc.DocumentElement.GetAttribute ("category");
 			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
+
+			ReadDependencies (info.Dependencies, info.OptionalDependencies, doc.DocumentElement);
 			
-			foreach (XmlElement dep in doc.SelectNodes ("AddIn/Dependencies/AddIn")) {
+			return info;
+		}
+		
+		static void ReadDependencies (PackageDependencyCollection deps, PackageDependencyCollection opDeps, XmlElement elem)
+		{
+			foreach (XmlElement dep in elem.SelectNodes ("Dependencies/AddIn")) {
 				AddinDependency adep = new AddinDependency ();
 				adep.AddinId = dep.GetAttribute ("id");
 				string v = dep.GetAttribute ("version");
 				if (v.Length != 0)
 					adep.Version = v;
-				info.Dependencies.Add (adep);
+				deps.Add (adep);
 			}
 			
-			foreach (XmlElement dep in doc.SelectNodes ("AddIn/Dependencies/Assembly")) {
+			foreach (XmlElement dep in elem.SelectNodes ("Dependencies/Assembly")) {
 				AssemblyDependency adep = new AssemblyDependency ();
 				adep.FullName = dep.GetAttribute ("name");
 				adep.Package = dep.GetAttribute ("package");
-				info.Dependencies.Add (adep);
+				deps.Add (adep);
 			}
 			
-			return info;
+			foreach (XmlElement mod in elem.SelectNodes ("Module"))
+				ReadDependencies (opDeps, opDeps, mod);
 		}
 		
 		public bool SupportsVersion (string version)

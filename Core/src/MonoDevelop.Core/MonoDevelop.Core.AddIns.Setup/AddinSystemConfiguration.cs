@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -37,6 +38,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 	{
 		ArrayList repositories = new ArrayList ();
 		int repositoryIdCount = 0;
+		StringCollection disabledAddins = new StringCollection ();
 		
 		[XmlArrayItem ("Repository", typeof(RepositoryRecord))]
 		public ArrayList Repositories {
@@ -46,6 +48,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 		public int RepositoryIdCount {
 			get { return repositoryIdCount; }
 			set { repositoryIdCount = value; }
+		}
+		
+		public StringCollection DisabledAddins {
+			get { return disabledAddins; }
+			set { disabledAddins = value; }
 		}
 	}
 }

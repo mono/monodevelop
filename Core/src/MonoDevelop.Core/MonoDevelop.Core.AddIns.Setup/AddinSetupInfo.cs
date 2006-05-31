@@ -37,10 +37,9 @@ namespace MonoDevelop.Core.AddIns.Setup
 {
 	public class AddinSetupInfo
 	{
-		public AddinInfo addin;
-		public bool enabled;
-		public string configFile;
-		public string directory;
+		AddinInfo addin;
+		string configFile;
+		string directory;
 		
 		public AddinSetupInfo (string file)
 		{
@@ -49,7 +48,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 			using (StreamReader s = new StreamReader (file)) {
 				addin = AddinInfo.ReadFromAddinFile (s);
 			}
-			enabled = true;
 		}
 		
 		public AddinInfo Addin {
@@ -57,8 +55,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 		}
 		
 		public bool Enabled {
-			get { return enabled; }
-			set { enabled = value; }
+			get { return Runtime.SetupService.IsAddinEnabled (addin.Id); }
+			set {
+				if (value)
+					Runtime.SetupService.EnableAddin (addin.Id);
+				else
+					Runtime.SetupService.DisableAddin (addin.Id);
+			}
 		}
 		
 		public string ConfigFile {

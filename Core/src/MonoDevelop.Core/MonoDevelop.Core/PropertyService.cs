@@ -103,7 +103,7 @@ namespace MonoDevelop.Core
 					return false;
 				}
 				SetValueFromXmlElement(doc.DocumentElement["Properties"]);
-			} catch (Exception e) {
+			} catch {
 				//Console.WriteLine("Exception while load properties from stream :\n " + e.ToString());
 				return false;
 			}

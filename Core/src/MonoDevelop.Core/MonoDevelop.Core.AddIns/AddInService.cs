@@ -137,7 +137,7 @@ namespace MonoDevelop.Core.AddIns
 				foreach (ExtensionRelation rel in ads.ExtensionRelations) {
 					if ((rel.Path + "/").StartsWith (ppath)) {
 						foreach (string addin in rel.AddIns)
-							if (!addins.Contains (addin) && !IsAddinLoaded (addin))
+							if (!addins.Contains (addin) && !IsAddinLoaded (addin) && Runtime.SetupService.IsAddinEnabled (addin))
 								addins.Add (addin);
 					}
 				}
@@ -149,7 +149,11 @@ namespace MonoDevelop.Core.AddIns
 				try {
 					monitor.BeginTask (GettextCatalog.GetString("Loading Add-ins"), addins.Count);
 					foreach (string id in addins) {
-						PreloadAddin (monitor, id);
+						try {
+							PreloadAddin (monitor, id);
+						} catch (Exception ex) {
+							ReportLoadError (new AddinError (id, ex, false));
+						}
 						monitor.Step (1);
 					}
 				} finally {
@@ -162,13 +166,16 @@ namespace MonoDevelop.Core.AddIns
 		{
 			if (IsAddinLoaded (id))
 				return;
+				
+			if (!Runtime.SetupService.IsAddinEnabled (id))
+				throw new InvalidOperationException (GettextCatalog.GetString ("The add-in {0} is disabled.", id));
 
 			if (monitor == null)
 				monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
 					
 			ArrayList addins = new ArrayList ();
 			Stack depCheck = new Stack ();
-			ResolveLoadDependencies (addins, depCheck, id, null);
+			ResolveLoadDependencies (addins, depCheck, id, null, false);
 			addins.Reverse ();
 			
 			monitor.BeginTask (GettextCatalog.GetString("Loading Addins"), addins.Count);
@@ -201,10 +208,10 @@ namespace MonoDevelop.Core.AddIns
 			}
 		}
 		
-		void ResolveLoadDependencies (ArrayList addins, Stack depCheck, string id, string version)
+		bool ResolveLoadDependencies (ArrayList addins, Stack depCheck, string id, string version, bool optional)
 		{
 			if (IsAddinLoaded (id))
-				return;
+				return true;
 				
 			if (depCheck.Contains (id))
 				throw new InvalidOperationException ("A cyclic addin dependency has been detected.");
@@ -212,9 +219,15 @@ namespace MonoDevelop.Core.AddIns
 			depCheck.Push (id);
 
 			AddinSetupInfo iad = Runtime.SetupService.GetInstalledAddin (id);
-			if (iad == null || (version != null && !iad.Addin.SupportsVersion (version)))
-				throw new ArgumentException ("The addin '" + id + "' v" + version + " is not installed.");
-			
+			if (iad == null || (version != null && !iad.Addin.SupportsVersion (version)) || !iad.Enabled) {
+				if (optional)
+					return false;
+				else if (iad != null && !iad.Enabled)
+					throw new MissingDependencyException (GettextCatalog.GetString ("The required addin '{0}' v{1} is disabled.", id, version));
+				else
+					throw new MissingDependencyException (GettextCatalog.GetString ("The required addin '{0}' v{1} is not installed.", id, version));
+			}
+
 			// If this addin has already been requested, bring it to the head
 			// of the list, so it is loaded earlier than before.
 			addins.Remove (iad);
@@ -222,11 +235,30 @@ namespace MonoDevelop.Core.AddIns
 			
 			foreach (PackageDependency dep in iad.Addin.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
-				if (adep != null)
-					ResolveLoadDependencies (addins, depCheck, adep.AddinId, adep.Version);
+				if (adep != null) {
+					try {
+						ResolveLoadDependencies (addins, depCheck, adep.AddinId, adep.Version, false);
+					} catch (MissingDependencyException) {
+						if (optional)
+							return false;
+						else
+							throw;
+					}
+				}
+			}
+			
+			if (iad.Addin.OptionalDependencies != null) {
+				foreach (PackageDependency dep in iad.Addin.OptionalDependencies) {
+					AddinDependency adep = dep as AddinDependency;
+					if (adep != null) {
+						if (!ResolveLoadDependencies (addins, depCheck, adep.AddinId, adep.Version, true))
+						return false;
+					}
+				}
 			}
 				
 			depCheck.Pop ();
+			return true;
 		}
 		
 		void ReportLoadError (AddinError err)

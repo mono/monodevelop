@@ -178,7 +178,7 @@ namespace MonoDevelop.Core.AddIns
 		/// Initializes this addIn. It loads the xml definition in file
 		/// fileName.
 		/// </summary>
-		public void Initialize(string fileName)
+		public void Initialize (string fileName)
 		{
 			this.fileName = fileName;
 			
@@ -204,19 +204,29 @@ namespace MonoDevelop.Core.AddIns
 			version = doc.DocumentElement.GetAttribute ("version");
 			
 			XmlElement deps = doc.DocumentElement ["Dependencies"];
-			if (deps != null)
-				CheckDependencies (deps);
+			CheckDependencies (deps, true);
 			
-			foreach (object o in doc.DocumentElement.ChildNodes) {
+			ReadXmlContents (fileName, doc.DocumentElement);
+		}
+		
+		void ReadXmlContents (string fileName, XmlElement elem)
+		{
+			foreach (object o in elem.ChildNodes) {
 				if (o is XmlElement) {
 					XmlElement curEl = (XmlElement)o;
 					
 					switch (curEl.Name) {
 						case "Runtime":
-							AddRuntimeLibraries(Path.GetDirectoryName(fileName), curEl);
+							AddRuntimeLibraries (Path.GetDirectoryName (fileName), curEl);
 							break;
 						case "Extension":
 							AddExtensions(curEl);
+							break;
+						case "Module":
+							// Load the module if all dependencies can be satisfied
+							XmlElement deps = curEl ["Dependencies"];
+							if (CheckDependencies (deps, false))
+								ReadXmlContents (fileName, curEl);
 							break;
 					}
 				}
@@ -253,7 +263,7 @@ namespace MonoDevelop.Core.AddIns
 			AddCodonsToExtension(e, el, new ConditionCollection());
 		}
 		
-		void CheckDependencies (XmlElement deps)
+		bool CheckDependencies (XmlElement deps, bool rootDependencies)
 		{
 			if (deps != null) {
 				ArrayList list = new ArrayList ();
@@ -269,8 +279,18 @@ namespace MonoDevelop.Core.AddIns
 								throw new InvalidOperationException ("Missing version attribute in AddIn dependency element");
 
 							AddIn addin = AddInTreeSingleton.AddInTree.AddIns [aname];
-							if (addin == null)
-								throw new MissingDependencyException ("Required add-in not found: " + aname);
+							if (addin == null) {
+								if (rootDependencies)
+									throw new MissingDependencyException ("Required add-in not found: " + aname);
+								else {
+									// The add-in is installed, but not yet loaded
+									if (Runtime.SetupService.CheckInstalledAddin (aname, aversion) && Runtime.SetupService.IsAddinEnabled (aname))
+										throw new MissingDependencyException ("Required add-in not loaded: " + aname);
+									return false;
+								}
+							}
+							else
+								list.Add (addin);								
 								
 							// Make sure the installed version is the required one.
 							if (!Runtime.SetupService.CheckInstalledAddin (aname, aversion))
@@ -281,14 +301,20 @@ namespace MonoDevelop.Core.AddIns
 						}
 						case "Assembly": {
 							string aname = dep.GetAttribute ("name");
-							if (Runtime.SystemAssemblyService.GetAssemblyLocation (aname) == null)
-								throw new MissingDependencyException ("Required assembly not found: " + aname);
+							if (Runtime.SystemAssemblyService.GetAssemblyLocation (aname) == null) {
+								if (rootDependencies)
+									throw new MissingDependencyException ("Required assembly not found: " + aname);
+								else
+									return false;
+							}
 							break;
 						}
 					}
 				}
-				dependencies = (AddIn[]) list.ToArray (typeof(AddIn));
+				if (rootDependencies)
+					dependencies = (AddIn[]) list.ToArray (typeof(AddIn));
 			}
+			return true;
 		}
 		
 		/// <summary>

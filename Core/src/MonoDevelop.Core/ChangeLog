@@ -1,3 +1,25 @@
+2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns.Setup/AddinInfo.cs:
+	* MonoDevelop.Core.AddIns/AddIn.cs: Implemented support for optional
+	  extensions in add-ins.
+	  
+	* MonoDevelop.Core.AddIns/AddInService.cs: Don't crash if pre-loading
+	  of an add-in fails, just report the error. While resolving deps and
+	  preloading add-ins, take into account disabled add-ins.
+	  
+	* MonoDevelop.Core.AddIns.Setup/AddinSystemConfiguration.cs:
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinSetupInfo.cs: Implement support
+	  for enabling/disabling add-ins.
+	  
+	* MonoDevelop.Core.AddIns/DumpAddinInfoApp.cs:
+	* MonoDevelop.Core.AddIns/AddInTreeSingleton.cs: Removed unused code.
+	
+	* MonoDevelop.Core/PropertyService.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinPackage.cs: Fix warning.
+	
+
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/AddInService.cs: Throw an UserException if

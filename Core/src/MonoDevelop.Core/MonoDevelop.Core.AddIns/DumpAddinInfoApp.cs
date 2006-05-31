@@ -9,7 +9,6 @@ namespace MonoDevelop.Core.AddIns
 {
 	public class DumpAddinInfoApp: IApplication
 	{
-		int extId;
 		ArrayList addins = new ArrayList ();
 		bool indent = true;
 		

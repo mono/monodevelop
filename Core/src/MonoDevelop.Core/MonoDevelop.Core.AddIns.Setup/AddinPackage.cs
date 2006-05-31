@@ -245,7 +245,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (Directory.GetFiles (basePath).Length == 0) {
 				try {
 					Directory.Delete (basePath);
-				} catch (Exception ex) {
+				} catch {
 					monitor.ReportWarning ("Directory " + basePath + " could not be deleted.");
 				}
 			}
