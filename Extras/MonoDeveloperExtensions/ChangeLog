@@ -1,3 +1,17 @@
+2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoProject.cs: Removed dependency to NUnit add-in.
+	* Makefile.am: Removed dependency to NUnit add-in. Added the
+	  new nunit module to the build.
+	
+	* MonoDeveloperExtensions.addin.xml: Added optional module which
+	  extends the nunit add-in.
+	  
+	* NUnit/MonoTestProvider.cs: 
+	* NUnit/Makefile.am: 
+	* NUnit/NUnit.mdp: Created a new assembly which implements the nunit
+	  extension for Mono projects.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDeveloperExtensions.addin.xml: Updated versions.

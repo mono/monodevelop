@@ -16,7 +16,6 @@
 	    <AddIn id="MonoDevelop.Projects" version="0.11.0"/>
 	    <AddIn id="MonoDevelop.Projects.Gui" version="0.10.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
-		<AddIn id="MonoDevelop.NUnit" version="0.10.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
@@ -131,6 +130,17 @@
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<NodeBuilder id = "MonoProjectBuilder" class = "MonoDeveloper.MonoProjectBuilder"/>
 	</Extension>
-	
+
+	<Module>
+	    <Runtime>
+	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
+	    </Runtime>
+		<Dependencies>
+			<AddIn id="MonoDevelop.NUnit" version="0.10.0"/>
+		</Dependencies>
+		<Extension path = "/Services/NUnit/TestProviders">
+			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
+		</Extension>
+	</Module>
 </AddIn>
 

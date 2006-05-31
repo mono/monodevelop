@@ -1,3 +1,5 @@
+SUBDIRS = . NUnit
+
 FILES = \
 AssemblyInfo.cs \
 MonoCombine.cs \
@@ -5,8 +7,7 @@ MonoMakefile.cs \
 MonoMakefileFormat.cs \
 MonoProject.cs \
 Commands.cs \
-MonoProjectConfiguration.cs \
-MonoTestProvider.cs
+MonoProjectConfiguration.cs
 
 REFS = -r:System \
        -r:System.Data \
@@ -16,7 +17,6 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GCONF_SHARP_LIBS) \

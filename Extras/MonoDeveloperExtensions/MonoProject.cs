@@ -44,7 +44,8 @@ namespace MonoDeveloper
 		string outFile;
 		ArrayList refNames = new ArrayList ();
 		bool loading;
-		MonoTestSuite testSuite;
+		string testFileBase;
+		object unitTest;
 		
 		public override string ProjectType {
 			get { return "MonoMakefile"; }
@@ -122,8 +123,7 @@ namespace MonoDeveloper
 			
 			if (mkfile.GetVariable ("NO_TEST") != "yes") {
 				string tname = Path.GetFileNameWithoutExtension (aname) + "_test_";
-				string testFileBase = Path.Combine (basePath, tname);
-				testSuite = new MonoTestSuite (this, Name, testFileBase);
+				testFileBase = Path.Combine (basePath, tname);
 			}
 			
 			MonoProjectConfiguration conf = new MonoProjectConfiguration ("default", "default");
@@ -328,9 +328,14 @@ namespace MonoDeveloper
 			IdeApp.ProjectOperations.CombineOpened -= new CombineEventHandler (CombineOpened);
 		}
 		
-		internal MonoTestSuite GetTestSuite ()
+		public string GetTestFileBase ()
 		{
-			return testSuite;
+			return testFileBase;
+		}
+		
+		public object UnitTest {
+			get { return unitTest; }
+			set { unitTest = value; }
 		}
 	}
 }
