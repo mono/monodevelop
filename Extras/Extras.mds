@@ -2,7 +2,6 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
-      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="MonoQuery" configuration="Debug" />
@@ -17,10 +16,10 @@
       <Entry build="True" name="VBNetBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
-      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="MonoQuery" configuration="Debug" />
@@ -35,11 +34,11 @@
       <Entry build="True" name="VBNetBinding" configuration="" />
       <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">
     <Execute type="None" entry="MonoDevelop.NUnit" />
-    <Execute type="None" entry="MonoDeveloperExtensions" />
     <Execute type="None" entry="CSharpBinding" />
     <Execute type="None" entry="ILAsmBinding" />
     <Execute type="None" entry="MonoQuery" />
@@ -54,10 +53,10 @@
     <Execute type="None" entry="VBNetBinding" />
     <Execute type="None" entry="MonoDevelop.Debugger" />
     <Execute type="None" entry="ChangeLogAddIn" />
+    <Execute type="None" entry="MonoDeveloperExtensions" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
-    <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mdp" />
     <Entry filename="./CSharpBinding/CSharpBinding.mdp" />
     <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
     <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
@@ -72,5 +71,6 @@
     <Entry filename="./VBNetBinding/VBNetBinding.mds" />
     <Entry filename="./DebuggerAddIn/MonoDevelop.Debugger.mdp" />
     <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
+    <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />
   </Entries>
 </Combine>
