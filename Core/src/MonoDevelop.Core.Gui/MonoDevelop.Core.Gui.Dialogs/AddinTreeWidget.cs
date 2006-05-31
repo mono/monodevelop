@@ -222,11 +222,19 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		public object SaveStatus ()
 		{
 			TreeIter iter;
+			ArrayList list = new ArrayList ();
+			
+			// Save the current selection
+			Gtk.TreeModel foo;
+			if (treeView.Selection.GetSelected (out foo, out iter))
+				list.Add (treeStore.GetPath (iter));
+			else
+				list.Add (null);
 			
 			if (!treeStore.GetIterFirst (out iter))
 				return null;
-			ArrayList list = new ArrayList ();
 			
+			// Save the expand state
 			do {
 				SaveStatus (list, iter);
 			} while (treeStore.IterNext (ref iter));
@@ -238,8 +246,17 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 			if (ob == null)
 				return;
-			foreach (TreePath path in (ArrayList)ob)
-				treeView.ExpandRow (path, false);			
+				
+			// The first element is the selection
+			ArrayList list = (ArrayList) ob;
+			TreePath selpath = (TreePath) list [0];
+			list.RemoveAt (0);
+			
+			foreach (TreePath path in list)
+				treeView.ExpandRow (path, false);
+
+			if (selpath != null)
+				treeView.Selection.SelectPath (selpath);
 		}
 		
 		void SaveStatus (ArrayList list, TreeIter iter)
