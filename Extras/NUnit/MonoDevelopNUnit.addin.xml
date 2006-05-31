@@ -119,4 +119,10 @@
 		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
 	</Extension>
 
+	<!-- New extension points -->
+
+	<Extension path = "/Services/NUnit/TestProviders" extension-nodes="Class" description="Test providers.|Specified classes must implement ITestProvider.">
+		<Class id = "SystemTestProvider" class = "MonoDevelop.NUnit.SystemTestProvider"/>
+	</Extension>
+
 </AddIn>

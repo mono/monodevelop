@@ -1,3 +1,9 @@
+2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopNUnit.addin.xml:
+	* Services/NUnitService.cs: Added an extension point for registering
+	  test providers. It replaces the RegisterTestProvider api call.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Updated versions.

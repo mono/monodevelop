@@ -42,7 +42,7 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitService : AbstractService
 	{
-		ArrayList providers = new ArrayList ();
+		ITestProvider[] providers;
 		UnitTest rootTest;
 		Pad resultsPad;
 		
@@ -52,13 +52,26 @@ namespace MonoDevelop.NUnit
 		
 		public override void InitializeService ()
 		{
-			RegisterTestProvider (new SystemTestProvider ());
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			
 			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
 			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
+			
+			providers = (ITestProvider[]) Runtime.AddInService.GetTreeItems ("/Services/NUnit/TestProviders", typeof(ITestProvider));
+			foreach (ITestProvider provider in providers) {
+				Type[] types = provider.GetOptionTypes ();
+				if (types != null) {
+					foreach (Type t in types) {
+						if (!typeof(ICloneable).IsAssignableFrom (t)) {
+							Console.WriteLine ("Option types must implement ICloneable: " + t);
+							continue;
+						}
+						ps.DataContext.IncludeType (t);
+					}
+				}
+			}
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test)
@@ -129,20 +142,6 @@ namespace MonoDevelop.NUnit
 		
 		public UnitTest RootTest {
 			get { return rootTest; }
-		}
-		
-		public void RegisterTestProvider (ITestProvider provider)
-		{
-			providers.Add (provider);
-			Type[] types = provider.GetOptionTypes ();
-			if (types != null) {
-				foreach (Type t in types) {
-					if (!typeof(ICloneable).IsAssignableFrom (t))
-						throw new InvalidOperationException ("Option types must implement ICloneable: " + t);
-					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-					ps.DataContext.IncludeType (t);
-				}
-			}
 		}
 		
 		public static void ShowOptionsDialog (UnitTest test)
