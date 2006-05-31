@@ -263,6 +263,7 @@ Extras/BooBinding/BooShell/Makefile
 Extras/JavaBinding/Makefile
 Extras/Makefile
 Extras/MonoDeveloperExtensions/Makefile
+Extras/MonoDeveloperExtensions/NUnit/Makefile
 Extras/MonoQuery/Makefile
 Extras/MonoQuery/Mono.Data.Sql/Makefile
 Extras/MonoQuery/MonoQuery/Makefile
