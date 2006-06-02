@@ -95,11 +95,65 @@ namespace MonoDevelop.Core
 
 			if (assemblyName == "mscorlib")
 				return typeof(object).Assembly.Location;
+			
+			path = FindAssembly (assemblyName, AppDomain.CurrentDomain.BaseDirectory);
+			if (path != null)
+				return path;
 
 			AssemblyLocator locator = (AssemblyLocator) Runtime.ProcessService.CreateExternalProcessObject (typeof(AssemblyLocator), true);
 			using (locator) {
 				return locator.Locate (assemblyName);
 			}
+		}
+		
+		string FindAssembly (string aname, string baseDirectory)
+		{
+			// A fast but hacky way of location an assembly.
+			
+			int i = aname.IndexOf (",");
+			if (i == -1) return null;
+
+			string name = aname.Substring (0, i).Trim ();
+			string file = Path.Combine (baseDirectory, name + ".dll");
+			
+			if (File.Exists (file))
+				return file;
+				
+			file = Path.Combine (baseDirectory, name + ".exe");
+			if (File.Exists (file))
+				return file;
+			
+			// Look for the assembly in the GAC.
+			// WARNING: this is a hack, but there isn't right now a better
+			// way of doing it
+			
+			string gacDir = typeof(Uri).Assembly.Location;
+			gacDir = Path.GetDirectoryName (gacDir);
+			gacDir = Path.GetDirectoryName (gacDir);
+			gacDir = Path.GetDirectoryName (gacDir);
+			
+			string[] parts = aname.Split (',');
+			if (parts.Length != 4) return null;
+			name = parts[0].Trim ();
+			
+			i = parts[1].IndexOf ('=');
+			string version = i != -1 ? parts[1].Substring (i+1).Trim () : parts[1].Trim ();
+			
+			i = parts[2].IndexOf ('=');
+			string culture = i != -1 ? parts[2].Substring (i+1).Trim () : parts[2].Trim ();
+			if (culture == "neutral") culture = "";
+			
+			i = parts[3].IndexOf ('=');
+			string token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
+			
+			file = Path.Combine (gacDir, name);
+			file = Path.Combine (file, version + "_" + culture + "_" + token);
+			file = Path.Combine (file, name + ".dll");
+			
+			if (File.Exists (file))
+				return file;
+			else
+				return null;
 		}
 		
 		// Given the full name of an assembly, returns the corresponding full assembly name
