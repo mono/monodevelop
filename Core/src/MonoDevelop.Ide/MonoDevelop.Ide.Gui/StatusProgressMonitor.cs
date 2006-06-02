@@ -39,10 +39,12 @@ namespace MonoDevelop.Ide.Gui
 	{
 		Gtk.Image icon;
 		bool showErrorDialogs;
+		bool showTaskTitles;
 		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs)
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles)
 		{
 			this.showErrorDialogs = showErrorDialogs;
+			this.showTaskTitles = showTaskTitles;
 			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
 			Services.StatusBar.BeginProgress (title);
 			Services.StatusBar.SetMessage (icon, title);
@@ -50,7 +52,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void OnProgressChanged ()
 		{
-			Services.StatusBar.SetMessage (icon, CurrentTask);
+			if (showTaskTitles)
+				Services.StatusBar.SetMessage (icon, CurrentTask);
 			if (!UnknownWork)
 				Services.StatusBar.SetProgressFraction (GlobalWork);
 			Services.DispatchService.RunPendingEvents ();

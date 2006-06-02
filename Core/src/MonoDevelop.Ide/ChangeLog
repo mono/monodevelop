@@ -1,3 +1,11 @@
+2006-06-02 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Added an option
+	  for not showing the task titles in the status bar (will always 
+	  show the initial title in this case).
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Use the previous option
+	  for the save progress monitor.
+
 2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs: Moved field initialization to

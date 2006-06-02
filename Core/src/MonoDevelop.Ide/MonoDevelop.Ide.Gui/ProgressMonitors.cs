@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetSaveProgressMonitor ()
 		{
-			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true, false);
 		}
 		
 		public IConsole CreateConsole (bool closeOnDispose)
@@ -81,7 +81,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs);
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, true);
+		}
+		
+		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs, bool showTaskTitle)
+		{
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle);
 		}
 		
 		public IProgressMonitor GetBackgroundProgressMonitor (string title, string icon)
