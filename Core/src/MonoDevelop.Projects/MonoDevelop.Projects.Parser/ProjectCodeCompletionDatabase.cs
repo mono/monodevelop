@@ -120,7 +120,8 @@ namespace MonoDevelop.Projects.Parser
 		
 		void OnProjectModified (object s, CombineEntryEventArgs args)
 		{
-			UpdateCorlibReference ();
+			if (UpdateCorlibReference ())
+				parserDatabase.NotifyReferencesChanged (this);
 		}
 
 		public void UpdateFromProject ()
@@ -160,16 +161,17 @@ namespace MonoDevelop.Projects.Parser
 			UpdateCorlibReference ();
 		}
 		
-		void UpdateCorlibReference ()
+		bool UpdateCorlibReference ()
 		{
 			// Creates a reference to the correct version of mscorlib, depending
-			// on the target runtime version
+			// on the target runtime version. Returns true if the references
+			// have changed.
 			
 			DotNetProject prj = project as DotNetProject;
-			if (prj == null) return;
+			if (prj == null) return false;
 			
 			if (prj.ClrVersion == lastVersion)
-				return;
+				return false;
 			
 			// Look for an existing mscorlib reference
 			string currentRefUri = null;
@@ -189,12 +191,13 @@ namespace MonoDevelop.Projects.Parser
 				if (currentRefUri != requiredRefUri) {
 					RemoveReference (currentRefUri);
 					AddReference (requiredRefUri);
-					parserDatabase.NotifyReferencesChanged (this);
+					return true;
 				}
 			} else {
 				AddReference (requiredRefUri);
-				parserDatabase.NotifyReferencesChanged (this);
+				return true;
 			}
+			return false;
 		}
 		
 		string GetReferenceKey (ProjectReference pr)

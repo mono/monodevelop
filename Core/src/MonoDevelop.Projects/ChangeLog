@@ -1,3 +1,11 @@
+2006-06-02 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Fixed a bug in
+	  CleanUnusedDatabases. Some 'used' databases were unloaded.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: avoid
+	  notifying changes in references while the project database is
+	  being created.
+
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Parser/ICompilationUnitBase.cs:

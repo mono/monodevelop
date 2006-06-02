@@ -605,7 +605,7 @@ namespace MonoDevelop.Projects.Parser
 						databases [realUri] = adb;
 						if (uri != realUri)
 							databases [uri] = adb;
-						
+							
 						// Load referenced databases
 						foreach (ReferenceEntry re in db.References)
 							GetDatabase (baseDir, re.Uri);
@@ -749,12 +749,9 @@ namespace MonoDevelop.Projects.Parser
 			lock (databases)
 			{
 				Hashtable references = new Hashtable ();
-				foreach (CodeCompletionDatabase db in databases.Values)
-				{
-					if (db is ProjectCodeCompletionDatabase) {
-						foreach (ReferenceEntry re in ((ProjectCodeCompletionDatabase)db).References)
-							references [re.Uri] = null;
-					}
+				foreach (CodeCompletionDatabase db in databases.Values) {
+					if (db is ProjectCodeCompletionDatabase)
+						CollectAssemblyReferences (db, references);
 				}
 				
 				ArrayList todel = new ArrayList ();
@@ -762,13 +759,27 @@ namespace MonoDevelop.Projects.Parser
 				{
 					if (!(en.Value is ProjectCodeCompletionDatabase) &&
 						!references.Contains (en.Key) &&
-						!loadedAssemblies.Contains (en.Key)
-					)
+						!loadedAssemblies.Contains (en.Key) &&
+						((string)en.Key) != CoreDB
+					) {
 						todel.Add (en.Key);
+					}
 				}
 				
 				foreach (string uri in todel)
 					UnloadDatabase (uri);
+			}
+		}
+		
+		void CollectAssemblyReferences (CodeCompletionDatabase db, Hashtable references)
+		{
+			foreach (ReferenceEntry re in db.References) {
+				if (!references.Contains (re.Uri)) {
+					references.Add (re.Uri, null);
+					CodeCompletionDatabase dbc = GetDatabase (re.Uri);
+					if (dbc != null && !(dbc is ProjectCodeCompletionDatabase))
+						CollectAssemblyReferences (dbc, references);
+				}
 			}
 		}
 		
