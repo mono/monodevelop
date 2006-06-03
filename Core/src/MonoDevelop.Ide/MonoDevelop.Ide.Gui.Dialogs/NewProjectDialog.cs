@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			StringBuilder sb = new StringBuilder ();
 			for (int n=0; n<name.Length; n++) {
 				char c = name [n];
-				if (Array.IndexOf (Path.InvalidPathChars, c) != -1)
+				if (Array.IndexOf (Path.GetInvalidPathChars(), c) != -1)
 					continue;
 				if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar || c == Path.VolumeSeparatorChar)
 					continue;
