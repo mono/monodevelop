@@ -1,7 +1,7 @@
 2006-06-03 John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Core/FileUtilityService.cs: fix warning
-	by using the more appropriate Path.GetInvalidFileNameChars()
+	by using the non-obsolete Path.GetInvalidPathChars()
 	instead of Path.InvalidPathChars
 	
 2006-06-02 Lluis Sanchez Gual  <lluis@novell.com>

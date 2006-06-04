@@ -132,8 +132,8 @@ namespace MonoDevelop.Core
 				return false;
 			}
 			
-			// platform independent : check for invalid filename chars
-			foreach (char invalidChar in Path.GetInvalidFileNameChars()) {
+			// platform independent : check for invalid path chars
+			foreach (char invalidChar in Path.GetInvalidPathChars()) {
 				if (fileName.IndexOf(invalidChar) >= 0) {
 					return false;
 				}
