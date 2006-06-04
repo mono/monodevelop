@@ -5,6 +5,8 @@ using Nemerle.Completion;
 using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Event : AbstractEvent
@@ -14,7 +16,17 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Event (IClass declaringType, SR.EventInfo tinfo)
+		void LoadXml (Class declaring)
+		{
+			if (declaring.xmlHelp != null) {
+				XmlNode node = declaring.xmlHelp.SelectSingleNode ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']/Docs/summary");
+				if (node != null) {
+					Documentation = node.InnerXml;
+				}
+			}
+		}
+		
+		public Event (Class declaringType, SR.EventInfo tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -25,9 +37,11 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			returnType = new ReturnType(tinfo.EventHandlerType);
 			this.region = Class.GetRegion();
 			this.bodyRegion = Class.GetRegion();
+			
+			LoadXml (declaringType);
 		}
 		
-		public Event (IClass declaringType, NCC.IEvent tinfo)
+		public Event (Class declaringType, NCC.IEvent tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -64,6 +78,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 this.bodyRegion = Class.GetRegion (((NCC.MemberBuilder)tinfo).BodyLocation);
             else
                 this.bodyRegion = Class.GetRegion (tinfo.Location);
+                
+            LoadXml (declaringType);
 		}
 	}
 }

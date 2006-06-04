@@ -6,11 +6,23 @@ using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 using Nemerle.Compiler.Typedtree;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Parameter : AbstractParameter
 	{
-		public Parameter (IMember declaringMember, Fun_parm pinfo)
+	    void LoadXml(XmlNode methodNode)
+	    {
+            if (methodNode != null) {
+				XmlNode paramDocu = methodNode.SelectSingleNode("Docs/param[@name='" + name + "']");
+				if (paramDocu != null) {
+					documentation = paramDocu.InnerXml;
+				}
+			}	       
+	    }
+	   
+		public Parameter (IMember declaringMember, Fun_parm pinfo, XmlNode docNode)
 		{
 			this.name = pinfo.Name;
 			NCC.MType realType = (NCC.MType)pinfo.ty;
@@ -18,24 +30,30 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			{
 			    NCC.MType.Ref rt = (NCC.MType.Ref)realType;
 			    returnType = new ReturnType ((NCC.MType)rt.t);
+			    modifier |= ParameterModifier.Ref;
 			}
 			else if (realType is NCC.MType.Out)
 			{
 			    NCC.MType.Out rt = (NCC.MType.Out)realType;
 			    returnType = new ReturnType ((NCC.MType)rt.t);
+			    modifier |= ParameterModifier.Out;
 			}
 			else
 			{
 			    returnType = new ReturnType (realType);
 			}
 			this.declaringMember = declaringMember;
+			
+			LoadXml (docNode);
 		}
 		
-		public Parameter (IMember declaringMember, SR.ParameterInfo pinfo)
+		public Parameter (IMember declaringMember, SR.ParameterInfo pinfo, XmlNode docNode)
 		{
 		    this.name = pinfo.Name;
 		    returnType = new ReturnType(pinfo.ParameterType);
 		    this.declaringMember = declaringMember;
+		    
+		    LoadXml (docNode);
 		}
 	}
 }

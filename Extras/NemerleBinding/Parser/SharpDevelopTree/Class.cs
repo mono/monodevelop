@@ -6,21 +6,39 @@ using System.Collections;
 using SR = System.Reflection;
 using System.Collections.Generic;
 
+using MonoDevelop.Projects;
+using System.Xml;
+
 using MonoDevelop.Projects.Parser;
 using Nemerle.Completion;
 using NCC = Nemerle.Compiler;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Class : AbstractClass
-	{
-		ICompilationUnit cu;
+    public class Class : AbstractClass
+    {
+        ICompilationUnit cu;
         NCC.TypeInfo tinfo;
+        internal XmlDocument xmlHelp;
         
         public Class(string name)
         {
             this.FullyQualifiedName = name;
             this.modifiers = (ModifierEnum)0;
+        }
+        
+        void LoadXml ()
+        {
+            xmlHelp = Services.DocumentationService != null ?
+                Services.DocumentationService.GetHelpXml (this.FullyQualifiedName) : null;
+            if (xmlHelp != null)
+            {
+                XmlNode node = xmlHelp.SelectSingleNode ("/Type/Docs/summary");
+                if (node != null)
+                {
+                    this.Documentation = node.InnerXml;
+                }
+            } 
         }
         
         public Class(Type tinfo, CompilationUnit cu)
@@ -42,7 +60,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 classType = ClassType.Class;
                 
             this.region = GetRegion ();
-			this.bodyRegion = GetRegion ();
+            this.bodyRegion = GetRegion ();
             
             ModifierEnum mod = (ModifierEnum)0;
             if (tinfo.IsNotPublic)
@@ -54,9 +72,9 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             if (tinfo.IsSealed)
                 mod |= ModifierEnum.Sealed;
             
-			modifiers = mod;
-			
-			if (tinfo.IsEnum)
+            modifiers = mod;
+            
+            if (tinfo.IsEnum)
             {
                 foreach (SR.FieldInfo field in tinfo.GetFields())
                 {
@@ -96,10 +114,16 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 Class nested = new Class (i, cu);
                 innerClasses.Add (nested);
             }
+            
+            LoadXml ();
         }
-		
-		public Class(NCC.TypeInfo tinfo, CompilationUnit cu)
-		{
+        
+        public Class(NCC.TypeInfo tinfo, CompilationUnit cu)
+          : this (tinfo, cu, true)
+        { }
+        
+        public Class(NCC.TypeInfo tinfo, CompilationUnit cu, bool addMembers)
+        {
             this.cu = cu;
             this.tinfo = tinfo;
             
@@ -116,8 +140,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             else
                 classType = ClassType.Class;
             
-		    this.region = GetRegion (tinfo.Location);
-		    this.bodyRegion = GetRegion (tinfo.Location);
+            this.region = GetRegion (tinfo.Location);
+            this.bodyRegion = GetRegion (tinfo.Location);
             
             ModifierEnum mod = (ModifierEnum)0;
             if ((tinfo.Attributes & NCC.NemerleAttributes.Private) != 0)
@@ -133,54 +157,59 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             if ((tinfo.Attributes & NCC.NemerleAttributes.Sealed) != 0)
                 mod |= ModifierEnum.Sealed;
                 
-			modifiers = mod;
-			
-			foreach (NCC.IMember member in tinfo.GetMembers ())
-			{
-			    if (member.Name.StartsWith ("_N") || member.Location.Line == tinfo.Location.Line)
-                    continue;
-                    
-                NCC.MemberKind m = member.GetKind ();
-                
-                if (m is NCC.MemberKind.Field)
+            modifiers = mod;
+            
+            if (addMembers)
+            {
+                foreach (NCC.IMember member in tinfo.GetMembers ())
                 {
-                    NCC.MemberKind.Field f = (NCC.MemberKind.Field)m;
-                    if (f.field.Name != "value__")
-                        fields.Add (new Field (this, f.field));
-                }
-                else if (m is NCC.MemberKind.Method)
-                {
-                    NCC.MemberKind.Method mt = (NCC.MemberKind.Method)m;
-                    if (mt.method.Name.StartsWith ("get_") || mt.method.Name.StartsWith ("set_") || 
-                        mt.method.Name.StartsWith ("add_") || mt.method.Name.StartsWith ("remove_"))
+                    if (member.Name.StartsWith ("_N") || member.Location.Line == tinfo.Location.Line)
                         continue;
+                        
+                    NCC.MemberKind m = member.GetKind ();
                     
-                    NCC.FunKind fk = mt.method.GetFunKind ();
-                    if (fk is NCC.FunKind.Constructor || fk is NCC.FunKind.StaticConstructor)
-                        methods.Add (new Constructor (this, mt.method));
-                    else
-                        methods.Add (new Method (this, mt.method));
+                    if (m is NCC.MemberKind.Field)
+                    {
+                        NCC.MemberKind.Field f = (NCC.MemberKind.Field)m;
+                        if (f.field.Name != "value__")
+                            fields.Add (new Field (this, f.field));
+                    }
+                    else if (m is NCC.MemberKind.Method)
+                    {
+                        NCC.MemberKind.Method mt = (NCC.MemberKind.Method)m;
+                        if (mt.method.Name.StartsWith ("get_") || mt.method.Name.StartsWith ("set_") || 
+                            mt.method.Name.StartsWith ("add_") || mt.method.Name.StartsWith ("remove_"))
+                            continue;
+                        
+                        NCC.FunKind fk = mt.method.GetFunKind ();
+                        if (fk is NCC.FunKind.Constructor || fk is NCC.FunKind.StaticConstructor)
+                            methods.Add (new Constructor (this, mt.method));
+                        else
+                            methods.Add (new Method (this, mt.method));
+                    }
+                    else if (m is NCC.MemberKind.Property)
+                    {
+                        NCC.MemberKind.Property px = (NCC.MemberKind.Property)m;
+                        if (px.prop.IsIndexer)
+                            indexer.Add (new Indexer (this, px.prop));
+                        else
+                            properties.Add (new Property (this, px.prop));
+                    }
+                    else if (m is NCC.MemberKind.Event)
+                        events.Add (new Event (this, ((NCC.MemberKind.Event)m).body));
+                    else if (m is NCC.MemberKind.Type)
+                        innerClasses.Add (new Class ( ((NCC.MemberKind.Type)m).tycon, cu));
                 }
-                else if (m is NCC.MemberKind.Property)
-                {
-                    NCC.MemberKind.Property px = (NCC.MemberKind.Property)m;
-                    if (px.prop.IsIndexer)
-                        indexer.Add (new Indexer (this, px.prop));
-                    else
-                        properties.Add (new Property (this, px.prop));
-                }
-                else if (m is NCC.MemberKind.Event)
-                    events.Add (new Event (this, ((NCC.MemberKind.Event)m).body));
-                else if (m is NCC.MemberKind.Type)
-                    innerClasses.Add (new Class ( ((NCC.MemberKind.Type)m).tycon, cu));
-			}
-			
-			foreach (NCC.MType.Class mt in tinfo.GetDirectSuperTypes ())
-			{
-			    baseTypes.Add (Engine.GetNameFromType (mt));
-			} 
-		}
-		
+            }
+            
+            foreach (NCC.MType.Class mt in tinfo.GetDirectSuperTypes ())
+            {
+                baseTypes.Add (Engine.GetNameFromType (mt));
+            }
+            
+            LoadXml ();
+        }
+        
         public static DefaultRegion GetRegion (NCC.Location cloc)
         {
             try
@@ -207,5 +236,5 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         {
             get { return cu; }
         }
-	}
+    }
 }

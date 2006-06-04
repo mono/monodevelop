@@ -267,25 +267,7 @@ namespace NemerleBinding.Parser
                         string method_content = Crop (fileContent, line, column, caretLineNumber, caretColumn);
                         NCC.OverloadPossibility[] infox = engine.RunCompletionEngine (the_method.Member, method_content);
                         
-                        return GetResults (infox, comp);
-
-                        /*else
-                        {
-                            CompletionTypes the_types = (CompletionTypes)infox;
-                            LanguageItemCollection lang = new LanguageItemCollection (); 
-                            CompilationUnit cu = new CompilationUnit ();
-                            
-                            foreach (NemerleTypeInfo clasea in the_types.Types)
-                            {
-                                if (clasea.TypeKind == NemerleTypeKind.DeclaredType)
-                                    lang.Add (new Class ((DeclaredTypeInfo)clasea, cu));
-                                else
-                                    lang.Add (new Class (((ReferencedTypeInfo)clasea).Type, cu));
-                            } 
-                            
-                            return new ResolveResult (the_types.Namespaces, lang);
-                        }*/
-                        
+                        return GetResults (infox, comp);                        
                     }
                 }
                 
@@ -328,7 +310,7 @@ namespace NemerleBinding.Parser
                         if (!alreadyAdded.Contains (node.Key))
                         {
                             alreadyAdded.Add (node.Key);
-                            lang.Add (new Class (((NCC.NamespaceTree.TypeInfoCache.Cached)node.Value.Value).tycon, cu));
+                            lang.Add (new Class (((NCC.NamespaceTree.TypeInfoCache.Cached)node.Value.Value).tycon, cu, false));
                         }
                     }
                 }
@@ -337,6 +319,8 @@ namespace NemerleBinding.Parser
             }
             else
             {
+                Class declaring = new Class (head.Member.DeclaringType, cu, false);
+                
                 LanguageItemCollection lang = new LanguageItemCollection ();
                 foreach (NCC.OverloadPossibility ov in ovs)
                 {
@@ -352,23 +336,23 @@ namespace NemerleBinding.Parser
                     {
                         if (ov.Member is NCC.IField)
                         {
-                            lang.Add (new Field (null, (NCC.IField)ov.Member));
+                            lang.Add (new Field (declaring, (NCC.IField)ov.Member));
                         }
                         else if (ov.Member is NCC.IMethod)
                         {
-                            lang.Add (new Method (null, (NCC.IMethod)ov.Member));
+                            lang.Add (new Method (declaring, (NCC.IMethod)ov.Member));
                         }
                         else if (ov.Member is NCC.IProperty)
                         {
                             NCC.IProperty prop = (NCC.IProperty)ov.Member;
                             if (prop.IsIndexer)
-                                lang.Add (new Indexer (null, prop));
+                                lang.Add (new Indexer (declaring, prop));
                             else
-                                lang.Add (new Property (null, prop));
+                                lang.Add (new Property (declaring, prop));
                         }
                         else if (ov.Member is NCC.IEvent)
                         {
-                            lang.Add (new Event (null, (NCC.IEvent)ov.Member));
+                            lang.Add (new Event (declaring, (NCC.IEvent)ov.Member));
                         }
                     }
                     catch (Exception e)
@@ -376,7 +360,7 @@ namespace NemerleBinding.Parser
                         System.Console.WriteLine (e.Message);
                     }
                 }
-                return new ResolveResult ((Class)null, lang);
+                return new ResolveResult (declaring, lang);
             }
         }
         

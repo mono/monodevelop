@@ -5,6 +5,8 @@ using Nemerle.Completion;
 using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
     public class Property : AbstractProperty
@@ -17,20 +19,33 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         internal Method Getter;
         internal Method Setter;
         
-        public Property (IClass declaringType, SR.PropertyInfo tinfo)
+        void LoadXml (Class declaring)
         {
-               this.declaringType = declaringType;
+            if (declaring.xmlHelp != null)
+            {
+                XmlNode node = declaring.xmlHelp.SelectSingleNode ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']/Docs/summary");
+				if (node != null) {
+					Documentation = node.InnerXml;
+				}
+            }
+        }
+        
+        public Property (Class declaringType, SR.PropertyInfo tinfo)
+        {
+            this.declaringType = declaringType;
         
             ModifierEnum mod = (ModifierEnum)0;
-             modifiers = mod;
+            modifiers = mod;
             
             this.FullyQualifiedName = tinfo.Name;
             returnType = new ReturnType(tinfo.PropertyType);
             this.region = Class.GetRegion();
             this.bodyRegion = Class.GetRegion();
+            
+            LoadXml (declaringType);
         }
         
-        public Property (IClass declaringType, NCC.IProperty tinfo)
+        public Property (Class declaringType, NCC.IProperty tinfo)
         {
             this.declaringType = declaringType;
         
@@ -86,6 +101,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			    else
 			        setterRegion = Class.GetRegion(setter.Location);
 			}
+			
+			LoadXml (declaringType);
         }
         
         public new IRegion GetterRegion {

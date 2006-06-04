@@ -18,16 +18,16 @@
 		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
+  <Extension path = "/SharpDevelop/Workbench/Ambiences">
+	<Class id    = "Nemerle"
+	       class = "NemerleBinding.NemerleAmbience" />
+  </Extension>	
+	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
     <FileFilter id = "Nemerle"
                 insertbefore = "AllFiles"
                 _label = "Nemerle Files"
-                extensions = "*.n"/>
-  </Extension>
-  
-  <Extension path = "/SharpDevelop/Workbench/Ambiences">
-	<Class id    = "Nemerle"
-	       class = "NemerleBinding.NemerleAmbience"/>
+                extensions = "*.n" />
   </Extension>
 
   <Extension path = "/MonoDevelop/FileTemplates">

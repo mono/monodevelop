@@ -52,7 +52,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			    
 			// Add parameters
 			foreach (SR.ParameterInfo pinfo in tinfo.GetParameters())
-			    parameters.Add(new Parameter(this, pinfo));
+			    parameters.Add(new Parameter(this, pinfo, null));
 		}
 
 		public Constructor (IClass declaringType, NCC.IMethod tinfo)
@@ -96,7 +96,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			    
 			// Add parameters
 			foreach (Fun_parm pinfo in tinfo.GetParameters ())
-			    parameters.Add(new Parameter(this, pinfo));
+			    parameters.Add(new Parameter(this, pinfo, null));
 		}
 	}
 }

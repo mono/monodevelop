@@ -6,19 +6,36 @@ using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 using Nemerle.Compiler.Typedtree;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Indexer : AbstractIndexer
 	{
+	    XmlNode node;
+	
 		public void AddModifier(ModifierEnum m)
 		{
 			modifiers = modifiers | m;
 		}
 		
+		void LoadXml (Class declaring)
+        {
+			if (declaring.xmlHelp != null) {
+				node = declaring.xmlHelp.SelectSingleNode ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']");
+				if (node != null) {
+					XmlNode docNode = node.SelectSingleNode ("Docs/summary");
+					if (docNode != null) {
+						Documentation = node.InnerXml;
+					}
+				}
+			}
+        }
+		
 		internal Method Getter;
 		internal Method Setter;
 		
-		public Indexer (IClass declaringType, SR.PropertyInfo tinfo)
+		public Indexer (Class declaringType, SR.PropertyInfo tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -29,13 +46,15 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			returnType = new ReturnType(tinfo.PropertyType);
 			this.region = Class.GetRegion();
 			this.bodyRegion = Class.GetRegion();
+			
+			LoadXml (declaringType);
 			    
 			// Add parameters
 			foreach (SR.ParameterInfo pinfo in tinfo.GetIndexParameters())
-			    parameters.Add(new Parameter(this, pinfo));
+			    parameters.Add(new Parameter(this, pinfo, node));
 		}
 		
-		public Indexer (IClass declaringType, NCC.IProperty tinfo)
+		public Indexer (Class declaringType, NCC.IProperty tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -91,12 +110,14 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			    else
 			        setterRegion = Class.GetRegion(setter.Location);
 			}
+			
+			LoadXml (declaringType);
 			    
 			// Add parameters
 			if (getter != null)
 			{
 			    foreach (Fun_parm pinfo in getter.GetParameters ())
-			       parameters.Add(new Parameter(this, pinfo));
+			       parameters.Add(new Parameter(this, pinfo, node));
 			}
 		}
 		

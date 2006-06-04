@@ -6,6 +6,8 @@ using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 using Nemerle.Compiler.Typedtree;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
     public interface INemerleMethod
@@ -26,7 +28,101 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 		    get { return _member; }
 		}
 		
-		public Method (IClass declaringType, SR.MethodInfo tinfo)
+		XmlNode node;
+		void LoadXml (Class declaring, SR.MethodInfo methodBase)
+		{
+		   if (declaring.xmlHelp != null) {
+				XmlNodeList nodes = declaring.xmlHelp.SelectNodes ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']");
+				if (nodes != null && nodes.Count > 0) {
+					if (nodes.Count == 1) {
+						node = nodes[0];
+					} else {
+						node = FindMatch (nodes, methodBase);
+					}
+					if (node != null) {
+						XmlNode docNode = node.SelectSingleNode ("Docs/summary");
+						if (docNode != null) {
+							Documentation = docNode.InnerXml;
+						}
+					}
+				}
+			}
+		}
+		
+		XmlNode FindMatch (XmlNodeList nodes, SR.MethodInfo methodBase)
+		{
+			SR.ParameterInfo[] p = methodBase.GetParameters ();
+			string s = "";
+			foreach (XmlNode node in nodes) {
+				XmlNodeList paramList = node.SelectNodes ("Parameters/*");
+				s += paramList.Count + " - " + p.Length + "\n";
+				if (p.Length == 0 && paramList.Count == 0) return node;
+				if (p.Length != paramList.Count) continue;
+				bool matched = true;
+				for (int i = 0; i < p.Length; i++) {
+					if (p[i].ParameterType.ToString () != paramList[i].Attributes["Type"].Value) {
+						matched = false;
+					}
+				}
+				if (matched)
+					return node;
+			}
+			return null;
+		}
+		
+		void LoadXml (Class declaring, NCC.IMethod methodBase)
+		{
+		   if (declaring.xmlHelp != null) {
+				XmlNodeList nodes = declaring.xmlHelp.SelectNodes ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']");
+				if (nodes != null && nodes.Count > 0) {
+					if (nodes.Count == 1) {
+						node = nodes[0];
+					} else {
+						node = FindMatch (nodes, methodBase);
+					}
+					if (node != null) {
+						XmlNode docNode = node.SelectSingleNode ("Docs/summary");
+						if (docNode != null) {
+							Documentation = docNode.InnerXml;
+						}
+					}
+				}
+			}
+		}
+		
+		XmlNode FindMatch (XmlNodeList nodes, NCC.IMethod methodBase)
+		{
+		    Nemerle.Core.list<Fun_parm> p = methodBase.GetParameters ();
+			string s = "";
+			foreach (XmlNode node in nodes) {
+				XmlNodeList paramList = node.SelectNodes ("Parameters/*");
+				s += paramList.Count + " - " + p.Length + "\n";
+				if (p.Length == 0 && paramList.Count == 0) return node;
+				if (p.Length != paramList.Count) continue;
+				bool matched = true;
+				for (int i = 0; i < p.Length; i++) {
+				    Fun_parm k = p.Nth(i);
+				    if (k.ty is NCC.MType.Class)
+				    {
+				        string pname = ((NCC.MType.Class)k.ty).tycon.FrameworkTypeName;
+				        if (pname != paramList[i].Attributes["Type"].Value) {
+						  matched = false;
+						  break;
+					    }
+				    }
+				    else
+				    {
+				        matched = false;
+				        break;
+				    }
+				}
+				if (matched)
+					return node;
+			}
+			return null;
+		}
+		
+		public Method (Class declaringType, SR.MethodInfo tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -94,13 +190,15 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			this.region = Class.GetRegion();
 			this.bodyRegion = Class.GetRegion();
 			this._member = null;
+			
+			LoadXml (declaringType, tinfo);
 			    
 			// Add parameters
 			foreach (SR.ParameterInfo pinfo in tinfo.GetParameters())
-			    parameters.Add(new Parameter(this, pinfo));
+			    parameters.Add(new Parameter(this, pinfo, node));
 		}
 		
-		public Method (IClass declaringType, NCC.IMethod tinfo)
+		public Method (Class declaringType, NCC.IMethod tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -176,10 +274,12 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             else
                 this.bodyRegion = Class.GetRegion (tinfo.Location);
 			this._member = tinfo;
+			
+			LoadXml (declaringType, tinfo);
 			    
 			// Add parameters
 			foreach (Fun_parm pinfo in tinfo.GetParameters ())
-			    parameters.Add(new Parameter(this, pinfo));
+			    parameters.Add(new Parameter(this, pinfo, node));
 		}
 	}
 }

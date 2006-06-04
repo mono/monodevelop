@@ -5,6 +5,8 @@ using Nemerle.Completion;
 using SR = System.Reflection;
 using NCC = Nemerle.Compiler;
 
+using System.Xml;
+
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Field : AbstractField
@@ -14,7 +16,17 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Field (IClass declaringType, SR.FieldInfo tinfo)
+		void LoadXml (Class declaring)
+        {
+			if (declaring.xmlHelp != null) {
+				XmlNode node = declaring.xmlHelp.SelectSingleNode ("/Type/Members/Member[@MemberName='" + FullyQualifiedName + "']/Docs/summary");
+				if (node != null) {
+					Documentation = node.InnerXml;
+				}
+			}
+        }
+		
+		public Field (Class declaringType, SR.FieldInfo tinfo)
 		{
 			this.declaringType = declaringType;
 		
@@ -37,9 +49,11 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			this.FullyQualifiedName = tinfo.Name;
 			returnType = new ReturnType(tinfo.FieldType);
 			this.region = Class.GetRegion();
+			
+			LoadXml (declaringType);
 	   }
 		
-		public Field (IClass declaringType, NCC.IField tinfo)
+		public Field (Class declaringType, NCC.IField tinfo)
 		{
 		    this.declaringType = declaringType;
 		
@@ -71,12 +85,16 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 mod |= ModifierEnum.Readonly;
             if (tinfo.IsVolatile)
                 mod |= ModifierEnum.Volatile;
+            if (tinfo.IsLiteral)
+                mod |= ModifierEnum.Const;
                 
 			modifiers = mod;
 			
 			this.FullyQualifiedName = tinfo.Name;
 			returnType = new ReturnType (tinfo.GetMemType ());
 			this.region = Class.GetRegion (tinfo.Location);
+			
+			LoadXml (declaringType);
 	   }
 	}
 }
