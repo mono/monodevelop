@@ -3,6 +3,8 @@
 using MonoDevelop.Projects.Parser;
 using Nemerle.Completion;
 using SR = System.Reflection;
+using NCC = Nemerle.Compiler;
+using Nemerle.Compiler.Typedtree;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
@@ -12,6 +14,9 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 		{
 			modifiers = modifiers | m;
 		}
+		
+		internal Method Getter;
+		internal Method Setter;
 		
 		public Indexer (IClass declaringType, SR.PropertyInfo tinfo)
 		{
@@ -30,49 +35,69 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			    parameters.Add(new Parameter(this, pinfo));
 		}
 		
-		public Indexer (IClass declaringType, PropertyInfo tinfo)
+		public Indexer (IClass declaringType, NCC.IProperty tinfo)
 		{
 		    this.declaringType = declaringType;
 		
 		    ModifierEnum mod = (ModifierEnum)0;
-            if (tinfo.IsPrivate)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Private) != 0)
                 mod |= ModifierEnum.Private;
-            if (tinfo.IsInternal)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Internal) != 0)
                 mod |= ModifierEnum.Internal;
-            if (tinfo.IsProtected)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Protected) != 0)
                 mod |= ModifierEnum.Protected;
-            if (tinfo.IsPublic)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Public) != 0)
                 mod |= ModifierEnum.Public;
-            if (tinfo.IsAbstract)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Abstract) != 0)
                 mod |= ModifierEnum.Abstract;
-            if (tinfo.IsFinal)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Sealed) != 0)
                 mod |= ModifierEnum.Sealed;
-            if (tinfo.IsStatic)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Static) != 0)
                 mod |= ModifierEnum.Static;
-            if (tinfo.IsOverride)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Override) != 0)
                 mod |= ModifierEnum.Override;
-            if (tinfo.IsVirtual)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Virtual) != 0)
                 mod |= ModifierEnum.Virtual;
-            if (tinfo.IsNew)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.New) != 0)
                 mod |= ModifierEnum.New;
-            if (tinfo.IsExtern)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Extern) != 0)
                 mod |= ModifierEnum.Extern;
                 
 			modifiers = mod;
 			
 			this.FullyQualifiedName = tinfo.Name;
-			returnType = new ReturnType(tinfo.Type);
-			this.region = Class.GetRegion(tinfo.Location);
-			this.bodyRegion = Class.GetRegion(tinfo.Location);
+			returnType = new ReturnType (tinfo.GetMemType ());
+			this.region = Class.GetRegion (tinfo.Location);
+            if (tinfo is NCC.MemberBuilder)
+                this.bodyRegion = Class.GetRegion (((NCC.MemberBuilder)tinfo).BodyLocation);
+            else
+                this.bodyRegion = Class.GetRegion (tinfo.Location);
 			
-			if (tinfo.Getter != null)
-			    getterRegion = Class.GetRegion(tinfo.Getter.Location);
-			if (tinfo.Setter != null)
-			    setterRegion = Class.GetRegion(tinfo.Setter.Location);
+			NCC.IMethod getter = tinfo.GetGetter ();
+			NCC.IMethod setter = tinfo.GetSetter ();
+			if (getter != null)
+		    {
+			    this.Getter = new Method(declaringType, getter);
+			    if (getter is NCC.MemberBuilder)
+			        getterRegion = Class.GetRegion (((NCC.MemberBuilder)getter).BodyLocation);
+			    else
+			       getterRegion = Class.GetRegion(getter.Location);
+			}
+			if (setter != null)
+			{
+			    this.Setter = new Method(declaringType, setter);
+			    if (setter is NCC.MemberBuilder)
+			        setterRegion = Class.GetRegion (((NCC.MemberBuilder)setter).BodyLocation);
+			    else
+			        setterRegion = Class.GetRegion(setter.Location);
+			}
 			    
 			// Add parameters
-			foreach (ConstructedTypeInfo pinfo in tinfo.IndexerParameters)
-			    parameters.Add(new Parameter(this, pinfo));
+			if (getter != null)
+			{
+			    foreach (Fun_parm pinfo in getter.GetParameters ())
+			       parameters.Add(new Parameter(this, pinfo));
+			}
 		}
 		
 		public new IRegion GetterRegion {

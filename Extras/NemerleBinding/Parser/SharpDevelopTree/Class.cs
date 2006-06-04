@@ -4,16 +4,18 @@ using System;
 using System.Diagnostics;
 using System.Collections;
 using SR = System.Reflection;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects.Parser;
 using Nemerle.Completion;
+using NCC = Nemerle.Compiler;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Class : AbstractClass
 	{
 		ICompilationUnit cu;
-        DeclaredTypeInfo tinfo;
+        NCC.TypeInfo tinfo;
         
         public Class(string name)
         {
@@ -96,122 +98,101 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             }
         }
 		
-		public Class(DeclaredTypeInfo tinfo, CompilationUnit cu)
+		public Class(NCC.TypeInfo tinfo, CompilationUnit cu)
 		{
             this.cu = cu;
             this.tinfo = tinfo;
             
-            if (tinfo.IsNested)
-                this.FullyQualifiedName = tinfo.Namespace + "." + 
-                    tinfo.DeclaringType.Name + "." + tinfo.Name.TrimEnd('*').TrimEnd ('1', '2', '3', '4').TrimEnd('`');
-            else
-                this.FullyQualifiedName = tinfo.Namespace + "." + tinfo.Name.TrimEnd('*').TrimEnd ('1', '2', '3', '4').TrimEnd('`');
+            this.FullyQualifiedName = tinfo.FrameworkTypeName.TrimEnd('*').TrimEnd ('1', '2', '3', '4').TrimEnd('`');
             
             if (tinfo.IsEnum)
                 classType = ClassType.Enum;
             else if (tinfo.IsInterface)
                 classType = ClassType.Interface;
-            else if (tinfo.IsStruct)
+            else if (tinfo.IsValueType)
                 classType = ClassType.Struct;
             else if (tinfo.IsDelegate)
                 classType = ClassType.Delegate;
             else
                 classType = ClassType.Class;
             
-			this.region = GetRegion (tinfo.Location);
-			this.bodyRegion = GetRegion (tinfo.Location);
+		    this.region = GetRegion (tinfo.Location);
+		    this.bodyRegion = GetRegion (tinfo.Location);
             
             ModifierEnum mod = (ModifierEnum)0;
-            if (tinfo.IsPrivate)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Private) != 0)
                 mod |= ModifierEnum.Private;
-            if (tinfo.IsInternal)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Internal) != 0)
                 mod |= ModifierEnum.Internal;
-            if (tinfo.IsProtected)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Protected) != 0)
                 mod |= ModifierEnum.Protected;
-            if (tinfo.IsPublic)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Public) != 0)
                 mod |= ModifierEnum.Public;
-            if (tinfo.IsAbstract)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Abstract) != 0)
                 mod |= ModifierEnum.Abstract;
-            if (tinfo.IsSealed)
+            if ((tinfo.Attributes & NCC.NemerleAttributes.Sealed) != 0)
                 mod |= ModifierEnum.Sealed;
-            
+                
 			modifiers = mod;
-            
-            // Add members
-            if (tinfo.IsEnum)
-            {
-                foreach (FieldInfo field in tinfo.Fields)
-                {
-                    if (field.Name != "value__" && !field.Name.StartsWith("_N") &&
-                        field.Location.Line != tinfo.Location.Line)
-                        fields.Add (new Field (this, field));
-                }
-            }
-            else
-            {
-                foreach (FieldInfo field in tinfo.Fields)
-                {
-                    if (!field.Name.StartsWith("_N")&&
-                        field.Location.Line != tinfo.Location.Line)
-                        fields.Add (new Field (this, field));
-                }
-            }
-            foreach (MethodInfo method in tinfo.Methods)
-            {
-                if (method.Name.StartsWith("_N") || method.Name.StartsWith("get_") || method.Name.StartsWith("set_") ||
-                    method.Location.Line == tinfo.Location.Line || method.Name.StartsWith("add_") || method.Name.StartsWith("remove_"))
+			
+			foreach (NCC.IMember member in tinfo.GetMembers ())
+			{
+			    if (member.Name.StartsWith ("_N") || member.Location.Line == tinfo.Location.Line)
                     continue;
-                if (method.IsConstructor || method.IsStaticConstructor)
-                    methods.Add (new Constructor (this, method));
-                else
-                    methods.Add (new Method (this, method));
-            }
-            foreach (PropertyInfo prop in tinfo.Properties)
-            {
-                if (prop.Location.Line != tinfo.Location.Line)
-                    properties.Add (new Property (this, prop));
-            }
-            foreach (EventInfo ev in tinfo.Events)
-            {
-                if (ev.Location.Line != tinfo.Location.Line)
-                    events.Add (new Event (this, ev));
-            }
-            
-            ArrayList typex = new ArrayList();
-            foreach (DeclaredTypeInfo var in tinfo.VariantOptions)
-            {
-                if (!typex.Contains (var.Name))
+                    
+                NCC.MemberKind m = member.GetKind ();
+                
+                if (m is NCC.MemberKind.Field)
                 {
-                    Class nested = new Class (var, cu);
-                    innerClasses.Add (nested);
-                    typex.Add (var.Name);
+                    NCC.MemberKind.Field f = (NCC.MemberKind.Field)m;
+                    if (f.field.Name != "value__")
+                        fields.Add (new Field (this, f.field));
                 }
-            }
-            foreach (DeclaredTypeInfo i in tinfo.NestedTypes)
-            {
-                if (!typex.Contains (i.Name))
+                else if (m is NCC.MemberKind.Method)
                 {
-                    Class nested = new Class (i, cu);
-                    innerClasses.Add (nested);
-                    typex.Add (i.Name);
+                    NCC.MemberKind.Method mt = (NCC.MemberKind.Method)m;
+                    if (mt.method.Name.StartsWith ("get_") || mt.method.Name.StartsWith ("set_") || 
+                        mt.method.Name.StartsWith ("add_") || mt.method.Name.StartsWith ("remove_"))
+                        continue;
+                    
+                    NCC.FunKind fk = mt.method.GetFunKind ();
+                    if (fk is NCC.FunKind.Constructor || fk is NCC.FunKind.StaticConstructor)
+                        methods.Add (new Constructor (this, mt.method));
+                    else
+                        methods.Add (new Method (this, mt.method));
                 }
-            }        
+                else if (m is NCC.MemberKind.Property)
+                {
+                    NCC.MemberKind.Property px = (NCC.MemberKind.Property)m;
+                    if (px.prop.IsIndexer)
+                        indexer.Add (new Indexer (this, px.prop));
+                    else
+                        properties.Add (new Property (this, px.prop));
+                }
+                else if (m is NCC.MemberKind.Event)
+                    events.Add (new Event (this, ((NCC.MemberKind.Event)m).body));
+                else if (m is NCC.MemberKind.Type)
+                    innerClasses.Add (new Class ( ((NCC.MemberKind.Type)m).tycon, cu));
+			}
+			
+			foreach (NCC.MType.Class mt in tinfo.GetDirectSuperTypes ())
+			{
+			    baseTypes.Add (Engine.GetNameFromType (mt));
+			} 
 		}
 		
-        public static DefaultRegion GetRegion (CodeLocation cloc)
+        public static DefaultRegion GetRegion (NCC.Location cloc)
         {
             try
             {
                 DefaultRegion reg = new DefaultRegion (cloc.Line, cloc.Column,
                     cloc.EndLine, cloc.EndColumn);
-                reg.FileName = cloc.Filename;
+                reg.FileName = cloc.File;
                 return reg;
             }
             catch
             {
-                DefaultRegion rd = new DefaultRegion (0, 0, 0, 0);
-                rd.FileName = "";
-                return rd;
+                return GetRegion ();
             }
         }
         

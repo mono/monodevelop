@@ -3,22 +3,31 @@
 using MonoDevelop.Projects.Parser;
 using Nemerle.Completion;
 using SR = System.Reflection;
+using NCC = Nemerle.Compiler;
+using Nemerle.Compiler.Typedtree;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
 	public class Parameter : AbstractParameter
 	{
-		public Parameter (IMember declaringMember, ParameterInfo pinfo)
+		public Parameter (IMember declaringMember, Fun_parm pinfo)
 		{
 			this.name = pinfo.Name;
-			returnType = new ReturnType(pinfo.Type);
-			this.declaringMember = declaringMember;
-		}
-		
-		public Parameter (IMember declaringMember, ConstructedTypeInfo tinfo)
-		{
-			this.name = "";
-			returnType = new ReturnType(tinfo);
+			NCC.MType realType = (NCC.MType)pinfo.ty;
+			if (realType is NCC.MType.Ref)
+			{
+			    NCC.MType.Ref rt = (NCC.MType.Ref)realType;
+			    returnType = new ReturnType ((NCC.MType)rt.t);
+			}
+			else if (realType is NCC.MType.Out)
+			{
+			    NCC.MType.Out rt = (NCC.MType.Out)realType;
+			    returnType = new ReturnType ((NCC.MType)rt.t);
+			}
+			else
+			{
+			    returnType = new ReturnType (realType);
+			}
 			this.declaringMember = declaringMember;
 		}
 		
