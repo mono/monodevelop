@@ -1,3 +1,10 @@
+2006-06-05 Scott Ellington  <scott.ellington@gmail.com>
+
+	* Extras/Makefile.am:
+	* Makefile.am:
+	* configure.in: Added MonoDevelop.Autotools to the build.
+	* AUTHORS: Added my name.
+
 2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Added new makefile to the build.

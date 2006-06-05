@@ -55,7 +55,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Paco Martinez",
 			"Lluis Sanchez Gual",
 			"Christian Hergert",
-			"Jacob Ilsø Christensen"
+			"Jacob Ilsø Christensen",
+			"Scott Ellington"
 		};
 		
 		public ScrollBox ()

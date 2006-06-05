@@ -46,8 +46,8 @@ PACKAGES = \
 	build/AddIns/prj2makesharp/prj2make-sharp-lib.addin.xml \
 	build/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml \
 	build/AddIns/ChangeLogAddIn/ChangeLogAddIn.addin.xml \
-	build/AddIns/WelcomePage/WelcomePage.addin.xml
-
+	build/AddIns/WelcomePage/WelcomePage.addin.xml \
+	build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml
 
 DOCFILES = \
 	build/bin/MonoDevelop.Core.dll \

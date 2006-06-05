@@ -1,0 +1,41 @@
+<AddIn	id          = "MonoDevelop.Autotools"
+		name        = "MonoDevelop Autotools AddIn"
+		author      = "Matthias Braun, Scott Ellington"
+        copyright   = "LGPL"
+        url         = "http://monodevelop.com"
+        description = "AddIn for deploying projects as autotool projects"
+        version     = "0.1">
+        
+	<Runtime>
+		<Import assembly="MonoDevelop.Autotools.dll" />
+		<Import file="autogen.sh.template"/>		
+		<Import file="Makefile.am.project.template"/>		
+		<Import file="Makefile.include"/>		
+		<Import file="configure.ac.template"/>		
+		<Import file="exe.wrapper.in.template"/>		
+	</Runtime>
+
+	<Dependencies>
+		<AddIn id="MonoDevelop.Core" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.11.0"/>
+	</Dependencies>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.Autotools.Commands.Deploy"
+			_label = "Deploy As Autotools Project"
+			description="Deploy as autotools project"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
+		<CommandItem id = "MonoDevelop.Autotools.Commands.Deploy"/>
+	</Extension>
+
+	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">
+	</Extension>
+</AddIn>
