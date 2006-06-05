@@ -12,6 +12,7 @@ using System.Xml;
 using MonoDevelop.Projects.Parser;
 using Nemerle.Completion;
 using NCC = Nemerle.Compiler;
+using NemerleBinding.Parser;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
@@ -29,14 +30,20 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         
         void LoadXml ()
         {
-            xmlHelp = Services.DocumentationService != null ?
-                Services.DocumentationService.GetHelpXml (this.FullyQualifiedName) : null;
-            if (xmlHelp != null)
+            if (TParser.xmlCache.ContainsKey (this.FullyQualifiedName))
+                xmlHelp = TParser.xmlCache [this.FullyQualifiedName];
+            else
             {
-                XmlNode node = xmlHelp.SelectSingleNode ("/Type/Docs/summary");
-                if (node != null)
+                xmlHelp = Services.DocumentationService != null ?
+                    Services.DocumentationService.GetHelpXml (this.FullyQualifiedName) : null;
+                if (xmlHelp != null)
                 {
-                    this.Documentation = node.InnerXml;
+                    TParser.xmlCache.Add (this.FullyQualifiedName, xmlHelp);
+                    XmlNode node = xmlHelp.SelectSingleNode ("/Type/Docs/summary");
+                    if (node != null)
+                    {
+                        this.Documentation = node.InnerXml;
+                    }
                 }
             } 
         }

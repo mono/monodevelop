@@ -16,18 +16,21 @@ using MonoDevelop.Projects;
 using NemerleBinding.Parser.SharpDevelopTree;
 using Nemerle.Completion;
 using NCC = Nemerle.Compiler;
+using System.Xml;
 
 namespace NemerleBinding.Parser
 {
     public class TParser : IParser
     {
         Engine engine;
+        internal static Dictionary<string, XmlDocument> xmlCache;
         
         public TParser ()
         {
             lock (syncObject)
             {
                 engine = new Engine ();
+                xmlCache = new Dictionary<string, XmlDocument> ();
             }
         }
         
