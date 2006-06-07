@@ -3,7 +3,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Autotools
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Autotools.dll
 
 REFS = -r:Mono.Posix \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/bin/log4net.dll  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
