@@ -1,3 +1,7 @@
+2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
+
+	* configure.in: Add new makefile to the build.
+
 2006-06-05 Scott Ellington  <scott.ellington@gmail.com>
 
 	* Extras/Makefile.am:

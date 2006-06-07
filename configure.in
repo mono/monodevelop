@@ -274,6 +274,7 @@ Extras/VersionControl/DiffWidget/Makefile
 Extras/VersionControl/Makefile
 Extras/VersionControl/VersionControl/Makefile
 Extras/CSharpBinding/Makefile
+Extras/CSharpBinding/Autotools/Makefile
 Extras/ILAsmBinding/Makefile
 Extras/NemerleBinding/Makefile
 Extras/VBNetBinding/Makefile
