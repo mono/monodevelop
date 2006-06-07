@@ -1,4 +1,8 @@
 2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
+	
+	* Makefile.am: Autotools must build before CSharpBinding
+
+2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
 
 	* configure.in: Add new makefile to the build.
 
