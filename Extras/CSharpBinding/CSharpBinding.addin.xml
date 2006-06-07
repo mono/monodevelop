@@ -131,4 +131,16 @@
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
 		<Class class = "CSharpBinding.CSharpCompilerParameters" />
 	</Extension>
+
+	<Module>
+	    <Runtime>
+	        <Import assembly="CSharpBinding.Autotools.dll"/>
+	    </Runtime>
+		<Dependencies>
+			<AddIn id="MonoDevelop.Autotools" version="0.1"/>
+		</Dependencies>
+		<Extension path = "/Autotools/SimpleSetups">
+			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
+		</Extension>
+	</Module>
 </AddIn>

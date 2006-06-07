@@ -1,3 +1,5 @@
+SUBDIRS = . Autotools
+
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/CSharpBinding.dll
 

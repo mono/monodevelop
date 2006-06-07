@@ -1,3 +1,11 @@
+2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
+
+	* CSharpBinding.addin.xml:
+	* Autotools/CSharpAutotoolsSetup.cs:
+	* Autotools/Makefile.am:
+	* Makefile.am:
+	Add optional module for implementing simple autotools support
+
 2006-05-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Parser/Parser.cs:
