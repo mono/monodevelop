@@ -1,3 +1,10 @@
+2006-06-08 Matej Urbas <matej.urbas@gmail.com>
+
+	* Monodevelop.Ide.Gui/Document.cs: Fixed the way ViewOnly documents
+	  influence save operations. One cannot save ViewOnly documents anymore.
+	* Monodevelop.Ide.Gui/ViewCommandHandlers.cs: Added OnUpdateSaveFileAs
+	  handler and fixed OnUpdateSaveFile.
+
 2006-06-05 Scott Ellington <scott.ellington@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:

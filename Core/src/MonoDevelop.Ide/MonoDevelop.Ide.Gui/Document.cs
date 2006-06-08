@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui
 */
 		public virtual void Save ()
 		{
-			if (!Window.ViewContent.IsDirty)
+			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 				return;
 
 			if (Window.ViewContent.ContentName == null) {
@@ -127,6 +127,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveAs (string filename)
 		{
+			if (Window.ViewContent.IsViewOnly)
+				return;
+
 			if (Window.ViewContent is ICustomizedCommands) {
 				if (((ICustomizedCommands)window.ViewContent).SaveAsCommand()) {
 					return;

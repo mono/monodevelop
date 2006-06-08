@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IViewContent content = window.ActiveViewContent as IViewContent;
 			if (content != null)
-				info.Enabled = content.IsDirty;
+				info.Enabled = !content.IsViewOnly && content.IsDirty;
 			else
 				info.Enabled = false;
 		}
@@ -99,6 +99,16 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnSaveFileAs ()
 		{
 			IdeApp.Workbench.FindDocument (window).SaveAs ();
+		}
+		
+		[CommandUpdateHandler (FileCommands.SaveAs)]
+		protected void OnUpdateSaveFileAs (CommandInfo info)
+		{
+			IViewContent content = window.ActiveViewContent as IViewContent;
+			if (content != null)
+				info.Enabled = !content.IsViewOnly;
+			else
+				info.Enabled = false;
 		}
 		
 		[CommandHandler (FileCommands.ReloadFile)]
