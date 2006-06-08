@@ -22,10 +22,11 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         NCC.TypeInfo tinfo;
         internal XmlDocument xmlHelp;
         
-        public Class(string name)
+        public Class(string name, CompilationUnit cu)
         {
             this.FullyQualifiedName = name;
             this.modifiers = (ModifierEnum)0;
+            this.cu = cu;
         }
         
         void LoadXml ()
@@ -52,7 +53,9 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         {
             this.cu = cu;
             this.tinfo = null;
-            this.FullyQualifiedName = tinfo.FullName.TrimEnd('*').TrimEnd ('1', '2', '3', '4').TrimEnd('`');
+            this.FullyQualifiedName = tinfo.FullName.TrimEnd('*');
+            if (this.FullyQualifiedName.Contains("`"))
+                this.FullyQualifiedName = this.FullyQualifiedName.TrimEnd ('1', '2', '3', '4').TrimEnd('`');
             
             if (tinfo.IsEnum)
                 classType = ClassType.Enum;
@@ -134,7 +137,10 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             this.cu = cu;
             this.tinfo = tinfo;
             
-            this.FullyQualifiedName = tinfo.FrameworkTypeName.TrimEnd('*').TrimEnd ('1', '2', '3', '4').TrimEnd('`');
+            this.FullyQualifiedName = tinfo.FrameworkTypeName.TrimEnd('*');
+            if (this.FullyQualifiedName.Contains("`"))
+                this.FullyQualifiedName = this.FullyQualifiedName.TrimEnd ('1', '2', '3', '4').TrimEnd('`');
+
             
             if (tinfo.IsEnum)
                 classType = ClassType.Enum;

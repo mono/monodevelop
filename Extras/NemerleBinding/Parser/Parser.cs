@@ -268,7 +268,7 @@ namespace NemerleBinding.Parser
                     {   
                         // Recover the text from the start of the method to cursor
                         string method_content = Crop (fileContent, line, column, caretLineNumber, caretColumn);
-                        NCC.OverloadPossibility[] infox = engine.RunCompletionEngine (the_method.Member, method_content);
+                        NCC.CompletionResult infox = engine.RunCompletionEngine (the_method.Member, method_content);
                         
                         return GetResults (infox, comp);                        
                     }
@@ -286,13 +286,13 @@ namespace NemerleBinding.Parser
             return null;
         }
         
-        ResolveResult GetResults (NCC.OverloadPossibility[] ovs, CompilationUnit cu)
+        ResolveResult GetResults (NCC.CompletionResult results, CompilationUnit cu)
         {
-            if (ovs.Length == 0)
+            if (results.Overloads.Length == 0)
                 return null;
             
             bool complete_types = false;
-            NCC.OverloadPossibility head = ovs[0];
+            NCC.OverloadPossibility head = results.Overloads.Head;
             if (head.Member.Name == ".ctor" || head.Member.Name == ".cctor" || head.Member is NCC.TypeInfo)
                 complete_types = true;
             
@@ -322,10 +322,26 @@ namespace NemerleBinding.Parser
             }
             else
             {
-                Class declaring = new Class (head.Member.DeclaringType, cu, false);
+                Class declaring = GetTheRealType (results.ObjectType, cu);
+                
+                if (declaring.FullyQualifiedName == "System.Object")
+                {
+                    // Try with any other member
+                    NCC.TypeInfo found = null;
+                    foreach (NCC.OverloadPossibility ov in results.Overloads)
+                    {
+                        if (ov.Member.DeclaringType.FrameworkTypeName != "System.Object")
+                        {
+                            found = ov.Member.DeclaringType;
+                            break;
+                        }
+                    }
+                    if (found != null)
+                        declaring = new Class (found, cu, false);
+                }
                 
                 LanguageItemCollection lang = new LanguageItemCollection ();
-                foreach (NCC.OverloadPossibility ov in ovs)
+                foreach (NCC.OverloadPossibility ov in results.Overloads)
                 {
                     // Do not add property getters and setters, not events adders and removers,
                     // nor overloaded operators, nor enum value__, not Nemerle internal methods
@@ -364,6 +380,34 @@ namespace NemerleBinding.Parser
                     }
                 }
                 return new ResolveResult (declaring, lang);
+            }
+        }
+        
+        private Class GetTheRealType (NCC.MType objectType, CompilationUnit cu)
+        {
+            if (objectType is NCC.MType.Class)
+            {
+                return new Class (((NCC.MType.Class)objectType).tycon, cu, false);
+            }
+            else if (objectType is NCC.MType.Array)
+            {
+                return new Class ("System.Array", cu);
+            }
+            else if (objectType is NCC.MType.Fun)
+            {
+                return GetTheRealType ((NCC.MType)((NCC.MType.Fun)objectType).to, cu);
+            }
+            else if (objectType is NCC.MType.Ref)
+            {
+                return GetTheRealType ((NCC.MType)((NCC.MType.Ref)objectType).t, cu);
+            }
+            else if (objectType is NCC.MType.Out)
+            {
+                return GetTheRealType ((NCC.MType)((NCC.MType.Out)objectType).t, cu);
+            }
+            else
+            {
+                return null;
             }
         }
         

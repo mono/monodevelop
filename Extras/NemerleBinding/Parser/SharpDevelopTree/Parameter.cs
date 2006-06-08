@@ -44,7 +44,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			}
 			this.declaringMember = declaringMember;
 			
-			LoadXml (docNode);
+			try { LoadXml (docNode); } catch { }
 		}
 		
 		public Parameter (IMember declaringMember, SR.ParameterInfo pinfo, XmlNode docNode)
@@ -53,7 +53,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 		    returnType = new ReturnType(pinfo.ParameterType);
 		    this.declaringMember = declaringMember;
 		    
-		    LoadXml (docNode);
+		    try { LoadXml (docNode); } catch { }
 		}
 	}
 }
