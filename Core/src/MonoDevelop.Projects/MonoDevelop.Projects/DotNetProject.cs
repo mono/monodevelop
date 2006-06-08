@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Text;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
@@ -23,7 +24,7 @@ namespace MonoDevelop.Projects
 	{
 		[ItemProperty]
 		string language;
-		ClrVersion clrVersion = ClrVersion.Net_1_1; 
+		ClrVersion clrVersion = ClrVersion.Net_1_1;
 		
 		IDotNetLanguageBinding languageBinding;
 		
@@ -217,7 +218,15 @@ namespace MonoDevelop.Projects
 		
 		public virtual string GetDefaultNamespace (string fileName)
 		{
-			return Name;
+			StringBuilder sb = new StringBuilder ();
+			foreach (char c in Name) {
+				if (char.IsLetterOrDigit (c) || c == '_' || c == '.')
+					sb.Append (c);
+			}
+			if (sb.Length > 0)
+				return sb.ToString ();
+			else
+				return "Application";
 		}
 		
 		// Make sure that the project references are valid for the target clr version.

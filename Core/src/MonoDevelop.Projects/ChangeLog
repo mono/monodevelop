@@ -1,3 +1,8 @@
+2006-06-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: GetDefaultNamespace now
+	  removes invalid characters from the project name. Fixes bug #78552.
+
 2006-06-02 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Fixed a bug in
