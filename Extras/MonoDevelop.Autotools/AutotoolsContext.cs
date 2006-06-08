@@ -155,7 +155,7 @@ namespace MonoDevelop.Autotools
 		public Stream GetTemplateStream ( string id )
 		{
 			//return GetType().Assembly.GetManifestResourceStream(id); 
-			return new FileStream (template_dir + id, FileMode.Open );
+			return new FileStream (template_dir + id, FileMode.Open, FileAccess.Read );
 		}
 
 		public static string GetPkgVar (string package)

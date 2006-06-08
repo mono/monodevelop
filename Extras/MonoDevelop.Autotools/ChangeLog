@@ -1,3 +1,7 @@
+2006-06-08  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* AutotoolsContext.cs: fix loading of templates to allow readonly
+
 2006-06-07  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* Makefile.am: removed CSharpBinding dll ref
