@@ -97,12 +97,14 @@ namespace MonoDevelop.WelcomePage
 			//Console.WriteLine(fs.ToString());
 			htmlControl.Html = fs.ToString();
 			//Initialize(null);
+			
+			this.IsViewOnly = true;
 		}
 		
 		void LinkMessage (object sender, EventArgs e)
 		{
-			if (htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1) return;
-			if (htmlControl.LinkMessage == null || htmlControl.LinkMessage == String.Empty)
+			if (htmlControl.LinkMessage == null || htmlControl.LinkMessage == String.Empty
+				|| htmlControl.LinkMessage.IndexOf ("monodevelop://") != -1)
 			{
 				IdeApp.Workbench.StatusBar.SetMessage (null);
 			} else
@@ -209,6 +211,5 @@ namespace MonoDevelop.WelcomePage
 				return "Less than a minute";
 			}
 		}
-
 	}
 }
