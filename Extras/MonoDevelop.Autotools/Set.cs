@@ -26,10 +26,6 @@ namespace MonoDevelop.Autotools
 	{
 		private Hashtable hashtable = new Hashtable();
 		
-		public Set()
-		{
-		}
-		
 		public void Add(object o)
 		{
 			hashtable[o] = true;
@@ -78,6 +74,6 @@ namespace MonoDevelop.Autotools
 			get {
 				return hashtable.Count == 0;
 			}
-		}		
+		}
 	}
 }

@@ -22,6 +22,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Autotools
@@ -30,6 +31,7 @@ namespace MonoDevelop.Autotools
 	{
 		bool CanDeploy ( CombineEntry entry );
 
-		Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry );
+		Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor );
 	}
 }
+

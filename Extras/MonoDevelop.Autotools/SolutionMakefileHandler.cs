@@ -21,7 +21,9 @@ Boston, MA 02111-1307, USA.
 using System;
 using System.IO;
 using System.Text;
+using System.Collections;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Autotools
 {
@@ -42,41 +44,171 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry )
+		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
 		{
-			if ( !CanDeploy ( entry ) )
-				throw new Exception ( "Not a deployable combine." );
+			monitor.BeginTask ( GettextCatalog.GetString  ("Creating Makefile.am for Solution {0}", entry.Name), 1 );			
+			Makefile mfile = new Makefile ();
 
-			Combine combine = entry as Combine;
-
-			StringBuilder subdirs = new StringBuilder();
-			subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
-			subdirs.Append ("SUBDIRS = ");
-			foreach ( CombineEntry ce in ctx.CalculateSubDirOrder ( combine ) )
+			try
 			{
-				string path = Path.GetDirectoryName (ce.RelativeFileName);
-				if (path.StartsWith ("./") )
-					path = path.Substring (2);
-				subdirs.Append (" ");
-				subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
+				if ( !CanDeploy ( entry ) )
+					throw new Exception ( GettextCatalog.GetString ("Not a deployable solution.") );
 
-				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
-				Makefile makefile;
-				if ( handler.CanDeploy ( ce ) )
+				Combine combine = entry as Combine;
+
+				StringBuilder subdirs = new StringBuilder();
+				subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
+				subdirs.Append ("SUBDIRS = ");
+				foreach ( CombineEntry ce in CalculateSubDirOrder ( combine ) )
 				{
-					makefile = handler.Deploy ( ctx, ce );
-					string outpath = Path.GetDirectoryName(ce.FileName) + "/Makefile";
-					StreamWriter writer = new StreamWriter ( outpath + ".am" );
-					makefile.Write ( writer );
-					writer.Close ();
-					ctx.AddAutoconfFile ( outpath );
+					if ( combine.BaseDirectory == ce.BaseDirectory )
+						throw new Exception ( GettextCatalog.GetString ("Child projects / solutions cannot be in the same directory as their parent") );
+					
+					if ( !ce.BaseDirectory.StartsWith (combine.BaseDirectory) )
+						throw new Exception ( GettextCatalog.GetString ("Child projects / solutions must be in sub-directories of their parent") );
+
+					string path = Path.GetDirectoryName (ce.RelativeFileName);
+					if (path.StartsWith ("./") )
+						path = path.Substring (2);
+					subdirs.Append (" ");
+					subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
+
+					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
+					Makefile makefile;
+					if ( handler.CanDeploy ( ce ) )
+					{
+						makefile = handler.Deploy ( ctx, ce, monitor );
+						string outpath = Path.GetDirectoryName(ce.FileName) + "/Makefile";
+						StreamWriter writer = new StreamWriter ( outpath + ".am" );
+						makefile.Write ( writer );
+						writer.Close ();
+						ctx.AddAutoconfFile ( outpath );
+					}
 				}
+
+				mfile.Append ( subdirs.ToString () );
+
+				monitor.Step (1);
+			}
+			finally
+			{
+				monitor.EndTask ();
+			}
+			return mfile;
+		}
+
+		// utility function for finding the correct order to process directories
+		ArrayList CalculateSubDirOrder ( Combine combine )
+		{
+			ArrayList resultOrder = new ArrayList();
+			Set dependenciesMet = new Set();
+			Set inResult = new Set();
+
+			bool added;
+			string notMet;
+			do 
+			{
+				added = false;
+				notMet = null;
+				
+				foreach (CombineEntry entry in combine.Entries) 
+				{
+					if (inResult.Contains(entry)) continue;
+
+					Set references, provides;
+					if(entry is Project)
+					{
+						Project project = entry as Project;
+
+						references = GetReferencedProjects (project);
+						provides = new Set();
+						provides.Add(project.Name);
+					} 
+					else if (entry is Combine) 
+						GetAllProjects ( entry as Combine, out provides, out references);
+					else continue;
+					
+					if (dependenciesMet.ContainsSet (references) ) 
+					{
+						resultOrder.Add (entry);
+						dependenciesMet.Union(provides);
+						inResult.Add(entry);
+						added = true;
+					} 
+					else notMet = entry.Name;
+				}
+			} while (added == true);
+
+			if (notMet != null) 
+				throw new Exception("Impossible to find a solution order that satisfies project references for '" + notMet + "'");
+
+			return resultOrder;
+		}
+		
+		// cache references
+		Hashtable projectReferences = new Hashtable();		
+		/**
+		 * returns a set of all monodevelop projects that a give
+		 * projects references
+		 */
+		Set GetReferencedProjects (Project project)
+		{
+			Set set = (Set) projectReferences[project];
+			if (set != null) return set;
+
+			set = new Set();
+
+			foreach (ProjectReference reference in project.ProjectReferences) 
+			{
+				if (reference.ReferenceType == ReferenceType.Project)
+					set.Add(reference.Reference);
 			}
 
-			Makefile mfile = new Makefile ();
-			mfile.Append ( subdirs.ToString () );
-			return mfile;
+			projectReferences[project] = set;
+			return set;
+		}
+
+		// cache references
+		Hashtable combineProjects = new Hashtable();
+		Hashtable combineReferences = new Hashtable();
+		/**
+		 * returns a set of projects that a combine contains and a set of projects
+		 * that are referenced from combine projects but not part of the combine
+		 */
+		void GetAllProjects (Combine combine, out Set projects, out Set references)
+		{
+			projects = (Set) combineProjects[combine];
+			if(projects != null) 
+			{
+				references = (Set) combineReferences[combine];
+				return;
+			}
+
+			projects = new Set();
+			references = new Set();
+			foreach (CombineEntry entry in combine.Entries) 
+			{
+				if (entry is Project) 
+				{
+					Project project = entry as Project;
+					projects.Add (project.Name);
+					references.Union ( GetReferencedProjects(project) );
+				} 
+				else if (entry is Combine) 
+				{
+					Set subProjects;
+					Set subReferences;
+					GetAllProjects ( entry as Combine, out subProjects, out subReferences);
+					
+					projects.Union (subProjects);
+					references.Union (subReferences);
+				}
+			}
+			references.Without (projects);
+			combineProjects [combine] = projects;
+			combineReferences [combine] = references;
 		}
 	}
 }
+
 

@@ -21,8 +21,6 @@ Boston, MA 02111-1307, USA.
 using System;
 using System.Collections;
 using System.IO;
-using System.Text;
-using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
@@ -53,8 +51,6 @@ namespace MonoDevelop.Autotools
 	
 	public class AddinCommandHandler : NodeCommandHandler
 	{
-		//private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		
 		[CommandHandler (Commands.Deploy)]
 		protected void OnDeploy()
 		{
@@ -74,9 +70,13 @@ namespace MonoDevelop.Autotools
 				return;
 			}
 
-			//TODO: try/catch this.  various exceptions may occur in the process
-			deployer.Deploy(combine);
+			//using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ( GettextCatalog.GetString("Autotools Output"), "md-package", false, true))	
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Autotools Output"), "md-package", true, true))	
+			{
+				deployer.Deploy (combine, monitor);
+			}
 		}		
 	}	
 }
+
 

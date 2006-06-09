@@ -37,10 +37,6 @@ namespace MonoDevelop.Autotools
 
 		AutotoolsContext context;
 
-		public SolutionDeployer ()
-		{
-		}
-
 		public bool CanDeploy ( Combine combine )
 		{
 			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
@@ -48,39 +44,55 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 		
-		public void Deploy (Combine combine)
+		public void Deploy (Combine combine, IProgressMonitor monitor )
 		{
-			context = new AutotoolsContext ( );
-			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
-			if ( !handler.CanDeploy (combine) )
+			monitor.BeginTask ( GettextCatalog.GetString ("Deploying Solution {0}", combine.Name), 1 );
+
+			try
 			{
-				// TODO: throw exception?
-				return;
+				context = new AutotoolsContext ( );
+				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
+				if ( !handler.CanDeploy (combine) )
+					throw new Exception ( GettextCatalog.GetString ("This solution cannot be deployed.") );
+
+				solution_dir = Path.GetDirectoryName(combine.FileName);
+				solution_name = combine.Name;
+				// FIXME: pull version out of AssemblyInfo.cs?
+				// or wait for http://bugzilla.ximian.com/show_bug.cgi?id=77889
+				solution_version = "0.1";
+
+				Makefile makefile = handler.Deploy ( context, combine, monitor );
+				string path = solution_dir + "/Makefile";
+				context.AddAutoconfFile ( path );
+
+				CreateAutoGenDotSH ( monitor );
+				CreateConfigureDotAC ( monitor );
+				CreateMakefileInclude ( monitor );
+
+				//AddTopLevelMakefileVars ( makefile, monitor );
+
+				StreamWriter writer = new StreamWriter ( path + ".am" );
+				makefile.Write ( writer );
+				writer.Close ();
+
+				monitor.ReportSuccess ( GettextCatalog.GetString ("Autotools files were successfully generated.") );
+				monitor.Step (1);
 			}
-
-			solution_dir = Path.GetDirectoryName(combine.FileName);
-			solution_name = combine.Name;
-			// FIXME: pull version out of AssemblyInfo.cs?
-			// or wait for http://bugzilla.ximian.com/show_bug.cgi?id=77889
-			solution_version = "0.1";
-				
-			Makefile makefile = handler.Deploy ( context, combine );
-			string path = solution_dir + "/Makefile";
-			context.AddAutoconfFile ( path );
-
-			CreateAutoGenDotSH ();
-			CreateConfigureDotAC ();
-			CreateMakefileInclude ();
-
-			AddTopLevelMakefileVars ( makefile );
-			
-			StreamWriter writer = new StreamWriter ( path + ".am" );
-			makefile.Write ( writer );
-			writer.Close ();
+			catch ( Exception e )
+			{
+				monitor.ReportError ( GettextCatalog.GetString ("Solution could not be deployed: "), e );
+			}
+			finally
+			{
+				monitor.EndTask ();
+			}
 		}
 
-		void AddTopLevelMakefileVars ( Makefile makefile )
+		/*
+		void AddTopLevelMakefileVars ( Makefile makefile, IProgressMonitor monitor)
 		{
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile.am") );
+
 			StringBuilder sb = new StringBuilder ();
 			foreach ( string dll in context.GetReferencedDlls() )
 			{
@@ -89,15 +101,18 @@ namespace MonoDevelop.Autotools
 			}
 			string vals = sb.ToString ();
 
-			makefile.SetVariable ( "DLL_REFERENCES", vals );
-			makefile.SetVariable ( "EXTRA_DIST", vals );
-			makefile.SetVariable ( "pkglib_DATA", vals );
+			//makefile.SetVariable ( "DLL_REFERENCES", vals );
+			//makefile.SetVariable ( "EXTRA_DIST", vals );
+			//makefile.SetVariable ( "pkglib_DATA", vals );
 		}
-		
-		void CreateAutoGenDotSH ()
+		*/
+
+		void CreateAutoGenDotSH (IProgressMonitor monitor)
 		{
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating autogen.sh") );
+
 			TemplateEngine templateEngine = new TemplateEngine();			
-			
+
 			templateEngine.Variables["NAME"] = solution_name;
 
 			string fileName = solution_dir + "/autogen.sh";
@@ -115,9 +130,10 @@ namespace MonoDevelop.Autotools
 			// make autogen.sh executable
 			Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
-		
-		void CreateConfigureDotAC ()
+
+		void CreateConfigureDotAC (IProgressMonitor monitor)
 		{
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
 			templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";			
 			// build compiler checks
@@ -130,7 +146,7 @@ namespace MonoDevelop.Autotools
 				compiler_checks.Append("fi\n");
 			}
 			templateEngine.Variables["COMPILER_CHECKS"] = compiler_checks.ToString();
-			
+
 			// build list of *.in files
 			StringBuilder configFiles = new StringBuilder();
 			foreach (string makefile in context.GetAutoConfFiles () ) 
@@ -166,9 +182,11 @@ namespace MonoDevelop.Autotools
 			reader.Close();
 			writer.Close();
 		}
-		
-		void CreateMakefileInclude ()
+
+		void CreateMakefileInclude (IProgressMonitor monitor)
 		{
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
+
 			string fileName = solution_dir + "/Makefile.include";
 
 			Stream stream = context.GetTemplateStream ("Makefile.include");
@@ -183,3 +201,4 @@ namespace MonoDevelop.Autotools
 		}
 	}
 }
+

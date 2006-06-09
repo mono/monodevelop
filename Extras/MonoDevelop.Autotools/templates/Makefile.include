@@ -2,18 +2,18 @@ build_sources = $(addprefix $(srcdir)/, $(FILES) $(GENERATED_FILES))
 build_resources = $(addprefix $(srcdir)/, $(RESOURCES))
 build_resources_embed = $(foreach res,$(build_resources), $(addprefix -resource:,$(res)),$(RESOURCES_PREFIX)$(notdir $(res)))
 
-build_references = $(foreach ref,$(DLL_REFERENCES), $(addprefix $(top_srcdir)/,$(ref)))
+build_references = $(DLL_REFERENCES)
 build_references_ref = $(REFERENCES)
 build_references_ref += $(foreach ref, $(build_references), -r:$(ref))
-build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), $(addprefix -r:$(top_builddir)/,$(ref)))  
+build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))  
 
 $(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_references)
 	mkdir -p $(dir $(ASSEMBLY))		
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
 
-EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN)
+EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(DLL_REFERENCES)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 DISTCLEANFILES = $(GENERATED_FILES)
 
-pkglib_SCRIPTS = $(ASSEMBLY)
+pkglib_SCRIPTS = $(ASSEMBLY) $(DLL_REFERENCES)
 bin_SCRIPTS = $(ASSEMBLY_WRAPPER)
