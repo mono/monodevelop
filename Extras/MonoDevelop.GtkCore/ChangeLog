@@ -1,3 +1,9 @@
+2006-06-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/libsteticui.dll:
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs:
+	  Track changes in the api.
+
 2006-06-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libs/*: Updated from stetic module. Several improvements.
