@@ -88,12 +88,10 @@ namespace MonoDevelop.GtkCore
 					continue;
 
 				IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, args.FileName, null);
-				
-				foreach (IClass cls in info.GetExportedClasses ())
-					if (cls.Region.FileName == args.FileName) {
+				foreach (IClass cls in info.GetExportedClasses ()) {
+					if (cls.Region.FileName == args.FileName)
 						UpdateObjectsFile (project, cls, null);
-						return;
-					}
+				}
 			}
 		}
 		
@@ -181,17 +179,21 @@ namespace MonoDevelop.GtkCore
 		static void MergeObject (XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
 		{
 			foreach (IProperty prop in widgetClass.Properties)
-				MergeProperty (objectElem, prop);
+				if (IsBrowsable (prop))
+					MergeProperty (objectElem, prop);
 				
 			foreach (IEvent ev in widgetClass.Events)
-				MergeEvent (objectElem, ev);
+				if (IsBrowsable (ev))
+					MergeEvent (objectElem, ev);
 				
 			if (wrapperClass != null) {
 				foreach (IProperty prop in wrapperClass.Properties)
-					MergeProperty (objectElem, prop);
+					if (IsBrowsable (prop))
+						MergeProperty (objectElem, prop);
 					
 				foreach (IEvent ev in wrapperClass.Events)
-					MergeEvent (objectElem, ev);
+					if (IsBrowsable (ev))
+						MergeEvent (objectElem, ev);
 			}
 			
 			// Remove old properties
@@ -200,11 +202,11 @@ namespace MonoDevelop.GtkCore
 			foreach (XmlElement xprop in objectElem.SelectNodes ("itemgroups/itemgroup/property")) {
 				string cat = ((XmlElement)xprop.ParentNode).GetAttribute ("name");
 				IProperty prop = widgetClass.Properties [xprop.GetAttribute ("name")];
-				if (prop != null && cat == GetCategory (prop))
+				if (prop != null && cat == GetCategory (prop) && IsBrowsable (prop))
 					continue;
 				if (wrapperClass != null) {
 					prop = wrapperClass.Properties [xprop.GetAttribute ("name")];
-					if (prop != null && cat == GetCategory (prop))
+					if (prop != null && cat == GetCategory (prop) && IsBrowsable (prop))
 						continue;
 				}
 				toDelete.Add (xprop);
@@ -215,11 +217,11 @@ namespace MonoDevelop.GtkCore
 			foreach (XmlElement xevent in objectElem.SelectNodes ("signals/itemgroup/signal")) {
 				string cat = ((XmlElement)xevent.ParentNode).GetAttribute ("name");
 				IEvent evnt = widgetClass.Events [xevent.GetAttribute ("name")];
-				if (evnt != null && cat == GetCategory (evnt))
+				if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (evnt))
 					continue;
 				if (wrapperClass != null) {
 					evnt = wrapperClass.Events [xevent.GetAttribute ("name")];
-					if (evnt != null && cat == GetCategory (evnt))
+					if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (evnt))
 						continue;
 				}
 				toDelete.Add (xevent);
@@ -306,6 +308,27 @@ namespace MonoDevelop.GtkCore
 				}
 			}
 			return "";
+		}
+		
+		static bool IsBrowsable (IMember member)
+		{
+			IProperty prop = member as IProperty;
+			if (prop != null && (!prop.CanGet || !prop.CanSet))
+				return false;
+
+			foreach (IAttributeSection section in member.Attributes) {
+				foreach (IAttribute at in section.Attributes) {
+					if (at.Name == "Browsable" || at.Name == "BrowsableAttribute" || at.Name == "System.ComponentModel.BrowsableAttribute"|| at.Name == "System.ComponentModel.Browsable") {
+						if (at.PositionalArguments != null && at.PositionalArguments.Length > 0) {
+							CodePrimitiveExpression exp = at.PositionalArguments [0] as CodePrimitiveExpression;
+							if (exp != null && exp.Value != null && exp.Value is bool) {
+								return (bool) exp.Value;
+							}
+						}
+					}
+				}
+			}
+			return true;
 		}
 		
 		static public IClass[] GetExportableClasses (Project project)

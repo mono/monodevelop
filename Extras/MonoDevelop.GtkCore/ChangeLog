@@ -1,3 +1,11 @@
+2006-06-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: If a member has a [Browsable(false)]
+	  attribute, don't add it to the objects.xml file. Also don't add
+	  read-only properties.
+	* lib/*: Updated from stetic module. Fixes bugs #78622 and #78620.
+	  Adds an icon for expander and fixes a bug in ColorButton (fix by ml)
+
 2006-06-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/libsteticui.dll:
