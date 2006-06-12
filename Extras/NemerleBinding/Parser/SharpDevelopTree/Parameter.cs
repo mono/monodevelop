@@ -29,13 +29,13 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			if (realType is NCC.MType.Ref)
 			{
 			    NCC.MType.Ref rt = (NCC.MType.Ref)realType;
-			    returnType = new ReturnType ((NCC.MType)rt.t);
+			    returnType = new ReturnType ((NCC.MType)rt.t.Fix ());
 			    modifier |= ParameterModifier.Ref;
 			}
 			else if (realType is NCC.MType.Out)
 			{
 			    NCC.MType.Out rt = (NCC.MType.Out)realType;
-			    returnType = new ReturnType ((NCC.MType)rt.t);
+			    returnType = new ReturnType ((NCC.MType)rt.t.Fix ());
 			    modifier |= ParameterModifier.Out;
 			}
 			else

@@ -172,7 +172,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 
             modifiers = mod;
             
-            if (addMembers)
+            if (addMembers || tinfo.IsDelegate)
             {
                 foreach (NCC.IMember member in tinfo.GetMembers ())
                 {

@@ -395,15 +395,15 @@ namespace NemerleBinding.Parser
             }
             else if (objectType is NCC.MType.Fun)
             {
-                return GetTheRealType ((NCC.MType)((NCC.MType.Fun)objectType).to, cu);
+                return GetTheRealType (((NCC.MType.Fun)objectType).to.Fix (), cu);
             }
             else if (objectType is NCC.MType.Ref)
             {
-                return GetTheRealType ((NCC.MType)((NCC.MType.Ref)objectType).t, cu);
+                return GetTheRealType (((NCC.MType.Ref)objectType).t.Fix (), cu);
             }
             else if (objectType is NCC.MType.Out)
             {
-                return GetTheRealType ((NCC.MType)((NCC.MType.Out)objectType).t, cu);
+                return GetTheRealType (((NCC.MType.Out)objectType).t.Fix (), cu);
             }
             else
             {
