@@ -27,13 +27,22 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
-		<Command id = "MonoDevelop.Autotools.Commands.Deploy"
-			_label = "Deploy As Autotools Project"
-			description="Deploy as autotools project"/>
+		<Command id = "MonoDevelop.Autotools.Commands.Generate"
+			_label = "Generate Autotools Files"
+			description="Generate autotools files for a solution"/>
+		<Command id = "MonoDevelop.Autotools.Commands.Create"
+			_label = "Create Distributable"
+			icon = "md-package"
+			description="Create a compressed distributable for a solution"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
-		<CommandItem id = "MonoDevelop.Autotools.Commands.Deploy"/>
+		<ItemSet id = "CombineAutotoolsMenu" _label = "Autotools" 
+			insertafter= "CombineBuildGroupSeparator">
+			<CommandItem id = "MonoDevelop.Autotools.Commands.Generate"/>
+			<CommandItem id = "MonoDevelop.Autotools.Commands.Create"/>
+		</ItemSet>
+		<SeparatorItem id = "Separator1" />
 	</Extension>
 
 	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">

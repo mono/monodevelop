@@ -192,8 +192,6 @@ namespace MonoDevelop.Autotools
 							throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
 										reference.Reference ) );
 
-						Console.WriteLine ( project.GetRelativeChildPath ( GetProjectAssembly (refp) ) );
-						
 						projectReferences.WriteLine (" \\");
 						projectReferences.Write ("\t");
 						projectReferences.Write ( project.GetRelativeChildPath ( GetProjectAssembly (refp) ) );

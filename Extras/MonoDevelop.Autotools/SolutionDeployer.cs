@@ -37,6 +37,15 @@ namespace MonoDevelop.Autotools
 
 		AutotoolsContext context;
 
+		public bool IsDeployed ( Combine combine )
+		{
+			string dir = Path.GetDirectoryName(combine.FileName) + "/";
+
+			if ( File.Exists ( dir + "configure.ac" ) && File.Exists ( dir + "autogen.sh" ) )
+				return true;
+			return false;
+		}
+		
 		public bool CanDeploy ( Combine combine )
 		{
 			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
@@ -81,10 +90,25 @@ namespace MonoDevelop.Autotools
 			catch ( Exception e )
 			{
 				monitor.ReportError ( GettextCatalog.GetString ("Solution could not be deployed: "), e );
+				DeleteGeneratedFiles ( context );
 			}
 			finally
 			{
 				monitor.EndTask ();
+			}
+		}
+
+		void DeleteGeneratedFiles ( AutotoolsContext context )
+		{
+			foreach ( string file in context.GetAutoConfFiles () )
+				if ( File.Exists ( file ) ) File.Delete ( file );
+							
+			string[] other_files = new string [] { "autogen.sh", "configure.ac", "Makefile.include" };
+
+			foreach ( string file in other_files )
+			{
+				string path = solution_dir + "/" + file;
+				if ( File.Exists ( path ) ) File.Delete ( path );
 			}
 		}
 

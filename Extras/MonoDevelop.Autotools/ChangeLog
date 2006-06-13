@@ -1,3 +1,14 @@
+2006-06-13  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SimpleProjectMakefileHandler.cs: 
+	remove Console.WriteLine
+	* SolutionDeployer.cs:
+	* MonoDevelop.Autotools.addin.xml:
+	* DeployHandler.cs:
+	* Makefile.am:
+	Add new functionality which wraps 'make dist'
+	and other changes
+
 2006-06-09  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SimpleProjectMakefileHandler.cs:
