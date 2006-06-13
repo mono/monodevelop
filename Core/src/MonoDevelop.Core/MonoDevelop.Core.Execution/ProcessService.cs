@@ -62,7 +62,7 @@ namespace MonoDevelop.Core.Execution
 			if (exited != null)
 				p.Exited += exited;
 				
-			if(arguments == null || arguments.Length == 0)
+			if(String.IsNullOrEmpty (arguments))
 				p.StartInfo = new ProcessStartInfo (command);
 			else
 				p.StartInfo = new ProcessStartInfo (command, arguments);

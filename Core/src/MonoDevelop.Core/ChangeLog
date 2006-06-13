@@ -1,3 +1,13 @@
+2006-06-12 John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs:
+	* MonoDevelop.Core/FileUtilityService.cs:
+	* MonoDevelop.Core/PropertyService.cs:
+	* MonoDevelop.Core/SystemAssemblyService.cs: use String.IsNullOrEmpty
+	in a few places
+
 2006-06-03 John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Core/FileUtilityService.cs: fix warning

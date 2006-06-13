@@ -41,7 +41,7 @@ namespace MonoDevelop.Core
 			}
 
 			configDirectory = Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
-			if (configDirectory == null || configDirectory == "")
+			if (String.IsNullOrEmpty (configDirectory))
 				configDirectory = System.IO.Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".config");
 
 			configDirectory = System.IO.Path.Combine (configDirectory, "MonoDevelop");

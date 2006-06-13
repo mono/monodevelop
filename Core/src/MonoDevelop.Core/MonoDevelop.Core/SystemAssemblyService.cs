@@ -231,7 +231,7 @@ namespace MonoDevelop.Core
 
 			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
 			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
-			if (libpath == null || libpath.Length == 0) {
+			if (String.IsNullOrEmpty (libpath)) {
 				string path_dirs = Environment.GetEnvironmentVariable ("PATH");
 				foreach (string pathdir in path_dirs.Split (':')) {
 					if (pathdir == null)
@@ -372,7 +372,7 @@ namespace MonoDevelop.Core
 			p.Start ();
 			p.WaitForExit ();
 			string ret = p.StandardOutput.ReadToEnd ().Trim ();
-			if (ret == null || ret.Length == 0)
+			if (String.IsNullOrEmpty (ret))
 				return String.Empty;
 			return ret;
 		}

@@ -57,7 +57,7 @@ namespace MonoDevelop.Core.AddIns
 
 		public bool TreeNodeExists (string path)
 		{
-			if (path == null || path.Length == 0)
+			if (String.IsNullOrEmpty (path))
 				return false;
 			string[] splitPath = path.Split('/');
 			IAddInTreeNode curPath = root;
@@ -149,7 +149,7 @@ namespace MonoDevelop.Core.AddIns
 		
 		DefaultAddInTreeNode CreatePath(DefaultAddInTreeNode localRoot, string path)
 		{
-			if (path == null || path.Length == 0) {
+			if (String.IsNullOrEmpty (path)) {
 				return localRoot;
 			}
 			string[] splittedPath = path.Split(new char[] {'/'});
@@ -181,7 +181,7 @@ namespace MonoDevelop.Core.AddIns
 		/// </exception>
 		public IAddInTreeNode GetTreeNode(string path)
 		{
-			if (path == null || path.Length == 0) {
+			if (String.IsNullOrEmpty (path)) {
 				return root;
 			}
 			

@@ -115,7 +115,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		void WriteText (string text, int leftMargin)
 		{
-			if (text == null || text == "")
+			if (String.IsNullOrEmpty (text))
 				return;
 
 			int n = 0;

@@ -128,7 +128,7 @@ namespace MonoDevelop.Core
 		{
 			// Fixme: 260 is the hardcoded maximal length for a path on my Windows XP system
 			//        I can't find a .NET property or method for determining this variable.
-			if (fileName == null || fileName.Length == 0 || fileName.Length >= 260) {
+			if (String.IsNullOrEmpty (fileName) || fileName.Length >= 260) {
 				return false;
 			}
 			
