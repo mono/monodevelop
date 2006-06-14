@@ -153,15 +153,31 @@ namespace NemerleBinding.Parser
         
         public LanguageItemCollection CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName)
         {
-            return null;
+            Project currentProj = IdeApp.ProjectOperations.CurrentSelectedProject;
+            string fileContent = "";
+            foreach (ProjectFile file in currentProj.ProjectFiles)
+            {
+                if (file.Name == fileName)
+                {
+                    fileContent = file.Data;
+                    break;
+                }
+            }
+            ResolveResult res = real_resolve (parserContext, caretLine, caretColumn, fileName, fileContent);
+            return res.Members;
         }
 
         public LanguageItemCollection IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
         {
             return null;
         }
-        
+
         public ResolveResult Resolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+        {
+            return real_resolve (parserContext, caretLineNumber, caretColumn, fileName, fileContent);
+        }
+        
+        public ResolveResult real_resolve (IParserContext parserContext, int caretLineNumber, int caretColumn, string fileName, string fileContent)
         {
             try
             {
@@ -190,7 +206,7 @@ namespace NemerleBinding.Parser
                 else
                 {
                     INemerleMethod the_method = null;
-                    int line = 0, column = 0;
+                    int line = 0, column = 0, end_line = 0, end_column = 0;
                     foreach (AbstractMethod m in the_class.Methods)
                     {
                         if (m.BodyRegion.BeginLine <= caretLineNumber &&
@@ -200,6 +216,8 @@ namespace NemerleBinding.Parser
                             the_method = (INemerleMethod)m;
                             line = m.BodyRegion.BeginLine;
                             column = m.BodyRegion.BeginColumn;
+                            end_line = m.BodyRegion.EndLine;
+                            end_column = m.BodyRegion.EndColumn;
                             break;
                         }
                     }
@@ -217,6 +235,8 @@ namespace NemerleBinding.Parser
                                     the_method = (INemerleMethod)p.Getter;
                                     line = p.GetterRegion.BeginLine;
                                     column = p.GetterRegion.BeginColumn;
+                                    end_line = p.BodyRegion.EndLine;
+                                    end_column = p.BodyRegion.EndColumn;
                                     break;
                                 }
                             }
@@ -229,6 +249,8 @@ namespace NemerleBinding.Parser
                                     the_method = (INemerleMethod)p.Setter;
                                     line = p.SetterRegion.BeginLine;
                                     column = p.SetterRegion.BeginColumn;
+                                    end_line = p.BodyRegion.EndLine;
+                                    end_column = p.BodyRegion.EndColumn;
                                     break;
                                 }
                             }
@@ -244,6 +266,8 @@ namespace NemerleBinding.Parser
                                     the_method = (INemerleMethod)p.Getter;
                                     line = p.GetterRegion.BeginLine;
                                     column = p.GetterRegion.BeginColumn;
+                                    end_line = p.BodyRegion.EndLine;
+                                    end_column = p.BodyRegion.EndColumn;
                                     break;
                                 }
                             }
@@ -256,6 +280,8 @@ namespace NemerleBinding.Parser
                                     the_method = (INemerleMethod)p.Setter;
                                     line = p.SetterRegion.BeginLine;
                                     column = p.SetterRegion.BeginColumn;
+                                    end_line = p.BodyRegion.EndLine;
+                                    end_column = p.BodyRegion.EndColumn;
                                     break;
                                 }
                             }
@@ -267,14 +293,15 @@ namespace NemerleBinding.Parser
                     else
                     {   
                         // Recover the text from the start of the method to cursor
-                        string method_content = Crop (fileContent, line, column, caretLineNumber, caretColumn);
-                        NCC.CompletionResult infox = engine.RunCompletionEngine (the_method.Member, method_content);
+                        string method_start = Crop (fileContent, line, column, caretLineNumber, caretColumn);
+                        string method_end = Crop (fileContent, caretLineNumber, caretColumn, end_line, end_column) + "}";
+                        // System.Console.WriteLine (method_start + method_end);
+                        NCC.CompletionResult infox = engine.RunCompletionEngine ((NCC.MethodBuilder)the_method.Member,
+                            method_start + method_end, method_start.Length);
                         
-                        return GetResults (infox, comp);                        
+                        return GetResults (infox, comp, false);                        
                     }
                 }
-                
-                return null;
             }
             catch(Exception ex)
             {
@@ -282,11 +309,9 @@ namespace NemerleBinding.Parser
                 Console.WriteLine (ex.StackTrace);
                 return null;
             }
-            
-            return null;
         }
         
-        ResolveResult GetResults (NCC.CompletionResult results, CompilationUnit cu)
+        ResolveResult GetResults (NCC.CompletionResult results, CompilationUnit cu, bool completeLocals)
         {
             if (results.Overloads.Length == 0)
                 return null;
@@ -343,6 +368,9 @@ namespace NemerleBinding.Parser
                 LanguageItemCollection lang = new LanguageItemCollection ();
                 foreach (NCC.OverloadPossibility ov in results.Overloads)
                 {
+                    if (ov is NCC.LocalValueCompletionPossibility && !completeLocals)
+                        continue;
+                    
                     // Do not add property getters and setters, not events adders and removers,
                     // nor overloaded operators, nor enum value__, not Nemerle internal methods
                     if (ov.Member.Name.StartsWith("_N") || ov.Member.Name.StartsWith("get_") ||
@@ -431,7 +459,7 @@ namespace NemerleBinding.Parser
                 else
                     sb.Append (lines[i] + "\n");
             }
-            return sb.ToString ().TrimStart (' ', '{');
+            return sb.ToString (); //.TrimStart (' ', '{');
         }
         
         ///////// IParser Interface END
