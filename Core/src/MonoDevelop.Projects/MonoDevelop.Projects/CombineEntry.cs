@@ -17,6 +17,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Projects
 {
@@ -32,6 +33,8 @@ namespace MonoDevelop.Projects
 		string path;
 		
 		IFileFormat fileFormat;
+		
+		DeployTargetCollection deployTargets;
 		
 		public CombineEntry ()
 		{
@@ -160,6 +163,15 @@ namespace MonoDevelop.Projects
 					NotifyModified ();
 					OnActiveConfigurationChanged (new ConfigurationEventArgs (this, value));
 				}
+			}
+		}
+		
+		[ItemProperty]
+		public DeployTargetCollection DeployTargets {
+			get { 
+				if (deployTargets == null)
+					deployTargets = new DeployTargetCollection ();
+				return deployTargets;
 			}
 		}
 		

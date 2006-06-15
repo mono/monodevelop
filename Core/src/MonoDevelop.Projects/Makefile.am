@@ -17,6 +17,10 @@ MonoDevelop.Projects.Ambience/AmbienceService.cs \
 MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
 MonoDevelop.Projects.Ambience/IAmbience.cs \
 MonoDevelop.Projects.Ambience/NetAmbience.cs \
+MonoDevelop.Projects.Deployment/DeployHandler.cs \
+MonoDevelop.Projects.Deployment/DeployService.cs \
+MonoDevelop.Projects.Deployment/DeployTarget.cs \
+MonoDevelop.Projects.Deployment/IDeployHandler.cs \
 MonoDevelop.Projects/Language.cs \
 MonoDevelop.Projects/LanguageService.cs \
 MonoDevelop.Projects/LanguageBindingService.cs \

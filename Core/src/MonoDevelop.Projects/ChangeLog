@@ -1,3 +1,19 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectsServices.cs: Added DeployService.
+	* MonoDevelop.Projects/CombineEntry.cs: Added a list of deploy
+	  targets.
+	* MonoDevelop.Projects.addin.xml: Registered new deploy service and
+	  extension point.
+	  
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Added new files.
+
+	* MonoDevelop.Projects.Deployment/DeployHandler.cs:
+	* MonoDevelop.Projects.Deployment/DeployService.cs:
+	* MonoDevelop.Projects.Deployment/DeployTarget.cs:
+	* MonoDevelop.Projects.Deployment/IDeployHandler.cs: New files.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/LanguageBindingService.cs:

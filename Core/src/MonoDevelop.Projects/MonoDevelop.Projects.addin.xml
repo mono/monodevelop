@@ -27,6 +27,8 @@
 		       class = "MonoDevelop.Projects.LanguageBindingService"/>
 		<Class id    = "AmbienceService"
 		       class = "MonoDevelop.Projects.Ambience.AmbienceService"/>
+		<Class id    = "DeployService"
+		       class = "MonoDevelop.Projects.Deployment.DeployService"/>
 	</Extension>
 	
 	<Extension path = "/Workspace/Applications">
@@ -66,4 +68,6 @@
 		<Class id = "PostBuildStep" class = "MonoDevelop.Projects.Project+PostBuildStep" />
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/DeployHandlers" extension-nodes="Class" description="Deployment handlers. Specified classes must implement IDeployHandler.">
+	</Extension>
 </AddIn>
