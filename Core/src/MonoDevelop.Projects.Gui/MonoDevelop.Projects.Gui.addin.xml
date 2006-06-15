@@ -26,6 +26,9 @@
 			<DialogPanel id = "Compile"
 			             _label = "Compile"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileProjectOptions"/>
+			<DialogPanel id = "Deployment"
+			             _label = "Deployment"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeploymentOptionsPanel"/>
 		</DialogPanel>
 	</Extension>
 	
@@ -41,6 +44,9 @@
 			<DialogPanel id = "Build"
 						_label = "Build Properties"
 						class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptions"/>
+			<DialogPanel id = "Deployment"
+			             _label = "Deployment"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeploymentOptionsPanel"/>
 		</DialogPanel>
 
 		<DialogPanel id = "Configurations"
@@ -53,6 +59,7 @@
 			             _label = "Configurations"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
 	</Extension>
-
-
+	
+	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IDeployTargetEditor.">
+	</Extension>
 </AddIn>

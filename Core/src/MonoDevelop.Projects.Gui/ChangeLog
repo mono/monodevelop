@@ -1,3 +1,19 @@
+2006-05-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Added new deployment panel
+	  and extension point.
+	* MonoDevelop.Projects.Gui.mdp: Added new files and updated references.
+	* Base.glade: Added new deploymnet panel and support dialogs.
+	* Makefile.am: Added new files.
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Implement deploy command.
+	* MonoDevelop.Ide.addin.xml: Added new command which shows a list of
+	  available deploy targets.
+	* MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs:
+	* MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs: New files.
+
 2006-05-24  Grzegorz Sobański  <silk@boktor.net>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

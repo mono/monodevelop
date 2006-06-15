@@ -13,12 +13,15 @@ REFS =  -r:System \
 
 FILES= \
 MonoDevelop.Projects.Gui/IconService.cs \
+MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs \
 MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs \
+MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs \
@@ -35,6 +38,8 @@ MonoDevelop.Projects.Gui.Completion/ListWindow.cs \
 MonoDevelop.Projects.Gui.Completion/TextUtilities.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
+MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs \
+MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs \
 MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
 
 RES= \

@@ -1,15 +1,15 @@
-<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="MonoDevelop.Projects.Gui" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects.Gui" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/" assembly="MonoDevelop.Projects.Gui" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
@@ -43,14 +43,16 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Deployment" subtype="Directory" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -58,5 +60,9 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
 </Project>
