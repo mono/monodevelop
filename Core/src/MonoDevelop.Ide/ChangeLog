@@ -1,3 +1,21 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Use the new extension
+	  listeners to read extensions.
+	  
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Added null check.
+	
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs: After running the
+	  add-in manager, load newly activated add-ins.
+	  
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Create new toolbars and
+	  main menu when new items are added by add-ins.
+
 2006-06-08 Matej Urbas <matej.urbas@gmail.com>
 
 	* Monodevelop.Ide.Gui/Document.cs: Fixed the way ViewOnly documents

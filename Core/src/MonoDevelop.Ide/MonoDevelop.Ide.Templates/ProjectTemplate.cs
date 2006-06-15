@@ -219,12 +219,13 @@ namespace MonoDevelop.Ide.Templates
 
 		static ProjectTemplate()
 		{
-			LoadTemplates ((ProjectTemplateCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/ProjectTemplates", typeof (ProjectTemplateCodon)));
+			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/ProjectTemplates", OnExtensionChanged);
 		}
 
-		static void LoadTemplates (ProjectTemplateCodon[] codons)
+		static void OnExtensionChanged (ExtensionAction action, object item)
 		{
-			foreach (ProjectTemplateCodon codon in codons) {
+			if (action == ExtensionAction.Add) {
+				ProjectTemplateCodon codon = (ProjectTemplateCodon) item;
 				try {
 					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.ID, codon.Resource));
 				} catch (Exception e) {

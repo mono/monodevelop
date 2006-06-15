@@ -140,14 +140,19 @@ namespace MonoDevelop.Ide.Gui
 		
 			commandService.EnableUpdate ();
 			
-			foreach (CommandHandler handler in Runtime.AddInService.GetTreeItems ("/MonoDevelop/IDE/StartupHandlers", typeof(CommandHandler))) {
+			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/IDE/StartupHandlers", OnExtensionChanged);
+			monitor.EndTask ();
+		}
+		
+		static void OnExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
 				try {
-					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (handler, null);
+					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (item, null);
 				} catch (Exception ex) {
 					Runtime.LoggingService.Error (ex);
 				}
 			}
-			monitor.EndTask ();
 		}
 			
 		public static void Run ()

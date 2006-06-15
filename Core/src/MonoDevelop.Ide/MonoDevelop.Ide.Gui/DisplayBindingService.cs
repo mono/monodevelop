@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.CodeDom.Compiler;
 
@@ -28,7 +29,7 @@ namespace MonoDevelop.Ide.Gui
 	public class DisplayBindingService : AbstractService
 	{
 		readonly static string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
-		DisplayBindingCodon[] bindings = null;
+		List<DisplayBindingCodon> bindings = null;
 
 		public IDisplayBinding LastBinding {
 			get {
@@ -97,7 +98,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override void InitializeService ()
 		{
-			bindings = (DisplayBindingCodon[]) Runtime.AddInService.GetTreeItems (displayBindingPath, typeof(DisplayBindingCodon));
+			bindings = new List<DisplayBindingCodon> ();
+			Runtime.AddInService.RegisterExtensionItemListener (displayBindingPath, OnExtensionChanged);
+		}
+		
+		void OnExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add)
+				bindings.Add ((DisplayBindingCodon)item);
 		}
 	}
 }

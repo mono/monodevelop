@@ -54,10 +54,12 @@ namespace MonoDevelop.Ide.Gui
 		EventHandler contextChangedHandler;
 		Hashtable padWindows = new Hashtable ();
 		
-		WorkbenchContextCodon[] contextCodons;
 		bool initialized;
 		IWorkbenchWindow lastActive;
 		bool ignorePageSwitch;
+		
+		Gtk.Toolbar[] toolBars;
+		Gtk.MenuBar menubar;
 
 		public SdiWorkbenchLayout () {
 			contextChangedHandler = new EventHandler (OnContextChanged);
@@ -92,6 +94,9 @@ namespace MonoDevelop.Ide.Gui
 					toolbarFrame.AddBar ((DockToolbar)workbench.ToolBars[i]);
 				}
 			}
+			
+			toolBars = workbench.ToolBars;
+			menubar = workbench.TopMenu;
 			
 			// Create the docking widget and add it to the window.
 			dock = new Dock ();
@@ -290,22 +295,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreateDefaultLayout()
 		{
-			contextCodons = (WorkbenchContextCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/Contexts", typeof(WorkbenchContextCodon));
-			PadContentCollection collection;
-			
-			// Set the pads specific of each context
-			foreach (WorkbenchContextCodon codon in contextCodons)
-			{
-				collection = new PadContentCollection ();
-				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.ID);
-				padCollections [ctx] = collection;
-
-				foreach (ContextPadCodon padCodon in codon.Pads) {
-					IPadContent pad = workbench.PadContentCollection [padCodon.ID];
-					if (pad != null)
-						collection.Add (pad);
-				}
-			}
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Contexts", OnExtensionChanged);
 			
 			Runtime.LoggingService.Debug ("Default Layout created.");
 			dockLayout = new DockLayout (dock);
@@ -316,6 +306,22 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		void OnExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				WorkbenchContextCodon codon = (WorkbenchContextCodon) item;
+				PadContentCollection collection = new PadContentCollection ();
+				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.ID);
+				padCollections [ctx] = collection;
+
+				foreach (ContextPadCodon padCodon in codon.Pads) {
+					IPadContent pad = workbench.PadContentCollection [padCodon.ID];
+					if (pad != null)
+						collection.Add (pad);
+				}
+			}
+		}
+		
 		public void Detach()
 		{
 			workbench.ContextChanged -= contextChangedHandler;
@@ -491,6 +497,36 @@ namespace MonoDevelop.Ide.Gui
 				DockItem item = dock.GetItemByName (content.Id);
 				if (item != null)
 					item.LongName = GetPadWindow (content).Title;
+			}
+			
+			// If the toolbar or menubar has changed, replace it in the layout
+			
+			DefaultWorkbench wb = (DefaultWorkbench) workbench;
+			if (wb.ToolBars != toolBars) {
+				string cl = toolbarFrame.CurrentLayout;
+				DockToolbarFrameStatus mem = toolbarFrame.GetStatus ();
+				toolBars = wb.ToolBars;
+				toolbarFrame.ClearToolbars ();
+				if (toolBars != null) {
+					foreach (DockToolbar tb in toolBars) {
+						tb.ShowAll ();
+						toolbarFrame.AddBar (tb);
+					}
+				}
+				toolbarFrame.SetStatus (mem);
+				toolbarFrame.CurrentLayout = cl;
+			}
+
+			if (wb.TopMenu != menubar) {
+				Gtk.Box parent = (Gtk.Box) menubar.Parent;
+				int pos = ((Gtk.Box.BoxChild) parent [menubar]).Position;
+				
+				parent.PackStart (wb.TopMenu, false, false, 0);
+				((Gtk.Box.BoxChild) parent [wb.TopMenu]).Position = pos;
+				wb.TopMenu.ShowAll ();
+				
+				parent.Remove (menubar);
+				menubar = wb.TopMenu;
 			}
 		}
 		

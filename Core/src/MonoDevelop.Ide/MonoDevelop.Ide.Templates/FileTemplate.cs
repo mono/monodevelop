@@ -193,12 +193,13 @@ namespace MonoDevelop.Ide.Templates
 		
 		static FileTemplate()
 		{
-			LoadTemplates ((FileTemplateCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/FileTemplates", typeof (FileTemplateCodon)));
+			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/FileTemplates", OnExtensionChanged);
 		}
 
-		static void LoadTemplates (FileTemplateCodon[] codons)
+		static void OnExtensionChanged (ExtensionAction action, object item)
 		{
-			foreach (FileTemplateCodon codon in codons) {
+			if (action == ExtensionAction.Add) {
+				FileTemplateCodon codon = (FileTemplateCodon) item;
 				try {
 					FileTemplate t = LoadFileTemplate (codon.AddIn, codon.Resource);
 					t.id = codon.ID;

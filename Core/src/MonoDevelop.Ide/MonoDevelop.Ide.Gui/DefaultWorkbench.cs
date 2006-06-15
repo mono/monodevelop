@@ -180,6 +180,28 @@ namespace MonoDevelop.Ide.Gui
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 			foreach (Gtk.Toolbar t in toolbars)
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
+				
+			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+		}
+		
+		void OnExtensionChanged (string path)
+		{
+			bool changed = false;
+			
+			if (path.StartsWith (mainMenuPath)) {
+				TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+				changed = true;
+			}
+			
+			if (path.StartsWith (toolbarsPath)) {
+				toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
+				foreach (Gtk.Toolbar t in toolbars)
+					t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
+				changed = true;
+			}
+			
+			if (changed && layout != null)
+				layout.RedrawAllComponents();
 		}
 				
 		public void CloseContent(IViewContent content)
@@ -550,6 +572,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			RedrawAllComponents ();
+			
+			// Subscribe to changes in the extension
+			Runtime.AddInService.RegisterExtensionItemListener (viewContentPath, OnExtensionChanged, false);
+		}
+		
+		void OnExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				PadCodon codon = (PadCodon) item;
+				ShowPad (codon.Pad);
+				
+				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);
+				if (codon.Label != null)
+					win.Title = codon.Label;
+				if (codon.Icon != null)
+					win.Icon = codon.Icon;
+
+				RedrawAllComponents ();
+			}
 		}
 		
 		// Handle keyboard shortcuts

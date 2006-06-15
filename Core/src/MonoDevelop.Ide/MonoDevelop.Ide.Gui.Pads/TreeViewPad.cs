@@ -696,8 +696,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			ITreeNavigator nav = GetRootNode ();
 			XmlElement rootNode = parent ["Node"];
-			NodeState state = NodeState.FromXml (rootNode);
-			nav.RestoreState (state);
+			if (rootNode != null) {
+				NodeState state = NodeState.FromXml (rootNode);
+				nav.RestoreState (state);
+			}
 		}
 		
 		TypeNodeBuilder GetTypeNodeBuilder (Type type)
