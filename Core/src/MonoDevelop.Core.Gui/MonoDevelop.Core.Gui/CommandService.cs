@@ -48,9 +48,13 @@ namespace MonoDevelop.Core.Gui
 		
 		public void LoadCommands (string addinPath)
 		{
-			object[] commandCodons = Runtime.AddInService.GetTreeItems (addinPath);
-			foreach (Command cmd in commandCodons)
-				manager.RegisterCommand (cmd, null);
+			Runtime.AddInService.RegisterExtensionItemListener (addinPath, OnExtensionChange);
+		}
+		
+		void OnExtensionChange (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add)
+				manager.RegisterCommand (item as Command, null);
 		}
 		
 		public void EnableUpdate ()

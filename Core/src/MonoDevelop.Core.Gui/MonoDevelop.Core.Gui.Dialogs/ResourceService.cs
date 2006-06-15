@@ -61,8 +61,13 @@ namespace MonoDevelop.Core.Gui
 			stockMappings = new Hashtable ();
 			iconFactory.AddDefault ();
 
-			StockIconCodon[] icons = (StockIconCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/StockIcons", typeof(StockIconCodon));
-			foreach (StockIconCodon icon in icons) {
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/StockIcons", OnExtensionChange);
+		}
+		
+		void OnExtensionChange (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				StockIconCodon icon = (StockIconCodon) item;
 				foreach (Assembly a in icon.AddIn.RuntimeLibraries.Values) {
 					try {
 						System.IO.Stream s = a.GetManifestResourceStream (icon.Resource);
