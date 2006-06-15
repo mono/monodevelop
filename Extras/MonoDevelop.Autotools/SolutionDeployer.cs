@@ -59,12 +59,13 @@ namespace MonoDevelop.Autotools
 
 			try
 			{
-				context = new AutotoolsContext ( );
+				solution_dir = Path.GetDirectoryName(combine.FileName);
+				
+				context = new AutotoolsContext ( solution_dir );
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
 				if ( !handler.CanDeploy (combine) )
 					throw new Exception ( GettextCatalog.GetString ("This solution cannot be deployed.") );
 
-				solution_dir = Path.GetDirectoryName(combine.FileName);
 				solution_name = combine.Name;
 				// FIXME: pull version out of AssemblyInfo.cs?
 				// or wait for http://bugzilla.ximian.com/show_bug.cgi?id=77889
@@ -75,10 +76,10 @@ namespace MonoDevelop.Autotools
 				context.AddAutoconfFile ( path );
 
 				CreateAutoGenDotSH ( monitor );
-				CreateConfigureDotAC ( monitor );
+				CreateConfigureDotAC ( combine, monitor );
 				CreateMakefileInclude ( monitor );
 
-				//AddTopLevelMakefileVars ( makefile, monitor );
+				AddTopLevelMakefileVars ( makefile, monitor );
 
 				StreamWriter writer = new StreamWriter ( path + ".am" );
 				makefile.Write ( writer );
@@ -112,7 +113,6 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		/*
 		void AddTopLevelMakefileVars ( Makefile makefile, IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile.am") );
@@ -120,16 +120,24 @@ namespace MonoDevelop.Autotools
 			StringBuilder sb = new StringBuilder ();
 			foreach ( string dll in context.GetReferencedDlls() )
 			{
+				string dll_name = Path.GetFileName  ( dll );
+
+				string libdir = solution_dir + "/lib/";
+				if ( !Directory.Exists ( libdir ) ) Directory.CreateDirectory ( libdir );
+					
+				string newPath = libdir + dll_name;
+				File.Copy ( dll, newPath , true );
+				
+				newPath = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, newPath );
 				sb.Append (' ');
-				sb.Append ( dll );
+				sb.Append ( newPath );
 			}
 			string vals = sb.ToString ();
 
-			//makefile.SetVariable ( "DLL_REFERENCES", vals );
-			//makefile.SetVariable ( "EXTRA_DIST", vals );
-			//makefile.SetVariable ( "pkglib_DATA", vals );
+			makefile.SetVariable ( "DLL_REFERENCES", vals );
+			makefile.SetVariable ( "EXTRA_DIST", "$(DLL_REFERENCES)" );
+			makefile.SetVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
 		}
-		*/
 
 		void CreateAutoGenDotSH (IProgressMonitor monitor)
 		{
@@ -155,11 +163,34 @@ namespace MonoDevelop.Autotools
 			Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-		void CreateConfigureDotAC (IProgressMonitor monitor)
+		void CreateConfigureDotAC ( Combine combine, IProgressMonitor monitor )
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
 			templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";			
+			// add solution configuration options
+			StringBuilder config_options = new StringBuilder ();
+			foreach ( IConfiguration config in combine.Configurations )
+			{
+				string name = config.Name.ToLower();
+				string def = config == combine.ActiveConfiguration ? "YES" : "NO";
+				string ac_var = "enable_" + name;
+				config_options.AppendFormat ( "AC_ARG_ENABLE({0},\n", name );
+				config_options.AppendFormat ("	AC_HELP_STRING([--enable-{0}],\n", name );
+				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", config.Name, def );
+				config_options.AppendFormat ( "		{0}=yes, {0}=no)\n", ac_var );
+				config_options.AppendFormat ( "AM_CONDITIONAL({0}, test x${1} = xyes)\n", ac_var.ToUpper(), ac_var );
+				config_options.AppendFormat ( "if test \"x${0}\" = \"xyes\" ; then\n", ac_var );
+				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
+			}
+			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
+			config_options.AppendFormat ( "AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
+					+ combine.ActiveConfiguration.Name.ToUpper()  );
+			
+			
+			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
+			
+			
 			// build compiler checks
 			StringBuilder compiler_checks = new StringBuilder();
 			foreach (string compiler in context.GetCommandChecks () ) 

@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Reflection;
+using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -62,49 +63,149 @@ namespace MonoDevelop.Autotools
 				TemplateEngine templateEngine = new TemplateEngine();			
 				ISimpleAutotoolsSetup setup = FindSetupForProject ( project );
 				
-				// we are using the 'Release' configuration 
-				AbstractProjectConfiguration config = project.Configurations["Release"] as AbstractProjectConfiguration;
-				
-				if (config == null)
-					throw new Exception( GettextCatalog.GetString ("No 'Release' configuration in project '{0}'", project.Name ) );
-
-				// Process some .Net specific variables
-				if ( config is DotNetProjectConfiguration )
+				Set wrapped_exes = new Set ();
+				StringBuilder conf_vars = new StringBuilder ();
+				foreach ( DotNetProjectConfiguration config in project.Configurations )
 				{
-					DotNetProjectConfiguration dnconfig = config as DotNetProjectConfiguration;
-					string assembly = project.GetRelativeChildPath ( GetProjectAssembly (project) );
+					conf_vars.AppendFormat ("if ENABLE_{0}\n", config.Name.ToUpper () );
+					string assembly = project.GetRelativeChildPath ( config.CompiledOutputName );
+
+					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
+							setup.GetCompilerCommand ( project, config.Name ) );
+					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_FLAGS = {0}\n",
+							setup.GetCompilerFlags ( project, config.Name ) );
+
+					// add check for compiler command in configure.ac
+					ctx.AddCommandCheck ( setup.GetCompilerCommand ( project, config.Name ) );
 					
-					DotNetProject dnp = project as DotNetProject;
-					if ( dnp != null )
-						templateEngine.Variables["LANGUAGE"] = AutotoolsContext.EscapeStringForAutomake( dnp.LanguageName);
-					templateEngine.Variables["ASSEMBLY"] = AutotoolsContext.EscapeStringForAutomake (assembly);
-					
-					switch (dnconfig.CompileTarget) 
+					conf_vars.AppendFormat ( "ASSEMBLY = {0}\n", 
+							AutotoolsContext.EscapeStringForAutomake (assembly) );
+
+					string target;
+					switch (config.CompileTarget) 
 					{
 						case CompileTarget.Exe:
-							templateEngine.Variables["COMPILE_TARGET"] = "exe";
+							target = "exe";
 							break;
 						case CompileTarget.Library:
-							templateEngine.Variables["COMPILE_TARGET"] = "library";
+							target = "library";
 							break;
 						case CompileTarget.WinExe:
-							templateEngine.Variables["COMPILE_TARGET"] = "winexe";
+							target = "winexe";
 							break;
 						case CompileTarget.Module:
-							templateEngine.Variables["COMPILE_TARGET"] = "module";
+							target = "module";
 							break;
 						default:
-							throw new Exception( GettextCatalog.GetString ("Unknown target {0}", dnconfig.CompileTarget ) );
+							throw new Exception( GettextCatalog.GetString ("Unknown target {0}", config.CompileTarget ) );
+					}
+					conf_vars.AppendFormat ( "COMPILE_TARGET = {0}\n", target );
+
+					if ( config.CompileTarget == CompileTarget.Exe || 
+								config.CompileTarget == CompileTarget.WinExe  )
+					{
+						string assembly_name = Path.GetFileName ( assembly );
+						string wrapper;
+						if ( !wrapped_exes.Contains ( assembly_name ) )
+						{
+							wrapper = CreateExeWrapper ( ctx, 
+									assembly,  
+									Path.GetDirectoryName (project.FileName), 
+									monitor );
+							wrapped_exes.Add ( assembly_name );
+						}
+						else wrapper = GetExeWrapperFromAssembly ( assembly );
+
+						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER = {0}\n", wrapper );
+						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER_IN = {0}.in\n", wrapper );
 					}
 
-					if (dnconfig.CompileTarget == CompileTarget.Exe || 
-							dnconfig.CompileTarget == CompileTarget.WinExe) 
+					// for project references, we need a ref to the dll for the current configuration
+					StringWriter projectReferences = new StringWriter();
+					foreach (ProjectReference reference in project.ProjectReferences) 
 					{
-						string wrapper = CreateExeWrapper ( ctx, assembly,  Path.GetDirectoryName (project.FileName), monitor );
-						templateEngine.Variables["ASSEMBLY_WRAPPER"] = wrapper;
-						templateEngine.Variables["ASSEMBLY_WRAPPER_IN"] = wrapper + ".in";  	
+						if (reference.ReferenceType == ReferenceType.Project) 
+						{
+							Project refp = null;
+							Combine c = project.RootCombine;
+
+							if (c != null) refp = c.FindProject (reference.Reference);
+
+							if (refp == null)
+								throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
+											reference.Reference ) );
+
+							DotNetProjectConfiguration dnpc = refp.Configurations[config.Name] as DotNetProjectConfiguration;
+							if ( dnpc == null )
+								throw new Exception ( GettextCatalog.GetString ("Could not add reference to project '{0}'", refp.Name) );
+							
+							projectReferences.WriteLine (" \\");
+							projectReferences.Write ("\t");
+							projectReferences.Write ( project.GetRelativeChildPath ( dnpc.CompiledOutputName ) );
+						} 
 					}
+					conf_vars.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
+					conf_vars.AppendFormat ( "BUILD_DIR = {0}\n", project.GetRelativeChildPath ( config.OutputDirectory ) );
+					conf_vars.Append ( "endif\n" );
 				}
+				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();
+
+				// grab pkg-config references
+				StringWriter references = new StringWriter();
+				Set pkgs = new Set();
+				StringBuilder copy_dlls = new StringBuilder ();
+				StringWriter dllReferences = new StringWriter();
+				foreach(ProjectReference reference in project.ProjectReferences) 
+				{
+					if(reference.ReferenceType == ReferenceType.Gac) 
+					{
+						// Get pkg-config keys
+						String pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
+						if (pkg != "MONO-SYSTEM") 
+						{
+							if ( pkgs.Contains(pkg) ) continue;
+							pkgs.Add(pkg);
+
+							references.WriteLine (" \\");
+							references.Write ("\t$(");
+							references.Write (AutotoolsContext.GetPkgVar(pkg));
+							references.Write ("_LIBS)");
+							ctx.AddRequiredPackage (pkg);
+						} 
+						else 
+						{
+							references.WriteLine (" \\");
+							references.Write ("\t-r:");
+							AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
+							references.Write (assembly.Name);
+							references.Write ("");
+						}
+					} 
+					else if (reference.ReferenceType == ReferenceType.Assembly) 
+					{
+						string assemblyPath = Path.GetFullPath (reference.Reference);
+						string libdll_path = ctx.AddReferencedDll ( assemblyPath );
+
+						// use reference in local directory (make sure it is there)
+						//string newPath = config.OutputDirectory + "/" + Path.GetFileName ( assemblyPath );
+						//if ( !File.Exists ( newPath ) ) File.Copy ( assemblyPath , newPath );				
+						//newPath = project.GetRelativeChildPath ( newPath );
+
+						string newPath = "$(BUILD_DIR)/" + Path.GetFileName ( assemblyPath );
+						copy_dlls.AppendFormat ( "	cp -f {0} {1}\n", project.GetRelativeChildPath (libdll_path), newPath );
+
+						dllReferences.WriteLine (" \\");
+						dllReferences.Write ("\t");
+						dllReferences.Write ( newPath );
+					} 
+					else if (reference.ReferenceType == ReferenceType.Project) continue; // handled above
+					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not support yet", 
+								reference.ReferenceType.ToString() ) );
+				}
+				templateEngine.Variables["REFERENCES"] = references.ToString();
+				templateEngine.Variables["COPY_DLLS"] = copy_dlls.ToString();
+				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
+				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
 
 				/* Collect file groups: Such as resources, code files, etc...
 				 * files are currently split into groups depending on their BuildAction setting
@@ -133,90 +234,13 @@ namespace MonoDevelop.Autotools
 					list.Add(projectFile.RelativePath);
 				}
 
-				// Collect references
-				StringWriter references = new StringWriter();
-				StringWriter dllReferences = new StringWriter();
-				StringWriter projectReferences = new StringWriter();
-				Set pkgs = new Set();
-				foreach(ProjectReference reference in project.ProjectReferences) 
-				{
-					if(reference.ReferenceType == ReferenceType.Gac) 
-					{
-						// Get pkg-config keys
-						String pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
-						if(pkg != "MONO-SYSTEM") 
-						{
-							if(pkgs.Contains(pkg)) continue;
-							pkgs.Add(pkg);
-
-							references.WriteLine (" \\");
-							references.Write ("\t$(");
-							references.Write (AutotoolsContext.GetPkgVar(pkg));
-							references.Write ("_LIBS)");
-							ctx.AddRequiredPackage (pkg);
-						} 
-						else 
-						{
-							references.WriteLine (" \\");
-							references.Write ("\t-r:");
-							AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
-							references.Write (assembly.Name);
-							references.Write ("");
-						}
-					} 
-					else if(reference.ReferenceType == ReferenceType.Assembly) 
-					{
-						if ( !reference.LocalCopy )
-							throw new Exception ( "Referenced assemblies must have a local copy." );
-
-						string assemblyPath = Path.GetFullPath (reference.Reference);
-
-						// use reference in local directory (make sure it is there)
-						string newPath = config.OutputDirectory + "/" + Path.GetFileName ( assemblyPath );
-						if ( !File.Exists ( newPath ) ) File.Copy ( assemblyPath , newPath );				
-						newPath = project.GetRelativeChildPath ( newPath );
-						
-						dllReferences.WriteLine (" \\");
-						dllReferences.Write ("\t");
-						dllReferences.Write ( newPath );
-						//ctx.AddReferencedDll ( newPath );
-					} 
-					else if (reference.ReferenceType == ReferenceType.Project) 
-					{
-						Project refp = null;
-						Combine c = project.RootCombine;
-
-						if (c != null) refp = c.FindProject (reference.Reference);
-						
-						if (refp == null)
-							throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
-										reference.Reference ) );
-
-						projectReferences.WriteLine (" \\");
-						projectReferences.Write ("\t");
-						projectReferences.Write ( project.GetRelativeChildPath ( GetProjectAssembly (refp) ) );
-					} 
-					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not support yet", 
-								reference.ReferenceType.ToString() ) );
-				}
-				templateEngine.Variables["REFERENCES"] = references.ToString();
-				templateEngine.Variables["DLL_REFERENCES"] = dllReferences.ToString();
-				templateEngine.Variables["PROJECT_REFERENCES"] = projectReferences.ToString();
-				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
-				templateEngine.Variables["PROJECT_TYPE"] = AutotoolsContext.EscapeStringForAutomake(project.ProjectType); 
-				templateEngine.Variables["ASSEMBLY_COMPILER_COMMAND"] = setup.GetCompilerCommand (project);
-				templateEngine.Variables["ASSEMBLY_COMPILER_FLAGS"] = setup.GetCompilerFlags (project);
-
-				// add check for compiler command in configure.ac
-				ctx.AddCommandCheck ( setup.GetCompilerCommand ( project ) );
-
 				// write out various variables ( RESOURCES, EXTRAS, ... )
-				foreach(string group in groups.Keys) 
+				foreach (string group in groups.Keys) 
 				{
-					ArrayList files = (ArrayList) groups[group];
-					StringWriter gwriter = new StringWriter();
+					ArrayList files = (ArrayList) groups [group];
+					StringWriter gwriter = new StringWriter ();
 
-					if(files.Count > 2) 
+					if (files.Count > 2) 
 					{
 						gwriter.WriteLine("\\");
 
@@ -224,8 +248,8 @@ namespace MonoDevelop.Autotools
 						{
 							string file = (string) files[i];
 							file = project.GetRelativeChildPath (file);
-							gwriter.Write("\t" + AutotoolsContext.EscapeStringForAutomake(file));
-							if(i+1 < files.Count)
+							gwriter.Write ("\t" + AutotoolsContext.EscapeStringForAutomake (file));
+							if (i+1 < files.Count)
 								gwriter.Write(" \\");
 
 							gwriter.WriteLine("");
@@ -253,23 +277,24 @@ namespace MonoDevelop.Autotools
 
 				monitor.Step (1);
 			}
-			finally
-			{
-				monitor.EndTask ();
-			}
-
+			finally	{ monitor.EndTask (); }
 			return makefile;
+		}
+
+		static string GetExeWrapperFromAssembly ( string assembly )
+		{
+			string basename = assembly;
+			if (basename.EndsWith(".exe"))
+				basename = basename.Substring(0, basename.Length-4);
+
+			return Path.GetFileName(basename).ToLower();			
 		}
 
 		string CreateExeWrapper ( AutotoolsContext context , string assembly, string baseDir, IProgressMonitor monitor )
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating wrapper script for executable.") );
 
-			string basename = assembly;
-
-			if(basename.EndsWith(".exe"))
-				basename = basename.Substring(0, basename.Length-4);
-			string wrapperName = Path.GetFileName(basename).ToLower();			
+			string wrapperName = GetExeWrapperFromAssembly ( assembly );
 
 			TemplateEngine templateEngine = new TemplateEngine();
 			templateEngine.Variables["ASSEMBLY"] = Path.GetFileName(assembly);
@@ -288,27 +313,6 @@ namespace MonoDevelop.Autotools
 
 			context.AddAutoconfFile ( path );
 			return wrapperName;
-		}
-
-		DotNetProjectConfiguration GetProjectConfig (Project project)
-		{
-			if (! (project is DotNetProject))
-				return null;
-
-			DotNetProject dotNetProject = (DotNetProject) project;
-
-			DotNetProjectConfiguration config =
-				(DotNetProjectConfiguration) dotNetProject.Configurations["Release"];
-
-			return config;
-		}
-
-		string GetProjectAssembly (Project project)
-		{
-			DotNetProjectConfiguration config = GetProjectConfig (project);		
-			//string assembly = project.GetRelativeChildPath (config.CompiledOutputName);
-			string assembly = config.CompiledOutputName;
-			return assembly;
 		}
 	}
 }

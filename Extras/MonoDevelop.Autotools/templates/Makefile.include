@@ -7,13 +7,9 @@ build_references_ref = $(REFERENCES)
 build_references_ref += $(foreach ref, $(build_references), -r:$(ref))
 build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))  
 
-$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_references)
-	mkdir -p $(dir $(ASSEMBLY))		
-	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
-
-EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(DLL_REFERENCES)
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) 
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)
 DISTCLEANFILES = $(GENERATED_FILES)
 
-pkglib_SCRIPTS = $(ASSEMBLY) $(DLL_REFERENCES)
+pkglib_SCRIPTS = $(ASSEMBLY) 
 bin_SCRIPTS = $(ASSEMBLY_WRAPPER)

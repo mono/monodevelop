@@ -33,9 +33,15 @@ namespace MonoDevelop.Autotools
 		
 		ArrayList autoconfConfigFiles = new ArrayList();
 		Set referencedPackages = new Set();
-		//Set globalDllReferences = new Set();
+		Set globalDllReferences = new Set();
 		Set compilers = new Set ();
-
+		string base_dir;
+		
+		public AutotoolsContext ( string base_directory )
+		{
+			base_dir = base_directory;
+		}
+		
 		public void AddRequiredPackage ( string pkg_name )
 		{
 			referencedPackages.Add (pkg_name);
@@ -48,16 +54,14 @@ namespace MonoDevelop.Autotools
 
 		public void AddCommandCheck ( string command_name )
 		{
-			//if ( !compilers.Contains ( setup ) ) 
 			compilers.Add ( command_name );
 		}
 
-		/*
-		public void AddReferencedDll ( string dll_name )
+		public string AddReferencedDll ( string dll_name )
 		{
 			globalDllReferences.Add ( dll_name );
+			return base_dir + "/lib/" + Path.GetFileName (dll_name);
 		}
-		*/
 
 		public IEnumerable GetAutoConfFiles ()
 		{
@@ -74,12 +78,10 @@ namespace MonoDevelop.Autotools
 			return compilers;
 		}
 
-		/*
 		public IEnumerable GetReferencedDlls ()
 		{
 			return globalDllReferences;
 		}
-		*/
 		
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.

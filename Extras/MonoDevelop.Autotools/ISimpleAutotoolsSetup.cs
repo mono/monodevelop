@@ -28,9 +28,9 @@ namespace MonoDevelop.Autotools
 {
 	public interface ISimpleAutotoolsSetup
 	{
-		string GetCompilerCommand ( Project project );
+		string GetCompilerCommand ( Project project, string configuration );
 
-		string GetCompilerFlags ( Project project );
+		string GetCompilerFlags ( Project project, string configuration );
 		
 		bool CanDeploy ( Project project );
 	}

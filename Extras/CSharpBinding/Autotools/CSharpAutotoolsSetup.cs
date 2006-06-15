@@ -9,7 +9,7 @@ namespace CSharpBinding.Autotools
 {
 	public class CSharpAutotoolsSetup : ISimpleAutotoolsSetup
 	{
-		public string GetCompilerCommand ( Project project )
+		public string GetCompilerCommand ( Project project, string configuration )
 		{
 			if ( !this.CanDeploy ( project ) )
 				throw new Exception ( "Not a deployable project." );
@@ -17,17 +17,16 @@ namespace CSharpBinding.Autotools
 			return "mcs";
 		}
 
-		public string GetCompilerFlags ( Project project )
+		public string GetCompilerFlags ( Project project, string configuration )
 		{
 			if ( !this.CanDeploy ( project ) )
 				throw new Exception ( "Not a deployable project." );
 			
-			DotNetProject dotNetProject = (DotNetProject) project;
-				
-			DotNetProjectConfiguration config =
-			(DotNetProjectConfiguration) dotNetProject.Configurations["Release"];
+			DotNetProjectConfiguration config = 
+				project.Configurations [configuration] as DotNetProjectConfiguration;
+
+			if ( config == null ) return "";
 			
-			//Console.WriteLine ( config.CompilationParameters );
 			CSharpCompilerParameters parameters = (CSharpCompilerParameters) config.CompilationParameters;
 			StringWriter writer = new StringWriter();
 			
@@ -76,7 +75,5 @@ namespace CSharpBinding.Autotools
 				if ( csproj.LanguageName == "C#" ) return true;
 			return false;
 		}
-		
 	}
-	
 }
