@@ -83,7 +83,7 @@
   </Extension>
   
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "JavaBinding.JavaCompilerParameters" />
+		<DataType class = "JavaBinding.JavaCompilerParameters" />
 	</Extension>
 
 </AddIn>
