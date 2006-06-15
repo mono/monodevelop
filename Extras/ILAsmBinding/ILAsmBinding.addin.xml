@@ -44,7 +44,7 @@
   </Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "ILAsmBinding.ILAsmCompilerParameters" />
+		<DataType class = "ILAsmBinding.ILAsmCompilerParameters" />
 	</Extension>
 	
 </AddIn>
