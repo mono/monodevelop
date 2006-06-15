@@ -1,4 +1,9 @@
 2006-06-15  Scott Ellington  <scott.ellington@gmail.com> 
+	
+	* SolutionDeployer.cs: always run autogen.sh on Deploy
+	* templates/Makefile.include: clean up
+
+2006-06-15  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SimpleProjectMakefileHandler.cs:
 	* templates/exe.wrapper.in.template:

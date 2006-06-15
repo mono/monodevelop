@@ -108,11 +108,24 @@ namespace MonoDevelop.Autotools
 			if ( !HasGeneratedFiles (combine) )
 				if ( !GenerateFiles ( combine, monitor ) )  return;
 			
-			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 2 );
+			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 3 );
 			try
 			{
 				string baseDir = Path.GetDirectoryName ( combine.FileName);
 	
+				ProcessWrapper ag_process = Runtime.ProcessService.StartProcess ( "sh", 
+						"autogen.sh", 
+						baseDir, 
+						monitor.Log, 
+						monitor.Log, 
+						null );
+				ag_process.WaitForOutput ();
+				
+				if ( ag_process.ExitCode > 0 )
+					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'","autogen.sh") );
+				
+				monitor.Step ( 1 );
+
 				StringWriter sw = new StringWriter ();
 				LogTextWriter chainedOutput = new LogTextWriter ();
 				chainedOutput.ChainWriter (monitor.Log);
@@ -127,7 +140,7 @@ namespace MonoDevelop.Autotools
 				process.WaitForOutput ();
 
 				if ( process.ExitCode > 0 )
-					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running 'make dist'") );
+					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'", "make dist") );
 
 				monitor.Step ( 1 );
 
