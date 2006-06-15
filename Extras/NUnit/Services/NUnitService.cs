@@ -42,7 +42,7 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitService : AbstractService
 	{
-		ITestProvider[] providers;
+		ArrayList providers = new ArrayList ();
 		UnitTest rootTest;
 		Pad resultsPad;
 		
@@ -59,8 +59,16 @@ namespace MonoDevelop.NUnit
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
 			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
-			providers = (ITestProvider[]) Runtime.AddInService.GetTreeItems ("/Services/NUnit/TestProviders", typeof(ITestProvider));
-			foreach (ITestProvider provider in providers) {
+			Runtime.AddInService.RegisterExtensionItemListener ("/Services/NUnit/TestProviders", OnExtensionChange);
+		}
+		
+		void OnExtensionChange (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+				ITestProvider provider = item as ITestProvider;
+				providers.Add (provider);
+				
 				Type[] types = provider.GetOptionTypes ();
 				if (types != null) {
 					foreach (Type t in types) {
