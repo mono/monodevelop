@@ -10,13 +10,13 @@ REFS = -r:Mono.Posix \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll  \
-	$(GNOME_SHARP_LIBS) \ 
+	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) 
 
 FILES = \
 	AssemblyInfo.cs		\
 	AutotoolsContext.cs	\
-	DeployHandler.cs	\
+	Commands.cs	\
 	Handler.cs \
 	IMakefileHandler.cs	\
 	ISimpleAutotoolsSetup.cs \

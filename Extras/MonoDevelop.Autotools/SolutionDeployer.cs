@@ -24,6 +24,8 @@ using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
 
 using Mono.Unix.Native;
 
@@ -37,7 +39,7 @@ namespace MonoDevelop.Autotools
 
 		AutotoolsContext context;
 
-		public bool IsDeployed ( Combine combine )
+		public bool HasGeneratedFiles ( Combine combine )
 		{
 			string dir = Path.GetDirectoryName(combine.FileName) + "/";
 
@@ -53,9 +55,9 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 		
-		public void Deploy (Combine combine, IProgressMonitor monitor )
+		public bool GenerateFiles (Combine combine, IProgressMonitor monitor )
 		{
-			monitor.BeginTask ( GettextCatalog.GetString ("Deploying Solution {0}", combine.Name), 1 );
+			monitor.BeginTask ( GettextCatalog.GetString ("Generating Autotools files for Solution {0}", combine.Name), 1 );
 
 			try
 			{
@@ -64,7 +66,7 @@ namespace MonoDevelop.Autotools
 				context = new AutotoolsContext ( solution_dir );
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
 				if ( !handler.CanDeploy (combine) )
-					throw new Exception ( GettextCatalog.GetString ("This solution cannot be deployed.") );
+					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
 
 				solution_name = combine.Name;
 				// FIXME: pull version out of AssemblyInfo.cs?
@@ -90,20 +92,72 @@ namespace MonoDevelop.Autotools
 			}
 			catch ( Exception e )
 			{
-				monitor.ReportError ( GettextCatalog.GetString ("Solution could not be deployed: "), e );
+				monitor.ReportError ( GettextCatalog.GetString ("Autotools files could not be generated: "), e );
 				DeleteGeneratedFiles ( context );
+				return false;
 			}
 			finally
 			{
 				monitor.EndTask ();
 			}
+			return true;
+		}
+
+		public void Deploy ( Combine combine, string targetDir, IProgressMonitor monitor  )
+		{
+			if ( !HasGeneratedFiles (combine) )
+				if ( !GenerateFiles ( combine, monitor ) )  return;
+			
+			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 2 );
+			try
+			{
+				string baseDir = Path.GetDirectoryName ( combine.FileName);
+	
+				StringWriter sw = new StringWriter ();
+				LogTextWriter chainedOutput = new LogTextWriter ();
+				chainedOutput.ChainWriter (monitor.Log);
+				chainedOutput.ChainWriter (sw);
+
+				ProcessWrapper process = Runtime.ProcessService.StartProcess ( "make", 
+						"dist", 
+						baseDir, 
+						chainedOutput, 
+						monitor.Log, 
+						null );
+				process.WaitForOutput ();
+
+				if ( process.ExitCode > 0 )
+					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running 'make dist'") );
+
+				monitor.Step ( 1 );
+
+				// FIXME: hackish way to get the created tarball's filename
+				string output = sw.ToString();
+				int targz = output.LastIndexOf  ( "tar.gz" );
+				int begin = output.LastIndexOf ( '>', targz );
+
+				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ); 
+				
+				File.Copy ( baseDir + "/" + filename, targetDir + "/" + filename, true );
+				monitor.Step ( 1 );
+			}
+			catch ( Exception e )
+			{
+				monitor.ReportError ( GettextCatalog.GetString ("Solution could not be deployed: "), e );
+				return;
+			}
+			finally 
+			{
+				monitor.EndTask ();
+			}
+			monitor.ReportSuccess ( GettextCatalog.GetString ( "Solution was succesfully deployed" ) );
 		}
 
 		void DeleteGeneratedFiles ( AutotoolsContext context )
 		{
 			foreach ( string file in context.GetAutoConfFiles () )
 				if ( File.Exists ( file ) ) File.Delete ( file );
-							
+
 			string[] other_files = new string [] { "autogen.sh", "configure.ac", "Makefile.include" };
 
 			foreach ( string file in other_files )
@@ -124,10 +178,10 @@ namespace MonoDevelop.Autotools
 
 				string libdir = solution_dir + "/lib/";
 				if ( !Directory.Exists ( libdir ) ) Directory.CreateDirectory ( libdir );
-					
+
 				string newPath = libdir + dll_name;
 				File.Copy ( dll, newPath , true );
-				
+
 				newPath = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, newPath );
 				sb.Append (' ');
 				sb.Append ( newPath );
@@ -186,11 +240,11 @@ namespace MonoDevelop.Autotools
 			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
 			config_options.AppendFormat ( "AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
 					+ combine.ActiveConfiguration.Name.ToUpper()  );
-			
-			
+
+
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
-			
-			
+
+
 			// build compiler checks
 			StringBuilder compiler_checks = new StringBuilder();
 			foreach (string compiler in context.GetCommandChecks () ) 

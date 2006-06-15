@@ -28,7 +28,10 @@ namespace MonoDevelop.Autotools
 		
 		public bool CanDeploy (CombineEntry entry)
 		{
-			return true;
+			Combine combine = entry as Combine;
+			if ( combine == null ) return false;
+			SolutionDeployer deployer = new SolutionDeployer ();
+			return deployer.CanDeploy ( combine );
 		}
 		
 		public DeployTarget CreateTarget (CombineEntry entry)
@@ -52,7 +55,9 @@ namespace MonoDevelop.Autotools
 		
 		public override void Deploy (IProgressMonitor monitor, CombineEntry entry)
 		{
-			monitor.Log.WriteLine ("Deployed!");
+			Combine combine = entry as Combine;
+			SolutionDeployer deployer = new SolutionDeployer ();
+			deployer.Deploy ( combine, targetDir, monitor );
 		}
 		
 		public override void CopyFrom (DeployTarget other)

@@ -1,3 +1,18 @@
+2006-06-15  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SimpleProjectMakefileHandler.cs:
+	* templates/exe.wrapper.in.template:
+	pass runtime parameters on to exe wrapper
+	* Handler.cs:
+	* SolutionDeployer.cs:
+	* MonoDevelop.Autotools.addin.xml:
+	* Commands.cs:
+	Moved 'make dist' functionality into SolutionDeployer to
+	be consumed by the new IDeployHandler interface and removed
+	'Create Distributable' command.	
+	* Makefile.am: rename DeployHandler to Commands and
+	removed a trailing space.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Handler.cs: Implemented a basic IDeployHandler and the

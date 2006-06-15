@@ -111,6 +111,7 @@ namespace MonoDevelop.Autotools
 							wrapper = CreateExeWrapper ( ctx, 
 									assembly,  
 									Path.GetDirectoryName (project.FileName), 
+									config.CommandLineParameters,
 									monitor );
 							wrapped_exes.Add ( assembly_name );
 						}
@@ -290,7 +291,11 @@ namespace MonoDevelop.Autotools
 			return Path.GetFileName(basename).ToLower();			
 		}
 
-		string CreateExeWrapper ( AutotoolsContext context , string assembly, string baseDir, IProgressMonitor monitor )
+		string CreateExeWrapper ( AutotoolsContext context , 
+				string assembly, 
+				string baseDir, 
+				string parameters,
+				IProgressMonitor monitor )
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating wrapper script for executable.") );
 
@@ -298,6 +303,7 @@ namespace MonoDevelop.Autotools
 
 			TemplateEngine templateEngine = new TemplateEngine();
 			templateEngine.Variables["ASSEMBLY"] = Path.GetFileName(assembly);
+			templateEngine.Variables["ARGS"] = parameters;
 
 			Stream stream = context.GetTemplateStream ("exe.wrapper.in.template");
 

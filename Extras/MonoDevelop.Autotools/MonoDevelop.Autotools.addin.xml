@@ -27,20 +27,15 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
-		<Command id = "MonoDevelop.Autotools.Commands.Generate"
+		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
 			_label = "Generate Autotools Files"
 			description="Generate autotools files for a solution"/>
-		<Command id = "MonoDevelop.Autotools.Commands.Create"
-			_label = "Create Distributable"
-			icon = "md-package"
-			description="Create a compressed distributable for a solution"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
 		<ItemSet id = "CombineAutotoolsMenu" _label = "Autotools" 
 			insertafter= "CombineBuildGroupSeparator">
-			<CommandItem id = "MonoDevelop.Autotools.Commands.Generate"/>
-			<CommandItem id = "MonoDevelop.Autotools.Commands.Create"/>
+			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles"/>
 		</ItemSet>
 		<SeparatorItem id = "Separator1" />
 	</Extension>
