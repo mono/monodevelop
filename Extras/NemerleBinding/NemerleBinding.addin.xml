@@ -42,7 +42,7 @@
   </Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "NemerleBinding.NemerleParameters" />
+		<DataType class = "NemerleBinding.NemerleParameters" />
 	</Extension>
 	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
