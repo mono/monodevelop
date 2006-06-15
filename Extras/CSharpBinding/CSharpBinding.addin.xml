@@ -129,7 +129,7 @@
     </Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "CSharpBinding.CSharpCompilerParameters" />
+		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
 	</Extension>
 
 	<Module>

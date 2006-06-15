@@ -1,3 +1,8 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBinding.addin.xml: Use the DataType element instead fof Class
+	  to declare serializable types.
+
 2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
 
 	* CSharpBinding.addin.xml:
