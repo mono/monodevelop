@@ -41,7 +41,7 @@
   </Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "BooBinding.BooCompilerParameters" />
+		<DataType class = "BooBinding.BooCompilerParameters" />
 	</Extension>
 	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
