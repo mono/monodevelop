@@ -1,3 +1,9 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
+	  Implemented ClearToolbars(), which removes all toolbars
+	  from the frame.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.mdp: Updated.
