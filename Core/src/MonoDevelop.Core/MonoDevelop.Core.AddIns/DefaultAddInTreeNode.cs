@@ -164,6 +164,12 @@ namespace MonoDevelop.Core.AddIns
 			return (IAddInTreeNode[]) sorted.ToArray (typeof(IAddInTreeNode));
 		}
 		
+		public object Build (object caller)
+		{
+			ArrayList subItems = BuildChildItems (caller);
+			return Codon.BuildItem (caller, subItems, null);
+		}
+		
 		/// <summary>
 		/// Builds one child item of this node using the <code>BuildItem</code>
 		/// method of the codon in the child tree. The sub item with the <code>ID</code>

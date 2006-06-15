@@ -627,15 +627,39 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		internal void EnableAddin (string id)
 		{
+			if (IsAddinEnabled (id))
+				return;
+			
 			Configuration.DisabledAddins.Remove (id);
 			SaveConfiguration ();
+
+			// Enable required add-ins
+			
+			AddinSetupInfo ainfo = GetInstalledAddin (id);
+			
+			foreach (PackageDependency dep in ainfo.Addin.Dependencies) {
+				if (dep is AddinDependency)
+					EnableAddin (((AddinDependency)dep).AddinId);
+			}
 		}
 		
 		internal void DisableAddin (string id)
 		{
-			if (IsAddinEnabled (id)) {
-				Configuration.DisabledAddins.Add (id);
-				SaveConfiguration ();
+			if (!IsAddinEnabled (id))
+				return;
+
+			Configuration.DisabledAddins.Add (id);
+			SaveConfiguration ();
+			
+			// Disable all add-ins which depend on it
+			
+			foreach (AddinSetupInfo ainfo in InternalGetInstalledAddins ()) {
+				foreach (PackageDependency dep in ainfo.Addin.Dependencies) {
+					if (dep is AddinDependency && ((AddinDependency)dep).AddinId == id) {
+						DisableAddin (ainfo.Addin.Id);
+						break;
+					}
+				}
 			}
 		}
 		

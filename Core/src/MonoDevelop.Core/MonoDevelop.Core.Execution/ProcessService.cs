@@ -17,7 +17,7 @@ namespace MonoDevelop.Core.Execution
 	public class ProcessService : AbstractService
 	{
 		ProcessHostController externalProcess;
-		ExecutionHandlerCodon[] executionHandlers;
+		ArrayList executionHandlers;
 		string remotingChannel = "unix";
 		string unixRemotingFile;
 		
@@ -112,12 +112,20 @@ namespace MonoDevelop.Core.Execution
 		
 		public IExecutionHandler GetDefaultExecutionHandler (string platformId)
 		{
-			if (executionHandlers == null)
-				executionHandlers = (ExecutionHandlerCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ExecutionHandlers", typeof(ExecutionHandlerCodon));
+			if (executionHandlers == null) {
+				executionHandlers = new ArrayList ();
+				Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ExecutionHandlers", OnExtensionChange);
+			}
 			
 			foreach (ExecutionHandlerCodon codon in executionHandlers)
 				if (codon.Platform == platformId) return codon.ExecutionHandler;
 			return null;
+		}
+		
+		void OnExtensionChange (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add)
+				executionHandlers.Add (item);
 		}
 		
 		ProcessHostController GetHost (string id, bool shared)

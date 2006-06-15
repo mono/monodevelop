@@ -123,8 +123,10 @@ namespace MonoDevelop.Core.AddIns
 				localPath.Codon = codon;
 				localPath.ConditionCollection = (ConditionCollection)extension.Conditions[codon.ID];
 				localPath.AllowedChildNodes = CodonBuilder.GetAllowedChildNodes (codon.GetType ());
+				Runtime.AddInService.NotifyNodeAdded (extension.Path, localPath);
 //				localPath.Description = CodonBuilder.GetDescription (codon.GetType ());
 			}
+			Runtime.AddInService.NotifyExtensionsAdded (extension.Path);
 		}
 		
 		/// <summary>

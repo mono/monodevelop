@@ -1,3 +1,22 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs:
+	* MonoDevelop.Core.AddIns/IAddInTreeNode.cs: Added Build method,
+	  which builds the tree node.
+	  
+	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:
+	* MonoDevelop.Core.AddIns/AddInService.cs: Added new methods for
+	  registering listeners on extension items. Listeners are notified
+	  when new items are available in an extension, as a result of
+	  loading new add-ins.
+	  
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: When enabling an
+	  add-in, make sure all required add-ins are also enabled. When disabling,
+	  make sure all dependent add-ins are disabled.
+	  
+	* MonoDevelop.Core.Execution/ProcessService.cs: Use the new extension
+	  listeners to read extensions.
+
 2006-06-12 John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.Core.AddIns/DefaultAddInTree.cs:

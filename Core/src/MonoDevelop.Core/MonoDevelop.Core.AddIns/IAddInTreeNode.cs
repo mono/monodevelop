@@ -62,7 +62,9 @@ namespace MonoDevelop.Core.AddIns
 		/// method of the codon in the child tree. The sub item with the <code>ID</code>
 		/// <code>childItemID</code> will be build.
 		/// </remarks>
-		object    BuildChildItem(string childItemID, object caller);
+		object BuildChildItem(string childItemID, object caller);
+		
+		object Build (object caller);
 		
 		string[] AllowedChildNodes { get; }
 		

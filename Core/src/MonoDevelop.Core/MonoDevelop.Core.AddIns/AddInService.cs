@@ -36,6 +36,9 @@ namespace MonoDevelop.Core.AddIns
 	public class AddInService
 	{
 		ArrayList addInLoadErrors = new ArrayList ();
+		Hashtable listeners = new Hashtable ();
+		
+		public event ExtensionEventHandler ExtensionChanged;
 		
 		internal void Initialize ()
 		{
@@ -66,6 +69,11 @@ namespace MonoDevelop.Core.AddIns
 
 		public AddinError[] AddInLoadErrors {
 			get { return (AddinError[]) addInLoadErrors.ToArray (typeof(AddinError)); }
+		}
+		
+		public void DiscardAddInLoadErrors ()
+		{
+			addInLoadErrors.Clear ();
 		}
 		
 		string[] GetAddInDirectories (out bool ignoreDefaultPath)
@@ -298,6 +306,61 @@ namespace MonoDevelop.Core.AddIns
 			PreloadAddins (null, path);
 			return AddInTreeSingleton.AddInTree.GetTreeNode (path);
 		}
+		
+		public void RegisterExtensionItemListener (string path, ExtensionItemListener listener)
+		{
+			RegisterExtensionItemListener (path, listener, true);
+		}
+		
+		public void RegisterExtensionItemListener (string path, ExtensionItemListener listener, bool notifyCurrentNodes)
+		{
+			ArrayList list = (ArrayList) listeners [path];
+			if (list == null) {
+				list = new ArrayList ();
+				listeners [path] = list;
+			}
+			list.Add (listener);
+			if (notifyCurrentNodes) {
+				foreach (object ob in GetTreeItems (path))
+					listener (ExtensionAction.Add, ob);
+			}
+		}
+		
+		public void UnregisterExtensionItemListener (string path, ExtensionItemListener listener)
+		{
+			ArrayList list = (ArrayList) listeners [path];
+			if (list == null)
+				return;
+			list.Remove (listener);
+		}
+		
+		internal void NotifyNodeAdded (string path, IAddInTreeNode node)
+		{
+			ArrayList list = (ArrayList) listeners [path];
+			if (list == null)
+				return;
+				
+			object item = node.Build (null);
+			foreach (ExtensionItemListener listener in list)
+				listener (ExtensionAction.Add, item);
+		}
+		
+		internal void NotifyExtensionsAdded (string path)
+		{
+			if (ExtensionChanged != null)
+				ExtensionChanged (path);
+		}
+		
+		internal void NotifyNodeRemoved (string path, IAddInTreeNode node)
+		{
+			ArrayList list = (ArrayList) listeners [path];
+			if (list == null)
+				return;
+				
+			object item = node.Build (null);
+			foreach (ExtensionItemListener listener in list)
+				listener (ExtensionAction.Remove, item);
+		}
 	}
 	
 	
@@ -305,5 +368,15 @@ namespace MonoDevelop.Core.AddIns
 	{
 		string Id { get; }
 		string Description { get; }
+	}
+	
+	public delegate void ExtensionEventHandler (string path);
+	
+	public delegate void ExtensionItemListener (ExtensionAction action, object item);
+	
+	public enum ExtensionAction
+	{
+		Add,
+		Remove
 	}
 }
