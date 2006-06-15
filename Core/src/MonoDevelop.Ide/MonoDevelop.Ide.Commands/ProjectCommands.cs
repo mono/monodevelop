@@ -10,10 +10,12 @@ using System.IO;
 using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -49,7 +51,8 @@ namespace MonoDevelop.Ide.Commands
 		Stop,
 		Clean,
 		CleanSolution,
-		LocalCopyReference
+		LocalCopyReference,
+		DeployTargetList
 	}
 	
 	internal class RunHandler: CommandHandler
@@ -356,6 +359,29 @@ namespace MonoDevelop.Ide.Commands
 		{
 			info.Enabled = !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted ||
 							!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+		}
+	}
+	
+	internal class DeployTargetListHandler: CommandHandler
+	{
+		protected override void Run (object dt)
+		{
+			using (MessageDialogProgressMonitor mon = new MessageDialogProgressMonitor (true, false, true, false)) {
+				((DeployTarget)dt).Deploy (mon, IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			}
+		}
+		
+		protected override void Update (CommandArrayInfo info)
+		{
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (ce != null) {
+				foreach (DeployTarget dt in ce.DeployTargets) {
+					CommandInfo cinfo = new CommandInfo ();
+					cinfo.Text = dt.Name;
+					cinfo.Icon = dt.DeployHandler.Icon;
+					info.Add (cinfo, dt);
+				}
+			}
 		}
 	}
 	

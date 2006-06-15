@@ -1,3 +1,9 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Implemented
+	  DeployTargetList command.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:

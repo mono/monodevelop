@@ -234,6 +234,10 @@
 				type = "custom"
 				widget = "MonoDevelop.Ide.Gui.ConfigurationComboBox"
 				_label = "Active Configuration" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList"
+				defaultHandler = "MonoDevelop.Ide.Commands.DeployTargetListHandler"
+				type="array"
+				_label = "Deploy target list" />
 
 
 		<!-- FileCommands -->
@@ -470,6 +474,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<ItemSet id = "CombineDeployMenu" _label = "Deploy" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
+		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
