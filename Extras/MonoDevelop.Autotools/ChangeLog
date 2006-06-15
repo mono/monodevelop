@@ -1,3 +1,11 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Handler.cs: Implemented a basic IDeployHandler and the
+	  needed support classes.
+	* MonoDevelop.Autotools.addin.xml: Registered the new deploy
+	  handler to the deploy service.
+	* Makefile.am: Added Handler.cs and updated references.
+	
 2006-06-15  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SimpleProjectMakefileHandler.cs:

@@ -47,4 +47,16 @@
 
 	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DeployHandlers">
+		<Class class="MonoDevelop.Autotools.Handler" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors">
+		<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
+	</Extension>
 </AddIn>
