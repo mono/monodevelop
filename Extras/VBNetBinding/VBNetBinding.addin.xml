@@ -89,7 +89,7 @@
   </Extension>
   
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
-		<Class class = "VBBinding.VBCompilerParameters" />
+		<DataType class = "VBBinding.VBCompilerParameters" />
 	</Extension>
 	
 </AddIn>
