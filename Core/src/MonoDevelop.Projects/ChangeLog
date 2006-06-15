@@ -1,3 +1,19 @@
+2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/LanguageBindingService.cs:
+	* MonoDevelop.Projects/ProjectService.cs: Use the new extension listeners
+	  to read extensions.
+	
+	* MonoDevelop.Projects/Project.cs: Don't cache build steps since
+	  they may change if new add-ins are activated.
+	  
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Extensions/DataTypeCodon.cs: New codon used to
+	  specify serializable types.
+	  
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2006-06-08 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: GetDefaultNamespace now

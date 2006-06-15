@@ -52,8 +52,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("DeploymentInformation")]
 		protected DeployInformation deployInformation = new DeployInformation();
 		
-		IBuildStep[] buildPipeline;
-		
 		bool isDirty = false;
 		bool filesChecked;
 		
@@ -314,7 +312,7 @@ namespace MonoDevelop.Projects
 				
 				ICompilerResult res = null;
 				
-				foreach (IBuildStep step in BuildPipeline) {
+				foreach (IBuildStep step in steps) {
 					ICompilerResult sres = step.Build (monitor, this);
 					if (sres != null) {
 						if (res != null) {
@@ -343,9 +341,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual IBuildStep[] BuildPipeline {
 			get {
-				if (buildPipeline == null)
-					buildPipeline = (IBuildStep[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/BuildPipeline", typeof(IBuildStep));
-				return buildPipeline;
+				return (IBuildStep[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/BuildPipeline", typeof(IBuildStep));
 			}
 		}
 		

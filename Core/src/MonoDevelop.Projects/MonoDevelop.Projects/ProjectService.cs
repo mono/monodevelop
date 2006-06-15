@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects
 	public class ProjectService : AbstractService, IProjectService
 	{
 		DataContext dataContext = new DataContext ();
-		ProjectBindingCodon[] projectBindings;
+		ArrayList projectBindings = new ArrayList ();
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		IFileFormat defaultProjectFormat = new MdpFileFormat ();
@@ -126,19 +126,39 @@ namespace MonoDevelop.Projects
 			formatManager.RegisterFileFormat (defaultProjectFormat);
 			formatManager.RegisterFileFormat (defaultCombineFormat);
 			
-			FileFormatCodon[] formatCodons = (FileFormatCodon[]) Runtime.AddInService.GetTreeItems("/SharpDevelop/Workbench/ProjectFileFormats", typeof(FileFormatCodon));
-			foreach (FileFormatCodon codon in formatCodons)
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
+		}
+		
+		void OnFormatExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				FileFormatCodon codon = (FileFormatCodon) item;
 				formatManager.RegisterFileFormat (codon.FileFormat);
-			
-			foreach (ClassCodon cls in Runtime.AddInService.GetTreeCodons ("/SharpDevelop/Workbench/SerializableClasses"))
-				DataContext.IncludeType (cls.Type);
-						
-			foreach (ItemPropertyCodon cls in Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/Serialization/ExtendedProperties")) {
+			}
+		}
+		
+		void OnSerializableExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add)
+				DataContext.IncludeType (((DataTypeCodon)item).Type);
+		}
+		
+		void OnPropertiesExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				ItemPropertyCodon cls = (ItemPropertyCodon) item;
 				if (cls.ClassType != null && cls.PropertyType != null)
 					DataContext.RegisterProperty (cls.ClassType, cls.PropertyName, cls.PropertyType);
 			}
-						
-			projectBindings = (ProjectBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectBindings", typeof(ProjectBindingCodon));
+		}
+		
+		void OnProjectsExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add)
+				projectBindings.Add (item);
 		}
 	}
 }

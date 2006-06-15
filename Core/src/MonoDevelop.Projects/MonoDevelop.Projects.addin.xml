@@ -52,9 +52,9 @@
 	</Extension>
 	  
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses" extension-nodes="Class" description="Classes to be registered for serialization.">
-		<Class class = "MonoDevelop.Projects.Combine" />
-		<Class class = "MonoDevelop.Projects.Project" />
-		<Class class = "MonoDevelop.Projects.DotNetProject" />
+		<DataType class = "MonoDevelop.Projects.Combine" />
+		<DataType class = "MonoDevelop.Projects.Project" />
+		<DataType class = "MonoDevelop.Projects.DotNetProject" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties" extension-nodes="ItemProperty" description="Custom properties for projects and other types.">

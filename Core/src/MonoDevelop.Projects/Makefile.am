@@ -47,6 +47,7 @@ MonoDevelop.Projects.Parser/ParseInformationEventHandler.cs \
 MonoDevelop.Projects/ProjectEventArgs.cs \
 MonoDevelop.Projects/ProjectRenameEventArgs.cs \
 MonoDevelop.Projects/ProjectService.cs \
+MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 MonoDevelop.Projects.Extensions/FileFormatCodon.cs \
 MonoDevelop.Projects.Utility/Comparers.cs \

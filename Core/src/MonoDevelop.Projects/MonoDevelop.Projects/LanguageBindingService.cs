@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.CodeDom.Compiler;
 
@@ -24,7 +25,7 @@ namespace MonoDevelop.Projects
 {
 	public class LanguageBindingService : AbstractService
 	{
-		LanguageBindingCodon[] bindings = null;
+		List<LanguageBindingCodon> bindings = null;
 		ILanguageBinding[] langs;
 		
 		public ILanguageBinding GetBindingPerLanguageName(string languagename)
@@ -50,7 +51,7 @@ namespace MonoDevelop.Projects
 			if (langs != null)
 				return langs;
 				
-			langs = new ILanguageBinding [bindings.Length];
+			langs = new ILanguageBinding [bindings.Count];
 			for (int n=0; n<langs.Length; n++)
 				langs [n] = bindings [n].LanguageBinding;
 
@@ -117,7 +118,18 @@ namespace MonoDevelop.Projects
 		public override void InitializeService ()
 		{
 			base.InitializeService ();
-			bindings = (LanguageBindingCodon[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/LanguageBindings", typeof(LanguageBindingCodon));
+			bindings = new List<LanguageBindingCodon> ();
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
+		}
+		
+		void OnExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				bindings.Add ((LanguageBindingCodon) item);
+				
+				// Make sure the langs list is re-created
+				langs = null;
+			}
 		}
 	}
 }
