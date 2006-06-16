@@ -1,3 +1,12 @@
+2006-06-16  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SolutionDeployer.cs: Deploy and GenerateFiles can now
+	take a configuration parameter
+	* Makefile.am: added new file.
+	* TarballTargetEditorWidget.cs:
+	* Handler.cs:
+	Add option to set a default configuration at deployment.
+
 2006-06-15  Scott Ellington  <scott.ellington@gmail.com> 
 	
 	* SolutionDeployer.cs: always run autogen.sh on Deploy

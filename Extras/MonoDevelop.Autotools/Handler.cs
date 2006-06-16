@@ -36,7 +36,9 @@ namespace MonoDevelop.Autotools
 		
 		public DeployTarget CreateTarget (CombineEntry entry)
 		{
-			return new TarballDeployTarget (Id);
+			TarballDeployTarget target = new TarballDeployTarget (Id);
+			target.TargetCombine = entry as Combine;
+			return target;
 		}
 	}
 	
@@ -44,6 +46,11 @@ namespace MonoDevelop.Autotools
 	{
 		[ItemProperty ("TargetDirectory")]
 		string targetDir;
+		
+		[ItemProperty ("DefaultConfiguration")]
+		string defaultConfig;
+		
+		Combine target_combine;
 		
 		public TarballDeployTarget ()
 		{
@@ -57,18 +64,32 @@ namespace MonoDevelop.Autotools
 		{
 			Combine combine = entry as Combine;
 			SolutionDeployer deployer = new SolutionDeployer ();
-			deployer.Deploy ( combine, targetDir, monitor );
+			if ( defaultConfig == null || defaultConfig == "" )
+				deployer.Deploy ( combine, targetDir, monitor );
+			else deployer.Deploy ( combine, defaultConfig, targetDir, monitor );
 		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
 			base.CopyFrom (other);
-			targetDir = ((TarballDeployTarget)other).targetDir;
+			TarballDeployTarget target = other as TarballDeployTarget;
+			targetDir = target.targetDir;
+			defaultConfig = target.defaultConfig;
 		}
 		
 		public string TargetDir {
 			get { return targetDir; }
 			set { targetDir = value; }
+		}
+		
+		public string DefaultConfiguration {
+			get { return defaultConfig; }
+			set { defaultConfig = value; }
+		}
+
+		public Combine TargetCombine {
+			get { return target_combine; }
+			set { target_combine = value; }
 		}
 	}
 	
@@ -82,28 +103,6 @@ namespace MonoDevelop.Autotools
 		public Gtk.Widget CreateEditor (DeployTarget target)
 		{
 			return new TarballTargetEditorWidget ((TarballDeployTarget) target);
-		}
-	}
-	
-	public class TarballTargetEditorWidget: Gtk.HBox
-	{
-		public TarballTargetEditorWidget (TarballDeployTarget target)
-		{
-			Gtk.Label lab = new Gtk.Label ("Deploy directory:");
-			PackStart (lab, false, false, 0);
-			
-			Gnome.FileEntry fe = new Gnome.FileEntry ("tarball-folders","Target Directory");
-			fe.GtkEntry.Text = target.TargetDir;
-			fe.Directory = true;
-			fe.Modal = true;
-			fe.UseFilechooser = true;
-			fe.FilechooserAction = Gtk.FileChooserAction.SelectFolder;
-			fe.GtkEntry.Changed += delegate (object s, EventArgs args) {
-				target.TargetDir = fe.GtkEntry.Text;
-			};
-			
-			PackStart (fe, true, true, 6);
-			ShowAll ();
 		}
 	}
 }

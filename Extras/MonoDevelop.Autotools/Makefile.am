@@ -25,6 +25,7 @@ FILES = \
 	SimpleProjectMakefileHandler.cs	\
 	SolutionDeployer.cs	\
 	SolutionMakefileHandler.cs	\
+	TarballTargetEditorWidget.cs \
 	TemplateEngine.cs
 
 RES =

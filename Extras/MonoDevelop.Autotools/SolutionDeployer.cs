@@ -57,6 +57,11 @@ namespace MonoDevelop.Autotools
 		
 		public bool GenerateFiles (Combine combine, IProgressMonitor monitor )
 		{
+			 return GenerateFiles ( combine, combine.ActiveConfiguration.Name, monitor );
+		}
+		
+		public bool GenerateFiles (Combine combine, string defaultConf, IProgressMonitor monitor )
+		{
 			monitor.BeginTask ( GettextCatalog.GetString ("Generating Autotools files for Solution {0}", combine.Name), 1 );
 
 			try
@@ -78,7 +83,7 @@ namespace MonoDevelop.Autotools
 				context.AddAutoconfFile ( path );
 
 				CreateAutoGenDotSH ( monitor );
-				CreateConfigureDotAC ( combine, monitor );
+				CreateConfigureDotAC ( combine, defaultConf, monitor );
 				CreateMakefileInclude ( monitor );
 
 				AddTopLevelMakefileVars ( makefile, monitor );
@@ -105,8 +110,12 @@ namespace MonoDevelop.Autotools
 
 		public void Deploy ( Combine combine, string targetDir, IProgressMonitor monitor  )
 		{
-			if ( !HasGeneratedFiles (combine) )
-				if ( !GenerateFiles ( combine, monitor ) )  return;
+			Deploy ( combine, combine.ActiveConfiguration.Name, targetDir, monitor  );
+		}
+		
+		public void Deploy ( Combine combine, string defaultConf, string targetDir, IProgressMonitor monitor  )
+		{
+			if ( !GenerateFiles ( combine, defaultConf, monitor ) )  return;
 			
 			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 3 );
 			try
@@ -230,7 +239,7 @@ namespace MonoDevelop.Autotools
 			Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-		void CreateConfigureDotAC ( Combine combine, IProgressMonitor monitor )
+		void CreateConfigureDotAC ( Combine combine, string defaultConf, IProgressMonitor monitor )
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
@@ -252,7 +261,7 @@ namespace MonoDevelop.Autotools
 			}
 			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
 			config_options.AppendFormat ( "AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
-					+ combine.ActiveConfiguration.Name.ToUpper()  );
+					+ defaultConf.ToUpper()  );
 
 
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
