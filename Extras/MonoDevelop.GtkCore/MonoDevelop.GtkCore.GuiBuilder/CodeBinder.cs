@@ -223,13 +223,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IClass GetClass ()
 		{
-			Console.WriteLine ("Looking for " + className);
-			
 			IClass cls = GetClass (className);
 			if (cls != null)
 				return cls;
 				
-			Console.WriteLine ("Not found");
 			// The class name may have changed. Try to guess the new name.
 			
 			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
@@ -241,7 +238,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (IsValidClass (ctx, fcls, targetObject))
 					matches.Add (fcls);
 			}
-			Console.WriteLine ("Possible classes: " + matches.Count);
 			
 			// If found the class, just return it
 			if (matches.Count == 1) {

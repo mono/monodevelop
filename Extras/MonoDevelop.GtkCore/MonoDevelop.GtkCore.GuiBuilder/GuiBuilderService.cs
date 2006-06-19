@@ -112,7 +112,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					widgetTreePad.Fill (view.EditSession.SteticProject);
 				SetDesignerLayout ();
 			}
-			else {
+			else if (IdeApp.Workbench.ActiveDocument.Content is ActionGroupView) {
+				ActiveProject = null;
+				if (widgetTreePad != null)
+					widgetTreePad.Fill (null);
+				SetDesignerLayout ();
+			} else {
 				ActiveProject = null;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (null);
@@ -322,7 +327,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal static void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;
+				CombinedDesignView view = IdeApp.Workbench.ActiveDocument.Content as CombinedDesignView;
 				if (view != null)
 					view.JumpToSignalHandler (signal);
 			}

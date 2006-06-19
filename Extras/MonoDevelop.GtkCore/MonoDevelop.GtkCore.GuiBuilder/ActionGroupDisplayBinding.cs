@@ -153,6 +153,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			CodeConstructor ctor = new CodeConstructor ();
 			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (fullName));
 			
 			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
 				new CodeMethodReferenceExpression (
@@ -203,7 +204,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						return true;
 					
 					IClass baseCls = ctx.GetClass (bt, true, true);
-					if (IsValidClass (ctx, baseCls))
+					if (baseCls != null && IsValidClass (ctx, baseCls))
 						return true;
 				}
 			}

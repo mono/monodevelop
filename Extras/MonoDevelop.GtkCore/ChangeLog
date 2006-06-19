@@ -1,3 +1,16 @@
+2006-06-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/*: Updated from Stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Switch to the
+	  designer workbench layout when selecting an action group file.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: Support jumping
+	  to signal hanlder when double-clicking it in the signals editor.
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Removed debug code.
+	
+	* templates/ActionGroup.xft.xml:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs: 
+	  Fix code generation of action groups.
+
 2006-06-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore/GtkCoreService.cs: If a member has a [Browsable(false)]

@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -148,6 +149,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (DictionaryEntry e in actionCopyMap) {
 				if (e.Value == action)
 					editor.SelectedAction = (Stetic.Wrapper.Action) e.Key;
+			}
+		}
+		
+		public override void JumpToSignalHandler (Stetic.Signal signal)
+		{
+			IClass cls = codeBinder.GetClass ();
+			foreach (IMethod met in cls.Methods) {
+				if (met.Name == signal.Handler) {
+					ShowPage (1);
+					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
+					break;
+				}
 			}
 		}
 		
