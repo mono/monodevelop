@@ -38,6 +38,9 @@
 	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for solution options.">
 		<DialogPanel id    = "Common"
 		             _label = "Common">
+			<DialogPanel id = "Information"
+			             _label = "Solution Information"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationPanel"/>
 			<DialogPanel id = "Startup"
 			             _label = "Startup Properties"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanel"/>

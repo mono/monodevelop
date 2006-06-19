@@ -13,6 +13,7 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
@@ -23,6 +24,7 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs" subtype="Code" buildaction="Compile" />

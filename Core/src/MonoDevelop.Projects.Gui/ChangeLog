@@ -1,3 +1,13 @@
+2006-06-19 Scott Ellington  <scott.ellington@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs:
+	* Base.glade:
+	* MonoDevelop.Projects.Gui.addin.xml: 
+	Added option panel for setting solution information	
+	* MonoDevelop.Projects.Gui.mdp:
+	* Makefile.am:
+	Added file
+
 2006-05-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Added new deployment panel
