@@ -1,3 +1,11 @@
+2006-06-19  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SimpleProjectMakefileHandler.cs: 
+	* AutotoolsContext.cs: 
+	* SolutionDeployer.cs: 
+	use the new CombineEntry.Version property
+	* TarballTargetEditorWidget.cs: default to active config
+
 2006-06-16  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SolutionDeployer.cs: Deploy and GenerateFiles can now

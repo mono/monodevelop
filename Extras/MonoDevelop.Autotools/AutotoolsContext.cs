@@ -95,11 +95,11 @@ namespace MonoDevelop.Autotools
 				throw new Exception ( "No known IMakefileHandler for type.");
 		}
 	
-		public static string EscapeStringForAutomake (string Str) 
+		public static string EscapeStringForAutomake (string str) 
 		{
 			StringBuilder result = new StringBuilder();
-			for(int i = 0; i < Str.Length; ++i) {
-				char c = Str[i];
+			for(int i = 0; i < str.Length; ++i) {
+				char c = str[i];
 				if(!Char.IsLetterOrDigit(c) && c != '.' && c != '/' && c != '_' && c != '-')
 					result.Append('\\');
 
@@ -114,7 +114,18 @@ namespace MonoDevelop.Autotools
 			return new FileStream (template_dir + id, FileMode.Open, FileAccess.Read );
 		}
 
-		public static string GetPkgVar (string package)
+		public static string EscapeStringForAutoconf ( string str )
+		{
+			StringBuilder sb = new StringBuilder ();
+			foreach (char c in str)
+			{
+				if ( char.IsLetterOrDigit (c) || c == '.'  ) sb.Append ( c );
+				else if (c == '-' || c == '_' ) sb.Append ( '_' );
+			}
+			return sb.ToString ();	
+		}
+		
+		public static string GetPkgConfigVariable (string package)
 		{
 			StringBuilder sb = new StringBuilder ();
 			foreach (char c in package)

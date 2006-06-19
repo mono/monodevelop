@@ -74,9 +74,7 @@ namespace MonoDevelop.Autotools
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
 
 				solution_name = combine.Name;
-				// FIXME: pull version out of AssemblyInfo.cs?
-				// or wait for http://bugzilla.ximian.com/show_bug.cgi?id=77889
-				solution_version = "0.1";
+				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version);
 
 				Makefile makefile = handler.Deploy ( context, combine, monitor );
 				string path = solution_dir + "/Makefile";
@@ -291,7 +289,7 @@ namespace MonoDevelop.Autotools
 			StringWriter packageChecks = new StringWriter();
 			foreach ( string pkg in context.GetRequiredPackages () ) 
 			{
-				string pkgvar = AutotoolsContext.GetPkgVar (pkg); 
+				string pkgvar = AutotoolsContext.GetPkgConfigVariable (pkg); 
 				packageChecks.Write("PKG_CHECK_MODULES([");
 				packageChecks.Write(pkgvar);
 				packageChecks.Write("], [");

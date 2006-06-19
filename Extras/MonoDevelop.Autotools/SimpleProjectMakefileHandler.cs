@@ -169,7 +169,7 @@ namespace MonoDevelop.Autotools
 
 							references.WriteLine (" \\");
 							references.Write ("\t$(");
-							references.Write (AutotoolsContext.GetPkgVar(pkg));
+							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg));
 							references.Write ("_LIBS)");
 							ctx.AddRequiredPackage (pkg);
 						} 

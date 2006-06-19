@@ -34,17 +34,15 @@ namespace MonoDevelop.Autotools
 			Label conlab = new Label ( GettextCatalog.GetString ("Default configuration:") );
 			config_box.PackStart (conlab, false, false, 0);
 			
-			string curr_conf;
 			if ( target.DefaultConfiguration == null || target.DefaultConfiguration == "" )
-				curr_conf = target.TargetCombine.ActiveConfiguration.Name;
-			else curr_conf = target.DefaultConfiguration;
+				target.DefaultConfiguration = target.TargetCombine.ActiveConfiguration.Name;
 			
 			ComboBox configs = ComboBox.NewText ();
 			for ( int ii=0; ii < target.TargetCombine.Configurations.Count; ii++ )
 			{
 				string cc = target.TargetCombine.Configurations [ii].Name;
 				configs.AppendText ( cc );
-				if ( cc == curr_conf ) configs.Active = ii;
+				if ( cc == target.DefaultConfiguration ) configs.Active = ii;
 			}
 			configs.Changed += delegate (object s, EventArgs args) {
 				target.DefaultConfiguration = configs.ActiveText;
