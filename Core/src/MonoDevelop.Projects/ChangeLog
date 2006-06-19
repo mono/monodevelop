@@ -1,3 +1,9 @@
+2006-06-19 Scott Ellington  <scott.ellington@gmail.com>
+
+	* MonoDevelop.Projects/CombineEntry.cs: add a Version property
+	* MonoDevelop.Projects/Combine.cs: overload GetAllBuildableEntries
+	to allow them to be returned sorted in building order.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectsServices.cs: Added DeployService.

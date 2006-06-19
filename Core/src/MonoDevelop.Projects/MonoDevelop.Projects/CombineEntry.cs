@@ -56,6 +56,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		[ItemProperty ("releaseversion", DefaultValue = "0.1")]
+		string release_version;
+
+		public string Version {
+			get {
+				return release_version;
+			}
+			set {
+				release_version = value;
+			}
+		}
+		
 		[ItemProperty ("name")]
 		public virtual string Name {
 			get {

@@ -490,6 +490,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public CombineEntryCollection GetAllBuildableEntries (string configuration, bool topologicalSort)
+		{
+			CombineEntryCollection list = GetAllBuildableEntries (configuration);
+			if (topologicalSort)
+				return TopologicalSort (list);
+			else
+				return list;
+		}
+		
 		public CombineEntryCollection GetAllBuildableEntries (string configuration)
 		{
 			CombineEntryCollection list = new CombineEntryCollection();
