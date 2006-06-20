@@ -6,7 +6,7 @@ build_references_ref = $(REFERENCES)
 build_references_ref += $(foreach ref, $(DLL_REFERENCES), -r:$(ref))
 build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))  
 
-EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) 
+EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)
 DISTCLEANFILES = $(GENERATED_FILES)
 

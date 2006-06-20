@@ -31,6 +31,8 @@ namespace MonoDevelop.Autotools
 {
 	public class SimpleProjectMakefileHandler : IMakefileHandler
 	{
+		string resourcedir = "resources";
+		
 		public bool CanDeploy ( CombineEntry entry )
 		{
 			Project project = entry as Project;
@@ -187,13 +189,9 @@ namespace MonoDevelop.Autotools
 						string assemblyPath = Path.GetFullPath (reference.Reference);
 						string libdll_path = ctx.AddReferencedDll ( assemblyPath );
 
-						// use reference in local directory (make sure it is there)
-						//string newPath = config.OutputDirectory + "/" + Path.GetFileName ( assemblyPath );
-						//if ( !File.Exists ( newPath ) ) File.Copy ( assemblyPath , newPath );				
-						//newPath = project.GetRelativeChildPath ( newPath );
-
 						string newPath = "$(BUILD_DIR)/" + Path.GetFileName ( assemblyPath );
-						copy_dlls.AppendFormat ( "	cp -f {0} {1}\n", project.GetRelativeChildPath (libdll_path), newPath );
+						copy_dlls.AppendFormat ( "	cp -f {0} {1}\n", 
+								project.GetRelativeChildPath (libdll_path), newPath );
 
 						dllReferences.WriteLine (" \\");
 						dllReferences.Write ("\t");
@@ -208,66 +206,43 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
 				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
 
-				/* Collect file groups: Such as resources, code files, etc...
-				 * files are currently split into groups depending on their BuildAction setting
-				 * Each group will be outputted like this in the Makefile:
-				 *   GroupName = \
-				 *     FILE1 \
-				 *     FILE2 \
-				 *     ...
-				 */
-				//TODO: this should probably be reorganized
-				Hashtable groups = new Hashtable();
-				foreach(ProjectFile projectFile in project.ProjectFiles) {
-					string fileGroup = projectFile.BuildAction.ToString();
 
-					ArrayList list = (ArrayList) groups[fileGroup];
-					if(list == null) {
-						list = new ArrayList();
-						groups[fileGroup] = list;
-					}
-
-					// exclude directories from compilation
-					if ( projectFile.BuildAction == BuildAction.Compile && 
-							projectFile.Subtype != Subtype.Code ) 
-						continue;
-
-					list.Add(projectFile.RelativePath);
-				}
-
-				// write out various variables ( RESOURCES, EXTRAS, ... )
-				foreach (string group in groups.Keys) 
+				// grab all project files
+				StringBuilder files = new StringBuilder ();
+				StringBuilder res_files = new StringBuilder ();
+				StringBuilder extras = new StringBuilder ();
+				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
-					ArrayList files = (ArrayList) groups [group];
-					StringWriter gwriter = new StringWriter ();
-
-					if (files.Count > 2) 
+					switch ( projectFile.BuildAction )
 					{
-						gwriter.WriteLine("\\");
+						case BuildAction.Compile:
+							
+							if ( projectFile.Subtype != Subtype.Code ) continue;
+							files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
 
-						for(int i = 0; i < files.Count; ++i) 
-						{
-							string file = (string) files[i];
-							file = project.GetRelativeChildPath (file);
-							gwriter.Write ("\t" + AutotoolsContext.EscapeStringForAutomake (file));
-							if (i+1 < files.Count)
-								gwriter.Write(" \\");
+						case BuildAction.Nothing:
+							
+							extras.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
 
-							gwriter.WriteLine("");
-						}
-						gwriter.WriteLine("");
-					} 
-					else 
-					{
-						foreach(string file in files) 
-						{
-							string nfile = project.GetRelativeChildPath (file);
-							gwriter.Write(" " + AutotoolsContext.EscapeStringForAutomake(nfile));
-						}
+						case BuildAction.EmbedAsResource:
+
+							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
+							{
+								string rdir = Path.GetDirectoryName (project.FileName) + "/" + resourcedir;
+								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
+								string newPath = rdir + "/" + Path.GetFileName ( projectFile.FilePath );
+								File.Copy ( projectFile.FilePath, newPath, true ) ;
+								res_files.AppendFormat ( "\\\n\t{0} ", project.GetRelativeChildPath ( newPath ) );
+							}
+							else res_files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
 					}
-
-					templateEngine.Variables["GROUP_" + group] = gwriter.ToString();
 				}
+				templateEngine.Variables["FILES"] = files.ToString();
+				templateEngine.Variables["RESOURCES"] = res_files.ToString();
+				templateEngine.Variables["EXTRAS"] = extras.ToString();
 
 				// Create makefile
 				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");

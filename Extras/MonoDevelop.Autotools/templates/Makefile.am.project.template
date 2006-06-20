@@ -4,11 +4,11 @@
 	
 all: $(ASSEMBLY)
 
-FILES = %%GROUP_Compile%%
+FILES = %%FILES%%
 
-RESOURCES = %%GROUP_EmbedAsResource%%
+RESOURCES = %%RESOURCES%%
 
-EXTRA = %%GROUP_Nothing%%
+EXTRAS = %%EXTRAS%%
 
 REFERENCES = %%REFERENCES%%
 

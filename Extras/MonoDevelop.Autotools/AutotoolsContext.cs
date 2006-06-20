@@ -31,11 +31,24 @@ namespace MonoDevelop.Autotools
 	{
 		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location ) + "/";
 		
-		ArrayList autoconfConfigFiles = new ArrayList();
+		Set autoconfConfigFiles = new Set ();
 		Set referencedPackages = new Set();
 		Set globalDllReferences = new Set();
 		Set compilers = new Set ();
+		
 		string base_dir;
+		public string BaseDirectory {
+			get {
+				return base_dir;
+			}
+		}
+		
+		string libdir = "lib";
+		public string LibraryDirectory {
+			get {
+				return String.Format ( "{0}/{1}/", base_dir, libdir );
+			}
+		}
 		
 		public AutotoolsContext ( string base_directory )
 		{
@@ -49,6 +62,8 @@ namespace MonoDevelop.Autotools
 
 		public void AddAutoconfFile ( string file_name )
 		{
+			if ( autoconfConfigFiles.Contains ( file_name ) )
+				throw new Exception ( "file '" + file_name + "' has already been registered to be processed by configure. " );
 			autoconfConfigFiles.Add( file_name );
 		}
 
@@ -60,7 +75,7 @@ namespace MonoDevelop.Autotools
 		public string AddReferencedDll ( string dll_name )
 		{
 			globalDllReferences.Add ( dll_name );
-			return base_dir + "/lib/" + Path.GetFileName (dll_name);
+			return String.Format ( "{0}/{1}/{2}", base_dir, libdir, Path.GetFileName (dll_name) );
 		}
 
 		public IEnumerable GetAutoConfFiles ()

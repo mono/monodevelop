@@ -1,3 +1,12 @@
+2006-06-20  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* AutotoolsContext.cs:
+	* templates/Makefile.am.project.template:
+	* SimpleProjectMakefileHandler.cs: copy resources outside of
+	autotools hierarchy into project directory
+	* templates/Makefile.include: include files of 
+	BuildAction.Nothing in distribution
+
 2006-06-19  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SimpleProjectMakefileHandler.cs: 
