@@ -1,3 +1,8 @@
+2006-06-24  John Luke <john.luke@gmail.com>
+
+	* Unused/AssemblyAnalyzer:
+	* Unused/ICSharpCode.SharpAssembly: remove
+	
 2006-06-07 Scott Ellington  <scott.ellington@gmail.com>
 	
 	* Makefile.am: Autotools must build before CSharpBinding

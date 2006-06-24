@@ -1,4 +1,0 @@
-
-This is a port of SharpDevelop's AssemblyAnalyzer to MonoDevelop.  It offers
-similar functionality to FxCop on Windows.
-
