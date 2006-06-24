@@ -2,13 +2,15 @@
 using System;
 using System.Drawing;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom;
 
-using RefParser = ICSharpCode.SharpRefactory.Parser.VB;
-using AST = ICSharpCode.SharpRefactory.Parser.AST.VB;
+using RefParser = ICSharpCode.NRefactory.Parser;
+using AST = ICSharpCode.NRefactory.Parser.AST;
 using MonoDevelop.Projects.Parser;
 using VBBinding.Parser.SharpDevelopTree;
+using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser
 {
@@ -16,12 +18,12 @@ namespace VBBinding.Parser
 	{
 	}
 	
-	public class VBNetVisitor : RefParser.AbstractASTVisitor
+	public class VBNetVisitor : RefParser.AbstractAstVisitor
 	{
 		CompilationUnit cu = new CompilationUnit();
-		Stack currentNamespace = new Stack();
-		Stack currentClass = new Stack();
-		static ICSharpCode.SharpRefactory.Parser.VB.CodeDOMVisitor domVisitor = new ICSharpCode.SharpRefactory.Parser.VB.CodeDOMVisitor ();
+		Stack<string> currentNamespace = new Stack<string> ();
+		Stack<Class> currentClass = new Stack<Class> ();
+		static ICSharpCode.NRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.NRefactory.Parser.CodeDOMVisitor ();
 		
 		public CompilationUnit Cu {
 			get {
@@ -36,22 +38,17 @@ namespace VBBinding.Parser
 			return cu;
 		}
 		
-		public override object Visit(AST.ImportsDeclaration usingDeclaration, object data)
+		public override object Visit(AST.Using usingDeclaration, object data)
 		{
 			Using u = new Using();
-			u.Usings.Add(usingDeclaration.Namespace);
+			if (usingDeclaration.IsAlias)
+				u.Aliases[usingDeclaration.Alias.Type] = usingDeclaration.Name;
+			else
+				u.Usings.Add(usingDeclaration.Name);
 			cu.Usings.Add(u);
 			return data;
 		}
 		
-		public override object Visit(AST.ImportsAliasDeclaration usingAliasDeclaration, object data)
-		{
-			Using u = new Using();
-			u.Aliases[usingAliasDeclaration.Alias] = usingAliasDeclaration.Namespace;
-			cu.Usings.Add(u);
-			return data;
-		}
-				
 //		ModifierEnum VisitModifier(ICSharpCode.SharpRefactory.Parser.Modifier m)
 //		{
 //			return (ModifierEnum)m;
@@ -61,9 +58,9 @@ namespace VBBinding.Parser
 		{
 			string name;
 			if (currentNamespace.Count == 0) {
-				name = namespaceDeclaration.NameSpace;
+				name = namespaceDeclaration.Name;
 			} else {
-				name = String.Concat((string)currentNamespace.Peek(), '.', namespaceDeclaration.NameSpace);
+				name = String.Concat((string)currentNamespace.Peek(), '.', namespaceDeclaration.Name);
 			}
 			currentNamespace.Push(name);
 			object ret = namespaceDeclaration.AcceptChildren(this, data);
@@ -71,16 +68,16 @@ namespace VBBinding.Parser
 			return ret;
 		}
 		
-		ClassType TranslateClassType(RefParser.Types type)
+		ClassType TranslateClassType(RefParser.AST.ClassType type)
 		{
 			switch (type) {
-				case RefParser.Types.Class:
+				case RefParser.AST.ClassType.Class:
 					return ClassType.Class;
-				case RefParser.Types.Enum:
+				case RefParser.AST.ClassType.Enum:
 					return ClassType.Enum;
-				case RefParser.Types.Interface:
+				case RefParser.AST.ClassType.Interface:
 					return ClassType.Interface;
-				case RefParser.Types.Structure:
+				case RefParser.AST.ClassType.Struct:
 					return ClassType.Struct;
 			}
 			return ClassType.Class;
@@ -89,7 +86,7 @@ namespace VBBinding.Parser
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifier, region);
+			Class c = new Class(cu, TranslateClassType (typeDeclaration.Type), typeDeclaration.Modifier, region);
 			if (currentClass.Count > 0) {
 				Class cur = ((Class)currentClass.Peek());
 				cur.InnerClasses.Add(c);
@@ -102,11 +99,8 @@ namespace VBBinding.Parser
 				}
 				cu.Classes.Add(c);
 			}
-			if (typeDeclaration.BaseType != null) {
-				c.BaseTypes.Add(typeDeclaration.BaseType);
-			}
-			if (typeDeclaration.BaseInterfaces != null) {
-				foreach (AST.TypeReference type in typeDeclaration.BaseInterfaces) {
+			if (typeDeclaration.BaseTypes != null) {
+				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
 					c.BaseTypes.Add(type.Type);
 				}
 			}
@@ -174,8 +168,8 @@ namespace VBBinding.Parser
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
 					ReturnType type = null;
-					if (field.Type != null) {
-						type = new ReturnType(field.Type);
+					if (field.TypeReference != null) {
+						type = new ReturnType(field.TypeReference);
 					}
 					Field f = new Field(type, field.Name, fieldDeclaration.Modifier, region);
 					if (type == null) {

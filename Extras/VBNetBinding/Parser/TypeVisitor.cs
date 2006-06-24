@@ -1,19 +1,19 @@
 // created on 22.08.2003 at 19:02
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
-//using ICSharpCode.SharpRefactory.Parser;
-using ICSharpCode.SharpRefactory.Parser.VB;
-using ICSharpCode.SharpRefactory.Parser.AST.VB;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 using VBBinding.Parser.SharpDevelopTree;
 
 using MonoDevelop.Projects.Parser;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser
 {
 	
-	public class TypeVisitor : AbstractASTVisitor
+	public class TypeVisitor : AbstractAstVisitor
 	{
 		Resolver resolver;
 		
@@ -47,7 +47,7 @@ namespace VBBinding.Parser
 		
 		public override object Visit(InvocationExpression invocationExpression, object data)
 		{
-			if (invocationExpression.TargetObject is FieldReferenceOrInvocationExpression) {
+			/*if (invocationExpression.TargetObject is FieldReferenceOrInvocationExpression) {
 				FieldReferenceOrInvocationExpression field = (FieldReferenceOrInvocationExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
@@ -70,7 +70,7 @@ namespace VBBinding.Parser
 				}
 				// TODO: Find the right method
 				return ((IMethod)methods[0]).ReturnType;
-			}
+			}*/
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
 			if (t == null) {
@@ -78,18 +78,18 @@ namespace VBBinding.Parser
 			}
 			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
 			if (c.ClassType == ClassType.Delegate) {
-				ArrayList methods = resolver.SearchMethod(t, "invoke");
+				List<IMethod> methods = resolver.SearchMethod(t, "invoke");
 				if (methods.Count <= 0) {
 					return null;
 				}
-				return ((IMethod)methods[0]).ReturnType;
+				return methods[0].ReturnType;
 			}
 			return null;
 		}
 		
 		
 		//TODO - Verify logic; did a lot of "just make it work" hacking in this method
-		public override object Visit(FieldReferenceOrInvocationExpression fieldReferenceExpression, object data)
+		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
 		{
 			if (fieldReferenceExpression == null) {
 				return null;
@@ -116,7 +116,7 @@ namespace VBBinding.Parser
 					//FIXME?
 					try{
 						return new ReturnType(name + "." + fieldReferenceExpression.FieldName);
-					}catch(Exception ex){
+					}catch(Exception){
 						return null;	
 					}
 				}
@@ -193,10 +193,10 @@ namespace VBBinding.Parser
 			return assignmentExpression.Left.AcceptVisitor(this, data);
 		}
 		
-		public override object Visit(GetTypeExpression getTypeExpression, object data)
+		/*public override object Visit(GetTypeExpression getTypeExpression, object data)
 		{
 			return new ReturnType("System.Type");
-		}
+		}*/
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
@@ -245,15 +245,15 @@ namespace VBBinding.Parser
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			string name = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CallingClass, resolver.CompilationUnit).FullyQualifiedName;
-			return new ReturnType(name, (int[])objectCreateExpression.CreateType.RankSpecifier.ToArray(typeof(int)), 0);
+			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, 0);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			ReturnType type = new ReturnType(arrayCreateExpression.CreateType);
-			if (arrayCreateExpression.Parameters != null && arrayCreateExpression.Parameters.Count > 0) {
-				int[] newRank = new int[arrayCreateExpression.CreateType.RankSpecifier.Count + 1];
-				newRank[0] = arrayCreateExpression.Parameters.Count - 1;
+			if (arrayCreateExpression.Arguments != null && arrayCreateExpression.Arguments.Count > 0) {
+				int[] newRank = new int[arrayCreateExpression.CreateType.RankSpecifier.Length + 1];
+				newRank[0] = arrayCreateExpression.Arguments.Count - 1;
 				for (int i = 0; i < type.ArrayDimensions.Length; ++i) {
 					newRank[i + 1] = type.ArrayDimensions[i];
 				}

@@ -6,15 +6,18 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
-using ICSharpCode.SharpRefactory.Parser.AST.VB;
-using ICSharpCode.SharpRefactory.Parser.VB;
+
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser;
 
 namespace VBBinding.Parser
 {
@@ -80,10 +83,10 @@ namespace VBBinding.Parser
 			this.caretColumn   = caretColumn;
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			if (fileCompilationUnit == null) {
-				ICSharpCode.SharpRefactory.Parser.VB.Parser fileParser = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
-				fileParser.Parse(new Lexer(new StringReader(fileContent)));
+				ICSharpCode.NRefactory.Parser.IParser fileParser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader (fileContent));
+				fileParser.Parse();
 				//Console.WriteLine("!Warning: no parseinformation!");
 				return null;
 			}
@@ -93,7 +96,7 @@ namespace VBBinding.Parser
 			!!is so!! don't change things that work
 			Expression expr=null;	// tentative expression
 			Lexer l=null;
-			ICSharpCode.SharpRefactory.Parser.Parser p = new ICSharpCode.SharpRefactory.Parser.Parser();
+			ICSharpCode.NRefactory.Parser.Parser p = new ICSharpCode.NRefactory.Parser.Parser();
 			while (expression.Length > 0) {
 				l = new Lexer(new StringReader(expression));
 				expr = p.ParseExpression(l);
@@ -113,15 +116,14 @@ namespace VBBinding.Parser
 			//// here last subexpression should be fixed in expr
 			if it should be changed in expressionfinder don't fix it here
 			*/
-			ICSharpCode.SharpRefactory.Parser.VB.Parser p = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
-			Lexer l = new Lexer(new StringReader(expression));
-			Expression expr = p.ParseExpression(l);
+			ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(expression));
+			Expression expr = p.ParseExpression();
 			if (expr == null) {
 				return null;
 			//}else{
 				//Console.WriteLine(expr.ToString());
 			}
-			lookupTableVisitor = new LookupTableVisitor();
+			lookupTableVisitor = new LookupTableVisitor(StringComparer.InvariantCulture);
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			//Console.WriteLine("Visited lookup table");
 			
@@ -148,7 +150,7 @@ namespace VBBinding.Parser
 				
 				//// when type is null might be file needs to be reparsed - some vars were lost
 				fileCompilationUnit=parserContext.ParseFile(fileName, fileContent).MostRecentCompilationUnit.Tag 
-					as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+					as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 				lookupTableVisitor.Visit(fileCompilationUnit,null);
 				//Console.WriteLine("Lookup table visited again");
 				
@@ -166,7 +168,7 @@ namespace VBBinding.Parser
 			}
 			//Console.WriteLine("Here: Type is " + type.FullyQualifiedName);
 			return type;
-			}catch(Exception ex){
+			}catch(Exception){
 				//Console.WriteLine("Exception in internalResolve: " + ex.Message);
 				//Console.WriteLine(ex.StackTrace);
 				return null;
@@ -220,16 +222,15 @@ namespace VBBinding.Parser
 			this.caretColumn = caretColumn;
 			
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
-			ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit fcu = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fcu = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			if (fcu == null)
 				return null;
-			ICSharpCode.SharpRefactory.Parser.VB.Parser p = new ICSharpCode.SharpRefactory.Parser.VB.Parser ();
-			Lexer l = new Lexer (new StringReader (expression));
-			Expression expr = p.ParseExpression(l);
+			ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader (expression));
+			Expression expr = p.ParseExpression();
 			if (expr == null)
 				return null;
 
-			lookupTableVisitor = new LookupTableVisitor ();
+			lookupTableVisitor = new LookupTableVisitor (StringComparer.InvariantCulture);
 			lookupTableVisitor.Visit (fcu, null);
 
 			TypeVisitor typeVisitor = new TypeVisitor (this);
@@ -242,7 +243,7 @@ namespace VBBinding.Parser
 
 			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
 			if (type == null || type.PointerNestingLevel != 0) {
-				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 				lookupTableVisitor.Visit (fcu, null);
 				cu = (ICompilationUnit)vbVisitor.Visit (fcu, null);
 
@@ -288,9 +289,9 @@ namespace VBBinding.Parser
 			this.caretColumn   = caretColumn;
 			this.parserContext = parserContext;
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			if (fileCompilationUnit == null) {
-				ICSharpCode.SharpRefactory.Parser.VB.Parser fileParser = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
+				ICSharpCode.NRefactory.Parser.Parser fileParser = new ICSharpCode.NRefactory.Parser.Parser();
 				fileParser.Parse(new Lexer(new StringReader(fileContent)));
 				Console.WriteLine("!Warning: no parseinformation!");
 				return null;
@@ -331,7 +332,7 @@ namespace VBBinding.Parser
 			
 			if (expr == null) {
 				Lexer l = new Lexer(new StringReader(expression));
-				ICSharpCode.SharpRefactory.Parser.VB.Parser p = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
+				ICSharpCode.NRefactory.Parser.Parser p = new ICSharpCode.NRefactory.Parser.Parser();
 				expr = p.ParseExpression(l);
 				if (expr == null) {
 					Console.WriteLine("Warning: No Expression from parsing!");
@@ -597,7 +598,7 @@ namespace VBBinding.Parser
 				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
 //					Console.WriteLine("Position: ({0}/{1})", with.StartLocation, with.EndLocation);
 					if (IsInside(new Point(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
-						expr = with.WithExpression;
+						expr = with.Expression;
 					}
 				}
 			}
@@ -648,10 +649,10 @@ namespace VBBinding.Parser
 			return false;
 		}
 		
-		public ArrayList SearchMethod(IReturnType type, string memberName)
+		public List<IMethod> SearchMethod(IReturnType type, string memberName)
 		{
 			if (type == null || type.PointerNestingLevel != 0) {
-				return new ArrayList();
+				return new List<IMethod> ();
 			}
 			IClass curType;
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
@@ -659,13 +660,13 @@ namespace VBBinding.Parser
 			} else {
 				curType = SearchType(type.FullyQualifiedName, null, null);
 				if (curType == null) {
-					return new ArrayList();
+					return new List<IMethod>();
 				}
 			}
-			return SearchMethod(new ArrayList(), curType, memberName);
+			return SearchMethod(new List<IMethod>(), curType, memberName);
 		}
 		
-		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)
+		List<IMethod> SearchMethod(List<IMethod> methods, IClass curType, string memberName)
 		{
 			//bool isClassInInheritanceTree = IsClassInInheritanceTree(curType, callingClass);
 			
@@ -684,16 +685,16 @@ namespace VBBinding.Parser
 			return methods;
 		}
 		
-		public ArrayList SearchIndexer(IReturnType type)
+		public List<IIndexer> SearchIndexer(IReturnType type)
 		{
 			IClass curType = SearchType(type.FullyQualifiedName, null, null);
 			if (curType != null) {
-				return SearchIndexer(new ArrayList(), curType);
+				return SearchIndexer(new List<IIndexer> (), curType);
 			}
-			return new ArrayList();
+			return new List<IIndexer> ();
 		}
 		
-		public ArrayList SearchIndexer(ArrayList indexer, IClass curType)
+		public List<IIndexer> SearchIndexer(List<IIndexer> indexer, IClass curType)
 		{
 			//bool isClassInInheritanceTree =IsClassInInheritanceTree(curType, callingClass);
 			foreach (IIndexer i in curType.Indexer) {
@@ -827,7 +828,7 @@ namespace VBBinding.Parser
 //				Console.WriteLine(enumerator.Key);
 //			}
 //			Console.WriteLine("end listing");
-			ArrayList variables = (ArrayList)lookupTableVisitor.Variables[name.ToLower()];
+			List<LocalLookupVariable> variables = lookupTableVisitor.Variables[name.ToLower()];
 //			if (variables == null || variables.Count <= 0) {
 //				Console.WriteLine(name + " not in LookUpTable");
 //				return null;
@@ -1000,7 +1001,7 @@ namespace VBBinding.Parser
  			//Console.WriteLine("done, resultless");
 			//return null;
 			return parserContext.SearchNamespace(null,name,false); //, unit, caretLine, caretColumn, false);
-			}catch(Exception ex){
+			}catch(Exception){
 				//Console.WriteLine("done, resultless");
 				return null;
 			}
@@ -1079,16 +1080,16 @@ namespace VBBinding.Parser
 		{
 			//Console.WriteLine("Entering CtrlSpace for " + caretLine + ":" + caretColumn + " in " + fileName);
 			LanguageItemCollection result = new LanguageItemCollection();
-			foreach (string pt in TypeReference.PrimitiveTypes)
-				result.Add (new Namespace (pt));
+			foreach (KeyValuePair<string, string> pt in TypeReference.GetPrimitiveTypesVB ())
+				result.Add (new Namespace (pt.Key));
 				
 			IParseInformation parseInfo = parserContext.GetParseInformation(fileName);
-			ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.SharpRefactory.Parser.AST.VB.CompilationUnit;
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			if (fileCompilationUnit == null) {
 				//Console.WriteLine("!Warning: no parseinformation!");
 				return null;
 			}
-			LookupTableVisitor lookupTableVisitor = new LookupTableVisitor();
+			LookupTableVisitor lookupTableVisitor = new LookupTableVisitor(StringComparer.InvariantCulture);
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			VBNetVisitor vBNetVisitor = new VBNetVisitor();
 			cu = (ICompilationUnit)vBNetVisitor.Visit(fileCompilationUnit, null);
@@ -1097,7 +1098,7 @@ namespace VBBinding.Parser
 				//Console.WriteLine("CallingClass is " + callingClass == null ? "null" : callingClass.Name);
 			}
 			foreach (string name in lookupTableVisitor.Variables.Keys) {
-				ArrayList variables = (ArrayList)lookupTableVisitor.Variables[name.ToLower()];
+				List<LocalLookupVariable> variables = lookupTableVisitor.Variables[name.ToLower()];
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {

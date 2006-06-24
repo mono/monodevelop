@@ -9,7 +9,6 @@
 
   <Runtime>
     <Import assembly = "VBNetBinding.dll"/>
-    <Import assembly = "ICSharpCode.SharpRefactory.VB.dll"/>
   </Runtime>
 
 	<Dependencies>

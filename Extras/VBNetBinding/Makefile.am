@@ -2,17 +2,15 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/VBNetBinding.dll
 
-SUBDIRS = SharpRefactoryVB
-
-REFS =	-r:System \
-	-r:System.Xml \
-	-r:System.Drawing \
+REFS =	-r:System.dll \
+	-r:System.Xml.dll \
+	-r:System.Drawing.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/ICSharpCode.SharpRefactory.VB.dll \
+	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
 
@@ -73,7 +71,6 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources) $(RES)
 	mkdir -p $(ADDIN_BUILD)
-	cd SharpRefactoryVB && $(MAKE)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) \
 		$(build_sources)

@@ -6,17 +6,19 @@
 // </file>
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
 using VBBinding.Parser.SharpDevelopTree;
-using ICSharpCode.SharpRefactory.Parser.VB;
+
+using ICSharpCode.NRefactory.Parser;
 
 
 namespace VBBinding.Parser
 {
-	public class TParser : IParser
+	public class TParser : MonoDevelop.Projects.Parser.IParser
 	{
 	
 		public TParser() : base(){
@@ -63,7 +65,7 @@ namespace VBBinding.Parser
 										if (nextDirective.Arg.ToLower() == "region") {
 											--deep;
 											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.Start, nextDirective.End)));
+												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.StartPosition, nextDirective.EndPosition)));
 												goto end;
 											}
 										}
@@ -79,43 +81,39 @@ namespace VBBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			ICSharpCode.SharpRefactory.Parser.VB.Parser p = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StreamReader(fileName));
 			
-			Lexer lexer = new Lexer(new FileReader(fileName));
-			lexer.SpecialCommentTags = lexerTags;
-			p.Parse(lexer);
+			p.Parse();
 			
 			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.Visit(p.compilationUnit, null);
+			visitor.Visit(p.CompilationUnit, null);
 			//visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			RetrieveRegions(visitor.Cu, lexer.SpecialTracker);
+			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			
-			AddCommentTags(visitor.Cu, lexer.TagComments);
+			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			return visitor.Cu;
 		}
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.SharpRefactory.Parser.VB.Parser p = new ICSharpCode.SharpRefactory.Parser.VB.Parser();
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.VBNet, new StringReader(fileContent));
 			
-			Lexer lexer = new Lexer(new StringReader(fileContent));
-			lexer.SpecialCommentTags = lexerTags;
-			p.Parse(lexer);
+			p.Parse();
 			
 			VBNetVisitor visitor = new VBNetVisitor();
-			visitor.Visit(p.compilationUnit, null);
+			visitor.Visit(p.CompilationUnit, null);
 			//visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			visitor.Cu.Tag = p.compilationUnit;
-			RetrieveRegions(visitor.Cu, lexer.SpecialTracker);
-			AddCommentTags(visitor.Cu, lexer.TagComments);
+			visitor.Cu.Tag = p.CompilationUnit;
+			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
+			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
 			return visitor.Cu;
 		}
 		
-		void AddCommentTags(ICompilationUnit cu, ArrayList tagComments)
+		void AddCommentTags(ICompilationUnit cu, List<TagComment> tagComments)
 		{
-			foreach (ICSharpCode.SharpRefactory.Parser.VB.TagComment tagComment in tagComments) {
+			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {
 				DefaultRegion tagRegion = new DefaultRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
 				MonoDevelop.Projects.Parser.Tag tag = new MonoDevelop.Projects.Parser.Tag(tagComment.Tag, tagRegion);
 				tag.CommentString = tagComment.CommentText;

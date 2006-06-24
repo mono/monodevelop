@@ -1,9 +1,10 @@
 // created on 06.08.2003 at 12:37
 
 using System.Diagnostics;
-
 using MonoDevelop.Projects.Parser;
-using ICSharpCode.SharpRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Parser;
+using Modifier = ICSharpCode.NRefactory.Parser.AST.Modifier;
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {

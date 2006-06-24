@@ -1,7 +1,7 @@
 // created on 06.08.2003 at 12:35
 using System;
 using MonoDevelop.Projects.Parser;
-using ICSharpCode.SharpRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Parser.AST;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
