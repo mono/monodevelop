@@ -1,6 +1,6 @@
 RUNTIME = mono
 ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Dock.dll
-TEST = $(top_builddir)/build/bin/dock-test.exe
+TEST = $(top_builddir)/build/AddIns/dock-test.exe
 
 GLADE = layout.glade
 

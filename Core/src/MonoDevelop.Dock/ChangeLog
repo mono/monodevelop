@@ -1,5 +1,10 @@
 2006-06-25  John Luke  <john.luke@gmail.com>
 
+	* Makefile.am: change path of dock-test.exe
+	* DockItem.cs: don't try to allocate negative values
+
+2006-06-25  John Luke  <john.luke@gmail.com>
+
 	* *.cs: use generic collections
 
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>

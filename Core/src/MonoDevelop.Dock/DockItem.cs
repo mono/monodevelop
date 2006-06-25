@@ -365,8 +365,8 @@ namespace Gdl
 				
 				childAlloc.X = bw + Style.XThickness;
 				childAlloc.Y = bw + Style.YThickness;
-				childAlloc.Width = allocation.Width - 2 * (bw + Style.XThickness);
-				childAlloc.Height = allocation.Height - 2 * (bw + Style.YThickness);
+				childAlloc.Width = Math.Max (0, allocation.Width - 2 * (bw + Style.XThickness));
+				childAlloc.Height = Math.Max (0, allocation.Height - 2 * (bw + Style.YThickness));
 				
 				if (GripShown) {
 					Gdk.Rectangle gripAlloc = childAlloc;
@@ -374,11 +374,11 @@ namespace Gdl
 					
 					if (Orientation == Orientation.Horizontal) {
 						childAlloc.X += gripReq.Width;
-						childAlloc.Width -= gripReq.Width;
+						childAlloc.Width = Math.Max (0, childAlloc.Width - gripReq.Width);
 						gripAlloc.Width = gripReq.Width;
 					} else {
 						childAlloc.Y += gripReq.Height;
-						childAlloc.Height -= gripReq.Height;
+						childAlloc.Height = Math.Max (0, childAlloc.Height - gripReq.Height);
 						gripAlloc.Height = gripReq.Height;
 					}
 					
