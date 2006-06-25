@@ -1,3 +1,7 @@
+2006-06-25  John Luke  <john.luke@gmail.com>
+
+	* *.cs: use generic collections
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Dock.mdp: Updated.

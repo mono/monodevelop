@@ -22,15 +22,15 @@
  * Boston, MA 02111-1307, USA.
  */
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 
 namespace Gdl
 {
 	public class DockMaster
 	{
-		private Hashtable dockObjects = new Hashtable ();
-		private ArrayList toplevelDocks = new ArrayList ();
+		private Dictionary<string, DockObject> dockObjects = new Dictionary<string, DockObject> ();
+		private List<DockObject> toplevelDocks = new List<DockObject> ();
 		private DockObject controller = null;
 		private int dockNumber = 1;
 
@@ -48,8 +48,8 @@ namespace Gdl
 		// if size(unlocked_items) == 0 then locked = 1
 		// else if size(locked_items) == 0 then locked = 0
 		// else locked = -1
-		private Hashtable lockedItems = new Hashtable ();
-		private Hashtable unlockedItems = new Hashtable ();
+		private Dictionary<DockObject, int> lockedItems = new Dictionary<DockObject, int> ();
+		private Dictionary<DockObject, int> unlockedItems = new Dictionary<DockObject, int> ();
 		
 		public event EventHandler LayoutChanged;
 		internal event EventHandler NotifyLocked;
@@ -76,7 +76,7 @@ namespace Gdl
 			}
 		}
 		
-		public ICollection DockObjects {
+		public ICollection<DockObject> DockObjects {
 			get {
 				return dockObjects.Values;
 			}
@@ -96,7 +96,7 @@ namespace Gdl
 			}
 		}
 		
-		public ArrayList TopLevelDocks {
+		public List<DockObject> TopLevelDocks {
 			get {
 				return toplevelDocks;
 			}
@@ -116,17 +116,17 @@ namespace Gdl
 		
 		public void LockUnlock (bool locked)
 		{
-			foreach (Dock dock in toplevelDocks) {
-				if (dock.Root != null && dock.Root is DockItem)
-					ForeachLockUnlock ((DockItem)dock.Root, locked);
-			}
-
-			// FIXME: not sure about which list to foreach here
-			// just to be sure hidden items are set too
-			foreach (Widget w in toplevelDocks) {
-				DockItem i = w as DockItem;
-				if (i != null)
-					ForeachLockUnlock (i, locked);
+			foreach (DockObject o in toplevelDocks) {
+				if (o is Dock) {
+					Dock dock = o as Dock;
+					if (dock.Root != null && dock.Root is DockItem)
+						ForeachLockUnlock ((DockItem)dock.Root, locked);
+				} else if (o is DockItem) {
+					// just to be sure hidden items are set too
+					DockItem item = o as DockItem;
+					if (item != null)
+						ForeachLockUnlock (item, locked);
+				}
 			}
 		}
 		
@@ -141,7 +141,7 @@ namespace Gdl
 					obj.Name = "__dock_" + number++;
 
 				/* add the object to our hash list */
-				if (dockObjects.Contains (obj.Name))
+				if (dockObjects.ContainsKey (obj.Name))
 					Console.WriteLine ("Unable to add object, name \"{0}\" taken", obj.Name);
 				else
 					dockObjects.Add (obj.Name, obj);
@@ -191,12 +191,12 @@ namespace Gdl
 			// remove from locked/unlocked hashes and property change if that's the case
 			if (obj is DockItem && ((DockItem)obj).HasGrip) {
 				int locked = Locked;
-				if (lockedItems.Contains (obj)) {
+				if (lockedItems.ContainsKey (obj)) {
 					lockedItems.Remove (obj);
 					if (Locked != locked)
 						EmitNotifyLocked ();
 				}
-				if (unlockedItems.Contains (obj)) {
+				if (unlockedItems.ContainsKey (obj)) {
 					unlockedItems.Remove (obj);
 					if (Locked != locked)
 						EmitNotifyLocked ();
@@ -213,7 +213,7 @@ namespace Gdl
 					// now find some other non-automatic toplevel to use as a
 					// new controller.  start from the last dock, since it's
 					// probably a non-floating and manual
-					ArrayList reversed = toplevelDocks;
+					List<DockObject> reversed = toplevelDocks;
 					reversed.Reverse ();
 
 					foreach (DockObject item in reversed) {
@@ -244,7 +244,7 @@ namespace Gdl
 			}
 			
 			// remove the object from the hash if it is there
-			if (obj.Name != null && dockObjects.Contains (obj.Name))
+			if (obj.Name != null && dockObjects.ContainsKey (obj.Name))
 				dockObjects.Remove (obj.Name);
 			
 			/* post a layout_changed emission if the item is not automatic
@@ -255,9 +255,9 @@ namespace Gdl
 		
 		public DockObject GetObject (string name)
 		{
-			if (name == null)
-				return null;
-			return (DockObject)dockObjects[name];
+			if (name != null && dockObjects.ContainsKey (name))
+				return dockObjects[name];
+			return null;
 		}
 		
 		public DockObject Controller {

@@ -23,7 +23,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using Gtk;
@@ -43,8 +43,8 @@ namespace Gdl
 		private bool reducePending;
 
 		private PropertyInfo[] publicProps;
-		Hashtable afterProps;
-		Hashtable beforeProps;
+		Dictionary<string, PropertyInfo> afterProps;
+		Dictionary<string, PropertyInfo> beforeProps;
 		
 		public event DetachedHandler Detached;
 		public event DockedHandler Docked;
@@ -170,8 +170,8 @@ namespace Gdl
 		void SetPropertyValue (string property, string val, bool after)
 		{
 			if (afterProps == null) {
-				afterProps = new Hashtable ();
-				beforeProps = new Hashtable ();
+				afterProps = new Dictionary<string, PropertyInfo> ();
+				beforeProps = new Dictionary<string, PropertyInfo> ();
 				foreach (PropertyInfo pp in PublicProps) {
 					if (pp.IsDefined (typeof (AfterAttribute), true))
 						afterProps [pp.Name.ToLower ()] = pp;
@@ -181,7 +181,12 @@ namespace Gdl
 			}
 			
 			property = property.ToLower ();
-			PropertyInfo p = after ? (PropertyInfo) afterProps [property] : (PropertyInfo) beforeProps [property];
+			PropertyInfo p = null;
+			if (after && afterProps.ContainsKey (property)) {
+				p = afterProps [property];
+			} else if (beforeProps.ContainsKey (property)) {
+				p = beforeProps [property];
+			}
 			if (p != null)
 				SetPropertyValue (p, property, val);
 		}
@@ -232,7 +237,7 @@ namespace Gdl
 			XmlElement element = doc.CreateElement (GetXmlName (t));
 
 			// get object exported attributes
-			ArrayList exported = new ArrayList ();
+			List<PropertyInfo> exported = new List<PropertyInfo> ();
 			foreach (PropertyInfo p in PublicProps) {
 				if (p.IsDefined (typeof (ExportAttribute), true))
 					exported.Add (p);

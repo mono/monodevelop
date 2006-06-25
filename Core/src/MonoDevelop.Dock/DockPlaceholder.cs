@@ -23,7 +23,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using Gtk;
 
@@ -33,7 +33,7 @@ namespace Gdl
 	{
 		private DockObject host;
 		private bool sticky;
-		private Stack placementStack;
+		private Stack<DockPlacement> placementStack;
 
 		protected DockPlaceholder (IntPtr raw) : base (raw) { }
 		
@@ -81,12 +81,12 @@ namespace Gdl
 		public DockPlacement NextPlacement {
 			get {
 				if (placementStack != null && placementStack.Count > 0)
-					return (DockPlacement) placementStack.Pop ();
+					return placementStack.Pop ();
 				return DockPlacement.Center;
 			}
 			set { 
 				if (placementStack == null)
-					placementStack = new Stack ();
+					placementStack = new Stack<DockPlacement> ();
 				placementStack.Push (value);
 			}
 		}
@@ -292,8 +292,8 @@ namespace Gdl
 		void PrintPlacementStack ()
 		{
 			Console.WriteLine ("-- {0} count {1}", host.Name, placementStack.Count);
-			foreach (object o in placementStack.ToArray ())
-				Console.WriteLine (o);
+			foreach (DockPlacement dp in placementStack)
+				Console.WriteLine (dp);
 		}
 	}
 }

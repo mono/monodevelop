@@ -23,7 +23,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using Gtk;
 
@@ -162,7 +162,7 @@ namespace Gdl
 			}
 		}
 
-		public ICollection NamedItems {
+		public ICollection<DockObject> NamedItems {
 			get {
 				return Master.DockObjects;
 			}

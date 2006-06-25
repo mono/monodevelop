@@ -23,7 +23,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Gtk;
@@ -43,8 +43,8 @@ namespace Gdl
 
 		Widget itemsUI, layoutsUI;
 		DockMaster master = null;
-		ArrayList layouts;
-		Hashtable placeholders;
+		List<string> layouts;
+		Dictionary<DockPlaceholder, List<DockObject>> placeholders;
 		bool loading;
 
 		CheckButton locked_check;
@@ -56,7 +56,7 @@ namespace Gdl
 
 		public DockLayout (Dock dock)
 		{
-			layouts = new ArrayList ();
+			layouts = new List<string> ();
 			this.Attach (dock.Master);
 			BuildModels ();
 		}
@@ -69,7 +69,7 @@ namespace Gdl
 			}
 		}
 
-		public ArrayList Layouts {
+		public List<string> Layouts {
 			get { return layouts; }
 		}
 
@@ -141,7 +141,7 @@ namespace Gdl
 
 		public string[] GetLayouts (bool includeDefault)
 		{
-			return Layouts.ToArray (typeof (string)) as string[];
+			return Layouts.ToArray ();
 		}
 
 		public bool LoadFromFile (string file)
@@ -313,10 +313,10 @@ namespace Gdl
 				return;
 
 			// build items list
-			ArrayList items = new ArrayList ();
+			List<DockItem> items = new List<DockItem> ();
 			foreach (object o in master.DockObjects) {
 				if (o is DockItem)
-					items.Add (o);
+					items.Add ((DockItem)o);
 			}
 
 			TreeIter iter;
@@ -567,7 +567,7 @@ namespace Gdl
 
 			// FIXME: save placeholders for the object
 			if (!(obj is DockPlaceholder)) {
-				//ArrayList list = placeholders[obj] as ArrayList;
+				//List<DockObject> list = placeholders[obj] as List<DockObject>;
 				//foreach (DockObject child in list)
 				//	ForeachObjectSave (child, element);
 			}
@@ -600,7 +600,7 @@ namespace Gdl
 			// placeholders associated to each object, so that we can save the
 			// placeholders when we are saving the object (since placeholders
 			// don't show up in the normal widget hierarchy)
-			placeholders = new Hashtable ();
+			placeholders = new Dictionary<DockPlaceholder, List<DockObject>> ();
 			foreach (DockObject obj in master.DockObjects)
 				AddPlaceholder (obj);
 

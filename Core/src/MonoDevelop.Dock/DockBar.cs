@@ -21,7 +21,7 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 
 namespace Gdl
@@ -33,12 +33,12 @@ namespace Gdl
 	public class DockBar : VBox
 	{
 		DockMaster master;
-		ArrayList items;
+		List<DockItem> items;
 		Tooltips tooltips;
 		
 		public DockBar (Dock dock)
 		{
-			items = new ArrayList ();
+			items = new List<DockItem> ();
 			tooltips = new Tooltips ();
 			Master = dock.Master;
 		}
@@ -112,7 +112,7 @@ namespace Gdl
 			if (master == null)
 				return;
 
-			foreach (object o in master.DockObjects)
+			foreach (DockObject o in master.DockObjects)
 			{
 				DockItem item = o as DockItem;
 				if (item == null)
