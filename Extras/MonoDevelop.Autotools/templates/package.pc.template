@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+pkglibdir=@libdir@/@PACKAGE@
+
+Name: %%NAME%%
+Description: %%DESCRIPTION%%
+Version: %%VERSION%%
+
+Requires: %%REQUIRES_PKGS%%
+Libs: %%LIBS%%

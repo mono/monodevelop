@@ -24,6 +24,7 @@ FILES = \
 	Set.cs				\
 	SimpleProjectMakefileHandler.cs	\
 	SolutionDeployer.cs	\
+	SolutionOptionsPanel.cs	\
 	SolutionMakefileHandler.cs	\
 	TarballTargetEditorWidget.cs \
 	TemplateEngine.cs
@@ -35,7 +36,8 @@ DATA_FILES = \
 	templates/Makefile.include	\
 	templates/autogen.sh.template	\
 	templates/configure.ac.template	\
-	templates/exe.wrapper.in.template
+	templates/exe.wrapper.in.template \
+	templates/package.pc.template
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 

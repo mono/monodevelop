@@ -45,6 +45,11 @@ namespace MonoDevelop.Autotools
 		{
 			vars [key] = val;
 		}
+
+		public void AppendToVariable ( string key, string val )
+		{
+			vars [key] += " " + val;
+		}
 		
 		public void Append (string txt)
 		{

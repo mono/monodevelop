@@ -26,6 +26,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects.Serialization;
 
 using Mono.Unix.Native;
 
@@ -37,6 +38,8 @@ namespace MonoDevelop.Autotools
 		string solution_name;
 		string solution_version;
 
+		bool pkgconfig = false;
+		
 		AutotoolsContext context;
 
 		public bool HasGeneratedFiles ( Combine combine )
@@ -76,11 +79,17 @@ namespace MonoDevelop.Autotools
 				solution_name = combine.Name;
 				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version);
 
+				// check if we need to create pkgconfig file
+				object en_obj =  ((IExtendedDataItem) combine).ExtendedProperties ["MakePkgConfig"];
+				if (en_obj== null) pkgconfig = false;
+				else pkgconfig = (bool) en_obj;
+				
 				Makefile makefile = handler.Deploy ( context, combine, monitor );
 				string path = solution_dir + "/Makefile";
 				context.AddAutoconfFile ( path );
 
 				CreateAutoGenDotSH ( monitor );
+				CreatePkgConfigFile ( combine, monitor, makefile, context );
 				CreateConfigureDotAC ( combine, defaultConf, monitor );
 				CreateMakefileInclude ( monitor );
 
@@ -208,9 +217,9 @@ namespace MonoDevelop.Autotools
 			}
 			string vals = sb.ToString ();
 
-			makefile.SetVariable ( "DLL_REFERENCES", vals );
-			makefile.SetVariable ( "EXTRA_DIST", "$(DLL_REFERENCES)" );
-			makefile.SetVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
+			makefile.AppendToVariable ( "DLL_REFERENCES", vals );
+			makefile.AppendToVariable ( "EXTRA_DIST", "$(DLL_REFERENCES)" );
+			makefile.AppendToVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
 		}
 
 		void CreateAutoGenDotSH (IProgressMonitor monitor)
@@ -255,15 +264,18 @@ namespace MonoDevelop.Autotools
 				config_options.AppendFormat ( "		{0}=yes, {0}=no)\n", ac_var );
 				config_options.AppendFormat ( "AM_CONDITIONAL({0}, test x${1} = xyes)\n", ac_var.ToUpper(), ac_var );
 				config_options.AppendFormat ( "if test \"x${0}\" = \"xyes\" ; then\n", ac_var );
+				if ( pkgconfig ) config_options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n",
+						name.ToUpper(), GetAllLibs ( combine, config.Name ) );
 				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
+				if ( pkgconfig ) config_options.AppendFormat ( "AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
 			}
 			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
-			config_options.AppendFormat ( "AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
+			if ( pkgconfig ) config_options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n",
+						defaultConf.ToUpper (), GetAllLibs ( combine, defaultConf ) );
+			config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
 					+ defaultConf.ToUpper()  );
 
-
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
-
 
 			// build compiler checks
 			StringBuilder compiler_checks = new StringBuilder();
@@ -312,6 +324,24 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 		}
 
+		string GetAllLibs ( Combine combine, string config )
+		{
+			StringBuilder sb = new StringBuilder ();
+			foreach ( CombineEntry ce in combine.GetAllBuildableEntries ( config ) )
+			{
+				Project p = ce as Project;
+				if ( p == null ) continue;
+
+				DotNetProjectConfiguration dnpc = p.Configurations [config] as DotNetProjectConfiguration;
+				if ( dnpc == null ) continue;
+
+				if ( dnpc.CompileTarget != CompileTarget.Library ) continue;
+				
+				sb.Append ( " -r:${pkglibdir}/" +  Path.GetFileName ( dnpc.CompiledOutputName ) );
+			}
+			return sb.ToString ();
+		}
+		
 		void CreateMakefileInclude (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
@@ -327,6 +357,48 @@ namespace MonoDevelop.Autotools
 
 			reader.Close();
 			writer.Close();
+		}
+
+		void CreatePkgConfigFile ( Combine combine, IProgressMonitor monitor, Makefile mfile, AutotoolsContext context )
+		{
+			if ( !pkgconfig ) return;
+
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating pkg-config file") );
+
+			TemplateEngine templateEngine = new TemplateEngine();			
+
+			templateEngine.Variables["NAME"] = solution_name;
+			templateEngine.Variables["DESCRIPTION"] = combine.Description;
+			templateEngine.Variables["VERSION"] = solution_version;
+			
+			StringBuilder pkgs = new StringBuilder ();
+			foreach ( string pkg in context.GetRequiredPackages () )
+				pkgs.AppendFormat ( "{0} ", pkg );
+			templateEngine.Variables ["REQUIRES_PKGS"] = pkgs.ToString ();
+
+			StringBuilder libs = new StringBuilder ();
+			foreach ( IConfiguration config in combine.Configurations )
+				libs.AppendFormat ( "@{0}_CONFIG_LIBS@ ", config.Name.ToUpper() );
+			templateEngine.Variables ["LIBS"] = libs.ToString ();
+			
+			string fileName = solution_name.ToLower() + ".pc";
+			string path = String.Format ( "{0}/{1}.in", solution_dir, fileName );
+
+			StreamWriter writer = new StreamWriter( path );
+
+			Stream stream = context.GetTemplateStream ("package.pc.template");
+			StreamReader reader = new StreamReader(stream);
+
+			templateEngine.Process(reader, writer);
+
+			reader.Close();
+			writer.Close();
+			
+			context.AddAutoconfFile ( fileName );
+			mfile.AppendToVariable ( "EXTRA_DIST", fileName + ".in" );
+			mfile.SetVariable ( "pkgconfigdir", "$(libdir)/pkgconfig" );
+			mfile.AppendToVariable ( "pkgconfig_DATA", fileName );
+			mfile.AppendToVariable ( "DISTCLEANFILES", fileName );
 		}
 	}
 }

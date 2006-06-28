@@ -54,4 +54,15 @@
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
 		<DataType class = "MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+		<DialogPanel id= "AutoTools" _label = "Autotools"
+			class = "MonoDevelop.AutoTools.SolutionOptionsPanel" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.Combine"
+			name = "MakePkgConfig" type = "System.Boolean" />
+	</Extension>
+	
 </AddIn>

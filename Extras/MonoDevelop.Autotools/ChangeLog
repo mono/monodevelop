@@ -1,3 +1,12 @@
+2006-06-28  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* Makefile.cs: can append values to variables
+	* SolutionDeployer.cs: implement pkgconfig stuff
+	* MonoDevelop.Autotools.addin.xml: add option panel and store pref
+	* templates/package.pc.template: template for pc file
+	* Makefile.am: add new files
+	* SolutionOptionsPanel.cs: new option panel
+
 2006-06-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TarballTargetEditorWidget.cs: Added null check. Fix the build for
