@@ -1,3 +1,8 @@
+2006-06-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TarballTargetEditorWidget.cs: Added null check. Fix the build for
+	  gtk# 2.4.
+
 2006-06-20  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* AutotoolsContext.cs:
