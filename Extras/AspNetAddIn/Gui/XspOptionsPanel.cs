@@ -1,0 +1,152 @@
+//
+// XspOptionsPanel.cs: Edits XSP options of an AspNetAppProject
+//
+// Authors:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2006 Michael Hutchinson
+//
+//
+// This source code is licenced under The MIT License:
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System;
+using Gtk;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Properties;
+
+namespace AspNetAddIn
+{
+	
+	public class XspOptionsPanel : AbstractOptionPanel
+	{
+		XspOptionsPanelWidget panel;
+		
+		public XspOptionsPanel()
+		{
+		}
+		
+		public override void LoadPanelContents ()
+		{
+			panel = new XspOptionsPanelWidget ((IProperties) this.CustomizationObject);
+			this.Child = panel;
+		}
+		
+		public override bool StorePanelContents ()
+		{
+			panel.Store ((IProperties) CustomizationObject);
+ 			return true;
+		}
+	}
+	
+	//this should be a nested class, but MD code completion doesn't work with that
+	class XspOptionsPanelWidget : MonoDevelop.Components.GladeWidgetExtract
+	{
+		[Glade.Widget] SpinButton portNumber;
+		[Glade.Widget] Entry ipAddress;
+		[Glade.Widget] CheckButton verboseCheck;
+		[Glade.Widget] ComboBox sslMode;
+		[Glade.Widget] ComboBox sslProtocol;
+		[Glade.Widget] ComboBox keyType;
+		[Glade.Widget] Gnome.FileEntry keyLocation;
+		[Glade.Widget] Gnome.FileEntry certLocation;
+		[Glade.Widget] ComboBox passwordOptions;
+		[Glade.Widget] Entry passwordEntry;
+			
+		public XspOptionsPanelWidget  (IProperties customizationObject) : base ("AspNetAddIn.glade", "XspOptionsPanel")
+		{
+			AspNetAppProject project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
+			XspParameters xPar = project.XspParameters;
+			
+			//index should be equivalent to XspSslMode enum
+			((ListStore) sslMode.Model).Clear ();
+			sslMode.AppendText ("None");
+			sslMode.AppendText ("Enabled");
+			sslMode.AppendText ("Accept Client Certificates");
+			sslMode.AppendText ("Require Client Certificates");
+			
+			//index should be equivalent to XspSslProtocol enum
+			((ListStore) sslProtocol.Model).Clear ();
+			sslProtocol.AppendText ("Default");
+			sslProtocol.AppendText ("TLS");
+			sslProtocol.AppendText ("SSL 2");
+			sslProtocol.AppendText ("SSL 3");
+			
+			((ListStore) keyType.Model).Clear ();
+			keyType.AppendText ("None");
+			keyType.AppendText ("Pkcs12");
+			keyType.AppendText ("PVK");
+			
+			((ListStore) passwordOptions.Model).Clear ();
+			passwordOptions.AppendText ("None");
+			passwordOptions.AppendText ("Ask");
+			passwordOptions.AppendText ("Store (insecure)");
+			
+			//load all options
+			ipAddress.Text = xPar.Address;
+			portNumber.Value = xPar.Port;
+			verboseCheck.Active = xPar.Verbose;
+			sslMode.Active = (int) xPar.SslMode;
+			sslProtocol.Active = (int) xPar.SslProtocol;
+			keyType.Active = (int) xPar.KeyType;
+			keyLocation.Filename = xPar.PrivateKeyFile;
+			certLocation.Filename = xPar.CertificateFile;
+			passwordOptions.Active = (int) xPar.PasswordOptions;
+			passwordEntry.Text = xPar.PrivateKeyPassword;
+		}
+		
+		void updateSensitivity (object sender, EventArgs e)
+		{
+			bool sslEnabled = ((XspSslMode) sslMode.Active) != XspSslMode.None;
+			sslProtocol.Sensitive = sslEnabled;
+			keyType.Sensitive = sslEnabled;
+			
+			bool keyEnabled = (sslEnabled)? (keyType.Active != 0) : false;
+			keyLocation.Sensitive = keyEnabled;
+			passwordOptions.Sensitive = keyEnabled;
+			
+			bool certEnabled = (keyEnabled)? (keyType.Active == 2) : false;
+			certLocation.Sensitive = certEnabled;
+			
+			passwordEntry.Sensitive = (keyEnabled)? (passwordOptions.Active == 2) : false;
+			if (!passwordEntry.Sensitive)
+				passwordEntry.Text = "";
+		}
+		
+		public void Store (IProperties customizationObject)
+		{
+			AspNetAppProject project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
+			XspParameters xPar = project.XspParameters;
+			
+			xPar.Address = ipAddress.Text;
+			xPar.Port = System.Convert.ToInt16 (portNumber.Value);
+			xPar.Verbose = verboseCheck.Active;
+			xPar.SslMode = (XspSslMode) sslMode.Active;
+			xPar.SslProtocol = (XspSslProtocol) sslProtocol.Active;
+			xPar.KeyType = (XspKeyType) keyType.Active;
+			xPar.PrivateKeyFile = keyLocation.Filename;
+			xPar.CertificateFile = certLocation.Filename;
+			xPar.PasswordOptions = (XspPasswordOptions) passwordOptions.Active;
+			xPar.PrivateKeyPassword = passwordEntry.Text;
+		}
+	}
+}

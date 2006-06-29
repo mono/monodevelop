@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/06">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Form</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<Category>ASP.NET</Category>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an ASP.NET Web Form.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile NamePattern="${Name}.aspx">
+			<FileText>
+				<![CDATA[<%@ Page Language="${Language}" %>
+${Doctype}
+<html>
+<head>
+	<title>${Name}</title>
+	<script runat="server">
+	
+	</script>
+</head>
+<body>
+	<form id="form1" runat="server">
+	
+	</form>
+</body>
+</html>]]>
+			</FileText><!--
+			<CodeRegion name="script1">
+ //CodeDom parser needs type and namespace. Need workaround!
+<![CDATA[
+public void ButtonClick (object sender, EventArgs e) {
+	textBox1.Text ="Hello World"
+}
+]]>
+			</CodeRegion>-->
+		</AspNetFile>
+	</TemplateFiles>
+	
+	<FileOptions/>
+
+</Template>

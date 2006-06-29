@@ -1,0 +1,79 @@
+<AddIn id          = "AspNetAddIn"
+       name        = "ASP.NET Project Support"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com/"
+       description = "Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers."
+	   category    = "IDE extensions"
+       version     = "0.0.1">
+	
+	<Runtime>
+		<Import assembly = "AspNetAddIn.dll"/>
+	</Runtime>
+
+	<Dependencies>
+	    <AddIn id="MonoDevelop.Core" version="0.11.0"/>
+	    <AddIn id="MonoDevelop.Core.Gui" version="0.11.0"/>
+    	<AddIn id="MonoDevelop.Projects" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.11.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.11.0"/>
+		<AddIn id="CSharpBinding" version="0.9.0"/>
+	</Dependencies>
+
+	<Extension path = "/MonoDevelop/FileTemplates">
+		<FileTemplate id = "EmptyWebForm" resource = "EmptyWebForm.xft.xml"/>
+		<FileTemplate id = "EmptyWebHandler" resource = "EmptyWebHandler.xft.xml"/>
+		<FileTemplate id = "EmptyWebControl" resource = "EmptyWebControl.xft.xml"/>
+		<FileTemplate id = "CodeBehindWebControl" resource = "CodeBehindWebControl.xft.xml"/>
+		<FileTemplate id = "CodeBehindWebForm" resource = "CodeBehindWebForm.xft.xml"/>
+		<FileTemplate id = "CodeBehindWebHandler" resource = "CodeBehindWebHandler.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/FileTemplateTypes">
+		<FileTemplateType name = "AspNetFile" class = "AspNetAddIn.AspNetFileDescriptionTemplate"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectTemplates">
+		<ProjectTemplate id = "WebApplication" resource = "WebApplication.xpt.xml"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter	id = "AspNetWebForm"
+				insertbefore = "AllFiles"
+				_label = "ASP.NET Web Form (*.aspx)"
+				extensions = "*.aspx" />
+		<FileFilter	id = "AspNetWebHandler"
+				insertbefore = "AllFiles"
+				_label = "ASP.NET Web Handler (*.ashx)"
+				extensions = "*.ashx" />
+		<FileFilter	id = "AspNetWebUserControl"
+				insertbefore = "AllFiles"
+				_label = "ASP.NET User Control (*.ascx)"
+				extensions = "*.ascx" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id = "AspNetApplication" class = "AspNetAddIn.AspNetAppProjectBinding" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<PadOption id = "ShowCodeBehindClasses" _label = "Show CodeBehind classes with parent files" defaultValue = "True" />
+		<PadOption id = "HideCodeBehind" _label = "Hide CodeBehind files" defaultValue = "True" />
+		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "AspNetAddIn.CodeBehindProjectFileExtension"/>
+		<NodeBuilder id = "CodeBehindClassBuilder" class = "AspNetAddIn.CodeBehindClassBuilder"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+		<DataType class = "AspNetAddIn.AspNetAppProject" />
+		<DataType class = "AspNetAddIn.AspNetAppProjectConfiguration" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+		<Conditional activeproject="AspNetApp">
+			<DialogPanel id = "XspOptions"
+			             _label = "XSP Web Server"
+			             class = "AspNetAddIn.XspOptionsPanel"/>
+		</Conditional>
+	</Extension>
+</AddIn>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/18">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Handler with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<Category>ASP.NET</Category>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an ASP.NET Web Handler with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile NamePattern="${Name}.ashx">
+			<FileText>
+<![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}._${Name}" %>]]>
+			</FileText>
+		</AspNetFile>
+		
+		<AspNetFile NamePattern="${Name}.ashx.${LanguageExtension}">
+			<FileText>${CodeRegion:script1}</FileText>
+			<CodeRegion name="script1">
+<![CDATA[
+namespace ${Namespace} {
+	using System;
+	using System.Web;
+	using System.Web.UI;
+	
+	public class _${Name} : IHttpHandler {
+	
+		public void ProcessRequest (HttpContext context) {
+			context.Response.ContentType = "text/plain";
+			context.Response.Write("Hello World");
+		}
+	
+		public bool IsReusable {
+			get {
+				return false;
+			}
+		}
+	}
+}]]>
+			</CodeRegion>
+		</AspNetFile>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>
