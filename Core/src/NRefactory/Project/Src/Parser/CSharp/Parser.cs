@@ -4622,6 +4622,7 @@ la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon) {
 
 #line  2168 "cs.ATG" 
 			pexpr = new IdentifierExpression(t.val); 
+			pexpr.StartLocation = t.Location;
 		} else if (la.kind == 20) {
 			lexer.NextToken();
 			Expr(
