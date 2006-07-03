@@ -1,4 +1,9 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* WelcomePage.addin.xml: Updated versions.
+
 2006-06-08 Matej Urbas <matej.urbas@gmail.com>
+
 	* WelcomePageView.cs: Made the Welcome page ViewOnly.
 
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
