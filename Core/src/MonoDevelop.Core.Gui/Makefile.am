@@ -183,6 +183,7 @@ icons/Icons.32x32.TextFileIcon \
 icons/Icons.32x32.XMLFileIcon \
 icons/Icons.AboutImage \
 icons/Icons.SharpDevelopIcon \
+icons/Icons.SharpDevelopIcon-22.png \
 icons/Icons.TipOfTheDayIcon \
 icons/package-x-generic_22.png \
 icons/package-x-generic.png \

@@ -1,3 +1,16 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs: Set the progress
+	  bar to complete, when the last task ends.
+	* MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs: Made public.
+	* MonoDevelop.Core.Gui.Dialogs/ResourceService.cs: Stock icons for which
+	  size is not specified are valid for all sizes.
+	* MonoDevelop.Core.Gui/Makefile.am: New MD icon.
+	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	  Minor fix.
+	* MonoDevelop.Core.Gui.addin.xml: Added new icons with different sizes
+	  for the MD logo. Updated add-in and references version.
+
 2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Add new GetPassword method 

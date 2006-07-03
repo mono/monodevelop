@@ -281,6 +281,10 @@ namespace MonoDevelop.Core.Gui
 			Gtk.IconSource source = new Gtk.IconSource ();
 			source.Pixbuf = pixbuf;
 			source.Size = iconSize;
+			if (iconSize == Gtk.IconSize.Invalid)
+				source.SizeWildcarded = true;
+			else
+				source.SizeWildcarded = false;
 			iconSet.AddSource (source);
 		}
 		

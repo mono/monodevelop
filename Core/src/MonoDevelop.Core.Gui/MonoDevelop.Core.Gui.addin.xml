@@ -5,15 +5,16 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
-       version     = "0.11.0"
+       version     = "0.12.0"
        compatVersion = "0.10.0">
 
 	<Runtime>
+		<Import assembly="MonoDevelop.Components.dll"/>
 		<Import assembly="MonoDevelop.Core.Gui.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.12.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Services">
@@ -116,7 +117,9 @@
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />
 		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" />
 		<StockIcon stockid = "md-selection-arrow" resource = "Icons.16x16.SelectionArrow" />
-		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" />
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon-22.png" />
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Button"/>
+		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Dialog"/>
 		<StockIcon stockid = "md-solution-icon" resource = "Icons.16x16.SolutionIcon" />
 		<StockIcon stockid = "md-split-window" resource = "Icons.16x16.SplitWindow" />
 		<StockIcon stockid = "md-struct" resource = "Icons.16x16.Struct" />
@@ -129,10 +132,11 @@
 		<StockIcon stockid = "md-web-search-icon" resource = "Icons.16x16.WebSearchIcon" />
 		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.16x16.XMLFileIcon" size = "Menu" />
 		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.32x32.XMLFileIcon" size = "Dnd" />
-		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" size = "Button" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" />
 		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Menu" />
 		<StockIcon stockid = "md-user-package" resource = "user-package.png" />
 		<StockIcon stockid = "md-visual-studio" resource = "visual-studio.png" />
 		<StockIcon stockid = "md-comment" resource = "comment.png" />

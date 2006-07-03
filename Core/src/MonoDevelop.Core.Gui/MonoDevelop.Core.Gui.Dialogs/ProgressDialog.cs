@@ -178,6 +178,8 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		public void ShowDone (bool warnings, bool errors)
 		{
+			progressBar.Fraction = 1;
+			
 			btnCancel.Hide ();
 			btnClose.Show ();
 

@@ -8,7 +8,7 @@ using MonoDevelop.Core.AddIns.Setup;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	class AddinTreeWidget
+	public class AddinTreeWidget
 	{
 		protected Gtk.TreeView treeView;
 		protected Gtk.TreeStore treeStore;

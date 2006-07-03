@@ -158,10 +158,9 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 		void ShowDialogs ()
 		{
 			if (dialog != null) {
+				dialog.ShowDone (warningMessages.Count > 0, errorsMessages.Count > 0);
 				if (hideWhenDone)
 					dialog.Dispose ();
-				else
-					dialog.ShowDone (warningMessages.Count > 0, errorsMessages.Count > 0);
 			}
 			
 			if (showDetails)
