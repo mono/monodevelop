@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		public override void Dispose ()
 		{
-			Hide ();
+			Destroy ();
 			base.Dispose ();
 		}
 	}

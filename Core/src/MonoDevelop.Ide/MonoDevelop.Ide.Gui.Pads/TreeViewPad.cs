@@ -143,35 +143,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
-			// Create default options
-			
-			this.options = options;
-			globalOptions = new TreeOptions ();
-			foreach (TreePadOption op in options)
-				globalOptions [op.Id] = op.DefaultValue;
-				
-			globalOptions.Pad = this;
-			
-			// Check that there is only one node builder per type
-			
-			Hashtable bc = new Hashtable ();
-			foreach (NodeBuilder nb in builders) {
-				TypeNodeBuilder tnb = nb as TypeNodeBuilder;
-				if (tnb != null) {
-					TypeNodeBuilder other = (TypeNodeBuilder) bc [tnb.NodeDataType];
-					if (other != null)
-						throw new ApplicationException (string.Format ("The type node builder {0} can't be used in this context because the type {1} is already handled by {2}", nb.GetType(), tnb.NodeDataType, other.GetType()));
-					bc [tnb.NodeDataType] = tnb;
-				}
-				else if (!(nb is NodeBuilderExtension))
-					throw new InvalidOperationException (string.Format ("Invalid NodeBuilder type: {0}. NodeBuilders must inherit either from TypeNodeBuilder or NodeBuilderExtension", nb.GetType()));
-			}
-			
-			NodeBuilders = builders;
-
 			builderContext = new TreeBuilderContext (this);
-			
 			tree = new Gtk.TreeView ();
+			
+			SetBuilders (builders, options);
 			
 			/*
 			0 -- Text
@@ -224,9 +199,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			contentPanel.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler(OnButtonRelease);
 			contentPanel.PopupMenu += new Gtk.PopupMenuHandler (OnPopupMenu);
 			
-			foreach (NodeBuilder nb in builders)
-				nb.SetContext (builderContext);
-			
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
@@ -240,6 +212,62 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tree.CursorChanged += new EventHandler (OnSelectionChanged);
 			
 			contentPanel.ShowAll ();
+		}
+		
+		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
+		{
+			// Save the current state
+			ITreeNavigator root = GetRootNode ();
+			NodeState state = root != null ? root.SaveState () : null;
+			object obj = root != null ? root.DataItem : null;
+			
+			Clear ();
+			
+			// Clean cached builder chains
+			builderChains.Clear ();
+			
+			// Update the builders
+			SetBuilders (builders, options);
+
+			// Restore the tree
+			if (obj != null)
+				LoadTree (obj);
+			
+			root = GetRootNode ();
+			if (root != null && state != null)
+				root.RestoreState (state);
+		}
+		
+		void SetBuilders (NodeBuilder[] builders, TreePadOption[] options)
+		{
+			// Create default options
+			
+			this.options = options;
+			globalOptions = new TreeOptions ();
+			foreach (TreePadOption op in options)
+				globalOptions [op.Id] = op.DefaultValue;
+				
+			globalOptions.Pad = this;
+			
+			// Check that there is only one TypeNodeBuilder per type
+			
+			Hashtable bc = new Hashtable ();
+			foreach (NodeBuilder nb in builders) {
+				TypeNodeBuilder tnb = nb as TypeNodeBuilder;
+				if (tnb != null) {
+					TypeNodeBuilder other = (TypeNodeBuilder) bc [tnb.NodeDataType];
+					if (other != null)
+						throw new ApplicationException (string.Format ("The type node builder {0} can't be used in this context because the type {1} is already handled by {2}", nb.GetType(), tnb.NodeDataType, other.GetType()));
+					bc [tnb.NodeDataType] = tnb;
+				}
+				else if (!(nb is NodeBuilderExtension))
+					throw new InvalidOperationException (string.Format ("Invalid NodeBuilder type: {0}. NodeBuilders must inherit either from TypeNodeBuilder or NodeBuilderExtension", nb.GetType()));
+			}
+			
+			NodeBuilders = builders;
+			
+			foreach (NodeBuilder nb in builders)
+				nb.SetContext (builderContext);
 		}
 
 		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
@@ -1004,6 +1032,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				opset.AddItem (ViewCommands.TreeDisplayOptionList);
 				opset.AddItem (Command.Separator);
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
+				opset.AddItem (ViewCommands.RefreshTree);
 				IdeApp.CommandService.ShowContextMenu (eset);
 			}
 		}
@@ -1045,6 +1074,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tb.UpdateAll ();
 		}
 
+		[CommandHandler (ViewCommands.RefreshTree)]
+		protected void RefreshTree ()
+		{
+			Gtk.TreeModel foo;
+			Gtk.TreeIter iter;
+			if (!tree.Selection.GetSelected (out foo, out iter))
+				return;
+			TreeBuilder tb = new TreeBuilder (this, iter);
+			tb.UpdateAll ();
+		}
+		
 		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)
 		{
 			if (GetSelectedNode () != null)

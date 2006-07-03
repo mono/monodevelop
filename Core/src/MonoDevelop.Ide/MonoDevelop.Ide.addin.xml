@@ -5,7 +5,7 @@
        url         = "http://www.monodevelop.com"
        description = "The MonoDevelop IDE application."
 	   category    = "Applications"
-       version     = "0.11.0"
+       version     = "0.12.0"
        compatVersion = "0.10.0">
 
 
@@ -14,11 +14,11 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.11.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.11.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.11.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.11.0"/>
-		<AddIn id="MonoDevelop.Documentation" version="0.10.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Documentation" version="0.12.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Applications">
@@ -347,6 +347,8 @@
 				_label = "Display Options List" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ResetTreeDisplayOptions"
 				_label = "Reset Options" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.RefreshTree"
+				_label = "Refresh" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
 				type = "array"
 				_label = "OpenWidthList" />

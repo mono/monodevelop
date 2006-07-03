@@ -397,13 +397,18 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Label label = item.TabLabel as Gtk.Label;
 			label.UseMarkup = true;
 
+			Gtk.Widget pcontent;
 			if (content is Widget)
-				item.Add (content.Control);
+				pcontent = content.Control;
 			else {
 				CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
 				crc.Show ();
-				item.Add (crc);
+				pcontent = crc;
 			}
+			
+			CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
+			router.Show ();
+			item.Add (router);
 				
 			item.Show ();
 			item.HideItem ();

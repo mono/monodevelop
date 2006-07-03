@@ -116,16 +116,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			gacRefPanel.SignalRefChange (refInfo.Reference, true);
 			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			string path = refInfo.GetReferencedFileName ();
-			if (path != null)
-				refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), refInfo.ReferenceType.ToString (), System.IO.Path.GetFullPath (path), refInfo);
+			refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), refInfo.ReferenceType.ToString (), System.IO.Path.GetFullPath (refInfo.Reference), refInfo);
 		}
 
 		void AddGacReference (ProjectReference refInfo, Project referencedProject)
 		{
 			gacRefPanel.SignalRefChange (refInfo.Reference, true);
 			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.GetReferencedFileName ()), refInfo.ReferenceType.ToString (), refInfo.Reference, refInfo);
+			refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), refInfo.ReferenceType.ToString (), refInfo.Reference, refInfo);
 		}
 
 		public void RemoveReference (ReferenceType referenceType, string referenceName, string referenceLocation)
@@ -157,9 +155,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			ProjectReference tag;
 			switch (referenceType) {
-				case ReferenceType.Typelib:
-					tag = new ProjectReference(referenceType, referenceName + "|" + referenceLocation);
-					break;
 				case ReferenceType.Project:
 					tag = new ProjectReference(referenceType, referenceName);
 					break;

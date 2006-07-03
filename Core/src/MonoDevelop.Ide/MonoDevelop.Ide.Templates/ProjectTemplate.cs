@@ -214,6 +214,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			if (doc.DocumentElement["Combine"] != null) {
 				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"]);
+			} else {
+				throw new InvalidOperationException ("Combine element not found");
 			}
 			
 			// Read Actions;

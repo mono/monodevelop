@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
@@ -46,6 +47,7 @@ namespace MonoDevelop.Ide.Codons
 	{
 		NodeBuilder[] builders;
 		TreePadOption[] options;
+		TreeViewPad pad;
 		
 		[Description (	"Default placement of the pad inside the workbench. " +
 						"It can be: left, right, top, bottom, or a relative position, for example: 'ProjectPad/left'" +
@@ -66,6 +68,12 @@ namespace MonoDevelop.Ide.Codons
 		
 		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
 		{
+			BuildChildren (subItems);
+			return base.BuildItem (owner, subItems, conditions);
+		}
+		
+		void BuildChildren (ICollection subItems)
+		{
 			ArrayList bs = new ArrayList ();
 			ArrayList ops = new ArrayList ();
 			
@@ -81,12 +89,12 @@ namespace MonoDevelop.Ide.Codons
 			}
 			builders = (NodeBuilder[]) bs.ToArray (typeof(NodeBuilder));
 			options = (TreePadOption[]) ops.ToArray (typeof(TreePadOption));
-			return base.BuildItem (owner, subItems, conditions);
 		}
 		
 		protected override IPadContent CreatePad ()
 		{
-			TreeViewPad pad;
+			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+			
 			if (Class != null) {
 				object ob = AddIn.CreateObject (Class);
 				if (!(ob is TreeViewPad))
@@ -99,6 +107,15 @@ namespace MonoDevelop.Ide.Codons
 			pad.DefaultPlacement = placement;
 			pad.Id = ID;
 			return pad;
+		}
+		
+		void OnExtensionChanged (string path)
+		{
+			string codonpath = Extension.Path + "/" + this.ID;
+			if (path.StartsWith (codonpath)) {
+				BuildChildren (Runtime.AddInService.GetTreeItems (codonpath));
+				pad.UpdateBuilders (builders, options);
+			}
 		}
 	}
 }

@@ -68,12 +68,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = (SystemFile) dataObject;
 			label = file.Name;
 			icon = Context.GetIcon (Services.Icons.GetImageForFile (file.Path));
-			Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
-			if (gicon == null) {
-				gicon = Services.Icons.MakeTransparent (icon, 0.5);
-				Context.CacheComposedIcon (icon, "fade", gicon);
+			if (file.ShowTransparent) {
+				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
+				if (gicon == null) {
+					gicon = Services.Icons.MakeTransparent (icon, 0.5);
+					Context.CacheComposedIcon (icon, "fade", gicon);
+				}
+				icon = gicon;
 			}
-			icon = gicon;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -146,6 +148,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
 				project.Save (m);
 			}
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
+		public void UpdateIncludeFileToProject (CommandInfo info)
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			info.Visible = project != null;
 		}
 		
 		[CommandHandler (ViewCommands.OpenWithList)]

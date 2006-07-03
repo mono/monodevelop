@@ -1,3 +1,40 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs: Added support
+	  for Combine sublasses in templates.
+	  
+	* MonoDevelop.Ide.addin.xml:
+	  Updated add-in and references versions.
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: 
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Implemented Refresh
+	  command for tree pads. Allow changing the set of node builders
+	  at run time (to support run-time assembly loading).
+	  
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Run the deploy
+	  command in a background thread.
+	
+	* MonoDevelop.Ide.Commands/HelpCommands.cs: Destroy the about
+	  dialog when done.
+	  
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Added
+	  flag to SystemFile to make the semi-transparent icon optional.
+	  
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceNodeBuilder.cs:
+	  Track api changes in ProjectReference.
+	  
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Destroy the dialog
+	  when done.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Avoid switching layout when not
+	  necessary.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Explicitely route commands
+	  coming from pads to the main frame. It makes commands work for detached
+	  pads.
+	* MonoDevelop.Ide.Codons/SolutionPadCodon.cs: Update tree pads when loading
+	  assemblies which add new node builders.
+
 2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs:

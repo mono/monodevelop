@@ -27,6 +27,7 @@ namespace MonoDevelop.Ide.Templates
 		string name;
 		string startupProject    = null;
 		string relativeDirectory = null;
+		string typeName;
 	
 		public string StartupProject {
 			get {
@@ -34,9 +35,10 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		protected CombineDescriptor(string name)
+		protected CombineDescriptor (string name, string type)
 		{
 			this.name = name;
+			this.typeName = type;
 		}
 		
 		public ICombineEntryDescriptor[] EntryDescriptors {
@@ -45,7 +47,18 @@ namespace MonoDevelop.Ide.Templates
 		
 		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			Combine newCombine     = new Combine();
+			Combine newCombine;
+			
+			if (typeName != null && typeName.Length > 0) {
+				Type type = Type.GetType (typeName);
+				if (type == null) {
+					Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("Can't create solution with type : {0}"), typeName));
+					return String.Empty;
+				}
+				newCombine = (Combine) Activator.CreateInstance (type);
+			} else
+				newCombine = new Combine();
+
 			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.CombineName}
 			});
@@ -92,7 +105,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public static CombineDescriptor CreateCombineDescriptor(XmlElement element)
 		{
-			CombineDescriptor combineDescriptor = new CombineDescriptor(element.Attributes["name"].InnerText);
+			CombineDescriptor combineDescriptor = new CombineDescriptor(element.GetAttribute ("name"), element.GetAttribute ("type"));
 			
 			if (element.Attributes["directory"] != null) {
 				combineDescriptor.relativeDirectory = element.Attributes["directory"].InnerText;

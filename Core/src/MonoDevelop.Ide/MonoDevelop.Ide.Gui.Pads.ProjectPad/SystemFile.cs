@@ -37,11 +37,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		string absolutePath;
 		Project project;
+		bool showTransparent;
 		
-		public SystemFile (string absolutePath, Project project)
+		public SystemFile (string absolutePath, Project project): this (absolutePath, project, true)
+		{
+		}
+		
+		public SystemFile (string absolutePath, Project project, bool showTransparent)
 		{
 			this.project = project;
 			this.absolutePath = absolutePath;
+			this.showTransparent = showTransparent;
 		}
 		
 		public string Path {
@@ -51,11 +57,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public string Name {
 			get { return System.IO.Path.GetFileName (absolutePath); }
 		}
-		
+
 		public Project Project {
 			get { return project; }
 		}
 		
+		public bool ShowTransparent {
+			get { return showTransparent; }
+			set { showTransparent = value; }
+		}
+
 		public override bool Equals (object other)
 		{
 			SystemFile f = other as SystemFile;

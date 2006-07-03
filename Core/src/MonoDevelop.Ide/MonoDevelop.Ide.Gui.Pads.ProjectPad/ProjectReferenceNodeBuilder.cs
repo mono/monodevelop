@@ -63,14 +63,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectReference pref = (ProjectReference) dataObject;
 			
 			switch (pref.ReferenceType) {
-				case ReferenceType.Typelib:
-					int index = pref.Reference.IndexOf("|");
-					if (index > 0) {
-						label = pref.Reference.Substring(0, index);
-					} else {
-						label = pref.Reference;
-					}
-					break;
 				case ReferenceType.Project:
 					label = pref.Reference;
 					break;
@@ -81,7 +73,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					label = pref.Reference.Split(',')[0];
 					break;
 				default:
-					throw new NotImplementedException("reference type : " + pref.ReferenceType);
+					label = pref.Reference;
+					break;
 			}
 			
 			icon = Context.GetIcon (Stock.Reference);

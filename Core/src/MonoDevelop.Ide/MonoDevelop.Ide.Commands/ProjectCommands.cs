@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -366,9 +367,20 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run (object dt)
 		{
-			using (MessageDialogProgressMonitor mon = new MessageDialogProgressMonitor (true, false, true, false)) {
-				((DeployTarget)dt).Deploy (mon, IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
-			}
+			MessageDialogProgressMonitor mon = new MessageDialogProgressMonitor (true, false, true, false);
+
+			// Run the deploy command in a background thread to avoid
+			// deadlocks with the gui thread
+			
+			Thread t = new Thread (
+				delegate () {
+					using (mon) {
+						((DeployTarget)dt).Deploy (mon);
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
 		}
 		
 		protected override void Update (CommandArrayInfo info)
@@ -376,6 +388,8 @@ namespace MonoDevelop.Ide.Commands
 			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 			if (ce != null) {
 				foreach (DeployTarget dt in ce.DeployTargets) {
+					if (dt is UnknownDeployTarget)
+						continue;
 					CommandInfo cinfo = new CommandInfo ();
 					cinfo.Text = dt.Name;
 					cinfo.Icon = dt.DeployHandler.Icon;

@@ -165,7 +165,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string CurrentLayout {
 			get { return workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.CurrentLayout : ""; }
-			set { workbench.WorkbenchLayout.CurrentLayout = value; }
+			set {
+				if (value != workbench.WorkbenchLayout.CurrentLayout)
+					workbench.WorkbenchLayout.CurrentLayout = value; 
+			}
 		}
 
 		public string[] Layouts {

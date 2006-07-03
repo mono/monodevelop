@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			using (CommonAboutDialog ad = new CommonAboutDialog ()) {
 				ad.Run ();
-				ad.Hide ();
+				ad.Destroy ();
 			}
 		}
 	}
