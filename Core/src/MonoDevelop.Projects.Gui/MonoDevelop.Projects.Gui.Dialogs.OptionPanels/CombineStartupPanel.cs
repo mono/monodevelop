@@ -225,7 +225,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 			public bool Store()
 			{
-				combine.StartupEntry = (CombineEntry) combine.Entries [singleCombo.Active];
+				if (singleCombo.Active != -1)
+					combine.StartupEntry = (CombineEntry) combine.Entries [singleCombo.Active];
+				else
+					combine.StartupEntry = null;
 				combine.SingleStartupProject   = singleRadioButton.Active;
 				
 				// write back new combine execute definitions

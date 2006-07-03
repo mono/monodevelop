@@ -1,3 +1,16 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Registered a deploy target editor.
+	  Updated add-in and references versions.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Make it work for unknown deploy targets.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:
+	  Minor fix.
+	* MonoDevelop.Projects.Gui.addin.xml: Updated versions.
+	
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Added FileDeployTargetEditor.cs.
+	
 2006-06-19 Scott Ellington  <scott.ellington@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs:

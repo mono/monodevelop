@@ -15,6 +15,7 @@ FILES= \
 MonoDevelop.Projects.Gui/IconService.cs \
 MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs \
 MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs \
 MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \

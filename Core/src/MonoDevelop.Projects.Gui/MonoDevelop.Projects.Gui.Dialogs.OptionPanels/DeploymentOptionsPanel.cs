@@ -84,9 +84,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				targetsTree.AppendColumn ("", new Gtk.CellRendererText(), "markup", 1);
 				
 				foreach (DeployTarget target in entry.DeployTargets) {
-					DeployTarget ct = target.DeployHandler.CreateTarget (entry);
-					ct.CopyFrom (target);
-					targets.Add (ct);
+					if (target is UnknownDeployTarget)
+						targets.Add (target);
+					else {
+						DeployTarget ct = target.DeployHandler.CreateTarget (entry);
+						ct.CopyFrom (target);
+						targets.Add (ct);
+					}
 				}
 				
 				targetsTree.Selection.Changed += delegate (object s, EventArgs a) {
@@ -100,10 +104,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			{
 				store.Clear ();
 				foreach (DeployTarget target in targets) {
-					Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Dialog);
-					string desc = "<b>" + target.Name + "</b>";
-					desc += "\n<small>" + target.DeployHandler.Description + "</small>";
-					store.AppendValues (pix, desc, target);
+					if (target is UnknownDeployTarget) {
+						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("md-package", Gtk.IconSize.Dialog);
+						string desc = "<b>" + target.Name + "</b>\n<small>Unknown target</small>";
+						store.AppendValues (pix, desc, target);
+					} else {
+						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Dialog);
+						string desc = "<b>" + target.Name + "</b>";
+						desc += "\n<small>" + target.DeployHandler.Description + "</small>";
+						store.AppendValues (pix, desc, target);
+					}
 				}
 			}
 			
@@ -112,7 +122,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				DeployTarget t = GetSelection ();
 				if (t != null) {
 					buttonRemove.Sensitive = true;
-					buttonEdit.Sensitive = DeployTargetEditor.HasEditor (t);
+					buttonEdit.Sensitive = !(t is UnknownDeployTarget) && DeployTargetEditor.HasEditor (t);
 				} else {
 					buttonRemove.Sensitive = false;
 					buttonEdit.Sensitive = false;
