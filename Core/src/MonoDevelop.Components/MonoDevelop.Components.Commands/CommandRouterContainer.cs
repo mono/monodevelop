@@ -30,14 +30,14 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandRouterContainer: Gtk.EventBox, ICommandDelegatorRouter
+	public class CommandRouterContainer: Gtk.HBox, ICommandDelegatorRouter
 	{
 		object endTarget;
 		object delegated;
 		
 		public CommandRouterContainer (Gtk.Widget child, object target, bool continueToParent)
 		{
-			Add (child);
+			PackStart (child, true, true, 0);
 			delegated = target;
 			if (continueToParent)
 				endTarget = Parent;

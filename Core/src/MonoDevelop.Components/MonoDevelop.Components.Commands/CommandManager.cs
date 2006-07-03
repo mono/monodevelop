@@ -481,8 +481,31 @@ namespace MonoDevelop.Components.Commands
 				return cmdTarget;
 		}
 		
-		Gtk.Widget GetActiveWidget (Gtk.Widget widget)
+		Gtk.Widget GetActiveWidget (Gtk.Window win)
 		{
+			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
+			
+			foreach (Gtk.Window w in wins) {
+				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel) {
+					win = w;
+					break;
+				}
+			}
+			
+			if (win != null) {
+				Gtk.Widget widget = win;
+				while (widget is Gtk.Container) {
+					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+					if (child != null)
+						widget = child;
+					else
+						break;
+				}
+				return widget;
+			}
+			return win;
+			
+/*			Gtk.Widget widget = win;
 			while (widget is Gtk.Container) {
 				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
 				if (child != null)
@@ -490,7 +513,7 @@ namespace MonoDevelop.Components.Commands
 				else
 					break;
 			}
-			return widget;
+			return widget;*/
 		}
 		
 		bool UpdateStatus ()

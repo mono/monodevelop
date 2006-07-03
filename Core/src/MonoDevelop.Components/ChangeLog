@@ -1,3 +1,12 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Makefile.am: Install the library to the add-ins dir.
+	* MonoDevelop.Components.Commands/CommandRouterContainer.cs: Use
+	  an HBox rather than a more expensive EventBox as container.
+	* MonoDevelop.Components.Commands/CommandManager.cs: Make GetActiveWidget
+	  work for detached dock windows.
+	* MonoDevelop.Components/FileSelector.cs :Destroy de dialog when done.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
