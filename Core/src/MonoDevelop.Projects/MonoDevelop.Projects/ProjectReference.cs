@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -20,13 +21,13 @@ namespace MonoDevelop.Projects
 		Assembly,
 		Project,
 		Gac,
-		Typelib
+		Custom
 	}
 	
 	/// <summary>
 	/// This class represent a reference information in an Project object.
 	/// </summary>
-	[DataItemAttribute ("Reference")]
+	[DataItem (FallbackType=typeof(UnknownProjectReference))]
 	public class ProjectReference : ICloneable, ICustomDataItem
 	{
 		[ItemProperty ("type")]
@@ -98,11 +99,9 @@ namespace MonoDevelop.Projects
 		/// Returns the file name to an assembly, regardless of what 
 		/// type the assembly is.
 		/// </summary>
-		public string GetReferencedFileName ()
+		string GetReferencedFileName ()
 		{
 			switch (ReferenceType) {
-				case ReferenceType.Typelib:
-					return String.Empty;
 				case ReferenceType.Assembly:
 					return reference;
 				
@@ -123,6 +122,11 @@ namespace MonoDevelop.Projects
 				default:
 					throw new NotImplementedException("unknown reference type : " + ReferenceType);
 			}
+		}
+		
+		public virtual string[] GetReferencedFileNames ()
+		{
+			return new string[] { GetReferencedFileName () };
 		}
 		
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
@@ -181,6 +185,19 @@ namespace MonoDevelop.Projects
 		public override int GetHashCode ()
 		{
 			return reference.GetHashCode ();
+		}
+	}
+	
+	public class UnknownProjectReference: ProjectReference, IExtendedDataItem
+	{
+		Hashtable props;
+		
+		public IDictionary ExtendedProperties {
+			get {
+				if (props == null)
+					props = new Hashtable ();
+				return props;
+			}
 		}
 	}
 }

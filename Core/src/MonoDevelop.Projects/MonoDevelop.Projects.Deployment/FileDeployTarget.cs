@@ -1,10 +1,10 @@
 //
-// DataItemAttribute.cs
+// FileDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,34 +27,33 @@
 //
 
 using System;
-using System.Xml;
-using System.Collections;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Projects.Serialization
+namespace MonoDevelop.Projects.Deployment
 {
-	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-	public class DataItemAttribute: Attribute
+	public class FileDeployTarget: DeployTarget
 	{
-		string name;
-		Type fallbackType;
+		[ItemProperty ("Path")]
+		string path;
 		
-		public DataItemAttribute ()
+		public FileDeployTarget ()
 		{
 		}
 		
-		public DataItemAttribute (string name)
+		public FileDeployTarget (string defaultPath)
 		{
-			this.name = name;
-		}
-
-		public string Name {
-			get { return name; }
-			set { name = value; }
+			path = defaultPath;
 		}
 		
-		public Type FallbackType {
-			get { return fallbackType; }
-			set { fallbackType = value; }
+		public override void CopyFrom (DeployTarget other)
+		{
+			base.CopyFrom (other);
+			path = ((FileDeployTarget)other).path;
+		}
+		
+		public string Path {
+			get { return path; }
+			set { path = value; }
 		}
 	}
 }

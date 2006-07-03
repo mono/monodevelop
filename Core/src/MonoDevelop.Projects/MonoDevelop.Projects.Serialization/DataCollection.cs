@@ -170,5 +170,21 @@ namespace MonoDevelop.Projects.Serialization
 			if (list != null)
 				list.Clear ();
 		}
+		
+		public void Merge (DataCollection col)
+		{
+			ArrayList toAdd = new ArrayList ();
+			
+			foreach (DataNode node in col) {
+				DataNode current = this [node.Name];
+				if (current == null)
+					toAdd.Add (node);
+				else if (node is DataItem && current is DataItem) {
+					((DataItem)current).ItemData.Merge (((DataItem)node).ItemData);
+				}
+			}
+			foreach (DataNode node in toAdd)
+				Add (node);
+		}
 	}
 }

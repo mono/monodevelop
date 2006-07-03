@@ -145,10 +145,12 @@ namespace MonoDevelop.Projects.Parser
 			fs.Clear ();
 			foreach (ProjectReference pr in project.ProjectReferences)
 			{
-				string refId = GetReferenceKey (pr);
-				fs[refId] = null;
-				if (!HasReference (refId))
-					AddReference (refId);
+				string[] refIds = GetReferenceKeys (pr);
+				foreach (string refId in refIds) {
+					fs[refId] = null;
+					if (!HasReference (refId))
+						AddReference (refId);
+				}
 			}
 			
 			keys.Clear();
@@ -200,14 +202,22 @@ namespace MonoDevelop.Projects.Parser
 			return false;
 		}
 		
-		string GetReferenceKey (ProjectReference pr)
+		string[] GetReferenceKeys (ProjectReference pr)
 		{
-			string refId = pr.ReferenceType == ReferenceType.Project ? "Project" : "Assembly";
-			refId += ":" + pr.Reference;
-
-			if (pr.ReferenceType == ReferenceType.Gac && refId.ToLower().EndsWith (".dll"))
-				refId = refId.Substring (0, refId.Length - 4);
-			return refId;
+			switch (pr.ReferenceType) {
+				case ReferenceType.Project:
+					return new string[] { "Project:" + pr.Reference };
+				case ReferenceType.Gac:
+					string refId = pr.Reference;
+					if (refId.ToLower().EndsWith (".dll"))
+						refId = refId.Substring (0, refId.Length - 4);
+					return new string[] { "Assembly:" + refId };
+				default:
+					ArrayList list = new ArrayList ();
+					foreach (string s in pr.GetReferencedFileNames ())
+						list.Add ("Assembly:" + s);
+					return (string[]) list.ToArray (typeof(string));
+			}
 		}
 		
 		protected override void ParseFile (string fileName, IProgressMonitor monitor)

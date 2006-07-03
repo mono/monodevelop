@@ -178,18 +178,30 @@ namespace MonoDevelop.Projects
 	{
 		DataSerializer serializer;
 		Combine combine = new Combine ();
+		ArrayList entries = new ArrayList ();
 		IProgressMonitor monitor;
+		string baseFile;
 		
 		public CombineReaderV2 (DataSerializer serializer, IProgressMonitor monitor)
 		{
 			this.serializer = serializer;
-			combine.FileName = serializer.SerializationContext.BaseFile;
+			baseFile = serializer.SerializationContext.BaseFile;
 			this.monitor = monitor;
 		}
 		
 		public Combine ReadCombine (XmlReader reader)
 		{
 			DataItem data = (DataItem) Read (reader);
+			
+			Combine combine = (Combine) serializer.CreateInstance (typeof(Combine), data);
+			combine.FileName = serializer.SerializationContext.BaseFile;
+			
+			// The combine entries must be added before deserializing the combine
+			// since other combine members depend on it
+			
+			foreach (CombineEntry ce in entries)
+				combine.Entries.Add (ce);
+			
 			serializer.Deserialize (combine, data);
 			combine.FileFormat = new MdsFileFormat ();
 			return combine;
@@ -199,7 +211,7 @@ namespace MonoDevelop.Projects
 		{
 			if (reader.LocalName == "Entries") {
 				if (reader.IsEmptyElement) { reader.Skip(); return null; }
-				string basePath = Path.GetDirectoryName (combine.FileName);
+				string basePath = Path.GetDirectoryName (baseFile);
 				reader.ReadStartElement ();
 				
 				ArrayList files = new ArrayList ();
@@ -210,10 +222,10 @@ namespace MonoDevelop.Projects
 					reader.Skip ();
 				}
 				
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading solution: {0}"), combine.FileName), files.Count);
+				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading solution: {0}"), baseFile), files.Count);
 				try {
 					foreach (string nodefile in files) {
-						combine.Entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
+						entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
 						monitor.Step (1);
 					}
 				} finally {

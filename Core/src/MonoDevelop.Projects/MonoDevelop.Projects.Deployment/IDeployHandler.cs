@@ -28,6 +28,7 @@
 
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -38,5 +39,6 @@ namespace MonoDevelop.Projects.Deployment
 		string Icon { get; }
 		bool CanDeploy (CombineEntry entry);
 		DeployTarget CreateTarget (CombineEntry entry);
+		void Deploy (IProgressMonitor monitor, DeployTarget target);
 	}
 }

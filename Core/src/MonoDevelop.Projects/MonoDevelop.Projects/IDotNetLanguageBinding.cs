@@ -25,8 +25,6 @@ namespace MonoDevelop.Projects
 	{
 		ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection references, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
 		
-		void GenerateMakefile (Project project, Combine parentCombine);
-		
 		ICloneable CreateCompilationParameters (XmlElement projectOptions);
 
 		// Optional. Return null if not supported.

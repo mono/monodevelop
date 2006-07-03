@@ -20,7 +20,10 @@ MonoDevelop.Projects.Ambience/NetAmbience.cs \
 MonoDevelop.Projects.Deployment/DeployHandler.cs \
 MonoDevelop.Projects.Deployment/DeployService.cs \
 MonoDevelop.Projects.Deployment/DeployTarget.cs \
+MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs \
+MonoDevelop.Projects.Deployment/FileDeployTarget.cs \
 MonoDevelop.Projects.Deployment/IDeployHandler.cs \
+MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs \
 MonoDevelop.Projects/Language.cs \
 MonoDevelop.Projects/LanguageService.cs \
 MonoDevelop.Projects/LanguageBindingService.cs \
@@ -216,6 +219,7 @@ MonoDevelop.Projects/ConfigurationEventHandler.cs \
 MonoDevelop.Projects/ExecutionContext.cs \
 MonoDevelop.Projects/BuildTool.cs \
 MonoDevelop.Projects/ProjectsServices.cs \
+MonoDevelop.Projects/UnknownCombineEntry.cs \
 MonoDevelop.Projects.Documentation/IDocumentationService.cs
 
 GENERATED_FILES = \

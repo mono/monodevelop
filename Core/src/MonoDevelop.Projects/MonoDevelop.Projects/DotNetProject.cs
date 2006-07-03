@@ -210,13 +210,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override void GenerateMakefiles (Combine parentCombine)
-		{
-			Runtime.LoggingService.DebugFormat ("Generating makefiles for {0}",
-				Name);
-			languageBinding.GenerateMakefile (this, parentCombine);
-		}
-		
 		public override bool IsCompileable(string fileName)
 		{
 			return languageBinding.IsSourceCodeFile (fileName);

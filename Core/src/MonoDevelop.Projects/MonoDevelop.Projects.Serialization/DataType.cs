@@ -85,6 +85,9 @@ namespace MonoDevelop.Projects.Serialization
 		public virtual void Deserialize (SerializationContext serCtx, object mapData, DataNode data, object valueInstance)
 		{ throw new InvalidOperationException ("Could not create instance for type '" + ValueType + "'"); }
 		
+		public virtual object CreateInstance (SerializationContext serCtx, DataNode data)
+		{ throw new InvalidOperationException ("Could not create instance for type '" + ValueType + "'"); }
+		
 		public abstract bool IsSimpleType { get; }
 		public abstract bool CanCreateInstance { get; }
 		public abstract bool CanReuseInstance { get; }

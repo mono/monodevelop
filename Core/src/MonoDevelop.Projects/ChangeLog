@@ -1,3 +1,65 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectReference.cs: Remove the DataItemAttribute,
+	  since the name property wasn't used at all, and now it is.
+	  Added serialization fallback type. Replaced TypeLib reference type by Custom.
+	  Replaced GetReferencedFileName() by GetReferencedFileNames(). A Reference
+	  may now reference several files.
+	  
+	* MonoDevelop.Projects/CombineConfiguration.cs:
+	* MonoDevelop.Projects/AbstractProjectConfiguration.cs:
+	* MonoDevelop.Projects/DeployInformation.cs: Remove the DataItemAttribute,
+	  since the name property wasn't used at all, and now it is.
+	  
+	* MonoDevelop.Projects/ProjectService.cs: Throw an exception when a serializable
+	  type can't be found.
+	  
+	* MonoDevelop.Projects/IConfiguration.cs:
+	* MonoDevelop.Projects/CombineEntry.cs: Added serialization fallback type.
+	
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs:
+	* MonoDevelop.Projects/DotNetProject.cs: Removed obsolete GenerateMakefiles
+	  method.
+	  
+	* MonoDevelop.Projects/CmbxFileFormat.cs: Some changes to support version
+	  tolerant serialization of combines.
+	* MonoDevelop.Projects/Project.cs: Added serialization fallback type. Track
+	  API changes in ProjectReference.
+	  
+	* MonoDevelop.Projects.Serialization/DataType.cs:
+	* MonoDevelop.Projects.Serialization/DataContext.cs:
+	* MonoDevelop.Projects.Serialization/DataCollection.cs:
+	* MonoDevelop.Projects.Serialization/ClassDataType.cs:
+	* MonoDevelop.Projects.Serialization/DataSerializer.cs:
+	* MonoDevelop.Projects.Serialization/DataItemAttribute.cs:
+	  Implemented support for serialization fallback types. That is, when the
+	  serializer is deserializing an object, if the type of the object cannot
+	  be found (for example, because it was created by an add-in not installed
+	  in the system), then it will create a replacement object. The property
+	  FallbackType can be used to specify the type of the replacement object.
+	  
+	* MonoDevelop.Projects.addin.xml: Registered two new types of deployment
+	  targets. Updated add-in version and references.
+	  
+	* MonoDevelop.Projects.Deployment/DeployTarget.cs: Added fallback type.
+	  Added a new CombineEntry property.
+	  
+	* MonoDevelop.Projects.Deployment/DeployHandler.cs:
+	* MonoDevelop.Projects.Deployment/IDeployHandler.cs: Moved Deploy
+	  method from DeployTarget class to IDeployHandler.
+	  
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Make sure parse information
+	  for files is updated before running refactory operations.
+	  
+	* MonoDevelop.Projects/Makefile.am: Updated.
+	
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Added a public UpdateFile 
+	  method to IParserDatabase, which updates the parser information of a file.
+	  
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Track api changes
+	  in ProjectReference.
+
 2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Make CompileTarget 

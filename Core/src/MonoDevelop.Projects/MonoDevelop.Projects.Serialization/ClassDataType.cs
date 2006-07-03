@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects.Serialization
 		Hashtable properties = new Hashtable ();
 		ArrayList sortedPoperties = new ArrayList ();
 		ArrayList subtypes;
+		Type fallbackType;
 		
 		public ClassDataType (Type propType): base (propType)
 		{
@@ -48,6 +49,20 @@ namespace MonoDevelop.Projects.Serialization
 		
 		protected override void Initialize ()
 		{
+			DataItemAttribute atd = (DataItemAttribute) Attribute.GetCustomAttribute (ValueType, typeof(DataItemAttribute), false);
+			if (atd != null) {
+				if (!string.IsNullOrEmpty (atd.Name)) {
+					Name = atd.Name;
+				}
+				if (atd.FallbackType != null) {
+					fallbackType = atd.FallbackType;
+					if (!typeof(IExtendedDataItem).IsAssignableFrom (fallbackType))
+						throw new InvalidOperationException ("Fallback type '" + fallbackType + "' must implement IExtendedDataItem");
+					if (!ValueType.IsAssignableFrom (fallbackType))
+						throw new InvalidOperationException ("Fallback type '" + fallbackType + "' must be a subclass of '" + ValueType + "'");
+				}
+			}
+			
 			object[] incs = ValueType.GetCustomAttributes (typeof (DataIncludeAttribute), true);
 			foreach (DataIncludeAttribute incat in incs) {
 				Context.IncludeType (incat.Type);
@@ -55,12 +70,16 @@ namespace MonoDevelop.Projects.Serialization
 			
 			if (ValueType.BaseType != null) {
 				ClassDataType baseType = (ClassDataType) Context.GetConfigurationDataType (ValueType.BaseType);
-				baseType.AddSubtype (this); 
+				baseType.AddSubtype (this);
 				int n=0;
 				foreach (ItemProperty prop in baseType.Properties) {
 					properties.Add (prop.Name, prop);
 					sortedPoperties.Insert (n++, prop);
 				}
+				
+				// Inherit the fallback type
+				if (fallbackType == null && baseType.fallbackType != null)
+					fallbackType = baseType.fallbackType;
 			}
 
 			foreach (Type interf in ValueType.GetInterfaces ()) {
@@ -112,11 +131,15 @@ namespace MonoDevelop.Projects.Serialization
 						throw new InvalidOperationException ("ExpandedCollectionAttribute is not allowed in collections of simple types");
 				}
 			}
+			
+			if (fallbackType != null)
+				Context.IncludeType (fallbackType);
 		}
 		
 		private void AddSubtype (ClassDataType subtype)
 		{
-			if (subtypes == null) subtypes = new ArrayList (); 
+			if (subtypes == null)
+				subtypes = new ArrayList ();
 			subtypes.Add (subtype); 
 		}
 
@@ -156,12 +179,20 @@ namespace MonoDevelop.Projects.Serialization
 		
 		public override DataNode Serialize (SerializationContext serCtx, object mapData, object obj)
 		{
+			string ctype = null;
+			
 			if (obj.GetType () != ValueType) {
-				DataType subtype = Context.GetConfigurationDataType (obj.GetType ());
-				DataItem it = (DataItem) subtype.Serialize (serCtx, mapData, obj);
-				it.ItemData.Add (new DataValue ("ctype", subtype.Name));
-				it.Name = Name;
-				return it;
+				if (obj is IExtendedDataItem) {
+					// This is set by fallback types, to make sure the original type name is serialized back
+					ctype = (string) ((IExtendedDataItem)obj).ExtendedProperties ["__raw_ctype"];
+				}
+				if (ctype == null) {
+					DataType subtype = Context.GetConfigurationDataType (obj.GetType ());
+					DataItem it = (DataItem) subtype.Serialize (serCtx, mapData, obj);
+					it.ItemData.Add (new DataValue ("ctype", subtype.Name));
+					it.Name = Name;
+					return it;
+				}
 			} 
 			
 			DataItem item = new DataItem ();
@@ -174,6 +205,10 @@ namespace MonoDevelop.Projects.Serialization
 			}
 			else
 				item.ItemData = Serialize (serCtx, obj);
+				
+			if (ctype != null)
+				item.ItemData.Add (new DataValue ("ctype", ctype));
+
 			return item;
 		}
 		
@@ -206,6 +241,14 @@ namespace MonoDevelop.Projects.Serialization
 					col.Add (data);
 				}
 			}
+			
+			if (obj is IExtendedDataItem) {
+				// Serialize raw data which could not be deserialized
+				DataItem uknData = (DataItem) ((IExtendedDataItem)obj).ExtendedProperties ["__raw_data"];
+				if (uknData != null)
+					itemCol.Merge (uknData.ItemData);
+			}
+			
 			return itemCol;
 		}
 		
@@ -230,9 +273,27 @@ namespace MonoDevelop.Projects.Serialization
 				
 			DataValue ctype = item ["ctype"] as DataValue;
 			if (ctype != null && ctype.Value != Name) {
-				DataType stype = FindDerivedType (ctype.Value);
-				if (stype != null) return stype.Deserialize (serCtx, mapData, data);
-				else throw new InvalidOperationException ("Type not found: " + ctype.Value);
+				bool isFallbackType;
+				DataType stype = FindDerivedType (ctype.Value, out isFallbackType);
+				
+				if (isFallbackType) {
+					// Remove the ctype attribute, to make sure it is not checked again
+					// by the fallback type
+					item.ItemData.Remove (ctype);
+				}
+				
+				if (stype != null) {
+					object sobj = stype.Deserialize (serCtx, mapData, data);
+					
+					// Store the original data type, so it can be serialized back
+					if (isFallbackType && sobj is IExtendedDataItem) {
+						((IExtendedDataItem)sobj).ExtendedProperties ["__raw_ctype"] = ctype.Value;
+					}
+						
+					return sobj;
+				}
+				else
+					throw new InvalidOperationException ("Type not found: " + ctype.Value);
 			}
 			
 			ConstructorInfo ctor = ValueType.GetConstructor (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
@@ -241,6 +302,37 @@ namespace MonoDevelop.Projects.Serialization
 			object obj = ctor.Invoke (null);
 			SetConfigurationItemData (serCtx, obj, item);
 			return obj;
+		}
+		
+		public override object CreateInstance (SerializationContext serCtx, DataNode data)
+		{
+			DataItem item = data as DataItem;
+			if (item == null)
+				throw new InvalidOperationException ("Invalid value found for type '" + Name + "'");
+				
+			DataValue ctype = item ["ctype"] as DataValue;
+			if (ctype != null && ctype.Value != Name) {
+				bool isFallbackType;
+				DataType stype = FindDerivedType (ctype.Value, out isFallbackType);
+				if (isFallbackType) {
+					// Remove the ctype attribute, to make sure it is not checked again
+					// by the fallback type
+					item.ItemData.Remove (ctype);
+				}
+				if (stype != null) {
+					object sobj = stype.CreateInstance (serCtx, data);
+					// Store the original data type, so it can be serialized back
+					if (isFallbackType && sobj is IExtendedDataItem)
+						((IExtendedDataItem)sobj).ExtendedProperties ["__raw_ctype"] = ctype;
+					return sobj;
+				}
+				else throw new InvalidOperationException ("Type not found: " + ctype.Value);
+			}
+			
+			ConstructorInfo ctor = ValueType.GetConstructor (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+			if (ctor == null) throw new InvalidOperationException ("Default constructor not found for type '" + ValueType + "'");
+
+			return ctor.Invoke (null);
 		}
 		
 		public void SetConfigurationItemData (SerializationContext serCtx, object obj, DataItem item)
@@ -260,18 +352,39 @@ namespace MonoDevelop.Projects.Serialization
 				if (prop.DefaultValue != null)
 					SetPropValue (prop, obj, prop.DefaultValue);
 			
-			Deserialize (serCtx, obj, itemData, "");
+			// ukwnDataRoot is where to store values for which a property cannot be found.
+			DataItem ukwnDataRoot = (obj is IExtendedDataItem) ? new DataItem () : null;
+			
+			Deserialize (serCtx, obj, itemData, ukwnDataRoot, "");
+			
+			// store unreadable raw data to a special property so it can be 
+			// serialized back an the original format is kept
+			if (ukwnDataRoot != null && ukwnDataRoot.HasItemData)
+				((IExtendedDataItem)obj).ExtendedProperties ["__raw_data"] = ukwnDataRoot;
 		}
 		
-		void Deserialize (SerializationContext serCtx, object obj, DataCollection itemData, string baseName)
+		void Deserialize (SerializationContext serCtx, object obj, DataCollection itemData, DataItem ukwnDataRoot, string baseName)
 		{
 			Hashtable expandedCollections = null;
 			
 			foreach (DataNode value in itemData) {
 				ItemProperty prop = (ItemProperty) properties [baseName + value.Name];
 				if (prop == null) {
-					if (value is DataItem)
-						Deserialize (serCtx, obj, ((DataItem)value).ItemData, baseName + value.Name + "/");
+					if (value is DataItem) {
+						DataItem root = new DataItem ();
+						root.Name = value.Name;
+						root.UniqueNames = ((DataItem)value).UniqueNames;
+						ukwnDataRoot.ItemData.Add (root);
+						Deserialize (serCtx, obj, ((DataItem)value).ItemData, root, baseName + value.Name + "/");
+					}
+					else if (obj is IExtendedDataItem && (value.Name != "ctype" || baseName.Length > 0)) {
+						// store unreadable raw data to a special property so it can be 
+						// serialized back an the original format is kept
+						// The ctype attribute don't need to be stored for the root object, since
+						// it is generated by the serializer
+						ukwnDataRoot.ItemData.Add (value);
+						Console.WriteLine ("RAW: " + value.Name + "  :  " + baseName);
+					}
 					continue;
 				}
 				if (prop.WriteOnly)
@@ -334,16 +447,29 @@ namespace MonoDevelop.Projects.Serialization
 				return null;
 		}
 		
-		public DataType FindDerivedType (string name)
+		public DataType FindDerivedType (string name, out bool isFallbackType)
 		{
-			if (subtypes == null) return null;
-			
-			foreach (ClassDataType stype in subtypes) {
-				if (stype.Name == name) return stype;
-				DataType cst = stype.FindDerivedType (name);
-				if (cst != null) return cst;
+			isFallbackType = false;
+			if (subtypes != null) {
+				foreach (ClassDataType stype in subtypes) {
+					if (stype.Name == name) 
+						return stype;
+						
+					bool fb;
+					DataType cst = stype.FindDerivedType (name, out fb);
+					if (cst != null && !fb) {
+						isFallbackType = false;
+						return cst;
+					}
+				}
 			}
-			return null;
+			
+			if (fallbackType != null) {
+				isFallbackType = true;
+				return Context.GetConfigurationDataType (fallbackType);
+			}
+			else
+				return null;
 		}
 	}
 	

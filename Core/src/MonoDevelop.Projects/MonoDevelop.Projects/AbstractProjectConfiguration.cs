@@ -21,7 +21,6 @@ namespace MonoDevelop.Projects
 	/// External language bindings may choose to extend this class.
 	/// It makes things a bit easier.
 	/// </summary>
-	[DataItemAttribute("Configuration")]
 	public abstract class AbstractProjectConfiguration : AbstractConfiguration
 	{
 		[ProjectPathItemProperty ("Output/directory")]

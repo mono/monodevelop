@@ -1,10 +1,10 @@
 //
-// DataItemAttribute.cs
+// DirectoryDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,34 +27,18 @@
 //
 
 using System;
-using System.Xml;
-using System.Collections;
+using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Projects.Serialization
+namespace MonoDevelop.Projects.Deployment
 {
-	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-	public class DataItemAttribute: Attribute
+	public class DirectoryDeployTarget: FileDeployTarget
 	{
-		string name;
-		Type fallbackType;
-		
-		public DataItemAttribute ()
+		public DirectoryDeployTarget ()
 		{
-		}
-		
-		public DataItemAttribute (string name)
-		{
-			this.name = name;
 		}
 
-		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public Type FallbackType {
-			get { return fallbackType; }
-			set { fallbackType = value; }
+		public DirectoryDeployTarget (string defaultPath): base (defaultPath)
+		{
 		}
 	}
 }

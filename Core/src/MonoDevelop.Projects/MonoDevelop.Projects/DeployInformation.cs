@@ -21,10 +21,8 @@ namespace MonoDevelop.Projects
 		File
 	}
 	
-	[DataItem ("DeploymentInformation")]
 	public class DeployInformation
 	{
-		[DataItem ("Exclude")]
 		class ExcludeFile 
 		{
 			[ProjectPathItemProperty ("file")]

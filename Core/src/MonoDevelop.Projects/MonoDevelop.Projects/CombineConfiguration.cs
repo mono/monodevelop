@@ -108,7 +108,6 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	[DataItem ("Entry")]
 	public class CombineConfigurationEntry 
 	{
 		string entryName;

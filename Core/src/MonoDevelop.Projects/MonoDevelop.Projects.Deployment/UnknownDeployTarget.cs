@@ -1,10 +1,10 @@
 //
-// DataItemAttribute.cs
+// UnknownDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,34 +27,26 @@
 //
 
 using System;
-using System.Xml;
 using System.Collections;
 
-namespace MonoDevelop.Projects.Serialization
-{
-	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-	public class DataItemAttribute: Attribute
-	{
-		string name;
-		Type fallbackType;
-		
-		public DataItemAttribute ()
-		{
-		}
-		
-		public DataItemAttribute (string name)
-		{
-			this.name = name;
-		}
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
-		public string Name {
-			get { return name; }
-			set { name = value; }
+namespace MonoDevelop.Projects.Deployment
+{
+	public class UnknownDeployTarget: DeployTarget, IExtendedDataItem
+	{
+		Hashtable properties;
+		
+		public UnknownDeployTarget()
+		{
 		}
 		
-		public Type FallbackType {
-			get { return fallbackType; }
-			set { fallbackType = value; }
+		public IDictionary ExtendedProperties {
+			get {
+				if (properties == null) properties = new Hashtable ();
+				return properties;
+			}
 		}
 	}
 }

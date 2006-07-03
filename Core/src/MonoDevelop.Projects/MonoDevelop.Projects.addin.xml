@@ -5,15 +5,15 @@
        url         = "http://www.monodevelop.com"
        description = "Provides support for loading and building MonoDevelop projects."
 	   category    = "MonoDevelop Core"
-       version     = "0.11.0"
-       compatVersion = "0.11.0">
+       version     = "0.12.0"
+       compatVersion = "0.12.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Projects.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.11.0"/>
+		<AddIn id="MonoDevelop.Core" version="0.12.0"/>
 	</Dependencies>
 
 	<Extension path = "/Workspace/Services">
@@ -57,6 +57,8 @@
 		<DataType class = "MonoDevelop.Projects.Combine" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
+		<DataType class = "MonoDevelop.Projects.Deployment.FileDeployTarget" />
+		<DataType class = "MonoDevelop.Projects.Deployment.DirectoryDeployTarget" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties" extension-nodes="ItemProperty" description="Custom properties for projects and other types.">

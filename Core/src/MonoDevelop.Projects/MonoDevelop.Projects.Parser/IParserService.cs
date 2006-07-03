@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Parser
 		IFileParserContext GetFileParserContext (string file);
 		IAssemblyParserContext GetAssemblyParserContext (string assemblyFile);
 
+		IParseInformation UpdateFile (string fileName, string fileContent);
 		IParseInformation UpdateFile (Project project, string fileName, string fileContent);
 		
 		bool TrackFileChanges { get; set; }
@@ -79,6 +80,8 @@ namespace MonoDevelop.Projects.Parser
 
 	public interface IParserContext
 	{
+		IParserDatabase ParserDatabase { get; }
+		
 		IParseInformation ParseFile (string fileName);
 		IParseInformation ParseFile (string fileName, string fileContent);
 		IParseInformation ParseFile (ITextFile file);

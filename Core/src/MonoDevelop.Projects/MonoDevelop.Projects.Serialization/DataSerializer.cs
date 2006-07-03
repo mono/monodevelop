@@ -73,5 +73,10 @@ namespace MonoDevelop.Projects.Serialization
 		{
 			dataContext.SetConfigurationItemData (serializationContext, obj, data);
 		}
+		
+		public object CreateInstance (Type type, DataItem data)
+		{
+			return dataContext.CreateConfigurationData (serializationContext, type, data);
+		}
 	}
 }

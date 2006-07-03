@@ -21,6 +21,7 @@ using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Projects
 {
+	[DataItem (FallbackType = typeof(UnknownCombineEntry))]
 	public abstract class CombineEntry : ICustomDataItem, IDisposable, IExtendedDataItem
 	{
 		ConfigurationCollection configurations;
@@ -48,7 +49,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		IDictionary IExtendedDataItem.ExtendedProperties {
+		public IDictionary ExtendedProperties {
 			get {
 				if (extendedProperties == null)
 					extendedProperties = new Hashtable ();
@@ -209,6 +210,10 @@ namespace MonoDevelop.Projects
 			handler.Deserialize (this, data);
 			if (ac != null)
 				activeConfiguration = GetConfiguration (ac.Value);
+				
+			if (deployTargets != null)
+				foreach (DeployTarget target in deployTargets)
+					target.SetCombineEntry (this);
 		}
 		
 		public abstract IConfiguration CreateConfiguration (string name);

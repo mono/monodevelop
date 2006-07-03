@@ -114,6 +114,10 @@ namespace MonoDevelop.Projects.Parser
 			this.db = db;
 		}
 		
+		public IParserDatabase ParserDatabase { 
+			get { return pdb; }
+		}
+		
 		public IExpressionFinder GetExpressionFinder (string fileName)
 		{
 			return pdb.GetExpressionFinder (fileName);
@@ -1012,6 +1016,22 @@ namespace MonoDevelop.Projects.Parser
 			} finally {
 				if (monitor != null) monitor.Dispose ();
 			}
+		}
+		
+		public IParseInformation UpdateFile (string fileName, string fileContent)
+		{
+			Project project = null;
+			
+			lock (databases) {
+				foreach (object ob in databases.Values) {
+					ProjectCodeCompletionDatabase db = ob as ProjectCodeCompletionDatabase;
+					if (db != null) {
+						if (db.Project.IsFileInProject (fileName))
+							project = db.Project;
+					}
+				}
+			}
+			return UpdateFile (project, fileName, fileContent);
 		}
 		
 		public IParseInformation UpdateFile (Project project, string fileName, string fileContent)

@@ -28,6 +28,7 @@
 
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -54,12 +55,20 @@ namespace MonoDevelop.Projects.Deployment
 		
 		public DeployTarget CreateTarget (CombineEntry entry)
 		{
-			return handler.CreateTarget (entry);
+			DeployTarget dt = handler.CreateTarget (entry);
+			dt.Bind (this);
+			dt.SetCombineEntry (entry);
+			return dt;
 		}
 		
 		internal bool CanDeploy (CombineEntry entry)
 		{
 			return handler.CanDeploy (entry);
+		}
+		
+		internal void Deploy (IProgressMonitor monitor, DeployTarget target)
+		{
+			handler.Deploy (monitor, target);
 		}
 	}
 }

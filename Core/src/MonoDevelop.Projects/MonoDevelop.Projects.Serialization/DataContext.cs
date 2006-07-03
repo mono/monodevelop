@@ -60,6 +60,12 @@ namespace MonoDevelop.Projects.Serialization
 			dataType.SetConfigurationItemData (serCtx, obj, data);
 		}
 		
+		public object CreateConfigurationData (SerializationContext serCtx, Type type, DataNode data)
+		{
+			DataType dataType = GetConfigurationDataType (type);
+			return dataType.CreateInstance (serCtx, data);
+		}
+		
 		public void RegisterProperty (Type targetType, string name, Type propertyType)
 		{
 			if (!typeof(IExtendedDataItem).IsAssignableFrom (targetType))

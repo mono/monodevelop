@@ -142,8 +142,13 @@ namespace MonoDevelop.Projects
 		
 		void OnSerializableExtensionChanged (ExtensionAction action, object item)
 		{
-			if (action == ExtensionAction.Add)
-				DataContext.IncludeType (((DataTypeCodon)item).Type);
+			if (action == ExtensionAction.Add) {
+				Type t = ((DataTypeCodon)item).Type;
+				if (t == null) {
+					throw new UserException ("Type '" + ((DataTypeCodon)item).Class + "' not found. It could not be registered as a serializable type.");
+				}
+				DataContext.IncludeType (t);
+			}
 		}
 		
 		void OnPropertiesExtensionChanged (ExtensionAction action, object item)

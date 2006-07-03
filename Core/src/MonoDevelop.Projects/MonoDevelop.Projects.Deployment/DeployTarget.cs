@@ -34,7 +34,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public abstract class DeployTarget
+	[DataItem (FallbackType=typeof(UnknownDeployTarget))]
+	public class DeployTarget
 	{
 		DeployHandler handler;
 		
@@ -44,13 +45,26 @@ namespace MonoDevelop.Projects.Deployment
 		[ItemProperty ("Name")]
 		string name;
 		
-		protected DeployTarget ()
+		CombineEntry entry;
+		
+		public DeployTarget ()
 		{
 		}
 		
-		protected DeployTarget (string handlerId)
+		internal void Bind (DeployHandler handler)
 		{
-			this.handlerId = handlerId;
+			this.handler = handler;
+			this.handlerId = handler.Id;
+		}
+		
+		internal void SetCombineEntry (CombineEntry entry)
+		{
+			this.entry = entry;
+		}
+		
+		public void Deploy (IProgressMonitor monitor)
+		{
+			handler.Deploy (monitor, this);
 		}
 		
 		public string Name {
@@ -58,13 +72,16 @@ namespace MonoDevelop.Projects.Deployment
 			set { name = value; }
 		}
 		
-		public abstract void Deploy (IProgressMonitor monitor, CombineEntry entry);
+		public CombineEntry CombineEntry {
+			get { return entry; }
+		}
 		
 		public virtual void CopyFrom (DeployTarget other)
 		{
 			name = other.name;
 			handlerId = other.handlerId;
 			handler = other.handler;
+			entry = other.entry;
 		}
 		
 		public DeployHandler DeployHandler {

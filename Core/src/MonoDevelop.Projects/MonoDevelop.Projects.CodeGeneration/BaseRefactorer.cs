@@ -276,7 +276,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		// Returns a reparsed IClass instance that contains the generated code.
 		protected IClass GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IClass cls)
 		{
-			IParseInformation pi = ctx.ParserContext.ParseFile (buffer.Name, buffer.Text);
+			IParseInformation pi = ctx.ParserContext.ParserDatabase.UpdateFile (buffer.Name, buffer.Text);
 			foreach (IClass rclass in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
 				if (cls.Name == rclass.Name)
 					return rclass;

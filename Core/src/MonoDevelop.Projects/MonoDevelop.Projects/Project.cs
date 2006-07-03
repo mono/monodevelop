@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// External language bindings must extend this class
 	/// </summary>
-	[DataItemAttribute ("Project")]
 	[DataInclude (typeof(ProjectFile))]
+	[DataItem (FallbackType=typeof(UnknownProject))]
 	public abstract class Project : CombineEntry
 	{
 		[ItemProperty ("Description", DefaultValue="")]
@@ -208,16 +208,17 @@ namespace MonoDevelop.Projects
 		{
 			foreach (ProjectReference projectReference in ProjectReferences) {
 				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
-					string referenceFileName   = projectReference.GetReferencedFileName();
-					string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
-					try {
-						if (destinationFileName != referenceFileName) {
-							File.Copy(referenceFileName, destinationFileName, true);
-							if (File.Exists (referenceFileName + ".mdb"))
-								File.Copy (referenceFileName + ".mdb", destinationFileName + ".mdb", true);
+					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
+						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
+						try {
+							if (destinationFileName != referenceFileName) {
+								File.Copy(referenceFileName, destinationFileName, true);
+								if (File.Exists (referenceFileName + ".mdb"))
+									File.Copy (referenceFileName + ".mdb", destinationFileName + ".mdb", true);
+							}
+						} catch (Exception e) {
+							Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", referenceFileName, destinationFileName, e);
 						}
-					} catch (Exception e) {
-						Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1} reason {2}", referenceFileName, destinationFileName, e);
 					}
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
@@ -678,6 +679,18 @@ namespace MonoDevelop.Projects
 			{
 				return false;
 			}
+		}
+	}
+	
+	public class UnknownProject: Project
+	{
+		public override string ProjectType {
+			get { return ""; }
+		}
+
+		public override IConfiguration CreateConfiguration (string name)
+		{
+			return null;
 		}
 	}
 }
