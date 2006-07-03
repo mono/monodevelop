@@ -47,11 +47,6 @@ namespace VBBinding
 			return compilerServices.Compile (projectFiles, references, configuration, monitor);
 		}
 		
-		public void GenerateMakefile (Project project, Combine parentCombine)
-		{
-			compilerServices.GenerateMakefile (project, parentCombine);
-		}
-		
 		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new VBCompilerParameters ();

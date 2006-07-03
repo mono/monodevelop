@@ -1,3 +1,10 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* VBLanguageBinding.cs:
+	* VBBindingCompilerServices.cs: Track changes in ProjectReference.
+	  Removed obsolete GenerateMakefile method.
+	* VBNetBinding.addin.xml: Updated versions.
+
 2006-06-24 John Luke <john.luke@gmail.com>
 
 	* Makefile.am: reference NRefactory not SharpRefactory.VB
