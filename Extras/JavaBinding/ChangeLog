@@ -1,3 +1,8 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* JavaBinding.addin.xml: Updated versions.
+	* JavaBindingCompilerServices.cs: Track changes in ProjectReference.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBinding.addin.xml: Use the DataType element instead fof Class

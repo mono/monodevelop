@@ -134,13 +134,14 @@ namespace JavaBinding
 			
 			if (references != null) {
 				foreach (ProjectReference lib in references) {
-					string asm = lib.GetReferencedFileName ();
-					ProcessWrapper p = Runtime.ProcessService.StartProcess ("/bin/sh", "-c \"mono " + ikvmstub + " " + asm + "\"", configuration.OutputDirectory, null);
-					p.WaitForExit ();
-					
-					if (classpath.Length > 0) classpath += ":";
-					string name = Path.GetFileNameWithoutExtension (Path.GetFileName (asm));
-					classpath += Path.Combine (configuration.OutputDirectory, name + ".jar");
+					foreach (string asm in lib.GetReferencedFileNames ()) {
+						ProcessWrapper p = Runtime.ProcessService.StartProcess ("/bin/sh", "-c \"mono " + ikvmstub + " " + asm + "\"", configuration.OutputDirectory, null);
+						p.WaitForExit ();
+						
+						if (classpath.Length > 0) classpath += ":";
+						string name = Path.GetFileNameWithoutExtension (Path.GetFileName (asm));
+						classpath += Path.Combine (configuration.OutputDirectory, name + ".jar");
+					}
 				}
 			}
 			return classpath;
@@ -200,7 +201,8 @@ namespace JavaBinding
 			
 			if (references != null) {
 				foreach (ProjectReference lib in references)
-					opts += " -r:" + lib.GetReferencedFileName ();
+					foreach (string a in lib.GetReferencedFileNames ())
+						opts += " -r:" + a;
 			}
 			
 			string ikvmc = Path.Combine (ikvmPath, "ikvmc.exe");
