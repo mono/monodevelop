@@ -50,11 +50,6 @@ namespace CSharpBinding
 			return compilerManager.Compile (projectFiles, references, configuration, monitor);
 		}
 		
-		public void GenerateMakefile (Project project, Combine parentCombine)
-		{
-			compilerManager.GenerateMakefile (project, parentCombine);
-		}
-		
 		public ICloneable CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new CSharpCompilerParameters();

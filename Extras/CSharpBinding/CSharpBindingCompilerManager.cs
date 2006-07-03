@@ -46,26 +46,26 @@ namespace CSharpBinding
 				
 				if (references != null) {
 					foreach (ProjectReference lib in references) {
-						string fileName = lib.GetReferencedFileName ();
-						switch (lib.ReferenceType) {
-						case ReferenceType.Gac:
-							string pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
-							if (pkg.Trim () == String.Empty) {
-								string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
-								monitor.ReportWarning (msg);
-								continue;
+						foreach (string fileName in lib.GetReferencedFileNames ()) {
+							switch (lib.ReferenceType) {
+							case ReferenceType.Gac:
+								string pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
+								if (pkg.Trim () == String.Empty) {
+									string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
+									monitor.ReportWarning (msg);
+									continue;
+								}
+								if (pkg == "MONO-SYSTEM") {
+									writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
+								} else if (!pkg_references.Contains (pkg)) {
+									pkg_references.Add (pkg);
+									writer.WriteLine ("\"-pkg:" + pkg + "\"");
+								}
+								break;
+							default:
+								writer.WriteLine ("\"/r:" + fileName + "\"");
+								break;
 							}
-							if (pkg == "MONO-SYSTEM") {
-								writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
-							} else if (!pkg_references.Contains (pkg)) {
-								pkg_references.Add (pkg);
-								writer.WriteLine ("\"-pkg:" + pkg + "\"");
-							}
-							break;
-						case ReferenceType.Assembly:
-						case ReferenceType.Project:
-							writer.WriteLine ("\"/r:" + fileName + "\"");
-							break;
 						}
 					}
 				}
@@ -145,8 +145,8 @@ namespace CSharpBinding
 		
 				if (references != null) {		
 					foreach (ProjectReference lib in references) {
-						string fileName = lib.GetReferencedFileName ();
-						writer.WriteLine("-r:" + fileName );
+						foreach (string fileName in lib.GetReferencedFileNames ())
+							writer.WriteLine("-r:" + fileName );
 					}
 				}
 				
@@ -199,265 +199,6 @@ namespace CSharpBinding
 			File.Delete(output);
 			File.Delete(error);
 			return result;
-		}
-		
-		public void GenerateMakefile (Project project, Combine parentCombine)
-		{
-			StreamWriter stream = new StreamWriter (Path.Combine (project.BaseDirectory, "Makefile." + project.Name.Replace (" ", "")));
-
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.ActiveConfiguration;
-			CSharpCompilerParameters compilerparameters = (CSharpCompilerParameters) conf.CompilationParameters;
-			
-			string outputName = conf.CompiledOutputName;
-
-			string target = "";
-			string relativeOutputDir = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, parentCombine.OutputDirectory);
-
-			switch (conf.CompileTarget) {
-			case CompileTarget.Exe:
-				target = "exe";
-				break;
-			case CompileTarget.WinExe:
-				target = "winexe";
-				break;
-			case CompileTarget.Library:
-				target = "library";
-				break;
-			}			
-			
-			ArrayList compile_files = new ArrayList ();
-			ArrayList pkg_references = new ArrayList ();
-			ArrayList assembly_references = new ArrayList ();
-			ArrayList project_references = new ArrayList ();
-			ArrayList system_references = new ArrayList ();
-			ArrayList resources = new ArrayList ();
-			
-			foreach (ProjectFile finfo in project.ProjectFiles) {
-				if (finfo.Subtype != Subtype.Directory) {
-					switch (finfo.BuildAction) {
-					case BuildAction.Compile:
-						string rel_path = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, Path.GetDirectoryName (finfo.Name));
-						if (CanCompile (finfo.Name))
-							compile_files.Add (Path.Combine (rel_path, Path.GetFileName (finfo.Name)));
-						break;
-						
-					case BuildAction.EmbedAsResource:
-						string resource_rel_path = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, Path.GetDirectoryName (finfo.Name));
-						resources.Add (Path.Combine (resource_rel_path, Path.GetFileName (finfo.Name)));
-						break;
-					}
-				}
-			}
-
-			foreach (ProjectReference lib in project.ProjectReferences) {
-				switch (lib.ReferenceType) {
-				case ReferenceType.Gac:
-					string pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
-					if (pkg.Trim () == String.Empty)
-						continue;
-					if (pkg == "MONO-SYSTEM") {
-						system_references.Add (Path.GetFileName (lib.GetReferencedFileName ()));
-					} else if (!pkg_references.Contains (pkg)) {
-						pkg_references.Add (pkg);
-					}
-					break;
-				case ReferenceType.Assembly:
-					string assembly_fileName = lib.GetReferencedFileName ();
-					string rel_path_to = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, Path.GetDirectoryName (assembly_fileName));
-					assembly_references.Add (Path.Combine (rel_path_to, Path.GetFileName (assembly_fileName)));
-					break;
-				case ReferenceType.Project:
-					//string project_fileName = lib.GetReferencedFileName ();
-					CombineEntryCollection allProjects = project.RootCombine.GetAllProjects();
-					
-					foreach (Project projectEntry in allProjects) {
-						if (projectEntry.Name == lib.Reference) {
-							string project_base_dir = fileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, projectEntry.BaseDirectory);
-							
-							string project_output_fileName = projectEntry.GetOutputFileName ();
-							project_references.Add (Path.Combine (project_base_dir, Path.GetFileName (project_output_fileName)));
-						}
-					}
-					break;
-				}
-			}
-
-			stream.WriteLine ("# This makefile is autogenerated by MonoDevelop");
-			stream.WriteLine ("# Do not modify this file");
-			stream.WriteLine ();
-			stream.WriteLine ("SOURCES = \\");
-			for (int i = 0; i < compile_files.Count; i++) {
-				stream.Write (((string)compile_files[i]).Replace (" ", "\\ "));
-				if (i != compile_files.Count - 1)
-					stream.WriteLine (" \\");
-				else
-					stream.WriteLine ();
-			}
-			stream.WriteLine ();
-
-			if (resources.Count > 0) {
-				stream.WriteLine ("RESOURCES = \\");
-				for (int i = 0; i < resources.Count; i++) {
-					stream.Write (((string)resources[i]).Replace (" ", "\\ "));
-					if (i != resources.Count - 1)
-						stream.WriteLine (" \\");
-					else
-						stream.WriteLine ();
-				}
-				stream.WriteLine ();
-				stream.WriteLine ("RESOURCES_BUILD = $(foreach res,$(RESOURCES), $(addprefix -resource:,$(res)),$(notdir $(res)))");
-				stream.WriteLine ();
-			}
-
-			if (pkg_references.Count > 0) {
-				stream.WriteLine ("PKG_REFERENCES = \\");
-				for (int i = 0; i < pkg_references.Count; i++) {
-					stream.Write (pkg_references[i]);
-					if (i != pkg_references.Count - 1)
-						stream.WriteLine (" \\");
-					else
-						stream.WriteLine ();
-				}
-				
-				stream.WriteLine ();
-				stream.WriteLine ("PKG_REFERENCES_BUILD = $(addprefix -pkg:, $(PKG_REFERENCES))");
-				stream.WriteLine ();
-				stream.WriteLine ("PKG_REFERENCES_CHECK = $(addsuffix .pkgcheck, $(PKG_REFERENCES))");
-				stream.WriteLine ();
-			}
-			
-			if (system_references.Count > 0) {
-				stream.WriteLine ("SYSTEM_REFERENCES = \\");
-				for (int i = 0; i < system_references.Count; i++) {
-					stream.Write (system_references[i]);
-					if (i != system_references.Count - 1)
-						stream.WriteLine (" \\");
-					else
-						stream.WriteLine ();
-				}
-				stream.WriteLine ();
-				stream.WriteLine ("SYSTEM_REFERENCES_BUILD = $(addprefix -r:, $(SYSTEM_REFERENCES))");
-				stream.WriteLine ();
-				stream.WriteLine ("SYSTEM_REFERENCES_CHECK = $(addsuffix .check, $(SYSTEM_REFERENCES))");
-				stream.WriteLine ();
-			}
-
-			if (assembly_references.Count > 0) {
-				stream.WriteLine ("ASSEMBLY_REFERENCES = \\");
-				for (int i = 0; i < assembly_references.Count; i++) {
-					stream.Write ("\"" + assembly_references[i] + "\"");
-					if (i != assembly_references.Count - 1)
-						stream.WriteLine (" \\");
-					else
-						stream.WriteLine ();
-				}
-				
-				stream.WriteLine ();
-				stream.WriteLine ("ASSEMBLY_REFERENCES_BUILD = $(addprefix -r:, $(ASSEMBLY_REFERENCES))");
-				stream.WriteLine ();
-			}
-
-			if (project_references.Count > 0) {
-				stream.WriteLine ("PROJECT_REFERENCES = \\");
-				for (int i = 0; i < project_references.Count; i++) {
-					stream.Write ("\"" + project_references[i] + "\"");
-					if (i != project_references.Count - 1)
-						stream.WriteLine (" \\");
-					else
-						stream.WriteLine ();
-				}
-				
-				stream.WriteLine ();
-				stream.WriteLine ("PROJECT_REFERENCES_BUILD = $(addprefix -r:, $(PROJECT_REFERENCES))");
-				stream.WriteLine ();
-			}
-
-			stream.WriteLine ("COMPILER = mcs");
-			stream.Write ("COMPILER_OPTIONS = ");
-			if (compilerparameters.UnsafeCode) {
-				stream.Write ("-unsafe ");
-			}
-			if (compilerparameters.DefineSymbols != null && compilerparameters.DefineSymbols.Length > 0) {
-				stream.Write ("-define:" + '"' + compilerparameters.DefineSymbols + '"' + " ");
-			}
-			if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
-				stream.Write ("-main:" + compilerparameters.MainClass + " ");
-			}
-			stream.WriteLine ();
-			stream.WriteLine ();
-
-			stream.WriteLine ("all: " + outputName);
-			stream.WriteLine ();
-			
-			stream.Write (outputName + ": $(SOURCES)");
-			if (resources.Count > 0) {
-				stream.WriteLine (" $(RESOURCES)");
-			} else {
-				stream.WriteLine ();
-			}
-			
-			stream.Write ("\t$(COMPILER) $(COMPILER_OPTIONS) -target:{0} -out:\"{1}\"", target, outputName);
-			if (resources.Count > 0) {
-				stream.Write (" $(RESOURCES_BUILD)");
-			}
-			if (pkg_references.Count > 0) {
-				stream.Write (" $(PKG_REFERENCES_BUILD)");
-			}
-			if (assembly_references.Count > 0) {
-				stream.Write (" $(ASSEMBLY_REFERENCES_BUILD)");
-			}
-			if (project_references.Count > 0) {
-				stream.Write (" $(PROJECT_REFERENCES_BUILD)");
-			}
-			if (system_references.Count > 0) {
-				stream.Write (" $(SYSTEM_REFERENCES_BUILD)");
-			}
-			stream.WriteLine (" $(SOURCES) \\");
-			stream.WriteLine ("\t&& cp \"{0}\" {1}/.", outputName, relativeOutputDir);
-			
-			stream.WriteLine ();
-			stream.WriteLine ("clean:");
-			stream.WriteLine ("\trm -f {0}", outputName);
-			stream.WriteLine ();
-			
-			stream.Write ("depcheck: ");
-			if (pkg_references.Count > 0) {
-				stream.Write ("PKG_depcheck ");
-			}
-			if (system_references.Count > 0) {
-				stream.Write ("SYSTEM_depcheck");
-			}
-			stream.WriteLine ();
-			stream.WriteLine ();
-			if (pkg_references.Count > 0) {
-				stream.WriteLine ("PKG_depcheck: $(PKG_REFERENCES_CHECK)");
-				stream.WriteLine ();
-				stream.WriteLine ("%.pkgcheck:");
-				stream.WriteLine ("\t@echo -n Checking for package $(subst .pkgcheck,,$@)...");
-				stream.WriteLine ("\t@if pkg-config --libs $(subst .pkgcheck,,$@) &> /dev/null; then \\");
-				stream.WriteLine ("\t\techo yes; \\");
-				stream.WriteLine ("\telse \\");
-				stream.WriteLine ("\t\techo no; \\");
-				stream.WriteLine ("\t\texit 1; \\");
-				stream.WriteLine ("\tfi");
-				stream.WriteLine ();
-			}
-
-			if (system_references.Count > 0) {
-				stream.WriteLine ("SYSTEM_depcheck: $(SYSTEM_REFERENCES_CHECK)");
-				stream.WriteLine ();
-				stream.WriteLine ("%.check:");
-				stream.WriteLine ("\t@echo -n Checking for $(subst .check,,$@)...");
-				stream.WriteLine ("\t@if [ ! -e `pkg-config --variable=libdir mono`/mono/1.0/$(subst .check,,$@) ]; then \\");
-				stream.WriteLine ("\t\techo no; \\");
-				stream.WriteLine ("\t\texit 1; \\");
-				stream.WriteLine ("\telse \\");
-				stream.WriteLine ("\t\techo yes; \\");
-				stream.WriteLine ("\tfi");
-			}
-			
-			stream.Flush ();
-			stream.Close ();
 		}
 		
 		string GetCompilerName (ClrVersion version)

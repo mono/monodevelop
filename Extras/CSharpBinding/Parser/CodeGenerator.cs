@@ -230,7 +230,8 @@ namespace CSharpBinding.Parser
 		{
 			if (idExp.Identifier == member.Name)
 			{
-				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, idExp.StartLocation.Y, idExp.StartLocation.X);
+				Point p = idExp.StartLocation;
+				ILanguageItem item = resolver.ResolveIdentifier (fileCompilationUnit, idExp.Identifier, p.Y, p.X);
 				if (member is IMember) {
 					IMember m = item as IMember;
 					if (m != null && IsExpectedClass (m.DeclaringType) &&

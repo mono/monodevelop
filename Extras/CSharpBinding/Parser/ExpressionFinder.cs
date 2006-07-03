@@ -108,7 +108,8 @@ namespace CSharpBinding.Parser
 		{
 			// Get line start:
 			int lineStart = offset;
-			while (--lineStart > 0 && txt[lineStart] != '\n');
+			while (--lineStart > 0 && txt[lineStart] != '\n')
+			{}
 			
 			bool inAttribute = false;
 			int parens = 0;
