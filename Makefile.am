@@ -47,7 +47,8 @@ PACKAGES = \
 	build/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml \
 	build/AddIns/ChangeLogAddIn/ChangeLogAddIn.addin.xml \
 	build/AddIns/WelcomePage/WelcomePage.addin.xml \
-	build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml
+	build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml \
+	build/AddIns/AspNetAddIn/AspNetAddIn.addin.xml
 
 DOCFILES = \
 	build/bin/MonoDevelop.Core.dll \

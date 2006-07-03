@@ -1,3 +1,7 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoProject.cs: Implement SupportedLanguages, to filter file templates.
+
 2006-05-31 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoProject.cs: Removed dependency to NUnit add-in.

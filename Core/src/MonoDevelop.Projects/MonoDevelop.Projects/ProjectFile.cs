@@ -17,13 +17,7 @@ namespace MonoDevelop.Projects
 {
 	public enum Subtype {
 		Code,
-		Directory,
-		WinForm,
-		WebForm,
-		XmlForm,
-		WebService,		
-		WebReferences,
-		Dataset
+		Directory
 	}
 	
 	public enum BuildAction {

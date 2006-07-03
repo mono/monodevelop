@@ -1,3 +1,8 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.GtkCore.addin.xml: Only display WidgetBuilderOptionPanel 
+	for "DotNet" projects.
+
 2006-06-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/*: Updated from Stetic module.

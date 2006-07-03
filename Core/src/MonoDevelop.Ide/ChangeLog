@@ -1,3 +1,30 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	Add IsValidName hook for new file dialogue to check filename validity.
+	
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	Add virtual ModifyTags method for deriving classes to hook into tag 
+	substitution.
+	Make GetFileName virtual, correct extension-checking logic.
+	
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	Allow project templates to specify multiple supported languages (comma-
+	separated, 	with "*" as a wildcard for all .NET langauges.
+	Logic is a little odd, but public API is unchanged.
+	
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	Allow file templates to specify multiple supported languages (comma-
+	separated, 	with "*" as a wildcard for all .NET langauges.
+	Use tempates' IsValidName method to check for valid filenames.
+	
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	Fix build command -- current SVN mcs seems to treat monitorId++ as null.
+	
+	*MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs: Add my name.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml:

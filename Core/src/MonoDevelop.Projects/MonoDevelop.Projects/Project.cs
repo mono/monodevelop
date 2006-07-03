@@ -129,6 +129,13 @@ namespace MonoDevelop.Projects
 				return deployInformation;
 			}
 		}
+		
+		[Browsable(false)]
+		public virtual string [] SupportedLanguages {
+			get {
+				return new String [] { "" };
+			}
+		}
 
 		public bool IsFileInProject(string filename)
 		{

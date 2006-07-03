@@ -50,5 +50,10 @@ namespace MonoDevelop.Ide.Templates
 		public abstract void Load (XmlElement filenode);
 		public abstract void AddToProject (Project project, string language, string directory, string name);
 		public abstract void Show ();
+		
+		public virtual bool IsValidName (string name, string language)
+		{
+			return (name.Length > 0);
+		}
 	}
 }

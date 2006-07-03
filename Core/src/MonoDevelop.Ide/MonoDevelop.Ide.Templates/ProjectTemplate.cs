@@ -134,8 +134,6 @@ namespace MonoDevelop.Ide.Templates
 		
 		protected ProjectTemplate (AddIn addin, string id, string fileName)
 		{
-			this.id = id;
-			
 			Stream stream = addin.GetResourceStream (fileName);
 			if (stream == null)
 				throw new ApplicationException ("Template " + fileName + " not found");
@@ -146,6 +144,51 @@ namespace MonoDevelop.Ide.Templates
 			} finally {
 				stream.Close ();
 			}
+						
+			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
+			string category = config["Category"].InnerText;
+			string languageElement  = (config["LanguageName"] == null)? null : config["LanguageName"].InnerText;
+			
+			//Find all of the languages that the template supports
+			if (languageElement != null) {
+				ArrayList templateLangs = new ArrayList ();
+				foreach (string s in languageElement.Split (','))
+					templateLangs.Add (s.Trim ());
+				ExpandLanguageWildcards (templateLangs);
+				
+				//initialise this template (the first language)
+				string language = (string) templateLangs [0];
+				
+				if (templateLangs.Count > 1)
+					Initialise (addin, id, doc, language, language+"/"+category);
+				else
+					Initialise (addin, id, doc, language, category);
+				
+				//then add new templates for all other languages
+				//Yes, creating more of the same type of object in the constructor is weird,
+				//but it allows templates to specify multiple languages without changing the public API
+				for (int i = 1; i < templateLangs.Count; i++) {
+					try {
+						language = (string) templateLangs [i];
+						ProjectTemplates.Add (new ProjectTemplate (addin, id, doc, language, language+"/"+category));
+					} catch (Exception e) {
+						Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), fileName));
+					}
+				}
+			} else {
+				Initialise (addin, id, doc, null, category);
+			}
+		}
+		
+		
+		private ProjectTemplate (AddIn addin, string id, XmlDocument doc, string languagename, string category)
+		{
+			Initialise (addin, id, doc, languagename, category);
+		}
+		
+		private void Initialise (AddIn addin, string id, XmlDocument doc, string languagename, string category)
+		{
+			this.id = id;
 			
 			originator   = doc.DocumentElement.Attributes["originator"].InnerText;
 			created      = doc.DocumentElement.Attributes["created"].InnerText;
@@ -158,10 +201,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			name         = GettextCatalog.GetString (config["_Name"].InnerText);
-			category     = config["Category"].InnerText;
-			
-			if (config["LanguageName"] != null)
-				languagename = config["LanguageName"].InnerText;
+			this.category     = category;
+			this.languagename = languagename;
 			
 			if (config["_Description"] != null) {
 				description  = GettextCatalog.GetString (config["_Description"].InnerText);
@@ -179,6 +220,20 @@ namespace MonoDevelop.Ide.Templates
 			if (doc.DocumentElement["Actions"] != null) {
 				foreach (XmlElement el in doc.DocumentElement["Actions"]) {
 					actions.Add(new OpenFileAction(el.Attributes["filename"].InnerText));
+				}
+			}
+		}
+		
+		void ExpandLanguageWildcards (ArrayList list)
+		{
+			//Template can match all CodeDom .NET languages with a "*"
+			if (list.Contains ("*")) {
+				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
+				foreach (ILanguageBinding lb in bindings) {
+					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
+					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
+						list.Add (dnlang.Language);
+				list.Remove ("*");
 				}
 			}
 		}

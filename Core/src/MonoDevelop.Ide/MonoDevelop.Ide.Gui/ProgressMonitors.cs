@@ -117,7 +117,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon);
-			monitorPad.Id = "OutputPad" + (monitorId++);
+			monitorId++;
+			monitorPad.Id = "OutputPad" + monitorId;
 			pad = IdeApp.Workbench.ShowPad (monitorPad);
 			if (bringToFront) pad.BringToFront ();
 

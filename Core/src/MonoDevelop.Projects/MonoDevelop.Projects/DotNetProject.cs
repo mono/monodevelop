@@ -36,6 +36,12 @@ namespace MonoDevelop.Projects
 			get { return language; }
 		}
 		
+		public override string [] SupportedLanguages {
+			get {
+				return new string [] { "", language };
+			}
+		}
+		
 		public IDotNetLanguageBinding LanguageBinding {
 			get { return languageBinding; }
 		}
@@ -60,11 +66,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal DotNetProject ()
+		public DotNetProject ()
 		{
 		}
 		
-		internal DotNetProject (string languageName)
+		public DotNetProject (string languageName)
 		{
 			language = languageName;
 			languageBinding = FindLanguage (language);

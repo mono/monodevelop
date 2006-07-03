@@ -248,6 +248,11 @@ namespace MonoDevelop.Core.Gui
 		// returns null if cancel is selected
 		public string GetTextResponse(string question, string caption, string initialValue)
 		{
+			return GetTextResponse(question, caption, initialValue, false);
+		}
+		
+		private string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
+		{
 			string returnValue = null;
 			
 			using (Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent)) {
@@ -260,6 +265,7 @@ namespace MonoDevelop.Core.Gui
 				// add an entry with initialValue
 				Entry responseEntry = (initialValue != null) ? new Entry(initialValue) : new Entry();
 				md.VBox.PackStart(responseEntry, false, true, 6);
+				responseEntry.Visibility = !isPassword;
 				
 				// add action widgets
 				md.AddActionWidget(new Button(Gtk.Stock.Cancel), ResponseType.Cancel);
@@ -283,7 +289,12 @@ namespace MonoDevelop.Core.Gui
 		
 		public string GetTextResponse(string question, string caption)
 		{
-			return GetTextResponse(question, caption, string.Empty);
+			return GetTextResponse(question, caption, string.Empty, false);
+		}
+		
+		public string GetPassword (string question, string caption)
+		{
+			return GetTextResponse(question, caption, string.Empty, true);
 		}
 	}
 }

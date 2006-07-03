@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		ArrayList alltemplates = new ArrayList ();
 		ArrayList categories   = new ArrayList ();
 		Hashtable icons        = new Hashtable ();
+		ArrayList projectLangs = new ArrayList ();
 
 		PixbufList cat_imglist;
 
@@ -50,7 +51,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		string basePath;
 		
 		string currentProjectType = string.Empty;
-		string currentLanguage = string.Empty;
 
 		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
@@ -61,14 +61,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
 			
-			if (parentProject != null) {
-				currentProjectType = parentProject.ProjectType;
-				DotNetProject netproject = parentProject as DotNetProject;
-				if (netproject != null)
-					currentLanguage = netproject.LanguageName;
+			//if there's a parent project, check whether it wants to filter languages, else use defaults
+			if ((parentProject != null) && (parentProject.SupportedLanguages != null) && (parentProject.SupportedLanguages.Length > 0)) {
+				projectLangs.AddRange (parentProject.SupportedLanguages);
+			} else {
+				projectLangs.Add ("");	//match all non-filtered templates
+				projectLangs.Add ("*");	//match all .NET langs with CodeDom
 			}
+			ExpandLanguageWildcards (projectLangs);
 			
 			InitializeTemplates ();
+			InitializeComponents ();
 			nameEntry.GrabFocus ();
 		}
 		
@@ -178,26 +181,50 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				// Ignore templates not supported by this project
 				if (template.ProjectType != "" && template.ProjectType != currentProjectType)
 					continue;
-					
-				// Ignore templates not supported by the current language
-				if (template.LanguageName != "" && template.LanguageName != "*" && currentLanguage != "" && template.LanguageName != currentLanguage)
-					continue;
-					
-				if (template.LanguageName == "*") {
-					ILanguageBinding[] langs = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
-					foreach (ILanguageBinding lang in langs) {
-						IDotNetLanguageBinding dnlang = lang as IDotNetLanguageBinding; 
-						if (dnlang != null && dnlang.GetCodeDomProvider () != null) {
-							TemplateItem titem = new TemplateItem (template, dnlang.Language);
-							AddTemplate (titem, dnlang.Language);
-						}
-					}
-				} else {
-					TemplateItem titem = new TemplateItem (template, template.LanguageName);
-					AddTemplate (titem, template.LanguageName);
+				
+				//Find the languages that the template supports
+				ArrayList templateLangs = new ArrayList ();
+				foreach (string s in template.LanguageName.Split (','))
+					templateLangs.Add (s.Trim ());
+				ExpandLanguageWildcards (templateLangs);
+				
+				//Find all matches between the language strings of project and template
+				ArrayList langMatches = new ArrayList ();
+				
+				foreach (string templLang in templateLangs)
+					foreach (string projLang in projectLangs)
+						if (templLang == projLang)
+							langMatches.Add (projLang);
+				
+				//Eliminate duplicates
+				int pos = 0;
+				while (pos < langMatches.Count) {
+					int next = langMatches.IndexOf (langMatches [pos], pos +1);
+					if (next != -1)
+						langMatches.RemoveAt (next);
+					else
+						pos++;
+				}
+				
+				//Add all the possible templates
+				foreach (string match in langMatches) {
+					AddTemplate (new TemplateItem (template, match), match);	
 				}
 			}
-			InitializeComponents ();
+		}
+		
+		void ExpandLanguageWildcards (ArrayList list)
+		{
+			//Template can match all CodeDom .NET languages with a "*"
+			if (list.Contains ("*")) {
+				ILanguageBinding [] bindings = MonoDevelop.Projects.Services.Languages.GetLanguageBindings ();
+				foreach (ILanguageBinding lb in bindings) {
+					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
+					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
+						list.Add (dnlang.Language);
+				list.Remove ("*");
+				}
+			}
 		}
 		
 		void AddTemplate (TemplateItem titem, string templateLanguage)
@@ -205,17 +232,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Category cat = null;
 			
 			if (parentProject != null) {
-				if (templateLanguage != "") {
-					if (currentLanguage != "") {
-						// The template requires a language, and there is a language set, so only show it if they match 
-						if (currentLanguage != templateLanguage)
-							return;
-						cat = GetCategory (titem.Template.Category);
-					} else {
-						// The template requires a language, but there is no current language set, so create a category for it 
-						cat = GetCategory (templateLanguage);
-						cat = GetCategory (cat.Categories, titem.Template.Category);
-					}
+				if ((templateLanguage != "") && (projectLangs.Count != 2) ) {
+					// The template requires a language, but the project does not have a single fixed
+					// language type (plus empty match), so create a language category
+					cat = GetCategory (templateLanguage);
+					cat = GetCategory (cat.Categories, titem.Template.Category);
 				} else {
 					cat = GetCategory (titem.Template.Category);
 				}
@@ -292,10 +313,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			
 			FileTemplate item = sel.Template;
+			
 
 			if (item != null) {
 				infoLabel.Text = item.Description;
-				okButton.Sensitive = nameEntry.Text.Length > 0;
+				okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
 			} else {
 				okButton.Sensitive = false;
 			}

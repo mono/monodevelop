@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -39,6 +40,7 @@ namespace MonoDevelop.Ide.Templates
 	public class SingleFileDescriptionTemplate: FileDescriptionTemplate
 	{
 		string name;
+		string namepattern;
 		string generatedFile;
 		
 		public override void Load (XmlElement filenode)
@@ -110,7 +112,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns the name of the file that this template generates.
 		// All parameters are optional (can be null)
-		public string GetFileName (Project project, string language, string baseDirectory, string entryName)
+		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
 		{
 			string fileName = entryName;
 			string defaultName = name;
@@ -121,7 +123,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			if (fileName != null) {
-				if (Path.GetExtension (name) != Path.GetExtension (defaultName))
+				if (Path.GetExtension (fileName) != Path.GetExtension (defaultName))
 					fileName = fileName + Path.GetExtension (defaultName);
 			} else {
 				fileName = defaultName;
@@ -142,19 +144,11 @@ namespace MonoDevelop.Ide.Templates
 			if (project != null && project.IsFileInProject (fileName))
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
 			
-			string content = CreateContent (language);
+			Hashtable tags = new Hashtable ();
+			ModifyTags (project, language, fileName, ref tags);	
 			
-			DotNetProject netProject = project as DotNetProject;
-			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
-			string cname = Path.GetFileNameWithoutExtension (fileName);
-			string[,] tags = { 
-				{"Name", cname}, 
-				{"Namespace", ns},
-				{"FullName", ns.Length > 0 ? ns + "." + cname : cname},
-				{"ProjectName", project != null ? project.Name : ""}
-			};
-				
-			content = sps.Parse (content, tags);
+			string content = CreateContent (language);
+			content = sps.Parse (content, HashtableToStringArray (tags));
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data = System.Text.Encoding.UTF8.GetBytes (content);
@@ -165,9 +159,24 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Creates the text content of the file
 		// The Language parameter is optional
+
 		public virtual string CreateContent (string language)
 		{
 			return "";
+		}
+		
+		// Can add tags for substitution based on project, language or filename
+		// If overriding but still want base implementation's tags, should invoke base method 
+		public virtual void ModifyTags (Project project, string language, string fileName, ref Hashtable tags)
+		{
+			DotNetProject netProject = project as DotNetProject;
+			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
+			string cname = Path.GetFileNameWithoutExtension (fileName);
+			
+			tags ["Name"]        = cname;
+			tags ["Namespace"]   = ns;
+			tags ["FullName"]    = ns.Length > 0 ? ns + "." + cname : cname;
+			tags ["ProjectName"] = project != null ? project.Name : "";
 		}
 		
 		protected IDotNetLanguageBinding GetDotNetLanguageBinding (string language)
@@ -176,6 +185,19 @@ namespace MonoDevelop.Ide.Templates
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;
+		}
+		
+		protected string[,] HashtableToStringArray (Hashtable tags)
+		{			
+			string[,] tagsArr = new string [tags.Count, 2];
+			int i = 0;
+			foreach (string key in tags.Keys) {
+				tagsArr [i, 0] = key;
+				tagsArr [i, 1] = (string) tags [key];
+				i++;
+			}
+			
+			return tagsArr;
 		}
 	}
 }

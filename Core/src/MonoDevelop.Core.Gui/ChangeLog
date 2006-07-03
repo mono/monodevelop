@@ -1,3 +1,8 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Add new GetPassword method 
+	using existing GetTextResponse code.	
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/CommandService.cs:

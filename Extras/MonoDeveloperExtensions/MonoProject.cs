@@ -56,6 +56,12 @@ namespace MonoDeveloper
 			Read (mkfile);
 		}
 		
+		public override string [] SupportedLanguages {
+			get {
+				return new string [] { "C#", "" };
+			}
+		}
+		
 		void Read (MonoMakefile mkfile)
 		{
 			loading = true;

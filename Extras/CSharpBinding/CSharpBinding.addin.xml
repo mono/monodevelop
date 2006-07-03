@@ -5,7 +5,7 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
 	   category    = "Language bindings"
-       version     = "0.8">
+       version     = "0.9">
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>

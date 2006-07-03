@@ -44,7 +44,8 @@ CSharpAmbience.cs \
 Project/CSharpCompilerParameters.cs \
 CSharpLanguageBinding.cs \
 FormattingStrategy/CSharpFormattingStrategy.cs \
-CSharpBindingCompilerManager.cs
+CSharpBindingCompilerManager.cs \
+CSharpEnhancedCodeProvider.cs
 
 RES = \
 CSharp.glade \

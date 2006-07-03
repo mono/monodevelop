@@ -1,3 +1,15 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* CSharpBinding.mdp:
+	* Makefile.am:
+	* CSharpEnhancedCodeProvider.cs:
+	New file, implements CodeDom methods CreateParser and Parse.
+	
+	* CSharpLanguageBinding.cs: Use new CSharpEnhancedCodeProvider.
+	
+	* CSharpBinding.addin.xml: Bump version so that AspNetAddIn can take 
+	a dependency on the CodeProvider's CreateParser method.
+
 2006-06-15 Scott Ellington  <scott.ellington@gmail.com>
 
 	* Autotools/CSharpAutotoolsSetup.cs:

@@ -238,6 +238,16 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
+		public virtual bool IsValidName (string name, string language)
+		{
+			bool valid = true;
+			foreach (FileDescriptionTemplate templ in Files)
+				if (!templ.IsValidName (name, language))
+					valid = false;
+			
+			return valid;
+		}
+		
 		protected virtual void CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
 		{
 			if (project != null) {

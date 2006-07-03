@@ -1,3 +1,11 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Extras/Makefile.am:
+	* Extras/Extras.mds:
+	* Makefile.am:
+	* configure.in: Add AspNetAddIn to the build.
+	* AUTHORS: Add my name.
+
 2006-06-26  Alp Toker <alp@atoker.com>
 
 	* configure.in: Remove obsolete vte-sharp-2.0 check.

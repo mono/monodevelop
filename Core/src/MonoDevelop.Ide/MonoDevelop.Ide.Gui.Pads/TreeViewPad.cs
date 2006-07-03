@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "text", TextColumn);
-			complete_column.AddAttribute (text_render, "weight", WeightColumn);
+//			complete_column.AddAttribute (text_render, "weight", WeightColumn);
 	
 			tree.AppendColumn (complete_column);
 			

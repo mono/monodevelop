@@ -133,9 +133,11 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
-		<DialogPanel id = "SteticOptionsPanel"
-		             _label = "Widget Export"
-		             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
+		<Conditional activeproject="DotNet">
+			<DialogPanel id = "SteticOptionsPanel"
+			             _label = "Widget Export"
+			             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
+		</Conditional>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/FileTemplateTypes">

@@ -186,6 +186,22 @@ AC_ARG_ENABLE(versioncontrol,
 
 AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
 
+
+dnl ASP.NET project addin
+XSP_VERSION=0.1
+XSP2_VERSION=0.2
+AC_ARG_ENABLE(aspnet,
+	AC_HELP_STRING([--enable-aspnet],
+		[enable ASP.NET project support [default=no]]),
+		enable_aspnet=yes, enable_aspnet=no)
+
+if test "x$enable_aspnet" = "xyes"; then
+	PKG_CHECK_MODULES(XSP, xsp >= $XSP_VERSION xsp-2 >= $XSP2_VERSION)
+fi
+
+AM_CONDITIONAL(ENABLE_ASPNET, test x$enable_aspnet = xyes)
+
+
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
 AC_SUBST(MOZILLA_HOME)
 
@@ -288,6 +304,7 @@ Extras/prj2make-sharp-lib/Makefile
 Extras/WelcomePage/Makefile
 Extras/ChangeLogAddIn/Makefile
 Extras/MonoDevelop.GtkCore/Makefile
+Extras/AspNetAddIn/Makefile
 Extras/MonoDevelop.Autotools/Makefile
 Makefile
 monodevelop
@@ -314,4 +331,5 @@ echo "   * Nemerle support: $enable_nemerle"
 echo "   * NUnit support: $enable_nunit"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
+echo "   * ASP.NET project support: $enable_aspnet"
 echo ""

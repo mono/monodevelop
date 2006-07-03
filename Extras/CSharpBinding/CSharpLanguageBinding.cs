@@ -68,7 +68,7 @@ namespace CSharpBinding
 		public CodeDomProvider GetCodeDomProvider ()
 		{
 			if (provider == null)
-				provider = new CSharpCodeProvider ();
+				provider = new CSharpEnhancedCodeProvider ();
 			return provider;
 		}
 		

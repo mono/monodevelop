@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects
 			set { netRuntime = value; }
 		}
 
-		public CompileTarget CompileTarget {
+		public virtual CompileTarget CompileTarget {
 			get { return compiletarget; }
 			set { compiletarget = value; }
 		}

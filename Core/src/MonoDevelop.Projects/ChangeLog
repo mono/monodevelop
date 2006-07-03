@@ -1,3 +1,13 @@
+2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Make CompileTarget 
+	overridable.
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/DotNetProject.cs: Add SupportedLanguages array, 
+	allowing multiple languages.
+	* MonoDevelop.Projects/ProjectFile.cs: Remove redundant entries from 
+	Subtype enum.
+
 2006-06-19 Scott Ellington  <scott.ellington@gmail.com>
 
 	* MonoDevelop.Projects/CombineEntry.cs: add a Version property
