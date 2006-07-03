@@ -147,8 +147,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		public void BindCurrentWidget ()
 		{
-			if (gproject.Selection != null) {
-				Stetic.Wrapper.Widget w = Stetic.Wrapper.Widget.Lookup (gproject.Selection);
+			if (widget.Selection is Gtk.Action)
+				BindAction ((Stetic.Wrapper.Action) Stetic.ObjectWrapper.Lookup (widget.Selection));
+			else if (widget.Selection is Gtk.Widget) {
+				Stetic.Wrapper.Widget w = Stetic.Wrapper.Widget.Lookup ((Gtk.Widget) widget.Selection);
 				if (w.MemberName.Length == 0)
 					w.MemberName = w.Wrapped.Name;
 				codeBinder.BindToField (w);

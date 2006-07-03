@@ -1,3 +1,15 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* lib/*: Updated from Stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Fixed automatic
+	  layout switch policy.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Fix showing of
+	  action group view.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs: Properly
+	  bind actions when pressing "BindToField".
+	  
+	* MonoDevelop.GtkCore.addin.xml: Updated versions. 
+
 2006-06-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.GtkCore.addin.xml: Only display WidgetBuilderOptionPanel 

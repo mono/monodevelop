@@ -95,33 +95,41 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void OnActiveDocumentChanged (object s, EventArgs args)
 		{
-			NotifyWidgetLibraryChange ();
-
 			if (IdeApp.Workbench.ActiveDocument == null) {
-				ActiveProject = null;
-				if (widgetTreePad != null)
-					widgetTreePad.Fill (null);
-				RestoreLayout ();
+				if (ActiveProject != null) {
+					NotifyWidgetLibraryChange ();
+					ActiveProject = null;
+					if (widgetTreePad != null)
+						widgetTreePad.Fill (null);
+					RestoreLayout ();
+				}
 				return;
 			}
 
 			GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;
 			if (view != null) {
+				NotifyWidgetLibraryChange ();
 				ActiveProject = view.EditSession.SteticProject;
 				if (widgetTreePad != null)
 					widgetTreePad.Fill (view.EditSession.SteticProject);
 				SetDesignerLayout ();
 			}
 			else if (IdeApp.Workbench.ActiveDocument.Content is ActionGroupView) {
-				ActiveProject = null;
-				if (widgetTreePad != null)
-					widgetTreePad.Fill (null);
-				SetDesignerLayout ();
+				if (ActiveProject != null) {
+					NotifyWidgetLibraryChange ();
+					ActiveProject = null;
+					if (widgetTreePad != null)
+						widgetTreePad.Fill (null);
+					SetDesignerLayout ();
+				}
 			} else {
-				ActiveProject = null;
-				if (widgetTreePad != null)
-					widgetTreePad.Fill (null);
-				RestoreLayout ();
+				if (ActiveProject != null) {
+					NotifyWidgetLibraryChange ();
+					ActiveProject = null;
+					if (widgetTreePad != null)
+						widgetTreePad.Fill (null);
+					RestoreLayout ();
+				}
 			}
 		}
 		

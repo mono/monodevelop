@@ -54,6 +54,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		MonoDevelopWidgetActionBar widgetBar;
 		
 		Gtk.Widget currentDesigner;
+		bool actionsButtonVisible;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
@@ -93,9 +94,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			currentDesigner = editSession.WrapperWidget;
 			
-			if (editSession.RootWidget.LocalActionGroups.Count > 0)
+			if (editSession.RootWidget.LocalActionGroups.Count > 0) {
 				AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
-			else {
+				actionsButtonVisible = true;
+			} else {
 				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
 			}
 			
@@ -121,6 +123,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnRootWidgetChanged (object o, EventArgs a)
 		{
+			if (!actionsButtonVisible) {
+				widgetBar.RootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
+				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
+			}
+			
 			designerBox.Remove (currentDesigner);
 			currentDesigner = editSession.WrapperWidget;
 			designerBox.PackStart (currentDesigner, true, true, 0);
