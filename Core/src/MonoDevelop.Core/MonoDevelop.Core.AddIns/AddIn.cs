@@ -493,6 +493,9 @@ namespace MonoDevelop.Core.AddIns
 						break;
 					default:
 						ICodon codon = AddInTreeSingleton.AddInTree.CodonFactory.CreateCodon(this, curEl);
+						if (codon is AbstractCodon) {
+							((AbstractCodon)codon).Extension = e;
+						}
 						
 						AutoInitializeAttributes(codon, curEl);
 						

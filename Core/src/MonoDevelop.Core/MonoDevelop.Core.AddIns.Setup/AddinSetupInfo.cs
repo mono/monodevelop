@@ -76,7 +76,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return ConfigFile.StartsWith (Environment.GetFolderPath (Environment.SpecialFolder.Personal)); }
 		}
 		
-		internal AddinConfiguration GetConfiguration ()
+		public AddinConfiguration GetConfiguration ()
 		{
 			return AddinConfiguration.Read (ConfigFile);
 		}

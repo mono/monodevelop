@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -1010,7 +1011,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			ZipOutputStream s = new ZipOutputStream (File.Create (outFilePath));
 			s.SetLevel(5);
 			
-			ArrayList list = new ArrayList ();
+			List<string> list = new List<string> ();
 			list.Add (Path.GetFileName (filePath));
 			list.AddRange (conf.AllFiles);
 			

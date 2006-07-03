@@ -1,3 +1,19 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddIn.cs: 
+	* MonoDevelop.Core.AddIns/AbstractCodon.cs:
+	  Added an Extension property to AbstractCodon, which
+	  returns the extension point to which the codon is attached.
+	* MonoDevelop.Core.mdp: Updated.
+	
+	* MonoDevelop.Core.AddIns.Setup/AddinSetupInfo.cs:
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs:
+	* MonoDevelop.Core.AddIns.Setup/AddinConfiguration.cs: Many improvements
+	  in AddinConfiguration. Now it reads more information and can write
+	  changes.
+	  
+	* MonoDevelop.Core.addin.xml: Updated version.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs:

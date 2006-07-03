@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.AddIns
 		static int internalIdCount;
 		
 		AddIn  addIn = null;
+		AddIn.Extension extension;
 		
 		/// <summary>
 		/// Returns the AddIn in which the codon is defined.
@@ -122,6 +123,12 @@ namespace MonoDevelop.Core.AddIns
 				insertbefore = value;
 			}
 		}
+		
+		public AddIn.Extension Extension {
+			get { return extension; }
+			internal set { extension = value; }
+		}
+		
 		
 		/// <summary>
 		/// Creates an item with the specified sub items and the current
