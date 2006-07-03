@@ -36,9 +36,17 @@ namespace MonoDevelop.Autotools
 		
 		public DeployTarget CreateTarget (CombineEntry entry)
 		{
-			TarballDeployTarget target = new TarballDeployTarget (Id);
-			target.TargetCombine = entry as Combine;
-			return target;
+			return new TarballDeployTarget ();
+		}
+		
+		public void Deploy (IProgressMonitor monitor, DeployTarget target)
+		{
+			TarballDeployTarget tar = (TarballDeployTarget) target;
+			Combine combine = target.CombineEntry as Combine;
+			SolutionDeployer deployer = new SolutionDeployer ();
+			if ( tar.DefaultConfiguration == null || tar.DefaultConfiguration == "" )
+				deployer.Deploy ( combine, tar.TargetDir, monitor );
+			else deployer.Deploy ( combine, tar.DefaultConfiguration, tar.TargetDir, monitor );
 		}
 	}
 	
@@ -49,25 +57,6 @@ namespace MonoDevelop.Autotools
 		
 		[ItemProperty ("DefaultConfiguration")]
 		string defaultConfig;
-		
-		Combine target_combine;
-		
-		public TarballDeployTarget ()
-		{
-		}
-		
-		public TarballDeployTarget (string handlerId): base (handlerId)
-		{
-		}
-		
-		public override void Deploy (IProgressMonitor monitor, CombineEntry entry)
-		{
-			Combine combine = entry as Combine;
-			SolutionDeployer deployer = new SolutionDeployer ();
-			if ( defaultConfig == null || defaultConfig == "" )
-				deployer.Deploy ( combine, targetDir, monitor );
-			else deployer.Deploy ( combine, defaultConfig, targetDir, monitor );
-		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
@@ -88,8 +77,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		public Combine TargetCombine {
-			get { return target_combine; }
-			set { target_combine = value; }
+			get { return base.CombineEntry as Combine; }
 		}
 	}
 	

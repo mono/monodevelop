@@ -1,3 +1,8 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Handler.cs: Track changes in the deployment api.
+	* MonoDevelop.Autotools.addin.xml: Updated versions.
+
 2006-06-28  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* Makefile.cs: can append values to variables
