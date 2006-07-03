@@ -1,3 +1,14 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.NUnit.mdp:
+	* Makefile.am:
+	* templates/NUnitTestClass.xft.xml: Added new file template for
+	  unit tests.
+	  
+	* Services/UnitTest.cs: Removed DataItem attributes, since they
+	  are not ignored anymore.
+	* MonoDevelopNUnit.addin.xml: Updated versions.
+
 2006-06-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitService.cs: Use the new extension listeners to

@@ -56,6 +56,7 @@ Services/XmlResultsStore.cs
 RES = \
 nunit.glade \
 templates/NUnitAssemblyGroup.xpt.xml \
+templates/NUnitTestClass.xft.xml \
 Gui/NUnit.Running.png \
 Gui/NUnit.Failed.png \
 Gui/NUnit.SuccessAndFailed.png \

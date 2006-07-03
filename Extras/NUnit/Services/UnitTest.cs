@@ -522,7 +522,6 @@ namespace MonoDevelop.NUnit
 	}
 	
 	
-	[DataItem ("UnitTestOptions")]
 	class UnitTestOptionsSet
 	{
 		[ExpandedCollection]
@@ -537,7 +536,6 @@ namespace MonoDevelop.NUnit
 		}
 	}
 	
-	[DataItem ("Test")]
 	class UnitTestOptionsEntry
 	{
 		[ItemProperty ("Path")]
