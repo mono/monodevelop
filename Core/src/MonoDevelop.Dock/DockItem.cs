@@ -54,7 +54,10 @@ namespace Gdl
 		
 		public event DockItemMotionHandler DockItemMotion;
 		public event DockItemDragBeginHandler DockItemDragBegin;
-		public event DockItemDragEndHandler DockItemDragEnd;		
+		public event DockItemDragEndHandler DockItemDragEnd;
+		
+		public event EventHandler DockItemShown;
+		public event EventHandler DockItemHidden;
 				
 		static DockItem ()
 		{
@@ -866,6 +869,8 @@ namespace Gdl
 			} else {
 				target.Dock (this, position, null);
 			}
+			if (DockItemShown != null)
+				DockItemShown (this, EventArgs.Empty);
 		}
 		
 		public virtual void SetOrientation (Orientation orientation)
@@ -918,6 +923,9 @@ namespace Gdl
 			
 			Detach (true);
 			Thaw ();
+			
+			if (DockItemHidden != null)
+				DockItemHidden (this, EventArgs.Empty);
 		}
 		
 		private void HideChildItem (Widget widget)
@@ -947,6 +955,8 @@ namespace Gdl
 					Master.Controller.Dock (this, DockPlacement.Floating, null);
 				}
 			}
+			if (DockItemShown != null)
+				DockItemShown (this, EventArgs.Empty);
 		}
 		
 		public virtual void SetDefaultPosition (DockObject reference)
