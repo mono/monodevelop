@@ -88,11 +88,9 @@ namespace MonoDevelop.Ide.Gui
 			set {
 				if (value) {
 					layout.ShowPad (content);
-					if (PadShown != null) PadShown (this, EventArgs.Empty);
 				}
 				else {
 					layout.HidePad (content);
-					if (PadHidden != null) PadHidden (this, EventArgs.Empty);
 				}
 			}
 		}
@@ -100,6 +98,18 @@ namespace MonoDevelop.Ide.Gui
 		public void Activate ()
 		{
 			layout.ActivatePad (content);
+		}
+		
+		internal void NotifyHidden ()
+		{
+			if (PadShown != null)
+				PadShown (this, EventArgs.Empty);
+		}
+		
+		internal void NotifyShown ()
+		{
+			if (PadHidden != null)
+				PadHidden (this, EventArgs.Empty);
 		}
 		
 		public event EventHandler PadShown;

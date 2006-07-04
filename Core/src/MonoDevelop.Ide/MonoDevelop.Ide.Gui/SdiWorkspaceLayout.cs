@@ -222,6 +222,13 @@ namespace MonoDevelop.Ide.Gui
 				return currentLayout.Substring (currentLayout.IndexOf (".") + 1);
 			}
 			set {
+				// Store a list of pads being shown
+				ArrayList visible = new ArrayList ();
+				foreach (IPadContent content in activePadCollection) {
+					if (IsVisible (content))
+						visible.Add (content);
+				}
+				
 				// save previous layout first
 				if (currentLayout != "")
 					dockLayout.SaveLayout (currentLayout);
@@ -252,6 +259,21 @@ namespace MonoDevelop.Ide.Gui
 				// persist the selected layout for the current context
 				Runtime.Properties.SetProperty ("MonoDevelop.Core.Gui.SdiWorkbenchLayout." +
 				                             workbenchContext.Id, value);
+
+				// Notify hide/show events
+				foreach (IPadContent content in activePadCollection) {
+					if (IsVisible (content)) {
+						if (!visible.Contains (content)) {
+							PadWindow win = (PadWindow) padWindows [content];
+							win.NotifyShown ();
+						}
+					} else {
+						if (visible.Contains (content)) {
+							PadWindow win = (PadWindow) padWindows [content];
+							win.NotifyHidden ();
+						}
+					}
+				}
 			}
 		}
 
@@ -394,6 +416,14 @@ namespace MonoDevelop.Ide.Gui
 								 window.Icon,
 								 DockItemBehavior.Normal);
 
+			item.DockItemShown += delegate (object s, EventArgs a) {
+				window.NotifyShown ();
+			};
+
+			item.DockItemHidden += delegate (object s, EventArgs a) {
+				window.NotifyHidden ();
+			};
+
 			Gtk.Label label = item.TabLabel as Gtk.Label;
 			label.UseMarkup = true;
 
@@ -462,7 +492,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			DockItem item = GetDockItem (content);
 			if (item != null) {
-			
+				if (item.IsAttached)
+					return;
+
 				// TODO: ShowItem is not working properly in the
 				// managed Gdl.
 /*				if (item.DefaultPosition != null)
@@ -485,8 +517,9 @@ namespace MonoDevelop.Ide.Gui
 		public void HidePad (IPadContent padContent)
 		{
 			DockItem item = GetDockItem (padContent);
-			if (item != null)
+			if (item != null) {
 				item.HideItem();
+			}
 		}
 		
 		public void ActivatePad (IPadContent padContent)

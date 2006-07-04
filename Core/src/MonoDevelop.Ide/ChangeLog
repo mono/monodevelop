@@ -1,3 +1,15 @@
+2006-07-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/AbstractPadContent.cs: Made Initialize
+	  method virtual.
+	* MonoDevelop.Ide.Gui/IPadContainer.cs: Don't fire the PadShown
+	  and PadHidden events here, the workspace layuot takes care
+	  of that now.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fire the PadShown
+	  and PadHidden events.
+	* MonoDevelop.Ide.Gui/Pad.cs: Change visibility of the pad
+	  using the internal IPadWindow.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:

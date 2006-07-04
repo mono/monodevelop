@@ -64,13 +64,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Visible {
 			get {
-				return workbench.WorkbenchLayout.IsVisible (window.Content);
+				return window.Visible;
 			}
 			set {
-				if (value)
-					workbench.WorkbenchLayout.ShowPad (window.Content);
-				else
-					workbench.WorkbenchLayout.HidePad (window.Content);
+				window.Visible = value;
 			}
 		}
 	}

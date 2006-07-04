@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Gui
 			id = GetType ().FullName;
 		}
 		
-		public void Initialize (IPadWindow window)
+		public virtual void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			if (title != null) window.Title = title;
