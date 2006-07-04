@@ -14,20 +14,20 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile NamePattern="${Name}.ashx">
+		<AspNetFile name="${Name}.ashx">
 			<FileText>
 <![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}._${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
-		<AspNetFile NamePattern="${Name}.ashx.${LanguageExtension}">
+		<AspNetFile name="${Name}.ashx.${LanguageExtension}">
 			<FileText>${CodeRegion:script1}</FileText>
-			<CodeRegion name="script1">
-<![CDATA[
-namespace ${Namespace} {
-	using System;
-	using System.Web;
-	using System.Web.UI;
+			<CodeTranslationFile TagName="script1">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace} {	
 	
 	public class _${Name} : IHttpHandler {
 	
@@ -43,7 +43,7 @@ namespace ${Namespace} {
 		}
 	}
 }]]>
-			</CodeRegion>
+			</CodeTranslationFile>
 		</AspNetFile>
 	</TemplateFiles>
 	

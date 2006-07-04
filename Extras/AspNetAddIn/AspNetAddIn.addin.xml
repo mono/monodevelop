@@ -59,7 +59,7 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<PadOption id = "ShowCodeBehindClasses" _label = "Show CodeBehind classes with parent files" defaultValue = "True" />
-		<PadOption id = "HideCodeBehind" _label = "Hide CodeBehind files" defaultValue = "True" />
+		<PadOption id = "ShowCodeBehindFiles" _label = "Show CodeBehind files" defaultValue = "False" />
 		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "AspNetAddIn.CodeBehindProjectFileExtension"/>
 		<NodeBuilder id = "CodeBehindClassBuilder" class = "AspNetAddIn.CodeBehindClassBuilder"/>
 	</Extension>

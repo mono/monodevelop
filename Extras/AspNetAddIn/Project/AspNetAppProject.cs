@@ -194,7 +194,7 @@ namespace AspNetAddIn
 		public void VerifyCodeBehind (ProjectFile file, IProgressMonitor monitor)
 		{
 			Document doc = GetDocument (file);
-			IClass cls = GetCodeBehindClass (file);
+			IClass cls = GetCodeBehindClass (file, false);
 			//TODO: close file views before modifying them
 			
 			if (cls == null) {
@@ -263,7 +263,7 @@ namespace AspNetAddIn
 			}
 		}
 		
-		public IList GetAllCodeBehindClasses ()
+		public IList GetAllCodeBehindClasses (bool throwOnError)
 		{
 			System.Collections.ArrayList classes = new System.Collections.ArrayList ();
 			
@@ -275,16 +275,17 @@ namespace AspNetAddIn
 			
 				IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (this);
 				IClass cls = ctx.GetClass (doc.Info.InheritedClass);
-				if (cls == null)
-					throw new Exception ("The CodeBehind class \"" + doc.Info.InheritedClass + "\" cannot be found");
 				
-				classes.Add (cls);
+				if (cls != null)
+					classes.Add (cls);
+				else if (throwOnError)
+					throw new Exception ("The CodeBehind class \"" + doc.Info.InheritedClass + "\" cannot be found");
 			}
 			
 			return classes;
 		}
 		
-		public IClass GetCodeBehindClass (ProjectFile file)
+		public IClass GetCodeBehindClass (ProjectFile file, bool throwOnError)
 		{
 			Document doc = GetDocument (file);
 			
@@ -293,7 +294,7 @@ namespace AspNetAddIn
 			
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (this);
 			IClass cls = ctx.GetClass (doc.Info.InheritedClass);
-			if (cls == null)
+			if ((cls == null) && (throwOnError))
 				throw new Exception ("The CodeBehind class \"" + doc.Info.InheritedClass + "\" cannot be found");
 			
 			return cls;

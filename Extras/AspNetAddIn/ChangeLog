@@ -1,0 +1,25 @@
+2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Templates/CodeBehindWebControl.xft.xml:
+	* Templates/CodeBehindWebForm.xft.xml:
+
+	* Project/AspNetAppProject.cs:
+	* Project/CodeBehindProjectFileExtension.cs:
+	Don't always throw exceptions when CodeBehind not found.
+	
+	* AspNetAddIn.addin.xml:
+	* Project/CodeBehindProjectFileExtension.cs:
+	Change "HideCodeBehind" option to "ShowCodeBehindFiles"
+	
+	* Project/AspNetFileDescriptionTemplate.cs:
+	Move translation functionality to child CodeTranslationFileDescriptionTemplate.
+	Move name substitution functionality to SingleFileDescriptionTemplate.
+	
+	* Templates/CodeBehindWebHandler.xft.xml:
+	* Templates/EmptyWebForm.xft.xml:
+	* Templates/CodeBehindWebControl.xft.xml:
+	* Templates/CodeBehindWebForm.xft.xml:
+	* Templates/EmptyWebHandler.xft.xml:
+	* Templates/WebApplication.xpt.xml:
+	* Templates/EmptyWebControl.xft.xml:
+	Track AspNetFileDescriptionTemplate changes.

@@ -69,6 +69,7 @@ MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Templates/ResourceFileDescriptionTemplate.cs \
+MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs \
 MonoDevelop.Ide.Gui.Undo/IUndoableOperation.cs \
 MonoDevelop.Ide.Gui.Undo/UndoQueue.cs \
 MonoDevelop.Ide.Gui.Undo/UndoStack.cs \

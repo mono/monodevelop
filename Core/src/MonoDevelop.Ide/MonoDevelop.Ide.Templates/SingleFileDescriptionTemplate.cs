@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.Templates
 	public class SingleFileDescriptionTemplate: FileDescriptionTemplate
 	{
 		string name;
-		string namepattern;
 		string generatedFile;
 		
 		public override void Load (XmlElement filenode)
@@ -115,18 +114,19 @@ namespace MonoDevelop.Ide.Templates
 		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
 		{
 			string fileName = entryName;
-			string defaultName = name;
 			
-			if (language != null && language.Length > 0 && Path.GetExtension (defaultName).Length == 0) {
-				IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
-				defaultName = languageBinding.GetFileName (defaultName);
+			//substitute tags
+			if ((name != null) && (name.Length > 0)) {
+				StringParserService sps = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
+				Hashtable tags = new Hashtable ();
+				ModifyTags (project, language, entryName, null, ref tags);
+				fileName = sps.Parse (name, HashtableToStringArray (tags));
 			}
 			
-			if (fileName != null) {
-				if (Path.GetExtension (fileName) != Path.GetExtension (defaultName))
-					fileName = fileName + Path.GetExtension (defaultName);
-			} else {
-				fileName = defaultName;
+			//give it an extension if it didn't get one (compatibility with pre-substition behaviour)
+			if (language != null && language.Length > 0 && Path.GetExtension (fileName).Length == 0) {
+				IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
+				fileName = languageBinding.GetFileName (fileName);
 			}
 			
 			if (baseDirectory != null)
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Templates
 				throw new UserException (GettextCatalog.GetString ("The file '{0}' already exists in the project.", Path.GetFileName (fileName)));
 			
 			Hashtable tags = new Hashtable ();
-			ModifyTags (project, language, fileName, ref tags);	
+			ModifyTags (project, language, null, fileName, ref tags);
 			
 			string content = CreateContent (language);
 			content = sps.Parse (content, HashtableToStringArray (tags));
@@ -165,18 +165,43 @@ namespace MonoDevelop.Ide.Templates
 			return "";
 		}
 		
-		// Can add tags for substitution based on project, language or filename
-		// If overriding but still want base implementation's tags, should invoke base method 
-		public virtual void ModifyTags (Project project, string language, string fileName, ref Hashtable tags)
+		// Can add tags for substitution based on project, language or filename.
+		// If overriding but still want base implementation's tags, should invoke base method.
+		// We supply defaults whenever it is possible, to avoid having unsubstituted tags. However,
+		// do not substitute blanks when a sensible default cannot be guessed, because they result
+		//in less obvious errors.
+		public virtual void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			DotNetProject netProject = project as DotNetProject;
-			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
-			string cname = Path.GetFileNameWithoutExtension (fileName);
+			IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
+			string languageExtension = (binding != null)? Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1) : "";
 			
-			tags ["Name"]        = cname;
-			tags ["Namespace"]   = ns;
-			tags ["FullName"]    = ns.Length > 0 ? ns + "." + cname : cname;
-			tags ["ProjectName"] = project != null ? project.Name : "";
+			//need a default namespace or if there is no project, substitutions can get very messed up
+			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "Application";
+			
+			//need an 'identifier' for tag substitution, e.g. class name or page name
+			//if not given an identifier, use fileName
+			if ((identifier == null) && (fileName != null))
+				identifier = Path.GetFileName (fileName);
+			 
+			 if (identifier != null) {
+			 	//remove all extensions
+				while (Path.GetExtension (identifier).Length > 0)
+					identifier = Path.GetFileNameWithoutExtension (identifier);
+			 	
+				tags ["Name"] = identifier;
+				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
+			}			
+			
+			if (ns.Length > 0)
+				tags ["Namespace"] = ns;
+			if (project != null)
+				tags ["ProjectName"] = project.Name;
+			if ((language != null) && (language.Length > 0))
+				tags ["Language"] = language;
+			if (languageExtension.Length > 0)
+				tags ["LanguageExtension"] = languageExtension;
+			tags ["FileName"] = fileName;
 		}
 		
 		protected IDotNetLanguageBinding GetDotNetLanguageBinding (string language)
@@ -198,6 +223,20 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			return tagsArr;
+		}
+		
+		public override bool IsValidName (string name, string language)
+		{
+			if (name.Length > 0) {
+				IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
+				System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+				if (provider != null)
+					return provider.IsValidIdentifier (name);
+				
+				return true;
+			}
+			else
+				return false;
 		}
 	}
 }

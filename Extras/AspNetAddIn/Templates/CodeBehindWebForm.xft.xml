@@ -14,7 +14,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile NamePattern="${Name}.aspx">
+		<AspNetFile name="${Name}.aspx">
 			<FileText>
 				<![CDATA[<%@ Page Language="${Language}" Inherits="${Namespace}._${Name}" %>
 ${Doctype}
@@ -32,15 +32,13 @@ ${Doctype}
 			</FileText>
 		</AspNetFile>
 		
-		<AspNetFile NamePattern="${Name}.aspx.${LanguageExtension}">
-			<FileText>${CodeRegion:script1}</FileText>
-			<CodeRegion name="script1">
-<![CDATA[
-namespace ${Namespace} {
-	using System;
-	using System.Web;
-	using System.Web.UI;
+		<CodeTranslationFile name="${Name}.aspx.${LanguageExtension}">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
 
+namespace ${Namespace} {
+	
 	public class _${Name} : Page
 	{
 		public void onButtonClick (object sender, EventArgs e)
@@ -49,8 +47,7 @@ namespace ${Namespace} {
 		}
 	}
 }]]>
-			</CodeRegion>
-		</AspNetFile>
+		</CodeTranslationFile>
 	</TemplateFiles>
 	
 	<FileOptions/>

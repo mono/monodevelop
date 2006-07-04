@@ -92,7 +92,7 @@ namespace AspNetAddIn
 				ProjectFile file = (ProjectFile) dataObject;
 				AspNetAppProject proj = file.Project as AspNetAppProject;
 				if ((proj != null) && (proj.DetermineWebSubtype (file) != WebSubtype.None )) {
-					IClass cls = proj.GetCodeBehindClass (file);
+					IClass cls = proj.GetCodeBehindClass (file, false);
 					if (cls != null)
 						builder.AddChild (cls);
 				}
@@ -101,13 +101,13 @@ namespace AspNetAddIn
 		
 		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
 		{
-			if (parentNode.Options ["HideCodeBehind"]) {
+			if (! (parentNode.Options ["ShowCodeBehindFiles"] || parentNode.Options ["ShowAllFiles"])) {
 				ProjectFile file = (ProjectFile) dataObject;
 				
 				AspNetAppProject proj = file.Project as AspNetAppProject;
 				if ((proj != null) && (proj.DetermineWebSubtype (file) == WebSubtype.None )) {
 					IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (proj);
-					System.Collections.IList list = proj.GetAllCodeBehindClasses ();
+					System.Collections.IList list = proj.GetAllCodeBehindClasses (false);
 					
 					foreach (IClass cls in ctx.GetFileContents (file.FilePath))
 						if (list.Contains (cls))
@@ -122,7 +122,7 @@ namespace AspNetAddIn
 				ProjectFile file = (ProjectFile) dataObject;
 				AspNetAppProject proj = file.Project as AspNetAppProject;
 				if (proj != null) {
-					IClass cls = proj.GetCodeBehindClass (file);
+					IClass cls = proj.GetCodeBehindClass (file, false);
 					return (cls != null);
 				}
 			}

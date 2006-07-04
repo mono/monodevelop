@@ -14,20 +14,18 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile DefaultExtension=".ascx" DefaultName="Default">
+		<AspNetFile DefaultExtension=".ascx" name="Default">
 			<FileText>
 <![CDATA[<%@ Control Language="${Language}" ClassName="${Namespace}._${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
-		<AspNetFile NamePattern="${Name}.ascx.${LanguageExtension}">
-			<FileText>${CodeRegion:script1}</FileText>
-			<CodeRegion name="script1">
-<![CDATA[
+		<CodeTranslationFile name="${Name}.ascx.${LanguageExtension}">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
 namespace ${Namespace} {
-	using System;
-	using System.Web;
-	using System.Web.UI;
 
 	public class _${Name} : UserControl
 	{
@@ -37,8 +35,7 @@ namespace ${Namespace} {
 		}
 	}
 }]]>
-			</CodeRegion>
-		</AspNetFile>
+		</CodeTranslationFile>
 	</TemplateFiles>
 
 	<FileOptions />

@@ -14,12 +14,12 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile NamePattern="${Name}.ashx">
+		<AspNetFile name="${Name}.ashx">
 			<FileText>
 <![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}.${Name}" %>
 ${CodeRegion:script1}
 ]]>			</FileText>
-			<CodeRegion name="script1">
+			<CodeTranslationFile TagName="script1">
 <![CDATA[using System;
 using System.Web;
 
@@ -39,7 +39,7 @@ namespace ${Namespace} {
 		}
 	}
 }]]>
-			</CodeRegion>
+			</CodeTranslationFile>
 		</AspNetFile>
 	</TemplateFiles>
 	

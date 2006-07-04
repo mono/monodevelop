@@ -1,3 +1,15 @@
+2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:
+	* Core/src/MonoDevelop.Ide/Makefile.am:
+	* Core/src/MonoDevelop.Ide/MonoDevelop.Ide.mdp:
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	New file. Template translates source code from any CodeDom-parseable 
+	language to any CodeDom language.
+	
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Add support 
+	for templated filenames. Reduced complexity of name determination code.
+
 2006-07-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/AbstractPadContent.cs: Made Initialize

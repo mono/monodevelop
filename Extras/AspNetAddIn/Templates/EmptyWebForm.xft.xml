@@ -14,7 +14,7 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<AspNetFile NamePattern="${Name}.aspx">
+		<AspNetFile name="${Name}.aspx">
 			<FileText>
 				<![CDATA[<%@ Page Language="${Language}" %>
 ${Doctype}
@@ -31,15 +31,7 @@ ${Doctype}
 	</form>
 </body>
 </html>]]>
-			</FileText><!--
-			<CodeRegion name="script1">
- //CodeDom parser needs type and namespace. Need workaround!
-<![CDATA[
-public void ButtonClick (object sender, EventArgs e) {
-	textBox1.Text ="Hello World"
-}
-]]>
-			</CodeRegion>-->
+			</FileText>
 		</AspNetFile>
 	</TemplateFiles>
 	
