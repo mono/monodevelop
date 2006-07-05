@@ -165,7 +165,7 @@ namespace CSharpBinding.Parser
 			}
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(type.Type);
+					c.BaseTypes.Add(new ReturnType(type.Type));
 				}
 			}
 			currentClass.Push(c);

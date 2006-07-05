@@ -1,3 +1,12 @@
+2006-07-05 Matej Urbas <matej.urbas@gmail.com>
+ 
+	* CSharpAmbience.cs: Fixed a regression that displayed all base types of a
+	  class to be of PersistentReturnType type.
+	* Parser/CodeGenerator.cs:
+	* Parser/CSharpVisitor.cs:
+	* Parser/Resolver.cs: Updated to use ReturnType as BaseTypes in IClass
+	  instances.
+ 
 2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* CSharpEnhancedCodeProvider.cs: Fix parsing of imports

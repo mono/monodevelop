@@ -177,8 +177,8 @@ namespace CSharpBinding.Parser
 				return true;
 				
 			if (type.BaseTypes != null) {
-				foreach (string bc in type.BaseTypes) {
-					IClass bcls = ctx.ParserContext.GetClass (bc, true, true);
+				foreach (IReturnType bc in type.BaseTypes) {
+					IClass bcls = ctx.ParserContext.GetClass (bc.FullyQualifiedName, true, true);
 					if (bcls != null && IsExpectedClass (bcls))
 						return true;
 				}

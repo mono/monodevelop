@@ -333,8 +333,8 @@ namespace CSharpBinding.Parser
 			}
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
-				foreach (string s in curType.BaseTypes) {
-					IClass baseClass = parserContext.GetClass (s, true, true);
+				foreach (IReturnType s in curType.BaseTypes) {
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, true);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListMembers(members, baseClass);
 					}
@@ -352,8 +352,8 @@ namespace CSharpBinding.Parser
 		
 		public IClass BaseClass(IClass curClass)
 		{
-			foreach (string s in curClass.BaseTypes) {
-				IClass baseClass = parserContext.GetClass (s, true, true);
+			foreach (IReturnType s in curClass.BaseTypes) {
+				IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, true);
 				if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 					return baseClass;
 				}
@@ -567,8 +567,8 @@ namespace CSharpBinding.Parser
 					}
 				}
 			}
-			foreach (string baseType in curType.BaseTypes) {
-				IClass c = parserContext.GetClass (baseType, true, true);
+			foreach (IReturnType baseType in curType.BaseTypes) {
+				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, true, true);
 				if (c != null)
 					return SearchClassMember (new ReturnType(c.FullyQualifiedName), memberName, includeMethods, out curType, out member);
 			}
@@ -900,8 +900,8 @@ namespace CSharpBinding.Parser
 			if (possibleBaseClass.FullyQualifiedName == c.FullyQualifiedName) {
 				return true;
 			}
-			foreach (string baseClass in c.BaseTypes) {
-				IClass bc = parserContext.GetClass (baseClass, true, true);
+			foreach (IReturnType baseClass in c.BaseTypes) {
+				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, true, true);
 				if (IsClassInInheritanceTree(possibleBaseClass, bc)) {
 					return true;
 				}

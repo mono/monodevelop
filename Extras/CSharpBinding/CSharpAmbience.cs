@@ -178,7 +178,7 @@ namespace CSharpBinding
 				if (c.BaseTypes.Count > 0) {
 					builder.Append(" : ");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
-						builder.Append(c.BaseTypes[i]);
+						builder.Append(c.BaseTypes[i].FullyQualifiedName);
 						if (i + 1 < c.BaseTypes.Count) {
 							builder.Append(", ");
 						}
