@@ -20,6 +20,8 @@ if test -n "$MOZILLA_FIVE_HOME"; then
 	MOZILLA_HOME=$MOZILLA_FIVE_HOME
 elif [ -f @MOZILLA_HOME@/chrome/comm.jar ]; then
         MOZILLA_HOME=@MOZILLA_HOME@
+elif grep GRE_PATH /etc/gre.d/*.conf > /dev/null ; then
+	MOZILLA_HOME=$(grep -h GRE_PATH= /etc/gre.d/*.conf | cut -d '"' -f 2 -d = | head -n 1)
 elif [ $(which mozilla) ] && grep MOZILLA_FIVE_HOME= "$(which mozilla)" > /dev/null ; then
 	MOZILLA_HOME=$(grep MOZILLA_FIVE_HOME= $(which mozilla) | cut -d '"' -f 2)
 elif [ $(which firefox) ] && grep MOZILLA_FIVE_HOME= "$(which firefox)" > /dev/null ; then
@@ -28,7 +30,7 @@ else
 	echo "Cannot find mozilla installation directory. Please set MOZILLA_FIVE_HOME to your mozilla directory"
 	exit 1
 fi
- 
+
 MD_BIN_PATH=@prefix@/lib/monodevelop/bin
 
 if [ -n $LD_LIBRARY_PATH ]; then
