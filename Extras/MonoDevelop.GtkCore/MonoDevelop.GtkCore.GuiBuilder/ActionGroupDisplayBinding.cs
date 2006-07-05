@@ -199,11 +199,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal static bool IsValidClass (IParserContext ctx, IClass cls)
 		{
 			if (cls.BaseTypes != null) {
-				foreach (string bt in cls.BaseTypes) {
-					if (bt == "Gtk.ActionGroup")
+				foreach (IReturnType bt in cls.BaseTypes) {
+					if (bt.FullyQualifiedName == "Gtk.ActionGroup")
 						return true;
 					
-					IClass baseCls = ctx.GetClass (bt, true, true);
+					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);
 					if (baseCls != null && IsValidClass (ctx, baseCls))
 						return true;
 				}

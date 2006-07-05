@@ -80,14 +80,14 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		Stetic.ClassDescriptor FindType (IParserContext ctx, IClass cls)
 		{
-			foreach (string baseType in cls.BaseTypes) {
-				IClass bc = ctx.GetClass (baseType);
+			foreach (IReturnType baseType in cls.BaseTypes) {
+				IClass bc = ctx.GetClass (baseType.FullyQualifiedName);
 				if (bc == null)
 					continue;
 				if (bc.ClassType == ClassType.Interface)
 					continue;
 
-				Stetic.ClassDescriptor klass = Stetic.Registry.LookupClassByName (baseType);
+				Stetic.ClassDescriptor klass = Stetic.Registry.LookupClassByName (baseType.FullyQualifiedName);
 				if (klass != null) return klass;
 				
 				klass = FindType (ctx, bc);

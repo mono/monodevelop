@@ -302,11 +302,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (cls.BaseTypes != null) {
 				string typeName = GetObjectTypeName (obj);
-				foreach (string bt in cls.BaseTypes) {
-					if (bt == typeName)
+				foreach (IReturnType bt in cls.BaseTypes) {
+					if (bt.FullyQualifiedName == typeName)
 						return true;
 					
-					IClass baseCls = ctx.GetClass (bt, true, true);
+					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);
 					if (baseCls != null && IsValidClass (ctx, baseCls, obj))
 						return true;
 				}

@@ -343,12 +343,12 @@ namespace MonoDevelop.GtkCore
 		
 		static bool IsWidget (IClass cls, IParserContext pctx)
 		{
-			foreach (string bt in cls.BaseTypes)
-				if (bt == "Gtk.Widget")
+			foreach (IReturnType bt in cls.BaseTypes)
+				if (bt.FullyQualifiedName == "Gtk.Widget")
 					return true;
 
-			foreach (string bt in cls.BaseTypes) {
-				IClass bcls = pctx.GetClass (bt, true, true);
+			foreach (IReturnType bt in cls.BaseTypes) {
+				IClass bcls = pctx.GetClass (bt.FullyQualifiedName, true, true);
 				if (bcls != null)
 					return IsWidget (bcls, pctx);
 			}
