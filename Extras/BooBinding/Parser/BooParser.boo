@@ -88,7 +88,8 @@ class BooParser(IParser):
 		
 		if project is not null and project.ProjectReferences is not null:
 			for projectRef as ProjectReference in project.ProjectReferences:
-				compiler.Parameters.References.Add(System.Reflection.Assembly.LoadFile(projectRef.GetReferencedFileName()))
+				for asmName as string in projectRef.GetReferencedFileNames():
+					compiler.Parameters.References.Add(System.Reflection.Assembly.LoadFile(asmName))
 		
 		return Parse(fileName, lineLength, compiler)
 	

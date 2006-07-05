@@ -1,3 +1,8 @@
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/BooParser.boo:
+	* BooBindingCompilerServices.boo: Track changes in ProjectReference.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
 
 	* Parser/Visitor.boo: Updated to use ReturnType as BaseTypes in IClass

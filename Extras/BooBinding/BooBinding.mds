@@ -9,6 +9,7 @@
       <Entry build="True" name="BooShell" configuration="Debug" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <StartMode startupentry="BooBinding" single="True">
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="BooShell" />

@@ -13,6 +13,7 @@
       <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
