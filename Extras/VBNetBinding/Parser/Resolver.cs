@@ -533,8 +533,8 @@ namespace VBBinding.Parser
 			}
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
-				foreach (string s in curType.BaseTypes) {
-					IClass baseClass = parserContext.GetClass (s, true, false);
+				foreach (IReturnType s in curType.BaseTypes) {
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListMembers(members, baseClass);
 					}
@@ -567,8 +567,8 @@ namespace VBBinding.Parser
 			}
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
-				foreach (string s in curType.BaseTypes) {
-					IClass baseClass = parserContext.GetClass (s, true, false);
+				foreach (IReturnType s in curType.BaseTypes) {
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListTypes(members, baseClass);
 					}
@@ -781,8 +781,8 @@ namespace VBBinding.Parser
 					return m.ReturnType;
 				}
 			}
-			foreach (string baseType in curType.BaseTypes) {
-				IClass c = SearchType(baseType, curType);
+			foreach (IReturnType baseType in curType.BaseTypes) {
+				IClass c = SearchType(baseType.FullyQualifiedName, curType);
 				if (c != null) {
 					IReturnType erg = SearchMember(new ReturnType(c.FullyQualifiedName), memberName);
 					if (erg != null) {
@@ -1130,8 +1130,8 @@ namespace VBBinding.Parser
 	
 		public IClass BaseClass(IClass curClass)
 		{
-			foreach (string s in curClass.BaseTypes) {
-				IClass baseClass = parserContext.GetClass (s, true, false);
+			foreach (IReturnType s in curClass.BaseTypes) {
+				IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, false);
 				if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 					return baseClass;
 				}
@@ -1179,8 +1179,8 @@ namespace VBBinding.Parser
 			if (possibleBaseClass.FullyQualifiedName == c.FullyQualifiedName) {
 				return true;
 			}
-			foreach (string baseClass in c.BaseTypes) {
-				IClass bc = parserContext.GetClass (baseClass, true, false);
+			foreach (IReturnType baseClass in c.BaseTypes) {
+				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, true, false);
 				if (IsClassInInheritanceTree(possibleBaseClass, bc)) {
 					return true;
 				}

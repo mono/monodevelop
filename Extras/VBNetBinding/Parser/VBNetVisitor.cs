@@ -101,7 +101,7 @@ namespace VBBinding.Parser
 			}
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(type.Type);
+					c.BaseTypes.Add(new ReturnType (type.Type));
 				}
 			}
 			currentClass.Push(c);
