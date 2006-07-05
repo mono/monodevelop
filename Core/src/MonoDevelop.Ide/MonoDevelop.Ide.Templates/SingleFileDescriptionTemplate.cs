@@ -40,13 +40,13 @@ namespace MonoDevelop.Ide.Templates
 	public class SingleFileDescriptionTemplate: FileDescriptionTemplate
 	{
 		string name;
+		string defaultName;
 		string generatedFile;
 		
 		public override void Load (XmlElement filenode)
 		{
 			name = filenode.GetAttribute ("name");
-			if (name == "")
-				name = filenode.GetAttribute ("DefaultName") + filenode.GetAttribute ("DefaultExtension");
+			defaultName = filenode.GetAttribute ("DefaultName") + filenode.GetAttribute ("DefaultExtension");
 		}
 		
 		public override string Name {
@@ -113,6 +113,9 @@ namespace MonoDevelop.Ide.Templates
 		// All parameters are optional (can be null)
 		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
 		{
+			if (((entryName == null) || (entryName.Length < 1)) && (defaultName.Length > 0))
+				entryName = defaultName;
+			
 			string fileName = entryName;
 			
 			//substitute tags

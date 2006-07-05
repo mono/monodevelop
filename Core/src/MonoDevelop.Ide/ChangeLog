@@ -1,3 +1,9 @@
+2006-07-05 Michael Hutchinson <m.j.hutchinson@gmail.com
+ 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Fix name 
+	generation for templates that don't have "name" attribute but have 
+	"DefaultName" attribute set.
+ 
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
  
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Updated to use ReturnType
