@@ -124,7 +124,8 @@ class Visitor(AbstractVisitorCompilerStep):
 		region = GetRegion(node)
 		modifier = GetModifier(node)
 		c = Class(_cu, ClassType.Delegate, modifier, region)
-		c.BaseTypes.Add('System.Delegate')
+		// TODO: Check how a return type with type System.Delegate dan be created
+		c.BaseTypes.Add(ReturnType('System.Delegate'))
 		c.FullyQualifiedName = node.FullName
 		if _currentClass.Count > 0:
 			cast(Class, _currentClass.Peek()).InnerClasses.Add(c)
@@ -167,7 +168,8 @@ class Visitor(AbstractVisitorCompilerStep):
 				_cu.Classes.Add(c) unless c.Name.StartsWith ("___")
 			if node.BaseTypes != null:
 				for r as AST.SimpleTypeReference in node.BaseTypes:
-					c.BaseTypes.Add(r.Name)
+					// TODO: Check how a return type with type System.Delegate dan be created
+					c.BaseTypes.Add(ReturnType(r.Name))
 			_currentClass.Push(c)
 		except ex:
 			Error (ex.ToString ())
