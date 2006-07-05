@@ -225,8 +225,8 @@ namespace MonoDevelop.Ide.Commands
 			if (cls == null) return;
 			
 			if (cls.BaseTypes != null) {
-				foreach (string bc in cls.BaseTypes) {
-					IClass bcls = ctx.GetClass (bc, true, true);
+				foreach (IReturnType bc in cls.BaseTypes) {
+					IClass bcls = ctx.GetClass (bc.FullyQualifiedName, true, true);
 					if (bcls != null && bcls.ClassType != ClassType.Interface && bcls.Region != null) {
 						IdeApp.Workbench.OpenDocument (bcls.Region.FileName, bcls.Region.BeginLine, bcls.Region.BeginColumn, true);
 						return;

@@ -1,3 +1,8 @@
+2006-07-05 Matej Urbas <matej.urbas@gmail.com>
+ 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Updated to use ReturnType
+	as BaseTypes in IClass instances.
+ 
 2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:
