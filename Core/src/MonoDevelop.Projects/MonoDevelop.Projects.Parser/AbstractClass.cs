@@ -20,8 +20,9 @@ namespace MonoDevelop.Projects.Parser
 		protected IRegion          region;
 		protected IRegion          bodyRegion;
 		protected object           declaredIn;
-
-		protected StringCollection baseTypes       = new StringCollection();
+		
+		protected GenericParameterList genericParamters;
+		protected ReturnTypeList     baseTypes    = new ReturnTypeList();
 
 		protected ClassCollection    innerClasses = new ClassCollection();
 		protected FieldCollection    fields       = new FieldCollection();
@@ -57,8 +58,22 @@ namespace MonoDevelop.Projects.Parser
 				return declaredIn;
 			}
 		}
+		
+		/// <summary>
+		/// Contains a list of formal parameters to a generic type. 
+		/// <p>If this property returns null or an empty collection, the type is
+		/// not generic.</p>
+		/// </summary>
+		public virtual GenericParameterList GenericParameters {
+			get {
+				return genericParamters;
+			}
+			set {
+				genericParamters = value;
+			}
+		}
 
-		public virtual StringCollection BaseTypes {
+		public virtual ReturnTypeList BaseTypes {
 			get {
 				return baseTypes;
 			}
@@ -154,7 +169,15 @@ namespace MonoDevelop.Projects.Parser
 			if(cmp != 0)
 				return cmp;
 			
-			return DiffUtility.Compare(Events, value.Events);
+			cmp = DiffUtility.Compare(Events, value.Events);
+			if (cmp != 0)
+				return cmp;
+			
+			if (value.GenericParameters == GenericParameters)
+				return 0;	// They are the same classes or are both null - 
+							// which counts as 'being same'
+			else
+				return DiffUtility.Compare(GenericParameters, value.GenericParameters);
 		}
 		
 		public override bool Equals (object ob)

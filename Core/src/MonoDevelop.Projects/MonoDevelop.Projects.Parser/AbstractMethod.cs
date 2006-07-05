@@ -15,6 +15,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		protected IRegion bodyRegion;
 		
+		protected GenericParameterList genericParameters;
 		protected ParameterCollection parameters = new ParameterCollection();
 
 		public virtual IRegion BodyRegion {
@@ -29,6 +30,20 @@ namespace MonoDevelop.Projects.Parser
 			}
 			set {
 				parameters = value;
+			}
+		}
+		
+		/// <summary>
+		/// Contains a list of formal parameters to a generic method. 
+		/// <p>If this property returns null or an empty collection, the method
+		/// is not generic.</p>
+		/// </summary>
+		public virtual GenericParameterList GenericParameters {
+			get {
+				return genericParameters;
+			}
+			set {
+				genericParameters = value;
 			}
 		}
 
@@ -53,7 +68,14 @@ namespace MonoDevelop.Projects.Parser
 			if (cmp != 0)
 				return cmp;
 			
-			return DiffUtility.Compare(Parameters, ((IMethod)value).Parameters);
+			cmp = DiffUtility.Compare(Parameters, ((IMethod)value).Parameters);
+			if (cmp != 0)
+				return cmp;
+				
+			if (GenericParameters == ((IMethod)value).GenericParameters)
+				return 0;
+			else
+				return DiffUtility.Compare(GenericParameters, ((IMethod)value).GenericParameters);
 		}
 		
 		public override bool Equals (object ob)

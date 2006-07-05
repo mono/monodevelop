@@ -22,5 +22,14 @@ namespace MonoDevelop.Projects.Parser
 		bool IsConstructor {
 			get;
 		}
+		
+		/// <summary>
+		/// Contains a list of formal parameters to a generic method. 
+		/// <p>If this property returns null or an empty collection, the method
+		/// is not generic.</p>
+		/// </summary>
+		GenericParameterList GenericParameters {
+			get;
+		}
 	}
 }

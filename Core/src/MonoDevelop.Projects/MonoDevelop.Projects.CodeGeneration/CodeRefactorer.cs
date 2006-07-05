@@ -158,12 +158,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		bool IsSubclass (IParserContext ctx, IClass baseClass, IClass subclass)
 		{
-			foreach (string clsName in subclass.BaseTypes)
-				if (clsName == baseClass.FullyQualifiedName)
+			foreach (IReturnType clsName in subclass.BaseTypes)
+				if (clsName.FullyQualifiedName == baseClass.FullyQualifiedName)
 					return true;
 
-			foreach (string clsName in subclass.BaseTypes) {
-				IClass cls = ctx.GetClass (clsName, true, true);
+			foreach (IReturnType clsName in subclass.BaseTypes) {
+				IClass cls = ctx.GetClass (clsName.FullyQualifiedName, true, true);
 				if (cls != null && IsSubclass (ctx, baseClass, cls))
 					return true;
 			}

@@ -60,7 +60,10 @@ namespace MonoDevelop.Projects.Utility
 		static public int Compare(IList a, IList b, IComparer comparer)
 		{
 			if (a == null || b == null) {
-				return 1;
+				if (a == b)
+					return 0;
+				else
+					return (a == null) ? -1 : 1;
 			}
 			int limit = (a.Count < b.Count) ? a.Count : b.Count;
 			for(int i=0; i < limit; i++) {
@@ -82,7 +85,10 @@ namespace MonoDevelop.Projects.Utility
 		static public int Compare(SortedList a, SortedList b, IComparer comparer)
 		{
 			if (a == null || b == null) {
-				return 1;
+				if (a == b)
+					return 0;
+				else
+					return (a == null) ? -1 : 1;
 			}
 			int cmp;
 			int limit = (a.Count < b.Count) ? a.Count : b.Count;

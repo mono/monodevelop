@@ -15,6 +15,7 @@ namespace MonoDevelop.Projects.Parser
 		protected int    pointerNestingLevel;
 		protected int[]  arrayDimensions;
 		protected object declaredin = null;
+		protected ReturnTypeList genericArguments;
 		string fname;
 		
 		public virtual string FullyQualifiedName {
@@ -74,6 +75,19 @@ namespace MonoDevelop.Projects.Parser
 				return arrayDimensions;
 			}
 		}
+		 		
+		/// <summary>
+		/// Contains values (types) of actual parameters (arguments) to a
+		/// generic type.
+		/// </summary>
+		public virtual ReturnTypeList GenericArguments {
+			get {
+				return genericArguments;
+			}
+			set {
+				genericArguments = value;
+			}
+		}
 
 		public virtual int CompareTo (object ob) 
 		{
@@ -95,7 +109,14 @@ namespace MonoDevelop.Projects.Parser
 				return cmp;
 			}
 			
-			return DiffUtility.Compare(ArrayDimensions, value.ArrayDimensions);
+			cmp = DiffUtility.Compare(ArrayDimensions, value.ArrayDimensions);
+			if (cmp != 0)
+				return cmp;
+			
+			if (GenericArguments == value.GenericArguments)
+				return 0;
+			else
+				return DiffUtility.Compare(GenericArguments, value.GenericArguments);
 		}
 		
 		int IComparable.CompareTo(object value)

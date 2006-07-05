@@ -35,6 +35,13 @@ namespace MonoDevelop.Projects.Parser
 		object DeclaredIn {
 			get;
 		}
-		
+		 		
+		/// <summary>
+		/// Contains values (types) of actual parameters (arguments) to a
+		/// generic type.
+		/// </summary>
+		ReturnTypeList GenericArguments {
+			get;
+		}
 	}
 }

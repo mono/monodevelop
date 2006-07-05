@@ -94,9 +94,20 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public StringCollection BaseTypes {
+		/// <summary>
+		/// Contains a list of formal parameters to a generic type. 
+		/// <p>If this property returns null or an empty collection, the type is
+		/// not generic.</p>
+		/// </summary>
+		public GenericParameterList GenericParameters {
 			get {
-				return new StringCollection();
+				return null;
+			}
+		}
+		
+		public ReturnTypeList  BaseTypes {
+			get {
+				return new ReturnTypeList();
 			}
 		}
 		

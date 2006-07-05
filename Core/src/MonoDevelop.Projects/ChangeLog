@@ -1,3 +1,29 @@
+2006-07-05 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Utility/DiffUtility.cs: Changed the comparison
+	  methods to allow comparison between null and non-null arguments.
+	
+	* MonoDevelop.Projects.Parser/IClass.cs:
+	* MonoDevelop.Projects.Parser/IMethod.cs:
+	* MonoDevelop.Projects.Parser/IReturnType.cs:
+	* MonoDevelop.Projects.Parser/AbstractClass.cs:
+	* MonoDevelop.Projects.Parser/AbstractReturnType.cs:
+	* MonoDevelop.Projects.Parser/ClassProxy.cs:
+	* MonoDevelop.Projects.Parser/AbstractMethod.cs:
+	  Extended all above interfaces and classes to provide generics support.
+	
+	* MonoDevelop.Projects.Parser/GenericParameter.cs:
+	* MonoDevelop.Projects.Parser/GenericParameterList.cs:
+	* MonoDevelop.Projects.Parser/ReturnTypeList.cs:
+	  Added above files to the project.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Updated to use 
+	  ReturnType as BaseTypes in IClass instances.
+	
+	* MonoDevelop.Projects.mdp: Added new file to the build process.
+	
+	* Makefile.am: Added new files to the build process.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs: Remove the DataItemAttribute,

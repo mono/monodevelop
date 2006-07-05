@@ -35,8 +35,10 @@ namespace MonoDevelop.Projects.Parser
 			cls.modifiers          = sclass.Modifiers;
 			cls.classType          = sclass.ClassType;
 
-			foreach (string t in sclass.BaseTypes)
-				cls.baseTypes.Add (typeResolver.Resolve (t));
+			foreach (IReturnType t in sclass.BaseTypes)
+			{
+				cls.baseTypes.Add (PersistentReturnType.Resolve(t, typeResolver));
+			}
 			
 			foreach (IClass c in sclass.InnerClasses) {
 				PersistentClass pc = PersistentClass.Resolve (c, typeResolver);
@@ -92,7 +94,7 @@ namespace MonoDevelop.Projects.Parser
 
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.baseTypes.Add (PersistentHelper.ReadString (reader, nameTable));
+				cls.baseTypes.Add (PersistentReturnType.Read (reader, nameTable));
 			}
 			
 			count = reader.ReadUInt32();
@@ -150,10 +152,10 @@ namespace MonoDevelop.Projects.Parser
 				
 			writer.Write((uint)cls.Modifiers);
 			writer.Write((short)cls.ClassType);
-
+				
 			writer.Write((uint)(cls.BaseTypes.Count));
-			foreach (string baseType in cls.BaseTypes)
-				PersistentHelper.WriteString (baseType, writer, nameTable);
+			foreach (IReturnType baseType in cls.BaseTypes)
+				PersistentReturnType.WriteTo(baseType, writer, nameTable);
 
 			writer.Write((uint)cls.InnerClasses.Count);
 			foreach (IClass innerClass in cls.InnerClasses) {

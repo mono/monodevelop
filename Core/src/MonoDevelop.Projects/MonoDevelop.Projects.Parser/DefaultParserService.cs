@@ -1638,8 +1638,10 @@ namespace MonoDevelop.Projects.Parser
 
 		void PutBaseClassesOnStack(IClass c)
 		{
-			foreach (string baseTypeName in c.BaseTypes)
-				baseTypeQueue.Enqueue(baseTypeName);
+			foreach (IReturnType baseType in c.BaseTypes)
+			{
+				baseTypeQueue.Enqueue(baseType.FullyQualifiedName);
+			}
 		}
 
 		public IClass Current {

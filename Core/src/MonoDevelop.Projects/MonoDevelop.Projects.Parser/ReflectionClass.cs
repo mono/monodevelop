@@ -88,13 +88,13 @@ namespace MonoDevelop.Projects.Parser
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!
-				baseTypes.Add(type.BaseType.FullName);
+				baseTypes.Add(new ReflectionReturnType(type.BaseType));
 			}
 			
 			if (classType != ClassType.Delegate) {
 				// add members
 				foreach (TypeReference iface in type.Interfaces) {
-					baseTypes.Add(iface.FullName);
+					baseTypes.Add(new ReflectionReturnType(iface));
 				}
 				
 				foreach (TypeDefinition nestedType in type.NestedTypes) {
