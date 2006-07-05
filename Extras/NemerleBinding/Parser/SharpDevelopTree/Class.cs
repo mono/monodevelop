@@ -217,7 +217,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             
             foreach (NCC.MType.Class mt in tinfo.GetDirectSuperTypes ())
             {
-                baseTypes.Add (Engine.GetNameFromType (mt));
+                baseTypes.Add (new ReturnType(mt));
             }
             
             LoadXml ();
