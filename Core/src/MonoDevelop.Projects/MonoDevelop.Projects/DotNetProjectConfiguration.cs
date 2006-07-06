@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.IO;
 using MonoDevelop.Projects.Serialization;
 
@@ -59,7 +60,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Build/target")]
 		CompileTarget compiletarget = CompileTarget.Exe;
 		
-		[ItemProperty ("CodeGeneration")]
+		[ItemProperty ("CodeGeneration", FallbackType=typeof(UnknownCompilationParameters))]
 		ICloneable compilationParameters;
 		
 		string sourcePath;
@@ -109,6 +110,20 @@ namespace MonoDevelop.Projects
 			sourcePath = conf.sourcePath;
 			clrVersion = conf.clrVersion;
 			compilationParameters = conf.compilationParameters != null ? (ICloneable)conf.compilationParameters.Clone () : null;
+		}
+	}
+	
+	public class UnknownCompilationParameters: ICloneable, IExtendedDataItem
+	{
+		Hashtable table = new Hashtable ();
+		
+		public IDictionary ExtendedProperties { 
+			get { return table; }
+		}
+		
+		public object Clone ()
+		{
+			return MemberwiseClone (); 
 		}
 	}
 }

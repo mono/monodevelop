@@ -177,7 +177,6 @@ namespace MonoDevelop.Projects
 	class CombineReaderV2: XmlConfigurationReader, ICombineReader
 	{
 		DataSerializer serializer;
-		Combine combine = new Combine ();
 		ArrayList entries = new ArrayList ();
 		IProgressMonitor monitor;
 		string baseFile;

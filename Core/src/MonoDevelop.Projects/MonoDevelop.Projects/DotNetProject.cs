@@ -89,14 +89,16 @@ namespace MonoDevelop.Projects
 			language = languageName;
 			languageBinding = FindLanguage (language);
 			
-			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) CreateConfiguration ("Debug");
-			configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
-			Configurations.Add (configuration);
-			
-			configuration = (DotNetProjectConfiguration) CreateConfiguration ("Release");
-			configuration.DebugMode = false;
-			configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
-			Configurations.Add (configuration);
+			if (languageBinding != null) {
+				DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) CreateConfiguration ("Debug");
+				configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				Configurations.Add (configuration);
+				
+				configuration = (DotNetProjectConfiguration) CreateConfiguration ("Release");
+				configuration.DebugMode = false;
+				configuration.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				Configurations.Add (configuration);
+			}
 			
 			foreach (DotNetProjectConfiguration parameter in Configurations) {
 				parameter.OutputDirectory = Path.Combine (binPath, parameter.Name);
@@ -115,10 +117,6 @@ namespace MonoDevelop.Projects
 		
 		public override void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
-			DataValue val = data ["language"] as DataValue;
-			if (val != null && Services.Languages.GetBindingPerLanguageName (val.Value) == null)
-				throw new UserException (GettextCatalog.GetString ("Unknown language: {0}", val.Value), GettextCatalog.GetString ("You may need to install an additional add-in to support projects for the language '{0}'", val.Value));
-
 			base.Deserialize (handler, data);
 			languageBinding = FindLanguage (language);
 		}
@@ -126,8 +124,6 @@ namespace MonoDevelop.Projects
 		IDotNetLanguageBinding FindLanguage (string name)
 		{
 			IDotNetLanguageBinding binding = Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
-			if (binding == null)
-				throw new InvalidOperationException ("Language not supported: " + language);
 			return binding;
 		}
 
@@ -135,12 +131,17 @@ namespace MonoDevelop.Projects
 		{
 			DotNetProjectConfiguration conf = new DotNetProjectConfiguration ();
 			conf.Name = name;
-			conf.CompilationParameters = languageBinding.CreateCompilationParameters (null);
+			if (languageBinding != null)
+				conf.CompilationParameters = languageBinding.CreateCompilationParameters (null);
 			return conf;
 		}
 		
 		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
 		{
+			if (languageBinding == null) {
+				monitor.ReportError (GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", language), null);
+				return null;
+			}
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
 			conf.SourceDirectory = BaseDirectory;
 			
@@ -212,6 +213,8 @@ namespace MonoDevelop.Projects
 		
 		public override bool IsCompileable(string fileName)
 		{
+			if (languageBinding == null)
+				return false;
 			return languageBinding.IsSourceCodeFile (fileName);
 		}
 		

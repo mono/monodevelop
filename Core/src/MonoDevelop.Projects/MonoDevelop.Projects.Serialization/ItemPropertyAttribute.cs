@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects.Serialization
 		Type dataType;
 		bool readOnly;
 		bool writeOnly;
+		Type fallbackType;
 		
 		public ItemPropertyAttribute ()
 		{
@@ -90,6 +91,11 @@ namespace MonoDevelop.Projects.Serialization
 		public bool WriteOnly {
 			get { return writeOnly; }
 			set { writeOnly = value; }
+		}
+		
+		public Type FallbackType {
+			get { return fallbackType; }
+			set { fallbackType = value; }
 		}
 	}
 }

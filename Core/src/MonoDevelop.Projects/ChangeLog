@@ -1,3 +1,15 @@
+2006-07-06 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Added fallback
+	  type for the compilation parameters property.
+	* MonoDevelop.Projects/DotNetProject.cs: Don't crash if the specified
+	  language binding can't be found.
+	* MonoDevelop.Projects/CmbxFileFormat.cs: Fix warning.
+	
+	* MonoDevelop.Projects.Serialization/ItemPropertyAttribute.cs:
+	* MonoDevelop.Projects.Serialization/ClassDataType.cs:
+	  Allow specifying a fallback type in the ItemProperty attribute.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Projects.Utility/DiffUtility.cs: Changed the comparison
