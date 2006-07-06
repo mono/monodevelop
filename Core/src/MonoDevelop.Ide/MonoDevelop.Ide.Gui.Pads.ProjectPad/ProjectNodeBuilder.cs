@@ -113,8 +113,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
 
 			Project p = dataObject as Project;
-			label = p.Name;
-			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+			
+			string iconName;
+			if (p is DotNetProject && ((DotNetProject)p).LanguageBinding == null) {
+				iconName = Gtk.Stock.DialogError;
+				label += GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", p.Name, ((DotNetProject)p).LanguageName);
+			} else {
+				iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
+				label = p.Name;
+			}
+			
 			icon = Context.GetIcon (iconName);
 		}
 

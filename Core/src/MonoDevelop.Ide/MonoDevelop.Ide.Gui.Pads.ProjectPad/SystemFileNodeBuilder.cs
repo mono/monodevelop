@@ -75,6 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;
+				label = "<span foreground='darkgrey'>" + label + "</span>";
 			}
 		}
 		

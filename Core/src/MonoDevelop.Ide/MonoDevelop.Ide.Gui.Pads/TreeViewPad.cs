@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			
 			complete_column.PackStart (text_render, true);
-			complete_column.AddAttribute (text_render, "text", TextColumn);
+			complete_column.AddAttribute (text_render, "markup", TextColumn);
 //			complete_column.AddAttribute (text_render, "weight", WeightColumn);
 	
 			tree.AppendColumn (complete_column);

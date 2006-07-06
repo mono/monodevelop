@@ -1,3 +1,12 @@
+2006-07-06 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	  Show system files in grey color.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	  Show a warning message in the label when a language binding
+	  of a project can't be found.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Allow markup in a tree view.
+
 2006-07-05 Michael Hutchinson <m.j.hutchinson@gmail.com
  
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Fix name 
