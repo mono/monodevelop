@@ -1,3 +1,11 @@
+2006-07-06 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core/SystemAssemblyService.cs: Some assembly names
+	  include PublicKeyToken=null, some others do not (depending on
+	  the origin of the name. SystemAssemblyService now normalizes
+	  all names so there are no problems when different nane formats
+	  are used.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddIn.cs: 

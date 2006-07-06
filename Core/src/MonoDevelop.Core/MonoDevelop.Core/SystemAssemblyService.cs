@@ -54,6 +54,7 @@ namespace MonoDevelop.Core
 		{
 			Initialize ();
 			
+			fullname = NormalizeAsmName (fullname);
 			string path = (string)assemblyFullNameToPath[fullname];
 			if (path == null)
 				return String.Empty;
@@ -67,11 +68,21 @@ namespace MonoDevelop.Core
 			} else
 				return String.Empty;
 		}
+		
+		string NormalizeAsmName (string name)
+		{
+			int i = name.IndexOf (", PublicKeyToken=null");
+			if (i != -1)
+				return name.Substring (0, i).Trim ();
+			else
+				return name;
+		}
 	
 		// Returns the installed version of the given assembly name
 		// (it returns the full name of the installed assembly).
 		public string FindInstalledAssembly (string fullname)
 		{
+			fullname = NormalizeAsmName (fullname);
 			Initialize ();
 			if (assemblyFullNameToPath.Contains (fullname))
 				return fullname;
@@ -89,6 +100,8 @@ namespace MonoDevelop.Core
 	
 		public string GetAssemblyLocation (string assemblyName)
 		{
+			assemblyName = NormalizeAsmName (assemblyName); 
+			
 			string path = (string)assemblyFullNameToPath [assemblyName];
 			if (path != null)
 				return path;
@@ -160,6 +173,7 @@ namespace MonoDevelop.Core
 		// in the specified target CLR version, or null if it doesn't exist in that version.
 		public string GetAssemblyNameForVersion (string fullName, ClrVersion targetVersion)
 		{
+			fullName = NormalizeAsmName (fullName);
 			string package = GetPackageFromFullName (fullName);
 			if (package != "MONO-SYSTEM")
 				return fullName;
@@ -176,6 +190,8 @@ namespace MonoDevelop.Core
 		
 		public string GetAssemblyFullName (string assemblyName)
 		{
+			assemblyName = NormalizeAsmName (assemblyName);
+			
 			// Fast path for known assemblies.
 			if (assemblyFullNameToPath.Contains (assemblyName))
 				return assemblyName;
@@ -304,7 +320,7 @@ namespace MonoDevelop.Core
 
 			try {
 				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyfile);
-				assemblyFullNameToPath[an.FullName] = assemblyfile;
+				assemblyFullNameToPath[NormalizeAsmName (an.FullName)] = assemblyfile;
 				assemblyPathToPackage[assemblyfile] = Path.GetFileNameWithoutExtension (pcfile);
 			} catch { 
 			}
