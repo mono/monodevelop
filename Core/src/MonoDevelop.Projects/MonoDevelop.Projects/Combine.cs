@@ -617,9 +617,10 @@ namespace MonoDevelop.Projects
 
 					ICompilerResult res = entry.Build (monitor, false);
 					builds++;
-					cres.Errors.AddRange (res.CompilerResults.Errors);
+					if (res != null)
+						cres.Errors.AddRange (res.CompilerResults.Errors);
 					monitor.Step (1);
-					if (res.ErrorCount > 0) {
+					if (res != null && res.ErrorCount > 0) {
 						failedBuilds++;
 						break;
 					}

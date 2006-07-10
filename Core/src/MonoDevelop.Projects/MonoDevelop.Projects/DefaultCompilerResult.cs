@@ -77,5 +77,15 @@ namespace MonoDevelop.Projects
 			get { return failedBuildCount; }
 			set { failedBuildCount = value; }
 		}
+		
+		public void AddError (string file, int line, int col, string errorNum, string text)
+		{
+			compilerResults.Errors.Add (new CompilerError (file, line, col, errorNum, text));
+		}
+		
+		public void AddError (string text)
+		{
+			compilerResults.Errors.Add (new CompilerError (null, 0, 0, null, text));
+		}
 	}
 }

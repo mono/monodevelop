@@ -1,3 +1,14 @@
+2006-07-10 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Combine.cs:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/ProjectReference.cs: Added null checks.
+	
+	* MonoDevelop.Projects/DefaultCompilerResult.cs: Implemented method
+	  for adding errors to a DefaultCompilerResult.
+	* MonoDevelop.Projects/DotNetProject.cs: Report an error if a project
+	  referenced by a reference can't be found.
+
 2006-07-10 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed

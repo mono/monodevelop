@@ -139,9 +139,26 @@ namespace MonoDevelop.Projects
 		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
 		{
 			if (languageBinding == null) {
-				monitor.ReportError (GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", language), null);
-				return null;
+				DefaultCompilerResult refres = new DefaultCompilerResult ();
+				string msg = GettextCatalog.GetString ("Unknown language '{0}'. You may need to install an additional add-in to support this language.", language);
+				refres.AddError (msg);
+				monitor.ReportError (msg, null);
+				return refres;
 			}
+			
+			foreach (ProjectReference pr in ProjectReferences) {
+				DefaultCompilerResult refres = null;
+				if (pr.ReferenceType == ReferenceType.Project && pr.GetReferencedFileNames ().Length == 0) {
+					if (refres == null)
+						refres = new DefaultCompilerResult ();
+					string msg = GettextCatalog.GetString ("Referenced project '{0}' not found in the solution.", pr.Reference);
+					monitor.ReportError (msg, null);
+					refres.AddError (msg);
+				}
+				if (refres != null)
+					return refres;
+			}
+			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
 			conf.SourceDirectory = BaseDirectory;
 			

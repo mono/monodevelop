@@ -126,7 +126,11 @@ namespace MonoDevelop.Projects
 		
 		public virtual string[] GetReferencedFileNames ()
 		{
-			return new string[] { GetReferencedFileName () };
+			string s = GetReferencedFileName ();
+			if (s != null)
+				return new string[] { s };
+			else
+				return new string [0];
 		}
 		
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
