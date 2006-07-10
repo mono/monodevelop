@@ -15,7 +15,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[Description ("A lenguage binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
+	[Description ("A language binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
 	[CodonNameAttribute("LanguageBinding")]
 	internal class LanguageBindingCodon : ClassCodon
 	{
