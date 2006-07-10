@@ -238,6 +238,15 @@ namespace MonoDevelop.Ide.Gui
 				if (layouts.Contains (value))
 				{
 					dockLayout.LoadLayout (newLayout);
+					
+					DockItem ot = dock.GetItemByName ("Documents");
+					if (!ot.IsAttached) {
+						// Something went wrong. The documents item should always be visible.
+						// The cause may be a corrupt configuration file.
+						// This will reset this layout:
+						dockLayout.LoadLayout (null);
+						dockLayout.SaveLayout (newLayout);
+					}
 				}
 				else
 				{

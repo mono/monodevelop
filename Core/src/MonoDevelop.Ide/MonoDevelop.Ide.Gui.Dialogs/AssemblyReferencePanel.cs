@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				bool isAssembly = true;
 				try	{
 					System.Reflection.AssemblyName.GetAssemblyName(System.IO.Path.GetFullPath (file));
-				} catch (Exception assemblyExcep) {
+				} catch {
 					isAssembly = false;
 				}
 			

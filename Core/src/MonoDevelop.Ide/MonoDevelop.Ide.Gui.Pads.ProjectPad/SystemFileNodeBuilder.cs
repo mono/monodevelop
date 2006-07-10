@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;
-				label = "<span foreground='darkgrey'>" + label + "</span>";
+				label = "<span foreground='dimgrey'>" + label + "</span>";
 			}
 		}
 		
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			try {
 				Services.FileService.RemoveFile (file.Path);
-			} catch (Exception ex) {
+			} catch {
 				Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file {0} could not be deleted"), file.Path));
 			}
 		}

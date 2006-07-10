@@ -911,4 +911,8 @@
 	<Extension path = "/MonoDevelop/ProjectTemplates" extension-nodes="ProjectTemplate" description="Project templates to be shown in the New Project dialog.">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "md-parser" resource = "parsing.png" />
+	</Extension>
 </AddIn>

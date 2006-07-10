@@ -1,3 +1,23 @@
+2006-07-10 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Don't allow
+	  selecting projects which can cause cyclic dependencies.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Remove debug message.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: When loading a layout,
+	  make sure the documents dock item is always shown.
+	* MonoDevelop.Ide.Tasks/Task.cs: Added null check.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Fix
+	  warning. Use a darker color for the label.
+	  
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs: Fix warnings.
+	  
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.addin.xml: Added icon for background parsing.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
 2006-07-10 Alejandro Serrano  <trupill@yahoo.es> 
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs:

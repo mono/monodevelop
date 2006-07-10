@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Gui
 				listen_socket.Listen (5);
 				listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
 			} catch {
-				Console.WriteLine ("Socket already in use");
+				// Socket already in use
 			}
 
 			IdeApp.Run ();
@@ -232,12 +232,12 @@ namespace MonoDevelop.Ide.Gui
 				if (MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (file)) {
 					try {
 						IdeApp.ProjectOperations.OpenCombine (file);
-					} catch (Exception e) {
+					} catch {
 					}
 				} else {
 					try {
 						IdeApp.Workbench.OpenDocument (file);
-					} catch (Exception e) {
+					} catch {
 					}
 				}
 				IdeApp.Workbench.RootWindow.Present ();

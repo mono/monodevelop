@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Tasks
 			column      = error.Column;
 			line        = error.Line;
 			description = error.ErrorText;
-			if (error.ErrorNumber != String.Empty)
+			if (error.ErrorNumber != String.Empty && error.ErrorNumber != null)
 				description += "(" + error.ErrorNumber + ")";
 			fileName    = error.FileName;
 		}

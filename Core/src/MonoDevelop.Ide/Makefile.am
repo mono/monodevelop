@@ -250,6 +250,7 @@ templates/EmptyXMLFile.xft.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/mono-powered.png \
+icons/parsing.png \
 icons/Icons.AboutImage
 
 GENERATED_FILES = \

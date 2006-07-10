@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 		}
 		
-		void SolutionCheckChanged (object sender, EventArgs e)
+		protected void SolutionCheckChanged (object sender, EventArgs e)
 		{
 			if (CreateSolutionDirectory && txt_subdirectory.Text == "")
 				txt_subdirectory.Text = txt_name.Text;
@@ -249,7 +249,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			PathChanged (null, null);
 		}
 		
-		void NameChanged (object sender, EventArgs e)
+		protected void NameChanged (object sender, EventArgs e)
 		{
 			if (CreateSolutionDirectory && txt_subdirectory.Text == lastName)
 				txt_subdirectory.Text = txt_name.Text;
@@ -332,12 +332,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				{
 					System.IO.Directory.CreateDirectory (ProjectLocation);
 				}
-				catch (IOException ioException)
+				catch (IOException)
 				{
 					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("Could not create directory {0}. File already exists."), ProjectLocation));
 					return;
 				}
-				catch (UnauthorizedAccessException accessException)
+				catch (UnauthorizedAccessException)
 				{
 					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("You do not have permission to create to {0}"), ProjectLocation));
 					return;
