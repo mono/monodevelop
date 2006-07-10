@@ -247,18 +247,19 @@ namespace MonoDevelop.Projects.Parser
 			ClassUpdateInformation res = UpdateClassInformation (resolved, fileName);
 			
 			FileEntry file = files [fileName] as FileEntry;
-			if (file == null) return res;
-			
-			if (!allResolved) {
-				if (file.ParseErrorRetries > 0) {
-					file.ParseErrorRetries--;
+			if (file != null) {
+				if (!allResolved) {
+					if (file.ParseErrorRetries > 0) {
+						file.ParseErrorRetries--;
+					}
+					else
+						file.ParseErrorRetries = 3;
 				}
 				else
-					file.ParseErrorRetries = 3;
+					file.ParseErrorRetries = 0;
 			}
-			else
-				file.ParseErrorRetries = 0;
-
+			
+			Flush ();
 			return res;
 		}
 	}

@@ -409,7 +409,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			else {
 				IMethod m = cls.Methods [cls.Methods.Count - 1];
-				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				
+				int pos;
+				if (m.BodyRegion != null && m.BodyRegion.EndLine > 0)
+					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
+				else
+					// Abstract or P/Inboke methods don't have a body
+					pos = buffer.GetPositionFromLineColumn (m.Region.EndLine, m.Region.EndColumn);
+
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
 				string ind = GetLineIndent (buffer, m.Region.EndLine);

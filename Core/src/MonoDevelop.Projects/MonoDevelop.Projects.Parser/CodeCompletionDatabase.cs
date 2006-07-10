@@ -121,6 +121,7 @@ namespace MonoDevelop.Projects.Parser
 					CloseReader ();
 					
 					Runtime.LoggingService.Debug ("Reading " + dataFile);
+					
 					ifile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
 					BinaryFormatter bf = new BinaryFormatter ();
 					
@@ -143,7 +144,6 @@ namespace MonoDevelop.Projects.Parser
 					DeserializeData (dataQueue);
 
 					ifile.Close ();
-					
 				}
 				catch (Exception ex)
 				{
@@ -277,8 +277,13 @@ namespace MonoDevelop.Projects.Parser
 			return files [name] as FileEntry;
 		}
 				
-		void Flush ()
+		public void Flush ()
 		{
+			// Saves the database if it has too much information
+			// in memory. A parser database can't have more
+			// MAX_ACTIVE_COUNT classes loaded in memory at the
+			// same time.
+
 			int activeCount = 0;
 			
 			foreach (FileEntry fe in files.Values) {
@@ -564,7 +569,6 @@ namespace MonoDevelop.Projects.Parser
 				rootNamespace.Clean ();
 				fe.LastParseTime = DateTime.Now;
 				modified = true;
-				Flush ();
 				
 				return res;
 			}

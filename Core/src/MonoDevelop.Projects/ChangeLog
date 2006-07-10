@@ -1,3 +1,18 @@
+2006-07-10 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  crash when locating the position for a new method. Fixes
+	  bug #78798.
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  After successfully parsing an assembly, reset the error retry
+	  count.
+	  
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs:
+	  UpdateClassInformation does not flush the database anymore,
+	  so it has to be explicitely called.
+
 2006-07-06 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: Added fallback

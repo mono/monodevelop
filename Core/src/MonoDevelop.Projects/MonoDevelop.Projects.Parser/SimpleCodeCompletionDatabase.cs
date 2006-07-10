@@ -48,7 +48,9 @@ namespace MonoDevelop.Projects.Parser
 			ICompilationUnit cu = (ICompilationUnit)parserInfo.BestCompilationUnit;
 			ClassCollection resolved;
 			parserDatabase.ResolveTypes (null, cu, cu.Classes, out resolved);
-			return UpdateClassInformation (resolved, file);
+			ClassUpdateInformation res = UpdateClassInformation (resolved, file);
+			Flush ();
+			return res;
 		}
 		
 		public override void Read () {}

@@ -101,7 +101,6 @@ namespace MonoDevelop.Projects.Parser
 		{
 			IProgressMonitor monitor = parentMonitor;
 			if (parentMonitor == null) monitor = parserDatabase.GetParseProgressMonitor ();
-			
 			try {
 				monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
 				if (useExternalProcess)
@@ -116,7 +115,15 @@ namespace MonoDevelop.Projects.Parser
 				{
 					AssemblyInformation ainfo = new AssemblyInformation();
 					ainfo.Load (fileName, false);
+					
 					UpdateClassInformation (ainfo.Classes, fileName);
+
+					// Reset the error retry count, since the file has been
+					// successfully parsed.
+					FileEntry e = GetFile (fileName);
+					e.ParseErrorRetries = 0;
+
+					Flush ();
 				}
 			} catch (Exception ex) {
 				FileEntry e = GetFile (fileName);
