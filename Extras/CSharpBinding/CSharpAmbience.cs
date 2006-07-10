@@ -154,6 +154,17 @@ namespace CSharpBinding
 				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
 			else
 				AppendPangoHtmlTag (builder, c.Name, "b");
+				
+			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
+			{
+				builder.Append("&lt;");
+				for (int i = 0; i < c.GenericParameters.Count; i++)
+				{
+					builder.Append(c.GenericParameters[i].Name);
+					if (i + 1 < c.GenericParameters.Count) builder.Append(", ");
+				}
+				builder.Append("&gt;");
+			}
 			
 			
 			if (c.ClassType == ClassType.Delegate) {
@@ -178,7 +189,7 @@ namespace CSharpBinding
 				if (c.BaseTypes.Count > 0) {
 					builder.Append(" : ");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
-						builder.Append(c.BaseTypes[i].FullyQualifiedName);
+						builder.Append(Convert(c.BaseTypes[i]));
 						if (i + 1 < c.BaseTypes.Count) {
 							builder.Append(", ");
 						}
@@ -368,6 +379,17 @@ namespace CSharpBinding
 					AppendPangoHtmlTag (builder, m.Name, "b");
 			}
 			
+			if (m.GenericParameters != null && m.GenericParameters.Count > 0)
+			{
+				builder.Append("&lt;");
+				for (int i = 0; i < m.GenericParameters.Count; i++)
+				{
+					builder.Append(m.GenericParameters[i].Name);
+					if (i + 1 < m.GenericParameters.Count) builder.Append(", ");
+				}
+				builder.Append("&gt;");
+			}
+			
 			builder.Append(" (");
 			if (IncludeHTMLMarkup) builder.Append("<br>");
 			
@@ -429,6 +451,17 @@ namespace CSharpBinding
 				} else {
 					builder.Append(returnType.Name);
 				}
+			}
+			
+			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0)
+			{
+				builder.Append("&lt;");
+				for (int i = 0; i < returnType.GenericArguments.Count; i++)
+				{
+					builder.Append(Convert(returnType.GenericArguments[i]));
+					if (i + 1 < returnType.GenericArguments.Count) builder.Append(", ");
+				}
+				builder.Append("&gt;");
 			}
 			
 			if (linkSet) {

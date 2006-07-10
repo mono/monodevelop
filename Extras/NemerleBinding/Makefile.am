@@ -30,6 +30,7 @@ Parser/SharpDevelopTree/AttributeSection.cs \
 Parser/SharpDevelopTree/CompilationUnit.cs \
 Parser/SharpDevelopTree/Property.cs \
 Parser/SharpDevelopTree/Field.cs \
+Parser/SharpDevelopTree/Local.cs \
 Parser/SharpDevelopTree/ReturnType.cs \
 Parser/SharpDevelopTree/Modifier.cs \
 Parser/Parser.cs \

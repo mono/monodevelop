@@ -1,3 +1,8 @@
+2006-07-10 Alejandro Serrano  <trupill@yahoo.es> 
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs:
+	  Show generic parameters on class nodes.
+
 2006-07-06 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:

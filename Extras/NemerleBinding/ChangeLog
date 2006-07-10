@@ -1,3 +1,12 @@
+2006-07-10 Alejandro Serrano <trupill@yahoo.es>
+
+	* Parser/SharpDevelopTree/Class.cs:
+	* Parser/SharpDevelopTree/ReturnType.cs:
+	* Parser/SharpDevelopTree/Method.cs: Updated to show generic parameters or arguments.
+	* Parser/SharpDevelopTree/Local.cs: First approach to show local
+	  variables on Completion Window.
+	* Makefile.am: Add Parser/SharpDevelopTree/Local.cs to compilation.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
 
 	* Parser/SharpDevelopTree/Class.cs: Updated to use ReturnType as BaseTypes.

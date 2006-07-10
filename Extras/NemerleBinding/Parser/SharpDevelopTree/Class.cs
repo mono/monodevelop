@@ -172,6 +172,15 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 
             modifiers = mod;
             
+            if (tinfo.Typarms.Length > 0)
+            {
+                this.genericParamters = new GenericParameterList ();
+                foreach (NCC.StaticTyVar typarm in tinfo.Typarms)
+                {
+                    genericParamters.Add (GetGenericParameter (typarm));
+                }
+            }
+            
             if (addMembers || tinfo.IsDelegate)
             {
                 foreach (NCC.IMember member in tinfo.GetMembers ())
@@ -217,7 +226,12 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             
             foreach (NCC.MType.Class mt in tinfo.GetDirectSuperTypes ())
             {
-                baseTypes.Add (new ReturnType(mt));
+                if (mt.tycon.FrameworkTypeName != "System.Object" &&
+                    mt.tycon.FrameworkTypeName != "System.ValueType" &&
+                    mt.tycon.FrameworkTypeName != "System.Enum" &&
+                    mt.tycon.FrameworkTypeName != "System.Delegate" &&
+                    mt.tycon.FrameworkTypeName != "System.MulticastDelegate")
+                    baseTypes.Add (new ReturnType(mt));
             }
             
             LoadXml ();
@@ -243,6 +257,27 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             DefaultRegion rd = new DefaultRegion (0, 0, 0, 0);
             rd.FileName = "";
             return rd;
+        }
+        
+        internal static GenericParameter GetGenericParameter (NCC.StaticTyVar tyvar)
+        {
+            ReturnTypeList constraints = new ReturnTypeList ();
+            foreach (NCC.MType constraint in tyvar.Constraints)
+                constraints.Add (new ReturnType (constraint));
+
+            SpecialConstraintType special = (SpecialConstraintType)0;
+            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.ReferenceTypeConstraint) != 0)
+                special |= SpecialConstraintType.Class;
+            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.NotNullableValueTypeConstraint) != 0)
+                special |= SpecialConstraintType.Struct;
+            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.DefaultConstructorConstraint) != 0)
+                special |= SpecialConstraintType.New;
+            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.Contravariant) != 0)
+                special |= SpecialConstraintType.Contravariant;
+            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.Covariant) != 0)
+                special |= SpecialConstraintType.Covariant;
+                
+            return new GenericParameter (tyvar.Name, constraints, special);
         }
         
         public override ICompilationUnit CompilationUnit

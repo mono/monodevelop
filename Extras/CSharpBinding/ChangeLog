@@ -1,3 +1,9 @@
+2006-07-10 Alejandro Serrano <trupill@yahoo.es>
+ 
+	* CSharpAmbience.cs: Add support for generics ambience.
+	* Autotools/Makefile.am: Fixed error on compilation because
+	  of a not found reference.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
  
 	* CSharpAmbience.cs: Fixed a regression that displayed all base types of a

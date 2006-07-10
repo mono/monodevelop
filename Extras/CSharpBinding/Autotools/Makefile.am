@@ -4,6 +4,7 @@ CSharpAutotoolsSetup.cs
 REFS = -r:System \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll
 

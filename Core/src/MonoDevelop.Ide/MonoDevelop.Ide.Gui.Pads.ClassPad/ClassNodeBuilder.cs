@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -49,14 +50,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((ClassData)dataObject).Class.Name;
+			return GetNameWithGenericParameters(((ClassData)dataObject).Class);
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
-			label = classData.Class.Name;
+			label = GetNameWithGenericParameters(classData.Class);
 			icon = Context.GetIcon (Services.Icons.GetIcon (classData.Class));
+		}
+		
+		private string GetNameWithGenericParameters (IClass c)
+		{
+			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
+			{
+				System.Console.WriteLine ("hey");
+				StringBuilder builder = new StringBuilder (c.Name);
+				builder.Append("&lt;");
+				for (int i = 0; i < c.GenericParameters.Count; i++)
+				{
+					builder.Append(c.GenericParameters[i].Name);
+					if (i + 1 < c.GenericParameters.Count) builder.Append(", ");
+				}
+				builder.Append("&gt;");
+				return builder.ToString();
+			}
+			else
+				return c.Name;
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

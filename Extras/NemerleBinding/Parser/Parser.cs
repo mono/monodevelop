@@ -163,7 +163,7 @@ namespace NemerleBinding.Parser
                     break;
                 }
             }
-            ResolveResult res = real_resolve (parserContext, caretLine, caretColumn, fileName, fileContent);
+            ResolveResult res = real_resolve (parserContext, caretLine, caretColumn, fileName, fileContent, true);
             return res.Members;
         }
 
@@ -174,10 +174,10 @@ namespace NemerleBinding.Parser
 
         public ResolveResult Resolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
         {
-            return real_resolve (parserContext, caretLineNumber, caretColumn, fileName, fileContent);
+            return real_resolve (parserContext, caretLineNumber, caretColumn, fileName, fileContent, false);
         }
         
-        public ResolveResult real_resolve (IParserContext parserContext, int caretLineNumber, int caretColumn, string fileName, string fileContent)
+        public ResolveResult real_resolve (IParserContext parserContext, int caretLineNumber, int caretColumn, string fileName, string fileContent, bool completeLocals)
         {
             try
             {
@@ -299,7 +299,7 @@ namespace NemerleBinding.Parser
                         NCC.CompletionResult infox = engine.RunCompletionEngine ((NCC.MethodBuilder)the_method.Member,
                             method_start + method_end, method_start.Length);
                         
-                        return GetResults (infox, comp, false);                        
+                        return GetResults (infox, comp, completeLocals);                        
                     }
                 }
             }
@@ -318,6 +318,7 @@ namespace NemerleBinding.Parser
             
             bool complete_types = false;
             NCC.OverloadPossibility head = results.Overloads.Head;
+            
             if (head.Member.Name == ".ctor" || head.Member.Name == ".cctor" || head.Member is NCC.TypeInfo)
                 complete_types = true;
             
@@ -368,8 +369,14 @@ namespace NemerleBinding.Parser
                 LanguageItemCollection lang = new LanguageItemCollection ();
                 foreach (NCC.OverloadPossibility ov in results.Overloads)
                 {
-                    if (ov is NCC.LocalValueCompletionPossibility && !completeLocals)
-                        continue;
+                    if (ov is NCC.LocalValueCompletionPossibility)
+                    {
+                        if (completeLocals)
+                            lang.Add (new Local (new Class ("LOCALS", cu),
+                                (NCC.LocalValueCompletionPossibility)ov));
+                        else
+                            continue;
+                    }
                     
                     // Do not add property getters and setters, not events adders and removers,
                     // nor overloaded operators, nor enum value__, not Nemerle internal methods
@@ -451,11 +458,17 @@ namespace NemerleBinding.Parser
             for (int i = startLine - 1; i < endLine; i++)
             {
                 if (i == (startLine - 1) && i == (endLine - 1))
+                {
                     sb.Append (lines[i].Substring (startColumn - 1, endColumn - startColumn));
+                    break;
+                }
                 else if (i == (startLine - 1))
                     sb.Append (lines[i].Substring (startColumn - 1) + "\n");
-                else if (i == (endLine - 1))
+                else if (i == (endLine - 1) || i >= lines.Length)
+                {
                     sb.Append (lines[i].Substring (0, endColumn - 1));
+                    break;
+                }
                 else
                     sb.Append (lines[i] + "\n");
             }

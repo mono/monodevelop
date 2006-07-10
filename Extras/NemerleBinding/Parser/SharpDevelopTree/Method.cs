@@ -255,6 +255,15 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             modifiers = mod;
             this.FullyQualifiedName = tinfo.Name;
             
+            if (tinfo.GetHeader().typarms.Length > 0)
+            {
+                this.genericParameters = new GenericParameterList ();
+                foreach (NCC.StaticTyVar typarm in tinfo.GetHeader().typarms)
+                {
+                    genericParameters.Add (Class.GetGenericParameter (typarm));
+                }
+            }
+            
             if (tinfo.Name == "op_Addition") this.FullyQualifiedName = "@+";
             else if (tinfo.Name == "op_Subtraction") this.FullyQualifiedName = "@-";
             else if (tinfo.Name == "op_Multiply") this.FullyQualifiedName = "@*";
