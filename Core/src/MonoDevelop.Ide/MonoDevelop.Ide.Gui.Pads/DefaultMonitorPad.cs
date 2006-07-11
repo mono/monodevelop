@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buffer.TagTable.Add (bold);
 			
 			tag = new TextTag ("0");
-			tag.Indent = 10;
+			tag.LeftMargin = 10;
 			buffer.TagTable.Add (tag);
 			tags.Add (tag);
 
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			ident++;
 			if (ident >= tags.Count) {
 				tag = new TextTag (ident.ToString ());
-				tag.Indent = 10 + 15 * (ident - 1);
+				tag.LeftMargin = 10 + 15 * (ident - 1);
 				buffer.TagTable.Add (tag);
 				tags.Add (tag);
 			} else {

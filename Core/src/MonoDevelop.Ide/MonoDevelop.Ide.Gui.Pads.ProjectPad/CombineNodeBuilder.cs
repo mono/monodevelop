@@ -44,12 +44,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		CombineEntryEventHandler combineEntryAdded;
 		CombineEntryEventHandler combineEntryRemoved;
 		CombineEntryRenamedEventHandler combineNameChanged;
+		EventHandler startupChanged;
 		
 		public CombineNodeBuilder ()
 		{
 			combineEntryAdded = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
 			combineEntryRemoved = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
 			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
+			startupChanged = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
 		}
 
 		public override Type NodeDataType {
@@ -124,6 +126,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			combine.EntryAdded += combineEntryAdded;
 			combine.EntryRemoved += combineEntryRemoved;
 			combine.NameChanged += combineNameChanged;
+			combine.StartupPropertyChanged += startupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -132,6 +135,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			combine.EntryAdded -= combineEntryAdded;
 			combine.EntryRemoved -= combineEntryRemoved;
 			combine.NameChanged -= combineNameChanged;
+			combine.StartupPropertyChanged -= startupChanged;
+		}
+		
+		void OnStartupChanged (object sender, EventArgs args)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder (sender);
+			if (tb != null)
+				tb.UpdateAll ();
 		}
 		
 		void OnEntryAdded (object sender, CombineEntryEventArgs e)

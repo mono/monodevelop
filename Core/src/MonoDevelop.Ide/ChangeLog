@@ -1,3 +1,12 @@
+2006-07-11 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Show startup
+	  projects in bold.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Update the
+	  tree when the startup project changes.
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Use the LeftMargin
+	  property for indenting, this fixes bug #78387.
+
 2006-07-11 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs: Show errors
