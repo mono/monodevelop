@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects
 		
 		public string BinPath {
 			get {
-				return combinePath + Path.DirectorySeparatorChar + "bin";
+				return projectBasePath + Path.DirectorySeparatorChar + "bin";
 			}
 		}
 		

@@ -228,6 +228,30 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		void CleanReferencesInOutputPath (string destPath)
+		{
+			foreach (ProjectReference projectReference in ProjectReferences) {
+				if (projectReference.ReferenceType != ReferenceType.Gac) {
+					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
+						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
+						try {
+							if (destinationFileName != referenceFileName) {
+								File.Delete (destinationFileName);
+								if (File.Exists (destinationFileName + ".mdb"))
+									File.Delete (destinationFileName + ".mdb");
+							}
+						} catch (Exception e) {
+							Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
+						}
+					}
+				}
+				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
+					Project p = RootCombine.FindProject (projectReference.Reference);
+					p.CleanReferencesInOutputPath (destPath);
+				}
+			}
+		}
+		
 		public override void Dispose()
 		{
 			base.Dispose ();
@@ -268,9 +292,20 @@ namespace MonoDevelop.Projects
 		public override void Clean ()
 		{
 			isDirty = true;
+			
+			// Delete the generated assembly
 			string file = GetOutputFileName ();
-			if (file != null && File.Exists (file))
-				File.Delete (file);
+			if (file != null) {
+				if (File.Exists (file))
+					File.Delete (file);
+				if (File.Exists (file + ".mdb"))
+					File.Delete (file + ".mdb");
+			}
+
+			// Delete referenced assemblies
+			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
+			if (config != null)
+				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
 		
 		public override ICompilerResult Build (IProgressMonitor monitor)

@@ -1,3 +1,10 @@
+2006-07-11 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectCreateInformation.cs: The bin directory
+	  should be relative to the project directory, not the combine directory.
+	* MonoDevelop.Projects/Project.cs: In Clean(), delete the referenced
+	  assemblies as well as the generated assembly. Fixes bug #78447.
+
 2006-07-10 Alexandre Miguel Pedro Gomes  <alexmipego@gmail.com>
 
 	* MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs: Fix typo.
