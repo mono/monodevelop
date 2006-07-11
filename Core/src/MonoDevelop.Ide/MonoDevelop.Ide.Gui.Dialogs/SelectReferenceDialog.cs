@@ -55,6 +55,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			AddReferenceDialog.Hide ();
 		}
+		
+		public Gtk.Window Window {
+			get { return AddReferenceDialog; }
+		}
 
 		public void SetProject (Project configureProject)
 		{

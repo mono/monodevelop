@@ -1,3 +1,10 @@
+2006-07-11 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs: Show errors
+	  in a modal dialog.
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs: Added getter
+	  for the window.
+
 2006-07-10 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Don't allow

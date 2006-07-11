@@ -71,8 +71,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					System.IO.Path.GetFileName(file),
 					file);
 				} else {
-					// FIXME: il8n this
-					Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("File {0} is not a valid .Net Assembly"), file));
+					Services.MessageService.ShowError (null, GettextCatalog.GetString ("File '{0}' is not a valid .Net Assembly", file), selectDialog.Window, true);
 				}
 			}
 		}
