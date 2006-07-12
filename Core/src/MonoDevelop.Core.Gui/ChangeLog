@@ -1,3 +1,11 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs: Remove debug code.
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Added method for
+	  selecting a panel in the options dialog.
+	* MonoDevelop.Core.Gui.addin.xml: Removed incorrect icon size for
+	  the md-software-update icon.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs: Set the progress

@@ -99,7 +99,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				
 			bool showUpdates = filterComboBox.Active >= 1;
 			bool showNotInstalled = filterComboBox.Active <= 1;
-			Console.WriteLine ("showUpdates:" + showUpdates + " showNotInstalled:" + showNotInstalled);
 			
 			string rep = (string) repoStore.GetValue (iter, 1);
 			

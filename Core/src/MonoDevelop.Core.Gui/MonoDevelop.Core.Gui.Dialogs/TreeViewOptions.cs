@@ -26,6 +26,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		protected ArrayList OptionPanels = new ArrayList ();
 		protected IProperties properties = null;
 		CommandManager cmdManager;
+		Hashtable descriptors = new Hashtable ();
 
 		protected Gtk.TreeStore treeStore;
 		
@@ -113,6 +114,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 				i = treeStore.AppendValues (iter, label, descriptor);
 			}
 
+			descriptors [descriptor.ID] = i;
 			AddChildNodes (customizer, i, descriptor);
 		}
 		
@@ -164,6 +166,13 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 			IDialogPanelDescriptor descriptor = treeStore.GetValue (iter, 1) as IDialogPanelDescriptor;  
 			if (descriptor != null)
 				SetOptionPanelTo (descriptor);
+		}
+		
+		public void SelectPanel (string id)
+		{
+			object it = descriptors [id];
+			if (it != null)
+				SelectSpecificNode ((Gtk.TreeIter) it);
 		}
 		
 		public TreeViewOptions (Gtk.Window parentWindow, IProperties properties, IAddInTreeNode node)
