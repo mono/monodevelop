@@ -1,3 +1,12 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs: Show the
+	  project/solution name in the window title.
+	  
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Set the correct button state when initially showing the panel.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml: Registered a deploy target editor.
