@@ -1,3 +1,12 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Don't reset
+	  sensitive status for array items. It not necessary since those
+	  items are regenerated every time the menu is shown, and doing
+	  it causes some status updating problems.
+	* MonoDevelop.Components.Commands/CommandInfo.cs: Store enabled and 
+	  checked parameters.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Makefile.am: Install the library to the add-ins dir.

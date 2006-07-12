@@ -73,10 +73,12 @@ namespace MonoDevelop.Components.Commands
 			
 			((ICommandUserItem)this).Update ();
 			
-			// Make sure the accelerators allways work for this item
-			// while the menu is hidden
-			Sensitive = true;
-			Visible = true;
+			if (!isArrayItem) {
+				// Make sure the accelerators allways work for this item
+				// while the menu is hidden
+				Sensitive = true;
+				Visible = true;
+			}
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton ev)

@@ -64,6 +64,8 @@ namespace MonoDevelop.Components.Commands
 		public CommandInfo (string text, bool enabled, bool checkd)
 		{
 			Text = text;
+			this.enabled = enabled;
+			this.checkd = checkd;
 		}
 		
 		public string Text {
