@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 		{
 			this.project = project;
 			this.configurationNode = configurationNode;
-			this.Title = GettextCatalog.GetString ("Project Options");
+			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
 			
 			properties = new DefaultProperties();
 			properties.SetProperty("Project", project);

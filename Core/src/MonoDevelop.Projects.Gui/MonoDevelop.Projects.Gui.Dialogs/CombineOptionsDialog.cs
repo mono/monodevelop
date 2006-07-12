@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		{
 			this.combine = combine;
 			this.configurationNode = configurationNode;
-			this.Title = GettextCatalog.GetString ("Solution Options");
+			this.Title = GettextCatalog.GetString ("Solution Options") + " - " + combine.Name;
 			
 			configData = ConfigurationData.Build (combine);
 			configData.ConfigurationsChanged += new EventHandler (OnConfigChanged);

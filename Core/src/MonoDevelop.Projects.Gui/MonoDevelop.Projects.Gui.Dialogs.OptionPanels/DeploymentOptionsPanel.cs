@@ -98,6 +98,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				};
 				
 				FillTargets ();
+				UpdateButtons ();
 			}
 			
 			void FillTargets ()
