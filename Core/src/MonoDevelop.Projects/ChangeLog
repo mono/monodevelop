@@ -1,3 +1,10 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Project.cs: In CheckNeedsBuild, always
+	  check for modified files. We can't rely on the watcher for now,
+	  since it's not scanning project subdirectories.
+	* MonoDevelop.Projects.Parser/LocalVariable.cs: Added Region property.
+
 2006-07-11 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectCreateInformation.cs: The bin directory

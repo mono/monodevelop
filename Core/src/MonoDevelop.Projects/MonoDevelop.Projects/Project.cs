@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects
 		protected DeployInformation deployInformation = new DeployInformation();
 		
 		bool isDirty = false;
-		bool filesChecked;
 		
 		private FileSystemWatcher projectFileWatcher;
 		
@@ -522,19 +521,15 @@ namespace MonoDevelop.Projects
 				return;
 			}
 			
-			if (!filesChecked) {
-				foreach (ProjectFile file in ProjectFiles) {
-					if (file.BuildAction == BuildAction.Exclude) continue;
-					FileInfo finfo = new FileInfo (file.FilePath);
-					if (finfo.Exists && finfo.LastWriteTime > tim) {
-						isDirty = true;
-						return;
-					}
+			foreach (ProjectFile file in ProjectFiles) {
+				if (file.BuildAction == BuildAction.Exclude) continue;
+				FileInfo finfo = new FileInfo (file.FilePath);
+				if (finfo.Exists && finfo.LastWriteTime > tim) {
+					isDirty = true;
+					return;
 				}
-				
-				filesChecked = true;
 			}
-
+			
 			foreach (ProjectReference pref in ProjectReferences) {
 				if (pref.ReferenceType == ReferenceType.Project && RootCombine != null) {
 					Project rp = RootCombine.FindProject (pref.Reference);
@@ -544,7 +539,6 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
-			
 		}
 		
 		protected virtual DateTime GetLastBuildTime ()

@@ -37,12 +37,14 @@ namespace MonoDevelop.Projects.Parser
 		string name;
 		string documentation;
 		IReturnType returnType;
+		IRegion region;
 		
-		public LocalVariable (string name, IReturnType type, string documentation)
+		public LocalVariable (string name, IReturnType type, string documentation, IRegion region)
 		{
 			this.name = name;
 			this.documentation = documentation;
 			this.returnType = type;
+			this.region = region;
 		}
 		
 		public string Name {
@@ -51,6 +53,10 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IReturnType ReturnType {
 			get { return returnType; }
+		}
+		
+		public IRegion Region {
+			get { return region; }
 		}
 
 		public string Documentation {
