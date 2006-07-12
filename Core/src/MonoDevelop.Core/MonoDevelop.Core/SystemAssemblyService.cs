@@ -82,8 +82,8 @@ namespace MonoDevelop.Core
 		// (it returns the full name of the installed assembly).
 		public string FindInstalledAssembly (string fullname)
 		{
-			fullname = NormalizeAsmName (fullname);
 			Initialize ();
+			fullname = NormalizeAsmName (fullname);
 			if (assemblyFullNameToPath.Contains (fullname))
 				return fullname;
 			
@@ -100,6 +100,8 @@ namespace MonoDevelop.Core
 	
 		public string GetAssemblyLocation (string assemblyName)
 		{
+			Initialize ();
+			
 			assemblyName = NormalizeAsmName (assemblyName); 
 			
 			string path = (string)assemblyFullNameToPath [assemblyName];
@@ -173,6 +175,8 @@ namespace MonoDevelop.Core
 		// in the specified target CLR version, or null if it doesn't exist in that version.
 		public string GetAssemblyNameForVersion (string fullName, ClrVersion targetVersion)
 		{
+			Initialize ();
+
 			fullName = NormalizeAsmName (fullName);
 			string package = GetPackageFromFullName (fullName);
 			if (package != "MONO-SYSTEM")
@@ -190,6 +194,8 @@ namespace MonoDevelop.Core
 		
 		public string GetAssemblyFullName (string assemblyName)
 		{
+			Initialize ();
+			
 			assemblyName = NormalizeAsmName (assemblyName);
 			
 			// Fast path for known assemblies.
