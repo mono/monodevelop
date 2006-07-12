@@ -260,12 +260,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Expanded = true;
 		}
 		
-		[CommandHandler (ProjectCommands.Options)]
-		public void OnCombineOptions ()
-		{
-			IdeApp.ProjectOperations.ShowOptions ((Combine) CurrentNode.DataItem);
-		}
-		
 		[CommandHandler (SearchCommands.FindInFiles)]
 		public void OnFindInFiles ()
 		{

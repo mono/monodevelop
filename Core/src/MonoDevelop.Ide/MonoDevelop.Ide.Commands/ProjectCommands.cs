@@ -53,7 +53,8 @@ namespace MonoDevelop.Ide.Commands
 		Clean,
 		CleanSolution,
 		LocalCopyReference,
-		DeployTargetList
+		DeployTargetList,
+		ConfigureDeployTargets
 	}
 	
 	internal class RunHandler: CommandHandler
@@ -387,28 +388,55 @@ namespace MonoDevelop.Ide.Commands
 		{
 			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 			if (ce != null) {
-				foreach (DeployTarget dt in ce.DeployTargets) {
-					if (dt is UnknownDeployTarget)
-						continue;
+				if (ce.DeployTargets.Count > 0) {
+					foreach (DeployTarget dt in ce.DeployTargets) {
+						if (dt is UnknownDeployTarget)
+							continue;
+						CommandInfo cinfo = new CommandInfo ();
+						cinfo.Text = dt.Name;
+						cinfo.Icon = dt.DeployHandler.Icon;
+						info.Add (cinfo, dt);
+					}
+				} else {
 					CommandInfo cinfo = new CommandInfo ();
-					cinfo.Text = dt.Name;
-					cinfo.Icon = dt.DeployHandler.Icon;
-					info.Add (cinfo, dt);
+					cinfo.Text = GettextCatalog.GetString ("No deploy targets available");
+					cinfo.Enabled = false;
+					info.Add (cinfo, null);
 				}
 			}
 		}
 	}
 	
-	internal class GenerateMakefilesHandler: CommandHandler
+	internal class ConfigureDeployTargetsHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IdeApp.ProjectOperations.CurrentOpenCombine.GenerateMakefiles ();
-			}
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (ce != null)
+				IdeApp.ProjectOperations.ShowOptions (ce, "Deployment");
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
 		}
 	}
-
+	
+	internal class CombineEntryOptionsHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (ce != null)
+				IdeApp.ProjectOperations.ShowOptions (ce);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+		}
+	}
+	
 	internal class GenerateProjectDocumentation : CommandHandler
 	{
 		protected override void Run ()

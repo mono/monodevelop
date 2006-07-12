@@ -145,6 +145,7 @@
 				description = "Remove an item from the project"
 				icon  = "gtk-delete" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
+				defaultHandler = "MonoDevelop.Ide.Commands.CombineEntryOptionsHandler"
 				_label = "Options..." 
 				description = "Show options window"
 				icon  = "md-properties-icon" />
@@ -238,6 +239,9 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.DeployTargetListHandler"
 				type="array"
 				_label = "Deploy target list" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets"
+				defaultHandler = "MonoDevelop.Ide.Commands.ConfigureDeployTargetsHandler"
+				_label = "Configure deploy targets..." />
 
 
 		<!-- FileCommands -->
@@ -478,6 +482,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<ItemSet id = "CombineDeployMenu" _label = "Deploy" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
+			<SeparatorItem id = "DeploySeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
@@ -825,7 +831,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		
-		<ItemSet id = "Run" _label = "_Run">
+		<ItemSet id = "Run" _label = "_Project">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" />
@@ -833,9 +839,14 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+			<SeparatorItem id = "DeploySeparator" />
+			<ItemSet id = "DeployTargets" _label = "Deploy">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
+			</ItemSet>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
+<!--			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />
 			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.Pause" />
@@ -847,6 +858,8 @@
 			<SeparatorItem id = "Separator4" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ToggleBreakpoint" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.ClearAllBreakpoints" />
+-->			<SeparatorItem id = "OptionsSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 		</ItemSet>
         
 		<ItemSet id = "Tools" _label = "_Tools">

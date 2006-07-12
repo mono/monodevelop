@@ -1,3 +1,22 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Base.glade: Fix some accelerators in the new project dialog.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Add support for
+	  "Go to declaration" for local variables.
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Added command for
+	  configuring deploy targets.
+	  
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Moved
+	  handling of command ProjectCommands.Options to a global handler,
+	  so it can be used in the main menu.
+	  
+	* MonoDevelop.Ide.addin.xml: Added new ConfigureDeployTargets command.
+	  Renamed Run menu to Project, which I think makes more sense.
+	  Commented out currently unused debugger commands.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: In ShowOptions, support
+	  showing a specific options panel.
+
 2006-07-11 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Show startup

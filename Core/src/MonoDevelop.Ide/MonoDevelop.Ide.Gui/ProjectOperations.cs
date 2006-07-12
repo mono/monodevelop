@@ -401,6 +401,11 @@ namespace MonoDevelop.Ide.Gui
 
 		public void ShowOptions (CombineEntry entry)
 		{
+			ShowOptions (entry, null);
+		}
+		
+		public void ShowOptions (CombineEntry entry, string panelId)
+		{
 			if (entry is Project) {
 				Project selectedProject = (Project) entry;
 				
@@ -408,6 +413,9 @@ namespace MonoDevelop.Ide.Gui
 				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
 				
 				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode);
+				if (panelId != null)
+					optionsDialog.SelectPanel (panelId);
+					
 				if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
 					selectedProject.NeedsBuilding = true;
 				}
@@ -418,6 +426,8 @@ namespace MonoDevelop.Ide.Gui
 				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
 				
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
+				if (panelId != null)
+					optionsDialog.SelectPanel (panelId);
 				optionsDialog.Run ();
 			}
 			
