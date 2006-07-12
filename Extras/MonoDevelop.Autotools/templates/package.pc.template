@@ -1,6 +1,7 @@
 prefix=@prefix@
 exec_prefix=${prefix}
 pkglibdir=@libdir@/@PACKAGE@
+Libraries= %%LIBRARIES%%
 
 Name: %%NAME%%
 Description: %%DESCRIPTION%%
