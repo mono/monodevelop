@@ -61,7 +61,8 @@ namespace CSharpBinding.Parser
 				ArrayList methods = resolver.SearchMethod(type, id);
 				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
-					return null;
+					// It may be a call to a constructor
+					return resolver.SearchType (id, resolver.CompilationUnit);
 				}
 				// TODO: Find the right method
 				return methods[0];
@@ -194,20 +195,26 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
-			if (type == null) {
+			object ob = indexerExpression.TargetObject.AcceptVisitor(this, data);
+			IReturnType type = ob as IReturnType;
+			if (type != null) {
+				if (type.ArrayDimensions == null || type.ArrayDimensions.Length == 0) {
+					if (indexerExpression.TargetObject is ThisReferenceExpression) {
+						return null;
+					}
+					ArrayList indexer = resolver.SearchIndexer(type);
+					if (indexer.Count == 0) {
+						return null;
+					}
+					// TODO: get the right indexer
+					return indexer[0];
+				}
 				return null;
 			}
-			if (type.ArrayDimensions == null || type.ArrayDimensions.Length == 0) {
-				if (indexerExpression.TargetObject is ThisReferenceExpression) {
-					return null;
-				}
-				ArrayList indexer = resolver.SearchIndexer(type);
-				if (indexer.Count == 0) {
-					return null;
-				}
-				// TODO: get the right indexer
-				return indexer[0];
+			
+			IClass cls = ob as IClass;
+			if (cls != null) {
+				return new ReturnType (cls.FullyQualifiedName, new int[] { 0 }, 0);
 			}
 			
 			return null;
@@ -232,12 +239,12 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			return null;
+			return resolver.SearchType (objectCreateExpression.CreateType.SystemType, resolver.CompilationUnit);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			return null;
+			return resolver.SearchType (arrayCreateExpression.CreateType.SystemType, resolver.CompilationUnit);
 		}
 		
 		public override object Visit(DirectionExpression directionExpression, object data)

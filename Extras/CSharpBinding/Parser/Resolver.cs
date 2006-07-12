@@ -23,7 +23,8 @@ namespace CSharpBinding.Parser
 	class Resolver
 	{
 		IParserContext parserContext;
-		ICompilationUnit cu;
+		ICompilationUnit currentUnit;
+		string currentFile;
 		IClass callingClass;
 		LookupTableVisitor lookupTableVisitor;
 		
@@ -40,7 +41,7 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				return cu;
+				return currentUnit;
 			}
 		}
 		
@@ -125,8 +126,10 @@ namespace CSharpBinding.Parser
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
-			if (cu != null) {
+			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			currentFile = fileName;
+			
+			if (currentUnit != null) {
 				callingClass = GetInnermostClass();
 //				Console.WriteLine("CallingClass is " + callingClass == null ? "null" : callingClass.Name);
 			}
@@ -144,8 +147,8 @@ namespace CSharpBinding.Parser
 				fileCompilationUnit = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag 
 					as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 				lookupTableVisitor.Visit(fileCompilationUnit,null);
-				cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
-				if (cu != null) {
+				currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+				if (currentUnit != null) {
 					callingClass = GetInnermostClass();
 				}
 				type=expr.AcceptVisitor(typeVisitor,null) as IReturnType;
@@ -161,7 +164,8 @@ namespace CSharpBinding.Parser
 		public IClass ResolveExpressionType (ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit, Expression expr, int line, int col)
 		{
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			currentFile = null;
 			
 			this.caretLine = line;
 			this.caretColumn = col;
@@ -173,7 +177,7 @@ namespace CSharpBinding.Parser
 			TypeVisitor typeVisitor = new TypeVisitor (this);
 			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
 			if (type != null)
-				return SearchType (type.FullyQualifiedName, cu);
+				return SearchType (type.FullyQualifiedName, currentUnit);
 			else
 				return null;
 		}
@@ -182,6 +186,7 @@ namespace CSharpBinding.Parser
 		{
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
 			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			currentFile = fileName;
 			return ResolveIdentifier (fileCompilationUnit, id, line, col);
 		}
 		
@@ -189,9 +194,11 @@ namespace CSharpBinding.Parser
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(id));
 			Expression expr = p.ParseExpression ();
+			if (expr == null)
+				return null;
 			
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			
 			this.caretLine = line;
 			this.caretColumn = col;
@@ -258,10 +265,10 @@ namespace CSharpBinding.Parser
 			if (type == null)
 				return null;
 
-			IClass returnClass = SearchType (type.FullyQualifiedName, cu);
+			IClass returnClass = SearchType (type.FullyQualifiedName, currentUnit);
 			if (returnClass == null) {
 				// Try if type is Namespace:
-				string n = SearchNamespace(type.FullyQualifiedName, cu);
+				string n = SearchNamespace(type.FullyQualifiedName, currentUnit);
 				if (n == null) {
 					return null;
 				}
@@ -510,7 +517,7 @@ namespace CSharpBinding.Parser
 			if (type == null || memberName == null || memberName == "")
 				return false;
 			
-			curType = SearchType (type.FullyQualifiedName, cu);
+			curType = SearchType (type.FullyQualifiedName, currentUnit);
 			if (curType == null)
 				return false;
 
@@ -599,37 +606,22 @@ namespace CSharpBinding.Parser
 			return between.Y < end.Y || between.X <= end.X;
 		}
 		
-		ReturnType SearchVariable(string name)
+		LocalVariable SearchVariable (string name)
 		{
-//			Console.WriteLine("Searching Variable");
-//			
-//			Console.WriteLine("LookUpTable has {0} entries", lookupTableVisitor.variables.Count);
-//			Console.WriteLine("Listing Variables:");
-//			IDictionaryEnumerator enumerator = lookupTableVisitor.variables.GetEnumerator();
-//			while (enumerator.MoveNext()) {
-//				Console.WriteLine(enumerator.Key);
-//			}
-//			Console.WriteLine("end listing");
 			System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.LocalLookupVariable> variables;
 			if (!lookupTableVisitor.Variables.TryGetValue (name, out variables) || variables.Count <= 0) {
-//				Console.WriteLine(name + " not in LookUpTable");
 				return null;
 			}
 			
-			ReturnType found = null;
 			foreach (LocalLookupVariable v in variables) {
-//				Console.WriteLine("Position: ({0}/{1})", v.StartPos, v.EndPos);
 				if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-					found = new ReturnType(v.TypeRef);
-//					Console.WriteLine("Variable found");
-					break;
+					IClass c = SearchType (v.TypeRef.SystemType, CompilationUnit);
+					DefaultRegion reg = new DefaultRegion (v.StartPos, v.EndPos);
+					reg.FileName = currentFile;
+					return new LocalVariable (name, new ReturnType (v.TypeRef, c), "", reg);
 				}
 			}
-			if (found == null) {
-//				Console.WriteLine("No Variable found");
-				return null;
-			}
-			return found;
+			return null;
 		}
 		
 		/// <remarks>
@@ -638,9 +630,9 @@ namespace CSharpBinding.Parser
 		public ILanguageItem IdentifierLookup (string id)
 		{
 			// try if it exists a variable named id
-			ReturnType variable = SearchVariable (id);
+			LocalVariable variable = SearchVariable (id);
 			if (variable != null) {
-				return new LocalVariable (id, variable, "");
+				return variable;
 			}
 			
 			if (callingClass == null) {
@@ -702,10 +694,10 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine("name == " + typeName);
 			
 			// try if it exists a variable named typeName
-			ReturnType variable = SearchVariable(typeName);
+			LocalVariable variable = SearchVariable (typeName);
 			if (variable != null) {
 				showStatic = false;
-				return variable;
+				return variable.ReturnType;
 			}
 //			Console.WriteLine("No Variable found");
 			
@@ -854,9 +846,7 @@ namespace CSharpBinding.Parser
 //				Console.WriteLine("Found!");
 				return c;
 			}
-			Console.WriteLine("No FullName");
 			if (unit != null) {
-				Console.WriteLine(unit.Usings.Count + " Usings");
 				foreach (IUsing u in unit.Usings) {
 					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
 //						Console.WriteLine("In UsingRegion");
@@ -915,8 +905,8 @@ namespace CSharpBinding.Parser
 		/// </remarks>
 		IClass GetInnermostClass()
 		{
-			if (cu != null) {
-				foreach (IClass c in cu.Classes) {
+			if (currentUnit != null) {
+				foreach (IClass c in currentUnit.Classes) {
 					if (c != null && ((c.Region != null && c.Region.IsInside(caretLine, caretColumn)) ||
 						              (c.BodyRegion != null && c.BodyRegion.IsInside(caretLine, caretColumn))))
 					{
@@ -952,8 +942,8 @@ namespace CSharpBinding.Parser
 		ClassCollection GetOuterClasses()
 		{
 			ClassCollection classes = new ClassCollection();
-			if (cu != null) {
-				foreach (IClass c in cu.Classes) {
+			if (currentUnit != null) {
+				foreach (IClass c in currentUnit.Classes) {
 					if (c != null && c.Region != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
 						if (c != GetInnermostClass()) {
 							GetOuterClasses(classes, c);
@@ -1009,8 +999,9 @@ namespace CSharpBinding.Parser
 			TypeVisitor typeVisitor = new TypeVisitor (this);
 
 			CSharpVisitor csharpVisitor = new CSharpVisitor ();
-			cu = (ICompilationUnit)csharpVisitor.Visit (fcu, null);
-			if (cu != null) {
+			currentUnit = (ICompilationUnit)csharpVisitor.Visit (fcu, null);
+			currentFile = fileName;
+			if (currentUnit != null) {
 				callingClass = GetInnermostClass ();
 			}
 
@@ -1018,9 +1009,9 @@ namespace CSharpBinding.Parser
 			if (type == null || type.PointerNestingLevel != 0) {
 				fcu = parserContext.ParseFile (fileName, fileContent).MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 				lookupTableVisitor.Visit (fcu, null);
-				cu = (ICompilationUnit)csharpVisitor.Visit (fcu, null);
+				currentUnit = (ICompilationUnit)csharpVisitor.Visit (fcu, null);
 
-				if (cu != null) {
+				if (currentUnit != null) {
 					callingClass = GetInnermostClass ();
 				}
 				type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
@@ -1030,8 +1021,8 @@ namespace CSharpBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				type = new ReturnType ("System.Array");
 
-			IClass returnClass = SearchType (type.FullyQualifiedName, cu);
-//			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, cu);
+			IClass returnClass = SearchType (type.FullyQualifiedName, currentUnit);
+//			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, currentUnit);
 			if (returnClass == null)
 				return null;
 
@@ -1059,8 +1050,9 @@ namespace CSharpBinding.Parser
 			lookupTableVisitor = new LookupTableVisitor(StringComparer.InvariantCulture);
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
-			if (cu != null) {
+			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			currentFile = fileName;
+			if (currentUnit != null) {
 				callingClass = GetInnermostClass();
 				Console.WriteLine("CallingClass is " + (callingClass == null ? "null" : callingClass.Name));
 			}
@@ -1080,7 +1072,7 @@ namespace CSharpBinding.Parser
 			}
 			string n = "";
 			result.AddRange(parserContext.GetNamespaceContents (n, true));
-			foreach (IUsing u in cu.Usings) {
+			foreach (IUsing u in currentUnit.Usings) {
 				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
 					foreach (string name in u.Usings) {
 						result.AddRange(parserContext.GetNamespaceContents (name, true));

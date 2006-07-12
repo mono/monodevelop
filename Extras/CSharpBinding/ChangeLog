@@ -1,3 +1,14 @@
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Use a more meaningful name for the "current unit".
+	  Store the name of the file being resolved in currentFile.
+	  Changed SearchVariable, so it now returns a LocalVariable object,
+	  with all information, including the region.
+	* Parser/LanguageItemVisitor.cs: Fix crash when processing indexers.
+	  Return valid values for object creation expressions.
+	* Parser/SharpDevelopTree/ReturnType.cs: Added constructor which
+	  takes a properly resolved class as parameter.
+
 2006-07-10 Alejandro Serrano <trupill@yahoo.es>
  
 	* CSharpAmbience.cs: Add support for generics ambience.

@@ -36,9 +36,13 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			this.pointerNestingLevel = pointerNestingLevel;
 		}
 		
-		public ReturnType(ICSharpCode.NRefactory.Parser.AST.TypeReference type)
+		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type): this (type, null)
 		{
-			base.FullyQualifiedName  = type.SystemType;
+		}
+		
+		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type, IClass resolvedClass)
+		{
+			base.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : type.SystemType;
 			base.arrayDimensions     = type.RankSpecifier == null ? new int[] { } : type.RankSpecifier;
 			base.pointerNestingLevel = type.PointerNestingLevel;
 		}
