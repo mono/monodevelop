@@ -39,7 +39,7 @@ make install
 Dependencies
 ------------
 Mono >= 1.1.4
-Gtk# >= 2.3.90
+Gtk# >= 2.4.2
 monodoc >= 1.0
 gecko-sharp >= 0.10
 gtksourceview-sharp >= 0.10
