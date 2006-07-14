@@ -1,3 +1,9 @@
+2006-07-14 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: When calling 
+	  g_utf8_validate, use -1 as byte count, so it checks the whole text. 
+	  Patch by John Luke. Fixes bug #78707.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Updated versions.

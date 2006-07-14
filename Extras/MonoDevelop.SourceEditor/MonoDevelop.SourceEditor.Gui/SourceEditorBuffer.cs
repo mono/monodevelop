@@ -277,7 +277,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		//
 		public void LoadText (string text)
 		{
-			if (g_utf8_validate (text, text.Length, IntPtr.Zero))
+			if (g_utf8_validate (text, -1, IntPtr.Zero))
 			{
 				using (NoUndo n = new NoUndo (this))
 					Text = text;
