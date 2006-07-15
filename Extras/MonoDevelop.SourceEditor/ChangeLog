@@ -1,3 +1,11 @@
+2006-07-15  John Luke  <john.luke@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs:
+	rename HasSelection to _HasSelection so it wont conflict with
+	gtk 2.10 version
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:
+	disambiguate PrintJob for gtk 2.10
+
 2006-07-14 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: When calling 

@@ -23,7 +23,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public SourceEditorBuffer Buffer;
 		public SourceEditorView View;
 		public SourceEditorDisplayBindingWrapper DisplayBinding;
-		protected PrintJob printJob;
+		protected Gnome.PrintJob printJob;
 		protected PrintDialog printDialog;
 		
 		static Gdk.Pixbuf dragIconPixbuf;

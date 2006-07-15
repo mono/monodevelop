@@ -320,7 +320,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 
 #region IClipboardHandler
-		bool HasSelection
+		// FIXME: remove when we depend on gtk > 2.10
+		bool _HasSelection
 		{
 			get {
 				TextIter dummy, dummy2;
@@ -330,7 +331,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public string GetSelectedText ()
 		{
-			if (HasSelection)
+			if (_HasSelection)
 			{
 				TextIter select1, select2;
 				GetSelectionBounds (out select1, out select2);
@@ -369,13 +370,13 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void IClipboardHandler.Cut (object sender, EventArgs e)
 		{
-			if (HasSelection)
+			if (_HasSelection)
 				CutClipboard (clipboard, true);
 		}
 		
 		void IClipboardHandler.Copy (object sender, EventArgs e)
 		{
-			if (HasSelection)
+			if (_HasSelection)
 				CopyClipboard (clipboard);
 		}
 		
@@ -389,7 +390,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void IClipboardHandler.Delete (object sender, EventArgs e)
 		{
-			if (HasSelection)
+			if (_HasSelection)
 				DeleteSelection (true, true);
 		}
 		
@@ -706,7 +707,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		public int GetLowerSelectionBounds ()
 		{
-			if (HasSelection)
+			if (_HasSelection)
 			{
 				TextIter select1, select2;
 				GetSelectionBounds (out select1, out select2);
