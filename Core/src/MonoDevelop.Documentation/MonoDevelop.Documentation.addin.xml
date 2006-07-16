@@ -1,7 +1,7 @@
 <AddIn id          = "MonoDevelop.Documentation"
        name        = "Documentation Browser"
        author      = "Todd Berman"
-       copyright   = "GPL"
+       copyright   = "MIT X11"
        url         = "http://www.monodevelop.com"
        description = "Integrates the Mono documentation browser (Monodoc) into the MonoDevelop IDE"
 	   category    = "IDE extensions"
