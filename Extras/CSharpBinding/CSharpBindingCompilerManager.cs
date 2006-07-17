@@ -49,17 +49,17 @@ namespace CSharpBinding
 						foreach (string fileName in lib.GetReferencedFileNames ()) {
 							switch (lib.ReferenceType) {
 							case ReferenceType.Gac:
-								string pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
-								if (pkg.Trim () == String.Empty) {
+								SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
+								if (pkg == null) {
 									string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
 									monitor.ReportWarning (msg);
 									continue;
 								}
-								if (pkg == "MONO-SYSTEM") {
+								if (pkg.IsCorePackage) {
 									writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
-								} else if (!pkg_references.Contains (pkg)) {
-									pkg_references.Add (pkg);
-									writer.WriteLine ("\"-pkg:" + pkg + "\"");
+								} else if (!pkg_references.Contains (pkg.Name)) {
+									pkg_references.Add (pkg.Name);
+									writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
 								}
 								break;
 							default:

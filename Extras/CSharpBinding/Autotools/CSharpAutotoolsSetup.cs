@@ -1,6 +1,7 @@
 
 using System;
 using System.IO;
+using MonoDevelop.Core;
 using MonoDevelop.Autotools;
 using MonoDevelop.Projects;
 using CSharpBinding;
@@ -13,8 +14,12 @@ namespace CSharpBinding.Autotools
 		{
 			if ( !this.CanDeploy ( project ) )
 				throw new Exception ( "Not a deployable project." );
-			
-			return "mcs";
+
+			DotNetProject dp = project as DotNetProject;
+			if (dp != null && dp.ClrVersion == ClrVersion.Net_2_0)
+				return "gmcs";
+			else
+				return "mcs";
 		}
 
 		public string GetCompilerFlags ( Project project, string configuration )

@@ -1,3 +1,8 @@
+2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Autotools/CSharpAutotoolsSetup.cs: Support compilation with gmcs.
+	* CSharpBindingCompilerManager.cs: Track changes in SystemAssemblyService.
+
 2006-07-12 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Use a more meaningful name for the "current unit".
