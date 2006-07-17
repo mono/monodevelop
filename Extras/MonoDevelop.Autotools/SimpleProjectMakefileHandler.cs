@@ -163,17 +163,17 @@ namespace MonoDevelop.Autotools
 					if(reference.ReferenceType == ReferenceType.Gac) 
 					{
 						// Get pkg-config keys
-						String pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
-						if (pkg != "MONO-SYSTEM") 
+						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
+						if (pkg != null && !pkg.IsCorePackage) 
 						{
 							if ( pkgs.Contains(pkg) ) continue;
 							pkgs.Add(pkg);
 
 							references.WriteLine (" \\");
 							references.Write ("\t$(");
-							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg));
+							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg.Name));
 							references.Write ("_LIBS)");
-							ctx.AddRequiredPackage (pkg);
+							ctx.AddRequiredPackage (pkg.Name);
 						} 
 						else 
 						{
