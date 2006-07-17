@@ -12,6 +12,9 @@ namespace MonoDevelop.Core
 	{
 		Hashtable assemblyPathToPackage = new Hashtable ();
 		Hashtable assemblyFullNameToPath = new Hashtable ();
+		Hashtable packagesHash = new Hashtable ();
+		ArrayList packages = new ArrayList ();
+		
 		object initLock = new object ();
 		bool initialized;
 		
@@ -38,35 +41,26 @@ namespace MonoDevelop.Core
 			if (clrVersion == ClrVersion.Default)
 				clrVersion = currentVersion;
 
-			string systemPackage = "MONO-SYSTEM-" + clrVersion;
-			
 			ArrayList list = new ArrayList ();
 			foreach (DictionaryEntry e in assemblyPathToPackage) {
-				string val = ((string)e.Value);
-				if (val.StartsWith ("MONO-SYSTEM") && val != systemPackage)
+				SystemPackage pkg = (SystemPackage) e.Value;
+				if (pkg.TargetVersion != ClrVersion.Default && pkg.TargetVersion != clrVersion)
 					continue;
 				list.Add (e.Key);
 			}
 			return list;
 		}
 
-		public string GetPackageFromFullName (string fullname)
+		public SystemPackage GetPackageFromFullName (string fullname)
 		{
 			Initialize ();
 			
 			fullname = NormalizeAsmName (fullname);
 			string path = (string)assemblyFullNameToPath[fullname];
 			if (path == null)
-				return String.Empty;
+				return null;
 
-			string pkg = (string)assemblyPathToPackage[path];
-			if (pkg != null) {
-				if (pkg.StartsWith ("MONO-SYSTEM-"))
-					return "MONO-SYSTEM";
-				else
-					return pkg;
-			} else
-				return String.Empty;
+			return (SystemPackage) assemblyPathToPackage[path];
 		}
 		
 		string NormalizeAsmName (string name)
@@ -178,15 +172,14 @@ namespace MonoDevelop.Core
 			Initialize ();
 
 			fullName = NormalizeAsmName (fullName);
-			string package = GetPackageFromFullName (fullName);
-			if (package != "MONO-SYSTEM")
+			SystemPackage package = GetPackageFromFullName (fullName);
+			if (package == null || !package.IsCorePackage)
 				return fullName;
 			
 			string fname = Path.GetFileName ((string) assemblyFullNameToPath [fullName]);
-			string targetPackage = "MONO-SYSTEM-" + targetVersion;
 			foreach (DictionaryEntry e in assemblyFullNameToPath) {
-				string rpack = (string) assemblyPathToPackage [e.Value];
-				if (rpack == targetPackage && Path.GetFileName ((string)e.Value) == fname)
+				SystemPackage rpack = (SystemPackage) assemblyPathToPackage [e.Value];
+				if (rpack.IsCorePackage && rpack.TargetVersion == targetVersion && Path.GetFileName ((string)e.Value) == fname)
 					return (string) e.Key;
 			}
 			return null;
@@ -288,14 +281,27 @@ namespace MonoDevelop.Core
 	
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
 		{
+			SystemPackage package = new SystemPackage ();
+			ArrayList list = new ArrayList ();
+			
 			string dir = Path.Combine (prefix, version);
-			foreach (string assembly in Directory.GetFiles (dir, "*.dll"))
-				AddAssembly (assembly, "MONO-SYSTEM-" + ver);
+			foreach (string assembly in Directory.GetFiles (dir, "*.dll")) {
+				AddAssembly (assembly, package);
+				list.Add (assembly);
+			}
+
+			package.Initialize ("mono", version, "The Mono runtime", (string[]) list.ToArray (typeof(string)), ver);
+			packages.Add (package);
 		}
 		
 		private void ParsePCFile (string pcfile)
 		{
 			ArrayList fullassemblies = null;
+			string version = "";
+			string desc = "";
+			
+			SystemPackage package = new SystemPackage ();
+			
 			using (StreamReader reader = new StreamReader (pcfile)) {
 				string line;
 				while ((line = reader.ReadLine ()) != null) {
@@ -308,18 +314,33 @@ namespace MonoDevelop.Core
 							fullassemblies = GetAssembliesWithoutLibInfo (choppedLine, pcfile);
 						}
 					}
+					else if (lowerLine.StartsWith ("version:")) {
+						version = line.Substring (8).Trim ();
+					}
+					else if (lowerLine.StartsWith ("description:")) {
+						version = line.Substring (12).Trim ();
+					}
 				}
 			}
 	
 			if (fullassemblies == null)
 				return;
 	
+			// Don't register the package twice
+			string pname = Path.GetFileNameWithoutExtension (pcfile);
+			if (packagesHash.Contains (pname))
+				return;
+			
 			foreach (string assembly in fullassemblies) {
-				AddAssembly (assembly, pcfile);
+				AddAssembly (assembly, package);
 			}
+
+			package.Initialize (pname, version, desc, (string[]) fullassemblies.ToArray (typeof(string)), ClrVersion.Default);
+			packages.Add (package);
+			packagesHash [pname] = package;
 		}
 
-		private void AddAssembly (string assemblyfile, string pcfile)
+		private void AddAssembly (string assemblyfile, SystemPackage package)
 		{
 			if (!File.Exists (assemblyfile))
 				return;
@@ -327,7 +348,7 @@ namespace MonoDevelop.Core
 			try {
 				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyfile);
 				assemblyFullNameToPath[NormalizeAsmName (an.FullName)] = assemblyfile;
-				assemblyPathToPackage[assemblyfile] = Path.GetFileNameWithoutExtension (pcfile);
+				assemblyPathToPackage[assemblyfile] = package;
 			} catch { 
 			}
 		}
