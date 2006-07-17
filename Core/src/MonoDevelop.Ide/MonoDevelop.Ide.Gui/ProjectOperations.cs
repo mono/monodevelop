@@ -390,15 +390,6 @@ namespace MonoDevelop.Ide.Gui
 				openCombine.RenameFileInProjects (e.SourceFile, e.TargetFile);
 		}
 		
-		public void Deploy (Project project)
-		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if (doc.IsDirty)
-					doc.Save();
-			}
-			DeployInformation.Deploy (project);
-		}
-
 		public void ShowOptions (CombineEntry entry)
 		{
 			ShowOptions (entry, null);

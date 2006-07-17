@@ -38,10 +38,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		PixbufList cat_imglist;
 
 		TreeStore catStore;
-		TreeStore templateStore;
 		Gtk.TreeView catView;
-		Gtk.TreeView templateView;
-		IconView TemplateView;
+		IconView iconView;
 		Button okButton;
 		Button cancelButton;
 		Label infoLabel;
@@ -136,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
 					if (item.Template.Id == id) {
 						catView.Selection.SelectIter (iter);
-						TemplateView.CurrentlySelected = item;
+						iconView.CurrentlySelected = item;
 						return true;
 					}
 				}
@@ -289,9 +287,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void FillCategoryTemplates (TreeIter iter)
 		{
-			TemplateView.Clear ();
+			iconView.Clear ();
 			foreach (TemplateItem item in (ArrayList)(catStore.GetValue (iter, 2))) {
-				TemplateView.AddIcon (new Gtk.Image (Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
+				iconView.AddIcon (new Gtk.Image (Services.Resources.GetBitmap (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
 			}
 		}
 		
@@ -308,18 +306,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void UpdateOkStatus ()
 		{
-			TemplateItem sel = (TemplateItem) TemplateView.CurrentlySelected;
-			if (sel == null)
-				return;
-			
-			FileTemplate item = sel.Template;
-			
+			try {
+				TemplateItem sel = (TemplateItem) iconView.CurrentlySelected;
+				if (sel == null)
+					return;
+				
+				FileTemplate item = sel.Template;
+				
 
-			if (item != null) {
-				infoLabel.Text = item.Description;
-				okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
-			} else {
-				okButton.Sensitive = false;
+				if (item != null) {
+					infoLabel.Text = item.Description;
+					okButton.Sensitive = item.IsValidName (nameEntry.Text, sel.Language);
+				} else {
+					okButton.Sensitive = false;
+				}
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
 			}
 		}
 		
@@ -339,9 +341,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			//propertyService.SetProperty("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 			//propertyService.SetProperty("Dialogs.NewFileDialog.LastSelectedCategory", ((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode.Text);
 			
-			//if (templateView.Selection.GetSelected (out mdl, out iter)) {
-			if (TemplateView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
-				TemplateItem titem = (TemplateItem) TemplateView.CurrentlySelected;
+			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
+				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
 				FileTemplate item = titem.Template;
 				
 				try {
@@ -431,12 +432,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void InitializeComponents()
 		{
-			
 			catStore = new Gtk.TreeStore (typeof(string), typeof(ArrayList), typeof(ArrayList), typeof(Gdk.Pixbuf));
 			catStore.SetSortColumnId (0, SortType.Ascending);
 			
-			templateStore = new Gtk.TreeStore (typeof(string), typeof(FileTemplate));
-
 			ScrolledWindow swindow1 = new ScrolledWindow();
 			swindow1.VscrollbarPolicy = PolicyType.Automatic;
 			swindow1.HscrollbarPolicy = PolicyType.Automatic;
@@ -444,8 +442,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			catView = new Gtk.TreeView (catStore);
 			catView.WidthRequest = 160;
 			catView.HeadersVisible = false;
-			templateView = new Gtk.TreeView (templateStore);
-			TemplateView = new IconView();
+			iconView = new IconView();
 
 			TreeViewColumn catColumn = new TreeViewColumn ();
 			catColumn.Title = "categories";
@@ -455,13 +452,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			catColumn.AddAttribute (cat_text_render, "text", 0);
 
 			catView.AppendColumn (catColumn);
-
-			TreeViewColumn templateColumn = new TreeViewColumn ();
-			templateColumn.Title = "template";
-			CellRendererText tmpl_text_render = new CellRendererText ();
-			templateColumn.PackStart (tmpl_text_render, true);
-			templateColumn.AddAttribute (tmpl_text_render, "text", 0);
-			templateView.AppendColumn (templateColumn);
 
 			okButton = new Button (Gtk.Stock.New);
 			okButton.Clicked += new EventHandler (OpenEvent);
@@ -476,7 +466,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			HBox viewbox = new HBox (false, 6);
 			swindow1.Add(catView);
 			viewbox.PackStart (swindow1,false,true,0);
-			viewbox.PackStart(TemplateView, true, true,0);
+			viewbox.PackStart(iconView, true, true,0);
 
 			this.AddActionWidget (cancelButton, (int)Gtk.ResponseType.Cancel);
 			this.AddActionWidget (okButton, (int)Gtk.ResponseType.Ok);
@@ -496,8 +486,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			cat_imglist.Add(Services.Resources.GetBitmap("md-closed-folder"));
 			catView.Selection.Changed += new EventHandler (CategoryChange);
 			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
-			TemplateView.IconSelected += new EventHandler(SelectedIndexChange);
-			TemplateView.IconDoubleClicked += new EventHandler(OpenEvent);
+			iconView.IconSelected += new EventHandler(SelectedIndexChange);
+			iconView.IconDoubleClicked += new EventHandler(OpenEvent);
 			InitializeView ();
 		}
 	}

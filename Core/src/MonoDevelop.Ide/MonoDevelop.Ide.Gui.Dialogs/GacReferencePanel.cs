@@ -126,10 +126,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (string assemblyPath in Runtime.SystemAssemblyService.GetAssemblyPaths (version)) {
 				try {
 					System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyPath);
-					string package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
-					if (package == "MONO-SYSTEM")
-						package = "Mono";
-					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, package);
+					SystemPackage package = Runtime.SystemAssemblyService.GetPackageFromFullName (an.FullName);
+					store.AppendValues (an.Name, an.Version.ToString (), System.IO.Path.GetFileName (assemblyPath), false, an.FullName, package.Name);
 				}catch {
 				}
 			}

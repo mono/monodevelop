@@ -284,13 +284,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 		}
 		
-		[CommandHandler (ProjectCommands.Deploy)]
-		public void OnProjectDeploy ()
-		{
-			Project selectedProject = CurrentNode.DataItem as Project;
-			IdeApp.ProjectOperations.Deploy (selectedProject);
-		}
-		
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
 		public void SetAsStartupProject ()
 		{

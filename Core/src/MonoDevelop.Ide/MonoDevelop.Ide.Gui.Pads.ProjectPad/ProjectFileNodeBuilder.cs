@@ -175,21 +175,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (ProjectCommands.IncludeInDeploy)]
 		public void OnUpdateIncludeInDeploy (CommandInfo info)
 		{
-			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
-			info.Checked = !project.DeployInformation.IsFileExcluded (finfo.Name);
+			info.Checked = finfo.BuildAction == BuildAction.FileCopy;
 		}
 		
 		[CommandHandler (ProjectCommands.IncludeInDeploy)]
 		public void OnIncludeInDeploy ()
 		{
 			ProjectFile finfo = CurrentNode.DataItem as ProjectFile;
-			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 
-			if (project.DeployInformation.IsFileExcluded (finfo.Name)) {
-				project.DeployInformation.RemoveExcludedFile (finfo.Name);
+			if (finfo.BuildAction == BuildAction.FileCopy) {
+				finfo.BuildAction = BuildAction.Nothing;
 			} else {
-				project.DeployInformation.AddExcludedFile (finfo.Name);
+				finfo.BuildAction = BuildAction.FileCopy;
 			}
 			IdeApp.ProjectOperations.SaveProject (finfo.Project);
 		}

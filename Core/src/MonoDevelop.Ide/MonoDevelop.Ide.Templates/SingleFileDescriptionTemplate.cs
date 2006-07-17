@@ -231,12 +231,13 @@ namespace MonoDevelop.Ide.Templates
 		public override bool IsValidName (string name, string language)
 		{
 			if (name.Length > 0) {
-				IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
-				System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-				if (provider != null)
-					return provider.IsValidIdentifier (name);
-				
-				return true;
+				if (language != null && language.Length > 0) {
+					IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
+					System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+					if (provider != null)
+						return provider.IsValidIdentifier (name);
+				}
+				return name.IndexOfAny (Path.InvalidPathChars) == -1;
 			}
 			else
 				return false;

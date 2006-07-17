@@ -1,3 +1,17 @@
+2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
+
+	 * MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: 
+	   In IsValidName, don't crash if the language name is not provided.
+	 * MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	   The IncludeInDeploy command now sets the new BuildAction.FileCopy flag.
+	 * MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: Removed
+	   unused command.
+	 * MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Track api changes.
+	 * MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Removed unused treeview.
+	   Renamed some fields for clarity. Catch some exceptions.
+	 * MonoDevelop.Ide.mdp: Updated.
+	 * MonoDevelop.Ide.Gui/ProjectOperations.cs: Removed unused method.
+
 2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Base.glade: Fix some accelerators in the new project dialog.
