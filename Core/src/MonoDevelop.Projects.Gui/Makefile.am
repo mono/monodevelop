@@ -22,7 +22,6 @@ MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
-MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
