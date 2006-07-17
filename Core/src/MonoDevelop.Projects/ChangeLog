@@ -1,3 +1,16 @@
+2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Copy files with BuildAction.FileCopy.
+	* MonoDevelop.Projects/Project.cs: Removed old deployment classes.
+	* MonoDevelop.Projects/ProjectFile.cs: Added new build action: copy to output
+	  directory.
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: From now
+	  on, assemblies which belong to a package will only be reparsed
+	  when the package version changes, not when the assembly timestamp
+	  changes.
+	* Makefile.am: Removed unused files.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump db version.
+
 2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Project.cs: In CheckNeedsBuild, always

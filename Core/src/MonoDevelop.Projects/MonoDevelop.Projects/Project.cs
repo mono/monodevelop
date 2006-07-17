@@ -49,9 +49,6 @@ namespace MonoDevelop.Projects
 
 		protected ProjectReferenceCollection projectReferences;
 		
-		[ItemProperty ("DeploymentInformation")]
-		protected DeployInformation deployInformation = new DeployInformation();
-		
 		bool isDirty = false;
 		
 		private FileSystemWatcher projectFileWatcher;
@@ -120,13 +117,6 @@ namespace MonoDevelop.Projects
 		
 		public abstract string ProjectType {
 			get;
-		}
-		
-		[Browsable(false)]
-		public DeployInformation DeployInformation {
-			get {
-				return deployInformation;
-			}
 		}
 		
 		[Browsable(false)]

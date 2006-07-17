@@ -165,11 +165,6 @@ MonoDevelop.Projects/TypelibImporter.cs \
 MonoDevelop.Projects/UnknownProjectVersionException.cs \
 MonoDevelop.Projects/ProjectFileCollection.cs \
 MonoDevelop.Projects/ProjectReferenceCollection.cs \
-MonoDevelop.Projects/AssemblyDeploy.cs \
-MonoDevelop.Projects/DeployInformation.cs \
-MonoDevelop.Projects/FileDeploy.cs \
-MonoDevelop.Projects/IDeploymentStrategy.cs \
-MonoDevelop.Projects/ScriptDeploy.cs \
 MonoDevelop.Projects.Serialization/ArrayHandler.cs \
 MonoDevelop.Projects.Serialization/ArrayListHandler.cs \
 MonoDevelop.Projects.Serialization/ClassDataType.cs \

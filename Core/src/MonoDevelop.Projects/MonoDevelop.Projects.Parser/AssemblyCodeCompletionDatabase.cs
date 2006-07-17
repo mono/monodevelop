@@ -46,6 +46,10 @@ namespace MonoDevelop.Projects.Parser
 		string baseDir;
 		string assemblyName;
 		bool loadError;
+		bool isPackageAssembly;
+		
+		// This is the package version of the assembly. It is serialized.
+		string packageVersion;
 		
 		public AssemblyCodeCompletionDatabase (string baseDir, string assemblyName, ParserDatabase parserDatabase)
 		: base (parserDatabase)
@@ -58,7 +62,18 @@ namespace MonoDevelop.Projects.Parser
 				loadError = true;
 				return;
 			}
-				
+			
+			string tl = assemblyName.ToLower();
+			isPackageAssembly = tl.IndexOf (".dll") == -1 && tl.IndexOf (".exe") == -1; 
+			
+			if (isPackageAssembly) {
+				SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (this.assemblyName);
+				if (pkg != null)
+					packageVersion = pkg.Name + " " + pkg.Version;
+				else
+					isPackageAssembly = false;
+			}
+
 			this.baseDir = baseDir;
 			
 			SetLocation (baseDir, name);
@@ -88,6 +103,24 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public override void CheckModifiedFiles ()
+		{
+			if (!isPackageAssembly)
+				base.CheckModifiedFiles ();
+			else {
+				// Don't check timestamps for packaged assemblies.
+				// Just check if the package has changed.
+
+				foreach (FileEntry file in files.Values) {
+					SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
+					bool versionMismatch = pkg != null && packageVersion != pkg.Name + " " + pkg.Version;
+					if (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0)) {
+						QueueParseJob (file);
+					}
+				}
+			}
+		}
+		
 		public static string GetFullAssemblyName (string s)
 		{
 			return Runtime.SystemAssemblyService.GetAssemblyFullName (s);
@@ -97,10 +130,39 @@ namespace MonoDevelop.Projects.Parser
 			get { return loadError; }
 		}
 		
+		protected override void SerializeData (Queue dataQueue)
+		{
+			base.SerializeData (dataQueue);
+			dataQueue.Enqueue (packageVersion);
+		}
+		
+		protected override void DeserializeData (Queue dataQueue)
+		{
+			base.DeserializeData (dataQueue);
+			if (isPackageAssembly) {
+				if (dataQueue.Count > 0) {
+					string ver = (string) dataQueue.Dequeue ();
+					if (ver != null) {
+						packageVersion = ver;
+						return;
+					}
+				}
+				
+				// Package version not set, assume current version 
+			}
+		}
+		
 		protected override void ParseFile (string fileName, IProgressMonitor parentMonitor)
 		{
 			IProgressMonitor monitor = parentMonitor;
-			if (parentMonitor == null) monitor = parserDatabase.GetParseProgressMonitor ();
+			if (parentMonitor == null)
+				monitor = parserDatabase.GetParseProgressMonitor ();
+			
+			// Update the package version
+			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
+			if (pkg != null)
+				packageVersion = pkg.Name + " " + pkg.Version;
+				
 			try {
 				monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
 				if (useExternalProcess)
@@ -199,7 +261,7 @@ namespace MonoDevelop.Projects.Parser
 			{
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 
-				if (assemblyFile != null)
+				if (assemblyFile != null && File.Exists (assemblyFile))
 					asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 				
 				if (asm == null) {

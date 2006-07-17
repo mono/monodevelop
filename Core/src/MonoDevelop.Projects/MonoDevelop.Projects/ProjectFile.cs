@@ -24,6 +24,7 @@ namespace MonoDevelop.Projects
 		Nothing,
 		Compile,
 		EmbedAsResource,
+		FileCopy,
 		Exclude		
 	}
 	

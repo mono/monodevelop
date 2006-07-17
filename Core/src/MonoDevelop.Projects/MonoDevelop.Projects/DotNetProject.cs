@@ -169,6 +169,9 @@ namespace MonoDevelop.Projects
 				{
 					File.Copy (finfo.Name, conf.CompiledOutputName + ".config",true);
 				}
+				if (finfo.BuildAction == BuildAction.FileCopy) {
+					File.Copy (finfo.Name, Path.Combine (Path.GetDirectoryName (conf.CompiledOutputName), Path.GetFileName (finfo.Name)), true);
+				}
 			}
 
 			ICompilerResult res = languageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
