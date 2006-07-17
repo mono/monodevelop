@@ -1,3 +1,10 @@
+2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Show a tooltip with
+	  identifier information when hovering over the source code.
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Added.
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
 2006-07-15  John Luke  <john.luke@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs:

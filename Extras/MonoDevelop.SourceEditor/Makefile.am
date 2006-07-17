@@ -13,6 +13,7 @@ MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs \
+MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs \
 MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs \
 MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs \
 MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs \

@@ -36,6 +36,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		bool autoHideCompletionWindow = true;
 		bool autoInsertTemplates;
 		EditActionCollection editactions = new EditActionCollection ();
+		LanguageItemWindow languageItemWindow;
+		
+		ILanguageItem tipItem;
+		bool showTipScheduled;
+		int langTipX, langTipY;
 
 		public bool EnableCodeCompletion {
 			get { return codeCompleteEnabled; }
@@ -65,13 +70,104 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.MarkSet += new MarkSetHandler (BufferMarkSet);
 			buf.Changed += new EventHandler (BufferChanged);
 			LoadEditActions ();
+			
+			this.Events = this.Events | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 		}
 		
 		public new void Dispose ()
 		{
+			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
 			buf.Changed -= new EventHandler (BufferChanged);
 			base.Dispose ();
+		}
+		
+		uint tipTimeoutId;
+		
+		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+		{
+			bool res = base.OnMotionNotifyEvent (evnt);
+			UpdateLanguageItemWindow ();
+			return res;
+		}
+		
+		void UpdateLanguageItemWindow ()
+		{
+			if (languageItemWindow != null) {
+				// Tip already being shown. Update it.
+				ShowTooltip ();
+			}
+			else if (showTipScheduled) {
+				// Tip already scheduled. Reset the timer.
+				GLib.Source.Remove (tipTimeoutId);
+				tipTimeoutId = GLib.Timeout.Add (500, ShowTooltip);
+			}
+			else {
+				// Start a timer to show the tip
+				showTipScheduled = true;
+				tipTimeoutId = GLib.Timeout.Add (500, ShowTooltip);
+			}
+		}
+		
+		bool ShowTooltip ()
+		{
+			ModifierType mask; // ignored
+			int xloc, yloc;
+
+			showTipScheduled = false;
+				
+			this.GetWindow (TextWindowType.Text).GetPointer (out xloc, out yloc, out mask);
+
+			TextIter ti = this.GetIterAtLocation (xloc + this.VisibleRect.X, yloc + this.VisibleRect.Y);
+			ILanguageItem item = GetLanguageItem (ti);
+			
+			if (item != null) {
+				// Tip already being shown for this language item?
+				if (languageItemWindow != null && tipItem != null && tipItem.Equals (item))
+					return false;
+				
+				langTipX = xloc;
+				langTipY = yloc;
+				tipItem = item;
+
+				HideLanguageItemWindow ();
+
+				languageItemWindow = new LanguageItemWindow (tipItem, GetParserContext ());
+				
+				int ox, oy;
+				this.GetWindow (TextWindowType.Text).GetOrigin (out ox, out oy);
+				int w = languageItemWindow.Child.SizeRequest().Width;
+				languageItemWindow.Move (langTipX + ox - (w/2), langTipY + oy + 20);
+				languageItemWindow.ShowAll ();
+			} else
+				HideLanguageItemWindow ();
+			
+			return false;
+		}
+		
+
+		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
+		{
+			HideLanguageItemWindow ();
+			return base.OnLeaveNotifyEvent (evnt);
+		}
+		
+		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+		{
+			HideLanguageItemWindow ();
+			return base.OnScrollEvent (evnt);
+		}
+		
+		public void HideLanguageItemWindow ()
+		{
+			if (showTipScheduled) {
+				GLib.Source.Remove (tipTimeoutId);
+				showTipScheduled = false;
+			}
+			if (languageItemWindow != null) {
+				languageItemWindow.Destroy ();
+				languageItemWindow = null;
+			}
 		}
 		
 		void BufferMarkSet (object s, MarkSetArgs a)
@@ -147,6 +243,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override void OnPopulatePopup (Menu menu)
 		{
+			HideLanguageItemWindow ();
+			
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu");
 			if (cset.Count > 0) {
 				cset.AddItem (Command.Separator);
@@ -286,14 +384,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			} catch {
 				return false;
 			}
-			insertIter = triggerIter;
-			string fileName = ParentEditor.DisplayBinding.ContentName;
-			IExpressionFinder expressionFinder = GetParserContext ().GetExpressionFinder(fileName);
-			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(this, insertIter.Offset) : expressionFinder.FindExpression(buf.GetText(buf.StartIter, insertIter, true), insertIter.Offset - 2).Expression;
-			if (expression == null) return false;
-			Console.WriteLine ("Expression: {" + expression + "}");
-
-			ILanguageItem languageItem = GetParserContext ().ResolveIdentifier(expression, insertIter.Line + 1, insertIter.LineOffset + 1, fileName, buf.Text);
+			ILanguageItem languageItem = GetLanguageItem (triggerIter);
 			
 			if (languageItem == null)
 				return false;
@@ -301,6 +392,20 @@ namespace MonoDevelop.SourceEditor.Gui
 			IdeApp.HelpOperations.ShowHelp (MonoDevelop.Projects.Services.DocumentationService.GetHelpUrl(languageItem));
 			
 			return true;
+		}
+		
+		ILanguageItem GetLanguageItem (TextIter ti)
+		{
+			string txt = buf.Text;
+			string fileName = ParentEditor.DisplayBinding.ContentName;
+			IParserContext ctx = GetParserContext ();
+			IExpressionFinder expressionFinder = ctx.GetExpressionFinder (fileName);
+			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (this, ti.Offset) : expressionFinder.FindFullExpression (txt, ti.Offset).Expression;
+			if (expression == null)
+				return null;
+
+			Console.WriteLine ("EXP: " + expression);
+			return ctx.ResolveIdentifier (expression, ti.Line + 1, ti.LineOffset + 1, fileName, txt);
 		}
 
 		internal void ScrollUp ()
@@ -327,6 +432,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			HideLanguageItemWindow ();
+				
 			if (CompletionListWindow.ProcessKeyEvent (evnt))
 				return true;
 			
