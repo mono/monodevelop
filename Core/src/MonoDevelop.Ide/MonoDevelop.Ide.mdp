@@ -14,9 +14,6 @@
     </Configuration>
   </Configurations>
   <DeployTargets />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
   <Contents>
     <File name="./templates/AppConfigFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/BlankCombine.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -275,4 +272,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.GetOptions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>

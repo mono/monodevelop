@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 				if (tabControl == null || tabControl.CurrentPage < 0 || tabControl.CurrentPage >= tabControl.NPages)  {
 					return null;
 				}
-				return (IWorkbenchWindow)workbench.ViewContentCollection[tabControl.CurrentPage].WorkbenchWindow;
+				return (IWorkbenchWindow) tabControl.CurrentPageWidget;
 			}
 		}
 		
@@ -624,16 +624,13 @@ namespace MonoDevelop.Ide.Gui
 
 		void closeClicked (object o, EventArgs e)
 		{
-			int pageNum = -1;
 			Widget parent = ((Widget)o).Parent;
 			foreach (Widget child in tabControl.Children) {
 				if (tabControl.GetTabLabel (child) == parent) {
-					pageNum = tabControl.PageNum (child);
+					int pageNum = tabControl.PageNum (child);
+					((SdiWorkspaceWindow)child).CloseWindow (false, false, pageNum);
 					break;
 				}
-			}
-			if (pageNum != -1) {
-				workbench.ViewContentCollection [pageNum].WorkbenchWindow.CloseWindow (false, false, pageNum);
 			}
 		}
 
