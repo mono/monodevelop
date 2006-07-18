@@ -1,3 +1,8 @@
+2006-07-05 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DragNotebook.cs: Provide the correct value for "old page" when
+	  firing the TabsReordered event.
+
 2006-07-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs: Added some events which are fired when the item is

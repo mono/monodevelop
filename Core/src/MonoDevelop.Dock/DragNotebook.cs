@@ -54,13 +54,14 @@ namespace Gdl
 			return -1;
 		}
 
-		void MoveTab (int destinationPage) {
-
+		void MoveTab (int destinationPage)
+		{
 			if (destinationPage >= 0 && destinationPage != CurrentPage) {
+				int oldPage = CurrentPage;
 				ReorderChild (CurrentPageWidget, destinationPage);
 
 				if (TabsReordered != null)
-					TabsReordered (CurrentPageWidget, CurrentPage, destinationPage);
+					TabsReordered (CurrentPageWidget, oldPage, destinationPage);
 			}
 		}
 
