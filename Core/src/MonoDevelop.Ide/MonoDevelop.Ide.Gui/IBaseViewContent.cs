@@ -34,6 +34,9 @@ namespace MonoDevelop.Ide.Gui
 		/// The text on the tab page when more than one view content
 		/// is attached to a single window.
 		/// </summary>
+		string TabPageLabel {
+			get;
+		}
 		
 		/// <summary>
 		/// Reinitializes the content. (Re-initializes all add-in tree stuff)
@@ -41,5 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		/// what you do.
 		/// </summary>
 		void RedrawContent();
+		
+		bool CanReuseView (string fileName);
 	}
 }

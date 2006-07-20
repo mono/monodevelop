@@ -259,12 +259,36 @@ namespace MonoDevelop.Ide.Gui
 		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, IDisplayBinding binding)
 		{
 			foreach (Document doc in Documents) {
-				if (doc.FileName == fileName) {
-					if (bringToFront)
-						doc.Select ();
-					if (line != -1 && doc.Window.ViewContent is IPositionable) {
-						((IPositionable)doc.Window.ViewContent).JumpTo (line, column != -1 ? column : 0);
+				IBaseViewContent vcFound = null;
+				int vcIndex = 0;
+				
+				//search all ViewContents to see if they can "re-use" this filename
+				if (doc.Window.ViewContent.CanReuseView (fileName))
+					vcFound = doc.Window.ViewContent;
+				else if (doc.Window.SubViewContents != null) {
+					for (int i = 0; i < doc.Window.SubViewContents.Count; i++) {
+						ISecondaryViewContent vc = (ISecondaryViewContent) doc.Window.SubViewContents [i];
+						if (vc.CanReuseView (fileName)) {
+							vcIndex = i +1;
+							vcFound = vc;
+						}
 					}
+				}
+				
+				//old method as fallback
+				if ((vcFound == null) && (doc.FileName == fileName))
+					vcFound = doc.Window.ViewContent;
+				
+				//if found, select window and jump to line
+				if (vcFound != null) {
+					if (bringToFront) {
+						doc.Select ();
+						doc.Window.SwitchView (vcIndex);
+					}
+					if (line != -1 && vcFound is IPositionable) {
+						((IPositionable) vcFound).JumpTo (line, column != -1 ? column : 0);
+					}
+					
 					return doc;
 				}
 			}

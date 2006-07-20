@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.Gui
 		/// Is called after the window closes.
 		/// </summary>
 		event EventHandler Closed;
+		
+		event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
 	
 	public delegate void WorkbenchWindowEventHandler (object sender, WorkbenchWindowEventArgs args);
@@ -92,6 +94,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Forced {
 			get { return forced; }
+		}
+	}
+	
+		
+	public delegate void ActiveViewContentEventHandler (object sender, ActiveViewContentEventArgs args);
+	
+	public class ActiveViewContentEventArgs: System.EventArgs
+	{
+		IBaseViewContent content;
+		
+		public ActiveViewContentEventArgs (IBaseViewContent content)
+		{
+			this.content = content;
+		}
+		
+		public IBaseViewContent Content {
+			get { return content; }
 		}
 	}
 }

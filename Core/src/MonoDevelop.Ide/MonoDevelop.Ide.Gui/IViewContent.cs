@@ -80,10 +80,6 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		void Load(string fileName);
 		
-		string TabPageLabel {
-			get;
-		}
-		
 		/// <summary>
 		/// The name of the project the content is attached to
 		/// </summary>

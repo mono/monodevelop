@@ -10,6 +10,7 @@ using Gtk;
 using Gecko;
 
 using MonoDevelop.Ide.Gui.Undo;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -25,7 +26,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		protected IViewContent parent;
 
 		public void Selected ()
-		{
+		{	
 		}
 
 		public void Deselected ()
@@ -45,25 +46,24 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		public void BaseContentChanged ()
 		{
-			//FIXME: This is a hack
-			if (parent.Control.GetType ().ToString () == "MonoDevelop.SourceEditor.Gui.SourceEditor")
-			{
-				try {
-					htmlViewPane.MozillaControl.OpenStream ("file://", "text/html");
-					htmlViewPane.MozillaControl.AppendData (((Gtk.TextView)((Gtk.ScrolledWindow)parent.Control).Children[0]).Buffer.Text);
-					htmlViewPane.MozillaControl.CloseStream ();
-					GLib.Timeout.Add (50, new GLib.TimeoutHandler (checkFocus));
-					
-				} catch {
-					Runtime.LoggingService.Error ("Gecko# tossed an exception");
-				}
+			ITextBuffer buffer = (ITextBuffer) parent;
+			
+			try {
+				htmlViewPane.MozillaControl.OpenStream ("file://", "text/html");
+				htmlViewPane.MozillaControl.AppendData (buffer.Text);
+				htmlViewPane.MozillaControl.CloseStream ();
+				GLib.Timeout.Add (50, new GLib.TimeoutHandler (checkFocus));
+			} catch {
+				Runtime.LoggingService.Error ("Gecko# tossed an exception");
 			}
 		}
 
 		public bool checkFocus ()
-		{
-			if (((Gtk.ScrolledWindow)parent.Control).Children[0].HasFocus == false) {
-				((Gtk.ScrolledWindow)parent.Control).Children[0].GrabFocus ();
+		{			
+			//not sure why this was here, may be to fix a GTK+ 2.4 bug
+			Gtk.ScrolledWindow sw = (ScrolledWindow) ((VBox) parent.Control).Children [1];
+			if (sw.Children[0].HasFocus == false) {
+				sw.Children[0].GrabFocus ();
 				return false;
 			}
 			return true;
@@ -92,16 +92,22 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		public BrowserPane (bool showNavigation, IViewContent parent) : this (showNavigation)
 		{
 			this.parent = parent;
-		}
-
-		protected void onFocused (object o, EventArgs e)
-		{
+			
+			//suppress in-window hyperlinking, but only when this used as is an 
+			//ISecondaryViewContent, i.e, it has a parent
+			htmlViewPane.MozillaControl.OpenUri += CatchUri;
 		}
 
 		public BrowserPane (bool showNavigation)
 		{
 			htmlViewPane = new HtmlViewPane(showNavigation);
 			htmlViewPane.MozillaControl.TitleChange += new EventHandler (OnTitleChanged);
+		}
+		
+		void CatchUri (object sender, OpenUriArgs e)
+		{
+			e.RetVal = true;
+			Gnome.Url.Show (e.AURI);
 		}
 		
 		public BrowserPane () : this (true)

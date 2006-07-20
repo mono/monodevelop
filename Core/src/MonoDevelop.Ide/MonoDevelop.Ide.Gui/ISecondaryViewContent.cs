@@ -33,9 +33,5 @@ namespace MonoDevelop.Ide.Gui
 		void NotifyBeforeSave();
 
 		void BaseContentChanged ();
-
-		string TabPageLabel {
-			get;
-		}
 	}
 }

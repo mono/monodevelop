@@ -1,3 +1,31 @@
+2006-07-20 Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs: Make 
+	  independent of SourceEditor by using ITextBuffer instead; re-enable 
+	  live secondary view of html pages.
+	  
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Re-enable and re-work 
+	  support for secondary ViewContents.
+	  
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs: Add an event to detect when 
+	  the active ViewContent changes.
+	  
+	* MonoDevelop.Ide.Gui/IBaseViewContent.cs:
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:
+	* MonoDevelop.Ide.Gui/AbstractViewContent.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs: New method bool CanReuseView (string 
+	  fileName), used to determine whether an existing ViewContent can be 
+	  used instead of re-opening a file.
+	  
+	* MonoDevelop.Ide.Gui/IBaseViewContent.cs:
+	* MonoDevelop.Ide.Gui/ISecondaryViewContent.cs:
+	* MonoDevelop.Ide.Gui/IViewContent.cs: Move TabPageLabel back into into 
+	  the base interface, as it is duplicated in both deriving interfaces.
+	  
+	* MonoDevelop.Ide.Gui/Document.cs: Add a property to retrieve the active
+	  IViewContent, and an event to detect when it changes.
+
 2006-07-20 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:

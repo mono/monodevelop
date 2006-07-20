@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.window = window;
 			window.Closed += new EventHandler (OnClosed);
+			window.ActiveViewContentChanged += delegate { OnViewChanged (EventArgs.Empty); };
 		}
 		
 		public string FileName {
@@ -84,6 +85,10 @@ namespace MonoDevelop.Ide.Gui
 		public void Select ()
 		{
 			window.SelectWindow ();
+		}
+		
+		public object ActiveView {
+			get { return window.ActiveViewContent; }
 		}
 		
 /*		public void JumpTo (int line, int column)
@@ -226,8 +231,15 @@ namespace MonoDevelop.Ide.Gui
 				Closed (this, args);
 		}
 		
+		protected virtual void OnViewChanged (EventArgs args)
+		{
+			if (ViewChanged != null)
+				ViewChanged (this, args);
+		}
+		
 		public event EventHandler Closed;
 		public event EventHandler Saved;
+		public event EventHandler ViewChanged;
 	}
 }
 

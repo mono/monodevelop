@@ -44,6 +44,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 		
+		public virtual bool CanReuseView (string fileName)
+		{
+			return false;
+		}
+		
 		protected virtual void OnWorkbenchWindowChanged(EventArgs e)
 		{
 			if (WorkbenchWindowChanged != null) {

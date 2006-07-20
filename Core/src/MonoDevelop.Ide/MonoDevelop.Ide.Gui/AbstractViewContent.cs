@@ -102,6 +102,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public override bool CanReuseView (string fileName)
+		{
+			return (ContentName == fileName);
+		}
+		
 		public string PathRelativeToProject
 		{
 			get

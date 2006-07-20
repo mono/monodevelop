@@ -24,11 +24,11 @@ namespace MonoDevelop.Ide.Gui
 	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandRouter
 	{
 		IWorkbench workbench;
-		Notebook   viewTabControl = null;
 		IViewContent content;
-		ArrayList    subViewContents = null;
-
-//		ArrayList    subDockItems = null;
+		
+		ArrayList subViewContents = null;
+		Notebook subViewNotebook = null;
+		Toolbar subViewToolbar = null;
 		
 		TabLabel tabLabel;
 		Widget    tabPage;
@@ -115,18 +115,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IBaseViewContent ActiveViewContent {
 			get {
-				if (viewTabControl != null && viewTabControl.CurrentPage > 0) {
-					return (IBaseViewContent)subViewContents[viewTabControl.CurrentPage - 1];
+				if (subViewNotebook != null && subViewNotebook.CurrentPage > 0) {
+					return (IBaseViewContent)subViewContents[subViewNotebook.CurrentPage - 1];
 				}
 				return content;
 			}
 		}
 		
-		public void SwitchView(int viewNumber)
+		public void SwitchView (int viewNumber)
 		{
-			if (viewTabControl != null) {
-				this.viewTabControl.CurrentPage = viewNumber;
-			}
+			if (subViewNotebook != null)
+				ShowPage (viewNumber);
 		}
 		
 		public void SelectWindow()	
@@ -228,12 +227,22 @@ namespace MonoDevelop.Ide.Gui
 			content.ContentChanged     -= new EventHandler (OnContentChanged);
 			content.WorkbenchWindow = null;
 			
-			Remove (content.Control);
+			
+			if (subViewContents != null) {
+				foreach (ISecondaryViewContent sv in subViewContents) {
+					subViewNotebook.Remove (sv.Control);
+					sv.Dispose ();
+				}
+				this.subViewContents = null;
+				subViewNotebook.Remove (content.Control);
+			}
+			this.Remove (this.Child);
 			content.Dispose ();
 
 			OnClosed (null);
 			
 			this.content = null;
+			this.subViewNotebook = null;
 			this.tabControl = null;
 			this.tabLabel = null;
 			this.tabPage = null;
@@ -241,26 +250,86 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void AttachSecondaryViewContent(ISecondaryViewContent subViewContent)
 		{
-			// FIXME: We should use a notebook instead.
-			/*if (subViewContents == null) {
+			// need to create child Notebook when first ISecondaryViewContent is added
+			if (subViewContents == null) {
 				subViewContents = new ArrayList ();
-				subDockItems = new ArrayList ();
+				
+				this.Remove (this.Child);
+				
+				subViewNotebook = new Notebook ();
+				subViewNotebook.TabPos = PositionType.Bottom;
+				subViewNotebook.ShowTabs = false;
+				subViewNotebook.Show ();
+				subViewNotebook.SwitchPage += subViewNotebookIndexChanged;
+			
+				// Bottom toolbar
+				subViewToolbar = new Toolbar ();
+				subViewToolbar.IconSize = IconSize.SmallToolbar;
+				subViewToolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
+				subViewToolbar.ShowArrow = false;
+				subViewToolbar.Show ();
+				
+				//add existing ViewContent
+				AddButton (this.ViewContent.TabPageLabel, this.ViewContent.Control).Active = true;
+				
+				//pack them in a box
+				VBox box = new VBox ();
+				box.PackStart (subViewNotebook, true, true, 0);
+				box.PackStart (subViewToolbar, false, false, 0);
+				box.ShowAll ();
+				this.Child = box;
 			}
-	
-			mainItem.Behavior = DockItemBehavior.CantClose | DockItemBehavior.CantIconify;
+			
 			subViewContents.Add (subViewContent);
-			DockItem dockitem = new DockItem (subViewContent.TabPageLabel, subViewContent.TabPageLabel, DockItemBehavior.CantClose | DockItemBehavior.CantIconify);
-			dockitem.Add (subViewContent.Control);
-			subViewContent.Control.ShowAll ();
-			dockitem.ShowAll ();
-			subDockItems.Add (dockitem);
-			AddItem (dockitem, DockPlacement.Bottom);
-			OnContentChanged (null, null);*/
+			subViewContent.WorkbenchWindow = this;
+			AddButton (subViewContent.TabPageLabel, subViewContent.Control);
+			
+			OnContentChanged (null, null);
 		}
 		
+		bool updating = false;
+		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
+		{
+			updating = true;
+			ToggleToolButton button = new ToggleToolButton ();
+			button.Label = label;
+			button.IsImportant = true;
+			button.Clicked += new EventHandler (OnButtonToggled);
+			button.ShowAll ();
+			subViewToolbar.Insert (button, -1);
+			subViewNotebook.AppendPage (page, new Gtk.Label ());
+			page.ShowAll ();
+			updating = false;
+			return button;
+		}
 		
-/*		int oldIndex = -1;
-		protected void viewTabControlIndexChanged(object sender, EventArgs e)
+		protected void ShowPage (int npage)
+		{
+			if (subViewNotebook.CurrentPage == npage)
+				return;
+				
+			if (updating) return;
+			updating = true;
+			
+			subViewNotebook.CurrentPage = npage;
+			Gtk.Widget[] buttons = subViewToolbar.Children;
+			for (int n=0; n<buttons.Length; n++) {
+				ToggleToolButton b = (ToggleToolButton) buttons [n];
+				b.Active = (n == npage);
+			}
+
+			updating = false;
+		}
+		
+		void OnButtonToggled (object s, EventArgs args)
+		{
+			int i = Array.IndexOf (subViewToolbar.Children, s);
+			if (i != -1)
+				ShowPage (i);
+		}
+		
+		int oldIndex = -1;
+		protected void subViewNotebookIndexChanged(object sender, SwitchPageArgs e)
 		{
 			if (oldIndex > 0) {
 				ISecondaryViewContent secondaryViewContent = subViewContents[oldIndex - 1] as ISecondaryViewContent;
@@ -269,15 +338,17 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			if (viewTabControl.CurrentPage > 0) {
-				ISecondaryViewContent secondaryViewContent = subViewContents[viewTabControl.CurrentPage - 1] as ISecondaryViewContent;
+			if (subViewNotebook.CurrentPage > 0) {
+				ISecondaryViewContent secondaryViewContent = subViewContents[subViewNotebook.CurrentPage - 1] as ISecondaryViewContent;
 				if (secondaryViewContent != null) {
 					secondaryViewContent.Selected();
 				}
 			}
-			oldIndex = viewTabControl.CurrentPage;
+			oldIndex = subViewNotebook.CurrentPage;
+			
+			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}
-*/
+
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			commandHandler.SetNextCommandTarget (Parent); 
@@ -323,9 +394,16 @@ namespace MonoDevelop.Ide.Gui
 				Closed (this, e);
 			}
 		}
+		
+		protected virtual void OnActiveViewContentChanged (ActiveViewContentEventArgs e)
+		{
+			if (ActiveViewContentChanged != null)
+				ActiveViewContentChanged (this, e);
+		}
 
 		public event EventHandler TitleChanged;
 		public event EventHandler Closed;
 		public event WorkbenchWindowEventHandler Closing;
+		public event ActiveViewContentEventHandler ActiveViewContentChanged;
 	}
 }
