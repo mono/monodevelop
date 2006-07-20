@@ -476,6 +476,39 @@ namespace Gdl
 			return false;
 		}
 		
+		public override void GetRelativeChildPlacement (DockObject child, out DockObject relativeObject, out DockPlacement relativePlacement)
+		{
+			// Since a Dock can only have one child, we use "this" as relative object, and Center as relative position.
+			
+			if (child == root) {
+				relativeObject = this;
+				relativePlacement = DockPlacement.Center;
+			} else {
+				relativeObject = null;
+				relativePlacement = DockPlacement.None;
+			}
+		}
+		
+		public override DockObject GetChildFromRelative (DockObject relativeObject, DockPlacement relativePlacement)
+		{
+			// Since a Dock can only have one child, we use "this" as relative object, and Center as relative position.
+			
+			if (relativeObject == this && relativePlacement == DockPlacement.Center)
+				return root;
+			else
+				return null;
+		}
+		
+		public override DockObject GetObjectFromRelativePlacement (DockPlacement relativePlacement)
+		{
+			// Since a Dock can only have one child, we use "this" as relative object, and Center as relative position.
+			
+			if (relativePlacement == DockPlacement.Center)
+				return root;
+			else
+				return null;
+		}
+		
 		public override void OnPresent (DockObject child)
 		{
 			if (Floating && window != null && window is Window)

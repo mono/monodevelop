@@ -171,6 +171,29 @@ namespace Gdl
 			return false;
 		}
 		
+		public override void GetRelativeChildPlacement (DockObject child, out DockObject relativeObject, out DockPlacement relativePlacement)
+		{
+			// The relative position of a child will be the Center of any other child in the notebook
+			
+			if (Child != null) {
+				// Look for any other child
+				foreach (DockObject widget in ((Notebook)Child).Children) {
+					if (widget != child) {
+						relativePlacement = DockPlacement.Center;
+						relativeObject = widget;
+						return;
+					}
+				}
+				// There should be at least one child, since the notebook
+				// would have been reduced otherwise
+			}
+			
+			// The notebook does not have children, return then the relative position
+			// of the whole notebook.
+			GetRelativePlacement (out relativeObject, out relativePlacement);
+			return;
+		}
+		
 		public override void OnPresent (DockObject child)
 		{
 			Notebook nb = Child as Notebook;

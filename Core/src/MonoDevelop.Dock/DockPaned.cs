@@ -132,6 +132,32 @@ namespace Gdl
 			return base.OnChildPlacement (child, ref pos);
 		}
 
+		public override void GetRelativeChildPlacement (DockObject child, out DockObject relativeObject, out DockPlacement relativePlacement)
+		{
+			// The relative object of one child is the other child of the paned.
+			
+			relativePlacement = DockPlacement.None;
+			relativeObject = null;
+				
+			if (this.Child != null) {
+				Paned paned = this.Child as Paned;
+				
+				if (child == paned.Child1) {
+					relativeObject = (DockObject) paned.Child2;
+					relativePlacement = this.Orientation == Orientation.Horizontal ? DockPlacement.Left : DockPlacement.Top;
+				}
+				else if (child == paned.Child2) {
+					relativePlacement = this.Orientation == Orientation.Horizontal ? DockPlacement.Right : DockPlacement.Bottom;
+					relativeObject = (DockObject) paned.Child1;
+				}
+				if (relativeObject == null) {
+					// It means that the pane does not have children, return then the relative position
+					// of the whole paned.
+					GetRelativePlacement (out relativeObject, out relativePlacement);
+				}
+			}
+		}
+		
 		protected override void OnDestroyed ()
 		{
 			// this first

@@ -474,6 +474,7 @@ namespace Gdl
 				grip = null;
 			}
 			if (dockPlaceHolder != null) {
+				dockPlaceHolder.Dispose ();
 				dockPlaceHolder = null;
 			}
 			base.OnDestroyed ();
@@ -691,7 +692,7 @@ namespace Gdl
 		{
 			DockObject parent = ParentObject;
 			DockObject newParent = null;
-			bool addOurselvesFirst;
+			bool addOurselvesFirst = false;
 			
 			switch (position) {
 			case DockPlacement.Top:
@@ -705,8 +706,12 @@ namespace Gdl
 				addOurselvesFirst = (position == DockPlacement.Right);
 				break;
 			case DockPlacement.Center:
-				newParent = new DockNotebook ();
-				addOurselvesFirst = true;
+				// If the parent is already a DockNotebook, we don't need
+				// to create a new one.
+				if (!(parent is DockNotebook)) {
+					newParent = new DockNotebook ();
+					addOurselvesFirst = true;
+				}
 				break;
 			default:
 				Console.WriteLine ("Unsupported docking strategy");
@@ -716,33 +721,44 @@ namespace Gdl
 			if (parent != null)
 				parent.Freeze ();
 
-			DockObjectFlags |= DockObjectFlags.InReflow;
-			Detach (false);
-			newParent.Freeze ();
-			newParent.Bind (Master);
+			if (newParent != null) {
+				DockObjectFlags |= DockObjectFlags.InReflow;
+				Detach (false);
+				newParent.Freeze ();
+				newParent.Bind (Master);
+				
+				if (addOurselvesFirst) {
+					newParent.Add (this);
+					newParent.Add (requestor);
+				} else {
+					newParent.Add (requestor);
+					newParent.Add (this);
+				}
+				
+				if (parent != null)
+					parent.Add (newParent);
 			
-			if (addOurselvesFirst) {
-				newParent.Add (this);
-				newParent.Add (requestor);
+				if (Visible)
+					newParent.Show ();
+			
+				DockObjectFlags &= ~(DockObjectFlags.InReflow);
+			
+				newParent.Thaw ();
 			} else {
-				newParent.Add (requestor);
-				newParent.Add (this);
+				parent.Add (requestor);
 			}
-			
-			if (parent != null)
-				parent.Add (newParent);
-			
-			if (Visible)
-				newParent.Show ();
-			
+
 			if (position != DockPlacement.Center && data != null && data is System.Int32) {
 				if (newParent is DockPaned)
 					((DockPaned) newParent).Position = (int) data;
 			}
 			
-			DockObjectFlags &= ~(DockObjectFlags.InReflow);
-
-			newParent.Thaw ();
+			if (requestor.Parent is Notebook) {
+				// Activate the page we just added
+				Notebook notb = (Notebook) requestor.Parent;
+				notb.Page = notb.PageNum (requestor);
+			}
+			
 			if (parent != null)
 				parent.Thaw ();
 		}
@@ -912,8 +928,11 @@ namespace Gdl
 			
 			/* if the object is manual, create a new placeholder to be
 			   able to restore the position later */
-			if (!IsAutomatic)
+			if (!IsAutomatic) {
+				if (dockPlaceHolder != null)
+					dockPlaceHolder.Dispose ();
 				dockPlaceHolder = new DockPlaceholder (this, false);
+			}
 			
 			Freeze ();
 
@@ -949,6 +968,7 @@ namespace Gdl
 			
 			if (dockPlaceHolder != null) {
 				dockPlaceHolder.Add (this);
+				dockPlaceHolder.Dispose ();
 				dockPlaceHolder = null;
 			} else if (IsBound) {
 				if (Master.Controller != null) {
@@ -961,6 +981,8 @@ namespace Gdl
 		
 		public virtual void SetDefaultPosition (DockObject reference)
 		{
+			if (dockPlaceHolder != null)
+				dockPlaceHolder.Dispose ();
 			dockPlaceHolder = null;
 			
 			if (reference != null && reference.IsAttached) {

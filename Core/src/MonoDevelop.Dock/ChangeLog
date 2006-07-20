@@ -1,3 +1,15 @@
+2006-07-18 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockPlaceholder.cs:
+	* DockItem.cs:
+	* DockObject.cs: 
+	* Dock.cs:
+	* DockNotebook.cs:
+	* DockPaned.cs: Fixed several bugs related to hiding, showing and
+	  iconifying docks.
+	
+	* MonoDevelop.Dock.mdp: Updated.
+
 2006-07-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DragNotebook.cs: Provide the correct value for "old page" when

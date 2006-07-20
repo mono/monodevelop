@@ -32,14 +32,17 @@ namespace Gdl
 	public class DockPlaceholder : DockObject
 	{
 		private DockObject host;
+		private DockObject oldHostParent;
 		private bool sticky;
 		private Stack<DockPlacement> placementStack;
+		int panedPosition;
 
 		protected DockPlaceholder (IntPtr raw) : base (raw) { }
 		
 		public DockPlaceholder (string name, DockObject obj,
 					DockPlacement position, bool sticky)
 		{
+			this.DockObjectFlags &= ~(DockObjectFlags.Automatic);
 			WidgetFlags |= WidgetFlags.NoWindow;
 			WidgetFlags &= ~(WidgetFlags.CanFocus);
 
@@ -47,24 +50,29 @@ namespace Gdl
 			Name = name;
 
 			if (obj != null) {
-				Attach (obj);
+				// Store the divider position if the parent is a DockPaned
+				DockPaned paned = obj.ParentObject as DockPaned;
+				if (paned != null)
+					panedPosition = paned.Position;
+				
+				// Get the relative position of this object, provided by the container
+				obj.GetRelativePlacement (out obj, out position); 
 
 				if (position == DockPlacement.None)
 					position = DockPlacement.Center;
+				
+				Attach (obj);
 
-				NextPlacement = position;
+				PushNextPlacement (position);
 
 				//the top placement will be consumed by the toplevel dock, so add a dummy placement
 				if (obj is Dock)
-					NextPlacement = DockPlacement.Center;
-
-				// try a recursion
-				DoExcursion ();
+					PushNextPlacement (DockPlacement.Center);
 			}
 		}
 		
 		public DockPlaceholder (DockObject obj, bool sticky) :
-			this (obj.Name, obj, DockPlacement.None, sticky) { }
+			this (null, obj, DockPlacement.None, sticky) {  }
 		
 		public DockObject Host {
 			get {
@@ -78,17 +86,26 @@ namespace Gdl
 		
 		[After]
 		[Export]
-		public DockPlacement NextPlacement {
+		DockPlacement NextPlacement {
 			get {
 				if (placementStack != null && placementStack.Count > 0)
-					return placementStack.Pop ();
+					return placementStack.Peek ();
 				return DockPlacement.Center;
 			}
-			set { 
-				if (placementStack == null)
-					placementStack = new Stack<DockPlacement> ();
-				placementStack.Push (value);
-			}
+		}
+		
+		DockPlacement PopNextPlacement ()
+		{
+			if (placementStack != null && placementStack.Count > 0)
+				return placementStack.Pop ();
+			return DockPlacement.Center;
+		}
+		
+		void PushNextPlacement (DockPlacement value)
+		{
+			if (placementStack == null)
+				placementStack = new Stack<DockPlacement> ();
+			placementStack.Push (value);
 		}
 
 		public bool Sticky {
@@ -113,7 +130,10 @@ namespace Gdl
 			if (!(widget is DockItem))
 				return;
 
-			Dock ((DockItem)widget, NextPlacement, null);
+			// Try to find the correct parent widget before docking
+			DoExcursion ();
+			
+			Dock ((DockItem)widget, NextPlacement, panedPosition);
 		}
 		
 		public override void OnDetached (bool recursive)
@@ -134,7 +154,7 @@ namespace Gdl
 		
 		public override void OnDocked (DockObject requestor, DockPlacement position, object data)
 		{
-			if (host != null) {
+			if (host != null && position != DockPlacement.Floating) {
 				// we simply act as a placeholder for our host
 				host.Dock (requestor, position, data);
 			} else {
@@ -160,32 +180,27 @@ namespace Gdl
 		*/
 		public void DoExcursion ()
 		{
-			if (host != null && !Sticky && placementStack != null && placementStack.Count > 0 && host.IsCompound) {
-				DockPlacement pos;
-				DockPlacement stack_pos = NextPlacement;
-				foreach (Widget child in host.Children) {
-					DockObject item = child as DockObject;
-					if (item == null)
-						continue;
-					pos = stack_pos;
+			if (host != null && !Sticky && placementStack != null && placementStack.Count > 1) {
+				DockObject newHost = host.GetObjectFromRelativePlacement (NextPlacement);
+				if (newHost != null) {
+					DisconnectHost ();
 					
-					host.ChildPlacement (item, ref pos);
-					if (pos == stack_pos) {
-						// remove the stack position
-						if (placementStack.Count > 1)
-							placementStack.Pop ();
-						DisconnectHost ();
-
-						// connect to the new host
-						ConnectHost (item);
+					PopNextPlacement ();
+					
+					// connect to the new host
+					ConnectHost (newHost);
 						
-						// recurse ...
-						if (!item.InReflow)
-							DoExcursion ();
-						break;
-					}
+					// recurse ...
+					if (!newHost.InReflow)
+						DoExcursion ();
 				}
 			}
+		}
+		
+		public override void Dispose ()
+		{
+			DisconnectHost ();
+			base.Dispose ();
 		}
 		
 		private void DisconnectHost ()
@@ -194,8 +209,9 @@ namespace Gdl
 				return;
 
 			host.Detached -= new DetachedHandler (OnHostDetached);
-			host.Docked -= new DockedHandler (OnHostDocked);
+			oldHostParent.Docked -= new DockedHandler (OnHostDocked);
 
+			DumpTree (host);
 			host = null;
 		}
 		
@@ -206,8 +222,15 @@ namespace Gdl
 
 			host = newHost;
 
+			if (host is Dock)
+				oldHostParent = host;
+			else
+				oldHostParent = host.ParentObject;
+			
 			host.Detached += new DetachedHandler (OnHostDetached);
-			host.Docked += new DockedHandler (OnHostDocked);
+			oldHostParent.Docked += new DockedHandler (OnHostDocked);
+			
+			DumpTree (host);
 		}
 		
 		public void Attach (DockObject objekt)
@@ -237,28 +260,25 @@ namespace Gdl
 		void OnHostDetached (object sender, DetachedArgs a)
 		{
 			// skip sticky objects
-			if (sticky)
+			// Ignore the event if the host is in reflow, since it means that
+			// it will be added again.
+			if (sticky || host.InReflow)
 				return;
 
-			// go up in the hierarchy
-			DockObject newHost = host.ParentObject;
-
-			while (newHost != null) {
-				DockPlacement pos = DockPlacement.None;
-
-				// get a placement hint from the new host
-				if (newHost.ChildPlacement (host, ref pos))
-					NextPlacement = pos;
-				else
-					Console.WriteLine ("Something weird happened while getting the child placement for {0} from parent {1}", host, newHost);
-
-				// we found a "stable" dock object
-				if (newHost.InDetach)
-					break;
-
-				newHost = newHost.ParentObject;
+			DockPlacement pos;
+			DockObject newHost;
+			
+			// get the relative position of the host, and push it in the position stack
+			host.GetRelativePlacement (out newHost, out pos);
+				
+			if (newHost == null) {
+				DumpTree (host);
+				Console.WriteLine ("Something weird happened while getting the child placement for {0} from parent {1}", host, newHost);
+				return;
 			}
 
+			PushNextPlacement (pos);
+				
 			// disconnect host
 			DisconnectHost ();
 
@@ -266,7 +286,7 @@ namespace Gdl
 			// controller with an initial placement of floating
 			if (newHost == null) {
 				newHost = this.Master.Controller;
-				NextPlacement = DockPlacement.Floating;
+				PushNextPlacement (DockPlacement.Floating);
 			}
 
 			if (newHost != null)
@@ -278,12 +298,11 @@ namespace Gdl
 		void OnHostDocked (object sender, DockedArgs a)
 		{
 			DockObject obj = sender as DockObject;
-			// see if the given position is compatible for the stack's top element
-			if (!sticky && placementStack != null) {
-				DockPlacement pos = NextPlacement;
-				if (obj.ChildPlacement (a.Requestor, ref pos))
-					DoExcursion ();
-			}
+			DumpTree (obj);
+			PrintPlacementStack ();
+			
+			// Try to follow the stack of positions
+			DoExcursion ();
 
 			PrintPlacementStack ();
 		}
@@ -294,6 +313,27 @@ namespace Gdl
 			Console.WriteLine ("-- {0} count {1}", host.Name, placementStack.Count);
 			foreach (DockPlacement dp in placementStack)
 				Console.WriteLine (dp);
+		}
+		
+		public static void DumpTree (Widget w)
+		{
+			if (w == null)
+				return;
+			while (w.Parent != null)
+				w = w.Parent;
+				
+			DumpTreeRec (w, 0);
+		}
+		
+		[System.Diagnostics.Conditional ("DEBUG")]
+		static void DumpTreeRec (Widget w, int n)
+		{
+			if (w is DockObject)
+				Console.WriteLine (new string (' ', n*4) + "- " + ((DockObject)w).Name + " " + w.GetType ());
+			if (w is Gtk.Container) {
+				foreach (Widget c in ((Gtk.Container)w).Children)
+					DumpTreeRec (c, n+1);
+			}
 		}
 	}
 }

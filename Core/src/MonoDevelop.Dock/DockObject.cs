@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
@@ -319,6 +320,8 @@ namespace Gdl
 			if (!IsCompound)
 				return;
 				
+			DockPlaceholder.DumpTree (this);
+			
 			DockObject parent = ParentObject;
 			Widget[] children = Children;
 			if (children.Length <= 1) {
@@ -326,16 +329,36 @@ namespace Gdl
 					parent.Freeze ();
 
 				Freeze ();
-				Detach (false);
+				
+				// Detach the children before detaching this object, since in this
+				// way the children can have access to the whole object hierarchy.
+				
+				// Set the InDetach flag now, so the children know that this object
+				// is going to be detached.
+				
+				flags |= DockObjectFlags.InDetach;
+				
+				ArrayList dchildren = new ArrayList ();
 
 				foreach (Widget widget in children) {
 					DockObject child = widget as DockObject;
 					child.flags |= DockObjectFlags.InReflow;
 					child.Detach (false);
-					if (parent != null)
-						parent.Add (child);
+					if (parent != null) {
+						// Don't add the child to the new parent yet, 
+						// since we need first to removed the old child.
+						dchildren.Add (child);
+					}
 					child.flags &= ~(DockObjectFlags.InReflow);
 				}
+				
+				// Now it can be detached
+				Detach (false);
+				
+				// After detaching the reduced object, we can add the
+				// children (the only child in fact) to the new parent
+				foreach (DockObject c in dchildren)
+					parent.Add (c);
 				
 				reducePending = false;
 
@@ -343,6 +366,7 @@ namespace Gdl
 				if (parent != null)
 					parent.Thaw ();
 			}
+			DockPlaceholder.DumpTree (parent);
 		}
 		
 		public virtual bool OnDockRequest (int x, int y, ref DockRequest request)
@@ -377,6 +401,47 @@ namespace Gdl
 			return OnChildPlacement (child, ref placement);
 		}
 		
+		public virtual void GetRelativePlacement (out DockObject relativeObject, out DockPlacement relativePlacement)
+		{
+			// Returns a reference object and a reference placement from which this object
+			// can be located
+			
+			if (ParentObject != null)
+				ParentObject.GetRelativeChildPlacement (this, out relativeObject, out relativePlacement);
+			else {
+				relativeObject = this;
+				relativePlacement = DockPlacement.Floating;
+			}
+		}
+		
+		public virtual DockObject GetObjectFromRelativePlacement (DockPlacement relativePlacement)
+		{
+			// Returns the object at the specified relative position
+			if (ParentObject != null)
+				return ParentObject.GetChildFromRelative (this, relativePlacement);
+			else
+				return this;
+		}
+		
+		public virtual void GetRelativeChildPlacement (DockObject child, out DockObject relativeObject, out DockPlacement relativePlacement)
+		{
+			// Returns a reference child and a reference placement from which this object
+			// can be located
+			
+			relativeObject = this;
+			relativePlacement = DockPlacement.None;
+		}
+		
+		public virtual DockObject GetChildFromRelative (DockObject relativeObject, DockPlacement relativePlacement)
+		{
+			// Returns the child at the specified relative child position
+			
+			DockObject child;
+			DockPlacement pos;
+			GetRelativeChildPlacement (relativeObject, out child, out pos);
+			return child;
+		}
+		
 		public void Detach (bool recursive)
 		{
 			if (!IsAttached)
@@ -385,11 +450,14 @@ namespace Gdl
 			/* freeze the object to avoid reducing while detaching children */
 			Freeze ();
 			
+			// Call the OnDetached mehtod after firing the event, so everything
+			// is processed in the correct order
+			
 			DockObjectFlags |= DockObjectFlags.InDetach;
-			OnDetached (recursive);
 			DetachedHandler handler = Detached;
 			if (handler != null)
 				handler (this, new DetachedArgs (recursive));
+			OnDetached (recursive);
 			DockObjectFlags &= ~(DockObjectFlags.InDetach);
 
 			Thaw ();		
@@ -486,7 +554,6 @@ namespace Gdl
 		{
 			if (master == null) {
 				Console.WriteLine ("Passed master is null");
-				Console.WriteLine (System.Environment.StackTrace);
 				return;
 			}
 			if (this.master == master) {
