@@ -783,7 +783,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 			string name = Path.Combine (UserConfigPath, "repository-cache");
 			if (!Directory.Exists (name))
 				Directory.CreateDirectory (name);
-			name = Path.Combine (name, new Uri (url).Host);
+				
+			string host = new Uri (url).Host;
+			if (host == null || host.Length == 0)
+				host = "local";
+			name = Path.Combine (name, host);
 			rr.File = name + "_" + Configuration.RepositoryIdCount + ".mrep";
 			
 			rr.Id = "rep" + Configuration.RepositoryIdCount;
