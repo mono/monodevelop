@@ -1,3 +1,12 @@
+2006-07-20 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  Removed call to StealFocus, since StartLabelEdit already does it.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Removed StealFocus
+	  method and merged into StartLabelEdit.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Removed workaround
+	  for showing a dock item, since it now works.
+
 2006-07-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix some problems

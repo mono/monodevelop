@@ -467,9 +467,7 @@ namespace MonoDevelop.Ide.Gui
 				GetPlacement (placement, out dockPlacement, out ot);
 				
 			if (item.Iconified)
-			{
 				item.Iconified = false;
-			}
 			
 			if (dockPlacement != DockPlacement.None && dockPlacement != DockPlacement.Floating) {
 				if (ot != null) {
@@ -504,12 +502,10 @@ namespace MonoDevelop.Ide.Gui
 				if (item.IsAttached)
 					return;
 
-				// TODO: ShowItem is not working properly in the
-				// managed Gdl.
-/*				if (item.DefaultPosition != null)
+				if (item.DefaultPosition != null)
 					item.ShowItem();
 				else
-*/					DockPad (item, content.DefaultPlacement);
+					DockPad (item, content.DefaultPlacement);
 			}
 			else
 				AddPad (content, content.DefaultPlacement);

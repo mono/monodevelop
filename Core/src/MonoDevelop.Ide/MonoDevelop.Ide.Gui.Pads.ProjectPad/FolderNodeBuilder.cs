@@ -345,7 +345,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnFileInserted (ITreeNavigator nav)
 		{
-			Tree.StealFocus ();
 			nav.Selected = true;
 			Tree.StartLabelEdit ();
 		}

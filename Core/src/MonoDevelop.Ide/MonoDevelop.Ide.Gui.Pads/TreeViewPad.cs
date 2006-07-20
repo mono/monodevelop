@@ -625,13 +625,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		/// <summary>
-		/// If you want to edit a node label. Select the node you want to edit and then
-		/// call this method, instead of using the LabelEdit Property and the BeginEdit
-		/// Method directly.
-		/// </summary>
-		[CommandHandler (EditCommands.Rename)]
-		public void StartLabelEdit()
+		public void StartLabelEditInternal()
 		{
 			if (editingText)
 				return;
@@ -992,14 +986,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return false;
 		}
 
-		public void StealFocus ()
+		/// <summary>
+		/// If you want to edit a node label. Select the node you want to edit and then
+		/// call this method, instead of using the LabelEdit Property and the BeginEdit
+		/// Method directly.
+		/// </summary>
+		[CommandHandler (EditCommands.Rename)]
+		public void StartLabelEdit ()
 		{
 			GLib.Timeout.Add (20, new GLib.TimeoutHandler (wantFocus));
 		}
+		
 		bool wantFocus ()
 		{
 			tree.GrabFocus ();
-			StartLabelEdit ();
+			StartLabelEditInternal ();
 			return false;
 		}
 
