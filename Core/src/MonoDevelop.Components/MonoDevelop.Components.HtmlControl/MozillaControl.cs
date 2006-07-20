@@ -16,10 +16,25 @@ namespace MonoDevelop.Components.HtmlControl
 		internal static GLib.GType gtype;
 		private string html;
 		private string css;
+		private bool reShown = false;
 		
 		public MozillaControl ()
 		{
 			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
+			
+			//FIXME: suppress a strange bug with control not getting drawn first time it's shown, or when docking changed.
+			//For some reason this event only fires when control 'appears' or is re-docked, which corresponds 1:1 to the bug.
+			//FIXME: OnExposeEvent doesn't fire, but ExposeEvent does
+			this.ExposeEvent += delegate {
+				if (!reShown) {
+					Hide ();
+					Show ();
+					
+					//Normally we would expect this event to fire with every redraw event, so put in a limiter in case this is fixed in future.
+					reShown = true;
+					GLib.Timeout.Add (1000, delegate { reShown = false; return false; } );
+				}
+			};
 		}
 		
 		public void GoHome ()
