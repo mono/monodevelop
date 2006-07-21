@@ -176,8 +176,12 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void ModifyTags (Project project, string language, string identifier, string fileName, ref Hashtable tags)
 		{
 			DotNetProject netProject = project as DotNetProject;
-			IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
-			string languageExtension = (binding != null)? Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1) : "";
+			string languageExtension = "";
+			if (!string.IsNullOrEmpty (language)) {
+				IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
+				if (binding != null)
+					languageExtension = Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1);
+			}
 			
 			//need a default namespace or if there is no project, substitutions can get very messed up
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "Application";

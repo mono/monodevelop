@@ -73,6 +73,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameEntry.GrabFocus ();
 		}
 		
+		public override void Dispose ()
+		{
+			Destroy ();
+			base.Dispose ();
+		}
+		
 		void InitializeView()
 		{
 			PixbufList smalllist  = new PixbufList();

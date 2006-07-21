@@ -104,10 +104,7 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			string txt;
 			
-			if ((item is IMember && ((IMember)item).Region != null) || 
-			    (item is IClass && ((IClass)item).Region != null) || 
-			    (item is LocalVariable && ((LocalVariable)item).Region != null)) 
-			{
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			}
 			
@@ -184,19 +181,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void GoToDeclaration ()
 		{
-			if (item is IMember) {
-				IMember mem = (IMember) item;
-				if (mem.DeclaringType != null && mem.DeclaringType.Region != null && mem.Region != null)
-					IdeApp.Workbench.OpenDocument (mem.DeclaringType.Region.FileName, mem.Region.BeginLine, mem.Region.BeginColumn, true);
-			} else if (item is IClass) {
-				IClass cls = (IClass) item;
-				if (cls.Region != null)
-					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
-			} else if (item is LocalVariable) {
-				LocalVariable cls = (LocalVariable) item;
-				if (cls.Region != null)
-					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
-			}
+			IdeApp.ProjectOperations.JumpToDeclaration (item);
 		}
 		
 		public void FindReferences ()

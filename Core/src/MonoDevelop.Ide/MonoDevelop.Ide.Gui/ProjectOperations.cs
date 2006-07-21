@@ -177,6 +177,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public void JumpToDeclaration (ILanguageItem item)
+		{
+			if (item is IMember) {
+				IMember mem = (IMember) item;
+				if (mem.DeclaringType != null && mem.DeclaringType.Region != null && mem.Region != null)
+					IdeApp.Workbench.OpenDocument (mem.DeclaringType.Region.FileName, mem.Region.BeginLine, mem.Region.BeginColumn, true);
+			} else if (item is IClass) {
+				IClass cls = (IClass) item;
+				if (cls.Region != null)
+					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
+			} else if (item is LocalVariable) {
+				LocalVariable cls = (LocalVariable) item;
+				if (cls.Region != null)
+					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
+			}
+		}
+		
+		public bool CanJumpToDeclaration (ILanguageItem item)
+		{
+			return ((item is IMember && ((IMember)item).Region != null) || 
+			    (item is IClass && ((IClass)item).Region != null) || 
+			    (item is LocalVariable && ((LocalVariable)item).Region != null)); 
+		}
+		
 		public void SaveCombinePreferences ()
 		{
 			if (CurrentOpenCombine != null)
