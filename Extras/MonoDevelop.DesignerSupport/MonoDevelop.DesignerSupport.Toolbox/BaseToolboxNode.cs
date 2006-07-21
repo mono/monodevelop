@@ -1,5 +1,5 @@
  /* 
- * BaseToolboxNode.cs - Base class for holding tree in a NodeStore, with columns for TreeView.
+ * ToolboxNode.cs - Base class for holding tree in a NodeStore, with columns for TreeView.
  *						Shared functionality for ItemToolboxNodes and CategoryToolboxNodes.
  * 
  * Authors: 
@@ -33,7 +33,7 @@ using System;
 using System.Drawing.Design;
 using Gtk;
 
-namespace AspNetEdit.Gui.Toolbox
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public abstract class BaseToolboxNode : Gtk.ITreeNode
 	{

@@ -35,9 +35,9 @@ using System;
 using System.ComponentModel;
 using Gtk;
 using System.Collections;
-using AspNetEdit.UI;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 
 	[PropertyEditorType(typeof(System.Enum))]

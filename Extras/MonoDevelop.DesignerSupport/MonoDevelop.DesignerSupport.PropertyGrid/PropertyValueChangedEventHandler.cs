@@ -31,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	public delegate void PropertyValueChangedEventHandler (object sender, PropertyValueChangedEventArgs e);
 }

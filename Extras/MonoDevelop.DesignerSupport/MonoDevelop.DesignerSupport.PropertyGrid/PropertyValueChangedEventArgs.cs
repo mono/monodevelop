@@ -33,7 +33,7 @@
 
 using System;
 
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	public class PropertyValueChangedEventArgs
 	{

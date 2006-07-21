@@ -36,7 +36,7 @@ using System;
 using System.ComponentModel;
 using Gtk;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 
 	[PropertyEditorType (typeof (string))]

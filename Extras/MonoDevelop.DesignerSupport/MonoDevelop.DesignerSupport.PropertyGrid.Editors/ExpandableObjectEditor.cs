@@ -37,7 +37,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Collections;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 	class ExpandableObjectEditor : BaseEditor
 	{

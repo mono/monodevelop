@@ -29,26 +29,17 @@
  */
 
 using System;
-using System.Collections;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Drawing.Design;
-using Gtk;
 
-namespace AspNetEdit.Gui.Toolbox
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
+	[Serializable]
 	public class TextToolboxNode : ItemToolboxNode
 	{
-		protected string Text = "";
+		private string text = "";
 		
 		public TextToolboxNode (string text)
 		{
 			Text = text;
-			
-			//TODO: Use additional filters to limit to a specific host
-			ToolboxItemFilterAttribute[] filters  = new ToolboxItemFilterAttribute [1];
-			filters[0] = new ToolboxItemFilterAttribute ("AspNetEdit.RawText", ToolboxItemFilterType.Require);
-			base.ItemFilters = filters;
 		}
 		
 		public override bool Filter (string keyword)
@@ -57,15 +48,9 @@ namespace AspNetEdit.Gui.Toolbox
 				   || ((Text==null)? false : (Text.IndexOf (keyword) >= 0));
 		}
 		
-		public override void Activate (object host)
-		{
-			AspNetEdit.Editor.ComponentModel.DesignerHost deshost =
-				host as AspNetEdit.Editor.ComponentModel.DesignerHost;
-
-			if (deshost != null)
-				deshost.RootDocument.InsertFragment (Text);
-			else
-				throw new NotImplementedException ("We need an interface to insert text into documents in other hosts");
+		public string Text {
+			get { return text; }
+			set { text = value; }
 		}
 	}	
 }

@@ -36,7 +36,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms.Design;
  
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	public class DefaultPropertyTab : PropertyTab
 	{

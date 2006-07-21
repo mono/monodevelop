@@ -38,7 +38,7 @@ using System.Reflection;
 using Gtk;
 using System.ComponentModel;
 
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	public class GridRow
 	{

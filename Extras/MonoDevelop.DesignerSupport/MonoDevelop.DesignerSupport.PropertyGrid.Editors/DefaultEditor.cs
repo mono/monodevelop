@@ -36,7 +36,7 @@ using System;
 using Gtk;
 using System.ComponentModel;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 	public class DefaultEditor : BaseEditor
 	{

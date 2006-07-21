@@ -39,7 +39,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms.Design;
 
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 
 public class PropertyGrid : Gtk.VBox
@@ -89,7 +89,7 @@ public class PropertyGrid : Gtk.VBox
 		base.PackStart (toolbar, false, false, 0);
 		
 		catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
-		catButton.IconWidget = new Image (new Gdk.Pixbuf (null, "AspNetEdit.UI.PropertyGrid.SortByCat.png"));
+		catButton.IconWidget = new Image (new Gdk.Pixbuf (null, "MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
 		catButton.SetTooltip (tips, "Sort in categories", null);
 		catButton.Toggled += new EventHandler (toolbarClick);
 		toolbar.Insert (catButton, 0);

@@ -29,96 +29,94 @@
  */
 
 using System;
+using System.IO;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
+using System.Runtime.Serialization.Formatters.Binary;
 
-namespace AspNetEdit.Gui.Toolbox
+using MonoDevelop.Projects.Serialization;
+
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class ToolboxItemToolboxNode : ItemToolboxNode
+	[Serializable]
+	public class ToolboxItemToolboxNode : TypeToolboxNode
 	{
-		private ToolboxItem item;
+		[ItemProperty ("item-contents")]
+		string serializedToolboxItem;
+		
+		[ItemProperty ("item-type")]
+		TypeReference toolboxItemType;
 		
 		public ToolboxItemToolboxNode (ToolboxItem item)
+			: base (item.TypeName, item.AssemblyName.FullName)
 		{
-			this.item = item;
 			base.Name = item.DisplayName;
 			if (item.Bitmap != null)
-				base.Icon = base.ImageToPixbuf (item.Bitmap);
+				base.Icon = ImageToPixbuf (item.Bitmap);
 			
-			if (item.AssemblyName != null)
-				foreach (System.ComponentModel.CategoryAttribute ca in
-					System.Reflection.Assembly.Load (item.AssemblyName)
-					.GetType (item.TypeName)
-					.GetCustomAttributes (typeof (System.ComponentModel.CategoryAttribute), true))
-					this.Category = ca.Category;
-		}
-		
-		public ToolboxItem ToolboxItem
-		{
-			get {
-				//TODO: load assembly and then item, if not already done
-				return item;
-			}
-		}
-		
-		#region Behaviours
-		
-		//Runs when item is clicked.
-		//We should be able to avoid loading actual ToolboxItem instances and their
-		//associated assemblies until they are activated.
-		public override void Activate (object host)
-		{
-			IDesignerHost desHost = host as IDesignerHost;
+			foreach (ToolboxItemFilterAttribute tbfa in item.Filter)
+				base.ItemFilters.Add (tbfa);
 			
-			if (desHost == null)
-				throw new Exception("This ToolboxItem should not have been shown for this host. System.Drawing.Design.ToolboxItem requires a host of type System.ComponentModel.Design.IDesignerHost");
-			
-			//web controls have sample HTML that need to be deserialised
-			//TODO: Fix WebControlToolboxItem so we don't have to mess around with type lookups and attributes here
-			if ((item is System.Web.UI.Design.WebControlToolboxItem) && host is AspNetEdit.Editor.ComponentModel.DesignerHost)
-			{
-				AspNetEdit.Editor.ComponentModel.DesignerHost aspDesHost = (AspNetEdit.Editor.ComponentModel.DesignerHost) desHost;
-				
-				if (item.AssemblyName != null && item.TypeName != null) {
-					//look up and register the type
-					ITypeResolutionService typeRes = (ITypeResolutionService) aspDesHost.GetService(typeof(ITypeResolutionService));					
-					typeRes.ReferenceAssembly (item.AssemblyName);
-					Type controlType = typeRes.GetType (item.TypeName, true);
-						
-					//read the WebControlToolboxItem data from the attribute
-					AttributeCollection atts = TypeDescriptor.GetAttributes (controlType);
-					System.Web.UI.ToolboxDataAttribute tda = (System.Web.UI.ToolboxDataAttribute) atts[typeof(System.Web.UI.ToolboxDataAttribute)];
-						
-					//if it's present
-					if (tda != null && tda.Data.Length > 0) {
-						//look up the tag's prefix and insert it into the data						
-						System.Web.UI.Design.IWebFormReferenceManager webRef = aspDesHost.GetService (typeof (System.Web.UI.Design.IWebFormReferenceManager)) as System.Web.UI.Design.IWebFormReferenceManager;
-						if (webRef == null)
-							throw new Exception("Host does not provide an IWebFormReferenceManager");
-						string aspText = String.Format (tda.Data, webRef.GetTagPrefix (controlType));
-						System.Diagnostics.Trace.WriteLine ("Toolbox processing ASP.NET item data: " + aspText);
-							
-						//and add it to the document
-						aspDesHost.RootDocument.DeserializeAndAdd (aspText);
-						return;
-					}
-				}
-			}
-				
-			//No ToolboxDataAttribute? Get the ToolboxItem to create the components itself
-			item.CreateComponents (desHost);
+			//we only need to serialise the ToolboxItem if it is non-standard, because we can reliably recreate the two built-in types
+			if (item.GetType () == typeof (ToolboxItem))
+				toolboxItemType = null; //no-op, but this has consequences 	
+			else if (item.GetType () == typeof (System.Web.UI.Design.WebControlToolboxItem))
+				toolboxItemType = new TypeReference (typeof (System.Web.UI.Design.WebControlToolboxItem));
+			else {
+				serializedToolboxItem = SerializeToolboxItem (item);
+				toolboxItemType = new TypeReference (item.GetType ());
+			} 
 		}
 		
-		protected override bool EvaluateCustomFilter (IToolboxUser user)
+		public ToolboxItem GetToolboxItem ()
 		{
-			return user.GetToolSupported (item);
+			//get the type of the toolboxitem, and make sure it's loaded
+			Type tbiType = typeof (ToolboxItem);
+			if ((toolboxItemType != null) && (!string.IsNullOrEmpty (toolboxItemType.TypeName)))
+				tbiType = toolboxItemType.Load ();
+			
+			if ((serializedToolboxItem != null) && (serializedToolboxItem.Length > 0))
+				return DeserializeToolboxItem (serializedToolboxItem);
+			
+			//built-in type, no need to deserialise; we can recreate
+			Type clsType = base.Type.Load ();
+			ToolboxItem item = (ToolboxItem) Activator.CreateInstance (tbiType, new object[] {clsType});
+			return item;
 		}
 		
+		#region private utility methods
 		
-		//TODO: drag source
+		ToolboxItem DeserializeToolboxItem (string serializedObject)
+		{
+			byte[] bytes = Convert.FromBase64String (serializedObject);
+			
+			MemoryStream ms = new MemoryStream(bytes);
+			BinaryFormatter BF = new BinaryFormatter ();
+			
+			object obj = BF.Deserialize (ms);
+   			ms.Close ();
+   			
+   			if (! (obj is ToolboxItem))
+   				throw new Exception ("Could not deserialise ToolboxItem for " + base.Name);
+   			
+   			return (ToolboxItem) obj;
+		}
 		
-		#endregion Behaviours
+		string SerializeToolboxItem (ToolboxItem toolboxItem)
+		{
+			MemoryStream ms = new MemoryStream ();
+			BinaryFormatter BF = new BinaryFormatter ();
+			
+			BF.Serialize (ms, toolboxItem);
+			byte[] bytes = ms.ToArray ();
+			
+			
+   			ms.Close ();
+   			return Convert.ToBase64String(bytes);
+		}
+		
+		#endregion
 	}	
 }

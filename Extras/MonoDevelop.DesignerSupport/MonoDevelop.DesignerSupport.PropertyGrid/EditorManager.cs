@@ -35,10 +35,10 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.ComponentModel;
-using AspNetEdit.UI.PropertyEditors;
+using MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors;
 using System.Drawing.Design;
 
-namespace AspNetEdit.UI
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	internal class EditorManager
 	{

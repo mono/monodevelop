@@ -36,7 +36,7 @@ using System.ComponentModel.Design;
 using System.Collections;
 using Gtk;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 
 	[PropertyEditorType (typeof (Delegate), true)]

@@ -36,7 +36,7 @@ using System.ComponentModel;
 using Gtk;
 using Gdk;
 
-namespace AspNetEdit.UI.PropertyEditors
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
 	[PropertyEditorType (typeof (System.Drawing.Color))]
 	public class ColorEditor : BaseEditor

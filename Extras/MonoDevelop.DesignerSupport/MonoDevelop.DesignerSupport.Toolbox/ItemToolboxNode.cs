@@ -31,29 +31,66 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 using Gtk;
 
-namespace AspNetEdit.Gui.Toolbox
+using MonoDevelop.Projects.Serialization;
+
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public abstract class ItemToolboxNode : BaseToolboxNode
+	[DataItem (Name = "item", FallbackType = typeof(UnknownToolboxNode))]
+	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem
 	{
-		//we expect to serialise/deserialise these
-		//TODO: getters, setters
-		//TODO: serialisation
-		protected Gdk.Pixbuf Icon;
-		public string Name = "";
-		public string Category = "";
-		public string Description = "";
-		protected ICollection ItemFilters; //ToolboxItemFilterAttribute
+		Gdk.Pixbuf icon;
+		
+		[ItemProperty ("name")]
+		string name = "";
+		
+		[ItemProperty ("category")]
+		string category = "";
+		
+		[ItemProperty ("description")]
+		string description = "";
+		
+		List <ToolboxItemFilterAttribute> itemFilters = new List <ToolboxItemFilterAttribute> ();
 		
 		//need to be able to create empty instances of derived classes
 		//for deserialisation
 		public ItemToolboxNode ()
 		{
 		}
+		
+		#region properties
+		
+		public virtual Gdk.Pixbuf Icon {
+			get { return icon; }
+			set { icon = value; }
+		}
+		
+		public virtual string Name {
+			get { return name; }
+			set { name = value; }
+		}
+		
+		public virtual string Category {
+			get { return category; }
+			set { category = value; }
+		}
+		
+		public virtual string Description {
+			get { return description; }
+			set { description = value; }
+		}
+		
+		//collection of ToolboxItemFilterAttribute
+		public virtual IList ItemFilters {
+			get { return itemFilters; }
+		}
+		
+		#endregion
 		
 		#region Behaviours
 		
@@ -63,93 +100,11 @@ namespace AspNetEdit.Gui.Toolbox
 				   || ((Description == null)? false : (Description.ToLower ().IndexOf (keyword) >= 0));
 		}
 		
-		//Runs when item is clicked.
-		public abstract void Activate (object host);
-		
-		public virtual bool IsSupportedBy (object rootDesigner)
+		public override bool Equals (object o)
 		{
-			//if something has no filters it is more useful and efficient
-			//to show it for everything than to show it for nothing
-			if (ItemFilters == null || ItemFilters.Count == 0)
-				return true;
-			
-			//get the designer's filter attributes
-			//TODO: This may be worth caching at some point
-			Type desType = rootDesigner.GetType ();
-			ToolboxItemFilterAttribute[] hostFilters =
-				(ToolboxItemFilterAttribute[]) desType.GetCustomAttributes (typeof (ToolboxItemFilterAttribute), true);
-			
-			//check all of host's filters
-			foreach (ToolboxItemFilterAttribute desFa in hostFilters)
-			{
-				if (!FilterPermitted (desFa, ItemFilters, rootDesigner))
-					return false;
-			}
-			
-			//check all of item's filters
-			foreach (ToolboxItemFilterAttribute itemFa in ItemFilters)
-			{
-				if (!FilterPermitted (itemFa, hostFilters, rootDesigner))
-					return false;
-			}
-			
-			//we assume permitted, so only return false when blocked by a filter
-			return true;
+			ItemToolboxNode node = o as ItemToolboxNode;
+			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
 		}
-		
-		//evaluate a filter attribute against a list, and check whther permitted
-		private bool FilterPermitted (ToolboxItemFilterAttribute desFa, ICollection filterAgainst, object rootDesigner)
-		{
-			switch (desFa.FilterType) {
-				case ToolboxItemFilterType.Allow:
-					//this is really for matching some other filter string against
-					return true;
-				
-				case ToolboxItemFilterType.Custom:
-					IToolboxUser tbUser = rootDesigner as IToolboxUser;
-					if (tbUser == null)
-						throw new ArgumentException ("Host's root designer does not support IToolboxUser interface.");
-					return EvaluateCustomFilter (tbUser);
-					
-				case ToolboxItemFilterType.Prevent:
-					//if host and toolboxitem have same filterstring, then not permitted
-					foreach (ToolboxItemFilterAttribute itemFa in filterAgainst)
-						if (desFa.Match (itemFa))
-							return false;
-					return true;
-				
-				case ToolboxItemFilterType.Require:
-					//if host and toolboxitem have same filterstring, then permitted, unless one is prevented
-					foreach (ToolboxItemFilterAttribute itemFa in filterAgainst)
-						if (desFa.Match (itemFa) && (desFa.FilterType != ToolboxItemFilterType.Prevent))
-							return true;
-					return false;
-			}
-			throw new InvalidOperationException ("Unexpected ToolboxItemFilterType value.");
-		}
-		
-		//utility, gets a root designer from an IDesignerHost and calls IsSupportedBy (object) on it
-		public virtual bool IsSupportedBy (IDesignerHost host)
-		{
-			if (host == null)
-				throw new ArgumentException ("IDesignerHost must not be null.");
-			IComponent comp = host.RootComponent;
-			if (comp == null)
-				throw new ArgumentException ("Host does not have a root component.");
-			IDesigner des = host.GetDesigner (comp);
-			if (des == null)
-				throw new ArgumentException ("Host does not have a root designer.");
-			
-			return IsSupportedBy (des);
-		}
-		
-		//if derived class supports it, we have to load the real toolboxitem
-		protected virtual bool EvaluateCustomFilter (IToolboxUser user)
-		{
-			throw new InvalidOperationException ("Custom filters are only supported with ToolboxItems.");
-		}
-		
-		//TODO: drag source
 		
 		#endregion Behaviours
 		
@@ -182,5 +137,58 @@ namespace AspNetEdit.Gui.Toolbox
 				return new Gdk.Pixbuf (stream);
 			}
 		}
+		
+		#region custom serialisation for ToolboxItemFilterAttribute collection
+		
+		public DataCollection Serialize (ITypeSerializer handler)
+		{
+			DataCollection dc = handler.Serialize (this);
+			
+			DataItem filtersItem = new DataItem ();
+			filtersItem.Name = "filters";
+			dc.Add (filtersItem);
+			
+			foreach (ToolboxItemFilterAttribute tbfa in itemFilters) {
+				DataItem item = new DataItem ();
+				item.Name = "filter";
+				item.ItemData.Add (new DataValue ("string", tbfa.FilterString));
+				item.ItemData.Add (new DataValue ("type", System.Enum.GetName (typeof (ToolboxItemFilterType), tbfa.FilterType)));
+				filtersItem.ItemData.Add (item);
+			}
+			
+			if (icon !=  null) {
+				DataItem item = new DataItem ();
+				item.Name = "icon";
+				dc.Add (item);
+				string iconString = Convert.ToBase64String (icon.SaveToBuffer ("png"));
+				item.ItemData.Add (new DataValue ("enc", iconString));
+			}
+			
+			return dc;
+		}
+		
+		public void Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			handler.Deserialize (this, data);
+			
+			DataItem filtersItem = data ["filters"] as DataItem;
+			if ((filtersItem != null) && (filtersItem.HasItemData)) {
+				foreach (DataItem item in filtersItem.ItemData) {
+					string filter = ((DataValue) item.ItemData ["string"]).Value;
+					string typeString = ((DataValue) item.ItemData ["type"]).Value;
+					ToolboxItemFilterType type = (ToolboxItemFilterType) Enum.Parse (typeof (ToolboxItemFilterType), typeString);
+					
+					itemFilters.Add (new ToolboxItemFilterAttribute (filter, type));
+				}
+			}
+			
+			DataItem iconItem = data ["icon"] as DataItem;
+			if (iconItem != null) {
+				DataValue iconData = (DataValue) iconItem ["enc"];
+				this.icon = new Gdk.Pixbuf (Convert.FromBase64String(iconData.Value));
+			}
+		}
+		
+		#endregion
 	}	
 }

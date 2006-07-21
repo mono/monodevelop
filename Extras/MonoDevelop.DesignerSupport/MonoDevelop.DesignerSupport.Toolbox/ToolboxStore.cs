@@ -32,7 +32,7 @@ using Gtk;
 using System.Collections;
 using System.Drawing.Design;
 
-namespace AspNetEdit.Gui.Toolbox
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	internal class ToolboxStore : Gtk.NodeStore
 	{

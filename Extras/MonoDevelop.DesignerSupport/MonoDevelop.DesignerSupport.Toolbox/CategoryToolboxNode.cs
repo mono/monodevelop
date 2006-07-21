@@ -35,7 +35,7 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using Gtk;
 
-namespace AspNetEdit.Gui.Toolbox
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public class CategoryToolboxNode: BaseToolboxNode
 	{

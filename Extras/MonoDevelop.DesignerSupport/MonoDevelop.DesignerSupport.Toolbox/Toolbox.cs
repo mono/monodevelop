@@ -34,17 +34,15 @@ using System.Collections;
 using System.Drawing.Design;
 using System.ComponentModel.Design;
 using System.ComponentModel;
-using AspNetEdit.Editor.ComponentModel;
 
-namespace AspNetEdit.Gui.Toolbox
+namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public class Toolbox : VBox
 	{
-		private ServiceContainer parentServices;
 		ToolboxService toolboxService;
 		ToolboxStore store;
 		NodeView nodeView;
-		BaseToolboxNode selectedNode;
+		ItemToolboxNode selectedNode;
 		Hashtable expandedCategories = new Hashtable ();
 		
 		private ScrolledWindow scrolledWindow;
@@ -53,16 +51,9 @@ namespace AspNetEdit.Gui.Toolbox
 		private ToggleToolButton catToggleButton;
 		private Entry filterEntry;
 		
-		public Toolbox(ServiceContainer parentServices)
+		public Toolbox (ToolboxService toolboxService)
 		{			
-			this.parentServices = parentServices;
-
-			//we need this service, so create it if not present
-			toolboxService = parentServices.GetService (typeof (IToolboxService)) as ToolboxService;
-			if (toolboxService == null) {
-				toolboxService = new ToolboxService ();
-				parentServices.AddService (typeof (IToolboxService), toolboxService);
-			}
+			this.toolboxService = toolboxService;
 			
 			#region Toolbar
 			toolbar = new Toolbar ();
@@ -71,17 +62,21 @@ namespace AspNetEdit.Gui.Toolbox
 			base.PackStart (toolbar, false, false, 0);
 		
 			filterToggleButton = new ToggleToolButton ();
-			filterToggleButton.IconWidget = new Image (Stock.MissingImage, IconSize.SmallToolbar);
+			filterToggleButton.IconWidget = new Image (Stock.Find, IconSize.SmallToolbar);
 			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
 			toolbar.Insert (filterToggleButton, 0);
 			
 			catToggleButton = new ToggleToolButton ();
-			catToggleButton.IconWidget = new Image (Stock.MissingImage, IconSize.SmallToolbar);
+			catToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.SmallToolbar);
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			toolbar.Insert (catToggleButton, 1);
 			
 			SeparatorToolItem sep = new SeparatorToolItem();
 			toolbar.Insert (sep, 2);
+			
+			ToolButton toolboxAddButton = new ToolButton (Stock.Add);
+			toolbar.Insert (toolboxAddButton, 3);
+			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
 			
 			filterEntry = new Entry();
 			filterEntry.WidthRequest = 150;
@@ -145,6 +140,8 @@ namespace AspNetEdit.Gui.Toolbox
 			//set initial state
 			filterToggleButton.Active = false;
 			catToggleButton.Active = true;
+			
+			this.ShowAll ();
 		}
 		
 		private void tbsChanged (object sender, EventArgs e)
@@ -181,6 +178,11 @@ namespace AspNetEdit.Gui.Toolbox
 			EnsureState ();
 		}
 		
+		void toolboxAddButton_Clicked (object sender, EventArgs e)
+		{
+			toolboxService.UserAddItems ();
+		}
+		
 		#endregion
 		
 		#region GUI population
@@ -190,30 +192,10 @@ namespace AspNetEdit.Gui.Toolbox
 			Repopulate (true);
 		}
 		
-		private void Repopulate	(bool categorised)
-		{
-			IDesignerHost host = parentServices.GetService (typeof (IDesignerHost)) as IDesignerHost;
-			IToolboxService toolboxService = parentServices.GetService (typeof (IToolboxService)) as IToolboxService;
-			if (toolboxService == null || host == null) return;
-			
+		private void Repopulate (bool categorised)
+		{			
 			store.Clear ();
-			
-			ToolboxItemCollection tools = toolboxService.GetToolboxItems (host);
-			if (tools == null) return;
-			
-			ArrayList nodes = new ArrayList (tools.Count);
-			
-			CategoryNameCollection catNames = toolboxService.CategoryNames;
-				
-			foreach (string name in catNames) {				
-				tools = toolboxService.GetToolboxItems (name, host);
-				foreach (ToolboxItem ti in tools) {
-					ToolboxItemToolboxNode node = new ToolboxItemToolboxNode (ti);
-					node.Category = name;
-					nodes.Add (node);
-				}
-			}
-			
+			ICollection nodes = toolboxService.GetCurrentToolboxItems ();
 			store.SetNodes (nodes);
 			EnsureState ();
 		}
@@ -268,35 +250,15 @@ namespace AspNetEdit.Gui.Toolbox
 		
 		private void OnSelectionChanged (object sender, EventArgs e)
 		{
-			selectedNode = nodeView.NodeSelection.SelectedNode as BaseToolboxNode;
-			
-			if (selectedNode is ToolboxItemToolboxNode) {
-				//get the services
-				DesignerHost host = parentServices.GetService (typeof (IDesignerHost)) as DesignerHost;
-				IToolboxService toolboxService = parentServices.GetService (typeof (IToolboxService)) as IToolboxService;
-				if (toolboxService == null || host == null)	return;
-				
-				toolboxService.SetSelectedToolboxItem (((ToolboxItemToolboxNode) selectedNode).ToolboxItem);
-			}
+			selectedNode = nodeView.NodeSelection.SelectedNode as ItemToolboxNode;		
+			toolboxService.SelectItem (selectedNode);
 		}
 		
 		private void OnRowActivated (object sender, RowActivatedArgs e)
 		{
-			ItemToolboxNode activatedNode = store.GetNode(e.Path) as ItemToolboxNode;
-			
-			DesignerHost host = parentServices.GetService (typeof (IDesignerHost)) as DesignerHost;
-			IToolboxService toolboxService = parentServices.GetService (typeof (IToolboxService)) as IToolboxService;
-			
-			//toolboxitem needs to trigger extra events from toolboxService
-			if (selectedNode is ToolboxItemToolboxNode) {
-				if (toolboxService == null || host == null)	return;
-				toolboxService.SetSelectedToolboxItem (((ToolboxItemToolboxNode) activatedNode).ToolboxItem);
-				activatedNode.Activate (host);
-				toolboxService.SelectedToolboxItemUsed ();
-			}
-			else {
-				activatedNode.Activate (host);
-			}
+			selectedNode = store.GetNode(e.Path) as ItemToolboxNode;		
+			toolboxService.SelectItem (selectedNode);
+			toolboxService.UseSelectedItem ();
 		}	
 		#endregion	
 	}
