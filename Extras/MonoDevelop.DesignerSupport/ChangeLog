@@ -1,3 +1,29 @@
+2006-07-21  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: 
+	Store toolbox data in the correct location.
+	* ChangeLog: add missing entries.
+
+2006-07-21  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/*:
+	* MonoDevelop.DesignerSupport.PropertyGrid/*:
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/*:
+	* MonoDevelop.DesignerSupport/*:
+	* MonoDevelop.DesignerSupport.CodeBehind/*:
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.addin.xml:
+	* MonoDevelop.DesignerSupport.mdp:
+	* icons/*:
+	Import the Designer Support addin.
+
+2006-07-21  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/*:
+	* MonoDevelop.DesignerSupport.PropertyGrid/*:
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/*:
+	Import AspNetEdit property grid and toolbox.
+
 2006-04-27  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs: 

@@ -37,7 +37,7 @@ namespace MonoDevelop.DesignerSupport
 				if (toolboxService == null) {
 					toolboxService = new ToolboxService ();
 										
-					string path = System.IO.Path.Combine (Runtime.Properties.DataDirectory, "toolbox.xml");
+					string path = System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml");
 					if (System.IO.File.Exists (path))
 						toolboxService.LoadContents (path);
 				}
@@ -66,7 +66,7 @@ namespace MonoDevelop.DesignerSupport
 		public override void UnloadService()
 		{
 			if (toolboxService != null)
-				toolboxService.SaveContents (System.IO.Path.Combine (Runtime.Properties.DataDirectory, "toolbox.xml"));
+				toolboxService.SaveContents (System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml"));
 		}
 		
 		#endregion
