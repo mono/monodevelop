@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 				return false;
 			string mimetype = Gnome.Vfs.MimeType.GetMimeTypeForUri (filename);
 			if (mimetype == "text/html")
-				return true;
+				return (parent is MonoDevelop.Ide.Gui.Content.ITextBuffer);
 			return false;
 		}
 

@@ -1,3 +1,11 @@
+2006-07-21 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Improve name file generation. Use defaultExtension for filenames 
+	  that specify neither a language nor a name pattern.
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Make browser preview more robust (missed earlier).
+
 2006-07-21 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Don't ctash

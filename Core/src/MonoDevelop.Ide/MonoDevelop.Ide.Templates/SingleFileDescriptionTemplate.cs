@@ -41,12 +41,14 @@ namespace MonoDevelop.Ide.Templates
 	{
 		string name;
 		string defaultName;
+		string defaultExtension;
 		string generatedFile;
 		
 		public override void Load (XmlElement filenode)
 		{
 			name = filenode.GetAttribute ("name");
-			defaultName = filenode.GetAttribute ("DefaultName") + filenode.GetAttribute ("DefaultExtension");
+			defaultName = filenode.GetAttribute ("DefaultName");
+			defaultExtension = filenode.GetAttribute ("DefaultExtension");
 		}
 		
 		public override string Name {
@@ -113,7 +115,7 @@ namespace MonoDevelop.Ide.Templates
 		// All parameters are optional (can be null)
 		public virtual string GetFileName (Project project, string language, string baseDirectory, string entryName)
 		{
-			if (((entryName == null) || (entryName.Length < 1)) && (defaultName.Length > 0))
+			if (string.IsNullOrEmpty (entryName) && !string.IsNullOrEmpty (defaultName))
 				entryName = defaultName;
 			
 			string fileName = entryName;
@@ -127,9 +129,14 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			//give it an extension if it didn't get one (compatibility with pre-substition behaviour)
-			if (language != null && language.Length > 0 && Path.GetExtension (fileName).Length == 0) {
-				IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
-				fileName = languageBinding.GetFileName (fileName);
+			if (Path.GetExtension (fileName).Length == 0) {
+				if (!string.IsNullOrEmpty  (defaultExtension)) {
+					fileName = fileName + defaultExtension;
+				}
+				else if (!string.IsNullOrEmpty  (language)) {
+					IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
+					fileName = languageBinding.GetFileName (fileName);
+				} 
 			}
 			
 			if (baseDirectory != null)
