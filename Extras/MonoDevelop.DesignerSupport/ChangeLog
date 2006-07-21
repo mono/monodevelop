@@ -1,0 +1,36 @@
+2006-04-27  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs: 
+	Make sure we cover all items in filtering loop.
+
+2006-04-27  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs: 
+	  Accessor for ToolboxItem.
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs:
+	  Don't rebuild after blank filter.
+	* MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs:
+	  Add Clear () method to remove all children.
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	  Get categories from ToolboxService, and maintain expansion 
+	  and selection state where possible.
+	
+2006-04-26  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs: 
+	  Add new NodeStore-based Toolbox.
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:	
+	  Add Refresh method as interim workaround for not being
+	  able to track externally changed values of properties.
+
+2006-01-16 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/StringEditor.cs: 
+	  Write helpful trace message after swallowing PropertyConverter failure.
