@@ -200,6 +200,7 @@ if test "x$enable_aspnet" = "xyes"; then
 fi
 
 AM_CONDITIONAL(ENABLE_ASPNET, test x$enable_aspnet = xyes)
+AM_CONDITIONAL(ENABLE_DESIGNERSUPP, test x$enable_aspnet = xyes)
 
 
 MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
@@ -306,6 +307,7 @@ Extras/ChangeLogAddIn/Makefile
 Extras/MonoDevelop.GtkCore/Makefile
 Extras/AspNetAddIn/Makefile
 Extras/MonoDevelop.Autotools/Makefile
+Extras/MonoDevelop.DesignerSupport/Makefile
 Makefile
 monodevelop
 mdtool

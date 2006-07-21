@@ -1,2 +1,2 @@
 
-SUBDIRS = MonoDevelop.SourceEditor MonoDevelop.Autotools CSharpBinding DebuggerAddIn ILAsmBinding MonoQuery JavaBinding BooBinding NemerleBinding NUnit MonoDeveloperExtensions VersionControl prj2make-sharp-lib VBNetBinding WelcomePage ChangeLogAddIn MonoDevelop.GtkCore AspNetAddIn
+SUBDIRS = MonoDevelop.SourceEditor MonoDevelop.Autotools CSharpBinding DebuggerAddIn ILAsmBinding MonoQuery JavaBinding BooBinding NemerleBinding NUnit MonoDeveloperExtensions VersionControl prj2make-sharp-lib VBNetBinding WelcomePage ChangeLogAddIn MonoDevelop.GtkCore MonoDevelop.DesignerSupport AspNetAddIn

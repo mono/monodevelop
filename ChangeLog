@@ -1,3 +1,10 @@
+2006-07-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Extras/Makefile.am:
+	* Extras/Extras.mds:
+	* Makefile.am:
+	* configure.in: Add MonoDevelop.DesignerSupport to the build.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* monodevelop.in: Added yet another way of finding the

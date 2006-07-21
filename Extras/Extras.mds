@@ -18,6 +18,7 @@
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
       <Entry build="True" name="AspNetAddIn" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -37,8 +38,10 @@
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
       <Entry build="True" name="AspNetAddIn" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <StartMode startupentry="BooBinding" single="True">
     <Execute type="None" entry="MonoDevelop.NUnit" />
     <Execute type="None" entry="CSharpBinding" />
@@ -57,6 +60,7 @@
     <Execute type="None" entry="ChangeLogAddIn" />
     <Execute type="None" entry="MonoDeveloperExtensions" />
     <Execute type="None" entry="AspNetAddIn" />
+    <Execute type="None" entry="MonoDevelop.DesignerSupport" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -76,5 +80,6 @@
     <Entry filename="./ChangeLogAddIn/ChangeLogAddIn.mdp" />
     <Entry filename="./MonoDeveloperExtensions/MonoDeveloperExtensions.mds" />
     <Entry filename="./AspNetAddIn/AspNetAddIn.mdp" />
+    <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
   </Entries>
 </Combine>
