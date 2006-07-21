@@ -13,6 +13,7 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS)
@@ -22,10 +23,13 @@ FILES = \
 	Project/AspNetAppProjectBinding.cs \
 	Project/AspNetAppProjectConfiguration.cs \
 	Project/AspNetFileDescriptionTemplate.cs \
-	Project/CodeBehindClassBuilder.cs \
-	Project/CodeBehindProjectFileExtension.cs \
+	Project/AspNetCodeBehindProvider.cs \
+	Project/AspNetDisplayBinding.cs \
 	Project/XspParameters.cs \
+	Project/VerifyCodeBehindBuildStep.cs \
+	\
 	Gui/XspOptionsPanel.cs \
+	\
 	Parser/Document.cs \
 	Parser/MemberListVisitor.cs \
 	Parser/WebFormReferenceManager.cs \
@@ -54,9 +58,11 @@ RES = \
 	Templates/EmptyWebHandler.xft.xml \
 	Templates/EmptyWebForm.xft.xml \
 	Templates/EmptyWebControl.xft.xml \
+	Templates/EmptyWebService.xft.xml \
 	Templates/CodeBehindWebHandler.xft.xml \
 	Templates/CodeBehindWebForm.xft.xml \
 	Templates/CodeBehindWebControl.xft.xml \
+	Templates/CodeBehindWebService.xft.xml \
 	Templates/WebApplication.xpt.xml \
 	AspNetAddIn.glade
 	

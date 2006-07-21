@@ -16,7 +16,7 @@
 	<TemplateFiles>
 		<AspNetFile DefaultExtension=".ascx" name="Default">
 			<FileText>
-<![CDATA[<%@ Control Language="${Language}" ClassName="${Namespace}._${Name}" %>]]>
+<![CDATA[<%@ Control Language="${Language}" Inherits="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
@@ -27,7 +27,7 @@ using System.Web.UI;
 
 namespace ${Namespace} {
 
-	public class _${Name} : UserControl
+	public class ${Name} : UserControl
 	{
 		public void ButtonClick (object sender, EventArgs e)
 		{

@@ -18,14 +18,16 @@
 		<AddIn id="MonoDevelop.Projects.Gui" version="0.12.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
 		<AddIn id="MonoDevelop.SourceEditor" version="0.12.0"/>
-		<AddIn id="CSharpBinding" version="0.9.0"/>
+		<AddIn id="MonoDevelop.DesignerSupport" version="0.0.1"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/FileTemplates">
 		<FileTemplate id = "EmptyWebForm" resource = "EmptyWebForm.xft.xml"/>
 		<FileTemplate id = "EmptyWebHandler" resource = "EmptyWebHandler.xft.xml"/>
 		<FileTemplate id = "EmptyWebControl" resource = "EmptyWebControl.xft.xml"/>
+		<FileTemplate id = "EmptyWebService" resource = "EmptyWebService.xft.xml"/>
 		<FileTemplate id = "CodeBehindWebControl" resource = "CodeBehindWebControl.xft.xml"/>
+		<FileTemplate id = "CodeBehindWebService" resource = "CodeBehindWebService.xft.xml"/>
 		<FileTemplate id = "CodeBehindWebForm" resource = "CodeBehindWebForm.xft.xml"/>
 		<FileTemplate id = "CodeBehindWebHandler" resource = "CodeBehindWebHandler.xft.xml"/>
 	</Extension>
@@ -39,29 +41,14 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/FileFilter">
-		<FileFilter	id = "AspNetWebForm"
+		<FileFilter	id = "AspNetWebFiles"
 				insertbefore = "AllFiles"
-				_label = "ASP.NET Web Form (*.aspx)"
-				extensions = "*.aspx" />
-		<FileFilter	id = "AspNetWebHandler"
-				insertbefore = "AllFiles"
-				_label = "ASP.NET Web Handler (*.ashx)"
-				extensions = "*.ashx" />
-		<FileFilter	id = "AspNetWebUserControl"
-				insertbefore = "AllFiles"
-				_label = "ASP.NET User Control (*.ascx)"
-				extensions = "*.ascx" />
+				_label = "ASP.NET Files"
+				extensions = "*.aspx,*.ashx,*.asmx,*.ascx" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id = "AspNetApplication" class = "AspNetAddIn.AspNetAppProjectBinding" />
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
-		<PadOption id = "ShowCodeBehindClasses" _label = "Show CodeBehind classes with parent files" defaultValue = "True" />
-		<PadOption id = "ShowCodeBehindFiles" _label = "Show CodeBehind files" defaultValue = "False" />
-		<NodeBuilder id = "CodeBehindProjectFileExtension" class = "AspNetAddIn.CodeBehindProjectFileExtension"/>
-		<NodeBuilder id = "CodeBehindClassBuilder" class = "AspNetAddIn.CodeBehindClassBuilder"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
@@ -74,6 +61,22 @@
 			<DialogPanel id = "XspOptions"
 			             _label = "XSP Web Server"
 			             class = "AspNetAddIn.XspOptionsPanel"/>
+		</Conditional>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
+		<Class id="AspNetCodeBehindProvider" class="AspNetAddIn.AspNetCodeBehindProvider"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "AspNetDisplayBinding"
+		                supportedformats = "Source Code"
+		                class = "AspNetAddIn.AspNetDisplayBinding"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
+		<Conditional activeproject="AspNetApp">
+			<Class insertbefore = "MainBuildStep" class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 		</Conditional>
 	</Extension>
 </AddIn>

@@ -1,3 +1,39 @@
+2006-07-21  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Project/AspNetAppProject.cs:
+	* Project/VerifyCodeBehindBuildStep.cs:
+	  Move Codebehind verification into a separate build step.
+	
+	* Project/CodeBehindClassBuilder.cs:
+	* Project/AspNetCodeBehindProvider.cs:
+	  Deleted. Functionality moved to MonoDevelop.DesignerSupport.
+	* Project/AspNetAppProject.cs:
+	* AspNetAddIn.addin.xml:
+	* Project/CodeBehindProjectFileExtension.cs:
+	  Implement CodeBehindProvider architecture.
+	
+	* Parser/PageInfoVisitor.cs:
+	  Find CodeBehind info for more filetypes.
+	
+	* Templates/CodeBehindWebHandler.xft.xml:
+	* Templates/CodeBehindWebControl.xft.xml:
+	* Templates/CodeBehindWebForm.xft.xml:
+	* Templates/WebApplication.xpt.xml:
+	  Remove unnecessary underscores in CodeBehind class names.
+	
+	* Templates/CodeBehindWebService.xft.xml:
+	* Templates/EmptyWebService.xft.xml:
+	  New templates.
+	  
+
+	* Project/AspNetDisplayBinding.cs:
+	  New file. For now, makes it possible to open ASP.NET mime types.
+	  
+	* AspNetAddIn.addin.xml:
+	* Makefile.am:
+	* AspNetAddIn.mdp:
+	  Include new files, remove old ones.
+	
 2006-07-04  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* Templates/CodeBehindWebControl.xft.xml:

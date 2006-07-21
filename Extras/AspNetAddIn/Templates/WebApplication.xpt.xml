@@ -33,7 +33,7 @@
 			<Files>
 				<AspNetFile name="Default.aspx">
 					<FileText>
-						<![CDATA[<%@ Page Language="${Language}" Inherits="${Namespace}._${Name}" %>
+						<![CDATA[<%@ Page Language="${Language}" Inherits="${Namespace}.${Name}" %>
 ${Doctype}
 <html>
 <head>
@@ -56,7 +56,7 @@ using System.Web.UI;
 	
 namespace ${Namespace} {
 
-	public class _${Name} : Page
+	public class ${Name} : Page
 	{
 		public void onButtonClick (object sender, EventArgs e)
 		{

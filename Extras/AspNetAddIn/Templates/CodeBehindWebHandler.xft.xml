@@ -16,7 +16,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.ashx">
 			<FileText>
-<![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}._${Name}" %>]]>
+<![CDATA[<%@ WebHandler Language="${Language}" Class="${Namespace}.${Name}" %>]]>
 			</FileText>
 		</AspNetFile>
 		
@@ -29,7 +29,7 @@ using System.Web.UI;
 
 namespace ${Namespace} {	
 	
-	public class _${Name} : IHttpHandler {
+	public class ${Name} : IHttpHandler {
 	
 		public void ProcessRequest (HttpContext context) {
 			context.Response.ContentType = "text/plain";

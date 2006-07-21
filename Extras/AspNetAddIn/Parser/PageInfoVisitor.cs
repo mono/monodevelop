@@ -40,15 +40,34 @@ namespace AspNetAddIn.Parser
 		private string inheritedClass;
 		private string codeBehindFile;
 		private string language;
+		private AspNetAddIn.WebSubtype type = WebSubtype.None;
 		
 		public override void Visit (DirectiveNode node)
 		{
-			if (String.Compare (node.Name, "page", true) != 0)
-				return;
+			switch (node.Name.ToLower ()) {
+				case "page":
+					type = WebSubtype.WebForm;
+					break;
+				case "control":
+					type = WebSubtype.WebControl;
+					break;
+				case "webservice":
+					type = WebSubtype.WebService;
+					break;
+				case "webhandler":
+					type = WebSubtype.WebHandler;
+					break;
+				default:
+					type = WebSubtype.None;
+					return;
+			}
 			
-			inheritedClass = (string) node.Attributes ["inherits"];
-			codeBehindFile = (string) node.Attributes ["codebehind"];
-			language = (string) node.Attributes ["language"];
+			inheritedClass = node.Attributes ["inherits"] as string;
+			if (inheritedClass == null)
+				inheritedClass = node.Attributes ["class"] as string;
+			
+			codeBehindFile = node.Attributes ["codebehind"] as string;
+			language = node.Attributes ["language"] as string;
 		}
 		
 		public string InheritedClass {
@@ -61,6 +80,10 @@ namespace AspNetAddIn.Parser
 		
 		public string Language {
 			get { return language; }
+		}
+		
+		public AspNetAddIn.WebSubtype Subtype {
+			get { return type; }
 		}
 	}
 }
