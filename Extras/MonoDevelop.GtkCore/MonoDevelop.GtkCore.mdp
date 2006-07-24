@@ -13,9 +13,7 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeployTargets />
   <Contents>
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.GtkCore.addin.xml" subtype="Code" buildaction="Nothing" />
@@ -86,4 +84,7 @@
     <ProjectReference type="Assembly" localcopy="True" refto="../../contrib/Mono.Cecil.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>

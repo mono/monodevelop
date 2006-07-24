@@ -1,3 +1,8 @@
+2006-07-24 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* lib/libstetic.dll: Updated from stetic module. Fixes a bug
+	  in the table wrapper which may cause an endless loop.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.GtkCore/GtkCoreService.cs:
