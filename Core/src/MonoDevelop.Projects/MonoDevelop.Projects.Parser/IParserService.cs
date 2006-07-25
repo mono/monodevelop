@@ -90,6 +90,9 @@ namespace MonoDevelop.Projects.Parser
 		IParseInformation ParseFile (string fileName, string fileContent);
 		IParseInformation ParseFile (ITextFile file);
 		
+		// Makes sure that all parser information is up to date.
+		void UpdateDatabase ();
+		
 		IExpressionFinder GetExpressionFinder(string fileName);
 		
 		IParseInformation GetParseInformation (string fileName);

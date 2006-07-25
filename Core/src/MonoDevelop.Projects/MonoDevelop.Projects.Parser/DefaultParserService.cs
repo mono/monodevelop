@@ -118,6 +118,11 @@ namespace MonoDevelop.Projects.Parser
 			get { return pdb; }
 		}
 		
+		public void UpdateDatabase ()
+		{
+			db.UpdateDatabase ();
+		}
+		
 		public IExpressionFinder GetExpressionFinder (string fileName)
 		{
 			return pdb.GetExpressionFinder (fileName);
@@ -458,7 +463,10 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IProjectParserContext GetProjectParserContext (Project project)
 		{
-			return new ProjectParserContext (parserService, this, GetProjectDatabase (project));
+			CodeCompletionDatabase pdb = GetProjectDatabase (project);
+			if (pdb == null)
+				throw new InvalidOperationException ("Project not found in parser database");
+			return new ProjectParserContext (parserService, this, pdb);
 		}
 		
 		public IFileParserContext GetFileParserContext (string file)

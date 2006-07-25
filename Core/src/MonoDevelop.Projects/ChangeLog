@@ -1,3 +1,15 @@
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	  Added an UpdateDatabase method to IParserContext. This method
+	  will parse all modified files of the parser context. It does
+	  not use the parsing queue, so it will block until done.
+	  
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Override IsFileModified instead of CheckModifiedFiles.
+
 2006-07-25 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Combine.cs: When disposing the combine, dispose

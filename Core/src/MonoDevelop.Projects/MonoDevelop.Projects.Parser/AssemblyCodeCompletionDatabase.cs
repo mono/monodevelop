@@ -103,22 +103,16 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		public override void CheckModifiedFiles ()
+		protected override bool IsFileModified (FileEntry file)
 		{
 			if (!isPackageAssembly)
-				base.CheckModifiedFiles ();
-			else {
-				// Don't check timestamps for packaged assemblies.
-				// Just check if the package has changed.
+				return base.IsFileModified (file);
 
-				foreach (FileEntry file in files.Values) {
-					SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
-					bool versionMismatch = pkg != null && packageVersion != pkg.Name + " " + pkg.Version;
-					if (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0)) {
-						QueueParseJob (file);
-					}
-				}
-			}
+			// Don't check timestamps for packaged assemblies.
+			// Just check if the package has changed.
+			SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (assemblyName);
+			bool versionMismatch = pkg != null && packageVersion != pkg.Name + " " + pkg.Version;
+			return (!file.DisableParse && (versionMismatch || file.LastParseTime == DateTime.MinValue || file.ParseErrorRetries > 0));
 		}
 		
 		public static string GetFullAssemblyName (string s)

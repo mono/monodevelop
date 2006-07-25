@@ -405,20 +405,41 @@ namespace MonoDevelop.Projects.Parser
 			
 			ce.Class = ReadClass (ce);
 			return ce.Class;
-		}		
+		}
+		
+		public void UpdateDatabase ()
+		{
+			ArrayList list = GetModifiedFileEntries ();
+			foreach (FileEntry file in list)
+				ParseFile (file.FileName, null);
+		}
 		
 		public virtual void CheckModifiedFiles ()
 		{
+			ArrayList list = GetModifiedFileEntries ();
+			foreach (FileEntry file in list)
+				QueueParseJob (file);
+		}
+		
+		protected ArrayList GetModifiedFileEntries ()
+		{
+			ArrayList list = new ArrayList ();
 			lock (rwlock)
 			{
-				foreach (FileEntry file in files.Values)
-				{
-					if (!File.Exists (file.FileName)) continue;
-					FileInfo fi = new FileInfo (file.FileName);
-					if ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse)
-						QueueParseJob (file);
+				foreach (FileEntry file in files.Values) {
+					if (IsFileModified (file))
+						list.Add (file);
 				}
 			}
+			return list;
+		}
+		
+		protected virtual bool IsFileModified (FileEntry file)
+		{
+			if (!File.Exists (file.FileName))
+				return false;
+			FileInfo fi = new FileInfo (file.FileName);
+			return ((fi.LastWriteTime > file.LastParseTime || file.ParseErrorRetries > 0) && !file.DisableParse);
 		}
 		
 		protected void QueueParseJob (FileEntry file)
