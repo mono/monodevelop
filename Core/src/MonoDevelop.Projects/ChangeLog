@@ -1,3 +1,19 @@
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/Combine.cs: When disposing the combine, dispose
+	  all combine entries.
+	  
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Added properties and
+	  events that give information about when the parser database is parsing
+	  code or assemblies.
+	
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added a check when
+	  loading the database, which will avoid allocation huge arrays if the file
+	  format is corrupted.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Fixed a bug
+	  which was causing some databases to be marked as modified, when they were not.
+
 2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Copy files with BuildAction.FileCopy.

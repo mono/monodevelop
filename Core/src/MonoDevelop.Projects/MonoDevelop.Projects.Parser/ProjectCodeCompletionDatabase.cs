@@ -51,6 +51,12 @@ namespace MonoDevelop.Projects.Parser
 			SetLocation (project.BaseDirectory, project.Name);
 			
 			this.project = project;
+			
+			// Store the project target runtime
+			DotNetProject prj = project as DotNetProject;
+			if (prj != null)
+				lastVersion = prj.ClrVersion;
+			
 			Read ();
 			
 			UpdateFromProject ();
@@ -68,6 +74,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override void Dispose ()
 		{
+			base.Dispose ();
 			project.FileChangedInProject -= new ProjectFileEventHandler (OnFileChanged);
 			project.FileAddedToProject -= new ProjectFileEventHandler (OnFileAdded);
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
@@ -157,7 +164,8 @@ namespace MonoDevelop.Projects.Parser
 			keys.AddRange (references);
 			foreach (ReferenceEntry re in keys)
 			{
-				if (!fs.Contains (re.Uri))
+				// Don't delete corlib references. They are implicit to projects, but not to pidbs.
+				if (!fs.Contains (re.Uri) && !IsCorlibReference (re))
 					RemoveReference (re.Uri);
 			}
 			UpdateCorlibReference ();
@@ -174,11 +182,11 @@ namespace MonoDevelop.Projects.Parser
 			
 			if (prj.ClrVersion == lastVersion)
 				return false;
-			
+
 			// Look for an existing mscorlib reference
 			string currentRefUri = null;
 			foreach (ReferenceEntry re in References) {
-				if (re.Uri.StartsWith ("Assembly:mscorlib")) {
+				if (IsCorlibReference (re)) {
 					currentRefUri = re.Uri;
 					break;
 				}
@@ -200,6 +208,11 @@ namespace MonoDevelop.Projects.Parser
 				return true;
 			}
 			return false;
+		}
+		
+		bool IsCorlibReference (ReferenceEntry re)
+		{
+			return re.Uri.StartsWith ("Assembly:mscorlib");
 		}
 		
 		string[] GetReferenceKeys (ProjectReference pr)

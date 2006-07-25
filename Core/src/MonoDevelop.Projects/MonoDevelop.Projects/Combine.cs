@@ -157,6 +157,13 @@ namespace MonoDevelop.Projects
 			entrySavedHandler = new CombineEntryEventHandler (NotifyEntrySaved);
 		}
 		
+		public override void Dispose()
+		{
+			base.Dispose ();
+			foreach (CombineEntry e in Entries)
+				e.Dispose ();
+		}
+		
 		public override IConfiguration CreateConfiguration (string name)
 		{
 			CombineConfiguration cc = new CombineConfiguration ();

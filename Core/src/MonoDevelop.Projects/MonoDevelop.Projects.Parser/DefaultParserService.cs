@@ -334,6 +334,7 @@ namespace MonoDevelop.Projects.Parser
 		bool threadRunning;
 		bool trackingFileChanges;
 		IProgressMonitorFactory parseProgressMonitorFactory;
+		int parseStatus;
 		
 		// Only keeps track of explicitely loaded assemblies, not the ones
 		// referenced by projects.
@@ -475,6 +476,9 @@ namespace MonoDevelop.Projects.Parser
 			set { parseProgressMonitorFactory = value; }
 		}
 		
+		public bool IsParsing {
+			get { return parseStatus > 0; }
+		}
 		
 		public bool TrackFileChanges {
 			get {
@@ -555,10 +559,13 @@ namespace MonoDevelop.Projects.Parser
 		
 		internal IProgressMonitor GetParseProgressMonitor ()
 		{
+			IProgressMonitor mon;
 			if (parseProgressMonitorFactory != null)
-				return parseProgressMonitorFactory.CreateProgressMonitor ();
+				mon = parseProgressMonitorFactory.CreateProgressMonitor ();
 			else
-				return new NullProgressMonitor ();
+				mon = new NullProgressMonitor ();
+			
+			return new AggregatedProgressMonitor (mon, new InternalProgressMonitor (this));
 		}
 			
 		internal CodeCompletionDatabase GetDatabase (string uri)
@@ -735,7 +742,8 @@ namespace MonoDevelop.Projects.Parser
 			}
 			if (db != null) {
 				db.Write ();
-				db.Dispose ();
+				if (!db.Disposed)
+					db.Dispose ();
 			}
 		}
 		
@@ -1015,6 +1023,25 @@ namespace MonoDevelop.Projects.Parser
 				while (pending > 0);
 			} finally {
 				if (monitor != null) monitor.Dispose ();
+			}
+		}
+		
+		internal void StartParseOperation ()
+		{
+			if ((parseStatus++) == 0) {
+				if (ParseOperationStarted != null)
+					ParseOperationStarted (this, EventArgs.Empty);
+			}
+		}
+		
+		internal void EndParseOperation ()
+		{
+			if (parseStatus == 0)
+				return;
+
+			if (--parseStatus == 0) {
+				if (ParseOperationFinished != null)
+					ParseOperationFinished (this, EventArgs.Empty);
 			}
 		}
 		
@@ -1586,6 +1613,8 @@ namespace MonoDevelop.Projects.Parser
 		public event ParseInformationEventHandler ParseInformationChanged;
 		public event ClassInformationEventHandler ClassInformationChanged;
 		public event AssemblyInformationEventHandler AssemblyInformationChanged;
+		public event EventHandler ParseOperationStarted;
+		public event EventHandler ParseOperationFinished;
 	}
 	
 	[Serializable]
@@ -1691,7 +1720,24 @@ namespace MonoDevelop.Projects.Parser
 			PutBaseClassesOnStack(topLevelClass);
 			baseTypeQueue.Enqueue("System.Object");
 		}
-	}	
+	}
+	
+	class InternalProgressMonitor: NullProgressMonitor
+	{
+		ParserDatabase db;
+		
+		public InternalProgressMonitor (ParserDatabase db)
+		{
+			this.db = db;
+			db.StartParseOperation ();
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			db.EndParseOperation ();
+		}
+	}
 	
 	public class ClassUpdateInformation
 	{

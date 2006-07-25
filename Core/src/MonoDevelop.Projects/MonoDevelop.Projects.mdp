@@ -14,9 +14,6 @@
     </Configuration>
   </Configurations>
   <DeployTargets />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/AbstractAmbience.cs" subtype="Code" buildaction="Compile" />
@@ -242,4 +239,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>

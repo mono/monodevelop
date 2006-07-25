@@ -59,6 +59,7 @@ namespace MonoDevelop.Projects.Parser
 		FileStream datafile;
 		int currentGetTime = 0;
 		bool modified;
+		bool disposed;
 		
 		string basePath;
 		string dataFile;
@@ -76,11 +77,21 @@ namespace MonoDevelop.Projects.Parser
 		
 		public virtual void Dispose ()
 		{
+			disposed = true;
 		}
 		
 		public string DataFile
 		{
 			get { return dataFile; }
+		}
+		
+		public bool Modified {
+			get { return modified; }
+			set { modified = value; }
+		}
+		
+		public bool Disposed {
+			get { return disposed; }
 		}
 		
 		protected void SetLocation (string basePath, string name)
@@ -172,6 +183,7 @@ namespace MonoDevelop.Projects.Parser
 			lock (rwlock)
 			{
 				if (!modified) return;
+				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
 							
@@ -213,12 +225,19 @@ namespace MonoDevelop.Projects.Parser
 								}
 								datafile.Position = ce.Position;
 								len = datareader.ReadInt32 ();
+								
+								// Sanity check to avoid allocating huge byte arrays if something
+								// goes wrong when reading the file contents
+								if (len > 1024*1024*10 || len < 0)
+									throw new InvalidOperationException ("pidb file corrupted: " + dataFile);
+									
 								data = new byte[len];
 								datafile.Read (data, 0, len);
 							}
 							else {
 								buffer.Position = 0;
 								PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
+								bufWriter.Flush ();
 								data = buffer.GetBuffer ();
 								len = (int)buffer.Position;
 							}

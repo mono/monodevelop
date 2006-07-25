@@ -57,12 +57,16 @@ namespace MonoDevelop.Projects.Parser
 		IParseInformation UpdateFile (Project project, string fileName, string fileContent);
 		
 		bool TrackFileChanges { get; set; }
+		bool IsParsing { get; }
 		
 		IProgressMonitorFactory ParseProgressMonitorFactory { get; set; }
 
 		event ParseInformationEventHandler ParseInformationChanged;
 		event ClassInformationEventHandler ClassInformationChanged;
 		event AssemblyInformationEventHandler AssemblyInformationChanged;
+
+		event EventHandler ParseOperationStarted;
+		event EventHandler ParseOperationFinished;
 	}
 	
 	public interface IFileParserContext: IParserContext
