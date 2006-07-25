@@ -1,3 +1,9 @@
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* src/mdhost.cs: Don't check for required add-ins here. The main
+	  process will do it. Added new LoadAddins method which can be
+	  used by the main process to remotely load add-ins.
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mdhost.mdp: Updated.

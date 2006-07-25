@@ -99,10 +99,16 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 	
 	public RemoteProcessObject CreateInstance (Type type)
 	{
-		InitializeRuntime (type);
 		RemoteProcessObject proc = (RemoteProcessObject) Activator.CreateInstance (type);
 		proc.Attach (controller);
 		return proc;
+	}
+	
+	public void LoadAddins (string[] addinIds)
+	{
+		Runtime.Initialize ();
+		foreach (string ad in addinIds)
+			Runtime.AddInService.PreloadAddin (null, ad);
 	}
 	
 	public RemoteProcessObject CreateInstance (string fullTypeName)
@@ -110,20 +116,9 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 		try {
 			Type t = Type.GetType (fullTypeName);
 			if (t == null) throw new InvalidOperationException ("Type not found: " + fullTypeName);
-			InitializeRuntime (t);
 			return CreateInstance (t);
 		} catch (Exception ex) {
 			throw new InvalidOperationException ("Type not found: " + fullTypeName);
-		}
-	}
-	
-	void InitializeRuntime (Type type)
-	{
-		object[] ats = type.GetCustomAttributes (typeof(AddinDependencyAttribute), true);
-		if (ats.Length > 0) {
-			Runtime.Initialize ();
-			foreach (AddinDependencyAttribute at in ats)
-				Runtime.AddInService.PreloadAddin (null, at.Addin);
 		}
 	}
 	
