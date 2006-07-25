@@ -155,22 +155,14 @@ namespace AspNetAddIn
 				operationMonitor.Dispose ();
 				console.Dispose ();
 			}
-		}		
+		}
 		
-		protected override ICompilerResult DoBuild (IProgressMonitor monitor)
+		protected override void DoPreBuild (IProgressMonitor monitor)
 		{
 			AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) ActiveConfiguration;
 			conf.SourceDirectory = BaseDirectory;
 			
-			string binDir = System.IO.Path.Combine (BaseDirectory, "bin");
-			if (!System.IO.Directory.Exists (binDir)) {
-				monitor.ReportWarning ("Directory \"" + binDir + "\" directory does not exist; creating it...");
-				System.IO.Directory.CreateDirectory (binDir);
-			}
-			
-			ICompilerResult res = LanguageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
-			CopyReferencesToOutputPath (false);
-			return res;
+			base.DoPreBuild (monitor);
 		}
 		
 		#endregion

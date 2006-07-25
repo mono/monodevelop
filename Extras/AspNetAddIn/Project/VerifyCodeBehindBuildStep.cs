@@ -40,66 +40,14 @@ namespace AspNetAddIn
 					return null;
 				}
 				
-				//TODO: close file views before modifying them
-				//TODO: currently case-sensitive, so some languages may not like this
-				bool ignoreCase = false;
-			
-				if (cls != null) {
-					foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
-						bool found = false;
-					
-						//check for identical property names
-						foreach (IProperty prop in cls.Properties) {
-							if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
-								monitor.ReportWarning ("Cannot add field \"" + member.Name + "\" from \"" + file.Name +
-							    	                        "\" to CodeBehind file \"" + cls.BodyRegion.FileName +
-							        	                    "\", because there is already a property with that name.");
-								found = true;
-								break;
-							}
-						}
-					
-						//check for identical method names
-						foreach (IMethod meth in cls.Methods) {
-							if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
-								monitor.ReportWarning ("Cannot add field \"" + member.Name + "\" from \"" + file.Name +
-								                            "\" to CodeBehind file \"" + cls.BodyRegion.FileName +
-							    	                        "\", because there is already a method with that name on line " + meth.BodyRegion.BeginLine + ".");
-								found = true;
-								break;
-							}
-						}
-					
-						//check for matching fields
-						foreach (IField field in cls.Fields) {
-							if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
-								found = true;
-							
-								//check whether they're accessible
-								if (!(field.IsPublic || field.IsProtected || field.IsProtectedOrInternal)) {
-									monitor.ReportWarning ("Cannot add field \"" + member.Name + "\" from \"" + file.Name +
-								                            "\" to CodeBehind file \"" + cls.BodyRegion.FileName +
-								                            "\", because there is already a field with that name, " +
-							    	                        "which cannot be accessed by the deriving page.");
-									break;
-								}
-							
-								//check they're the same type
-								//TODO: check for base type compatibility
-								if (string.Compare (member.Type.BaseType, field.ReturnType.FullyQualifiedName, ignoreCase) != 0) {
-									monitor.ReportWarning ("Cannot add field \"" + member.Name + "\" with type \"" + member.Type.BaseType + "\" from \"" + file.Name +
-								                            "\" to CodeBehind file \"" + cls.BodyRegion.FileName +
-								                            "\", because there is already a field with that name, " +
-								                            "which appears to have a different type, \"" + field.ReturnType.FullyQualifiedName + "\".");
-									break;
-								}
-							}
-						}
-					
-						if (!found)
-							MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CodeRefactorer.AddMember (cls, member);
+				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
+					try {
+						DesignerSupport.Service.BindingService.AddMemberToClass (cls, member, false);
+					} catch (MemberExistsException m) {
+						monitor.ReportWarning (m.ToString ());
 					}
 				}
+				
 			}
 			
 			return null;
