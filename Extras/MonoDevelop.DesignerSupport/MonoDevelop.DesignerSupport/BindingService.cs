@@ -29,10 +29,10 @@ namespace MonoDevelop.DesignerSupport
 					if (throwIfExists || (memProp == null))
 						throw new MemberExistsException (cls.Name, member, MemberType.Property);
 					
-					if (memProp.Type.BaseType == prop.ReturnType.FullyQualifiedName)
+					if (memProp.Type.BaseType != prop.ReturnType.FullyQualifiedName)
 						throw new InvalidOperationException ("Return type does not match");
 					
-					break;
+					return;
 				}
 			}
 				
@@ -44,25 +44,25 @@ namespace MonoDevelop.DesignerSupport
 					if (throwIfExists || (memMeth == null))
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
-					if (memMeth.ReturnType.BaseType == meth.ReturnType.FullyQualifiedName)
+					if (memMeth.ReturnType.BaseType != meth.ReturnType.FullyQualifiedName)
 						throw new InvalidOperationException ("Return type does not match");
 					
-					break;
+					return;
 				}
 			}
 			
 			//check for identical event names
-			foreach (IEvent ev in cls.Methods) {
+			foreach (IEvent ev in cls.Events) {
 				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberEvent memEv = member as CodeMemberEvent;
 					
 					if (throwIfExists || (memEv == null))
 						throw new MemberExistsException (cls.Name, member, MemberType.Event);
 					
-					if (memEv.Type.BaseType == ev.ReturnType.FullyQualifiedName)
+					if (memEv.Type.BaseType != ev.ReturnType.FullyQualifiedName)
 						throw new InvalidOperationException ("Return type does not match");
 
-					break;
+					return;
 				}
 			}
 				
@@ -74,10 +74,10 @@ namespace MonoDevelop.DesignerSupport
 					if (throwIfExists || (memField == null))
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
-					if (memField.Type.BaseType == field.ReturnType.FullyQualifiedName)
+					if (memField.Type.BaseType != field.ReturnType.FullyQualifiedName)
 						throw new InvalidOperationException ("Return type does not match");
 					
-					break;
+					return;
 				}
 			}
 			
