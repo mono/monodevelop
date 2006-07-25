@@ -63,12 +63,14 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 		}
 		
-		public AggregatedProgressMonitor (IProgressMonitor masterMonitor)
+		public AggregatedProgressMonitor (IProgressMonitor masterMonitor, params IProgressMonitor[] slaveMonitors)
 		{
 			this.masterMonitor = masterMonitor;
 			AddSlaveMonitor (masterMonitor, MonitorAction.All);
 			logger = new LogTextWriter ();
 			logger.TextWritten += new LogTextEventHandler (OnWriteLog);
+			foreach (IProgressMonitor mon in slaveMonitors)
+				AddSlaveMonitor (mon);
 		}
 		
 		public void AddSlaveMonitor (IProgressMonitor slaveMonitor)

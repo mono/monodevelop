@@ -1,3 +1,14 @@
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessHostController.cs:
+	* MonoDevelop.Core.Execution/IProcessHost.cs:
+	* MonoDevelop.Core.Execution/ProcessService.cs: Get the list
+	  of add-ins required by a type, and load those add-ins into
+	  the remote process before loading the type.
+	
+	* MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs:
+	  allow specifying slave monitors in the constructor.
+
 2006-07-20 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: store cached

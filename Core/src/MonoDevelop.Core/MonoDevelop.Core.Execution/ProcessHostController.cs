@@ -113,7 +113,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public RemoteProcessObject CreateInstance (Type type)
+		public RemoteProcessObject CreateInstance (Type type, string[] addins)
 		{
 			lock (this) {
 				references++;
@@ -127,6 +127,9 @@ namespace MonoDevelop.Core.Execution
 			}
 			
 			try {
+				// Before creating the instance, load the add-ins on which it depends
+				if (addins != null && addins.Length > 0)
+					processHost.LoadAddins (addins);
 				return processHost.CreateInstance (type);
 			} catch {
 				ReleaseInstance (null);
@@ -134,7 +137,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public RemoteProcessObject CreateInstance (string assemblyPath, string typeName)
+		public RemoteProcessObject CreateInstance (string assemblyPath, string typeName, string[] addins)
 		{
 			lock (this) {
 				references++;
@@ -148,6 +151,9 @@ namespace MonoDevelop.Core.Execution
 			}
 			
 			try {
+				// Before creating the instance, load the add-ins on which it depends
+				if (addins != null && addins.Length > 0)
+					processHost.LoadAddins (addins);
 				return processHost.CreateInstance (assemblyPath, typeName);
 			} catch {
 				ReleaseInstance (null);

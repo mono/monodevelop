@@ -148,12 +148,24 @@ namespace MonoDevelop.Core.Execution
 		
 		public RemoteProcessObject CreateExternalProcessObject (Type type, bool shared)
 		{
-			return GetHost (type.ToString(), shared).CreateInstance (type.Assembly.Location, type.FullName);
+			return GetHost (type.ToString(), shared).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type));
 		}
 		
-		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, bool shared)
+		public RemoteProcessObject CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
 		{
-			return GetHost (typeName, shared).CreateInstance (assemblyPath, typeName);
+			return GetHost (typeName, shared).CreateInstance (assemblyPath, typeName, requiredAddins);
+		}
+		
+		string[] GetRequiredAddins (Type type)
+		{
+			if (type.IsDefined (typeof(AddinDependencyAttribute), true)) {
+				object[] ats = type.GetCustomAttributes (typeof(AddinDependencyAttribute), true);
+				string[] addins = new string [ats.Length];
+				for (int n=0; n<ats.Length; n++)
+					addins [n] = ((AddinDependencyAttribute)ats [n]).Addin;
+				return addins;
+			} else
+				return null;
 		}
 		
 		public string ExternalProcessRemotingChannel {
