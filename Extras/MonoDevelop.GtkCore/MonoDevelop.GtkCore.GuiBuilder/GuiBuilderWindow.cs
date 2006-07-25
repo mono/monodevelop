@@ -91,11 +91,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		public string SourceCodeFile {
-			get {
-				IClass cls = GetClass ();
-				if (cls != null) return cls.Region.FileName;
-				else return null;
-			}
+			get { return fproject.GetSourceCodeFile (rootWidget); }
 		}
 		
 		public GuiBuilderEditSession CreateEditSession (ITextFileProvider textFileProvider)
@@ -158,22 +154,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				Changed (this, new WindowEventArgs (this));
 		}
 		
-		public IClass GetClass ()
-		{
-			return GetClass (rootWidget.Wrapped.Name);
-		}
-		
-		internal IClass GetClass (string name)
-		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (fproject.Project);
-			IClass[] classes = ctx.GetProjectContents ();
-			foreach (IClass cls in classes) {
-				if (cls.FullyQualifiedName == name)
-					return cls;
-			}
-			return null;
-		}
-		
 		public bool InsideWindow (Stetic.Wrapper.Widget widget)
 		{
 			while (widget.ParentWrapper != null)
@@ -189,7 +169,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			
 			ArrayList list = new ArrayList ();
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project.Project);
+			IParserContext ctx = fproject.GetParserContext ();
 			foreach (IClass cls in ctx.GetProjectContents ())
 				if (IsValidClass (ctx, cls))
 					list.Add (cls.FullyQualifiedName);

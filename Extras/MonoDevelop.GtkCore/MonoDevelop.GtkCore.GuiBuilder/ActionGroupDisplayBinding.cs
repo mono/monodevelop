@@ -99,26 +99,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null)
 				return null;
-
-			GuiBuilderProject gproject = info.GuiBuilderProject;
-			foreach (Stetic.Wrapper.ActionGroup group in gproject.SteticProject.ActionGroups) {
-				if (file == CodeBinder.GetSourceCodeFile (project, group))
-					return group;
-			}
-
-			return null;
+				
+			return info.GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
 		internal static string BindToClass (Project project, Stetic.Wrapper.ActionGroup group)
 		{
-			string file = CodeBinder.GetSourceCodeFile (project, group);
+			GuiBuilderProject gproject = GuiBuilderService.GetGuiBuilderProject (project);
+			string file = gproject.GetSourceCodeFile (group);
 			if (file != null)
 				return file;
 				
 			// Find the classes that could be bound to this design
 			
 			ArrayList list = new ArrayList ();
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = gproject.GetParserContext ();
 			foreach (IClass cls in ctx.GetProjectContents ())
 				if (IsValidClass (ctx, cls))
 					list.Add (cls.FullyQualifiedName);
@@ -135,7 +130,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
 				group.Name = fullName;
 			}
-			return CodeBinder.GetSourceCodeFile (project, group);
+			return gproject.GetSourceCodeFile (group);
 		}
 		
 		static IClass CreateClass (Project project, Stetic.Wrapper.ActionGroup group, string name, string namspace, string folder)

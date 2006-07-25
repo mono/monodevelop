@@ -96,13 +96,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (info == null)
 				return null;
 
-			GuiBuilderProject gproject = info.GuiBuilderProject;
-			foreach (GuiBuilderWindow win in gproject.Windows) {
-				if (win.SourceCodeFile == file)
-					return win;
-			}
-
-			return null;
+			return info.GuiBuilderProject.GetWindowForFile (file);
 		}
 	}
 }

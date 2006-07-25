@@ -55,6 +55,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		ITextFileProvider textFileProvider;
 		object targetObject;
 		Project project;
+		GuiBuilderProject gproject;
 		string className;
 		string classFile;
 		
@@ -62,7 +63,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			this.project = project;
 			this.textFileProvider = textFileProvider;
-			
+
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			gproject = info.GuiBuilderProject;
+
 			TargetObject = targetObject;
 		}
 		
@@ -70,7 +74,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return targetObject; }
 			set {
 				this.targetObject = value;
-				IClass cls = GetClass (GetClassName (targetObject)); 
+				IClass cls = gproject.FindClass (GetClassName (targetObject)); 
 				className = cls.FullyQualifiedName;
 				classFile = cls.Region.FileName;
 			}
@@ -223,13 +227,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IClass GetClass ()
 		{
-			IClass cls = GetClass (className);
+			IClass cls = gproject.FindClass (className);
 			if (cls != null)
 				return cls;
 				
 			// The class name may have changed. Try to guess the new name.
 			
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = gproject.GetParserContext ();
 			IParseInformation pi = ctx.ParseFile (classFile);
 			
 			ArrayList matches = new ArrayList ();
@@ -257,7 +261,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 							return null;
 						else {
 							SetObjectName (targetObject, className);
-							return GetClass (project, className);
+							return gproject.FindClass (className);
 						}
 					}
 				}
@@ -265,36 +269,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("The class bound to the component '{0}' could not be found. This may be due to syntax errors in the source code file.", GetObjectName(targetObject)));
 			}
 			
-			return null;
-		}
-		
-		public static IClass GetClass (Project project, object obj)
-		{
-			string name = GetClassName (obj);
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			IClass[] classes = ctx.GetProjectContents ();
-			foreach (IClass cls in classes) {
-				if (cls.FullyQualifiedName == name)
-					return cls;
-			}
-			return null;
-		}
-		
-		public static string GetSourceCodeFile (Project project, object obj)
-		{
-			IClass cls = GetClass (project, obj);
-			if (cls != null) return cls.Region.FileName;
-			else return null;
-		}
-		
-		internal IClass GetClass (string name)
-		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			IClass[] classes = ctx.GetProjectContents ();
-			foreach (IClass cls in classes) {
-				if (cls.FullyQualifiedName == name)
-					return cls;
-			}
 			return null;
 		}
 		
@@ -314,12 +288,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return false;
 		}
 		
-		public static string GetClassName (object obj)
+		internal static string GetClassName (object obj)
 		{
 			return GetObjectName (obj);
 		}
 		
-		public static string GetMemberName (object obj)
+		internal static string GetMemberName (object obj)
 		{
 			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
 			if (w != null)
@@ -328,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return GetObjectName (obj);
 		}
 		
-		public static string GetObjectName (object obj)
+		internal static string GetObjectName (object obj)
 		{
 			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
 			if (w != null) {
@@ -345,7 +319,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public static void SetMemberName (object obj, string name)
+		internal static void SetMemberName (object obj, string name)
 		{
 			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
 			if (w != null) {
@@ -354,7 +328,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				SetObjectName (obj, name);
 		}
 		
-		public static void SetObjectName (object obj, string name)
+		internal static void SetObjectName (object obj, string name)
 		{
 			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
 			if (w != null) {
@@ -369,7 +343,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 		}
 		
-		public static string GetObjectTypeName (object obj)
+		internal static string GetObjectTypeName (object obj)
 		{
 			Stetic.ObjectWrapper w = GetWrapper (obj);
 			if (w != null)

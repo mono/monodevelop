@@ -51,6 +51,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		string fileName;
 		internal bool UpdatingWindow;
 		bool hasError;
+		bool needsUpdate = true;
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
@@ -210,19 +211,65 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		public GuiBuilderWindow GetWindowForClass (IClass cls)
-		{
-			return GetWindowForClass (cls.FullyQualifiedName);
-		}
-		
 		public GuiBuilderWindow GetWindowForClass (string className)
 		{
 			foreach (GuiBuilderWindow form in formInfos) {
-				IClass fc = form.GetClass ();
-				if (fc != null && fc.FullyQualifiedName == className)
+				if (CodeBinder.GetObjectName (form.RootWidget) == className)
 					return form;
 			}
 			return null;
+		}
+		
+		public GuiBuilderWindow GetWindowForFile (string fileName)
+		{
+			foreach (GuiBuilderWindow win in Windows) {
+				if (fileName == win.SourceCodeFile)
+					return win;
+			}
+			return null;
+		}
+		
+		public Stetic.Wrapper.ActionGroup GetActionGroupForFile (string fileName)
+		{
+			foreach (Stetic.Wrapper.ActionGroup group in SteticProject.ActionGroups) {
+				if (fileName == GetSourceCodeFile (group))
+					return group;
+			}
+			return null;
+		}
+		
+		public string GetSourceCodeFile (object obj)
+		{
+			IClass cls = GetClass (obj);
+			if (cls != null) return cls.Region.FileName;
+			else return null;
+		}
+		
+		IClass GetClass (object obj)
+		{
+			string name = CodeBinder.GetClassName (obj);
+			return FindClass (name);
+		}
+		
+		public IClass FindClass (string className)
+		{
+			IParserContext ctx = GetParserContext ();
+			IClass[] classes = ctx.GetProjectContents ();
+			foreach (IClass cls in classes) {
+				if (cls.FullyQualifiedName == className)
+					return cls;
+			}
+			return null;
+		}
+		
+		public IParserContext GetParserContext ()
+		{
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (Project);
+			if (needsUpdate) {
+				needsUpdate = false;
+				ctx.UpdateDatabase ();
+			}
+			return ctx;
 		}
 	}
 	

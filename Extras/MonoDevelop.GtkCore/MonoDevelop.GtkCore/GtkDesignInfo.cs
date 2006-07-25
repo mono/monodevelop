@@ -166,7 +166,7 @@ namespace MonoDevelop.GtkCore
 
 		public IClass[] GetExportedClasses ()
 		{
-			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext pctx = GuiBuilderProject.GetParserContext ();
 			ArrayList list = new ArrayList ();
 			foreach (string cls in exportedWidgets) {
 				IClass c = pctx.GetClass (cls);

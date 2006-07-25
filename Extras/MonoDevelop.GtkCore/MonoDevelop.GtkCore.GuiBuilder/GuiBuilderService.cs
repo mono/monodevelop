@@ -75,9 +75,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set { widgetTreePad = value; }
 		}
 		
+		public static GuiBuilderProject GetGuiBuilderProject (Project project)
+		{
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			if (info != null)
+				return info.GuiBuilderProject;
+			else
+				return null;
+		}
+		
 		public static ActionGroupView OpenActionGroup (Project project, Stetic.Wrapper.ActionGroup group)
 		{
-			string file = CodeBinder.GetSourceCodeFile (project, group);
+			GuiBuilderProject p = GetGuiBuilderProject (project);
+			string file = p != null ? p.GetSourceCodeFile (group) : null;
 			if (file == null) {
 				file = ActionGroupDisplayBinding.BindToClass (project, group);
 			}

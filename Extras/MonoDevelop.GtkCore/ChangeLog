@@ -1,3 +1,18 @@
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Factorized several
+	  more or less duplicate methods into GuiBuilderProject, specially
+	  methods for locating the class bound to a window. GuiBuilderProject
+	  now will explicitelly update the parser database the first time it
+	  needs to locate a class, so it will work even if the parser service
+	  is busy parsing assemblies.
+
 2006-07-24 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* lib/libstetic.dll: Updated from stetic module. Fixes a bug
