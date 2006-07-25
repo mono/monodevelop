@@ -43,7 +43,7 @@ namespace MonoDevelop.Core.Execution
 			this.controller = controller;
 		}
 		
-		public void Dispose ()
+		public virtual void Dispose ()
 		{
 			if (controller != null) {
 				controller.ReleaseInstance (this);
