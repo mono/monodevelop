@@ -11,6 +11,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		VScrollbar scrollbar;
 		ListWidget list;
 		IListDataProvider provider;
+		Widget footer;
+		VBox vbox;
 		
 		StringBuilder word;
 		int curPos;
@@ -20,8 +22,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		public ListWindow (): base (Gtk.WindowType.Popup)
 		{
-			HBox box = new HBox ();
+			vbox = new VBox ();
 			
+			HBox box = new HBox ();
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
@@ -32,7 +35,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			scrollbar.ValueChanged += new EventHandler (OnScrollChanged); 
 			box.PackStart (scrollbar, false, false, 0);
 			
-			Add (box);
+			vbox.PackStart (box, true, true, 0);
+			Add (vbox);
+			
 			this.TypeHint = WindowTypeHint.Menu;
 		}
 		
@@ -40,6 +45,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			this.ShowAll ();
 			Reset ();
+		}
+		
+		public void ShowFooter (Widget w)
+		{
+			HideFooter ();
+			vbox.PackStart (w, false, false, 0);
+			footer = w;
+		}
+		
+		public void HideFooter ()
+		{
+			if (footer != null) {
+				vbox.Remove (footer);
+				footer = null;
+			}
 		}
 		
 		public void Reset ()

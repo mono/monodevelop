@@ -14,9 +14,6 @@
     </Configuration>
   </Configurations>
   <DeployTargets />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
   <Contents>
     <File name="./Base.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
@@ -67,4 +64,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>

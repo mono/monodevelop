@@ -27,7 +27,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CodeCompletionDataProvider : ICompletionDataProvider
+	public class CodeCompletionDataProvider : IMutableCompletionDataProvider, IDisposable
 	{
 //		static AmbienceService          ambienceService = (AmbienceService)ServiceManager.Services.GetService(typeof(AmbienceService));
 		Hashtable insertedClasses = new Hashtable ();
@@ -40,7 +40,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		bool ctrlspace;
 		IParserContext parserContext;
 		string fileName;
+		EventHandler onStartedParsing;
+		EventHandler onFinishedParsing;
 
+		ArrayList completionData = null;
+		
 		public CodeCompletionDataProvider (IParserContext parserContext, string fileName) : this (parserContext, fileName, false)
 		{
 		}
@@ -50,13 +54,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.fileName = fileName;
 			this.parserContext = parserContext;
 			this.ctrlspace = ctrl;
+			
+			onStartedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
+			onFinishedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
+			
+			parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;
+			parserContext.ParserDatabase.ParseOperationFinished += onFinishedParsing;
 		}
 		
-		ArrayList completionData = null;
+		public virtual void Dispose ()
+		{
+			parserContext.ParserDatabase.ParseOperationStarted -= onStartedParsing;
+			parserContext.ParserDatabase.ParseOperationFinished -= onFinishedParsing;
+		}
 		
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
 			completionData = new ArrayList();
+			insertedClasses.Clear ();
+			insertedElements.Clear ();
+			insertedPropertiesElements.Clear ();
+			insertedEventElements.Clear ();
 			
 			// the parser works with 1 based coordinates
 			caretLineNumber      = widget.TriggerLine + 1;
@@ -67,7 +85,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			IExpressionFinder expressionFinder = parserContext.GetExpressionFinder(fileName);
 			string expression    = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(widget, widget.TriggerOffset) : expressionFinder.FindExpression(widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 2).Expression;
 			if (expression == null) return null;
-			Console.WriteLine ("Expr: |{0}|", expression);
+
 			//FIXME: This chartyped check is a fucking *HACK*
 			if (expression == "is" || expression == "as") {
 				string expr = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (widget, widget.TriggerOffset - 3) : expressionFinder.FindExpression (widget.GetText (0, widget.TriggerOffset), widget.TriggerOffset - 5).Expression;
@@ -150,5 +168,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 				AddResolveResults(results.Members);
 			}
 		}
+		
+		public bool IsChanging { 
+			get { return parserContext.ParserDatabase.IsParsing; } 
+		}
+		
+		void OnStartedParsing (object s, EventArgs args)
+		{
+			if (CompletionDataChanging != null)
+				CompletionDataChanging (this, EventArgs.Empty);
+		}
+		
+		void OnFinishedParsing (object s, EventArgs args)
+		{
+			if (CompletionDataChanged != null)
+				CompletionDataChanged (this, EventArgs.Empty);
+		}
+		
+		public event EventHandler CompletionDataChanging;
+		public event EventHandler CompletionDataChanged;
 	}
 }

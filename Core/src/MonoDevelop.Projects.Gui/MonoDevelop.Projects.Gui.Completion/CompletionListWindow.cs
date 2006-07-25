@@ -3,6 +3,7 @@ using System.Collections;
 
 using Gtk;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Projects.Gui.Completion
@@ -13,7 +14,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 		ICompletionData[] completionData;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
 		ICompletionData currentData;
+		ICompletionDataProvider provider;
+		IMutableCompletionDataProvider mutableProvider;
+		Widget parsingMessage;
+		char firstChar;
+		
 		const int declarationWindowMargin = 3;
+		
 		static DataComparer dataComparer = new DataComparer ();
 		
 		class DataComparer: IComparer
@@ -51,7 +58,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				
 				wnd.PartialWord = text; 
 				//if there is only one matching result we take it by default
-				if (wnd.IsUniqueMatch)
+				if (wnd.IsUniqueMatch && !wnd.IsChanging)
 				{	
 					wnd.UpdateWord ();
 					wnd.Hide ();
@@ -64,15 +71,40 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget)
 		{
-			this.completionWidget = completionWidget;
+			if (mutableProvider != null) {
+				mutableProvider.CompletionDataChanging -= OnCompletionDataChanging;
+				mutableProvider.CompletionDataChanged -= OnCompletionDataChanged;
+			}
 			
-			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
+			this.provider = provider;
+			mutableProvider = provider as IMutableCompletionDataProvider;
+			
+			if (mutableProvider != null) {
+				mutableProvider.CompletionDataChanging += OnCompletionDataChanging;
+				mutableProvider.CompletionDataChanged += OnCompletionDataChanged;
+			
+				if (mutableProvider.IsChanging)
+					OnCompletionDataChanging (null, null);
+			}
+			
+			this.completionWidget = completionWidget;
+			this.firstChar = firstChar;
 
-			if (completionData == null || completionData.Length == 0) return false;
+			return FillList ();
+		}
+		
+		bool FillList ()
+		{
+			completionData = provider.GenerateCompletionData (completionWidget, firstChar);
+			if ((completionData == null || completionData.Length == 0) && !IsChanging)
+				return false;
 			
 			this.Style = completionWidget.GtkStyle;
 			
-			Array.Sort (completionData, dataComparer);
+			if (completionData == null)
+				completionData = new ICompletionData [0];
+			else
+				Array.Sort (completionData, dataComparer);
 			
 			DataProvider = this;
 
@@ -253,6 +285,34 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public Gdk.Pixbuf GetIcon (int n)
 		{
 			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
+		}
+		
+		internal bool IsChanging {
+			get { return mutableProvider != null && mutableProvider.IsChanging; }
+		}
+		
+		void OnCompletionDataChanging (object s, EventArgs args)
+		{
+			if (parsingMessage == null) {
+				VBox box = new VBox ();
+				box.PackStart (new Gtk.HSeparator (), false, false, 0);
+				HBox hbox = new HBox ();
+				hbox.BorderWidth = 3;
+				hbox.PackStart (new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu), false, false, 0);
+				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Gathering class information..."));
+				lab.Xalign = 0;
+				hbox.PackStart (lab, true, true, 3);
+				hbox.ShowAll ();
+				parsingMessage = hbox;
+			}
+			wnd.ShowFooter (parsingMessage);
+		}
+		
+		void OnCompletionDataChanged (object s, EventArgs args)
+		{
+			wnd.HideFooter ();
+			Reset ();
+			FillList ();
 		}
 	}
 }

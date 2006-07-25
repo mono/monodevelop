@@ -25,12 +25,12 @@ namespace MonoDevelop.Projects.Gui.Deployment
 			string label;
 			Gtk.FileChooserAction action;
 			
-			if (target is FileDeployTarget) {
-				label = GettextCatalog.GetString ("Deploy file");
-				action = Gtk.FileChooserAction.Save;
-			} else {
+			if (target is DirectoryDeployTarget) {
 				label = GettextCatalog.GetString ("Deploy directory");
 				action = Gtk.FileChooserAction.SelectFolder;
+			} else {
+				label = GettextCatalog.GetString ("Deploy file");
+				action = Gtk.FileChooserAction.Save;
 			}
 			
 			Gtk.Label lab = new Gtk.Label (label + ":");

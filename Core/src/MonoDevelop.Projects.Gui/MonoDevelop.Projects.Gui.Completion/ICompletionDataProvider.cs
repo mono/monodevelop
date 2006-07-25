@@ -15,4 +15,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped);
 	}
+	
+	public interface IMutableCompletionDataProvider: ICompletionDataProvider
+	{
+		bool IsChanging { get; }
+		event EventHandler CompletionDataChanging;
+		event EventHandler CompletionDataChanged;
+	}
 }
