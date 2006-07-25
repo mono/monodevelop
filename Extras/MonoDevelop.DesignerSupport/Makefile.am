@@ -23,6 +23,9 @@ FILES = \
 	MonoDevelop.DesignerSupport/WrapperDesignView.cs \
 	MonoDevelop.DesignerSupport/ToolboxService.cs \
 	MonoDevelop.DesignerSupport/CodeBehindService.cs \
+	MonoDevelop.DesignerSupport/BindingService.cs \
+	MonoDevelop.DesignerSupport/MemberExistsException.cs \
+	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
 	 \
 	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \

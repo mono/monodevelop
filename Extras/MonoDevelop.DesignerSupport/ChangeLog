@@ -1,5 +1,24 @@
 2006-07-25  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
+	* MonoDevelop.DesignerSupport.mdp:
+	* Makefile.am: Add files to build.
+	  
+	* MonoDevelop.DesignerSupport/BindingService.cs:
+	* MonoDevelop.DesignerSupport/MemberExistsException.cs:
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs:
+	  New service, assists with adding CodeBehind memebers. Incomplete.
+	
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Base class for 
+	  remoted designer, handles Gtk.Sockets and the Gtk# thread.
+	
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Override base member
+	  instead of hiding it.
+	
+	* MonoDevelop.DesignerSupport/PropertyPad.cs:
+	  Fix widget reparenting.
+
+2006-07-25  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Close file after 
 	deserialising toolbox.
 

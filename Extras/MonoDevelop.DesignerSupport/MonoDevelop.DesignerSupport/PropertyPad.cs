@@ -12,7 +12,7 @@ namespace MonoDevelop.DesignerSupport
 	public class PropertyPad : AbstractPadContent
 	{
 		pg.PropertyGrid grid;
-		Gtk.VBox box;
+		Gtk.Frame frame;
 		bool customWidget;
 		
 		public PropertyPad ()  : base ("")
@@ -21,16 +21,16 @@ namespace MonoDevelop.DesignerSupport
 			DefaultPlacement = "right";
 			
 			grid = new pg.PropertyGrid ();
-			box = new Gtk.VBox ();
-			box.Child = grid;
+			frame = new Gtk.Frame ();
+			frame.Add (grid);
 			
-			box.ShowAll ();
+			frame.ShowAll ();
 		}
 		
 		#region AbstractPadContent implementations
 		
 		public override Gtk.Widget Control {
-			get { return box; }
+			get { return frame; }
 		}
 		
 		public override void Dispose()
@@ -50,7 +50,8 @@ namespace MonoDevelop.DesignerSupport
 			get {
 				if (customWidget) {
 					customWidget = false;
-					box.Child = grid;
+					frame.Remove (frame.Child);
+					frame.Add (grid);
 				}
 				
 				return grid;
@@ -60,32 +61,9 @@ namespace MonoDevelop.DesignerSupport
 		public void UseCustomWidget (Gtk.Widget widget)
 		{
 			customWidget = true;
-			
-			box.Child = widget;
+			frame.Remove (frame.Child);
+			frame.Add (widget);
 			widget.Show ();			
 		}
-		
-		/*
-		
-		public void ConnectPlug (uint windowId)
-		{
-			if (!usingSocket) {
-				usingSocket = true;
-				
-				socket = new Gtk.Socket ();
-				socket.Destroyed += OnSocketDestroyed;
-				box.Child = socket;
-				socket.Show ();
-				
-				socket.AddId (windowId);
-			}
-		}
-		
-		void OnSocketDestroyed (object o, System.EventArgs e)
-		{
-			BlankPad ();
-		}
-		
-		*/
 	}
 }

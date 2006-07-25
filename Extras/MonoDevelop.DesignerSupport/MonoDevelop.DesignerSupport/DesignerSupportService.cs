@@ -13,6 +13,11 @@ namespace MonoDevelop.DesignerSupport
 		PropertyPad propertyPad = null;
 		ToolboxService toolboxService = null;
 		CodeBehindService codeBehindService = new CodeBehindService ();
+		BindingService bindingService = new BindingService ();
+		
+		public BindingService BindingService {
+			get { return bindingService; }
+		}
 		
 		#region PropertyPad
 		

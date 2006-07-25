@@ -65,6 +65,10 @@
     <File name="./MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport/ToolboxService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport/CodeBehindService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport/BindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport/MemberExistsException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

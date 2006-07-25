@@ -116,7 +116,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public virtual string ContentName {
+		public override string ContentName {
 			get { return content.ContentName; }
 			set { content.ContentName = value; }
 		}
