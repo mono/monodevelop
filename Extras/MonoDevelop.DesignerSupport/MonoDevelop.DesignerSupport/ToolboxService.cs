@@ -93,19 +93,23 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void SaveContents (string fileName)
 		{
-			XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
-			StreamWriter writer = new StreamWriter (fileName);
-			
-			serializer.Serialize (writer, allItems as IList);
-			writer.Close ();
+			using (StreamWriter writer = new StreamWriter (fileName)) {
+				XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
+				serializer.Serialize (writer, allItems as IList);
+			}
 		}
 		
 		public void LoadContents (string fileName)
 		{
-			XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
-			StreamReader reader = new StreamReader (fileName);
-			allItems = (ToolboxList) serializer.Deserialize (reader, typeof (ToolboxList));
+			object o;
 			
+			using (StreamReader reader = new StreamReader (fileName))
+			{
+				XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
+				o = serializer.Deserialize (reader, typeof (ToolboxList));	
+			}
+			
+			allItems = (ToolboxList) o;
 			OnToolboxChanged ();
 		}
 		
