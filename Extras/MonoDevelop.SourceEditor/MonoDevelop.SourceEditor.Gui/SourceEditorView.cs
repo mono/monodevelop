@@ -37,10 +37,13 @@ namespace MonoDevelop.SourceEditor.Gui
 		bool autoInsertTemplates;
 		EditActionCollection editactions = new EditActionCollection ();
 		LanguageItemWindow languageItemWindow;
+		CodeCompletionDataProvider currentCompletionProvider;
 		
+		const int LanguageItemTipTimer = 800;
 		ILanguageItem tipItem;
 		bool showTipScheduled;
 		int langTipX, langTipY;
+		uint tipTimeoutId;
 
 		public bool EnableCodeCompletion {
 			get { return codeCompleteEnabled; }
@@ -70,19 +73,20 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.MarkSet += new MarkSetHandler (BufferMarkSet);
 			buf.Changed += new EventHandler (BufferChanged);
 			LoadEditActions ();
-			
 			this.Events = this.Events | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 		}
 		
 		public new void Dispose ()
 		{
+			if (currentCompletionProvider != null) {
+				currentCompletionProvider.Dispose ();
+				currentCompletionProvider = null;
+			}
 			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
 			buf.Changed -= new EventHandler (BufferChanged);
 			base.Dispose ();
 		}
-		
-		uint tipTimeoutId;
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
@@ -100,12 +104,12 @@ namespace MonoDevelop.SourceEditor.Gui
 			else if (showTipScheduled) {
 				// Tip already scheduled. Reset the timer.
 				GLib.Source.Remove (tipTimeoutId);
-				tipTimeoutId = GLib.Timeout.Add (500, ShowTooltip);
+				tipTimeoutId = GLib.Timeout.Add (LanguageItemTipTimer, ShowTooltip);
 			}
 			else {
 				// Start a timer to show the tip
 				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (500, ShowTooltip);
+				tipTimeoutId = GLib.Timeout.Add (LanguageItemTipTimer, ShowTooltip);
 			}
 		}
 		
@@ -206,6 +210,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
 			CompletionListWindow.HideWindow ();
+			HideLanguageItemWindow ();
 			
 			if (!ShowLineMarkers)
 				return base.OnButtonPressEvent (e);
@@ -353,9 +358,12 @@ namespace MonoDevelop.SourceEditor.Gui
 
 		CodeCompletionDataProvider GetCodeCompletionDataProvider (bool ctrl)
 		{
+			if (currentCompletionProvider != null)
+				currentCompletionProvider.Dispose ();
 			IParserContext ctx = GetParserContext ();
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
-			return new CodeCompletionDataProvider (ctx, file, ctrl);
+			currentCompletionProvider = new CodeCompletionDataProvider (ctx, file, ctrl);
+			return currentCompletionProvider;
 		}
 			
 		internal bool MonodocResolver ()
@@ -404,7 +412,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			if (expression == null)
 				return null;
 
-			Console.WriteLine ("EXP: " + expression);
 			return ctx.ResolveIdentifier (expression, ti.Line + 1, ti.LineOffset + 1, fileName, txt);
 		}
 
@@ -433,7 +440,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			HideLanguageItemWindow ();
-				
+			
 			if (CompletionListWindow.ProcessKeyEvent (evnt))
 				return true;
 			

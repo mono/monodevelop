@@ -14,9 +14,6 @@
     </Configuration>
   </Configurations>
   <DeployTargets />
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
   <Contents>
     <File name="./texteditoraddin.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./EditorBindings.glade" subtype="Code" buildaction="EmbedAsResource" />
@@ -71,4 +68,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>
