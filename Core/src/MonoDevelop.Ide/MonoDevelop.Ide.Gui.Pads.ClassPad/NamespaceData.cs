@@ -66,8 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool Equals (object ob)
 		{
 			NamespaceData other = ob as NamespaceData;
-			return (namesp == other.namesp &&
-					project == other.project);
+			return (other != null && namesp == other.namesp && project == other.project);
 		}
 		
 		public override int GetHashCode ()

@@ -236,6 +236,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			
 			using (FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"))) {
+				fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
 				fdiag.SelectMultiple = true;
 				
 				IProgressMonitor monitor = null;

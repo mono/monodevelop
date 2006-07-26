@@ -63,8 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		internal const int ClosedIconColumn = 2;
 		internal const int DataItemColumn = 3;
 		internal const int BuilderChainColumn = 4;
-		internal const int WeightColumn = 5;
-		internal const int FilledColumn = 6;
+		internal const int FilledColumn = 5;
 		
 		NodeBuilder[] builders;
 		Hashtable builderChains = new Hashtable ();
@@ -154,10 +153,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			2 -- Icon (Closed)
 			3 -- Node Data
 			4 -- Builder chain
-			5 -- Pango weight
-			6 -- Expanded
+			5 -- Expanded
 			*/
-			store = new Gtk.TreeStore (typeof (string), typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (object), typeof (object), typeof(int), typeof(bool));
+			store = new Gtk.TreeStore (typeof (string), typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (object), typeof (object), typeof(bool));
 			tree.Model = store;
 
 			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
@@ -184,7 +182,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "markup", TextColumn);
-//			complete_column.AddAttribute (text_render, "weight", WeightColumn);
 	
 			tree.AppendColumn (complete_column);
 			

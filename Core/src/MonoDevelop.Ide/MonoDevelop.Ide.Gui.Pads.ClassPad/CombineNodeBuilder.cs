@@ -116,9 +116,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		void OnEntryAdded (object sender, CombineEntryEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (sender);
+			IdeApp.Services.DispatchService.GuiDispatch (OnAddEntry, e.CombineEntry);
+		}
+		
+		void OnAddEntry (object newEntry)
+		{
+			CombineEntry e = (CombineEntry) newEntry;
+			ITreeBuilder tb = Context.GetTreeBuilder (e.ParentCombine);
 			if (tb != null) {
-				tb.AddChild (e.CombineEntry, true);
+				tb.AddChild (e, true);
 				tb.Expanded = true;
 			}
 		}

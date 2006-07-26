@@ -1,3 +1,20 @@
+2006-07-26 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceData.cs:
+	  Added some null checks.
+	  
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs: 
+	  In OnEntryAdded, delay the tree update a bit, since the parser
+	  database is updated using the same event, so we have to wait
+	  until it is updated.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  When adding files, set the current selected folder as
+	  default directory.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Removed unused column.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: When adding a combine
+	  entry to a combine, use the combine folder as default directory.
+
 2006-07-21 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:

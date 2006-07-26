@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override bool Equals (object ob)
 		{
 			ClassData other = ob as ClassData;
-			return (cls.FullyQualifiedName == other.cls.FullyQualifiedName &&
+			return (other != null && cls.FullyQualifiedName == other.cls.FullyQualifiedName &&
 					project == other.project);
 		}
 		

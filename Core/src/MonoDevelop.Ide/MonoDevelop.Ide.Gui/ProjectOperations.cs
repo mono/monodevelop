@@ -490,6 +490,7 @@ namespace MonoDevelop.Ide.Gui
 			CombineEntry res = null;
 			
 			using (FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Solution"))) {
+				fdiag.SetCurrentFolder (parentCombine.BaseDirectory);
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
 					try {
