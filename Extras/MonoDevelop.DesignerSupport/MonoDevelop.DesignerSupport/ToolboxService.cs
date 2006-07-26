@@ -168,7 +168,8 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (oldActiveDoc != null)
 				oldActiveDoc.ViewChanged -= OnViewChanged;
-			IdeApp.Workbench.ActiveDocument.ViewChanged += OnViewChanged;
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.ViewChanged += OnViewChanged;
 			oldActiveDoc = IdeApp.Workbench.ActiveDocument;
 			
 			OnViewChanged (null, null);
@@ -177,7 +178,11 @@ namespace MonoDevelop.DesignerSupport
 		void OnViewChanged (object sender, EventArgs args)
 		{
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
-			currentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxConsumer;			
+			if (IdeApp.Workbench.ActiveDocument != null)
+				currentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxConsumer;
+			else
+				currentConsumer = null;
+			
 			OnToolboxConsumerChanged (currentConsumer);
 		}
 		
