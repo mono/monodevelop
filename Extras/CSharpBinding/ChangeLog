@@ -1,3 +1,8 @@
+2006-07-23 Matej Urbas <matej.urbas@gmail.com>
+
+	* CSharpAmbience.cs: Small cosmetic corrections when converting generic
+	  types
+
 2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Autotools/CSharpAutotoolsSetup.cs: Support compilation with gmcs.

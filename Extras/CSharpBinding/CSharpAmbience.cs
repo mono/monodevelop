@@ -154,10 +154,9 @@ namespace CSharpBinding
 				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
 			else
 				AppendPangoHtmlTag (builder, c.Name, "b");
-				
-			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
-			{
-				builder.Append("&lt;");
+
+			if (c.GenericParameters != null && c.GenericParameters.Count > 0) {
+				builder.Append(" &lt;");
 				for (int i = 0; i < c.GenericParameters.Count; i++)
 				{
 					builder.Append(c.GenericParameters[i].Name);
@@ -381,7 +380,7 @@ namespace CSharpBinding
 			
 			if (m.GenericParameters != null && m.GenericParameters.Count > 0)
 			{
-				builder.Append("&lt;");
+				builder.Append(" &lt;");
 				for (int i = 0; i < m.GenericParameters.Count; i++)
 				{
 					builder.Append(m.GenericParameters[i].Name);
@@ -455,7 +454,7 @@ namespace CSharpBinding
 			
 			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0)
 			{
-				builder.Append("&lt;");
+				builder.Append(" &lt;");
 				for (int i = 0; i < returnType.GenericArguments.Count; i++)
 				{
 					builder.Append(Convert(returnType.GenericArguments[i]));
