@@ -124,12 +124,10 @@ Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.addin.xml
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects/AssemblyDeploy.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects/FileDeploy.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs
@@ -145,7 +143,6 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyProperty.
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects/ScriptDeploy.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs
 Core/src/Tools/SharpCoco/src/Scanner.cs
 Extras/BooBinding/BooBinding.addin.xml
