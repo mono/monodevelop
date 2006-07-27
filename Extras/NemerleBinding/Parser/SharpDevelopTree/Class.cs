@@ -264,20 +264,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             ReturnTypeList constraints = new ReturnTypeList ();
             foreach (NCC.MType constraint in tyvar.Constraints)
                 constraints.Add (new ReturnType (constraint));
-
-            SpecialConstraintType special = (SpecialConstraintType)0;
-            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.ReferenceTypeConstraint) != 0)
-                special |= SpecialConstraintType.Class;
-            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.NotNullableValueTypeConstraint) != 0)
-                special |= SpecialConstraintType.Struct;
-            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.DefaultConstructorConstraint) != 0)
-                special |= SpecialConstraintType.New;
-            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.Contravariant) != 0)
-                special |= SpecialConstraintType.Contravariant;
-            if ((tyvar.SpecialConstraints & SR.GenericParameterAttributes.Covariant) != 0)
-                special |= SpecialConstraintType.Covariant;
                 
-            return new GenericParameter (tyvar.Name, constraints, special);
+            return new GenericParameter (tyvar.Name, constraints, tyvar.SpecialConstraints);
         }
         
         public override ICompilationUnit CompilationUnit

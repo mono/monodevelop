@@ -1,3 +1,9 @@
+2006-07-23 Matej Urbas <matej.urbas@gmail.com>
+
+	* Parser/SharpDevelopTree/Class.cs: A change in GenericParameter allowed to
+	  merely copy an attribute (when converting from Nemerle's parsed type-info
+	  to MonoDevelop's completion-info).
+
 2006-07-10 Alejandro Serrano <trupill@yahoo.es>
 
 	* Parser/SharpDevelopTree/Class.cs:
