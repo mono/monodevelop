@@ -29,8 +29,9 @@ namespace MonoDevelop.Projects.Parser
 			
 			if ((parameterInfo.Attributes & ParamAttributes.Out) != 0) {
 				modifier |= ParameterModifier.Out;
-			} else if (type.Name.EndsWith("&")) {
-				// seems there is no other way to determine a ref parameter
+			} else if (returnType.ByRef) {
+				// FIX: We should look at the return type of this parameter to
+				// determine whether a parameter is 'ref'
 				modifier |= ParameterModifier.Ref;
 			}
 			

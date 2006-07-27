@@ -229,6 +229,7 @@
     <File name="./MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/FileDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/PersistentGenericParamater.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />

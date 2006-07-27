@@ -16,6 +16,7 @@ namespace MonoDevelop.Projects.Parser
 		protected int[]  arrayDimensions;
 		protected object declaredin = null;
 		protected ReturnTypeList genericArguments;
+		protected bool   byRef;
 		string fname;
 		
 		public virtual string FullyQualifiedName {
@@ -73,6 +74,15 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				if (arrayDimensions == null) return new int[0];
 				return arrayDimensions;
+			}
+		}
+		 		
+		/// <summary>
+		/// Indicates whether the return type is passed by reference.
+		/// </summary>
+		public virtual bool ByRef {
+			get {
+				return byRef;
 			}
 		}
 		 		

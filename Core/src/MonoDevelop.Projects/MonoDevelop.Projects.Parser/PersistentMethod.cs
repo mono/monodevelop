@@ -29,6 +29,14 @@ namespace MonoDevelop.Projects.Parser
 			met.region = source.Region;
 			met.bodyRegion = source.BodyRegion;
 			met.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			
+			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
+				met.GenericParameters = new GenericParameterList();
+				foreach (GenericParameter gp in source.GenericParameters) {
+					met.GenericParameters.Add(PersistentGenericParamater.Resolve(gp, typeResolver));
+				}
+			}
+			
 			return met;
 		}
 		
@@ -48,6 +56,18 @@ namespace MonoDevelop.Projects.Parser
 			met.region = PersistentRegion.Read (reader, nameTable);
 			met.bodyRegion = PersistentRegion.Read (reader, nameTable);
 			met.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			
+			// Read the generic parameters
+			count = reader.ReadUInt32();
+			if (count > 0) {
+				met.GenericParameters = new GenericParameterList();
+				// Add the generic parameters one by one
+				for (uint i = 0; i < count; ++i) {
+					met.GenericParameters.Add(PersistentGenericParamater.Read(reader, nameTable));
+				}
+				// All the generic parameters have been added...
+			}
+			
 			return met;
 		}
 		
@@ -66,6 +86,16 @@ namespace MonoDevelop.Projects.Parser
 			PersistentRegion.WriteTo (met.Region, writer, nameTable);
 			PersistentRegion.WriteTo (met.BodyRegion, writer, nameTable);
 			PersistentAttributeSectionCollection.WriteTo (met.Attributes, writer, nameTable);
+			
+			// Write the generic parameters to the database file
+			if (met.GenericParameters == null || met.GenericParameters.Count < 1)
+				writer.Write((uint)0);
+			else {
+				writer.Write((uint)met.GenericParameters.Count);
+				foreach (GenericParameter gp in met.GenericParameters) {
+					PersistentGenericParamater.WriteTo(gp, writer, nameTable);
+				}
+			}
 		}
 	}
 }

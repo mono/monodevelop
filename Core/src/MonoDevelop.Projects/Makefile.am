@@ -217,6 +217,7 @@ MonoDevelop.Projects/ProjectsServices.cs \
 MonoDevelop.Projects.Parser/GenericParameter.cs \
 MonoDevelop.Projects.Parser/ReturnTypeList.cs \
 MonoDevelop.Projects.Parser/GenericParameterList.cs \
+MonoDevelop.Projects.Parser/PersistentGenericParamater.cs \
 MonoDevelop.Projects/UnknownCombineEntry.cs \
 MonoDevelop.Projects.Documentation/IDocumentationService.cs
 

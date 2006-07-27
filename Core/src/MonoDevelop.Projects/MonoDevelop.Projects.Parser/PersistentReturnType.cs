@@ -19,8 +19,17 @@ namespace MonoDevelop.Projects.Parser
 			
 			PersistentReturnType rt = new PersistentReturnType ();
 			rt.FullyQualifiedName = typeResolver.Resolve (source.FullyQualifiedName);
+			rt.byRef = source.ByRef;
 			rt.pointerNestingLevel = source.PointerNestingLevel;
 			rt.arrayDimensions = source.ArrayDimensions;
+			
+			if (rt.GenericArguments != null && rt.GenericArguments.Count > 0) {
+				rt.GenericArguments = new ReturnTypeList();
+				foreach (IReturnType ga in rt.GenericArguments) {
+					rt.GenericArguments.Add(PersistentReturnType.Resolve(ga, typeResolver));
+				}
+			}
+			
 			return rt;
 		}
 
@@ -30,6 +39,8 @@ namespace MonoDevelop.Projects.Parser
 			
 			PersistentReturnType rt = new PersistentReturnType ();
 			rt.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			
+			rt.byRef = reader.ReadBoolean();
 
 			rt.pointerNestingLevel = reader.ReadInt32();
 
@@ -38,6 +49,18 @@ namespace MonoDevelop.Projects.Parser
 			for (uint i = 0; i < rt.arrayDimensions.Length; ++i) {
 				rt.arrayDimensions[i] = reader.ReadInt32();
 			}
+			
+			// Read the generic arguments
+			count = reader.ReadUInt32();
+			if (count > 0) {
+				rt.GenericArguments = new ReturnTypeList();
+				// Add the generic arguments one by one
+				for (uint i = 0; i < count; ++i) {
+					rt.GenericArguments.Add(PersistentReturnType.Read(reader, nameTable));
+				}
+				// All the generic arguments have been added...
+			}
+			
 			return rt;
 		}
 
@@ -46,6 +69,8 @@ namespace MonoDevelop.Projects.Parser
 			if (PersistentHelper.WriteNull (rt, writer)) return;
 			
 			PersistentHelper.WriteString (rt.FullyQualifiedName, writer, nameTable);
+			
+			writer.Write(rt.ByRef);
 
 			writer.Write (rt.PointerNestingLevel);
 			if (rt.ArrayDimensions == null) {
@@ -54,6 +79,16 @@ namespace MonoDevelop.Projects.Parser
 				writer.Write((uint)rt.ArrayDimensions.Length);
 				for (uint i = 0; i < rt.ArrayDimensions.Length; ++i) {
 					writer.Write (rt.ArrayDimensions[i]);
+				}
+			}
+			
+			// Write generic arguments of this return type
+			if (rt.GenericArguments == null || rt.GenericArguments.Count < 1)
+				writer.Write((uint)0);
+			else {
+				writer.Write((uint)rt.GenericArguments.Count);
+				foreach (IReturnType ga in rt.GenericArguments) {
+					PersistentReturnType.WriteTo(ga, writer, nameTable);
 				}
 			}
 		}

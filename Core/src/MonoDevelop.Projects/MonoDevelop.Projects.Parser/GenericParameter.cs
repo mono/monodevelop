@@ -11,6 +11,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Parser;
+using Mono.Cecil;
+using System.Reflection;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -29,16 +31,16 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	public class GenericParameter
 	{
-		string                    name;
-		ReturnTypeList            baseTypes;
-		SpecialConstraintType     specialConstraints;
+		string                      name;
+		ReturnTypeList              baseTypes;
+		GenericParameterAttributes  specialConstraints;
 		
 		public GenericParameter() {
 		}
 		
 		public GenericParameter(string name
 		                      , ReturnTypeList baseTypes
-		                      , SpecialConstraintType specialConstraints) {
+		                      , GenericParameterAttributes specialConstraints) {
 			this.name               = name;
 			this.baseTypes          = baseTypes;
 			this.specialConstraints = specialConstraints;
@@ -78,13 +80,13 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		public bool HasNewConstraint {
 			get {
-				return (specialConstraints & SpecialConstraintType.New) > 0;
+				return (specialConstraints & GenericParameterAttributes.DefaultConstructorConstraint) > 0;
 			}
 			set {
 				if (value)
-					specialConstraints |= SpecialConstraintType.New;
+					specialConstraints |= GenericParameterAttributes.DefaultConstructorConstraint;
 				else
-					specialConstraints &= ~SpecialConstraintType.New;
+					specialConstraints &= ~GenericParameterAttributes.DefaultConstructorConstraint;
 			}
 		}
 		
@@ -95,13 +97,13 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		public bool HasStructConstraint {
 			get {
-				return (specialConstraints & SpecialConstraintType.Struct) > 0;
+				return (specialConstraints & GenericParameterAttributes.NotNullableValueTypeConstraint) > 0;
 			}
 			set {
 				if (value)
-					specialConstraints |= SpecialConstraintType.Struct;
+					specialConstraints |= GenericParameterAttributes.NotNullableValueTypeConstraint;
 				else
-					specialConstraints &= ~SpecialConstraintType.Struct;
+					specialConstraints &= ~GenericParameterAttributes.NotNullableValueTypeConstraint;
 			}
 		}
 		
@@ -112,13 +114,13 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		public bool HasClassConstraint {
 			get {
-				return (specialConstraints & SpecialConstraintType.Class) > 0;
+				return (specialConstraints & GenericParameterAttributes.ReferenceTypeConstraint) > 0;
 			}
 			set {
 				if (value)
-					specialConstraints |= SpecialConstraintType.Class;
+					specialConstraints |= GenericParameterAttributes.ReferenceTypeConstraint;
 				else
-					specialConstraints &= ~SpecialConstraintType.Class;
+					specialConstraints &= ~GenericParameterAttributes.ReferenceTypeConstraint;
 			}
 		}
 		
@@ -128,13 +130,13 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		public bool HasCovariantConstraint {
 			get {
-				return (specialConstraints & SpecialConstraintType.Covariant) > 0;
+				return (specialConstraints & GenericParameterAttributes.Covariant) > 0;
 			}
 			set {
 				if (value)
-					specialConstraints |= SpecialConstraintType.Covariant;
+					specialConstraints |= GenericParameterAttributes.Covariant;
 				else
-					specialConstraints &= ~SpecialConstraintType.Covariant;
+					specialConstraints &= ~GenericParameterAttributes.Covariant;
 			}
 		}
 		
@@ -144,13 +146,13 @@ namespace MonoDevelop.Projects.Parser
 		/// </summary>
 		public bool HasContravariantConstraint {
 			get {
-				return (specialConstraints & SpecialConstraintType.Contravariant) > 0;
+				return (specialConstraints & GenericParameterAttributes.Contravariant) > 0;
 			}
 			set {
 				if (value)
-					specialConstraints |= SpecialConstraintType.Contravariant;
+					specialConstraints |= GenericParameterAttributes.Contravariant;
 				else
-					specialConstraints &= ~SpecialConstraintType.Contravariant;
+					specialConstraints &= ~GenericParameterAttributes.Contravariant;
 			}
 		}
 		
@@ -158,7 +160,7 @@ namespace MonoDevelop.Projects.Parser
 		/// Gets or sets a value that indicates what kind of special constraints
 		/// this parameter has applied to it.
 		/// </summary>
-		public SpecialConstraintType SpecialConstraints {
+		public GenericParameterAttributes SpecialConstraints {
 			get {
 				return specialConstraints;
 			}
@@ -166,14 +168,5 @@ namespace MonoDevelop.Projects.Parser
 				specialConstraints = value;
 			}
 		}
-	}
-	
-	public enum SpecialConstraintType : byte
-	{
-		Class = 0x01,
-		Struct = 0x02,
-		New = 0x04,
-		Covariant = 0x08,
-		Contravariant = 0x10
 	}
 }

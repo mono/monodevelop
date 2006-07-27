@@ -35,6 +35,10 @@ namespace MonoDevelop.Projects.Parser
 		object DeclaredIn {
 			get;
 		}
+		
+		bool ByRef {
+			get;
+		}
 		 		
 		/// <summary>
 		/// Contains values (types) of actual parameters (arguments) to a

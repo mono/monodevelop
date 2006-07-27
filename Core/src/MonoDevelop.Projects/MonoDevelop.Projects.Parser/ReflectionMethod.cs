@@ -9,6 +9,7 @@ using System.Text;
 using System.Collections;
 using System.Xml;
 using Mono.Cecil;
+using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -95,6 +96,22 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			returnType = new ReflectionReturnType (methodBase.ReturnType.ReturnType);
+			
+			if (methodBase.GenericParameters != null && methodBase.GenericParameters.Count > 0) {
+				GenericParameters = new GenericParameterList();
+				foreach (Mono.Cecil.GenericParameter par in methodBase.GenericParameters) {
+					// Fill out the type constraints for generic parameters 
+					ReturnTypeList rtl = null;
+					if (par.Constraints != null && par.Constraints.Count > 0) {
+						rtl = new ReturnTypeList();
+						foreach (Mono.Cecil.TypeReference typeRef in par.Constraints) {
+							rtl.Add(new ReflectionReturnType(typeRef));
+						}
+					}
+					// Add the parameter to the generic parameter list
+					GenericParameters.Add(new MDGenericParameter(par.Name, rtl, (System.Reflection.GenericParameterAttributes)par.Attributes));
+				}
+			}
 		}
 		
 		public static ModifierEnum GetModifiers (MethodAttributes attributes)

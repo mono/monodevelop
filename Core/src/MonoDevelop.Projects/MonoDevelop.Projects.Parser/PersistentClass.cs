@@ -76,6 +76,13 @@ namespace MonoDevelop.Projects.Parser
 				cls.indexer.Add (pi);
 			}
 			
+			if (sclass.GenericParameters != null && sclass.GenericParameters.Count > 0) {
+				cls.GenericParameters = new GenericParameterList();
+				foreach (GenericParameter gp in sclass.GenericParameters) {
+					cls.GenericParameters.Add(PersistentGenericParamater.Resolve(gp, typeResolver));
+				}
+			}
+			
 			cls.region = sclass.Region;
 			cls.bodyRegion = sclass.BodyRegion;
 			cls.attributes = PersistentAttributeSectionCollection.Resolve (sclass.Attributes, typeResolver);
@@ -139,6 +146,17 @@ namespace MonoDevelop.Projects.Parser
 				cls.indexer.Add (ind);
 			}
 			
+			// Read the generic parameters
+			count = reader.ReadUInt32();
+			if (count > 0) {
+				cls.GenericParameters = new GenericParameterList();
+				// Add the generic parameters one by one
+				for (uint i = 0; i < count; ++i) {
+					cls.GenericParameters.Add(PersistentGenericParamater.Read(reader, nameTable));
+				}
+				// All the generic parameters have been added...
+			}
+			
 			cls.region = PersistentRegion.Read (reader, nameTable);
 			cls.bodyRegion = PersistentRegion.Read (reader, nameTable);
 			cls.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
@@ -186,6 +204,17 @@ namespace MonoDevelop.Projects.Parser
 			foreach (IIndexer ind in cls.Indexer) {
 				PersistentIndexer.WriteTo (ind, writer, nameTable);
 			}
+			
+			// Write the generic parameters to the database file
+			if (cls.GenericParameters == null || cls.GenericParameters.Count < 1)
+				writer.Write((uint)0);
+			else {
+				writer.Write((uint)cls.GenericParameters.Count);
+				foreach (GenericParameter gp in cls.GenericParameters) {
+					PersistentGenericParamater.WriteTo(gp, writer, nameTable);
+				}
+			}
+			
 			
 			PersistentRegion.WriteTo (cls.Region, writer, nameTable);
 			PersistentRegion.WriteTo (cls.BodyRegion, writer, nameTable);

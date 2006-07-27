@@ -1,3 +1,33 @@
+2006-07-23 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Parser/ReflectionReturnType.cs: Added generics
+	  support and entirely changed the process of visiting Mono.Cecil return
+	  types.
+	* MonoDevelop.Projects.Parser/ReflectionMethod.cs:
+	* MonoDevelop.Projects.Parser/ReflectionClass.cs: Added generics support -
+	  now generic types get correctly parsed from Mono assemblies.
+	* MonoDevelop.Projects.Parser/ReflectionParameter.cs: Changed the way we
+	  figure out if the parameter is passed ByRef.
+	* MonoDevelop.Projects.Parser/IReturnType.cs: Added the ByRef property
+	  which tells whether the type is passed by reference (as a method
+	  parameter).
+	* MonoDevelop.Projects.Parser/AbstractReturnType.cs: Added ByRef
+	  implementation.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Increased the
+	  version number.
+	* MonoDevelop.Projects.Parser/GenericParameter.cs: GenericParameter now uses
+	  special constraints as provided by Mono.Cecil - it is much cleaner so.
+	* MonoDevelop.Projects.Parser/PersistentMethod.cs: Added support for
+	  generic methods.
+	* MonoDevelop.Projects.Parser/PersistentReturnType.cs: Added generics
+	  support and implemented ByRef (de)serialization. With special thanks to Jb
+	  Evain (author of Cecil).
+	* MonoDevelop.Projects.Parser/PersistentGenericParamater.cs: Added this
+	  file to the project. It handles (de)serialization of generic parameters
+	  from/to the code completion databases.
+	* MonoDevelop.Projects.mdp: Added a new file to the build process.
+	* Makefile.am: Added a new file to the build process.
+
 2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
@@ -117,7 +147,7 @@
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Updated to use 
 	  ReturnType as BaseTypes in IClass instances.
 	
-	* MonoDevelop.Projects.mdp: Added new file to the build process.
+	* MonoDevelop.Projects.mdp: Added new files to the build process.
 	
 	* Makefile.am: Added new files to the build process.
 

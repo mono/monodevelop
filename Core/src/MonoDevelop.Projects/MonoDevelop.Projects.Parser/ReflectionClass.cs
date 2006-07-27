@@ -12,6 +12,7 @@ using System.Collections;
 using System.Xml;
 using System.Collections.Specialized;
 using Mono.Cecil;
+using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -85,6 +86,25 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			modifiers |= GetModifiers (type.Attributes);
+			
+			// Add generic parameters to the type
+			if (type.GenericParameters != null && type.GenericParameters.Count > 0) {
+				this.GenericParameters = new GenericParameterList();
+				
+				foreach (Mono.Cecil.GenericParameter par in type.GenericParameters) {
+					// Fill out the type constraints for generic parameters 
+					ReturnTypeList rtl = null;
+					if (par.Constraints != null && par.Constraints.Count > 0) {
+						rtl = new ReturnTypeList();
+						foreach (Mono.Cecil.TypeReference typeRef in par.Constraints) {
+							rtl.Add(new ReflectionReturnType(typeRef));
+						}
+					}
+					
+					// Add the parameter to the generic parameter list
+					this.GenericParameters.Add(new MDGenericParameter(par.Name, rtl, (System.Reflection.GenericParameterAttributes)par.Attributes));
+				}
+			}
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!
