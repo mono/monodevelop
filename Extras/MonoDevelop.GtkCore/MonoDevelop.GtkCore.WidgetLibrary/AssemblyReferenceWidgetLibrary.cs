@@ -128,12 +128,7 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		protected override IParserContext GetParserContext ()
 		{
-			DateTime t = DateTime.Now;
-			try {
-				return IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (assemblyName);
-			} finally {
-				Console.WriteLine ("Got parser context in " + (DateTime.Now - t).TotalMilliseconds); 
-			}
+			return IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (fileName);
 		}
 		
 		public override string AssemblyPath {

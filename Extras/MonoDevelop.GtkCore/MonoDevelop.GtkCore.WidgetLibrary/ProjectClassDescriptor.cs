@@ -100,6 +100,8 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			// Remove the registered signals, since those signals are bound
 			// to the custom widget class, not the widget container class.
 			Stetic.Wrapper.Widget ww = Stetic.Wrapper.Widget.Lookup (w);
+			if (ww == null)
+				return;
 			ww.Signals.Clear ();
 			
 			foreach (Gtk.Widget child in (Gtk.Container)w) {
