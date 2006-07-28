@@ -1,4 +1,11 @@
-2006-07-23 Matej Urbas <matej.urbas@gmail.com>
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Ambience/AbstractAmbience.cs: Added
+	  'ShowGenericParameters' property for the new ambience flag.
+	* MonoDevelop.Projects.Ambience/IAmbience.cs: Added the
+	  'ShowGenericParameters' flag.
+
+2006-07-27 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Projects.Parser/ReflectionReturnType.cs: Added generics
 	  support and entirely changed the process of visiting Mono.Cecil return

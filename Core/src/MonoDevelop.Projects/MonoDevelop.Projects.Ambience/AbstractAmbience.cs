@@ -17,7 +17,8 @@ namespace MonoDevelop.Projects.Ambience
 		ConversionFlags conversionFlags = ConversionFlags.ShowParameterNames     |
 		                                  ConversionFlags.UseFullyQualifiedNames |
 		                                  ConversionFlags.ShowInheritanceList    |
-		                                  ConversionFlags.ShowModifiers;
+		                                  ConversionFlags.ShowModifiers          |
+		                                  ConversionFlags.ShowGenericParameters;
 		
 		public ConversionFlags ConversionFlags {
 			get {
@@ -85,6 +86,12 @@ namespace MonoDevelop.Projects.Ambience
 		public bool IncludeBodies {
 			get {
 				return (conversionFlags & ConversionFlags.IncludeBodies) == ConversionFlags.IncludeBodies;
+			}
+		}
+		
+		public bool ShowGenericParameters {
+			get {
+				return (conversionFlags & ConversionFlags.ShowGenericParameters) == ConversionFlags.ShowGenericParameters;
 			}
 		}
 		

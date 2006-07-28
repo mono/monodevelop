@@ -26,7 +26,8 @@ namespace MonoDevelop.Projects.Ambience
 		UseLinkArrayList       = 64,
 		QualifiedNamesOnlyForReturnTypes = 128,
 		IncludeBodies          = 256,
-		IncludePangoMarkup         = 512,
+		IncludePangoMarkup     = 512,
+		ShowGenericParameters  = 1024,
 		
 		StandardConversionFlags = ShowParameterNames | 
 		                          UseFullyQualifiedNames | 
@@ -36,7 +37,8 @@ namespace MonoDevelop.Projects.Ambience
 		      ShowAccessibility | 
 		      UseFullyQualifiedNames |
 		      ShowModifiers | 
-		      ShowInheritanceList,
+		      ShowInheritanceList |
+		      ShowGenericParameters,
 		      
 		AssemblyScoutDefaults = StandardConversionFlags |
 		                        ShowAccessibility |	
