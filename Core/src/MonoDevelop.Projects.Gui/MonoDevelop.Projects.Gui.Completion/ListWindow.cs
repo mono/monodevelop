@@ -397,7 +397,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < win.DataProvider.ItemCount)
 			{
-				layout.SetMarkup (win.DataProvider.GetText (page + n));
+				layout.SetText (win.DataProvider.GetText (page + n));
 				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 				
 				int wi, he, typos, iypos;
@@ -417,7 +417,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				else
 					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + icon.Width + 2, typos, layout);
-					
+				
 				this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
 				ypos += rowHeight;

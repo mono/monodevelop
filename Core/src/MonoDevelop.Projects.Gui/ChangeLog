@@ -1,3 +1,10 @@
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed the completion
+	  popup so that it doesn't use Pango markup for displaying type names.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Changed the
+	  way names are generated for types in code completion.
+
 2006-07-25 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs:

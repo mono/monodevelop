@@ -147,9 +147,19 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public CodeCompletionData (IClass c)
 		{
 			image = Services.Icons.GetIcon(c);
-			text = c.Name;
-			completionString = c.Name;
-			description = Services.Ambience.CurrentAmbience.Convert(c);
+			
+			// Configure the ambience to convert names so that they contain
+			// generic parameters
+			IAmbience amb        = Services.Ambience.CurrentAmbience;
+			ConversionFlags prev = amb.ConversionFlags;
+			amb.ConversionFlags  = ConversionFlags.ShowGenericParameters;
+			
+			completionString     = amb.Convert(c);
+			text                 = completionString;
+			// Restore the conversion flags to what they were before
+			amb.ConversionFlags = prev;
+			
+			description = amb.Convert(c);
 			pango_description  = PangoAmbience.Convert(c);
 			documentation = c.Documentation;
 		}
