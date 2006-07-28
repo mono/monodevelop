@@ -293,7 +293,6 @@ Extras/CSharpBinding/Autotools/Makefile
 Extras/ILAsmBinding/Makefile
 Extras/NemerleBinding/Makefile
 Extras/VBNetBinding/Makefile
-Extras/VBNetBinding/SharpRefactoryVB/Makefile
 Extras/DebuggerAddIn/AssemblyInfo.cs
 Extras/DebuggerAddIn/Makefile
 Extras/DebuggerAddIn/DebuggerPaths.cs
