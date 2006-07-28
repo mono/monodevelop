@@ -282,7 +282,7 @@ namespace VersionControlPlugin {
 			set { }
 		}
 		
-		string IViewContent.TabPageLabel {
+		string IBaseViewContent.TabPageLabel {
 			get { return name; }
 		}
 		

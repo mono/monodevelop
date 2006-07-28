@@ -1,3 +1,7 @@
+2006-07-28 Wade Berrier <wberrier@novell.com> 
+
+	* AddIn/Addin.cs: Update from refactoring change on IViewContent (svn r62840)
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/VersionControl.addin.xml: Updated versions.
