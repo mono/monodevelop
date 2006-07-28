@@ -24,6 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Gtk;
 
@@ -120,10 +121,12 @@ namespace MonoDevelop.WelcomePage
 			e.RetVal = true;
 	
 			string URI = e.AURI;
+
 			if (URI.StartsWith("project://"))
 			{
-				string projectUri = URI.Substring(10);
-				IdeApp.ProjectOperations.OpenCombine(projectUri);
+				string projectUri = URI.Substring(10);			
+				Uri fileuri = new Uri ( projectUri );
+				IdeApp.ProjectOperations.OpenCombine ( fileuri.LocalPath );
 			}
 			else if (URI.StartsWith("monodevelop://"))
 			{
