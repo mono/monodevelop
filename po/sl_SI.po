@@ -9,17 +9,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl_SI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-27 12:50+0200\n"
+"POT-Creation-Date: 2006-07-28 12:26+0200\n"
 "PO-Revision-Date: 2006-07-28 10:28+0200\n"
 "Last-Translator: Matej Urbas\n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==2 ? 1 : (n>4 || n < 1) ? 3 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==2 ? 1 : (n>4 || n < 1) ? 3 : "
+"2;\n"
 "X-Generator: KBabel 1.11.2\n"
 
-#: Množine se obravnavajo posebej za 1,2,{3, 4} in števila večja od 4 ter manjša od 1
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs:23
 msgid "_Browse..."
 msgstr "_Razišči..."
@@ -56,7 +56,8 @@ msgstr "Naloži naslov"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
 msgid "<b>Select the add-ins to install and click on Next</b>"
-msgstr "<b>Označi <i>E-Dodatke</i>, ki jih želite namestiti in kliknite 'Naprej'</b>"
+msgstr ""
+"<b>Označi <i>E-Dodatke</i>, ki jih želite namestiti in kliknite 'Naprej'</b>"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
 msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
@@ -325,7 +326,9 @@ msgstr ""
 msgid ""
 "<b><span foreground=\"red\">The selected add-ins can't be installed because "
 "there are dependency conflicts.</span></b>\n"
-msgstr "<b><span foreground=\"red\">Označenih E-Dodatkov n mogoče odstraniti zaradi konfliktov z ostalimi E-Dodatki:</span></b>\n"
+msgstr ""
+"<b><span foreground=\"red\">Označenih E-Dodatkov n mogoče odstraniti zaradi "
+"konfliktov z ostalimi E-Dodatki:</span></b>\n"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:371
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:378
@@ -576,7 +579,8 @@ msgstr "Nalagam "
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1225
 #, csharp-format
-msgid "The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
+msgid ""
+"The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
 msgstr "E-Dodatka '{0} v {1}' ne morem odstraniti s trenutnimi privilegiji."
 
 #: ../Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:207
@@ -742,7 +746,9 @@ msgstr "Preveri ali obstajajo nadgradnje E-Dodatkov v naslednjem intervalu:"
 msgid ""
 "MonoDevelop can run without these add-ins, but the functionality they "
 "provide will be missing."
-msgstr "MonoDevelop lahko deluje tudi, če so izbrani E-Dodatki onemogočeni, vendar funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo."
+msgstr ""
+"MonoDevelop lahko deluje tudi, če so izbrani E-Dodatki onemogočeni, vendar "
+"funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo."
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
 msgid "MonoDevelop cannot start because a fatal error has been detected."
@@ -813,7 +819,8 @@ msgstr "Prikaži okence _izhoda, ko se prične izgradnja projekta"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
 msgid "Show _task list pad if build finished with errors"
-msgstr "Prikaži okence seznama _opravil, če se izgradnja projekta konča z napakami"
+msgstr ""
+"Prikaži okence seznama _opravil, če se izgradnja projekta konča z napakami"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
 msgid "Show extensions in project scout"
@@ -857,7 +864,8 @@ msgid ""
 "You can start MonoDevelop without these add-ins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
 msgstr ""
-"MonoDevelop lahko deluje tudi, če so izbrani E-Dodatki onemogočeni, vendar funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo.\n"
+"MonoDevelop lahko deluje tudi, če so izbrani E-Dodatki onemogočeni, vendar "
+"funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo.\n"
 "Želite nadaljevati?"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
@@ -1595,7 +1603,8 @@ msgstr "Počisti pretekle datoteke"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
 msgid "Are you sure you want to clear recent projects list?"
-msgstr "Ste prepričani, da želite počistiti vsebino seznama preteklih projektov?"
+msgstr ""
+"Ste prepričani, da želite počistiti vsebino seznama preteklih projektov?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
 msgid "Clear recent projects"
@@ -1704,7 +1713,8 @@ msgstr "Zaženi orodje"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
 #, csharp-format
 msgid "Enter any arguments you want to use while launching tool, {0}:"
-msgstr "Vnesite argumente, ki jih želite uporabiti medtem, ko se izvaja orodje '{0}':"
+msgstr ""
+"Vnesite argumente, ki jih želite uporabiti medtem, ko se izvaja orodje '{0}':"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
 #, csharp-format
@@ -2041,7 +2051,8 @@ msgstr "Datoteko morate shraniti"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:123
 msgid "Unsaved changed to open files were not included in counting"
-msgstr "Spremembe v datotekah, ki niso bile shranjene, niso bile vključene v štetje"
+msgstr ""
+"Spremembe v datotekah, ki niso bile shranjene, niso bile vključene v štetje"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:130
 msgid "You must be in project mode"
@@ -2117,18 +2128,23 @@ msgid ""
 msgstr ""
 "Zagon programa MonoDevelop je spodletel.\n"
 "Če ste MonoDevelop namestili s pomočjo namestitvenega programa, si oglejte\n"
-"'http://www.mono-project.com/InstallerInstructions' za več informacij o možnih\n"
+"'http://www.mono-project.com/InstallerInstructions' za več informacij o "
+"možnih\n"
 "vzrokih za to napako."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:111
 msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
-msgstr "Napaka ob zagonu programa MonoDevelop. Ni bilo mogoče preveriti lokalnega gostiteljevega imena."
+msgstr ""
+"Napaka ob zagonu programa MonoDevelop. Ni bilo mogoče preveriti lokalnega "
+"gostiteljevega imena."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:112
 msgid ""
 "Your network may be misconfigured. Make sure the hostname of your system is "
 "added to the /etc/hosts file."
-msgstr "Vaše omrežje je morda napačno nastavljeno. Preverite, ali je 'hostname' vašega sistema pravilno nastavljen v datoteki '/etc/hosts'."
+msgstr ""
+"Vaše omrežje je morda napačno nastavljeno. Preverite, ali je 'hostname' "
+"vašega sistema pravilno nastavljen v datoteki '/etc/hosts'."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:127
 msgid "Initializing MonoDevelop"
@@ -2136,11 +2152,15 @@ msgstr "Pripravljam MonoDevelop"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:170
 msgid "MonoDevelop failed to start. The following error has been reported: "
-msgstr "Napaka ob zagonu programa MonoDevelop. Sprožila se je naslednja izjema: "
+msgstr ""
+"Napaka ob zagonu programa MonoDevelop. Sprožila se je naslednja izjema: "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:286
-msgid "Some packages installed in your system are not compatible with MonoDevelop:\n"
-msgstr "Nekateri paketi nameščeni v vašem sistemu niso kompatibilni s programom MonoDevelop:\n"
+msgid ""
+"Some packages installed in your system are not compatible with MonoDevelop:\n"
+msgstr ""
+"Nekateri paketi nameščeni v vašem sistemu niso kompatibilni s programom "
+"MonoDevelop:\n"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:288
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:290
@@ -2150,7 +2170,8 @@ msgstr "Zahtevana različica: {0}"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:292
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
-msgstr "Potrebno je nadgraditi prejšnje pakete, če želite uporabljati MonoDevelop."
+msgstr ""
+"Potrebno je nadgraditi prejšnje pakete, če želite uporabljati MonoDevelop."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:42
 msgid "Item Path"
@@ -2355,14 +2376,17 @@ msgstr "Ime rešitve ne sme vsebovati naslednjih znakov: {0}"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:210
 #, csharp-format
 msgid "Do you really want to remove solution {0} from solution {1}?"
-msgstr "Ste prepričani, da želite odstraniti rešitev {0} iz očetovske rešitve {1}?"
+msgstr ""
+"Ste prepričani, da želite odstraniti rešitev {0} iz očetovske rešitve {1}?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:167
 #, csharp-format
 msgid ""
 "Do you really want to move the folder '{0}' to the root folder of project "
 "'{1}'?"
-msgstr "Ste prepričani, da želite premakniti imenik '{0}' v korenski imenik projekta '{1}'?"
+msgstr ""
+"Ste prepričani, da želite premakniti imenik '{0}' v korenski imenik projekta "
+"'{1}'?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:169
 #, csharp-format
@@ -2374,7 +2398,9 @@ msgstr "Ste prepričani, da želite premakniti imenik '{0}' v imenik '{1}'?"
 msgid ""
 "Do you really want to copy the folder '{0}' to the root folder of project "
 "'{1}'?"
-msgstr "Ste prepričani, da želite kopirati imenik '{0}' v korenski imenik projekta '{1}'?"
+msgstr ""
+"Ste prepričani, da želite kopirati imenik '{0}' v korenski imenik projekta "
+"'{1}'?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:175
 #, csharp-format
@@ -2400,7 +2426,8 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
 #, csharp-format
 msgid "Do you want to save the file '{0}' before the copy operation?"
-msgstr "Ali želite shraniti datoteko '{0}' preden se izvede operacija kopiranja?"
+msgstr ""
+"Ali želite shraniti datoteko '{0}' preden se izvede operacija kopiranja?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
 #, csharp-format
@@ -2409,7 +2436,8 @@ msgid ""
 "\n"
 "{0}"
 msgstr ""
-"Ali želite shraniti naslednje datoteke preden se izvede operacija kopiranja?\n"
+"Ali želite shraniti naslednje datoteke preden se izvede operacija "
+"kopiranja?\n"
 "\n"
 "{0}"
 
@@ -2448,7 +2476,9 @@ msgstr "_Premakni"
 msgid ""
 "An error occurred while attempt to move/copy that file. Please check your "
 "permissions."
-msgstr "Ob premiku/kopiranju datoteke je prišlo do napake. Prosimo, preverite vaše pravice v datotečnem sistemu."
+msgstr ""
+"Ob premiku/kopiranju datoteke je prišlo do napake. Prosimo, preverite vaše "
+"pravice v datotečnem sistemu."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:323
 #, csharp-format
@@ -2460,7 +2490,8 @@ msgstr "Datoteka '{0}' že obstaja. Ali jo želite prepisati?"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:105
 msgid "File or directory name is already in use, choose a different one."
-msgstr "Datotečno ime oz. ime imenika je že v uporabi, prosimo, izberite drugo ime."
+msgstr ""
+"Datotečno ime oz. ime imenika je že v uporabi, prosimo, izberite drugo ime."
 
 #. new file name with wildcard (*, ?) characters in it
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:110
@@ -2469,7 +2500,9 @@ msgstr "Datotečno ime oz. ime imenika je že v uporabi, prosimo, izberite drugo
 msgid ""
 "The file name you have chosen contains illegal characters. Please choose a "
 "different file name."
-msgstr "Izbrano ime datoteke vsebuje neveljavne znake. Prosimo, izberite drugačno ime."
+msgstr ""
+"Izbrano ime datoteke vsebuje neveljavne znake. Prosimo, izberite drugačno "
+"ime."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:141
 #, csharp-format
@@ -2681,8 +2714,8 @@ msgid ""
 " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
 "{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
 msgstr ""
-" v <span font_family='fixed'>{0,-4}</span>  st <span font_family='fixed'>"
-"{1,-3}</span>  znak <span font_family='fixed'>{2,-3}</span> "
+" v <span font_family='fixed'>{0,-4}</span>  st <span font_family='fixed'>{1,-"
+"3}</span>  znak <span font_family='fixed'>{2,-3}</span> "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:73
 #, csharp-format
@@ -3188,7 +3221,9 @@ msgstr "Izvedi"
 msgid ""
 "The Solution Execute Definitions for this Solution were invalid. A new empty "
 "set of Execute Definitions has been created."
-msgstr "Definicije za izvedbo rešitve so bile neveljavne. Nova, prazna množica definicij je bila ustvarjena."
+msgstr ""
+"Definicije za izvedbo rešitve so bile neveljavne. Nova, prazna množica "
+"definicij je bila ustvarjena."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
 #, csharp-format
@@ -3247,7 +3282,9 @@ msgstr "Nisem mogel shraniti rešitve: {0}"
 msgid ""
 "The file '{0}' is using an old solution file format. It will be "
 "automatically converted to the current format."
-msgstr "Datoteka '{0}' uporablja starejši format rešitve. Datoteka bo samodejno sprememnjena v novejši format."
+msgstr ""
+"Datoteka '{0}' uporablja starejši format rešitve. Datoteka bo samodejno "
+"sprememnjena v novejši format."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:224
@@ -3282,7 +3319,8 @@ msgstr ""
 msgid ""
 "Unknown language '{0}'. You may need to install an additional add-in to "
 "support this language."
-msgstr "Neznan jezik '{0}'. Morali boste namestiti E-Dodatke, ki podpirajo ta jezik."
+msgstr ""
+"Neznan jezik '{0}'. Morali boste namestiti E-Dodatke, ki podpirajo ta jezik."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:154
 #, csharp-format
@@ -3309,7 +3347,9 @@ msgstr "Ni bilo možno shraniti projekta: {0}"
 msgid ""
 "The file '{0}' is using an old project file format. It will be automatically "
 "converted to the current format."
-msgstr "Datoteka '{0}' uporablja starejši format projekta. Datoteka bo samodejno sprememnjena v novejši format."
+msgstr ""
+"Datoteka '{0}' uporablja starejši format projekta. Datoteka bo samodejno "
+"sprememnjena v novejši format."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:117
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
@@ -3869,7 +3909,9 @@ msgstr "Signali"
 msgid ""
 "The action '{0}' belongs to the global action group '{1}'. To modify it, "
 "open the action group file."
-msgstr "Akcija '{0}' pripada globalni skupini akcij '{1}'. Če želite to spremeniti, odprite datoteko, ki pripada tej skupini akcij."
+msgstr ""
+"Akcija '{0}' pripada globalni skupini akcij '{1}'. Če želite to spremeniti, "
+"odprite datoteko, ki pripada tej skupini akcij."
 
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:148
 msgid "Open Action Group"
@@ -4140,7 +4182,9 @@ msgstr "Urejevalnik koda"
 msgid ""
 "This file {0} has been changed outside of MonoDevelop. Are you sure you want "
 "to overwrite the file?"
-msgstr "Datoteka '{0}' je bila spremenjena zunaj MonoDevelop programa. Ste prepričani, da želite prepisati datoteko?"
+msgstr ""
+"Datoteka '{0}' je bila spremenjena zunaj MonoDevelop programa. Ste "
+"prepričani, da želite prepisati datoteko?"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:351
 msgid "This file has been changed outside of MonoDevelop"
@@ -4357,7 +4401,9 @@ msgstr "<b>Napredno</b>"
 msgid ""
 "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new "
 "connection</span></span>"
-msgstr "<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Ustvari novo povezavo</span></span>"
+msgstr ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Ustvari novo "
+"povezavo</span></span>"
 
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:3
 msgid "Connection String"
@@ -4726,7 +4772,9 @@ msgstr "Ne morem uvoziti datoteke: "
 msgid ""
 "Output directory '{0}' can't be mapped to a local directory. The directory "
 "'{1}' will be used instead"
-msgstr "Izhodni imenik '{0}' ne more biti pripisan nekemu lokalnemu imeniku. V zameno bo uporabljen imenik '{1}'."
+msgstr ""
+"Izhodni imenik '{0}' ne more biti pripisan nekemu lokalnemu imeniku. V "
+"zameno bo uporabljen imenik '{1}'."
 
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
 msgid "_Import Visual Studio .NET Project..."
@@ -4817,3 +4865,34 @@ msgstr "Pozdravna stran"
 msgid "Show welcome page on startup"
 msgstr "Prikaži pozdravno stran ob zagonu"
 
+#: ../Extras/WelcomePage/WelcomePageView.cs:64
+msgid "Welcome"
+msgstr "Dobrodošli"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:191
+msgid " day"
+msgid_plural " days"
+msgstr[0] " dan"
+msgstr[1] " dni"
+msgstr[2] " dnevi"
+msgstr[3] " dni"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:195
+msgid " hour"
+msgid_plural " hours"
+msgstr[0] " ura"
+msgstr[1] " uri"
+msgstr[2] " ure"
+msgstr[3] " ur"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:199
+msgid " minute"
+msgid_plural " minutes"
+msgstr[0] " minuta"
+msgstr[1] " minuti"
+msgstr[2] " minute"
+msgstr[3] " minut"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:203
+msgid "Less than a minute"
+msgstr "Manj kot minuta"
