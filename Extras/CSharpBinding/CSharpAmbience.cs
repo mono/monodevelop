@@ -124,6 +124,16 @@ namespace CSharpBinding
 				switch (c.ClassType) {
 					case ClassType.Delegate:
 						builder.Append("delegate");
+						// Only display the return type when modifiers are to be
+						// shown - this fixes the vay delegates are shown in the
+						// popup window
+						if (c.Methods.Count > 0) {
+							foreach(IMethod m in c.Methods) {
+								if (m.Name != "Invoke") continue;
+								builder.Append (' ');
+								builder.Append (Convert(m.ReturnType));
+							}
+						}
 						break;
 					case ClassType.Class:
 						builder.Append("class");
@@ -141,28 +151,34 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
-			if (c.ClassType == ClassType.Delegate && c.Methods.Count > 0) {
-				foreach(IMethod m in c.Methods) {
-					if (m.Name != "Invoke") continue;
-					
-					builder.Append(Convert(m.ReturnType));
-					builder.Append(' ');
-				}
+			if (UseFullyQualifiedMemberNames) {
+				// Remove the '`#' that is appended to names of generic types
+				if (c.GenericParameters != null)
+					AppendPangoHtmlTag (builder, c.FullyQualifiedName.Substring(0, c.FullyQualifiedName.LastIndexOf("`")), "b");
+				else
+					AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
+			} else {
+				// Remove the '`#' that is appended to names of generic types
+				if (c.GenericParameters != null)
+					AppendPangoHtmlTag (builder, c.Name.Substring(0, c.Name.LastIndexOf("`")), "b");
+				else
+					AppendPangoHtmlTag (builder, c.Name, "b");
 			}
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
-			else
-				AppendPangoHtmlTag (builder, c.Name, "b");
-
-			if (c.GenericParameters != null && c.GenericParameters.Count > 0) {
-				builder.Append(" &lt;");
-				for (int i = 0; i < c.GenericParameters.Count; i++)
-				{
-					builder.Append(c.GenericParameters[i].Name);
-					if (i + 1 < c.GenericParameters.Count) builder.Append(", ");
+			// Display generic parameters only if told so
+			if (ShowGenericParameters && c.GenericParameters != null && c.GenericParameters.Count > 0) {
+				bool includeMarkup = this.IncludeHTMLMarkup || this.IncludePangoMarkup;
+				builder.Append ((includeMarkup) ? "&lt;" : "<");
+				// Since we know that there is at least one generic parameter in
+				// the list, we can add it outside the loop - so, we don't have
+				// to check whether we may append a comma or not
+				builder.Append (c.GenericParameters[0].Name);
+				// Now continue with the others, if there are any
+				for (int i = 1; i < c.GenericParameters.Count; i++) {
+					builder.Append (", ");
+					builder.Append (c.GenericParameters[i].Name);
 				}
-				builder.Append("&gt;");
+				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
 			
 			
@@ -186,12 +202,11 @@ namespace CSharpBinding
 				
 			} else if (ShowInheritanceList && c.ClassType != ClassType.Enum) {
 				if (c.BaseTypes.Count > 0) {
-					builder.Append(" : ");
-					for (int i = 0; i < c.BaseTypes.Count; ++i) {
-						builder.Append(Convert(c.BaseTypes[i]));
-						if (i + 1 < c.BaseTypes.Count) {
-							builder.Append(", ");
-						}
+					builder.Append (" : ");
+					builder.Append (Convert(c.BaseTypes[0]));
+					for (int i = 1; i < c.BaseTypes.Count; ++i) {
+						builder.Append (", ");
+						builder.Append (Convert(c.BaseTypes[i]));
 					}
 				}
 			}
@@ -262,16 +277,14 @@ namespace CSharpBinding
 			
 			if (property.Parameters.Count > 0) {
 				builder.Append(" (");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
-			
+				if (IncludeHTMLMarkup) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+				builder.Append (Convert (property.Parameters[0]));
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHTMLMarkup) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+					builder.Append(", ");
 					builder.Append(Convert(property.Parameters[i]));
-					if (i + 1 < property.Parameters.Count) {
-						builder.Append(", ");
-					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
 				}
+				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
 				builder.Append(')');
 			}
@@ -334,13 +347,14 @@ namespace CSharpBinding
 				AppendPangoHtmlTag (builder, m.Name, "b");
 			
 			builder.Append(" [");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
-
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
+			
+			if (m.Parameters.Count > 0) {
+				if (IncludeHTMLMarkup) builder.Append ("<br>&nbsp;&nbsp;&nbsp;");
+				builder.Append (Convert (m.Parameters[0]));
+				for (int i = 1; i < m.Parameters.Count; ++i) {
+					builder.Append (", ");
+					if (IncludeHTMLMarkup) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+					builder.Append(Convert(m.Parameters[i]));
 				}
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 			}
@@ -378,25 +392,31 @@ namespace CSharpBinding
 					AppendPangoHtmlTag (builder, m.Name, "b");
 			}
 			
-			if (m.GenericParameters != null && m.GenericParameters.Count > 0)
-			{
-				builder.Append(" &lt;");
-				for (int i = 0; i < m.GenericParameters.Count; i++)
-				{
-					builder.Append(m.GenericParameters[i].Name);
-					if (i + 1 < m.GenericParameters.Count) builder.Append(", ");
+			// Display generic parameters only if told so
+			if (ShowGenericParameters && m.GenericParameters != null && m.GenericParameters.Count > 0) {
+				bool includeMarkup = this.IncludeHTMLMarkup || this.IncludePangoMarkup;
+				builder.Append ((includeMarkup) ? "&lt;" : "<");
+				// Since we know that there is at least one generic parameter in
+				// the list, we can add it outside the loop - so, we don't have
+				// to check whether we may append a comma or not
+				builder.Append (m.GenericParameters[0].Name);
+				// Now continue with the others, if there are any
+				for (int i = 1; i < m.GenericParameters.Count; i++) {
+					builder.Append (", ");
+					builder.Append (m.GenericParameters[i].Name);
 				}
-				builder.Append("&gt;");
+				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
 			
 			builder.Append(" (");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
 			
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
+			if (m.Parameters.Count > 0) {
+				if (IncludeHTMLMarkup) builder.Append ("<br>&nbsp;&nbsp;&nbsp;");
+				builder.Append (Convert (m.Parameters[0]));
+				for (int i = 1; i < m.Parameters.Count; ++i) {
+					builder.Append (", ");
+					if (IncludeHTMLMarkup) builder.Append("<br>&nbsp;&nbsp;&nbsp;");
+					builder.Append(Convert(m.Parameters[i]));
 				}
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 			}
@@ -445,22 +465,35 @@ namespace CSharpBinding
 			if (typeConversionTable[returnType.FullyQualifiedName] != null) {
 				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
 			} else {
-				if (UseFullyQualifiedNames) {
-					builder.Append(returnType.FullyQualifiedName);
+				if (UseFullyQualifiedMemberNames) {
+					// Remove the '`#' that is appended to names of generic types
+					if (returnType.GenericArguments != null)
+						builder.Append (returnType.FullyQualifiedName.Substring(0, returnType.FullyQualifiedName.LastIndexOf("`")));
+					else
+						builder.Append (returnType.FullyQualifiedName);
 				} else {
-					builder.Append(returnType.Name);
+					// Remove the '`#' that is appended to names of generic types
+					if (returnType.GenericArguments != null)
+						builder.Append (returnType.Name.Substring(0, returnType.Name.LastIndexOf("`")));
+					else
+						builder.Append (returnType.Name);
 				}
 			}
 			
-			if (returnType.GenericArguments != null && returnType.GenericArguments.Count > 0)
-			{
-				builder.Append(" &lt;");
-				for (int i = 0; i < returnType.GenericArguments.Count; i++)
-				{
-					builder.Append(Convert(returnType.GenericArguments[i]));
-					if (i + 1 < returnType.GenericArguments.Count) builder.Append(", ");
+			// Display generic parameters only if told so
+			if (ShowGenericParameters && returnType.GenericArguments != null && returnType.GenericArguments.Count > 0) {
+				bool includeMarkup = this.IncludeHTMLMarkup || this.IncludePangoMarkup;
+				builder.Append ((includeMarkup) ? "&lt;" : "<");
+				// Since we know that there is at least one generic argument in
+				// the list, we can add it outside the loop - so, we don't have
+				// to check whether we may append a comma or not
+				builder.Append (Convert(returnType.GenericArguments[0]));
+				// Now continue with the others, if there are any
+				for (int i = 1; i < returnType.GenericArguments.Count; i++) {
+					builder.Append (", ");
+					builder.Append ( Convert(returnType.GenericArguments[i]));
 				}
-				builder.Append("&gt;");
+				builder.Append ((includeMarkup) ? "&gt;" : ">");
 			}
 			
 			if (linkSet) {

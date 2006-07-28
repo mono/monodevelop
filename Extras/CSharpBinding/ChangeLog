@@ -1,3 +1,8 @@
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
+	* CSharpAmbience.cs: Fixed the way generics and delegates are shown in the
+	  code completion popup, and made some optimizations along the way.
+
 2006-07-23 Matej Urbas <matej.urbas@gmail.com>
 
 	* CSharpAmbience.cs: Small cosmetic corrections when converting generic
