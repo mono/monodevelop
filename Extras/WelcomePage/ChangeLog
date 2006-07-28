@@ -1,3 +1,8 @@
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
+	* WelcomePageView.cs: Added i18n support for the title and a small part of
+	  the contents.
+
 2006-07-28  Scott Ellington  <scott.ellington@gmail.com>
 
 	* WelcomePageView.cs: 

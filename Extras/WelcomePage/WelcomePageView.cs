@@ -62,7 +62,7 @@ namespace MonoDevelop.WelcomePage
 
 		public WelcomePageView() : base()
 		{
-			this.ContentName = "Welcome";
+			this.ContentName = GettextCatalog.GetString("Welcome");
 			
 			control = new Frame();
 			control.Show();
@@ -189,29 +189,21 @@ namespace MonoDevelop.WelcomePage
 			DateTime prjtime = (new DateTime (1970, 1, 1, 0, 0, 0, 0)).AddSeconds(timestamp);
 			TimeSpan sincelast = DateTime.UtcNow - prjtime;
 
-			if (sincelast.Days > 1)
+			if (sincelast.Days >= 1)
 			{
-				return sincelast.Days + " days";
+				return sincelast.Days + GettextCatalog.GetPluralString(" day", " days", sincelast.Days);
 			}
-			else if (sincelast.Days == 1)
+			else if (sincelast.Hours >= 1)
 			{
-				return "One day";
-			}
-			else if (sincelast.Hours > 1)
-			{
-				return sincelast.Hours + " hours";
-			}
-			else if (sincelast.Hours == 1)
-			{
-				return "One hour";
+				return sincelast.Hours + GettextCatalog.GetPluralString(" hour", " hours", sincelast.Hours);
 			}
 			else if (sincelast.Minutes > 0)
 			{
-				return sincelast.Minutes + " minutes";
+				return sincelast.Minutes + GettextCatalog.GetPluralString(" minute", " minutes", sincelast.Minutes);
 			}
 			else
 			{
-				return "Less than a minute";
+				return GettextCatalog.GetString("Less than a minute");
 			}
 		}
 	}
