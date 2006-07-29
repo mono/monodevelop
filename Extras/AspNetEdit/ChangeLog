@@ -1,3 +1,25 @@
+2006-07-29 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Integration/*:
+	* AspNetEdit.Editor/*:
+	* Makefile.am:
+	* AspNetEdit.mdp:
+	* AspNetEdit.addin.xml:
+	  Import MD AspNetEdit AddIn.
+	  
+	* AspNetEdit.Editor.UI/RootDesignerView.cs:
+	  Use MonoDevelop.Components.HtmlControl.MozillaControl, because it 
+	  contains a workaround for Gecko# redraw issues with MD's docking 
+	  library.
+	  
+	* AspNetEdit.Editor.UI/PropertyGrid.cs:
+	  Track property grid widget, becuase it has moved to 
+	  MonoDevelop.DesignerSupport.
+	  
+	* AspNetEdit.Editor.ComponentModel/DesignContainer.cs:
+	* AspNetEdit.Editor.ComponentModel/DesignerHost.cs:
+	  Add more debug traces.
+
 2006-07-15 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* chrome/locale/*:

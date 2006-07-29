@@ -77,7 +77,7 @@ namespace AspNetEdit.Editor.ComponentModel
 
 		public IComponent CreateComponent (Type componentClass, string name)
 		{
-			Console.WriteLine("Attempting to create component "+name);
+			System.Diagnostics.Trace.WriteLine("Attempting to create component "+name);
 			//check arguments
 			if (componentClass == null)
 				throw new ArgumentNullException ("componentClass");
@@ -104,7 +104,7 @@ namespace AspNetEdit.Editor.ComponentModel
 			if (sel != null)
 				sel.SetSelectedComponents (new IComponent[] {component});
 
-			
+			System.Diagnostics.Trace.WriteLine("Created component "+name);
 			return component;
 		}
 

@@ -76,8 +76,10 @@ namespace AspNetEdit.Editor.ComponentModel
 			if (nameService == null)
 				throw new Exception ("The container must have access to a INameCreationService implementation");
 			
-			if (name == null || nameService.IsValidName (name))
+			if (name == null || nameService.IsValidName (name)) {
 				name = nameService.CreateName (this, component.GetType ());
+				System.Diagnostics.Trace.WriteLine("Generated name for component: "+name);
+			}
 
 			//check we don't already have component with same name
 			if (GetComponent (name) != null)

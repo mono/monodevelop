@@ -33,7 +33,7 @@ using System.ComponentModel.Design;
 using Gtk;
 using System.ComponentModel;
 using System.Collections;
-using AspNetEdit.UI;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace AspNetEdit.Editor.UI
 {
@@ -44,7 +44,7 @@ namespace AspNetEdit.Editor.UI
 		private IExtenderListService extenderListService = null;
 		private IComponentChangeService changeService = null;
 		private ITypeDescriptorFilterService typeDescriptorFilterService = null;
-		private AspNetEdit.UI.PropertyGrid grid;
+		private MonoDevelop.DesignerSupport.PropertyGrid.PropertyGrid grid;
 		private ListStore components;
 		private ComboBox combo;
 		
@@ -54,7 +54,7 @@ namespace AspNetEdit.Editor.UI
 		{
 			this.parentServices = parentServices;
 			
-			grid = new AspNetEdit.UI.PropertyGrid ();
+			grid = new MonoDevelop.DesignerSupport.PropertyGrid.PropertyGrid ();
 			this.PackEnd (grid, true, true, 0);
 
 

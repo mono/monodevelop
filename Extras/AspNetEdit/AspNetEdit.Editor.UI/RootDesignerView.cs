@@ -40,7 +40,7 @@ using Gtk;
 
 namespace AspNetEdit.Editor.UI
 {
-	public class RootDesignerView : Gecko.WebControl
+	public class RootDesignerView : MonoDevelop.Components.HtmlControl.MozillaControl
 	{
 		private const string geckoChrome = "chrome://aspdesigner/content/"; 
 		private CommandManager comm;
@@ -186,7 +186,7 @@ namespace AspNetEdit.Editor.UI
 			throw new NotImplementedException ("Renaming controls not supported yet");
 		}
 		
-		internal string GetDocument ()
+		internal new string GetDocument ()
 		{
 			comm.JSCall (GeckoFunctions.GetPage, "DocumentReturn", null);
 			
