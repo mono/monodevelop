@@ -151,13 +151,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			// Configure the ambience to convert names so that they contain
 			// generic parameters
 			IAmbience amb        = Services.Ambience.CurrentAmbience;
-			ConversionFlags prev = amb.ConversionFlags;
 			amb.ConversionFlags  = ConversionFlags.ShowGenericParameters;
 			
 			completionString     = amb.Convert(c);
 			text                 = completionString;
 			// Restore the conversion flags to what they were before
-			amb.ConversionFlags = prev;
+			amb.ConversionFlags = ConversionFlags.All;
 			
 			description = amb.Convert(c);
 			pango_description  = PangoAmbience.Convert(c);
