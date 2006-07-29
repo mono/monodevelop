@@ -35,12 +35,15 @@ using Gtk;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
+	[Serializable]
 	public abstract class BaseToolboxNode : Gtk.ITreeNode
 	{
 		private static Gdk.Pixbuf _defaultIcon;
 		private static Gdk.Color _defaultColor;
 		private static int nextId = int.MinValue;
+		[NonSerialized]
 		private int id;
+		[NonSerialized]
 		private ITreeNode parent = null;
 		
 		public BaseToolboxNode ()
@@ -147,8 +150,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
     		return -1;
     	}
     	
+    	[field:NonSerialized]
     	public event System.EventHandler Changed;
-    	public event TreeNodeAddedHandler ChildAdded;
+		[field:NonSerialized]
+		public event TreeNodeAddedHandler ChildAdded;
+		[field:NonSerialized]
 		public event TreeNodeRemovedHandler ChildRemoved;
 		
 		protected void OnChanged ()

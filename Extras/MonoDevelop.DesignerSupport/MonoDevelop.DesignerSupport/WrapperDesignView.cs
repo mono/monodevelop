@@ -48,15 +48,34 @@ namespace MonoDevelop.DesignerSupport
 		IDocumentInformation
 	{
 		IViewContent content;
+		Gtk.VBox contentBox;
+		Gtk.Widget topBar;
 		
 		public WrapperDesignView  (IViewContent content)
 		{
 			this.content = content;
+			this.contentBox = new Gtk.VBox ();
+			this.contentBox.PackEnd (content.Control, true, true, 0);
+			this.contentBox.ShowAll ();
 			
 			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
+		}
+		
+		public Gtk.Widget TopBar {
+			get {
+				return topBar;
+			}
+			protected set {				
+				if (topBar != null)
+					contentBox.Remove (topBar);
+				
+				if (value != null)		
+					contentBox.PackStart (value, false, false, 0);
+				topBar = value;
+			}
 		}
 		
 		protected IViewContent Content {
@@ -92,7 +111,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		public override Gtk.Widget Control {
-			get { return content.Control; }
+			get { return contentBox; }
 		}
 		
 		public override void Save (string fileName)

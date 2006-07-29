@@ -70,7 +70,7 @@ public class PropertyGrid : Gtk.VBox
 	private TextView descText;
 	private Frame descFrame;
 
-	public PropertyGrid()
+	public PropertyGrid ()
 		: this(new EditorManager ())
 	{
 	}
@@ -89,7 +89,7 @@ public class PropertyGrid : Gtk.VBox
 		base.PackStart (toolbar, false, false, 0);
 		
 		catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
-		catButton.IconWidget = new Image (new Gdk.Pixbuf (null, "MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
+		catButton.IconWidget = new Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
 		catButton.SetTooltip (tips, "Sort in categories", null);
 		catButton.Toggled += new EventHandler (toolbarClick);
 		toolbar.Insert (catButton, 0);
@@ -130,7 +130,7 @@ public class PropertyGrid : Gtk.VBox
 		descText = new TextView ();
 		descText.WrapMode = WrapMode.Word;
 		descText.WidthRequest = 1;
-		descText.HeightRequest = 100;
+		descText.HeightRequest = 70;
 		descText.Editable = false;
 		descText.LeftMargin = 5;
 		descText.RightMargin = 5;

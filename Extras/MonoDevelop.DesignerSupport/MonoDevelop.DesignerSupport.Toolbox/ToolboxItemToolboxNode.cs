@@ -43,10 +43,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Serializable]
 	public class ToolboxItemToolboxNode : TypeToolboxNode
 	{
-		[ItemProperty ("item-contents")]
+		[ItemProperty ("itemcontents")]
 		string serializedToolboxItem;
 		
-		[ItemProperty ("item-type")]
+		[ItemProperty ("itemtype")]
 		TypeReference toolboxItemType;
 		
 		public ToolboxItemToolboxNode (ToolboxItem item)
@@ -68,6 +68,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				serializedToolboxItem = SerializeToolboxItem (item);
 				toolboxItemType = new TypeReference (item.GetType ());
 			} 
+		}
+		
+		//for deserialisation
+		public ToolboxItemToolboxNode ()
+		{
 		}
 		
 		public ToolboxItem GetToolboxItem ()

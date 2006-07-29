@@ -42,8 +42,10 @@ using MonoDevelop.Projects.Serialization;
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[DataItem (Name = "item", FallbackType = typeof(UnknownToolboxNode))]
+	[Serializable]
 	public abstract class ItemToolboxNode : BaseToolboxNode, ICustomDataItem
 	{
+		[NonSerialized]
 		Gdk.Pixbuf icon;
 		
 		[ItemProperty ("name")]
@@ -144,6 +146,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			DataCollection dc = handler.Serialize (this);
 			
+			dc.Extract ("filters");
+			dc.Extract ("icon");
+			
 			DataItem filtersItem = new DataItem ();
 			filtersItem.Name = "filters";
 			dc.Add (filtersItem);
@@ -169,9 +174,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void Deserialize (ITypeSerializer handler, DataCollection data)
 		{
-			handler.Deserialize (this, data);
-			
-			DataItem filtersItem = data ["filters"] as DataItem;
+			DataItem filtersItem = data.Extract ("filters") as DataItem;
 			if ((filtersItem != null) && (filtersItem.HasItemData)) {
 				foreach (DataItem item in filtersItem.ItemData) {
 					string filter = ((DataValue) item.ItemData ["string"]).Value;
@@ -182,13 +185,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			}
 			
-			DataItem iconItem = data ["icon"] as DataItem;
+			DataItem iconItem = data.Extract ("icon") as DataItem;
 			if (iconItem != null) {
 				DataValue iconData = (DataValue) iconItem ["enc"];
 				this.icon = new Gdk.Pixbuf (Convert.FromBase64String(iconData.Value));
 			}
+			
+			handler.Deserialize (this, data);
 		}
 		
 		#endregion
-	}	
+	}
 }

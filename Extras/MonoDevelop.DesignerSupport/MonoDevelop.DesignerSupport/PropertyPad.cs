@@ -22,6 +22,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			grid = new pg.PropertyGrid ();
 			frame = new Gtk.Frame ();
+			frame.Shadow = Gtk.ShadowType.None;
 			frame.Add (grid);
 			
 			frame.ShowAll ();

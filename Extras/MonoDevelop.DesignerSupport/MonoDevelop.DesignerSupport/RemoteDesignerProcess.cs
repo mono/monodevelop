@@ -15,7 +15,8 @@ namespace MonoDevelop.DesignerSupport
 		Frame propGridFrame;
 		Plug designerPlug;
 		Plug propGridPlug;
-		System.Threading.Thread gtkThread;
+		System.Threading.Thread gtkThread = null;
+		bool exceptionOccurred = false;
 		
 		public RemoteDesignerProcess ()
 		{
@@ -23,14 +24,71 @@ namespace MonoDevelop.DesignerSupport
 			
 			designerFrame = new Gtk.Frame ();
 			propGridFrame = new Gtk.Frame ();
+			designerFrame.Shadow = ShadowType.None;
+			propGridFrame.Shadow = ShadowType.None;
+			designerFrame.BorderWidth = 0;
 			
 			designerFrame.Show ();
 			propGridFrame.Show ();
-			
-			//we need another thread for GTK, or this one will lock up the remoting channel and freeze MD
-			gtkThread = new System.Threading.Thread (Application.Run);
-			gtkThread.Start ();
 		}
+		
+		#region threading, error handling
+		
+		//we need another thread for GTK, or this one will lock up the remoting channel and freeze MD
+		protected void StartGuiThread ()
+		{
+			if (gtkThread == null) {
+				gtkThread = new System.Threading.Thread (GuiThread);
+				gtkThread.Start ();
+			}
+		}
+		
+		void GuiThread ()
+		{
+			while (true) {
+				try {
+					Application.Run ();
+				} catch (Exception e) {
+					exceptionOccurred = true;
+					HandleError (e);
+				}
+			}
+		}
+		
+		public bool ExceptionOcurred
+		{
+			get { return exceptionOccurred; }
+		}
+		
+		public virtual void RecoverFromException ()
+		{
+			exceptionOccurred = false;
+		}
+		
+		protected virtual void HandleError (Exception e)
+		{
+			ShowText ("<b><big>The designer has encountered a fatal error:</big></b>\n\n" + System.Web.HttpUtility.HtmlEncode (e.ToString ()));
+		}
+		
+		protected void ShowText (string markup)
+		{
+			Label label= new Label ();
+			label.Markup = markup;
+			
+			Frame padFrame = new Gtk.Frame ();
+			padFrame.Add (label);
+			padFrame.BorderWidth = 10;
+			padFrame.Shadow = ShadowType.None;
+			
+			ScrolledWindow scrollW = new ScrolledWindow ();
+			scrollW.AddWithViewport (padFrame);
+			scrollW.BorderWidth = 0;
+			scrollW.ShadowType = ShadowType.None;
+			scrollW.ShowAll ();
+			DesignerWidget = scrollW;
+		}
+		
+		#endregion
 		
 		protected Widget PropertyGridWidget {
 			get {

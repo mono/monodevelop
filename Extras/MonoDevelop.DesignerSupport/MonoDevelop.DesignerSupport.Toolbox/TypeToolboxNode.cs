@@ -11,6 +11,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		[ItemProperty ("type")]
 		TypeReference type;
 		
+		//for deserialisation
+		public TypeToolboxNode ()
+		{
+		}
+		
 		public TypeToolboxNode (TypeReference typeRef)
 		{
 			this.type = typeRef;
@@ -47,6 +52,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		string assemblyName = "";
 		[ItemProperty ("name")]
 		string typeName = "";
+		
+		//for deserialisation
+		public TypeReference ()
+		{
+		}
 		
 		public TypeReference (string typeName, string assemblyName)
 		{

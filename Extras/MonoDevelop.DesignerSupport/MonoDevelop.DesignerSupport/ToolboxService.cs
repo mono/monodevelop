@@ -79,7 +79,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 			}
 			
-			OnToolboxChanged ();
+			OnToolboxContentsChanged ();
 		}
 		
 		~ToolboxService ()
@@ -94,7 +94,7 @@ namespace MonoDevelop.DesignerSupport
 		public void SaveContents (string fileName)
 		{
 			using (StreamWriter writer = new StreamWriter (fileName)) {
-				XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
+				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
 				serializer.Serialize (writer, allItems as IList);
 			}
 		}
@@ -105,12 +105,12 @@ namespace MonoDevelop.DesignerSupport
 			
 			using (StreamReader reader = new StreamReader (fileName))
 			{
-				XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
+				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
 				o = serializer.Deserialize (reader, typeof (ToolboxList));	
 			}
 			
 			allItems = (ToolboxList) o;
-			OnToolboxChanged ();
+			OnToolboxContentsChanged ();
 		}
 		
 		#endregion
@@ -123,15 +123,13 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		public IList GetToolboxItems (IToolboxConsumer consumer)
-		{	
-			return allItems;
-			
-			//FIXME: enable filtering
+		{
 			ArrayList arr = new ArrayList ();
 			
-			foreach (ItemToolboxNode node in allItems)
-				if (IsSupported (node, consumer))
-					arr.Add (node);
+			if (consumer != null)
+				foreach (ItemToolboxNode node in allItems)
+					if (IsSupported (node, consumer))
+						arr.Add (node);
 			
 			return arr;
 		}
@@ -186,10 +184,10 @@ namespace MonoDevelop.DesignerSupport
 			OnToolboxConsumerChanged (currentConsumer);
 		}
 		
-		protected virtual void OnToolboxChanged ()
+		protected virtual void OnToolboxContentsChanged ()
 		{
-			if (ToolboxChanged != null)
-				ToolboxChanged (this, new EventArgs ()); 	
+			if (ToolboxContentsChanged != null)
+				ToolboxContentsChanged (this, new EventArgs ()); 	
 		}
 		
 		protected virtual void OnToolboxConsumerChanged (IToolboxConsumer consumer)
@@ -210,7 +208,7 @@ namespace MonoDevelop.DesignerSupport
 				ToolboxUsed (this, new ToolboxUsedEventArgs (consumer, item)); 	
 		}
 		
-		public event EventHandler ToolboxChanged;
+		public event EventHandler ToolboxContentsChanged;
 		public event ToolboxConsumerChangedHandler ToolboxConsumerChanged;
 		public event ToolboxSelectionChangedHandler ToolboxSelectionChanged;
 		public event ToolboxUsedHandler ToolboxUsed;

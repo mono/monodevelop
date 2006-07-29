@@ -130,7 +130,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			nodeView.RowActivated  += OnRowActivated;
 			
 			//update view when toolbox service updated
-			toolboxService.ToolboxChanged += new EventHandler (tbsChanged);
+			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
+			toolboxService.ToolboxConsumerChanged += delegate { Refresh (); };
 			Refresh ();
 			
 			//track expanded state of nodes
@@ -142,11 +143,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			catToggleButton.Active = true;
 			
 			this.ShowAll ();
-		}
-		
-		private void tbsChanged (object sender, EventArgs e)
-		{
-			Refresh ();
 		}
 		
 		#region Toolbar event handlers
@@ -188,12 +184,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region GUI population
 		
 		public void Refresh ()
-		{
-			Repopulate (true);
-		}
-		
-		private void Repopulate (bool categorised)
-		{			
+		{	
 			store.Clear ();
 			ICollection nodes = toolboxService.GetCurrentToolboxItems ();
 			store.SetNodes (nodes);

@@ -1,3 +1,35 @@
+2006-07-29  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
+	  More flexible exception handling, and display errors.
+	
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs:
+	  Add a means of adding a 'bar' to the top of the view.
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs:
+	  Move file name from tab to top 'bar'.
+	  
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	  Rename OnToolboxChanged to OnToolboxContentChanged to remove ambiguity.
+	  Re-enable contextual filtering.
+	  Use project service's DataContext for serialisation.
+	  
+	* MonoDevelop.DesignerSupport/PropertyPad.cs:
+	  Remove shadow from frame.
+	  
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs:
+	  Fix serialisation, both for persisting toolbox and for remoting 
+	  toolbox nodes.
+	  
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	Track OnToolboxChanged name change.
+	  
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:
+	  Reduce height of help pane.
+	  Make sure that image resource comes from correct assembly when remoting.
+
 2006-07-25  Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: Prevent null 

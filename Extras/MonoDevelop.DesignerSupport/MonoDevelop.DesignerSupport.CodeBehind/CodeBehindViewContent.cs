@@ -9,10 +9,15 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	
 	public class CodeBehindViewContent : MonoDevelop.DesignerSupport.WrapperDesignView, ISecondaryViewContent
 	{
+		Gtk.Label nameLabel;
 		
 		public CodeBehindViewContent (IViewContent content)
 			: base (content)
 		{
+			Gtk.Label nameLabel = new Gtk.Label ("CodeBehind file: "+System.IO.Path.GetFileName (Content.ContentName));
+			nameLabel.Xpad = 3;
+			nameLabel.Show ();
+			base.TopBar = nameLabel;
 		}
 		
 		public virtual void Selected()
@@ -32,7 +37,7 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		}
 		
 		public override string TabPageLabel {
-			get { return "CodeBehind: " + System.IO.Path.GetFileName (Content.ContentName); }
+			get { return "CodeBehind"; }
 		}
 		
 		public override bool CanReuseView (string fileName)
