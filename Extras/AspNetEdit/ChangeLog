@@ -1,0 +1,56 @@
+2006-07-15 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* chrome/locale/*:
+	* chrome/chrome/*:
+	* chrome/Makefile.am: Restructure jar to make it work with Mozilla. Fix 
+	  nasty bug that broke Mozilla installations. Note that this extension 
+	  is still unlikely to work with anything newer than Mozilla 1.6.
+
+2006-06-24 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* chrome/locale/en-US/contents.rdf
+	* chrome/install.rdf
+	* chrome/chrome.manifest
+	* chrome/Makefile.am: Make chrome installable on Firefox, and build an 
+	  XPI extension. Unfortunately gtkmozembed doesn't appear to load 
+	  extensions, so we still have to install into the browser's chrome.
+
+2006-05-12  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* AspNetEdit.Editor.ComponentModel/TypeResolutionService.cs: Don't 
+	  error out too easily when looking up types. Also, resolve assembly-
+	  qualified type names.
+
+2006-04-26  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* AspNetEdit.Editor.ComponentModel/ToolboxService.cs: Convert the 
+	  ToolboxItem arrays properly or they become null when empty, and 
+	  ToolboxItemCollection gets unhappy. 
+
+2006-01-16 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Editor.ComponentModel/MenuCommandService.cs:
+	* AspNetEdit.Editor.ComponentModel/WebFormPage.cs:
+	* AspNetEdit.Editor.ComponentModel/Document.cs: Reduce trivial warnings.
+	  
+	* AspNetEdit.Editor.Persistence/DesignTimeParser.cs: Reduce trivial 
+	  warnings.
+	  
+	* AspNetEdit.Editor.UI/RootDesignerView.cs: make exception more 
+	  informative.
+	  
+	* chrome/Makefile.am: find installed-chrome.txt in correct location.
+
+2005-11-28 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Editor.ComponentModel/Document.cs:
+	* AspNetEdit.Editor.ComponentModel/DesignerHost.cs:
+	  Avoid duplicating controls in container when loading and unloading.
+	  
+	* AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs: Add 
+	  child collection objects to parent control.
+
+2005-10-05  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* chrome/Makefile.am: Added .js files from Blago's reorganisation to the 
+	chrome deployment.
