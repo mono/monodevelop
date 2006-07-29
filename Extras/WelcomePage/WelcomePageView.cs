@@ -191,15 +191,15 @@ namespace MonoDevelop.WelcomePage
 
 			if (sincelast.Days >= 1)
 			{
-				return sincelast.Days + GettextCatalog.GetPluralString(" day", " days", sincelast.Days);
+				return GettextCatalog.GetPluralString("{0} day", "{0} days", sincelast.Days, sincelast.Days);
 			}
 			else if (sincelast.Hours >= 1)
 			{
-				return sincelast.Hours + GettextCatalog.GetPluralString(" hour", " hours", sincelast.Hours);
+				return GettextCatalog.GetPluralString("{0} hour", "{0} hours", sincelast.Hours, sincelast.Hours);
 			}
 			else if (sincelast.Minutes > 0)
 			{
-				return sincelast.Minutes + GettextCatalog.GetPluralString(" minute", " minutes", sincelast.Minutes);
+				return GettextCatalog.GetPluralString("{0} minute", "{0} minutes", sincelast.Minutes, sincelast.Minutes);
 			}
 			else
 			{

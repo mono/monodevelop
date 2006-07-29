@@ -1,5 +1,11 @@
 2006-07-28 Matej Urbas <matej.urbas@gmail.com>
 
+	* WelcomePageView.cs: Fixed the wrong assumption I made about languages.
+	  The internationalized strings now use string formatting to allow better
+	  translations for other languages.
+
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
 	* WelcomePageView.cs: Added i18n support for the title and a small part of
 	  the contents.
 
