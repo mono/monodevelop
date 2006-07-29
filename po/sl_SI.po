@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl_SI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-28 12:26+0200\n"
+"POT-Creation-Date: 2006-07-28 22:44+0200\n"
 "PO-Revision-Date: 2006-07-28 10:28+0200\n"
 "Last-Translator: Matej Urbas\n"
 "Language-Team:  <en@li.org>\n"
@@ -25,7 +25,7 @@ msgid "_Browse..."
 msgstr "_Razišči..."
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
-#: ../Extras/WelcomePage/WelcomePageView.cs:147
+#: ../Extras/WelcomePage/WelcomePageView.cs:150
 #, csharp-format
 msgid "Could not open the url {0}"
 msgstr "Ni bilo možno odpreti URL naslova '{0}'"
@@ -4865,34 +4865,37 @@ msgstr "Pozdravna stran"
 msgid "Show welcome page on startup"
 msgstr "Prikaži pozdravno stran ob zagonu"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:64
+#: ../Extras/WelcomePage/WelcomePageView.cs:65
 msgid "Welcome"
 msgstr "Dobrodošli"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:191
-msgid " day"
-msgid_plural " days"
-msgstr[0] " dan"
-msgstr[1] " dni"
-msgstr[2] " dnevi"
-msgstr[3] " dni"
+#: ../Extras/WelcomePage/WelcomePageView.cs:194
+#, csharp-format
+msgid "{0} day"
+msgid_plural "{0} days"
+msgstr[0] "pred {0} dnevom"
+msgstr[1] "pred {0} dnevoma"
+msgstr[2] "pred {0} dnevi"
+msgstr[3] "pred {0} dnevi"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:195
-msgid " hour"
-msgid_plural " hours"
-msgstr[0] " ura"
-msgstr[1] " uri"
-msgstr[2] " ure"
-msgstr[3] " ur"
+#: ../Extras/WelcomePage/WelcomePageView.cs:198
+#, csharp-format
+msgid "{0} hour"
+msgid_plural "{0} hours"
+msgstr[0] "pred {0} uro"
+msgstr[1] "pred {0} urama"
+msgstr[2] "pred {0} urami"
+msgstr[3] "pred {0} urami"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:199
-msgid " minute"
-msgid_plural " minutes"
-msgstr[0] " minuta"
-msgstr[1] " minuti"
-msgstr[2] " minute"
-msgstr[3] " minut"
+#: ../Extras/WelcomePage/WelcomePageView.cs:202
+#, csharp-format
+msgid "{0} minute"
+msgid_plural "{0} minutes"
+msgstr[0] "pred {0} minuto"
+msgstr[1] "pred {0} minutama"
+msgstr[2] "pred {0} minutami"
+msgstr[3] "pred {0} minutami"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:203
+#: ../Extras/WelcomePage/WelcomePageView.cs:206
 msgid "Less than a minute"
-msgstr "Manj kot minuta"
+msgstr "Pred manj kot minuto"
