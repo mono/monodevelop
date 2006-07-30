@@ -11,6 +11,9 @@ using MonoDevelop.Projects.Parser;
 using CSharpBinding.Parser.SharpDevelopTree;
 using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 using ClassType = MonoDevelop.Projects.Parser.ClassType;
+using CSGenericParameter = CSharpBinding.Parser.SharpDevelopTree.GenericParameter;
+
+using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser
 {
@@ -163,11 +166,23 @@ namespace CSharpBinding.Parser
 				}
 				cu.Classes.Add(c);
 			}
+			
+			// Get base classes (with generic arguments et al)
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(new ReturnType(type.Type));
+					c.BaseTypes.Add(new ReturnType(type));
 				}
 			}
+			
+			// Get generic parameters for this type
+			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
+				c.GenericParameters = new GenericParameterList();
+				c.FullyQualifiedName = String.Concat (c.FullyQualifiedName, "`", typeDeclaration.Templates.Count.ToString());
+				foreach (AST.TemplateDefinition td in typeDeclaration.Templates) {
+					c.GenericParameters.Add (new CSGenericParameter(td));
+				}
+			}
+			
 			currentClass.Push(c);
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
@@ -233,7 +248,7 @@ namespace CSharpBinding.Parser
 			
 			ModifierFlags mf = methodDeclaration.Modifier;
 			Method method = new Method (c, String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
-			ParameterCollection parameters = new ParameterCollection();
+			ParameterCollection parameters = method.Parameters;
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
@@ -241,7 +256,14 @@ namespace CSharpBinding.Parser
 					parameters.Add(p);
 				}
 			}
-			method.Parameters = parameters;
+			
+			// Get generic parameters for this type
+			if (methodDeclaration.Templates != null && methodDeclaration.Templates.Count > 0) {
+				method.GenericParameters = new GenericParameterList();
+				foreach (AST.TemplateDefinition td in methodDeclaration.Templates) {
+					method.GenericParameters.Add (new CSGenericParameter(td));
+				}
+			}
 			
 			FillAttributes (method, methodDeclaration.Attributes);
 			

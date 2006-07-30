@@ -33,6 +33,7 @@ Parser/SharpDevelopTree/CompilationUnit.cs \
 Parser/SharpDevelopTree/Property.cs \
 Parser/SharpDevelopTree/Field.cs \
 Parser/SharpDevelopTree/ReturnType.cs \
+Parser/SharpDevelopTree/GenericParameter.cs \
 Parser/TypeVisitor.cs \
 Parser/CSharpVisitor.cs \
 Parser/LanguageItemVisitor.cs \

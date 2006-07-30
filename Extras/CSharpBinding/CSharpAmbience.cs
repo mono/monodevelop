@@ -153,14 +153,24 @@ namespace CSharpBinding
 			
 			if (UseFullyQualifiedMemberNames) {
 				// Remove the '`#' that is appended to names of generic types
-				if (c.GenericParameters != null)
-					AppendPangoHtmlTag (builder, c.FullyQualifiedName.Substring(0, c.FullyQualifiedName.LastIndexOf("`")), "b");
+				if (c.GenericParameters != null) {
+					int len = c.FullyQualifiedName.LastIndexOf("`");
+					if (len > 0)
+						AppendPangoHtmlTag (builder, c.FullyQualifiedName.Substring(0, len), "b");
+					else
+						AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
+				}
 				else
 					AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
 			} else {
 				// Remove the '`#' that is appended to names of generic types
-				if (c.GenericParameters != null)
-					AppendPangoHtmlTag (builder, c.Name.Substring(0, c.Name.LastIndexOf("`")), "b");
+				if (c.GenericParameters != null) {
+					int len = c.Name.LastIndexOf("`");
+					if (len > 0)
+						AppendPangoHtmlTag (builder, c.Name.Substring(0, len), "b");
+					else
+						AppendPangoHtmlTag (builder, c.Name, "b");
+				}
 				else
 					AppendPangoHtmlTag (builder, c.Name, "b");
 			}

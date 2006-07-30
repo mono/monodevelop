@@ -214,7 +214,7 @@ namespace CSharpBinding.Parser
 			
 			IClass cls = ob as IClass;
 			if (cls != null) {
-				return new ReturnType (cls.FullyQualifiedName, new int[] { 0 }, 0);
+				return ReturnType.Convert (cls);
 			}
 			
 			return null;

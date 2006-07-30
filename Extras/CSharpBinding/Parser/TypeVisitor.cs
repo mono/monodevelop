@@ -261,7 +261,7 @@ namespace CSharpBinding.Parser
 			}
 			int[] newArray = new int[type.ArrayDimensions.Length - 1];
 			Array.Copy(type.ArrayDimensions, 0, newArray, 0, type.ArrayDimensions.Length - 1);
-			return new ReturnType(type.Name, newArray, type.PointerNestingLevel);
+			return new ReturnType(type.Name, newArray, type.PointerNestingLevel, type.GenericArguments);
 		}
 		
 		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
@@ -292,7 +292,7 @@ namespace CSharpBinding.Parser
 			IClass type = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CompilationUnit);
 			if (type == null) return null;
 			string name = type.FullyQualifiedName;
-			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel);
+			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel, null);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)

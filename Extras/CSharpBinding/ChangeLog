@@ -1,3 +1,18 @@
+2006-07-30 Matej Urbas <matej.urbas@gmail.com>
+
+	* CSharpAmbience.cs: Fixed a curious null exception.
+	* Parser/CSharpVisitor.cs: Updated the visitor to store generic data as
+	  parsed by NRefactory.
+	* Parser/LanguageItemVisitor.cs:
+	* Parser/TypeVisitor.cs: Updated the way various expressions are
+	  treated in the code - to accommodate to new data for generics.
+	* Parser/SharpDevelopTree/ReturnType.cs: Added support for generics in
+	  return types.
+
+	* Parser/SharpDevelopTree/GenericParameter.cs: The new file
+	* CSharpBinding.mdp: Added the new file to the project.
+	* Makefile.am: Added the new file to the project.
+
 2006-07-28 Matej Urbas <matej.urbas@gmail.com>
 
 	* CSharpAmbience.cs: Fixed the way generics and delegates are shown in the
