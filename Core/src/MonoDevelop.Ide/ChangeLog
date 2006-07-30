@@ -1,3 +1,8 @@
+2006-07-30 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs: Removed a trace
+	  message.
+
 2006-07-26 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs:

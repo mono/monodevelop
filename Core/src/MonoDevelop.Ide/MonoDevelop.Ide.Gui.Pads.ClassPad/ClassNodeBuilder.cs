@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			if (c.GenericParameters != null && c.GenericParameters.Count > 0)
 			{
-				System.Console.WriteLine ("hey");
 				StringBuilder builder = new StringBuilder (c.Name);
 				builder.Append("&lt;");
 				for (int i = 0; i < c.GenericParameters.Count; i++)
