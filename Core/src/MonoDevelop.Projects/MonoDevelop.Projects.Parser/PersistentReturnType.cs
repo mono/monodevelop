@@ -23,9 +23,9 @@ namespace MonoDevelop.Projects.Parser
 			rt.pointerNestingLevel = source.PointerNestingLevel;
 			rt.arrayDimensions = source.ArrayDimensions;
 			
-			if (rt.GenericArguments != null && rt.GenericArguments.Count > 0) {
+			if (source.GenericArguments != null && source.GenericArguments.Count > 0) {
 				rt.GenericArguments = new ReturnTypeList();
-				foreach (IReturnType ga in rt.GenericArguments) {
+				foreach (IReturnType ga in source.GenericArguments) {
 					rt.GenericArguments.Add(PersistentReturnType.Resolve(ga, typeResolver));
 				}
 			}

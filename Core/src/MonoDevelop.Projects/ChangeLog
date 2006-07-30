@@ -1,3 +1,15 @@
+2006-07-30 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Parser/GenericParameter.cs: Changed the access level
+	  of some commonly needed fields in GenericParameter to protected. Added the
+	  forgotten license.
+	* MonoDevelop.Projects.Parser/PersistentReturnType.cs: Corrected a very
+	  nasty typo.
+	* MonoDevelop.Projects.Parser/ReturnTypeList.cs:
+	* MonoDevelop.Projects.Parser/GenericParameterList.cs:
+	* MonoDevelop.Projects.Parser/PersistentGenericParamater.cs: Added the
+	  forgotten license.
+
 2006-07-28 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Projects.Ambience/AbstractAmbience.cs: Added
