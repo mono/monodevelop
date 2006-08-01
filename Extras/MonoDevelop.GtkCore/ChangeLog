@@ -1,3 +1,12 @@
+2006-08-01 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	  Set the resource provider before loading the project.
+	  Fixes bug #78966.
+	  
+	* libs/*: Updated from Stetic module. Fixes several bugs:
+	  78938, 78916, 78909, 78956, and 78867.
+
 2006-07-27 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs:

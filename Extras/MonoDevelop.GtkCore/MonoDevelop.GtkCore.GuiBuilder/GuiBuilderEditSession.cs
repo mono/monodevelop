@@ -61,6 +61,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			// Create a local project and load into it the widget being edited.
 			// When saving the file, this project will be merged with the main project.
 			gproject = new Stetic.Project ();
+			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (win.Project.Project).ResourceProvider;
 			
 			// Reuse the action groups and icon factory of the main project
 			gproject.ActionGroups = win.Project.SteticProject.ActionGroups;
@@ -80,8 +81,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			gproject.SignalRemoved += new Stetic.SignalEventHandler (OnSignalRemoved);
 			gproject.SignalChanged += new Stetic.SignalChangedEventHandler (OnSignalChanged);
 			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
-			
-			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (win.Project.Project).ResourceProvider;
 		}
 		
 		public Stetic.Project SteticProject {
