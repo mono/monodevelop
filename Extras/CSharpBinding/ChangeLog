@@ -1,3 +1,7 @@
+2006-08-02 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Resolver.cs: Added null check.
+
 2006-07-30 Matej Urbas <matej.urbas@gmail.com>
 
 	* CSharpAmbience.cs: Fixed a curious null exception.

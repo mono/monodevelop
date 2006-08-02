@@ -187,6 +187,8 @@ namespace CSharpBinding.Parser
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
 			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			currentFile = fileName;
+			if (fileCompilationUnit == null)
+				return null;
 			return ResolveIdentifier (fileCompilationUnit, id, line, col);
 		}
 		
