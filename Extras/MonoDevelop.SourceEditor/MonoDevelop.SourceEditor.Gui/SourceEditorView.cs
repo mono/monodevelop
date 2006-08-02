@@ -406,8 +406,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			string txt = buf.Text;
 			string fileName = ParentEditor.DisplayBinding.ContentName;
+			if (fileName == null)
+				fileName = ParentEditor.DisplayBinding.UntitledName;
+
 			IParserContext ctx = GetParserContext ();
-			IExpressionFinder expressionFinder = ctx.GetExpressionFinder (fileName);
+			IExpressionFinder expressionFinder = null;
+			if (fileName != null)
+				expressionFinder = ctx.GetExpressionFinder (fileName);
+
 			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset (this, ti.Offset) : expressionFinder.FindFullExpression (txt, ti.Offset).Expression;
 			if (expression == null)
 				return null;
