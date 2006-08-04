@@ -211,6 +211,7 @@ namespace MonoDevelop.Autotools
 				StringBuilder files = new StringBuilder ();
 				StringBuilder res_files = new StringBuilder ();
 				StringBuilder extras = new StringBuilder ();
+				StringBuilder datafiles = new StringBuilder ();
 				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
 					switch ( projectFile.BuildAction )
@@ -238,11 +239,17 @@ namespace MonoDevelop.Autotools
 							}
 							else res_files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
 							break;
+							
+						case BuildAction.FileCopy:
+						
+							datafiles.AppendFormat ("\\\n\t{0} ", projectFile.RelativePath);
+							break;
 					}
 				}
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
 				templateEngine.Variables["EXTRAS"] = extras.ToString();
+				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
 
 				// Create makefile
 				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");

@@ -1,3 +1,10 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* SimpleProjectMakefileHandler.cs:
+	* templates/Makefile.include:
+	* templates/Makefile.am.project.template: Add support for project files
+	  with the FileCopy build action.
+
 2006-07-17 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs: Track changes in the SystemAssemblyService

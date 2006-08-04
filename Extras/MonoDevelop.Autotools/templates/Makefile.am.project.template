@@ -6,6 +6,8 @@ all: $(ASSEMBLY)
 
 FILES = %%FILES%%
 
+DATA_FILES = %%DATA_FILES%%
+
 RESOURCES = %%RESOURCES%%
 
 EXTRAS = %%EXTRAS%%
@@ -14,7 +16,7 @@ REFERENCES = %%REFERENCES%%
 
 DLL_REFERENCES = %%DLL_REFERENCES%%
 
-$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) 
+$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafiles) 
 	mkdir -p $(dir $(ASSEMBLY))		
 %%COPY_DLLS%%
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
