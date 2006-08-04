@@ -8,6 +8,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 
 using System;
@@ -75,6 +76,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		SourceEditorView view;
 		int highlightLine = -1;
 		bool underlineErrors = true;
+		string sourceEncoding;
 
 		public SourceEditorView View
 		{
@@ -97,6 +99,11 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 
+		public string SourceEncoding {
+			get { return sourceEncoding; }
+			set { sourceEncoding = value; }
+		}
+		
 		public SourceEditorBuffer (SourceEditorView view) : this ()
 		{
 			this.view = view;
@@ -242,62 +249,45 @@ namespace MonoDevelop.SourceEditor.Gui
 			atomic_undo.Dispose ();
 		}
 		
-		public void LoadFile (string file, string mime)
-		{
-			StreamReader sr = System.IO.File.OpenText (file);
-			LoadText (sr.ReadToEnd (), mime);		
-			sr.Close ();			
-		}
-		
 		public void LoadFile (string file)
 		{
-			using (NoUndo n = new NoUndo (this)) {
-				StreamReader sr = System.IO.File.OpenText (file);
-				LoadText(sr.ReadToEnd ());
-				sr.Close ();
-			}
+			LoadFile (file, null);
 		}
-
-		// needed to make sure the text is valid
-		[DllImport("libglib-2.0-0.dll")]
-		static extern bool g_utf8_validate(string text, int textLength, IntPtr end);
+		
+		public void LoadFile (string fileName, string mime)
+		{
+			LoadFile (fileName, mime, null);
+		}
+		
+		public void LoadFile (string fileName, string mime, string encoding)
+		{
+			TextFile file = TextFile.ReadFile (fileName, encoding);
+			sourceEncoding = file.SourceEncoding;
+			LoadText (file.Text, mime);
+		}
 		
 		public void LoadText (string text, string mime)
 		{
-			SourceLanguage lang = svs.GetLanguageFromMimeType (mime);
-			if (lang != null) 
-				Language = lang;
-
-			LoadText(text);
-		}
-		
-
-		//
-		// NOTE: Text is set to null if the file could not be loaded (i.e. not valid utf8 text
-		//
-		public void LoadText (string text)
-		{
-			if (g_utf8_validate (text, -1, IntPtr.Zero))
-			{
-				using (NoUndo n = new NoUndo (this))
-					Text = text;
+			if (mime != null) {
+				SourceLanguage lang = svs.GetLanguageFromMimeType (mime);
+				if (lang != null) 
+					Language = lang;
 			}
-			else
-			{
-				using (NoUndo n = new NoUndo (this))
-					Text = null;
+			
+			using (NoUndo n = new NoUndo (this)) {
+				Text = text;
 			}
-
+			
 			Modified = false;
-			ScrollToTop ();			
+			ScrollToTop ();
 		}
 
 		void ScrollToTop ()
 		{
 			PlaceCursor (StartIter);
 			if (View != null) {
-				View.ScrollMarkOnscreen (InsertMark);
-				GLib.Timeout.Add (20, new TimeoutHandler (changeFocus));
+//				View.ScrollMarkOnscreen (InsertMark);
+//				GLib.Timeout.Add (20, new TimeoutHandler (changeFocus));
 			}
 		}
 
@@ -307,15 +297,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			return false;
 		}
 		
-		public void Save (string fileName)
+		public void Save (string fileName, string encoding)
 		{
 			// This is workaround for Mono bug #77423.
 			TextWriter s = new StreamWriter (fileName, true);
 			s.Close ();
 			
-			s = new StreamWriter (fileName, false);
-			s.Write (Text);
-			s.Close ();
+			TextFile.WriteFile (fileName, Text, SourceEncoding);
 			Modified = false;
 		}
 

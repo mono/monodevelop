@@ -65,8 +65,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		public virtual IViewContent CreateContentForFile (string fileName)
 		{
 			SourceEditorDisplayBindingWrapper w = new SourceEditorDisplayBindingWrapper ();
-			
-			w.Load (fileName);
 			return w;
 		}
 		
@@ -84,7 +82,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
 		IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation
+		IDocumentInformation, IEncodedTextContent
 	{
 		VBox mainBox;
 		HBox editorBar;
@@ -264,6 +262,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public override void Save (string fileName)
 		{
+			Save (fileName, null);
+		}
+		
+		public void Save (string fileName, string encoding)
+		{
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
 					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?"), fileName),"MonoDevelop"))
@@ -275,14 +278,21 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 
 			lock (fileSaveLock) {
-				se.Buffer.Save (fileName);
+				se.Buffer.Save (fileName, encoding);
 				lastSaveTime = File.GetLastWriteTime (fileName);
 			}
+			if (encoding != null)
+				se.Buffer.SourceEncoding = encoding;
 			ContentName = fileName;
 			InitializeFormatter ();
 		}
 		
 		public override void Load (string fileName)
+		{
+			Load (fileName, null);
+		}
+		
+		public void Load (string fileName, string encoding)
 		{
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -293,7 +303,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			vfsname = vfsname.Replace ("%", "%25");
 			vfsname = vfsname.Replace ("#", "%23");
 			vfsname = vfsname.Replace ("?", "%3F");
-			se.Buffer.LoadFile (fileName, Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname));
+			se.Buffer.LoadFile (fileName, Gnome.Vfs.MimeType.GetMimeTypeForUri (vfsname), encoding);
 			ContentName = fileName;
 			InitializeFormatter ();
 			
@@ -427,10 +437,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void LoadString (string mime, string val)
 		{
-			if (mime != null)
-				se.Buffer.LoadText (val, mime);
-			else
-				se.Buffer.LoadText (val);
+			se.Buffer.LoadText (val, mime);
 		}
 		
 #region IEditableTextBuffer
@@ -523,6 +530,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		public event EventHandler TextChanged {
 			add { se.Buffer.Changed += value; }
 			remove { se.Buffer.Changed -= value; }
+		}
+		
+		public string SourceEncoding {
+			get { return se.Buffer.SourceEncoding; }
 		}
 		
 #endregion
