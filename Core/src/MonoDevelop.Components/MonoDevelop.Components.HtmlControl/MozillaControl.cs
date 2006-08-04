@@ -20,13 +20,14 @@ namespace MonoDevelop.Components.HtmlControl
 		
 		public MozillaControl ()
 		{
-			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
+//			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
 			
 			//FIXME: suppress a strange bug with control not getting drawn first time it's shown, or when docking changed.
 			//For some reason this event only fires when control 'appears' or is re-docked, which corresponds 1:1 to the bug.
 			//FIXME: OnExposeEvent doesn't fire, but ExposeEvent does
-			this.ExposeEvent += delegate {
+/*			this.ExposeEvent += delegate {
 				if (!reShown) {
+					Console.WriteLine ("P1");
 					Hide ();
 					Show ();
 					
@@ -35,7 +36,19 @@ namespace MonoDevelop.Components.HtmlControl
 					GLib.Timeout.Add (1000, delegate { reShown = false; return false; } );
 				}
 			};
-		}
+			
+			this.Realized += delegate {
+				Console.WriteLine ("REALIZED");
+			};
+			
+			this.Unrealized += delegate {
+				Console.WriteLine ("UNREALIZED");
+			};
+			
+			this.ParentSet += delegate {
+				Console.WriteLine ("PARENTSET " + Parent);
+			};
+*/		}
 		
 		public void GoHome ()
 		{
@@ -98,15 +111,30 @@ namespace MonoDevelop.Components.HtmlControl
 
 		public void InitializeWithBase (string base_uri)
 		{
+			Console.WriteLine ("InitializeWithBase " + html.Length);
+			
 			//Runtime.LoggingService.Info (base_uri);
 			if (html.Length > 0)
 			{
-				this.RenderData (html, base_uri, "text/html");
+/*    			OpenStream (base_uri, "text/html");
+    			int chunk = 100;
+    			for (int n=0; n<html.Length; n+=chunk)
+    			{
+    				int max = chunk;
+    				if (n+max > html.Length) max = html.Length-n;
+    				AppendData (html.Substring (n, max));
+    			}
+    			
+    			CloseStream ();
+*/			
+			
+    			this.RenderData ("hi", base_uri, "text/html");
 			}
 		}
 		
 		public void DelayedInitialize ()
 		{
+			Console.WriteLine ("DelayedInitialize");
 			InitializeWithBase ("file://");
 		}
 	}

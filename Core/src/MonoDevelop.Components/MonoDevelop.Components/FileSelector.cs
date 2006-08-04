@@ -11,23 +11,21 @@ namespace MonoDevelop.Components
 		PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 		FileUtilityService fileUtilityService = (FileUtilityService) ServiceManager.GetService (typeof (FileUtilityService));
 
-		public FileSelector () : base (GettextCatalog.GetString ("Open file ..."), null, FileChooserAction.Open)
+		public FileSelector () : this (GettextCatalog.GetString ("Open file ..."), FileChooserAction.Open)
 		{
-			AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
-			AddButton (Gtk.Stock.Open, ResponseType.Ok);
-			CommonSetup ();
 		}
 
-		public FileSelector (string title) : base (title, null, FileChooserAction.Open)
+		public FileSelector (string title) : this (title, FileChooserAction.Open)
 		{
-			AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
-			AddButton (Gtk.Stock.Open, ResponseType.Ok);
-			CommonSetup ();
 		}
 
 		public FileSelector (string title, FileChooserAction action) : base (title, null, action)
 		{
 			switch (action) {
+				case FileChooserAction.Open:
+					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
+					AddButton (Gtk.Stock.Open, ResponseType.Ok);
+					break;
 				case FileChooserAction.SelectFolder:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 					AddButton ("Select Folder", ResponseType.Ok);
