@@ -257,6 +257,7 @@ Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
 Core/src/MonoDevelop.Core.Gui/AssemblyInfo.cs
 Core/src/MonoDevelop.Core.Gui/Makefile
 Core/src/MonoDevelop.Projects/AssemblyInfo.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.dll.config
 Core/src/MonoDevelop.Projects/Makefile
 Core/src/MonoDevelop.Projects.Gui/AssemblyInfo.cs
 Core/src/MonoDevelop.Projects.Gui/Makefile

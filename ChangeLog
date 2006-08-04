@@ -1,3 +1,8 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Added MonoDevelop.Projects.dll.config to the
+	  build.
+
 2006-07-28  Wade Berrier <wberrier@novell.com>
 
 	* configure.in: Remove Extras/VBNetBinding/SharpRefactoryVB/Makefile reference,
