@@ -44,7 +44,7 @@ using Gdk;
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class CombinedDesignView : AbstractViewContent, IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation
+		IDocumentInformation, IEncodedTextContent
 	{
 		IViewContent content;
 		Gtk.Notebook notebook;
@@ -242,6 +242,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void DeleteText (int position, int length)
 		{
 			((IEditableTextBuffer)content).DeleteText (position, length);
+		}
+		
+		/* IEncodedTextContent **************/
+		
+		public string SourceEncoding {
+			get { return ((IEncodedTextContent)content).SourceEncoding; }
+		}
+		
+		public void Save (string fileName, string encoding)
+		{
+			((IEncodedTextContent)content).Save (fileName, encoding);
+		}
+		
+		public void Load (string fileName, string encoding)
+		{
+			((IEncodedTextContent)content).Load (fileName, encoding);
 		}
 		
 		/* ITextBuffer **********************/

@@ -1,3 +1,13 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	  CreateContentForFile should not load the file, just create
+	  the view.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Add
+	  support for IEncodedTextContent.
+
 2006-08-01 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:

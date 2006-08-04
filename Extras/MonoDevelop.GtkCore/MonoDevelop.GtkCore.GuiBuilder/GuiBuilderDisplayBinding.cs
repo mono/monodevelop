@@ -67,7 +67,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingPerFileName (fileName);
 			GuiBuilderView view = new GuiBuilderView (db.CreateContentForFile (fileName), GetWindow (fileName));
 			excludeThis = false;
-			view.Load (fileName);
 			return view;
 		}
 		

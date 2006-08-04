@@ -81,7 +81,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
-			view.Load (fileName);
 			return view;
 		}
 		
