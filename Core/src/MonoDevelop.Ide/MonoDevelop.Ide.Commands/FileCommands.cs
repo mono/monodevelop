@@ -84,37 +84,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			ArrayList filters = new ArrayList ();
-			filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/Combine/FileFilter").BuildChildItems (this));
-			try
-			{
-				filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/FileFilter").BuildChildItems (this));
-			}
-			catch
-			{
-				//nothing there..	
-			}
-			
-			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"))) {
+			using (FileSelectorDialog fs = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"))) {
 				
-				foreach (string filterStr in filters)
-				{
-					string[] parts = filterStr.Split ('|');
-					Gtk.FileFilter filter = new Gtk.FileFilter ();
-					filter.Name = parts[0];
-					foreach (string ext in parts[1].Split (';'))
-					{
-						filter.AddPattern (ext);
-					}
-					fs.AddFilter (filter);
-				}
-				
-				//Add All Files
-				Gtk.FileFilter allFilter = new Gtk.FileFilter ();
-                allFilter.Name = GettextCatalog.GetString ("All Files");
-                allFilter.AddPattern ("*");
-                fs.AddFilter (allFilter);
-
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
@@ -123,7 +94,7 @@ namespace MonoDevelop.Ide.Commands
 					if (ps.IsCombineEntryFile (name))
 						IdeApp.ProjectOperations.OpenCombine (name);
 					else
-						IdeApp.Workbench.OpenDocument (name);
+						IdeApp.Workbench.OpenDocument (name, fs.Encoding);
 				}	
 			}
 		}

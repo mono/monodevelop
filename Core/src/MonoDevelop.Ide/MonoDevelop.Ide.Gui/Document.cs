@@ -36,8 +36,10 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -141,11 +143,23 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
+			string encoding = null;
+			
+			IEncodedTextContent tbuffer = Window.ViewContent as IEncodedTextContent;
+			if (tbuffer != null) {
+				encoding = tbuffer.SourceEncoding;
+				if (encoding == null)
+					encoding = TextEncoding.DefaultEncoding;
+			}
+				
 			if (filename == null) {
-				FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
+				FileSelectorDialog fdiag = new FileSelectorDialog (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
 				fdiag.CurrentName = Window.ViewContent.UntitledName;
+				fdiag.Encoding = encoding;
+				fdiag.ShowEncodingSelector = (tbuffer != null);
 				int response = fdiag.Run ();
 				filename = fdiag.Filename;
+				encoding = fdiag.Encoding;
 				fdiag.Hide ();
 				if (response != (int)Gtk.ResponseType.Ok)
 					return;
@@ -161,13 +175,21 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				}
 			}
+			
 			// save backup first
 			if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
-				Window.ViewContent.Save (filename + "~");
+				if (tbuffer != null && encoding != null)
+					tbuffer.Save (filename + "~", encoding);
+				else
+					Window.ViewContent.Save (filename + "~");
 			}
 			
 			// do actual save
-			Window.ViewContent.Save (filename);
+			if (tbuffer != null && encoding != null)
+				tbuffer.Save (filename, encoding);
+			else
+				Window.ViewContent.Save (filename);
+
 			IdeApp.Services.FileService.NotifyFileChange (filename);
 			IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
 			

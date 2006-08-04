@@ -241,6 +241,11 @@
     <File name="./MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/FileViewer.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

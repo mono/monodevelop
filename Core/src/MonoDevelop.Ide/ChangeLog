@@ -1,3 +1,19 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs: New interface.
+	* Base.glade: Added dialog for managing encodings.
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Moved most of the code
+	  to FileSelectorDialog.
+	* MonoDevelop.Ide.Gui/FileViewer.cs: Track api changes.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/Document.cs: Implemented support for saving
+	  and loading files using a specific text encoding.
+	  
+	* MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs:
+	  Track api changes. CreateContentForFile should only create the
+	  view, not load it.
+	  
 2006-07-30 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs: Removed a trace

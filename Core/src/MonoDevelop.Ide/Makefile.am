@@ -96,6 +96,7 @@ MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
 MonoDevelop.Ide.Gui.Content/ICustomizedCommands.cs \
 MonoDevelop.Ide.Gui.Content/IEditable.cs \
+MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 MonoDevelop.Ide.Gui.Content/IPrintable.cs \
@@ -113,6 +114,8 @@ MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
+MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
+MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/BuildPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \

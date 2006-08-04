@@ -42,7 +42,6 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		public IViewContent CreateContentForFile(string fileName)
 		{
 			BrowserPane browserPane = new BrowserPane();
-			browserPane.Load (fileName);
 			return browserPane;
 		}
 		

@@ -1,5 +1,5 @@
 //
-// Document.cs
+// IEncodedTextContent.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,56 +27,14 @@
 //
 
 using System;
-using MonoDevelop.Ide.Codons;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Utils;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Gui.Content
 {
-	public class FileViewer
+	public interface IEncodedTextContent
 	{
-		IDisplayBinding binding;
-		DesktopApplication app;
+		void Load (string fileName, string encoding);
+		void Save (string fileName, string encoding);
 		
-		internal FileViewer (DesktopApplication app)
-		{
-			this.app = app;
-		}
-		
-		internal FileViewer (IDisplayBinding binding)
-		{
-			this.binding = binding;
-		}
-		
-		public string Title {
-			get { return binding != null ? binding.DisplayName : app.DisplayName; }
-		}
-		
-		public bool IsExternal {
-			get { return binding == null; }
-		}
-		
-		public override bool Equals (object ob)
-		{
-			FileViewer fv = ob as FileViewer;
-			if (fv == null) return false;
-			return binding == fv.binding || app.Command == fv.app.Command;
-		}
-		
-		public override int GetHashCode ()
-		{
-			if (binding != null)
-				return binding.GetHashCode ();
-			else
-				return app.Command.GetHashCode ();
-		}
-		
-		public void OpenFile (string filePath)
-		{
-			if (binding != null)
-				IdeApp.Workbench.OpenDocument (filePath, -1, -1, true, null, binding);
-			else
-				app.Launch (filePath);
-		}
+		string SourceEncoding { get; }		
 	}
 }

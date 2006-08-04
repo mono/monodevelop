@@ -246,6 +246,11 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, true);
 		}
 		
+		public Document OpenDocument (string fileName, string encoding)
+		{
+			return OpenDocument (fileName, -1, -1, true, encoding, null);
+		}
+		
 		public Document OpenDocument (string fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, -1, -1, bringToFront);
@@ -253,10 +258,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document OpenDocument (string fileName, int line, int column, bool bringToFront)
 		{
-			return OpenDocument (fileName, line, column, bringToFront, null);
+			return OpenDocument (fileName, line, column, bringToFront, null, null);
 		}
 		
-		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, IDisplayBinding binding)
+		public Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding)
+		{
+			return OpenDocument (fileName, line, column, bringToFront, encoding, null);
+		}
+		
+		internal Document OpenDocument (string fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
 		{
 			foreach (Document doc in Documents) {
 				IBaseViewContent vcFound = null;
@@ -301,6 +311,7 @@ namespace MonoDevelop.Ide.Gui
 			openFileInfo.Line = line;
 			openFileInfo.Column = column;
 			openFileInfo.DisplayBinding = binding;
+			openFileInfo.Encoding = encoding;
 			RealOpenFile (openFileInfo);
 			
 			if (!pm.AsyncOperation.Success)
@@ -573,6 +584,7 @@ namespace MonoDevelop.Ide.Gui
 		public int Column;
 		public IDisplayBinding DisplayBinding;
 		public IViewContent NewContent;
+		public string Encoding;
 	}
 	
 	class LoadFileWrapper
@@ -600,9 +612,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Invoke(string fileName)
 		{
-			newContent = binding.CreateContentForFile(fileName);
+			newContent = binding.CreateContentForFile (fileName);
 			if (newContent == null)
 				return;
+
+			if (fileInfo.Encoding != null && newContent is IEncodedTextContent)
+				((IEncodedTextContent)newContent).Load (fileName, fileInfo.Encoding);
+			else
+				newContent.Load (fileName);
 
 			if (project != null)
 				newContent.Project = project;
