@@ -1,3 +1,10 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Properly handle the case when the completion list is empty
+	  (this may happen if the parser database is being generated).
+
 2006-07-29 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Base types of

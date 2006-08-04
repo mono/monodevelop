@@ -170,7 +170,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void UpdateWord ()
 		{
-			completionWidget.SetCompletionText(wnd.PartialWord, wnd.CompleteWord);
+			string word = wnd.CompleteWord;
+			if (word != null)
+				completionWidget.SetCompletionText(wnd.PartialWord, word);
 		}
 		
 		public new void Hide ()
@@ -202,7 +204,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void UpdateDeclarationView ()
 		{
-			if (completionData == null || List.Selection >= completionData.Length)
+			if (completionData == null || List.Selection >= completionData.Length || List.Selection == -1)
 				return;
 
 			if (List.GdkWindow == null) return;

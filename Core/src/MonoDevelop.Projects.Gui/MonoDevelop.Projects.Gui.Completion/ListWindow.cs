@@ -89,7 +89,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public string CompleteWord
 		{
-			get { return provider.GetText (list.Selection);	}
+			get { 
+				if (list.Selection != -1)
+					return provider.GetText (list.Selection);
+				else
+					return null;
+			}
 		}
 		
 		public string PartialWord
@@ -283,7 +288,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void Reset ()
 		{
-			selection = 0;
+			if (win.DataProvider.ItemCount == 0)
+				selection = -1;
+			else
+				selection = 0;
+
 			page = 0;
 			disableSelection = false;
 			UpdateStyle ();
@@ -300,7 +309,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set {
 				if (value < 0)
 					value = 0;
-				else if (value >= win.DataProvider.ItemCount)
+				if (value >= win.DataProvider.ItemCount)
 					value = win.DataProvider.ItemCount - 1;
 					
 				if (value != selection) 
@@ -417,7 +426,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				}
 				else
 					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + icon.Width + 2, typos, layout);
-				
+					
 				this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
 				ypos += rowHeight;
