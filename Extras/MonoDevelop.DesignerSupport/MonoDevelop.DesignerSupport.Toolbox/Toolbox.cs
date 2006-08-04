@@ -100,7 +100,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			//cell renderers
 			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
 			CellRendererText textRenderer = new CellRendererText ();
-			textRenderer.Ellipsize = Pango.EllipsizeMode.End;
+//			textRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			
 			//Main column with text, icons
 			TreeViewColumn col = new TreeViewColumn ();

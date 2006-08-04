@@ -1,3 +1,10 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Add support
+	  for IEncodedTextContent.
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Fix build for
+	  gtk# 2.4.
+
 2006-07-29  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
