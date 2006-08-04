@@ -44,8 +44,6 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("StartMode/Execute", ValueType = typeof(CombineExecuteDefinition))]
 		ArrayList combineExecuteDefinitions = new ArrayList();
 		
-		bool   eventsAllowed = true;
-		
 		[ProjectPathItemProperty ("outputpath")]
 		string outputdir     = null;
 		
@@ -213,11 +211,6 @@ namespace MonoDevelop.Projects
 					entry.Configurations.Add(new CombineConfiguration(conf.Name));			
 			
 			combineExecuteDefinitions.Add (new CombineExecuteDefinition (entry, EntryExecuteType.None));
-			
-			if (eventsAllowed) {
-				NotifyModified ();
-				OnEntryAdded (new CombineEntryEventArgs (entry));
-			}
 
 			if (entry is Project)
 			{
@@ -243,6 +236,9 @@ namespace MonoDevelop.Projects
 			}
 			entry.Modified += entryModifiedHandler;
 			entry.Saved += entrySavedHandler;
+			
+			NotifyModified ();
+			OnEntryAdded (new CombineEntryEventArgs (entry));
 		}
 		
 		public override DataCollection Serialize (ITypeSerializer handler)

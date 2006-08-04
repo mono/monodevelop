@@ -805,23 +805,22 @@ namespace MonoDevelop.Projects.Parser
 		
 		void LoadCombineDatabases (Combine combine)
 		{
-			CombineEntryCollection projects = combine.GetAllProjects();
-			foreach (Project entry in projects) {
-				LoadProjectDatabase (entry);
-			}
+			foreach (CombineEntry entry in combine.Entries)
+				Load (entry);
+
 			combine.EntryAdded += combineEntryAddedHandler;
 			combine.EntryRemoved += combineEntryRemovedHandler;
 		}
 		
 		void UnloadCombineDatabases (Combine combine)
 		{
-			CombineEntryCollection projects = combine.GetAllProjects();
-			foreach (Project entry in projects) {
-				UnloadProjectDatabase (entry);
-			}
-			CleanUnusedDatabases ();
+			foreach (CombineEntry entry in combine.Entries)
+				Unload (entry);
+
 			combine.EntryAdded -= combineEntryAddedHandler;
 			combine.EntryRemoved -= combineEntryRemovedHandler;
+
+			CleanUnusedDatabases ();
 		}
 		
 		void OnProjectRenamed (object sender, CombineEntryRenamedEventArgs args)
@@ -841,19 +840,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		void OnCombineEntryAdded (object sender, CombineEntryEventArgs args)
 		{
-			if (args.CombineEntry is Project)
-				LoadProjectDatabase ((Project)args.CombineEntry);
-			else if (args.CombineEntry is Combine)
-				LoadCombineDatabases ((Combine)args.CombineEntry);
+			Load (args.CombineEntry);
 		}
 		
 		void OnCombineEntryRemoved (object sender, CombineEntryEventArgs args)
 		{
-			if (args.CombineEntry is Project)
-				UnloadProjectDatabase ((Project) args.CombineEntry);
-			else if (args.CombineEntry is Combine)
-				UnloadCombineDatabases ((Combine) args.CombineEntry);
-			CleanUnusedDatabases ();
+			Unload (args.CombineEntry);
 		}
 		
 		internal void NotifyReferencesChanged (CodeCompletionDatabase db)

@@ -1,5 +1,6 @@
 
 ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
+CONFIG = MonoDevelop.Projects.dll.config
   
 REFS = \
  	-r:System \
@@ -199,6 +200,7 @@ MonoDevelop.Projects.Text/IEditableTextFile.cs \
 MonoDevelop.Projects.Text/ITextFile.cs \
 MonoDevelop.Projects.Text/ITextFileProvider.cs \
 MonoDevelop.Projects.Text/TextFile.cs \
+MonoDevelop.Projects.Text/TextEncoding.cs \
 MonoDevelop.Projects/ProjectCreateInformation.cs \
 MonoDevelop.Projects/IProjectBinding.cs \
 MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
@@ -235,16 +237,18 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_sources) \
+	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
 
 addindir = $(MD_ADDIN_DIR)
 addin_DATA = $(ADDIN)
 
 assemblydir = $(MD_ADDIN_DIR)
-assembly_DATA = $(ASSEMBLY)
+assembly_DATA = $(ASSEMBLY) $(CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+DISTCLEANFILES = $(CONFIG)
 
-EXTRA_DIST = $(FILES) $(ADDIN)
+EXTRA_DIST = $(FILES) $(CONFIG).in $(ADDIN)
 
 include $(top_srcdir)/Makefile.include

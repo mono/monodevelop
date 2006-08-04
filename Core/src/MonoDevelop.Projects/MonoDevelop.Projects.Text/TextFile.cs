@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -36,15 +37,91 @@ namespace MonoDevelop.Projects.Text
 	{
 		string name;
 		StringBuilder text;
+		string sourceEncoding;
 		bool modified;
+		
+		public TextFile ()
+		{
+		}
 		
 		public TextFile (string name)
 		{
-			this.name = name;
-			StreamReader sr = new StreamReader (name);
-			text = new StringBuilder (sr.ReadToEnd ());
-			sr.Close ();
+			Read (name);
 		}
+		
+		public void Read (string fileName)
+		{
+			Read (fileName, null);
+		}
+		
+		public static TextFile ReadFile (string fileName)
+		{
+			TextFile tf = new TextFile ();
+			tf.Read (fileName);
+			return tf;
+		}
+		
+		public static TextFile ReadFile (string fileName, string encoding)
+		{
+			TextFile tf = new TextFile ();
+			tf.Read (fileName, encoding);
+			return tf;
+		}
+		
+		public void Read (string fileName, string encoding)
+		{
+			// Reads the file using the specified encoding.
+			// If the encoding is null, it autodetects the
+			// required encoding.
+			
+			this.name = fileName;
+			
+			FileInfo f = new FileInfo (fileName);
+			byte[] content = new byte [f.Length];
+			
+			using (FileStream stream = f.OpenRead ()) {
+				int n = 0, nc;
+				while ((nc = stream.Read (content, n, (content.Length - n))) > 0)
+					n += nc;
+			}
+			
+			if (encoding != null) {
+				string s = Convert (content, encoding);
+				if (s == null)
+					throw new Exception ("Invalid text file format");
+				text = new StringBuilder (s);
+				sourceEncoding = encoding;
+			}
+			else {
+				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
+					string s = Convert (content, co.Id);
+					if (s != null) {
+						sourceEncoding = co.Id;
+						text = new StringBuilder (s);
+						return;
+					}
+				}
+				throw new Exception ("Unknown text file encoding");
+			}
+		}
+		
+		static string Convert (byte[] content, string encoding)
+		{
+			int nr=0, nw=0;
+			IntPtr cc = g_convert (content, content.Length, "UTF-8", encoding, ref nr, ref nw, IntPtr.Zero);
+			if (cc != IntPtr.Zero) {
+				string s = System.Runtime.InteropServices.Marshal.PtrToStringAuto (cc, nw);
+				g_free (cc);
+				return s;
+			} else
+				return null;
+		}
+		
+		[DllImport("libglib-2.0-0.dll")]
+		static extern IntPtr g_convert(byte[] text, int textLength, string toCodeset, string fromCodeset, ref int read, ref int written, IntPtr err);
+
+		[DllImport("libglib-2.0-0.dll")]
+		static extern void g_free (IntPtr ptr);
 		
 		public string Name {
 			get { return name; } 
@@ -52,6 +129,11 @@ namespace MonoDevelop.Projects.Text
 
 		public bool Modified {
 			get { return modified; }
+		}
+		
+		public string SourceEncoding {
+			get { return sourceEncoding; }
+			set { sourceEncoding = value; }
 		}
 		
 		public string Text {
@@ -111,10 +193,34 @@ namespace MonoDevelop.Projects.Text
 		
 		public void Save ()
 		{
-			StreamWriter sw = new StreamWriter (name);
-			sw.Write (text.ToString ());
-			sw.Close ();
+			WriteFile (name, text.ToString (), sourceEncoding);
 			modified = false;
+		}
+		
+		public static void WriteFile (string fileName, string content, string encoding)
+		{
+			if (encoding == null || encoding == "UTF-8") {
+				using (StreamWriter sw = new StreamWriter (fileName)) {
+					sw.Write (content.ToString ());
+				}
+			}
+			else {
+				byte[] bytes = Encoding.UTF8.GetBytes (content);
+				
+				int nr=0, nw=0;
+				IntPtr cc = g_convert (bytes, bytes.Length, encoding, "UTF-8", ref nr, ref nw, IntPtr.Zero);
+				bytes = null;
+				
+				if (cc != IntPtr.Zero) {
+					byte[] data = new byte [nw];
+					System.Runtime.InteropServices.Marshal.Copy (cc, data, 0, nw);
+					g_free (cc);
+					using (FileStream fs = File.OpenWrite (fileName)) {
+						fs.Write (data, 0, data.Length);
+					}
+				} else
+					throw new Exception ("Invalid encoding: " + encoding);
+			}
 		}
 	}
 }

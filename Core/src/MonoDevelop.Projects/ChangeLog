@@ -1,3 +1,18 @@
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Combine.cs: Removed unused variable.
+	* MonoDevelop.Projects.Text/TextEncoding.cs: New file. Text encoding
+	  support based on g_convert.
+	* MonoDevelop.Projects.Text/TextFile.cs: Added methods for reading
+	  and writting files using specific encodings.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Properly
+	  load combines in the parser database.
+	* MonoDevelop.Projects.dll.config.in: New file.
+	
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+	
+
 2006-07-30 Matej Urbas <matej.urbas@gmail.com>
 
 	* MonoDevelop.Projects.Parser/GenericParameter.cs: Changed the access level

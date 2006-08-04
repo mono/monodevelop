@@ -230,6 +230,9 @@
     <File name="./MonoDevelop.Projects.Deployment/FileDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentGenericParamater.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Text/TextEncoding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />
