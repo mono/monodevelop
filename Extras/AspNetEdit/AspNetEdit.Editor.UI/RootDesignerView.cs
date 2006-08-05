@@ -192,8 +192,8 @@ namespace AspNetEdit.Editor.UI
 			
 			int counter = 0;
 			do {
-				//only allow JS 5 seconds to return value
-				if (counter > 50) throw new Exception ("Mozilla did not return value during 5 seconds");
+				//only allow JS 20 seconds to return value
+				if (counter > 200) throw new Exception ("Mozilla did not return value during 20 seconds");
 				
 				System.Threading.Thread.Sleep (100);
 				counter++;

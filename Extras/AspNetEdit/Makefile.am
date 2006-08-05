@@ -63,7 +63,9 @@ FILES =	\
 	AspNetEdit.Editor.UI/RootDesignerView.cs \
 	\
 	AspNetEdit.Integration/AspNetEditDisplayBinding.cs \
-	AspNetEdit.Integration/AspNetEditViewContent.cs
+	AspNetEdit.Integration/AspNetEditViewContent.cs \
+	AspNetEdit.Integration/MonoDevelopProxy.cs \
+	AspNetEdit.Integration/EditorProcess.cs
 
 
 RES = \

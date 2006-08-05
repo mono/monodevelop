@@ -76,7 +76,7 @@ namespace AspNetEdit.Editor.ComponentModel
 			if (nameService == null)
 				throw new Exception ("The container must have access to a INameCreationService implementation");
 			
-			if (name == null || nameService.IsValidName (name)) {
+			if (name == null || !nameService.IsValidName (name)) {
 				name = nameService.CreateName (this, component.GetType ());
 				System.Diagnostics.Trace.WriteLine("Generated name for component: "+name);
 			}
@@ -214,7 +214,10 @@ namespace AspNetEdit.Editor.ComponentModel
 		public event ComponentRenameEventHandler ComponentRename;
 
 		public void OnComponentChanged(object component, MemberDescriptor member, object oldValue, object newValue)
-		{		
+		{
+			if (oldValue == newValue)
+				return;
+			
 			//the names of components in this container are actually the same as their IDs
 			//so if a change to the ID occurs, we hook in and change it back if not valid
 			if(component is Control && ((Control) component).Site.Container == this && member.Name == "ID") {

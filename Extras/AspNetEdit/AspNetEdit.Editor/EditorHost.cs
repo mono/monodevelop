@@ -1,5 +1,5 @@
 //
-// EditorHost.cs: Hosts AspNetEdit in a remote process for MonoDevelop.
+// EditorHost.cs: Host for AspNetEdit designer.
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -30,161 +30,128 @@
 //
 
 using System;
-using Gtk;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 using System.ComponentModel.Design.Serialization;
-using System.IO;
 
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.DesignerSupport.Toolbox;
 
-using AspNetEdit.Editor.UI;
 using AspNetEdit.Editor.ComponentModel;
+using AspNetEdit.Editor.UI;
+using AspNetEdit.Integration;
 
 namespace AspNetEdit.Editor
 {
 	
-	public class EditorHost : MonoDevelop.DesignerSupport.RemoteDesignerProcess
+	public class EditorHost : GuiSyncObject, IDisposable
 	{
 		DesignerHost host;
 		ServiceContainer services;
-		Frame geckoFrame;
-		PropertyGrid propertyGrid;
+		RootDesignerView designerView;
+		MonoDevelopProxy proxy;
 		
-		public EditorHost ()
+		public EditorHost (MonoDevelopProxy proxy)
+			: this (proxy, null, null)
 		{
+		}
+		
+		public EditorHost (MonoDevelopProxy proxy, string document, string fileName)
+		{
+			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
 			
-			#if TRACE
-				System.Diagnostics.TextWriterTraceListener listener = new System.Diagnostics.TextWriterTraceListener (System.Console.Out);
-				System.Diagnostics.Trace.Listeners.Add (listener);
-			#endif
-			
-			#region Designer services and host
+			this.proxy = proxy;
 			
 			//set up the services
 			services = new ServiceContainer ();
 			services.AddService (typeof (INameCreationService), new NameCreationService ());
 			services.AddService (typeof (ISelectionService), new SelectionService ());
-			//services.AddService (typeof (IEventBindingService), new EventBindingService (window));
 			services.AddService (typeof (ITypeResolutionService), new TypeResolutionService ());
-			ExtenderListService extListServ = new AspNetEdit.Editor.ComponentModel.ExtenderListService ();
+			services.AddService (typeof (IEventBindingService), new EventBindingService (proxy));
+			ExtenderListService extListServ = new ExtenderListService ();
 			services.AddService (typeof (IExtenderListService), extListServ);
 			services.AddService (typeof (IExtenderProviderService), extListServ);
 			services.AddService (typeof (ITypeDescriptorFilterService), new TypeDescriptorFilterService ());
 			//services.AddService (typeof (IToolboxService), toolboxService);
 			
-			#endregion
+			System.Diagnostics.Trace.WriteLine ("Creating AspNetEdit editor");
+			host = new DesignerHost (services);
 			
-			#region build the GUI
-			
-			Gtk.VBox outerBox = new Gtk.VBox ();
-			
-			geckoFrame = new Frame ();
-			geckoFrame.Shadow = ShadowType.In;
-			outerBox.PackEnd (geckoFrame, true, true, 0);
-			
-			Toolbar tb = BuildToolbar ();
-			outerBox.PackStart (tb, false, false, 0);
-			
-			outerBox.ShowAll ();	
-			base.DesignerWidget = outerBox;
-			
-			#endregion GUI
-			
-			StartGuiThread ();
-			
-			Gtk.Application.Invoke (delegate {
-				System.Diagnostics.Trace.WriteLine ("Activating host");
-				host = new DesignerHost (services);
-				
-				//grid picks up some services from the designer host
-				propertyGrid = new PropertyGrid (services);
-				propertyGrid.ShowAll ();
-				base.PropertyGridWidget = propertyGrid;
-				
+			if (document != null)
+				host.Load (document, fileName);
+			else
 				host.NewFile ();
-				host.Activate ();
-				
-				IRootDesigner rootDesigner = (IRootDesigner) host.GetDesigner (host.RootComponent);
-				RootDesignerView designerView = (RootDesignerView) rootDesigner.GetView (ViewTechnology.Passthrough);
-				geckoFrame.Add (designerView);
-				
-				geckoFrame.ShowAll ();
-				
-				designerView.Realized += delegate { System.Diagnostics.Trace.WriteLine ("Designer view realized"); };
-			});
+			
+			host.Activate ();
+			System.Diagnostics.Trace.WriteLine ("AspNetEdit host activated; getting designer view");
+			
+			IRootDesigner rootDesigner = (IRootDesigner) host.GetDesigner (host.RootComponent);
+			designerView = (RootDesignerView) rootDesigner.GetView (ViewTechnology.Passthrough);
+			designerView.Realized += delegate { System.Diagnostics.Trace.WriteLine ("Designer view realized"); };
 		}
 		
-		Toolbar BuildToolbar ()
-		{
-			Toolbar buttons = new Toolbar ();
-			
-			// * Clipboard
-			
-			ToolButton undoButton = new ToolButton (Stock.Undo);
-			buttons.Add (undoButton);
-			undoButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Undo); };
-
-			ToolButton redoButton = new ToolButton (Stock.Redo);
-			buttons.Add (redoButton);
-			redoButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Redo); };
-
-			ToolButton cutButton = new ToolButton (Stock.Cut);
-			buttons.Add (cutButton);
-			cutButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Cut); };
-
-			ToolButton copyButton = new ToolButton (Stock.Copy);
-			buttons.Add (copyButton);
-			copyButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Copy); };
-
-			ToolButton pasteButton = new ToolButton (Stock.Paste);
-			buttons.Add (pasteButton);
-			pasteButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Paste); };
-			
-			
-			// * Text style
-			
-			buttons.Add (new SeparatorToolItem());
-			
-			ToolButton boldButton = new ToolButton (Stock.Bold);
-			buttons.Add (boldButton);
-			boldButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Bold); };
-			
-			ToolButton italicButton = new ToolButton (Stock.Italic);
-			buttons.Add (italicButton);
-			italicButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Italic); };
-			
-			ToolButton underlineButton = new ToolButton (Stock.Underline);
-			buttons.Add (underlineButton);
-			underlineButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Underline); };
-			
-			ToolButton indentButton = new ToolButton (Stock.Indent);
-			buttons.Add (indentButton);
-			indentButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Indent); };
-			
-			ToolButton unindentButton = new ToolButton (Stock.Unindent);
-			buttons.Add (unindentButton);
-			unindentButton.Clicked += delegate { host.RootDocument.DoCommand (EditorCommand.Outdent); };
-			
-			return buttons;
+		public Gtk.Widget DesignerView {
+			get { return designerView; }
 		}
 		
-		#region expose commands to MD
+		public ServiceContainer Services {
+			get { return services; }
+		}
+		
+		public DesignerHost DesignerHost {
+			get { return host; }
+		}
 		
 		public void UseToolboxNode (ItemToolboxNode node)
 		{
 			ToolboxItemToolboxNode tiNode = node as ToolboxItemToolboxNode;
 			if (tiNode != null) {
-				Gtk.Application.Invoke (delegate {
-					System.Drawing.Design.ToolboxItem ti = tiNode.GetToolboxItem ();
-					ti.CreateComponents (host);
-				});
+				System.Drawing.Design.ToolboxItem ti = tiNode.GetToolboxItem ();
+				ti.CreateComponents (host);
 			}
 		}
 		
-		#endregion
+		public void LoadDocument (string document, string fileName)
+		{
+			System.Diagnostics.Trace.WriteLine ("Copying document to editor.");
+			host.Reset ();
+			
+			host.Load (document, fileName);
+			host.Activate ();
+		}
+		
+		public string GetDocument ()
+		{
+			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
+			string doc = "";
+			
+			System.Console.WriteLine("persisting document");
+			doc = host.PersistDocument ();
+				
+			return doc;
+		}
+		
+		#region IDisposable
+		
+		bool disposed = false;
+		public virtual void Dispose ()
+		{
+			System.Console.WriteLine("disposing editor host");
+			if (disposed)
+				return;
+			
+			disposed = true;
+			designerView.Dispose ();
+			
+			GC.SuppressFinalize (this);
+		}
+		
+		~EditorHost ()
+		{
+			Dispose ();
+		}
+		
+		#endregion IDisposable
 	}
 }

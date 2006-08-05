@@ -29,6 +29,7 @@
  */
 
 using System;
+using System.CodeDom;
 using System.ComponentModel.Design;
 using System.ComponentModel;
 using System.Collections;
@@ -39,24 +40,14 @@ namespace AspNetEdit.Editor.ComponentModel
 {
 	public class EventBindingService : IEventBindingService
 	{
-		//TODO: Remove once we get code view
-		Gtk.Window parentWindow;
+		AspNetEdit.Integration.MonoDevelopProxy proxy;
 		
-		public EventBindingService (Gtk.Window parentWindow)
+		public EventBindingService (AspNetEdit.Integration.MonoDevelopProxy proxy)
 		{
-			this.parentWindow = parentWindow;
+			this.proxy = proxy;
 		}
-		
-		//TODO: Remove after getting code view
-		private void ShowMessage (string mess)
-		{
-			Gtk.MessageDialog md = new Gtk.MessageDialog (parentWindow, Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Info, Gtk.ButtonsType.Close, mess);
-			md.Run ();
-			md.Destroy ();
-		}				
+					
 		#region IEventBindingService Members
-		
-		private Hashtable eventHandlers = new Hashtable ();
 		
 		public string CreateUniqueMethodName (IComponent component, EventDescriptor e)
 		{
@@ -65,30 +56,16 @@ namespace AspNetEdit.Editor.ComponentModel
 			
 			//TODO: check component.Site.Name is valid as start of method name
 			string trialPrefix = component.Site.Name + "_" + e.Name;
-			string trialValue = trialPrefix;
 			
-			for (int suffix = 1; suffix <= int.MaxValue; suffix++)
-			{
-				if (!eventHandlers.ContainsKey (trialValue))
-					return trialValue;
-				
-				trialValue = trialPrefix + suffix.ToString ();
-			}
-			
-			throw new Exception ("Tried method names up to " + trialValue + " and all already existed");
+			return proxy.GenerateIdentifierUniqueInCodeBehind (trialPrefix);
 		}
 
 		public System.Collections.ICollection GetCompatibleMethods (System.ComponentModel.EventDescriptor e)
 		{
-			ParameterInfo[] pi = GetEventParameters (e);
+			MethodInfo mi = e.EventType.GetMethod ("Invoke");			
+			CodeMemberMethod methodSignature = MonoDevelop.DesignerSupport.BindingService.ReflectionToCodeDomMethod (mi);
 			
-			ArrayList arr = new ArrayList ();
-			
-			foreach (DictionaryEntry de in eventHandlers)
-				if ( (ParameterInfo[]) de.Value == pi)
-					arr.Add (de.Key); 
-			
-			return arr.ToArray (typeof(string));
+			return proxy.GetCompatibleMethodsInCodeBehind (methodSignature);
 		}
 
 		public System.ComponentModel.EventDescriptor GetEvent (System.ComponentModel.PropertyDescriptor property)
@@ -97,7 +74,7 @@ namespace AspNetEdit.Editor.ComponentModel
 			if (epd == null)
 				return null;
 			
-			return epd.InternalEventDescriptor;
+			return epd.InternalEventDescriptor;
 		}
 
 		public System.ComponentModel.PropertyDescriptorCollection GetEventProperties (System.ComponentModel.EventDescriptorCollection events)
@@ -116,7 +93,6 @@ namespace AspNetEdit.Editor.ComponentModel
 			return new EventPropertyDescriptor (e);
 		}
 
-		//TODO: actually show code and return true if exists
 		public bool ShowCode (System.ComponentModel.IComponent component, System.ComponentModel.EventDescriptor e)
 		{
 			PropertyDescriptor pd = GetEventProperty (e);
@@ -127,21 +103,17 @@ namespace AspNetEdit.Editor.ComponentModel
 				pd.SetValue (component, name);
 			}
 			
-			if (eventHandlers.ContainsKey (name))
-				ShowMessage("In an IDE this would show the existing CodeBehind method \"" + name + "\".");
-			else {
-				eventHandlers.Add (name, GetEventParameters (e) );
-				ShowMessage("In an IDE this would create and show the CodeBehind method \"" + name + "\".");
-			}
+			MethodInfo mi = e.EventType.GetMethod ("Invoke");
+			CodeMemberMethod methodSignature = MonoDevelop.DesignerSupport.BindingService.ReflectionToCodeDomMethod (mi);
+			methodSignature.Name = name;
+			methodSignature.Attributes = MemberAttributes.Family;
 			
-			return true;
+			return proxy.ShowMethod (methodSignature);
 		}
 
-		//TODO: actually show code and return true if exists
 		public bool ShowCode (int lineNumber)
 		{
-			ShowMessage ("In an IDE this would show the code at line " + lineNumber.ToString ());
-			return true;
+			return proxy.ShowLine (lineNumber);
 		}
 
 		public bool ShowCode ()
@@ -150,12 +122,6 @@ namespace AspNetEdit.Editor.ComponentModel
 		}
 
 		#endregion
-		
-		private ParameterInfo[] GetEventParameters (EventDescriptor e)
-		{
-			MethodInfo mi = e.EventType.GetMethod ("Invoke");
-			return mi.GetParameters ();
-		}
 	}
 
 	internal class EventPropertyDescriptor : PropertyDescriptor

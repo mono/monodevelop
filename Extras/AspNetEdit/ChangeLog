@@ -1,3 +1,42 @@
+2006-08-05 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.mdp:
+	* Makefile.am:
+	  Track new files.
+	
+	* AspNetEdit.Editor.UI/RootDesignerView.cs:
+	  Give JS more time to return a document.
+	
+	* AspNetEdit.Integration/EditorProcess.cs:
+	  New object for the remoted process. This simplifies GUI thread 
+	  handling.
+	
+	* AspNetEdit.Integration/AspNetEditViewContent.cs:
+	  Use EditorProcess instead of EditorHost.
+	  Create designer when doc is shown, and destroy when hidden, because 
+	  the designer process is a heavyweight object.
+	  Track IToolboxConsumer interface change. 
+	
+	* AspNetEdit.Integration/MonoDevelopProxy.cs:
+	  Provides remoted designer with access to methods in MD process, 
+	  mainly for event binding.
+	
+	* AspNetEdit.Editor/EditorHost.cs:
+	  Split away from EditorProcess, and use GuiSyncObject to simplify 
+	  threading.
+	  Expose lots of methods and objects.
+	  Add an IEventBindingService utilising MonoDevelopProxy.
+	
+	* AspNetEdit.Editor.ComponentModel/DesignContainer.cs:
+	  Prevent unnecessary generation of extra component names.
+	
+	* AspNetEdit.Editor.ComponentModel/Document.cs:
+	* AspNetEdit.Editor.ComponentModel/DesignerHost.cs:
+	  Make it easier to load a document from a string rather than a stream.
+	
+	* AspNetEdit.Editor.ComponentModel/EventBindingService.cs:
+	  Use MonoDevelopProxy to make this actually work.
+
 2006-07-29 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.Integration/*:

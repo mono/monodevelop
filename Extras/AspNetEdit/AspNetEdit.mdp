@@ -1,15 +1,15 @@
-<Project name="AspNetEdit" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="AspNetEdit" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Debug" assembly="AspNetEdit" />
       <Build debugmode="True" target="Exe" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Release" assembly="AspNetEdit" />
       <Build debugmode="False" target="Exe" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
@@ -22,7 +22,6 @@
     <File name="./AspNetEdit.addin.xml" subtype="Code" buildaction="Nothing" />
     <File name="./AspNetEdit.Editor.Persistence/AspParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./AspNetEdit.Editor.Persistence/ControlPersister.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/DesignTimeParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/Directive.cs" subtype="Code" buildaction="Compile" />
@@ -36,12 +35,10 @@
     <File name="./AspNetEdit.Editor.Persistence/StrUtils.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/TagAttributes.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/TagType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignContainer.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignerHost.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/Document.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DocumentDirective.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/ExtenderListService.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/MenuCommandService.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/NameCreationService.cs" subtype="Code" buildaction="Compile" />
@@ -71,8 +68,11 @@
     <File name="./chrome/content/aspdesigner/xpcom.js" subtype="Code" buildaction="Nothing" />
     <File name="./chrome/locale/en-US/aspdesigner/contents.rdf" subtype="Code" buildaction="Nothing" />
     <File name="./AspNetEdit.Integration/AspNetEditViewContent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor/EditorHost.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./AspNetEdit.Editor/EditorHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AspNetEdit.Integration/EditorProcess.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -81,13 +81,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Design, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
@@ -97,6 +90,13 @@
     <ProjectReference type="Project" localcopy="True" refto="AspNetAddIn" />
     <ProjectReference type="Gac" localcopy="True" refto="jscall, Version=0.0.2.0, Culture=neutral, PublicKeyToken=db10596f4718e9c9" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <DeploymentInformation strategy="File">
     <excludeFiles />

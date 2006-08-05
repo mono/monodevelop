@@ -381,14 +381,22 @@ namespace AspNetEdit.Editor.ComponentModel
 			OnLoadComplete ();
 		}
 
-		public void Load(Stream file, string fileName)
+		public void Load (Stream file, string fileName)
+		{
+			using (TextReader reader = new StreamReader (file))
+			{
+				Load (reader.ReadToEnd (), fileName);
+			}
+		}
+		
+		public void Load (string document, string fileName)
 		{
 			if (activated || RootComponent != null)
 				throw new InvalidOperationException ("You must reset the host before loading another file.");
 			loading = true;
 
 			this.Container.Add (new WebFormPage());
-			this.rootDocument = new Document ((Control)rootComponent, this, file, fileName);
+			this.rootDocument = new Document ((Control)rootComponent, this, document, fileName);
 
 			loading = false;
 			OnLoadComplete ();
@@ -406,12 +414,17 @@ namespace AspNetEdit.Editor.ComponentModel
 			}
 		}
 
-		public void SaveDocument (Stream file)
+		public void SaveDocumentToFile (Stream file)
 		{
 			StreamWriter writer = new StreamWriter (file);
 
 			writer.Write(RootDocument.PersistDocument ());
 			writer.Flush ();
+		}
+		
+		public string PersistDocument ()
+		{
+			return RootDocument.PersistDocument ();
 		}
 		
 		/*TODO: Some .NET 2.0 System.Web.UI.Design.WebFormsRootDesigner methods

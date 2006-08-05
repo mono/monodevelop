@@ -68,20 +68,10 @@ namespace AspNetEdit.Editor.ComponentModel
 		}
 		
 		///<summary>Creates a document from an existing file</summary>
-		public Document (Control parent, DesignerHost host, Stream fileStream, string fileName)
+		public Document (Control parent, DesignerHost host, string document, string fileName)
 		{
 			initDocument (parent, host);
-
-			TextReader reader = new StreamReader (fileStream);
-			try {
-				this.document = DeserializeAndAdd (reader.ReadToEnd ());
-			}
-			catch (ParseException ex) {
-				this.document = ConstructErrorDocument (ex.Title, ex.Message);
-			}
-			catch (Exception ex) {
-				this.document = ConstructErrorDocument ("Error loading document", ex.Message + ex.StackTrace);
-			}
+			this.document = DeserializeAndAdd (document);
 
 			GetView ();
 		}

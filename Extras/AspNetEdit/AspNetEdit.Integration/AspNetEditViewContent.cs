@@ -32,47 +32,50 @@
 
 using System;
 using System.ComponentModel;
+using Gtk;
 
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
+using MonoDevelop.DesignerSupport;
 
 using AspNetEdit.Editor;
 
 namespace AspNetEdit.Integration
 {
 	
-	public class AspNetEditViewContent : AbstractSecondaryViewContent, IToolboxConsumer
+	public class AspNetEditViewContent : AbstractSecondaryViewContent, IToolboxConsumer //, IEditableTextBuffer
 	{
 		IViewContent viewContent;
-		EditorHost editor;
+		EditorProcess editorProcess;
+		
 		Gtk.Socket designerSocket;
 		Gtk.Socket propGridSocket;
+		
+		Frame designerFrame;
+		
+		MonoDevelopProxy proxy;
 		
 		internal AspNetEditViewContent (IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 			
-			editor = (EditorHost) Runtime.ProcessService.CreateExternalProcessObject (typeof (EditorHost), false);
+			designerFrame = new Gtk.Frame ();
+			designerFrame.Shadow = ShadowType.None;
+			designerFrame.BorderWidth = 0;
 			
-			designerSocket = new Gtk.Socket ();
-			propGridSocket = new Gtk.Socket ();
-			
-			designerSocket.Realized += delegate { editor.AttachDesigner (designerSocket.Id); };
-			propGridSocket.Realized += delegate { editor.AttachPropertyGrid (propGridSocket.Id); };
-			
-			//designerSocket.FocusOutEvent += delegate {
-			//	MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.BlankPad (); };
-			designerSocket.FocusInEvent += delegate {
-				MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.UseCustomWidget (propGridSocket);
-			};
-			
-			
+			designerFrame.Show ();
+		}
+		
+		void UsePropGrid ()
+		{
+			MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.UseCustomWidget (propGridSocket);
 		}
 		
 		public override Gtk.Widget Control {
-			get { return designerSocket; }
+			get { return designerFrame; }
 		}
 		
 		public override string TabPageLabel {
@@ -81,17 +84,96 @@ namespace AspNetEdit.Integration
 		
 		public override void Dispose()
 		{
-			propGridSocket.Dispose ();
-			designerSocket.Dispose ();
-			editor.Dispose ();
+			DestroyEditorAndSockets ();
+			designerFrame.Destroy ();
+		}
+		
+		public override void Selected ()
+		{
+			if (editorProcess != null)
+				throw new Exception ("Editor should be null when document is selected");
+			
+			designerSocket = new Gtk.Socket ();
+			designerSocket.Show ();
+			designerFrame.Add (designerSocket);
+			
+			propGridSocket = new Gtk.Socket ();
+			propGridSocket.Show ();
+			
+			editorProcess = (EditorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (EditorProcess), false);
+			
+			if (designerSocket.IsRealized)
+				editorProcess.AttachDesigner (designerSocket.Id);
+			if (propGridSocket.IsRealized)
+				editorProcess.AttachPropertyGrid (propGridSocket.Id);
+			
+			designerSocket.Realized += delegate { editorProcess.AttachDesigner (designerSocket.Id); };
+			propGridSocket.Realized += delegate { editorProcess.AttachPropertyGrid (propGridSocket.Id); };
+			
+			//designerSocket.FocusOutEvent += delegate {
+			//	MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.BlankPad (); };
+			designerSocket.FocusInEvent += delegate { UsePropGrid (); };
+			
+			//hook up proxy for event binding
+			MonoDevelop.Projects.Parser.IClass codeBehind = null;
+			if (viewContent.Project != null) {
+				MonoDevelop.Projects.ProjectFile pf = viewContent.Project.GetProjectFile (viewContent.ContentName);
+				if (pf != null)
+					codeBehind = DesignerSupport.Service.CodeBehindService.GetCodeBehind (pf);
+			}
+			proxy = new MonoDevelopProxy (codeBehind);
+			
+			MonoDevelop.Ide.Gui.Content.ITextBuffer textBuf = (MonoDevelop.Ide.Gui.Content.ITextBuffer) viewContent;			
+			editorProcess.Initialise (proxy, textBuf.Text, viewContent.ContentName);
+			UsePropGrid ();
+		}
+		
+		public override void Deselected ()
+		{
+			if (!editorProcess.ExceptionOccurred) {
+				MonoDevelop.Ide.Gui.Content.IEditableTextBuffer textBuf = (MonoDevelop.Ide.Gui.Content.IEditableTextBuffer) viewContent;
+				
+				string doc = null;
+				try {
+					doc = editorProcess.Editor.GetDocument ();
+				} catch (Exception e) {
+					IdeApp.Services.MessageService.ShowError (e, "The document could not be retrieved from the designer");
+				}
+				
+				if (doc != null)
+					textBuf.Text = doc;
+			}
+			
+			proxy = null;
+			
+			DestroyEditorAndSockets ();
+		}
+		
+		void DestroyEditorAndSockets ()
+		{
+			if (editorProcess != null) {
+				editorProcess.Dispose ();
+				editorProcess = null;
+			}
+			
+			if (propGridSocket != null) {
+				propGridSocket.Dispose ();
+				propGridSocket = null;
+			}
+			
+			if (designerSocket != null) {
+				designerFrame.Remove (designerSocket);
+				designerSocket.Dispose ();
+				designerSocket = null;
+			}
 		}
 		
 		#region IToolboxConsumer
 		
-		public void Use (ItemToolboxNode node)
+		public void ConsumeItem (ItemToolboxNode node)
 		{
 			if (node is ToolboxItemToolboxNode)
-				editor.UseToolboxNode (node);
+				editorProcess.Editor.UseToolboxNode (node);
 		}
 		
 		//used to filter toolbox items
@@ -101,6 +183,11 @@ namespace AspNetEdit.Integration
 			
 		public ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
 			get { return atts; }
+		}
+		
+		public System.Collections.Generic.IList<ItemToolboxNode> GetDynamicItems ()
+		{
+			return null;
 		}
 		
 		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
