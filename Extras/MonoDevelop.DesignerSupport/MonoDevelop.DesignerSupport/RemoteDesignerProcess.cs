@@ -1,3 +1,34 @@
+//
+// RemoteDesignerProcess.cs: Base class for designer in remote process.
+//    Handles Gtk sockets and threads.
+//
+// Authors:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2006 Michael Hutchinson
+//
+//
+// This source code is licenced under The MIT License:
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using Gtk;
@@ -50,12 +81,28 @@ namespace MonoDevelop.DesignerSupport
 					Application.Run ();
 				} catch (Exception e) {
 					exceptionOccurred = true;
+					System.Console.WriteLine ("An exception occurred in the GUI thread");
 					HandleError (e);
 				}
 			}
 		}
 		
-		public bool ExceptionOcurred
+		public bool ExecuteSuccessfully (EventHandler handler)
+		{
+			bool success = true;
+			
+			try {
+				handler (null, EventArgs.Empty);
+			} catch (Exception e) {
+				exceptionOccurred = true;
+				success = false;
+				HandleError (e);
+			}
+			
+			return success;
+		}
+		
+		public bool ExceptionOccurred
 		{
 			get { return exceptionOccurred; }
 		}
@@ -67,7 +114,9 @@ namespace MonoDevelop.DesignerSupport
 		
 		protected virtual void HandleError (Exception e)
 		{
-			ShowText ("<b><big>The designer has encountered a fatal error:</big></b>\n\n" + System.Web.HttpUtility.HtmlEncode (e.ToString ()));
+			Gtk.Application.Invoke (delegate {
+				ShowText ("<b><big>The designer has encountered a fatal error:</big></b>\n\n" + System.Web.HttpUtility.HtmlEncode (e.ToString ()));
+			});	
 		}
 		
 		protected void ShowText (string markup)
@@ -160,13 +209,22 @@ namespace MonoDevelop.DesignerSupport
 		
 		#endregion plugs
 		
+		bool disposed = false;
 		public override void Dispose ()
 		{
-			//kill the GUI thread
+			if (disposed)
+				return;
+			disposed = true;
+			
+			System.Diagnostics.Trace.WriteLine ("Trying to close designer GUI thread");
 			Application.Invoke ( delegate {
 				Application.Quit ();
+				DisposePhase2 ();
 			});
-			
+		}
+		
+		void DisposePhase2 ()
+		{
 			//clean up widgets
 			if (designerPlug != null)
 				designerPlug.Dispose ();

@@ -101,6 +101,7 @@ namespace MonoDevelop.DesignerSupport
 			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
+			content.Dispose ();
 			base.Dispose ();
 		}
 		

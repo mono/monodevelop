@@ -1,3 +1,33 @@
+//
+// ToolboxService.cs: Loads, stores and manipulates toolbox items.
+//
+// Authors:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2006 Michael Hutchinson
+//
+//
+// This source code is licenced under The MIT License:
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.IO;
@@ -119,23 +149,37 @@ namespace MonoDevelop.DesignerSupport
 		
 		public IList GetCurrentToolboxItems ()
 		{
-			return GetToolboxItems (currentConsumer);
+			return GetToolboxItems (CurrentConsumer);
 		}
 		
 		public IList GetToolboxItems (IToolboxConsumer consumer)
 		{
-			ArrayList arr = new ArrayList ();
+			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
 			
-			if (consumer != null)
+			if (consumer != null) {
 				foreach (ItemToolboxNode node in allItems)
-					if (IsSupported (node, consumer))
+					//hide unknown nodes --
+					//they're only there because deserialisation has failed, so they won't actaully be usable
+					if ( !(node is UnknownToolboxNode))
+						if (IsSupported (node, consumer))
+							arr.Add (node);
+				
+				//merge the list of dynamic items
+				IList<ItemToolboxNode> dynamicItems = consumer.GetDynamicItems ();
+				if (dynamicItems != null)
+					foreach (ItemToolboxNode node in dynamicItems)
 						arr.Add (node);
+			}
 			
 			return arr;
 		}
 		
 		public IToolboxConsumer CurrentConsumer {
 			get { return currentConsumer; }
+			private set {
+				currentConsumer = value;				
+				OnToolboxConsumerChanged (currentConsumer);
+			}
 		}
 		
 		public ItemToolboxNode SelectedItem {
@@ -150,11 +194,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void UseSelectedItem ()
 		{
-			if ((currentConsumer == null) || (selectedItem == null))
+			if ((CurrentConsumer == null) || (selectedItem == null))
 				return;
 			
-			currentConsumer.Use (selectedItem);
-			OnToolboxUsed (currentConsumer, selectedItem);
+			CurrentConsumer.ConsumeItem (selectedItem);
+			OnToolboxUsed (CurrentConsumer, selectedItem);
 		}
 		
 		#endregion
@@ -177,11 +221,9 @@ namespace MonoDevelop.DesignerSupport
 		{
 			//only treat active ViewContent as a Toolbox consumer if it implements IToolboxConsumer
 			if (IdeApp.Workbench.ActiveDocument != null)
-				currentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxConsumer;
+				CurrentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView as IToolboxConsumer;
 			else
-				currentConsumer = null;
-			
-			OnToolboxConsumerChanged (currentConsumer);
+				CurrentConsumer = null;
 		}
 		
 		protected virtual void OnToolboxContentsChanged ()

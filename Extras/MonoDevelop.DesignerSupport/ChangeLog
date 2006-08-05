@@ -1,3 +1,47 @@
+2006-07-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxPad.cs:
+	  Clean up namespace alias.
+	  
+	* MonoDevelop.DesignerSupport/BindingService.cs:
+	  Add a lot of methods to support AspNetEdit event binding.
+	  Make static, becuase there's nothing large to initialise.
+	  Enable refactoring of open files (broken for secondary ViewContents).
+	  
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
+	  Fix exception handling and GUI threading.
+	  
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs:
+	  Remove Binding service; it's now static.
+	  
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs:
+	  Dispose child ViewContent content.
+	  
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs:
+	  Support for displaying dynamic items provided by current consumer.
+	  Rename Use method to ConsumeItem.
+	  Hide UnknownToolboxNodes.
+	
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs:
+	  Load file into child view. No idea why this was working before.
+	  
+	* MonoDevelop.DesignerSupport/ToolboxPad.cs:
+	* MonoDevelop.DesignerSupport/BindingService.cs:
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs:
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs:
+	* MonoDevelop.DesignerSupport/MemberExistsException.cs:
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport/PropertyPad.cs:
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs:
+	* MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs:
+	  Add missing copyright information.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Add support
