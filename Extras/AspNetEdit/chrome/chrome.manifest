@@ -1,0 +1,2 @@
+content aspdesigner jar:chrome/aspdesigner.jar!/content/
+locale aspdesigner en-US jar:chrome/aspdesigner.jar!/locale/en-US/

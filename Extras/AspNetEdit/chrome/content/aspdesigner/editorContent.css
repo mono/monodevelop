@@ -1,0 +1,96 @@
+ /*
+ * editorContent.css - Some style~="border"s rules for elements in edit mode
+ * Original Code:
+ *  Daniel Glazman <glazman@netscape.com>
+ * 
+ * Authors:
+ *  Blagovest Dachev <blago@dachev.com>
+ *
+ * This sourcecode is licenced under The MIT License:
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the
+ * following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+ * NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+a[name] {
+  min-height			: 17px; margin-left: 2px; margin-top: 2px;
+  padding-left			: 20px;
+  background-image		: url(chrome://editor/content/images/tag-anchor.gif);
+  background-repeat		: no-repeat;
+  background-position		: top left;
+}
+
+/* Force border display for empty cells
+   and tables with 0 border
+*/
+table {
+  empty-cells			: show;
+}
+
+/* give a red dotted border to tables and cells with no border
+   otherwise they are invisible
+*/
+ table[empty-cells]:not([cancelUI]),
+ table[border="0"]:not([cancelUI]),
+  /* next two selectors on line below for the case where tbody is omitted */
+  table[border="0"]:not([cancelUI]) > tr > td, table[border="0"]:not([cancelUI]) > tr > th,
+  table[border="0"]:not([cancelUI]) > thead > tr > td, table[border="0"]:not([cancelUI]) > tbody > tr > td, table[border="0"]:not([cancelUI]) > tfoot > tr > td,
+  table[border="0"]:not([cancelUI]) > thead > tr > th, table[border="0"]:not([cancelUI]) > tbody > tr > th, table[border="0"]:not([cancelUI]) > tfoot > tr > th,
+  table:not([border]):not([cancelUI]),
+  /* next two selectors on line below for the case where tbody is omitted */
+  table:not([border]):not([cancelUI]) > tr > td, table:not([border]):not([cancelUI]) > tr >  th,
+  table:not([border]):not([cancelUI]) > thead > tr > td, table:not([border]):not([cancelUI]) > tbody > tr > td, table:not([border]):not([cancelUI]) > tfoot > tr > td,
+  table:not([border]):not([cancelUI]) > thead > tr > th, table:not([border]):not([cancelUI]) > tbody > tr > th, table:not([border]):not([cancelUI]) > tfoot > tr > th
+ {
+    border			: 1px dotted #d59408;
+}
+
+/* give a green dashed border to forms otherwise they are invisible
+*/
+form {
+  border			: 2px dashed #9c9d83;
+  min-height			: 20px;
+}
+/* give a green dotted border to labels otherwise they are invisible
+*/
+label {
+  border			: 1px dotted green;
+}
+
+img {
+  -moz-force-broken-image-icon: 1;
+}
+/* Some <aspcontrol> properties that will persist
+*/
+aspcontrol {
+  border			: 1px solid #7f9db9;
+  display			: -moz-inline-box;
+  vertical-align		: text-bottom;
+  z-index			: 1;
+  position			: relative;
+  /*-moz-binding			: url("chrome://aspdesigner/content/editor.xml#aspcontrol");*/
+}
+
+span.onionOne {
+  display: block; position: relative;
+}
+
+span.onionTwo {
+  position: absolute; display: block; z-index: -1;
+}

@@ -1,0 +1,22 @@
+INSTALLATION
+============
+All the files in src/chrome/content should go in $MOZ_HOME/chrome/aspdesigner/content
+All the files in src/chrome/locale should go in $MOZ_HOME/chrome/aspdesigner/locale/en-US
+
+The following lines should be added to the end of $MOZ_HOME/chrome/installed-chrome.txt:
+content,install,url,resource:/chrome/aspdesigner/content/
+locale,install,url,resource:/chrome/aspdesigner/locale/en-US/
+
+The extention will be available through the following URL:
+chrome://aspdesigner/content/editor.xul
+
+EDITOR COMMANDS
+===============
+This document describes the editor commands:
+http://lxr.mozilla.org/seamonkey/source/editor/docs/Editor_Embedding_Guide.html
+
+Currently commands with parameters are NOT supported. This is going to change soon.
+
+INTERFACE
+===============
+

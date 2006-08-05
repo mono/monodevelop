@@ -1,0 +1,25 @@
+2006-07-15 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* locale/*:
+	* chrome/*:
+	* Makefile.am: Restructure jar to make it work with Mozilla. Fix nasty 
+	  bug that broke Mozilla installations. Note that this extension is 
+	  still unlikely to work with anything newer than Mozilla 1.6.
+
+2006-06-24 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* locale/en-US/contents.rdf
+	  install.rdf
+	  chrome.manifest
+	  Makefile.am: Make chrome installable on Firefox, and build an XPI
+	  extension. Unfortunately gtkmozembed doesn't appear to load 
+	  extensions, so we still have to install into the browser's chrome.
+
+2006-01-16 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: find installed-chrome.txt in correct location
+
+
+2005-10-5  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: Added .js files from Blago's reorganisation to the chrome deployment
