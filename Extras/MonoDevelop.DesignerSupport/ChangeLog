@@ -1,11 +1,11 @@
-2006-07-29  Michael Hutchinson <m.j.hutchinson@gmail.com>
+2006-08-05  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxPad.cs:
 	  Clean up namespace alias.
 	  
 	* MonoDevelop.DesignerSupport/BindingService.cs:
 	  Add a lot of methods to support AspNetEdit event binding.
-	  Make static, becuase there's nothing large to initialise.
+	  Make static, because there's nothing large to initialise.
 	  Enable refactoring of open files (broken for secondary ViewContents).
 	  
 	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:

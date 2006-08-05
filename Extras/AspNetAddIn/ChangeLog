@@ -1,8 +1,14 @@
+2006-08-05  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Project/VerifyCodeBehindBuildStep.cs:
+	  Track changes in BindingService.
+	* AspNetAddIn.mdp: Remove nonexistent file.
+
 2006-07-25  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* Project/AspNetAppProject.cs:
-	   Become aware of Project.DoPreBuild; let it create the correct output 
-	   directory for us.
+	  Become aware of Project.DoPreBuild; let it create the correct output 
+	  directory for us.
 	* Project/VerifyCodeBehindBuildStep.cs:
 	  Refactored some functionality into Monodevelop.DesignerSupport.
 	  BindingService.

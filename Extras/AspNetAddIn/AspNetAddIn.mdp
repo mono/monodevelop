@@ -30,7 +30,6 @@
     <File name="./Templates/CodeBehindWebHandler.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebApplication.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Gui" subtype="Directory" buildaction="Compile" />
-    <File name="./Gui/ProjectOptionsPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parser" subtype="Directory" buildaction="Compile" />
     <File name="./Parser/AspNetParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parser/Tree" subtype="Directory" buildaction="Compile" />

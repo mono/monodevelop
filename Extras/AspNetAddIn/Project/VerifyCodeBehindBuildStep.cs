@@ -42,7 +42,7 @@ namespace AspNetAddIn
 				
 				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
 					try {
-						DesignerSupport.Service.BindingService.AddMemberToClass (cls, member, false);
+						BindingService.AddMemberToClass (cls, member, false);
 					} catch (MemberExistsException m) {
 						monitor.ReportWarning (m.ToString ());
 					}
