@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using System.Globalization;
 
 using MonoDevelop.Core.Properties;
 
@@ -64,7 +65,7 @@ namespace MonoDevelop.Core
 		string Replace (string[,] customTags, string propertyName)
 		{
 			string propertyValue = null;
-			switch (propertyName.ToUpper()) {
+			switch (propertyName.ToUpper (CultureInfo.InvariantCulture)) {
 				case "DATE": // current date
 					propertyValue = DateTime.Today.ToShortDateString();
 					break;

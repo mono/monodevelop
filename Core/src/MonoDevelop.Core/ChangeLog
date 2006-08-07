@@ -1,3 +1,8 @@
+2006-08-07 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Core/StringParserService.cs: Use invariant culture
+	  for case-insensitive variable checks. Fixes bug #78814.
+
 2006-07-25  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* MonoDevelop.Core.Execution/RemoteProcessObject.cs:
