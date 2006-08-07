@@ -824,10 +824,11 @@ namespace MonoDevelop.SourceEditor.Gui
 		void ICompletionWidget.SetCompletionText (string partial_word, string complete_word)
 		{
 			TextIter offsetIter = buf.GetIterAtMark(triggerMark);
-                        TextIter endIter = buf.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
-                        buf.MoveMark (buf.InsertMark, offsetIter);
-                        buf.Delete (ref offsetIter, ref endIter);
-                        buf.InsertAtCursor (complete_word);
+			TextIter endIter = buf.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
+			buf.MoveMark (buf.InsertMark, offsetIter);
+			buf.Delete (ref offsetIter, ref endIter);
+			buf.InsertAtCursor (complete_word);
+			ScrollMarkOnscreen (buf.InsertMark);
 		}
 
 		void ICompletionWidget.InsertAtCursor (string text)

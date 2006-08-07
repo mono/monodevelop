@@ -1,3 +1,9 @@
+2006-08-07 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Ensure that the
+	  cursor is visible after using the code completion window. Fixes
+	  bug #78955.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs: 
