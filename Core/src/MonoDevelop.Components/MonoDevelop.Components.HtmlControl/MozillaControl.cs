@@ -8,6 +8,7 @@
 
 using System;
 using Gecko;
+using GLib;
 
 namespace MonoDevelop.Components.HtmlControl
 {
@@ -18,10 +19,13 @@ namespace MonoDevelop.Components.HtmlControl
 		private string css;
 		private bool reShown = false;
 		
-		public MozillaControl ()
+		static MozillaControl ()
 		{
 			WebControl.SetProfilePath ("/tmp", "MonoDevelop");
-			
+		}
+		
+		public MozillaControl ()
+		{
 			//FIXME: suppress a strange bug with control not getting drawn first time it's shown, or when docking changed.
 			//For some reason this event only fires when control 'appears' or is re-docked, which corresponds 1:1 to the bug.
 			//FIXME: OnExposeEvent doesn't fire, but ExposeEvent does
@@ -42,10 +46,6 @@ namespace MonoDevelop.Components.HtmlControl
 			LoadUrl ("about:blank");
 		}
 		
-		public void GoSearch ()
-		{
-		}
-		
 		public void Navigate (string Url, ref object Flags, ref object targetFrame, ref object postData, ref object headers)
 		{
 			// TODO: what is all that other crap for
@@ -57,33 +57,11 @@ namespace MonoDevelop.Components.HtmlControl
 			this.Reload ((int) ReloadFlags.Reloadnormal);
 		}
 		
-		public void Refresh2 ()
-		{
-			this.Reload ((int) ReloadFlags.Reloadnormal);
-		}
-		
 		public void Stop ()
 		{
 			this.StopLoad ();
 		}
 		
-		public void GetApplication ()
-		{
-		}
-		
-		public void GetParent ()
-		{
-		}
-		
-		public void GetContainer ()
-		{
-		}
-		
-		public IHTMLDocument2 GetDocument ()
-		{
-			return null;
-		}
-
 		public string Html
 		{
 			get { return html; }
@@ -101,7 +79,10 @@ namespace MonoDevelop.Components.HtmlControl
 			//Runtime.LoggingService.Info (base_uri);
 			if (html.Length > 0)
 			{
-				this.RenderData (html, base_uri, "text/html");
+				GLib.Idle.Add (delegate {
+					this.RenderData (html, base_uri, "text/html");
+					return false;
+				});
 			}
 		}
 		

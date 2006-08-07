@@ -1,3 +1,12 @@
+2006-08-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.HtmlControl/MozillaControl.cs: Set the
+	  profile path only once, not for every control instance.
+	  Delay html rendering using GLib.Idle. Fixes rendering problems
+	  in firefox. Removed several unused methods.
+	* MonoDevelop.Components.HtmlControl/IWebBrowser.cs: Removed several
+	  unused methods.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/FileSelector.cs: Factorized some creation
