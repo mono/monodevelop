@@ -35,6 +35,9 @@ namespace MonoDevelop.Projects
 		
 		IFileFormat fileFormat;
 		
+		[ItemProperty]
+		string defaultDeployTarget;
+		
 		DeployTargetCollection deployTargets;
 		
 		public CombineEntry ()
@@ -176,6 +179,25 @@ namespace MonoDevelop.Projects
 					NotifyModified ();
 					OnActiveConfigurationChanged (new ConfigurationEventArgs (this, value));
 				}
+			}
+		}
+		
+		public DeployTarget DefaultDeployTarget {
+			get {
+				if (defaultDeployTarget == null)
+					return null;
+				if (deployTargets == null)
+					return null;
+				foreach (DeployTarget dt in deployTargets)
+					if (dt.Name == defaultDeployTarget)
+						return dt;
+				return null;
+			}
+			set {
+				if (value != null)
+					defaultDeployTarget = value.Name;
+				else
+					defaultDeployTarget = null;
 			}
 		}
 		

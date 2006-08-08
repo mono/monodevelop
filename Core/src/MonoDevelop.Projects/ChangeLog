@@ -1,3 +1,15 @@
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CombineEntry.cs: Added DefaultDeployTarget
+	  property.
+	* MonoDevelop.Projects.addin.xml: Registered the new directory deploy
+	  target handler.
+	* MonoDevelop.Projects.Deployment/DeployTarget.cs: Report exceptions
+	  while deploying.
+	  
+	* Makefile.am:
+	* MonoDevelop.Projects.mdp: Updated.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Combine.cs: Removed unused variable.

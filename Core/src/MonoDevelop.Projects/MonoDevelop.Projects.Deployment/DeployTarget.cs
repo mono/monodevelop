@@ -64,7 +64,11 @@ namespace MonoDevelop.Projects.Deployment
 		
 		public void Deploy (IProgressMonitor monitor)
 		{
-			handler.Deploy (monitor, this);
+			try {
+				this.DeployHandler.Deploy (monitor, this);
+			} catch (Exception ex) {
+				monitor.ReportError ("Deploy operation failed", ex);
+			}
 		}
 		
 		public string Name {

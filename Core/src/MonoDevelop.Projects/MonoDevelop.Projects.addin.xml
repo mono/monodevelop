@@ -71,5 +71,6 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/DeployHandlers" extension-nodes="Class" description="Deployment handlers. Specified classes must implement IDeployHandler.">
+		<Class class = "MonoDevelop.Projects.Deployment.DirectoryDeployHandler" />
 	</Extension>
 </AddIn>

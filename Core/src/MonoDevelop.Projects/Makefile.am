@@ -22,6 +22,7 @@ MonoDevelop.Projects.Deployment/DeployHandler.cs \
 MonoDevelop.Projects.Deployment/DeployService.cs \
 MonoDevelop.Projects.Deployment/DeployTarget.cs \
 MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs \
+MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs \
 MonoDevelop.Projects.Deployment/FileDeployTarget.cs \
 MonoDevelop.Projects.Deployment/IDeployHandler.cs \
 MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs \
