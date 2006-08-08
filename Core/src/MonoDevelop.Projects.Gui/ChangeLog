@@ -1,3 +1,9 @@
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	* Base.glade: Allow setting the default deploy target in
+	  the deployment options panel.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:

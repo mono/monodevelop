@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			CombineEntry entry;
 			List<DeployTarget> targets = new List<DeployTarget> ();
 			ListStore store;
+			DeployTarget defaultTarget;
 
 			public DeploymentOptionsWidget (IProperties CustomizationObject) : 
 				base ("Base.glade", "DeployOptionsPanel")
@@ -90,6 +91,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						DeployTarget ct = target.DeployHandler.CreateTarget (entry);
 						ct.CopyFrom (target);
 						targets.Add (ct);
+						if (target == entry.DefaultDeployTarget)
+							defaultTarget = ct;
 					}
 				}
 				
@@ -112,6 +115,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					} else {
 						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Dialog);
 						string desc = "<b>" + target.Name + "</b>";
+						if (target == defaultTarget)
+							desc += " " + GettextCatalog.GetString ("(default target)");
 						desc += "\n<small>" + target.DeployHandler.Description + "</small>";
 						store.AppendValues (pix, desc, target);
 					}
@@ -135,6 +140,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				using (AddDeployTargetDialog dlg = new AddDeployTargetDialog (entry)) {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						targets.Add (dlg.NewTarget);
+						if (targets.Count == 1)
+							defaultTarget = dlg.NewTarget;
 						FillTargets ();
 					}
 				}
@@ -164,6 +171,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				}
 			}
 			
+			protected void OnSetDefault (object s, EventArgs args)
+			{
+				DeployTarget t = GetSelection ();
+				if (t != null) {
+					defaultTarget = t;
+					FillTargets ();
+				}
+			}
+			
 			DeployTarget GetSelection ()
 			{
 				Gtk.TreeModel model;
@@ -179,6 +195,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			{
 				entry.DeployTargets.Clear ();
 				entry.DeployTargets.AddRange (targets);
+				entry.DefaultDeployTarget = defaultTarget;
 				return true;
 			}
 		}
