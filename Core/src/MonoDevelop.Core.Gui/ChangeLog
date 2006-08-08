@@ -1,3 +1,9 @@
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/CommandService.cs: Allow specifying an
+	  initial command target when showing a context menu.
+	* icons/Icons.16x16.SaveAllIcon: Updated the save all icon.
+
 2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs: Remove debug code.

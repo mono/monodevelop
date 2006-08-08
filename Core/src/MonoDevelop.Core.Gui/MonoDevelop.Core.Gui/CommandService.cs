@@ -114,6 +114,14 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowContextMenu (Gtk.Menu menu)
 		{
+			ShowContextMenu (menu, null);
+		}
+		
+		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
+		{
+			if (menu is CommandMenu) {
+				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
+			}
 			menu.Popup (null, null, null, 0, Gtk.Global.CurrentEventTime);
 		}
 		
@@ -129,7 +137,12 @@ namespace MonoDevelop.Core.Gui
 		
 		public void ShowContextMenu (CommandEntrySet cset)
 		{
-			manager.ShowContextMenu (cset);
+			ShowContextMenu (cset, null);
+		}
+		
+		public void ShowContextMenu (CommandEntrySet cset, object initialTarget)
+		{
+			manager.ShowContextMenu (cset, initialTarget);
 		}
 		
 		public void ShowContextMenu (string addinPath)
