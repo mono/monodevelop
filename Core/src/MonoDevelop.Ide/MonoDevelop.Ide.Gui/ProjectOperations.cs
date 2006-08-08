@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Projects.Deployment;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -670,6 +671,26 @@ namespace MonoDevelop.Ide.Gui
 			{
 				Runtime.LoggingService.Warn("Could not save solution preferences: " + fileToSave as object, e);
 			}
+		}
+		
+		public IAsyncOperation Deploy (CombineEntry entry, DeployTarget target)
+		{
+			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Deploy Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+
+			// Run the deploy command in a background thread to avoid
+			// deadlocks with the gui thread
+			
+			System.Threading.Thread t = new System.Threading.Thread (
+				delegate () {
+					using (mon) {
+						target.Deploy (mon);
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
+
+			return mon.AsyncOperation;
 		}
 
 		public IAsyncOperation Execute (CombineEntry entry)

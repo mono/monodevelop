@@ -1021,7 +1021,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					IdeApp.CommandService.ShowContextMenu (opset);
+					IdeApp.CommandService.ShowContextMenu (opset, this);
 				}
 			} else {
 				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (nb.ContextMenuAddinPath);
@@ -1031,7 +1031,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				opset.AddItem (Command.Separator);
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 				opset.AddItem (ViewCommands.RefreshTree);
-				IdeApp.CommandService.ShowContextMenu (eset);
+				IdeApp.CommandService.ShowContextMenu (eset, this);
 			}
 		}
 		

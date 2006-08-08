@@ -1,3 +1,13 @@
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Added deploy command.
+	  Build the project before deploying.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Set the pad as command
+	  target when showing the context menu. Fixes bug #76141.
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Added null check.
+	* MonoDevelop.Ide.addin.xml: Added deploy command.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added Deploy method.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs: New interface.

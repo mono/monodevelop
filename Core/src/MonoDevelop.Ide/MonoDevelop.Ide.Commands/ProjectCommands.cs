@@ -364,24 +364,38 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
+	internal class DeployHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			CombineEntry e = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IAsyncOperation op = IdeApp.ProjectOperations.Build (e);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Deploy (e, e.DefaultDeployTarget);
+			};
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			CombineEntry e = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (e != null && e.DefaultDeployTarget != null) {
+				info.Enabled = true;
+			} else
+				info.Enabled = false;
+		}
+	}
+	
 	internal class DeployTargetListHandler: CommandHandler
 	{
 		protected override void Run (object dt)
 		{
-			MessageDialogProgressMonitor mon = new MessageDialogProgressMonitor (true, false, true, false);
-
-			// Run the deploy command in a background thread to avoid
-			// deadlocks with the gui thread
-			
-			Thread t = new Thread (
-				delegate () {
-					using (mon) {
-						((DeployTarget)dt).Deploy (mon);
-					}
-				}
-			);
-			t.IsBackground = true;
-			t.Start ();
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IAsyncOperation op = IdeApp.ProjectOperations.Build (ce);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Deploy (ce, (DeployTarget)dt);
+			};
 		}
 		
 		protected override void Update (CommandArrayInfo info)
@@ -394,6 +408,8 @@ namespace MonoDevelop.Ide.Commands
 							continue;
 						CommandInfo cinfo = new CommandInfo ();
 						cinfo.Text = dt.Name;
+						if (ce.DefaultDeployTarget == dt)
+							cinfo.Text += " " + GettextCatalog.GetString ("(default)");
 						cinfo.Icon = dt.DeployHandler.Icon;
 						info.Add (cinfo, dt);
 					}

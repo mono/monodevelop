@@ -275,7 +275,9 @@ namespace MonoDevelop.Ide.Gui.Pads
         	
 			try {
 				Task task = (Task) store.GetValue (iter, COL_TASK);
-        			if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
+				if (task == null)
+					return true;
+       			if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
         			else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
         			else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
         		} catch {

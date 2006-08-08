@@ -235,6 +235,10 @@
 				type = "custom"
 				widget = "MonoDevelop.Ide.Gui.ConfigurationComboBox"
 				_label = "Active Configuration" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy"
+				defaultHandler = "MonoDevelop.Ide.Commands.DeployHandler"
+				shortcut = "Shift|F7"
+				_label = "Deploy" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList"
 				defaultHandler = "MonoDevelop.Ide.Commands.DeployTargetListHandler"
 				type="array"
@@ -480,7 +484,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
-		<ItemSet id = "CombineDeployMenu" _label = "Deploy" >
+		<SeparatorItem id = "DeploySeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
+		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
 			<SeparatorItem id = "DeploySeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
@@ -527,12 +533,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
 		<SeparatorItem id = "OpenSeparator" />
-		<ItemSet id = "Add" _label = "Add">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
-		</ItemSet>
 		<ItemSet id = "Include" _label = "Include">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" />
@@ -581,6 +581,13 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<SeparatorItem id = "DeploySeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
+		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
+			<SeparatorItem id = "DeploySeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
+		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DebugEntry" />
@@ -840,7 +847,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 			<SeparatorItem id = "DeploySeparator" />
-			<ItemSet id = "DeployTargets" _label = "Deploy">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
+			<ItemSet id = "DeployTargets" _label = "Deploy to">
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
 			</ItemSet>
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
