@@ -100,9 +100,9 @@
 												<p />
 												<h1>Development Links</h1>
 												<ul>
-													<li><a href="http://www.csharphelp.com/">C# Help</a> - A site with articles on common C# problems.</li>
-													<li><a href="http://www.c-sharpcorner.com/">C# Corner</a> - Another C# community with articles and forums.</li>
-													<li><a href="http://www.gotdotnet.com/">Got Dot Net</a> - A .NET framework community featuring user blogs, message boards, and code samples.</li>
+													<li><a href="http://www.go-mono.com/docs/">Mono Documentation Library</a> - Online documentation for Mono libraries.</li>
+													<li><a href="http://msdn2.microsoft.com/en-us/library/ms306608.aspx">MSDN Class Library Reference</a> - Documentation for Microsoft's implementation of the .NET framework.</li>
+													<li><a href="http://www.codeproject.com/">The Code Project</a> - A popular site for .NET articles, code snippets, and discussions.</li>
 												</ul>
 											</td>
 										</tr>

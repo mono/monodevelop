@@ -1,3 +1,7 @@
+2006-08-08  Scott Ellington  <scott.ellington@gmail.com>
+
+	* WelcomePage.xsl: provide better development links
+
 2006-07-28 Matej Urbas <matej.urbas@gmail.com>
 
 	* WelcomePageView.cs: Fixed the wrong assumption I made about languages.
