@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList itemArray;
 		string lastIcon;
 		bool wasButtonActivation;
+		object initialTarget;
 		
 		public CommandMenuItem (object commandId, CommandManager commandManager): base ("")
 		{
@@ -51,17 +52,19 @@ namespace MonoDevelop.Components.Commands
 				isArray = cmd.CommandArray;
 		}
 		
-		void ICommandUserItem.Update ()
+		void ICommandUserItem.Update (object initialTarget)
 		{
 			if (commandManager != null && !isArrayItem) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId);
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
+				this.initialTarget = initialTarget;
 				Update (cinfo);
 			}
 		}
 		
-		void ICommandMenuItem.SetUpdateInfo (CommandInfo cmdInfo)
+		void ICommandMenuItem.SetUpdateInfo (CommandInfo cmdInfo, object initialTarget)
 		{
 			isArrayItem = true;
+			this.initialTarget = initialTarget;
 			arrayDataItem = cmdInfo.DataItem;
 			Update (cmdInfo);
 		}
@@ -71,7 +74,7 @@ namespace MonoDevelop.Components.Commands
 			base.OnParentSet (parent);
 			if (Parent == null) return;
 			
-			((ICommandUserItem)this).Update ();
+			((ICommandUserItem)this).Update (null);
 			
 			if (!isArrayItem) {
 				// Make sure the accelerators allways work for this item
@@ -96,11 +99,11 @@ namespace MonoDevelop.Components.Commands
 			
 			if (!wasButtonActivation) {
 				// It's being activated by an accelerator.
-				commandManager.DispatchCommandFromAccel (commandId, arrayDataItem);
+				commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
 			}
 			else {
 				wasButtonActivation = false;
-				commandManager.DispatchCommand (commandId, arrayDataItem);
+				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);
 			}
 		}
 		
@@ -128,7 +131,7 @@ namespace MonoDevelop.Components.Commands
 						} else {
 							item = CommandEntry.CreateMenuItem (commandManager, commandId, false);
 							ICommandMenuItem mi = (ICommandMenuItem) item; 
-							mi.SetUpdateInfo (info);
+							mi.SetUpdateInfo (info, initialTarget);
 						}
 						menu.Insert (item, ++i);
 						itemArray.Add (item);
@@ -172,7 +175,7 @@ namespace MonoDevelop.Components.Commands
 						} else {
 							item = CommandEntry.CreateMenuItem (commandManager, commandId, false);
 							ICommandMenuItem mi = (ICommandMenuItem) item; 
-							mi.SetUpdateInfo (info);
+							mi.SetUpdateInfo (info, initialTarget);
 						}
 						smenu.Add (item);
 					}

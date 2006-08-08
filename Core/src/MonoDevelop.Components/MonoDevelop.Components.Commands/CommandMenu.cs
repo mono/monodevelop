@@ -33,11 +33,17 @@ namespace MonoDevelop.Components.Commands
 	public class CommandMenu: Gtk.Menu
 	{
 		CommandManager manager;
+		object initialCommandTarget;
 
 		public CommandMenu (CommandManager manager)
 		{
 			this.manager = manager;
 			this.AccelGroup = manager.AccelGroup;
+		}
+		
+		public object InitialCommandTarget {
+			get { return initialCommandTarget; }
+			set { initialCommandTarget = value; }
 		}
 		
 		internal CommandManager CommandManager {
@@ -67,7 +73,13 @@ namespace MonoDevelop.Components.Commands
 			base.OnShown ();
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update ();
+					((ICommandUserItem)item).Update (initialCommandTarget);
+				else if (item is Gtk.MenuItem) {
+					CommandMenu men = ((Gtk.MenuItem)item).Submenu as CommandMenu;
+					if (men != null)
+						men.InitialCommandTarget = initialCommandTarget;
+					item.Show ();
+				}
 				else
 					item.Show ();
 			}

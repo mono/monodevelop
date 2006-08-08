@@ -33,9 +33,16 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandToolbar: DockToolbar
 	{
+		object initialCommandTarget;
+		
 		public CommandToolbar (CommandManager manager, string id, string title): base (id, title)
 		{
 			manager.RegisterToolbar (this);
+		}
+		
+		internal object InitialCommandTarget {
+			get { return initialCommandTarget; }
+			set { initialCommandTarget = value; }
 		}
 		
 		protected override void OnShown ()
@@ -48,7 +55,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update ();
+					((ICommandUserItem)item).Update (initialCommandTarget);
 				else
 					item.Show ();
 			}

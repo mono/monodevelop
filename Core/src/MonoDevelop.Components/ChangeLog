@@ -1,3 +1,16 @@
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandToolbar.cs:
+	* MonoDevelop.Components.Commands/CommandMenu.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.Commands/CommandToggleToolButton.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/ICommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandCheckMenuItem.cs:
+	* MonoDevelop.Components.Commands/ICommandUserItem.cs:
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs: Support specifying
+	  an initial command target for menus and toolbars.
+
 2006-08-07 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.HtmlControl/MozillaControl.cs: Set the

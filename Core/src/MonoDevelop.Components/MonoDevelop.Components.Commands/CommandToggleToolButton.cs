@@ -35,6 +35,7 @@ namespace MonoDevelop.Components.Commands
 		CommandManager commandManager;
 		object commandId;
 		bool updating;
+		object initialTarget;
 		
 		public CommandToggleToolButton (object commandId, CommandManager commandManager): base ("")
 		{
@@ -47,13 +48,14 @@ namespace MonoDevelop.Components.Commands
 			base.OnParentSet (parent);
 			if (Parent == null) return;
 
-			((ICommandUserItem)this).Update ();
+			((ICommandUserItem)this).Update (null);
 		}
 		
-		void ICommandUserItem.Update ()
+		void ICommandUserItem.Update (object initialTarget)
 		{
 			if (commandManager != null) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId);
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
+				this.initialTarget = initialTarget;
 				Update (cinfo);
 			}
 		}
@@ -66,7 +68,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 				
-			commandManager.DispatchCommand (commandId);
+			commandManager.DispatchCommand (commandId, null, initialTarget);
 		}
 		
 		void Update (CommandInfo cmdInfo)

@@ -32,6 +32,6 @@ namespace MonoDevelop.Components.Commands
 {
 	internal interface ICommandMenuItem: ICommandUserItem 
 	{
-		void SetUpdateInfo (CommandInfo cmdInfo);
+		void SetUpdateInfo (CommandInfo cmdInfo, object initialTarget);
 	}
 }

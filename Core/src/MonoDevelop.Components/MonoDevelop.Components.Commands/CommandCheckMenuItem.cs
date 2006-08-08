@@ -37,6 +37,7 @@ namespace MonoDevelop.Components.Commands
 		bool updating;
 		bool isArrayItem;
 		object arrayDataItem;
+		object initialTarget;
 		
 		public CommandCheckMenuItem (object commandId, CommandManager commandManager): base ("")
 		{
@@ -47,18 +48,20 @@ namespace MonoDevelop.Components.Commands
 				this.DrawAsRadio = true; 
 		}
 		
-		void ICommandUserItem.Update ()
+		void ICommandUserItem.Update (object initialTarget)
 		{
 			if (commandManager != null && !isArrayItem) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId);
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
+				this.initialTarget = initialTarget;
 				Update (cinfo);
 			}
 		}
 		
-		void ICommandMenuItem.SetUpdateInfo (CommandInfo cmdInfo)
+		void ICommandMenuItem.SetUpdateInfo (CommandInfo cmdInfo, object initialTarget)
 		{
 			isArrayItem = true;
 			arrayDataItem = cmdInfo.DataItem;
+			this.initialTarget = initialTarget;
 			Update (cmdInfo);
 		}
 		
@@ -67,7 +70,7 @@ namespace MonoDevelop.Components.Commands
 			base.OnParentSet (parent);
 			if (Parent == null) return;
 			
-			((ICommandUserItem)this).Update ();
+			((ICommandUserItem)this).Update (null);
 			
 			// Make sure the accelerators allways work for this item
 			// while the menu is hidden
@@ -84,7 +87,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 
-			commandManager.DispatchCommand (commandId, arrayDataItem);
+			commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);
 		}
 		
 		void Update (CommandInfo cmdInfo)

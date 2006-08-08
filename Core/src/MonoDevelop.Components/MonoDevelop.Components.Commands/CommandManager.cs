@@ -182,7 +182,7 @@ namespace MonoDevelop.Components.Commands
 				int n = menu.Children.Length;
 				menu.Insert (item, index);
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update ();
+					((ICommandUserItem)item).Update (null);
 				else
 					item.Show ();
 				index += menu.Children.Length - n;
@@ -191,7 +191,14 @@ namespace MonoDevelop.Components.Commands
 		
 		public void ShowContextMenu (CommandEntrySet entrySet)
 		{
-			ShowContextMenu (CreateMenu (entrySet));
+			ShowContextMenu (entrySet, null);
+		}
+		
+		public void ShowContextMenu (CommandEntrySet entrySet, object initialTarget)
+		{
+			CommandMenu menu = (CommandMenu) CreateMenu (entrySet);
+			menu.InitialCommandTarget = initialTarget;
+			ShowContextMenu (menu);
 		}
 		
 		public void ShowContextMenu (Gtk.Menu menu)
@@ -209,17 +216,22 @@ namespace MonoDevelop.Components.Commands
 
 		public bool DispatchCommand (object commandId)
 		{
-			return DispatchCommand (commandId, null);
+			return DispatchCommand (commandId, null, null);
 		}
 		
 		public bool DispatchCommand (object commandId, object dataItem)
+		{
+			return DispatchCommand (commandId, dataItem, null);
+		}
+
+		public bool DispatchCommand (object commandId, object dataItem, object initialTarget)
 		{
 			ActionCommand cmd = null;
 			try {
 				cmd = GetActionCommand (commandId);
 				
-				int globalPos;
-				object cmdTarget = GetFirstCommandTarget (out globalPos);
+				int globalPos = -1;
+				object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
 				CommandInfo info = new CommandInfo (cmd);
 				
 				while (cmdTarget != null)
@@ -269,14 +281,14 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		internal CommandInfo GetCommandInfo (object commandId)
+		internal CommandInfo GetCommandInfo (object commandId, object initialTarget)
 		{
 			ActionCommand cmd = GetActionCommand (commandId);
 			CommandInfo info = new CommandInfo (cmd);
 			
 			try {
-				int globalPos;
-				object cmdTarget = GetFirstCommandTarget (out globalPos);
+				int globalPos = -1;
+				object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
 				
 				while (cmdTarget != null)
 				{
@@ -322,7 +334,7 @@ namespace MonoDevelop.Components.Commands
 			return (ArrayList) overloadedAccelCommands [commandId];
 		}
 		
-		internal bool DispatchCommandFromAccel (object commandId, object dataItem)
+		internal bool DispatchCommandFromAccel (object commandId, object dataItem, object initialTarget)
 		{
 			// Dispatches a command that has been fired by an accelerator.
 			// The difference from a normal dispatch is that there may
@@ -336,16 +348,16 @@ namespace MonoDevelop.Components.Commands
 			Command cmd = GetCommand (commandId);
 			string accel = cmd.AccelKey;
 			if (accel == null || accel == "")
-				return DispatchCommand (commandId, dataItem);
+				return DispatchCommand (commandId, dataItem, initialTarget);
 			
 			ArrayList list = (ArrayList) overloadedAccelCommands [accel];
 			if (list == null)
 				// The command is not overloaded, so it can be handled normally.
-				return DispatchCommand (commandId, dataItem);
+				return DispatchCommand (commandId, dataItem, initialTarget);
 			
 			// Get the accelerator used to fire the command and make sure it has not changed.
-			CommandInfo accelInfo = GetCommandInfo (commandId);
-			bool res = DispatchCommand (commandId, accelInfo.DataItem);
+			CommandInfo accelInfo = GetCommandInfo (commandId, initialTarget);
+			bool res = DispatchCommand (commandId, accelInfo.DataItem, initialTarget);
 
 			// If the accelerator has changed, we can't handle overloading.
 			if (res || accel != accelInfo.AccelKey)
@@ -357,10 +369,10 @@ namespace MonoDevelop.Components.Commands
 			foreach (object altId in list) {
 				if (altId == commandId)	// already handled above.
 					continue;
-				CommandInfo cinfo = GetCommandInfo (altId);
+				CommandInfo cinfo = GetCommandInfo (altId, initialTarget);
 				if (cinfo.AccelKey != accel)	// Key changed by a handler, just ignore the command.
 					continue;
-				if (DispatchCommand (altId, cinfo.DataItem))
+				if (DispatchCommand (altId, cinfo.DataItem, initialTarget))
 					return true;
 			}
 			return false;
