@@ -1,3 +1,11 @@
+2006-07-11 Philip Turnbull <philip.turnbull@gmail.com>
+
+	* VBNetBinding/VBNetBinding.addin.xml:
+	Added VB Ambience.
+
+	* VBNetBinding/VBAmbience.cs:
+	Track API changes in Ambience.
+
 2006-07-05 Matej Urbas <matej.urbas@gmail.com>
 
 	* Parser/VBNetVisitor.cs:

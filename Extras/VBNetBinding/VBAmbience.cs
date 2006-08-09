@@ -16,7 +16,7 @@ using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Core
 {
-	public class VBAmbience :  AbstractAmbience
+	public class VBAmbience : Ambience
 	{
 		static string[,] typeConversionList = new string[,] {
 			{"System.String",  "String"},
@@ -45,11 +45,11 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		string GetModifier(IDecoration decoration)
+		string GetModifier(IDecoration decoration, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<i>");
 			}
 			
@@ -68,17 +68,17 @@ namespace MonoDevelop.Core
 				builder.Append("Shadows ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</i>");
 			}
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(ModifierEnum modifier)
+		public override string Convert(ModifierEnum modifier, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowAccessibility) {
+			if (ShowAccessibility(conversionFlags)) {
 				if ((modifier & ModifierEnum.Public) == ModifierEnum.Public) {
 					builder.Append("Public");
 				} else if ((modifier & ModifierEnum.Private) == ModifierEnum.Private) {
@@ -97,17 +97,17 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IClass c)
+		public override string Convert(IClass c, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(c.Modifiers));
+			builder.Append(Convert(c.Modifiers, conversionFlags));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<i>");
 			}
 			
-			if (ShowModifiers) {
+			if (ShowClassModifiers(conversionFlags)) {
 				if (c.IsSealed) {
 					if (c.ClassType == ClassType.Class) {
 						builder.Append("NotInheritable ");
@@ -117,70 +117,72 @@ namespace MonoDevelop.Core
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</i>");
 			}
 			
-			switch (c.ClassType) {
-				case ClassType.Delegate:
-					builder.Append("Delegate ");
-					if (ShowReturnType) {
-						foreach (IMethod m in c.Methods) {
-							if (m.Name != "Invoke") {
-								continue;
-							}
-							
-							if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-								builder.Append("Sub");
-							} else {
-								builder.Append("Function");
+			if (ShowClassModifiers(conversionFlags)) {
+				switch (c.ClassType) {
+					case ClassType.Delegate:
+						builder.Append("Delegate ");
+						if (ShowReturnType) {
+							foreach (IMethod m in c.Methods) {
+								if (m.Name != "Invoke") {
+									continue;
+								}
+								
+								if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
+									builder.Append("Sub");
+								} else {
+									builder.Append("Function");
+								}
 							}
 						}
-					}
-					break;
-				case ClassType.Class:
-					builder.Append("Class");
-					break;
-				case ClassType.Struct:
-					builder.Append("Structure");
-					break;
-				case ClassType.Interface:
-					builder.Append("Interface");
-					break;
-				case ClassType.Enum:
-					builder.Append("Enum");
-					break;
+						break;
+					case ClassType.Class:
+						builder.Append("Class");
+						break;
+					case ClassType.Struct:
+						builder.Append("Structure");
+						break;
+					case ClassType.Interface:
+						builder.Append("Interface");
+						break;
+					case ClassType.Enum:
+						builder.Append("Enum");
+						break;
+				}
+				builder.Append(' ');
 			}
-			builder.Append(' ');
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<b>");
 			}
 			
-			if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames(conversionFlags)) {
 				builder.Append(c.FullyQualifiedName);
 			} else {
 				builder.Append(c.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			if (c.ClassType == ClassType.Delegate) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 				
 				foreach (IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
-						if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+						if (IncludeHTMLMarkup(conversionFlags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
-						builder.Append(Convert(m.Parameters[i]));
+						builder.Append(Convert(m.Parameters[i], conversionFlags));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 
-						if (IncludeHTMLMarkup) builder.Append("<br>");
+						if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 					}
 				}
 
@@ -193,12 +195,12 @@ namespace MonoDevelop.Core
 					} else {
 						if (ShowReturnType) {
 							builder.Append(" As ");
-							builder.Append(Convert(m.ReturnType));
+							builder.Append(Convert(m.ReturnType, conversionFlags));
 						}
 					}
 				}
 
-			} else if (ShowInheritanceList) {
+			} else if (ShowInheritanceList(conversionFlags)) {
 				if (c.BaseTypes.Count > 0) {
 					builder.Append(" Inherits ");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
@@ -213,7 +215,7 @@ namespace MonoDevelop.Core
 			return builder.ToString();		
 		}
 		
-		public override string ConvertEnd(IClass c)
+		public override string ConvertEnd(IClass c, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -240,17 +242,17 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IField field)
+		public override string Convert(IField field, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(field.Modifiers));
+			builder.Append(Convert(field.Modifiers, conversionFlags));
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<i>");
 			}
 			
-			if (ShowModifiers) {
+			if (ShowMemberModifiers(conversionFlags)) {
 				if (field.IsStatic && field.IsLiteral) {
 					builder.Append("Const ");
 				} else if (field.IsStatic) {
@@ -258,37 +260,37 @@ namespace MonoDevelop.Core
 				}
 			}
 						
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</i>");
 				builder.Append("<b>");
 			}
 			
-			if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames(conversionFlags)) {
 				builder.Append(field.FullyQualifiedName);
 			} else {
 				builder.Append(field.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			if (field.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
-				builder.Append(Convert(field.ReturnType));
+				builder.Append(Convert(field.ReturnType, conversionFlags));
 			}			
 			
 			return builder.ToString();			
 		}
 		
-		public override string Convert(IProperty property)
+		public override string Convert(IProperty property, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(property.Modifiers));
+			builder.Append(Convert(property.Modifiers, conversionFlags));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(property));
+			if (ShowMemberModifiers(conversionFlags)) {
+				builder.Append(GetModifier(property, conversionFlags));
 			}
 			
 			if (property.CanGet && !property.CanSet) {
@@ -299,31 +301,31 @@ namespace MonoDevelop.Core
 				builder.Append("WriteOnly ");
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<b>");
 			}
 			
-			if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames(conversionFlags)) {
 				builder.Append(property.FullyQualifiedName);
 			} else {
 				builder.Append(property.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			if (property.Parameters.Count > 0) {
 				builder.Append("(");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-					builder.Append(Convert(property.Parameters[i]));
+					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("&nbsp;&nbsp;&nbsp;");
+					builder.Append(Convert(property.Parameters[i], conversionFlags));
 					if (i + 1 < property.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -331,98 +333,98 @@ namespace MonoDevelop.Core
 			
 			if (property.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
-				builder.Append(Convert(property.ReturnType));
+				builder.Append(Convert(property.ReturnType, conversionFlags));
 			}
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(IEvent e)
+		public override string Convert(IEvent e, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
-			builder.Append(Convert(e.Modifiers));
+			builder.Append(Convert(e.Modifiers, conversionFlags));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(e));
+			if (ShowMemberModifiers(conversionFlags)) {
+				builder.Append(GetModifier(e, conversionFlags));
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<b>");
 			}
 			
-			if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames(conversionFlags)) {
 				builder.Append(e.FullyQualifiedName);
 			} else {
 				builder.Append(e.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			if (e.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
-				builder.Append(Convert(e.ReturnType));
+				builder.Append(Convert(e.ReturnType, conversionFlags));
 			}
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(IIndexer m)
+		public override string Convert(IIndexer m, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers));
+			builder.Append(Convert(m.Modifiers, conversionFlags));
 			
-			if (ShowModifiers) {
+			if (ShowMemberModifiers(conversionFlags)) {
 				if (m.IsStatic) {
 					builder.Append("Shared ");
 				}
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<b>");
 			}
 			
-			if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames(conversionFlags)) {
 				builder.Append(m.FullyQualifiedName);
 			} else {
 				builder.Append(m.Name);
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			builder.Append("Item(");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
+			if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 
 			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("&nbsp;&nbsp;&nbsp;");
+				builder.Append(Convert(m.Parameters[i], conversionFlags));
 				if (i + 1 < m.Parameters.Count) {
 					builder.Append(", ");
 				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 			}
 			
 			builder.Append(")");
 			
 			if (m.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
-				builder.Append(Convert(m.ReturnType));
+				builder.Append(Convert(m.ReturnType, conversionFlags));
 			}			
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(IMethod m)
+		public override string Convert(IMethod m, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers));
+			builder.Append(Convert(m.Modifiers, conversionFlags));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(m));
+			if (ShowMemberModifiers(conversionFlags)) {
+				builder.Append(GetModifier(m, conversionFlags));
 			}
 			if (ShowReturnType) {
 				if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
@@ -432,44 +434,44 @@ namespace MonoDevelop.Core
 				}
 			}
 
-			string dispName = UseFullyQualifiedMemberNames ? m.FullyQualifiedName : m.Name;
+			string dispName = UseFullyQualifiedMemberNames(conversionFlags) ? m.FullyQualifiedName : m.Name;
 			if (m.Name == "ctor" || m.Name == "cctor" || m.Name == "#ctor" || m.Name == "#cctor" || m.IsConstructor) {
 				dispName = "New";
 			}
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("<b>");
 			}
 			
 			builder.Append(dispName);
 			
-			if (IncludeHTMLMarkup) {
+			if (IncludeHTMLMarkup(conversionFlags)) {
 				builder.Append("</b>");
 			}
 			
 			builder.Append("(");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
+			if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 
 			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("&nbsp;&nbsp;&nbsp;");
+				builder.Append(Convert(m.Parameters[i], conversionFlags));
 				if (i + 1 < m.Parameters.Count) {
 					builder.Append(", ");
 				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup(conversionFlags)) builder.Append("<br>");
 			}
 			
 			builder.Append(')');
 			
 			if (ShowReturnType && m.ReturnType != null && m.ReturnType.FullyQualifiedName != "System.Void") {
 				builder.Append(" As ");
-				builder.Append(Convert(m.ReturnType));
+				builder.Append(Convert(m.ReturnType, conversionFlags));
 			}
 			
 			return builder.ToString();
 		}
 		
-		public override string ConvertEnd(IMethod m)
+		public override string ConvertEnd(IMethod m, ConversionFlags conversionFlags)
 		{
 			if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
 				return "End Sub";
@@ -478,7 +480,7 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public override string Convert(IReturnType returnType)
+		public override string Convert(IReturnType returnType, ConversionFlags conversionFlags)
 		{
 			if (returnType == null) {
 				return String.Empty;
@@ -487,7 +489,7 @@ namespace MonoDevelop.Core
 			
 			bool linkSet = false;
 			
-			if (UseLinkArrayList) {
+			//if (UseLinkArrayList(conversionFlags)) {
 				//SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
 				//if (ret != null) {
 				//	if (ret.UnderlyingClass != null) {
@@ -495,12 +497,12 @@ namespace MonoDevelop.Core
 				//		linkSet = true;
 				//	}
 				//}
-			}
+			//}
 			
 			if (returnType.FullyQualifiedName != null && typeConversionTable[returnType.FullyQualifiedName] != null) {
 				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
 			} else {
-				builder.Append(UseFullyQualifiedNames ? returnType.FullyQualifiedName : returnType.Name);
+				builder.Append(UseFullyQualifiedNames(conversionFlags) ? returnType.FullyQualifiedName : returnType.Name);
 			}
 			
 			if (linkSet) {
@@ -522,11 +524,11 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 		
-		public override string Convert(IParameter param)
+		public override string Convert(IParameter param, ConversionFlags conversionFlags)
 		{
 			StringBuilder builder = new StringBuilder();
-			if (ShowParameterNames) {
-				if (IncludeHTMLMarkup) {
+			if (ShowParameterNames(conversionFlags)) {
+				if (IncludeHTMLMarkup(conversionFlags)) {
 					builder.Append("<i>");
 				}
 			
@@ -537,7 +539,7 @@ namespace MonoDevelop.Core
 				} else  {
 					builder.Append("ByVal ");
 				}
-				if (IncludeHTMLMarkup) {
+				if (IncludeHTMLMarkup(conversionFlags)) {
 					builder.Append("</i>");
 				}
 			
@@ -546,7 +548,7 @@ namespace MonoDevelop.Core
 				builder.Append(" As ");
 			}
 
-			builder.Append(Convert(param.ReturnType));
+			builder.Append(Convert(param.ReturnType, conversionFlags));
 
 			return builder.ToString();
 		}
@@ -568,6 +570,5 @@ namespace MonoDevelop.Core
 			}
 			return dotNetTypeName;
 		}
-	}
-	
+	}	
 }
