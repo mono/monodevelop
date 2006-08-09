@@ -20,7 +20,7 @@ namespace MonoDevelop.Projects.Ambience
 		static readonly string codeGenerationProperty = "SharpDevelop.UI.CodeGenerationOptions";
 		
 		Hashtable ambiences = new Hashtable ();
-		
+
 		public IProperties CodeGenerationProperties {
 			get {
 				return (IProperties) Runtime.Properties.GetProperty (codeGenerationProperty, new DefaultProperties());
@@ -45,19 +45,49 @@ namespace MonoDevelop.Projects.Ambience
 			}
 		}
 		
-		public AmbienceReflectionDecorator CurrentAmbience {
+		public Ambience GenericAmbience {
 			get {
-				string language = Runtime.Properties.GetProperty(ambienceProperty, "CSharp");
-				AmbienceReflectionDecorator ard = (AmbienceReflectionDecorator) ambiences [language];
-				if (ard == null) {
-					ard = new AmbienceReflectionDecorator((IAmbience)Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, this));
-					ambiences [language] = ard;
-				}
-				return ard;
+				return AmbienceFromName(".NET");
 			}
 		}
 		
-		void PropertyChanged(object sender, PropertyEventArgs e)
+		public string[] AvailableAmbiences {
+			get {
+				IAddInTreeNode ambiencesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
+				string[] availableAmbiences = new string[ambiencesNode.ChildNodes.Count];
+				int index = 0;
+				foreach(string ambienceName in ambiencesNode.ChildNodes.Keys)
+					availableAmbiences[index++] = ambienceName;
+				
+				return availableAmbiences;
+			}
+		}
+		
+		public Ambience AmbienceFromName(string name)
+		{
+			Ambience amb = (Ambience) ambiences [name];
+			
+			if (amb == null) {				
+				IAddInTreeNode node = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
+					
+				if(node.ChildNodes.Contains(name)) {
+					amb = (Ambience)node.BuildChildItem(name, this);
+				} else {
+					amb = GenericAmbience;
+				}
+				ambiences [name] = amb;
+			}
+			return amb;
+		}
+		
+		public Ambience CurrentAmbience {
+			get {
+				string language = Runtime.Properties.GetProperty(ambienceProperty, ".NET");
+				return AmbienceFromName(language);
+			}
+		}
+		
+		/*void PropertyChanged(object sender, PropertyEventArgs e)
 		{
 			if (e.Key == ambienceProperty) {
 				OnAmbienceChanged(EventArgs.Empty);
@@ -69,6 +99,10 @@ namespace MonoDevelop.Projects.Ambience
 			Runtime.Properties.PropertyChanged += new PropertyEventHandler(PropertyChanged);
 		}
 		
+		public override void UnloadService()
+		{
+			Runtime.Properties.PropertyChanged -= new PropertyEventHandler(PropertyChanged);
+		}
 		
 		protected virtual void OnAmbienceChanged(EventArgs e)
 		{
@@ -77,6 +111,6 @@ namespace MonoDevelop.Projects.Ambience
 			}
 		}
 		
-		public event EventHandler AmbienceChanged;
+		public event EventHandler AmbienceChanged;*/
 	}
 }

@@ -12,8 +12,7 @@ REFS = \
  	$(MONODOC_LIBS)
 
 FILES= \
-MonoDevelop.Projects.Ambience/AbstractAmbience.cs \
-MonoDevelop.Projects.Ambience/AmbienceReflectionDecorator.cs \
+MonoDevelop.Projects.Ambience/Ambience.cs \
 MonoDevelop.Projects.Ambience/AmbienceService.cs \
 MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs \
 MonoDevelop.Projects.Ambience/IAmbience.cs \

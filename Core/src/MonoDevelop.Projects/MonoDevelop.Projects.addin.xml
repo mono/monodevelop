@@ -38,7 +38,7 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences" extension-nodes="Class" description="Language ambiences.|Specified classes must implement IAmbience.">
 		<Class id    = ".NET"
-		       class = "MonoDevelop.Services.NetAmbience"/>
+		       class = "MonoDevelop.Projects.Ambience.NetAmbience"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings" extension-nodes="ProjectBinding" description="Project bindings.">

@@ -20,61 +20,36 @@ namespace MonoDevelop.Projects.Ambience
 		ShowParameterNames     = 1,
 		ShowAccessibility      = 16,
 		UseFullyQualifiedNames = 2,
-		ShowModifiers          = 4,
+		ShowMemberModifiers          = 4,
 		ShowInheritanceList    = 8,
 		IncludeHTMLMarkup      = 32,
 		UseLinkArrayList       = 64,
 		QualifiedNamesOnlyForReturnTypes = 128,
 		IncludeBodies          = 256,
 		IncludePangoMarkup     = 512,
-		ShowGenericParameters  = 1024,
+		ShowClassModifiers     = 1024,
+		ShowGenericParameters  = 2048,
 		
 		StandardConversionFlags = ShowParameterNames | 
 		                          UseFullyQualifiedNames | 
-		                          ShowModifiers,
+		                          ShowMemberModifiers |
+		                          ShowClassModifiers |
+		                          ShowGenericParameters,
 		                          
 		All = ShowParameterNames | 
 		      ShowAccessibility | 
 		      UseFullyQualifiedNames |
-		      ShowModifiers | 
+		      ShowMemberModifiers |
+		      ShowClassModifiers |
 		      ShowInheritanceList |
 		      ShowGenericParameters,
+
 		      
 		AssemblyScoutDefaults = StandardConversionFlags |
 		                        ShowAccessibility |	
 		                        QualifiedNamesOnlyForReturnTypes |
 		                        IncludeHTMLMarkup |
-		                        UseLinkArrayList,
-	}
-	
-	public interface IAmbience
-	{
-		ConversionFlags ConversionFlags {
-			get;
-			set;
-		}
-		
-		string Convert(ModifierEnum modifier);
-		
-		string Convert(IClass c);
-		string ConvertEnd(IClass c);
-		
-		string Convert(IIndexer c);
-		string Convert(IField field);
-		string Convert(IProperty property);
-		string Convert(IEvent e);
-		
-		string Convert(IMethod m);
-		string ConvertEnd(IMethod m);
-		
-		string Convert(IParameter param);
-		string Convert(IReturnType returnType);
-		
-		string WrapAttribute(string attribute);
-		string WrapComment(string comment);
-		
-		string GetIntrinsicTypeName(string dotNetTypeName);
-		
-		ArrayList LinkArrayList { get; set; }
+		                        UseLinkArrayList |
+		                        ShowGenericParameters,
 	}
 }

@@ -18,9 +18,9 @@ namespace MonoDevelop.Projects.Ambience
 {
 	public class CodeDOMGeneratorUtility 
 	{
-		AmbienceService ambienceService = Services.Ambience;
+		static AmbienceService ambienceService = Services.Ambience;
 		
-		public CodeGeneratorOptions CreateCodeGeneratorOptions {
+		public static CodeGeneratorOptions CodeGeneratorOptions {
 			get {
 				CodeGeneratorOptions options = new CodeGeneratorOptions();
 				options.BlankLinesBetweenMembers = ambienceService.CodeGenerationProperties.GetProperty("BlankLinesBetweenMembers", true);

@@ -16,6 +16,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects.Ambience;
 
 namespace MonoDevelop.Projects
 {
@@ -30,6 +31,10 @@ namespace MonoDevelop.Projects
 		
 		public override string ProjectType {
 			get { return "DotNet"; }
+		}
+		
+		public override MonoDevelop.Projects.Ambience.Ambience Ambience {
+			get { return Services.Ambience.AmbienceFromName (LanguageName); }
 		}
 		
 		public string LanguageName {

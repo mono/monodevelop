@@ -19,6 +19,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
@@ -117,6 +118,10 @@ namespace MonoDevelop.Projects
 		
 		public abstract string ProjectType {
 			get;
+		}
+		
+		public virtual MonoDevelop.Projects.Ambience.Ambience Ambience {
+			get { return Services.Ambience.GenericAmbience; }
 		}
 		
 		[Browsable(false)]

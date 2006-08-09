@@ -226,6 +226,7 @@
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentGenericParamater.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/TextEncoding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Ambience/Ambience.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs" subtype="Code" buildaction="Compile" />

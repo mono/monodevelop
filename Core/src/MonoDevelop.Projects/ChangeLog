@@ -1,3 +1,31 @@
+2006-08-07 Philip Turnbull <philip.turnbull@gmail.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/Project.cs:
+	Added Ambience property.
+
+	* MonoDevelop.Projects.Ambience/Ambience.cs:
+	Added ShowClassModifiers and ShowGenericParameters flags to ConversionFlags.
+	Refactored IAmbience interface into Ambience class.
+
+	* MonoDevelop.Projects.Ambience/AmbienceReflectionDecorator.cs:
+	* MonoDevelop.Projects.Ambience/AbstractAmbience.cs:
+	* MonoDevelop.Projects.Ambience/IAmbience.cs:
+	Removed unused class.
+
+	* MonoDevelop.Projects.Ambience/AmbienceService.cs:
+	Refactored AmbienceService class.
+
+	* MonoDevelop.Projects.Ambience/AbstractAmbience.cs:
+	* MonoDevelop.Projects.Ambience/NetAmbience.cs:
+	Track API changes in Ambience.
+ 
+	* MonoDevelop.Projects/MonoDevelop.Projects.addin.xml:
+	Fixed classname of NetAmbience.
+
+	* MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs:
+	Renamed and made CodeGeneratorOptions static.
+ 
 2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/CombineEntry.cs: Added DefaultDeployTarget
