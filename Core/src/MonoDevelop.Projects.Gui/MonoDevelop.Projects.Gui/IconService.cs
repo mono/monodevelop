@@ -214,6 +214,11 @@ namespace MonoDevelop.Projects.Gui
 			return GetWithModifiers (mod, Stock.Class, Stock.ProtectedClass, Stock.InternalClass, Stock.PrivateClass);
 		}
 		
+		public string GetIcon (IIndexer indexer)
+		{
+			return GetWithModifiers (indexer.Modifiers, Stock.Property, Stock.ProtectedProperty, Stock.InternalProperty, Stock.PrivateProperty);
+		}
+		
 		public Gdk.Pixbuf MakeTransparent (Gdk.Pixbuf icon, double opacity)
 		{
 			// If somebody knows a better way of doing this, please redo.

@@ -1,3 +1,11 @@
+2006-08-07 Philip Turnbull <philip.turnbull@gmail.com>
+
+	* MonoDevelop.Projects.Gui/IconService.cs:
+	Added GetIcon method for indexers.
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	Track API changes in Ambience.
+
 2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:

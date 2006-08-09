@@ -30,14 +30,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		bool convertedDocumentation = false;
 		
-		static IAmbience PangoAmbience
-		{
-			get {
-				IAmbience asvc = Services.Ambience.CurrentAmbience;
-				asvc.ConversionFlags |= ConversionFlags.IncludePangoMarkup;
-				return asvc;
-			}
-		}
+		static MonoDevelop.Projects.Ambience.Ambience ambience = Services.Ambience.GenericAmbience;
 
 		public string CompletionString 
 		{
@@ -147,19 +140,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public CodeCompletionData (IClass c)
 		{
 			image = Services.Icons.GetIcon(c);
-			
-			// Configure the ambience to convert names so that they contain
-			// generic parameters
-			IAmbience amb        = Services.Ambience.CurrentAmbience;
-			amb.ConversionFlags  = ConversionFlags.ShowGenericParameters;
-			
-			completionString     = amb.Convert(c);
-			text                 = completionString;
-			// Restore the conversion flags to what they were before
-			amb.ConversionFlags = ConversionFlags.All;
-			
-			description = amb.Convert(c);
-			pango_description  = PangoAmbience.Convert(c);
+			text = c.Name;
+			completionString = c.Name;
+			description = ambience.Convert(c);
+			pango_description = ambience.Convert(c, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
 			documentation = c.Documentation;
 		}
 		
@@ -167,8 +151,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			image  = Services.Icons.GetIcon(method);
 			text        = method.Name;
-			description = Services.Ambience.CurrentAmbience.Convert(method);
-			pango_description  = PangoAmbience.Convert (method);
+			description = ambience.Convert(method);
+			pango_description = ambience.Convert(method, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
 			completionString = method.Name;
 			documentation = method.Documentation;
 		}
@@ -177,8 +161,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			image  = Services.Icons.GetIcon(field);
 			text        = field.Name;
-			description = Services.Ambience.CurrentAmbience.Convert(field);
-			pango_description  = PangoAmbience.Convert (field);
+			description = ambience.Convert(field);
+			pango_description = ambience.Convert(field, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
 			completionString = field.Name;
 			documentation = field.Documentation;
 		}
@@ -187,8 +171,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			image  = Services.Icons.GetIcon(property);
 			text        = property.Name;
-			description = Services.Ambience.CurrentAmbience.Convert(property);
-			pango_description  = PangoAmbience.Convert (property);
+			description = ambience.Convert(property);
+			pango_description  = ambience.Convert(property, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
 			completionString = property.Name;
 			documentation = property.Documentation;
 		}
@@ -197,8 +181,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			image  = Services.Icons.GetIcon(e);
 			text        = e.Name;
-			description = Services.Ambience.CurrentAmbience.Convert(e);
-			pango_description  = PangoAmbience.Convert (e);
+			description = ambience.Convert(e);
+			pango_description  = ambience.Convert(e, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
 			completionString = e.Name;
 			documentation = e.Documentation;
 		}
