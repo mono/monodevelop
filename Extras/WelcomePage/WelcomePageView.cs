@@ -49,6 +49,8 @@ namespace MonoDevelop.WelcomePage
 		protected Frame control;
 		protected MozillaControl htmlControl;
 		
+		string datadir;
+		
 		public override Gtk.Widget Control {
 			get {
 				return control;
@@ -73,13 +75,17 @@ namespace MonoDevelop.WelcomePage
 			htmlControl.OpenUri += new OpenUriHandler (CatchUri);
 			htmlControl.LinkMsg += new EventHandler (LinkMessage);
 			
-			//START HERE: Move To Thread?
-			
-			string datadir = Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
-			//Console.WriteLine(datadir);
-			
-			//string datadir = Runtime.Properties.DataDirectory;
+			datadir = Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
 
+			this.IsViewOnly = true;
+
+			LoadContent ();
+
+			IdeApp.Workbench.RecentOpen.RecentProjectChanged += RecentChangesHandler;
+		}
+		
+		void LoadContent ()
+		{
 			// build simple xml which XSLT will process into XHTML
 			string myxml = 	"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" +
 							"<WelcomePage>" +
@@ -95,11 +101,14 @@ namespace MonoDevelop.WelcomePage
 			StringWriter fs = new StringWriter();
 			xslt.Transform(inxml, null, fs, null);
 
-			//Console.WriteLine(fs.ToString());
 			htmlControl.Html = fs.ToString();
 			//Initialize(null);
-			
-			this.IsViewOnly = true;
+		}
+
+		void RecentChangesHandler ( object sender, EventArgs e )
+		{
+			LoadContent ();
+			Initialize (null);
 		}
 		
 		void LinkMessage (object sender, EventArgs e)
@@ -180,10 +189,16 @@ namespace MonoDevelop.WelcomePage
 		public void Initialize(object obj)
 		{
 			htmlControl.DelayedInitialize();
-			//object t = new object();
-			//htmlControl.Navigate("http://www.google.com", ref t, ref t,ref t,ref t); 
 		}
 
+		public override void Dispose ()
+		{
+			base.Dispose ();
+
+			IdeApp.Workbench.RecentOpen.RecentProjectChanged -= RecentChangesHandler;
+			htmlControl.Dispose ();
+		}
+		
 		public static string TimeSinceEdited(int timestamp)
 		{
 			DateTime prjtime = (new DateTime (1970, 1, 1, 0, 0, 0, 0)).AddSeconds(timestamp);

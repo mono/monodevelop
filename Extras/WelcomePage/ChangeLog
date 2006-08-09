@@ -1,5 +1,9 @@
 2006-08-08  Scott Ellington  <scott.ellington@gmail.com>
 
+	* WelcomePageView.cs: reload when recent solutions list changes
+
+2006-08-08  Scott Ellington  <scott.ellington@gmail.com>
+
 	* WelcomePage.xsl: provide better development links
 
 2006-07-28 Matej Urbas <matej.urbas@gmail.com>
