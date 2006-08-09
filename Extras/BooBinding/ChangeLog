@@ -1,3 +1,8 @@
+2006-07-11 Philip Turnbull <philip.turnbull@gmail.com>
+
+	* BooBinding/BooAmbience.cs:
+	Track API changes in Ambience.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/BooParser.boo:

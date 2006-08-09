@@ -27,7 +27,7 @@ import MonoDevelop.Core
 import MonoDevelop.Core.Properties
 import MonoDevelop.Projects.Ambience
 
-class BooAmbience(AbstractAmbience):
+class BooAmbience(Ambience):
 	[Getter(TypeConversionTable)]
 	static _typeConversionTable = {
 		'System.Void'    : 'void',
@@ -68,8 +68,8 @@ class BooAmbience(AbstractAmbience):
 	private def ModifierIsSet(modifier as ModifierEnum, query as ModifierEnum) as bool:
 		return (modifier & query) == query
 	
-	override def Convert(modifier as ModifierEnum) as string:
-		if ShowAccessibility:
+	override def Convert(modifier as ModifierEnum, conversionFlags as ConversionFlags) as string:
+		if ShowAccessibility(conversionFlags):
 			if ModifierIsSet(modifier, ModifierEnum.Public):
 				return 'public '
 			elif ModifierIsSet(modifier, ModifierEnum.Private):
@@ -84,9 +84,9 @@ class BooAmbience(AbstractAmbience):
 				return 'protected '
 		return ''
 	
-	private def GetModifier(decoration as IDecoration) as string:
+	private def GetModifier(decoration as IDecoration, conversionFlags as ConversionFlags) as string:
 		ret as string = ''
-		if IncludeHTMLMarkup or IncludePangoMarkup:
+		if IncludeHTMLMarkup(conversionFlags) or IncludePangoMarkup(conversionFlags):
 			ret += '<i>'
 		
 		if decoration.IsStatic:
@@ -100,29 +100,29 @@ class BooAmbience(AbstractAmbience):
 		elif decoration.IsNew:
 			ret += 'new '
 		
-		if IncludeHTMLMarkup or IncludePangoMarkup:
+		if IncludeHTMLMarkup(conversionFlags) or IncludePangoMarkup(conversionFlags):
 			ret += '</i>'
 		
 		return ret
 	
-	override def Convert(c as IClass) as string:
+	override def Convert(c as IClass, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(c.Modifiers))
+		builder.Append(Convert(c.Modifiers, conversionFlags))
 
 		cType = c.ClassType
 		
-		if ShowModifiers:
+		if ShowClassModifiers(conversionFlags):
 			if c.IsSealed:
 				if cType == ClassType.Delegate or cType == ClassType.Enum:
 					pass
 				else:
 					//builder.Append('final ')
-					AppendPangoHtmlTag (builder, 'final ', 'i')
+					AppendPangoHtmlTag (builder, 'final ', 'i', conversionFlags)
 			elif c.IsAbstract and cType != ClassType.Interface:
 				//builder.Append('abstract ')
-				AppendPangoHtmlTag (builder, 'abstract ', 'i')
+				AppendPangoHtmlTag (builder, 'abstract ', 'i', conversionFlags)
 		
-		if ShowModifiers:
+		if ShowClassModifiers(conversionFlags):
 			if cType == ClassType.Delegate:
 				builder.Append('callable ')
 			elif cType == ClassType.Class:
@@ -137,26 +137,26 @@ class BooAmbience(AbstractAmbience):
 		if cType == ClassType.Delegate and c.Methods.Count > 0:
 			for m as IMethod in c.Methods:
 				if m.Name == 'Invoke':
-					builder.Append(Convert(m.ReturnType))
+					builder.Append(Convert(m.ReturnType, conversionFlags))
 					builder.Append(' ')
 		
-		if UseFullyQualifiedMemberNames:
-			AppendPangoHtmlTag (builder, c.FullyQualifiedName, 'b')
+		if UseFullyQualifiedMemberNames(conversionFlags):
+			AppendPangoHtmlTag (builder, c.FullyQualifiedName, 'b', conversionFlags)
 		else:
-			AppendPangoHtmlTag (builder, c.Name, 'b')
+			AppendPangoHtmlTag (builder, c.Name, 'b', conversionFlags)
 		
 		if c.ClassType == ClassType.Delegate:
 			builder.Append(' (')
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('<br>')
 			
 			for m as IMethod in c.Methods:
 				if m.Name == 'Invoke':
 					for i in range(m.Parameters.Count):
-						if IncludeHTMLMarkup:
+						if IncludeHTMLMarkup(conversionFlags):
 							builder.Append('&nbsp;&nbsp;&nbsp;')
 						
-						builder.Append(Convert(m.Parameters[i]))
+						builder.Append(Convert(m.Parameters[i], conversionFlags))
 						if i + 1 < m.Parameters.Count:
 							builder.Append(', ')
 						
@@ -164,7 +164,7 @@ class BooAmbience(AbstractAmbience):
 							builder.Append('<br>')
 			
 			builder.Append(Char.Parse(')'))
-		elif ShowInheritanceList:
+		elif ShowInheritanceList(conversionFlags):
 			if c.BaseTypes.Count > 0:
 				builder.Append('(')
 				for i in range(c.BaseTypes.Count):
@@ -173,71 +173,71 @@ class BooAmbience(AbstractAmbience):
 						builder.Append(', ')
 				builder.Append(')')
 		
-		if IncludeBodies:
+		if IncludeBodies(conversionFlags):
 			builder.Append(':\n')
 		
 		return builder.ToString()
 	
-	override def ConvertEnd(c as IClass) as string:
+	override def ConvertEnd(c as IClass, conversionFlags as ConversionFlags) as string:
 		return ''
 	
-	override def Convert(field as IField) as string:
+	override def Convert(field as IField, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(field.Modifiers))
+		builder.Append(Convert(field.Modifiers, conversionFlags))
 		
-		if ShowModifiers:
+		if ShowMemberModifiers(conversionFlags):
 			if field.IsStatic and field.IsLiteral:
-				AppendPangoHtmlTag (builder, 'const ', 'i')
+				AppendPangoHtmlTag (builder, 'const ', 'i', conversionFlags)
 			elif field.IsStatic:
-				AppendPangoHtmlTag (builder, 'static ', 'i')
+				AppendPangoHtmlTag (builder, 'static ', 'i', conversionFlags)
 			
 			if field.IsReadonly:
-				AppendPangoHtmlTag (builder, 'readonly ', 'i')
+				AppendPangoHtmlTag (builder, 'readonly ', 'i', conversionFlags)
 		
-		if UseFullyQualifiedMemberNames:
-			AppendPangoHtmlTag (builder, field.FullyQualifiedName, 'b')
+		if UseFullyQualifiedMemberNames(conversionFlags):
+			AppendPangoHtmlTag (builder, field.FullyQualifiedName, 'b', conversionFlags)
 		else:
-			AppendPangoHtmlTag (builder, field.Name, 'b')
+			AppendPangoHtmlTag (builder, field.Name, 'b', conversionFlags)
 		
 		if field.ReturnType != null:
-			AppendPangoHtmlTag (builder, ' as ' + Convert (field.ReturnType), 'b')
+			AppendPangoHtmlTag (builder, ' as ' + Convert (field.ReturnType, conversionFlags), 'b', conversionFlags)
 		
 		return builder.ToString()
 	
-	override def Convert(property as IProperty) as string:
+	override def Convert(property as IProperty, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(property.Modifiers))
-		if ShowModifiers:
-			builder.Append(GetModifier(property))
+		builder.Append(Convert(property.Modifiers, conversionFlags))
+		if ShowMemberModifiers(conversionFlags):
+			builder.Append(GetModifier(property, conversionFlags))
 		
-		if UseFullyQualifiedMemberNames:
-			AppendPangoHtmlTag (builder, property.FullyQualifiedName, 'b')
+		if UseFullyQualifiedMemberNames(conversionFlags):
+			AppendPangoHtmlTag (builder, property.FullyQualifiedName, 'b', conversionFlags)
 		else:
-			AppendPangoHtmlTag (builder, property.Name, 'b')
+			AppendPangoHtmlTag (builder, property.Name, 'b', conversionFlags)
 		
 		if property.Parameters.Count > 0:
 			builder.Append('(')
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('<br>')
 			
 			for i in range(property.Parameters.Count):
-				if IncludeHTMLMarkup:
+				if IncludeHTMLMarkup(conversionFlags):
 					builder.Append('&nbsp;&nbsp;&nbsp;')
 				
-				builder.Append(Convert(property.Parameters[i]))
+				builder.Append(Convert(property.Parameters[i], conversionFlags))
 				if i + 1 < property.Parameters.Count:
 					builder.Append(', ')
 				
-				if IncludeHTMLMarkup:
+				if IncludeHTMLMarkup(conversionFlags):
 					builder.Append('<br>')
 			
 			builder.Append(')')
 		
 		if property.ReturnType != null:
 			builder.Append(' as ')
-			builder.Append(Convert(property.ReturnType))
+			builder.Append(Convert(property.ReturnType, conversionFlags))
 		
-		if IncludeBodies:
+		if IncludeBodies(conversionFlags):
 			builder.Append(': ')
 			if property.CanGet:
 				builder.Append('get ')
@@ -247,87 +247,87 @@ class BooAmbience(AbstractAmbience):
 		
 		return builder.ToString()
 	
-	override def Convert(e as IEvent) as string:
+	override def Convert(e as IEvent, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(e.Modifiers))
-		if ShowModifiers:
-			builder.Append(GetModifier(e))
+		builder.Append(Convert(e.Modifiers, conversionFlags))
+		if ShowMemberModifiers(conversionFlags):
+			builder.Append(GetModifier(e, conversionFlags))
 		
-		if UseFullyQualifiedMemberNames:
-			AppendPangoHtmlTag (builder, e.FullyQualifiedName, 'b')
+		if UseFullyQualifiedMemberNames(conversionFlags):
+			AppendPangoHtmlTag (builder, e.FullyQualifiedName, 'b', conversionFlags)
 		else:
-			AppendPangoHtmlTag (builder, e.Name, 'b')
+			AppendPangoHtmlTag (builder, e.Name, 'b', conversionFlags)
 		
 		if e.ReturnType != null:
 			builder.Append(' as ')
-			builder.Append(Convert(e.ReturnType))
+			builder.Append(Convert(e.ReturnType, conversionFlags))
 		
 		return builder.ToString()
 	
-	override def Convert(m as IIndexer) as string:
+	override def Convert(m as IIndexer, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(m.Modifiers))
+		builder.Append(Convert(m.Modifiers, conversionFlags))
 		
-		if ShowModifiers and m.IsStatic:
-			AppendPangoHtmlTag (builder, 'static ', 'i')
+		if ShowMemberModifiers(conversionFlags) and m.IsStatic:
+			AppendPangoHtmlTag (builder, 'static ', 'i', conversionFlags)
 		
 		if m.ReturnType != null:
-			builder.Append(Convert(m.ReturnType))
+			builder.Append(Convert(m.ReturnType, conversionFlags))
 			builder.Append(' ')
 		
-		if UseFullyQualifiedMemberNames:
-			AppendPangoHtmlTag (builder, m.FullyQualifiedName, 'b')
+		if UseFullyQualifiedMemberNames(conversionFlags):
+			AppendPangoHtmlTag (builder, m.FullyQualifiedName, 'b', conversionFlags)
 		else:
-			AppendPangoHtmlTag (builder, m.Name, 'b')
+			AppendPangoHtmlTag (builder, m.Name, 'b', conversionFlags)
 
 		builder.Append('Indexer(')
 		if IncludeHTMLMarkup:
 			builder.Append('<br>')
 		
 		for i in range(m.Parameters.Count):
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('&nbsp;&nbsp;&nbsp;')
 			
-			builder.Append(Convert(m.Parameters[i]))
+			builder.Append(Convert(m.Parameters[i], conversionFlags))
 			if i + 1 < m.Parameters.Count:
 				builder.Append(', ')
 			
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('<br>')
 		
 		builder.Append(')')
 		
 		return builder.ToString()
 	
-	override def Convert(m as IMethod) as string:
+	override def Convert(m as IMethod, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
-		builder.Append(Convert(m.Modifiers))
-		if ShowModifiers:
-			builder.Append(GetModifier(m))
+		builder.Append(Convert(m.Modifiers, conversionFlags))
+		if ShowMemberModifiers(conversionFlags):
+			builder.Append(GetModifier(m, conversionFlags))
 		
 		//builder.Append('def ') if ShowReturnType
 		
 		if m.IsConstructor:
-			AppendPangoHtmlTag (builder, 'constructor', 'b')
+			AppendPangoHtmlTag (builder, 'constructor', 'b', conversionFlags)
 		else:
-			if UseFullyQualifiedMemberNames:
-				AppendPangoHtmlTag (builder, m.FullyQualifiedName, 'b')
+			if UseFullyQualifiedMemberNames(conversionFlags):
+				AppendPangoHtmlTag (builder, m.FullyQualifiedName, 'b', conversionFlags)
 			else:
-				AppendPangoHtmlTag (builder, m.Name, 'b')
+				AppendPangoHtmlTag (builder, m.Name, 'b', conversionFlags)
 		
 		builder.Append('(')
-		if IncludeHTMLMarkup:
+		if IncludeHTMLMarkup(conversionFlags):
 			builder.Append('<br>')
 		
 		for i in range(m.Parameters.Count):
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('&nbsp;&nbsp;&nbsp;')
 			
-			builder.Append(Convert(m.Parameters[i]))
+			builder.Append(Convert(m.Parameters[i], conversionFlags))
 			if i + 1 < m.Parameters.Count:
 				builder.Append(', ')
 			
-			if IncludeHTMLMarkup:
+			if IncludeHTMLMarkup(conversionFlags):
 				builder.Append('<br>')
 		
 		builder.Append(')')
@@ -335,9 +335,9 @@ class BooAmbience(AbstractAmbience):
 		//if m.ReturnType != null and ShowReturnType and not m.IsConstructor:
 		if m.ReturnType != null and not m.IsConstructor:
 			builder.Append(' as ')
-			builder.Append(Convert(m.ReturnType))
+			builder.Append(Convert(m.ReturnType, conversionFlags))
 		
-		if IncludeBodies:
+		if IncludeBodies(conversionFlags):
 			if m.DeclaringType != null:
 				if m.DeclaringType.ClassType != ClassType.Interface:
 					builder.Append(': ')
@@ -347,10 +347,10 @@ class BooAmbience(AbstractAmbience):
 		
 		return builder.ToString()
 	
-	override def ConvertEnd(m as IMethod) as string:
+	override def ConvertEnd(m as IMethod, conversionFlags as ConversionFlags) as string:
 		return ''
 	
-	override def Convert(returnType as IReturnType) as string:
+	override def Convert(returnType as IReturnType, conversionFlags as ConversionFlags) as string:
 		if returnType == null:
 			return ''
 		
@@ -371,7 +371,7 @@ class BooAmbience(AbstractAmbience):
 		if returnType.FullyQualifiedName != null and _typeConversionTable[returnType.FullyQualifiedName] != null:
 			builder.Append(_typeConversionTable[returnType.FullyQualifiedName])
 		else:
-			if UseFullyQualifiedNames:
+			if UseFullyQualifiedNames(conversionFlags):
 				builder.Append(returnType.FullyQualifiedName)
 			else:
 				builder.Append(returnType.Name)
@@ -394,27 +394,27 @@ class BooAmbience(AbstractAmbience):
 		
 		return builder.ToString()
 	
-	override def Convert(param as IParameter) as string:
+	override def Convert(param as IParameter, conversionFlags as ConversionFlags) as string:
 		builder as StringBuilder = StringBuilder()
 		
 		if param.IsRef:
-			AppendPangoHtmlTag (builder, 'ref ', 'i')
+			AppendPangoHtmlTag (builder, 'ref ', 'i', conversionFlags)
 		elif param.IsOut:
-			AppendPangoHtmlTag (builder, 'out ', 'i')
+			AppendPangoHtmlTag (builder, 'out ', 'i', conversionFlags)
 		elif param.IsParams:
-			AppendPangoHtmlTag (builder, 'params ', 'i')
+			AppendPangoHtmlTag (builder, 'params ', 'i', conversionFlags)
 		
-		if ShowParameterNames:
+		if ShowParameterNames(conversionFlags):
 			builder.Append(param.Name)
 			builder.Append(' as ')
-		builder.Append(Convert(param.ReturnType))
+		builder.Append(Convert(param.ReturnType, conversionFlags))
 		
 		return builder.ToString()
 	
-	private def AppendPangoHtmlTag (sb as StringBuilder, text as string, tag as string):
-		sb.Append ('<').Append (tag).Append ('>') if IncludeHTMLMarkup or IncludePangoMarkup
+	private def AppendPangoHtmlTag (sb as StringBuilder, text as string, tag as string, conversionFlags as ConversionFlags):
+		sb.Append ('<').Append (tag).Append ('>') if IncludeHTMLMarkup(conversionFlags) or IncludePangoMarkup(conversionFlags)
 		sb.Append (text)
-		sb.Append ('</').Append (tag).Append ('>') if IncludeHTMLMarkup or IncludePangoMarkup
+		sb.Append ('</').Append (tag).Append ('>') if IncludeHTMLMarkup(conversionFlags) or IncludePangoMarkup(conversionFlags)
 	
 	override def WrapAttribute(attribute as string) as string:
 		return '[' + attribute + ']'
