@@ -39,12 +39,59 @@ namespace MonoDevelop.Documentation
 		{
 			if (languageItem is IClass)
 				return "T:" + ((IClass)languageItem).FullyQualifiedName;
+				
+				if (languageItem is IEvent)
+				return "F:" + ((IEvent)languageItem).FullyQualifiedName;
+				
+			if (languageItem is IField)
+				return "F:" + ((IField)languageItem).FullyQualifiedName;
+				
+			if (languageItem is IIndexer) {
+				IIndexer indexer = (IIndexer)languageItem;
+				
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+				sb.Append ("P:");
+				sb.Append (indexer.DeclaringType.FullyQualifiedName);
+				sb.Append (".Item(");
+				
+				for (int i = 0; i < indexer.Parameters.Count; ++i) {
+					sb.Append (indexer.Parameters[i].ReturnType.FullyQualifiedName);
+					if (i + 1 != indexer.Parameters.Count)
+						sb.Append (",");
+				}
+				
+				sb.Append (")");
+				return sb.ToString ();
+			}
+ 			
+			if (languageItem is IMethod) {
+				IMethod m = (IMethod)languageItem;
+				
+				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			
+				if (m.IsConstructor) {
+					sb.Append ("C:");
+					sb.Append (m.DeclaringType.FullyQualifiedName);
+				}
+				else {
+					sb.Append ("M:");
+					sb.Append (m.FullyQualifiedName);
+				}				
+				
+				sb.Append ("(");
+				
+				for (int i = 0; i < m.Parameters.Count; ++i) {
+					sb.Append (m.Parameters[i].ReturnType.FullyQualifiedName);
+					if (i + 1 != m.Parameters.Count)
+						sb.Append (",");
+				}
+				
+				sb.Append (")");
+				return sb.ToString ();
+			}
 			
 			if (languageItem is IProperty)
 				return "P:" + ((IProperty)languageItem).FullyQualifiedName;
-
-			if (languageItem is IField)
-				return "F:" + ((IField)languageItem).FullyQualifiedName;
 
 			if (languageItem is Namespace)
 				return "N:" + ((Namespace)languageItem).Name;
