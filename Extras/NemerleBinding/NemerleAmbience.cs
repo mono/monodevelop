@@ -16,7 +16,7 @@ using MonoDevelop.Projects.Ambience;
 
 namespace NemerleBinding
 {
-	public class NemerleAmbience :  AbstractAmbience
+	public class NemerleAmbience :  Ambience
 	{
 		static string[,] typeConversionList = new string[,] {
 			{"System.Void",    "void"},
@@ -58,9 +58,9 @@ namespace NemerleBinding
 			return (modifier & query) == query;
 		}
 		
-		public override string Convert(ModifierEnum modifier)
+		public override string Convert(ModifierEnum modifier, ConversionFlags flags)
 		{
-			if (ShowAccessibility) {
+			if (ShowAccessibility (flags)) {
 				if (ModifierIsSet(modifier, ModifierEnum.Public)) {
 					return "public ";
 				} else if (ModifierIsSet(modifier, ModifierEnum.Private)) {
@@ -79,7 +79,7 @@ namespace NemerleBinding
 			return string.Empty;
 		}
 		
-		string GetModifier(IDecoration decoration)
+		string GetModifier(IDecoration decoration, ConversionFlags flags)
 		{	
 			string mod;
 			
@@ -90,20 +90,20 @@ namespace NemerleBinding
 			else if (decoration.IsNew)      mod = "new ";
 			else return "";
 			
-			if (IncludeHTMLMarkup | IncludePangoMarkup)
+			if (IncludeHTMLMarkup (flags) | IncludePangoMarkup (flags))
 				return "<i>" + mod + "</i>";
 			else
 				return mod;
 		}
 		
 		
-		public override string Convert(IClass c)
+		public override string Convert(IClass c, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(Convert(c.Modifiers));
 			
-			if (ShowModifiers) {
+			if (ShowClassModifiers (flags)) {
 				if (c.IsSealed) {
 					switch (c.ClassType) {
 						case ClassType.Delegate:
@@ -112,15 +112,15 @@ namespace NemerleBinding
 							break;
 						
 						default:
-							AppendPangoHtmlTag (builder, "sealed ", "i");
+							AppendPangoHtmlTag (builder, "sealed ", "i", flags);
 							break;
 					}
 				} else if (c.IsAbstract && c.ClassType != ClassType.Interface) {
-					AppendPangoHtmlTag (builder, "abstract ", "i");
+					AppendPangoHtmlTag (builder, "abstract ", "i", flags);
 				}
 			}
 			
-			if (ShowModifiers) {
+			if (ShowClassModifiers (flags)) {
 				switch (c.ClassType) {
 					case ClassType.Delegate:
 						builder.Append("delegate");
@@ -150,31 +150,31 @@ namespace NemerleBinding
 				}
 			}
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b");
+			if (UseFullyQualifiedMemberNames (flags))
+				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b", flags);
 			else
-				AppendPangoHtmlTag (builder, c.Name, "b");
+				AppendPangoHtmlTag (builder, c.Name, "b", flags);
 			
 			
 			if (c.ClassType == ClassType.Delegate) {
 				builder.Append(" (");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 				
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
 					for (int i = 0; i < m.Parameters.Count; ++i) {
-						if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+						if (IncludeHTMLMarkup (flags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 						
 						builder.Append(Convert(m.Parameters[i]));
 						if (i + 1 < m.Parameters.Count) builder.Append(", ");
 						
-						if (IncludeHTMLMarkup) builder.Append("<br>");
+						if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 					}
 				}
 				builder.Append(')');
 				
-			} else if (ShowInheritanceList && c.ClassType != ClassType.Enum) {
+			} else if (ShowInheritanceList (flags) && c.ClassType != ClassType.Enum) {
 				if (c.BaseTypes.Count > 0) {
 					builder.Append(" : ");
 					for (int i = 0; i < c.BaseTypes.Count; ++i) {
@@ -186,64 +186,64 @@ namespace NemerleBinding
 				}
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBodies (flags)) {
 				builder.Append("\n{");
 			}
 			
 			return builder.ToString();		
 		}
 		
-		public override string ConvertEnd(IClass c)
+		public override string ConvertEnd(IClass c, ConversionFlags flags)
 		{
 			return "}";
 		}
 		
-		public override string Convert(IField field)
+		public override string Convert(IField field, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(Convert(field.Modifiers));
 			
-			if (ShowModifiers) {
+			if (ShowMemberModifiers (flags)) {
 				if (field.IsStatic && field.IsLiteral)
-					AppendPangoHtmlTag (builder, "const ", "i");
+					AppendPangoHtmlTag (builder, "const ", "i", flags);
 				else if (field.IsStatic)
-					AppendPangoHtmlTag (builder, "static ", "i");
+					AppendPangoHtmlTag (builder, "static ", "i", flags);
 				
 				if (!field.IsReadonly) {
-					AppendPangoHtmlTag (builder, "mutable ", "i");
+					AppendPangoHtmlTag (builder, "mutable ", "i", flags);
 				}
 			}
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, field.FullyQualifiedName, "b");
+			if (UseFullyQualifiedMemberNames (flags))
+				AppendPangoHtmlTag (builder, field.FullyQualifiedName, "b", flags);
 			else
-				AppendPangoHtmlTag (builder, field.Name, "b");
+				AppendPangoHtmlTag (builder, field.Name, "b", flags);
 				
 		    if (field.ReturnType != null) {
 				builder.Append(" : " + Convert(field.ReturnType));
 				builder.Append(' ');
 			}
 			
-			if (IncludeBodies) builder.Append(";");
+			if (IncludeBodies (flags)) builder.Append(";");
 			
 			return builder.ToString();			
 		}
 		
-		public override string Convert(IProperty property)
+		public override string Convert(IProperty property, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(Convert(property.Modifiers));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(property));
+			if (ShowMemberModifiers (flags)) {
+				builder.Append(GetModifier(property, flags));
 			}
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, property.FullyQualifiedName, "b");
+			if (UseFullyQualifiedMemberNames (flags))
+				AppendPangoHtmlTag (builder, property.FullyQualifiedName, "b", flags);
 			else
-				AppendPangoHtmlTag (builder, property.Name, "b");
+				AppendPangoHtmlTag (builder, property.Name, "b", flags);
 				
 		    if (property.ReturnType != null) {
 				builder.Append(" : " + Convert(property.ReturnType));
@@ -252,15 +252,15 @@ namespace NemerleBinding
 			
 			if (property.Parameters.Count > 0) {
 				builder.Append(" (");
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 			
 				for (int i = 0; i < property.Parameters.Count; ++i) {
-					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+					if (IncludeHTMLMarkup (flags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(property.Parameters[i]));
 					if (i + 1 < property.Parameters.Count) {
 						builder.Append(", ");
 					}
-					if (IncludeHTMLMarkup) builder.Append("<br>");
+					if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 				}
 				
 				builder.Append(')');
@@ -280,54 +280,54 @@ namespace NemerleBinding
 			return builder.ToString();
 		}
 		
-		public override string Convert(IEvent e)
+		public override string Convert(IEvent e, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
 			builder.Append(Convert(e.Modifiers));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(e));
+			if (ShowMemberModifiers (flags)) {
+				builder.Append(GetModifier(e, flags));
 			}
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, e.FullyQualifiedName, "b");
+			if (UseFullyQualifiedMemberNames (flags))
+				AppendPangoHtmlTag (builder, e.FullyQualifiedName, "b", flags);
 			else
-				AppendPangoHtmlTag (builder, e.Name, "b");
+				AppendPangoHtmlTag (builder, e.Name, "b", flags);
 							
 			if (e.ReturnType != null) {
 				builder.Append(" : " + Convert(e.ReturnType));
 				builder.Append(' ');
 			}
 			
-			if (IncludeBodies) builder.Append(";");
+			if (IncludeBodies (flags)) builder.Append(";");
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(IIndexer m)
+		public override string Convert(IIndexer m, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.Append(Convert(m.Modifiers));
 			
-			if (ShowModifiers && m.IsStatic)
-				AppendPangoHtmlTag (builder, "static", "i");
+			if (ShowMemberModifiers (flags) && m.IsStatic)
+				AppendPangoHtmlTag (builder, "static", "i", flags);
 			
-			if (UseFullyQualifiedMemberNames)
-				AppendPangoHtmlTag (builder, m.FullyQualifiedName, "b");
+			if (UseFullyQualifiedMemberNames (flags))
+				AppendPangoHtmlTag (builder, m.FullyQualifiedName, "b", flags);
 			else
-				AppendPangoHtmlTag (builder, m.Name, "b");
+				AppendPangoHtmlTag (builder, m.Name, "b", flags);
 			
 			builder.Append(" [");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
+			if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 
 			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+				if (IncludeHTMLMarkup (flags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 				builder.Append(Convert(m.Parameters[i]));
 				if (i + 1 < m.Parameters.Count) {
 					builder.Append(", ");
 				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 			}
 			
 			builder.Append(']');
@@ -337,39 +337,39 @@ namespace NemerleBinding
 				builder.Append(' ');
 			}
 			
-			if (IncludeBodies) builder.Append(";");
+			if (IncludeBodies (flags)) builder.Append(";");
 			
 			return builder.ToString();
 		}
 		
-		public override string Convert(IMethod m)
+		public override string Convert(IMethod m, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.Append(Convert(m.Modifiers));
 			
-			if (ShowModifiers) {
-				builder.Append(GetModifier(m));
+			if (ShowMemberModifiers (flags)) {
+				builder.Append(GetModifier(m, flags));
 			}
 			
 			if (m.IsConstructor) {
-				AppendPangoHtmlTag (builder, "this", "b");
+				AppendPangoHtmlTag (builder, "this", "b", flags);
 			} else {
-				if (UseFullyQualifiedMemberNames)
-					AppendPangoHtmlTag (builder, m.FullyQualifiedName, "b");
+				if (UseFullyQualifiedMemberNames (flags))
+					AppendPangoHtmlTag (builder, m.FullyQualifiedName, "b", flags);
 				else
-					AppendPangoHtmlTag (builder, m.Name, "b");
+					AppendPangoHtmlTag (builder, m.Name, "b", flags);
 			}
 			
 			builder.Append(" (");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
+			if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 			
 			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
+				if (IncludeHTMLMarkup (flags)) builder.Append("&nbsp;&nbsp;&nbsp;");
 				builder.Append(Convert(m.Parameters[i]));
 				if (i + 1 < m.Parameters.Count) {
 					builder.Append(", ");
 				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
+				if (IncludeHTMLMarkup (flags)) builder.Append("<br>");
 			}
 			
 			builder.Append(')');
@@ -379,7 +379,7 @@ namespace NemerleBinding
 				builder.Append(' ');
 			}
 			
-			if (IncludeBodies) {
+			if (IncludeBodies (flags)) {
 				if (m.DeclaringType != null) {
 					if (m.DeclaringType.ClassType == ClassType.Interface) {
 						builder.Append(";");
@@ -394,12 +394,12 @@ namespace NemerleBinding
 			return builder.ToString();
 		}
 		
-		public override string ConvertEnd(IMethod m)
+		public override string ConvertEnd(IMethod m, ConversionFlags flags)
 		{
 			return "}";
 		}
 		
-		public override string Convert(IReturnType returnType)
+		public override string Convert(IReturnType returnType, ConversionFlags flags)
 		{
 			if (returnType == null) {
 				return String.Empty;
@@ -408,7 +408,7 @@ namespace NemerleBinding
 			
 			bool linkSet = false;
 			
-			if (UseLinkArrayList) {
+			//if (UseLinkArrayList) {
 				//SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
 				//if (ret != null) {
 				//	if (ret.UnderlyingClass != null) {
@@ -416,12 +416,12 @@ namespace NemerleBinding
 				//		linkSet = true;
 				//	}
 				//}
-			}
+			//}
 			
 			if (typeConversionTable[returnType.FullyQualifiedName] != null) {
 				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
 			} else {
-				if (UseFullyQualifiedNames) {
+				if (UseFullyQualifiedNames (flags)) {
 					builder.Append(returnType.FullyQualifiedName);
 				} else {
 					builder.Append(returnType.Name);
@@ -442,18 +442,18 @@ namespace NemerleBinding
 			    return builder.ToString ();
 		}
 		
-		public override string Convert(IParameter param)
+		public override string Convert(IParameter param, ConversionFlags flags)
 		{
 			StringBuilder builder = new StringBuilder();
 			
 			if (param.IsRef)
-				AppendPangoHtmlTag (builder, "ref ", "i");
+				AppendPangoHtmlTag (builder, "ref ", "i", flags);
 			else if (param.IsOut)
-				AppendPangoHtmlTag (builder, "out ", "i");
+				AppendPangoHtmlTag (builder, "out ", "i", flags);
 			else if (param.IsParams)
-				AppendPangoHtmlTag (builder, "params ", "i");
+				AppendPangoHtmlTag (builder, "params ", "i", flags);
 			
-			if (ShowParameterNames) {
+			if (ShowParameterNames (flags)) {
 				builder.Append(param.Name);
 			}
 			
@@ -466,13 +466,13 @@ namespace NemerleBinding
 		// <i>static </i>bool <b>Equals</b> (<i></i>object a, <i></i>object b)
 		// it will make "object a" italics. so rather tan appending a markup
 		// tag if there might be a modifier, we only do it if there is.
-		void AppendPangoHtmlTag (StringBuilder sb, string str, string tag)
+		void AppendPangoHtmlTag (StringBuilder sb, string str, string tag, ConversionFlags flags)
 		{
-			if (IncludeHTMLMarkup | IncludePangoMarkup) sb.Append ('<').Append (tag).Append ('>');
+			if (IncludeHTMLMarkup (flags) | IncludePangoMarkup (flags)) sb.Append ('<').Append (tag).Append ('>');
 			
 			sb.Append (str);
 			
-			if (IncludeHTMLMarkup | IncludePangoMarkup) sb.Append ("</").Append (tag).Append ('>');
+			if (IncludeHTMLMarkup (flags) | IncludePangoMarkup (flags)) sb.Append ("</").Append (tag).Append ('>');
 		}
 		
 		public override string WrapAttribute(string attribute)
