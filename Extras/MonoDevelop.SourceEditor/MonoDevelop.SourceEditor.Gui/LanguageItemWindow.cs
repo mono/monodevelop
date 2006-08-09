@@ -16,25 +16,17 @@ namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: Gtk.Window
 	{
+		static ConversionFlags WindowConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup;
+		
+		static Ambience ambience = MonoDevelop.Projects.Services.Ambience.GenericAmbience;
+		
 		public LanguageItemWindow (ILanguageItem item, IParserContext ctx) : base (WindowType.Popup)
 		{
 			string s;
 			
-			if (item is IMethod)
-				s = PangoAmbience.Convert ((IMethod)item);
-			else if (item is IField)
-				s = PangoAmbience.Convert ((IField)item);
-			else if (item is IProperty)
-				s = PangoAmbience.Convert ((IProperty)item);
-			else if (item is IIndexer)
-				s = PangoAmbience.Convert ((IIndexer)item);
-			else if (item is IClass)
-				s = PangoAmbience.Convert ((IClass)item);
-			else if (item is IEvent)
-				s = PangoAmbience.Convert ((IEvent)item);
-			else if (item is IParameter) {
+			if (item is IParameter) {
 				s = "<small><i>" + GettextCatalog.GetString ("Parameter") + "</i></small>\n";
-				s += PangoAmbience.Convert ((IParameter)item);
+				s += ambience.Convert ((IParameter)item, WindowConversionFlags);
 			}
 			else if (item is LocalVariable) {
 				LocalVariable var = (LocalVariable) item;
@@ -42,7 +34,7 @@ namespace MonoDevelop.SourceEditor
 			} else if (item is Namespace)
 				s = item.Name;
 			else
-				s = item.Name;
+				s = ambience.Convert (item, WindowConversionFlags);
 
 			string doc = GetDocumentation (item.Documentation).Trim ('\n');
 			if (doc.Length > 0)
@@ -62,16 +54,6 @@ namespace MonoDevelop.SourceEditor
 			Gtk.Requisition req = SizeRequest ();
 			Gtk.Style.PaintFlatBox (this.Style, this.GdkWindow, Gtk.StateType.Normal, Gtk.ShadowType.Out, Gdk.Rectangle.Zero, this, "tooltip", 0, 0, req.Width, req.Height);
 			return true;
-		}
-		
-		static IAmbience PangoAmbience
-		{
-			get {
-				IAmbience asvc = MonoDevelop.Projects.Services.Ambience.CurrentAmbience;
-				asvc.ConversionFlags |= ConversionFlags.IncludePangoMarkup;
-				asvc.ConversionFlags &= ~ConversionFlags.ShowInheritanceList;
-				return asvc;
-			}
 		}
 		
 		public static string GetDocumentation (string doc)

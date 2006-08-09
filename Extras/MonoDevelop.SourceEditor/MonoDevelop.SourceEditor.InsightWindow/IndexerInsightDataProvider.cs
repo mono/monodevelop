@@ -24,7 +24,7 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 {
 	public class IndexerInsightDataProvider : IInsightDataProvider
 	{
-		AmbienceService          ambienceService = (AmbienceService)ServiceManager.GetService(typeof(AmbienceService));
+		Ambience			ambience = null;
 		
 		string              fileName = null;
 		SourceEditorView    textArea;
@@ -39,9 +39,9 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 		public string GetInsightData(int number)
 		{
 			IIndexer method = methods[number];
-			IAmbience conv = ambienceService.CurrentAmbience;
-			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			return conv.Convert(method);// + 
+			return ambience.Convert(method);
+			//IAmbience conv = ambienceService.GenericAmbience;
+			//return conv.Convert(method);// + 
 			       //"\n" + 
 			       //CodeCompletionData.GetDocumentation(method.Documentation); // new (by G.B.)
 		}
@@ -62,10 +62,13 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 			int caretColumn          = initialIter.LineOffset + 1;
 			
 			IParserContext parserContext;
-			if (project != null)
+			if (project != null) {
 				parserContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			else
+				ambience = project.Ambience;
+			} else {
 				parserContext = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (fileName);
+				ambience = MonoDevelop.Projects.Services.Ambience.GenericAmbience;
+			}
 			
 			ResolveResult results = parserContext.Resolve (methodObject, caretLineNumber, caretColumn, fileName, textArea.Buffer.Text);
 			
