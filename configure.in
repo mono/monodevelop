@@ -186,6 +186,12 @@ AC_ARG_ENABLE(versioncontrol,
 
 AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
 
+AC_ARG_ENABLE(monoquery,
+	AC_HELP_STRING([--enable-monoquery],
+		[enable MonoQuery support [default=yes]]),
+		enable_monoquery=${enableval}, enable_monoquery=yes)
+
+AM_CONDITIONAL(ENABLE_MONOQUERY, test x$enable_monoquery = xyes)
 
 dnl ASP.NET project addin
 XSP_VERSION=0.1
@@ -321,12 +327,17 @@ echo ""
 echo "   * Installation prefix = $prefix"
 echo "   * C# compiler = $CSC"
 echo "   * mono-debugger: $enable_debugger"
-echo "   * MonoQuery Providers:"
-echo "   *   PostgreSQL:   yes"
-echo "   *   MySQL:        yes"
-echo "   *   SQLite:       yes"
-echo "   *   Oracle:       yes"
-echo "   *   SQL Server:   yes"
+echo "   * MonoQuery support: $enable_monoquery"
+
+if test "x$enable_monoquery" = "xyes"; then
+echo "   *   Providers:"
+echo "   *     PostgreSQL:   yes"
+echo "   *     MySQL:        yes"
+echo "   *     SQLite:       yes"
+echo "   *     Oracle:       yes"
+echo "   *     SQL Server:   yes"
+fi
+
 echo "   * java support: $enable_java"
 echo "   * boo support: $enable_boo"
 echo "   * Nemerle support: $enable_nemerle"

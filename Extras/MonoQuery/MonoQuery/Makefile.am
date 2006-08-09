@@ -78,7 +78,11 @@ REFS =	-r:System \
 	$(GLADE_SHARP_LIBS) \
 	$(GTKSOURCEVIEW_SHARP_LIBS)
 
+if ENABLE_MONOQUERY
 all: $(ADDIN_BUILD)/$(ADDIN) $(ASSEMBLY)
+else
+all:
+endif
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
@@ -93,7 +97,9 @@ CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
 
+if ENABLE_MONOQUERY
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
 monoquery_DATA = $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+endif
 
 include $(top_srcdir)/Makefile.include

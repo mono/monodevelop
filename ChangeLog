@@ -1,3 +1,7 @@
+2006-08-08  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* configure.in: Added support for enabling/disabling MonoQuery.
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Added MonoDevelop.Projects.dll.config to the

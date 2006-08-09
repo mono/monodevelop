@@ -48,7 +48,11 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 
 ASSEMBLY = $(ADDIN_BUILD)/Mono.Data.Sql.dll
 
+if ENABLE_MONOQUERY
 all: $(ASSEMBLY)
+else
+all:
+endif
 
 $(ASSEMBLY): $(FILES)
 	mkdir -p $(ADDIN_BUILD)
@@ -58,7 +62,9 @@ CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 EXTRA_DIST = $(FILES)
 
+if ENABLE_MONOQUERY
 monoquerydir = $(MD_ADDIN_DIR)/MonoQuery
 monoquery_DATA = $(ASSEMBLY)
+endif
 
 include $(top_srcdir)/Makefile.include

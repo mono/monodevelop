@@ -1,3 +1,9 @@
+2006-08-08  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* Mono.Data.Sql/Makefile.am:
+	* MonoQuery/Makefile.am:
+	Added support for enabling/disabling MonoQuery.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoQuery/MonoQuery.addin.xml: Updated references.
