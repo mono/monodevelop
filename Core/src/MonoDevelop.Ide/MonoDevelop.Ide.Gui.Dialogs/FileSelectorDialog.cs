@@ -193,7 +193,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (ExtraWidget == null || this.Action != Gtk.FileChooserAction.Open)
 				return;
 			
-			if (Filename != null && Filename.Length > 0 && !MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (Filename)) {
+			if (Filename != null && Filename.Length > 0 && 
+			    !MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (Filename) &&
+			    !System.IO.Directory.Exists (Filename))
+			{
 				ExtraWidget.Sensitive = true;
 			} else
 				ExtraWidget.Sensitive = false;
