@@ -80,6 +80,17 @@ namespace MonoDevelop.Projects.Ambience
 			return amb;
 		}
 		
+		public Ambience GetAmbienceForFile (string fileName)
+		{
+			ILanguageBinding lang = Services.Languages.GetBindingPerFileName (fileName);
+			if (lang != null) {
+				Ambience a = AmbienceFromName (lang.Language);
+				if (a != null)
+					return a;
+			}
+			return GenericAmbience;
+		}
+		
 		public Ambience CurrentAmbience {
 			get {
 				string language = Runtime.Properties.GetProperty(ambienceProperty, ".NET");
