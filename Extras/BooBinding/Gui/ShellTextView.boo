@@ -73,6 +73,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	private _fakeFileName as string
 	private _fileInfo as FileStream
 	private _parserContext as IParserContext;
+	private _ambience as BooBinding.BooAmbience
 	
 	def constructor(model as IShellModel):
 		_parserService = IdeApp.ProjectOperations.ParserDatabase
@@ -106,6 +107,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 
 		_parserService.Load(_fakeProject)
 		_parserContext = _parserService.GetProjectParserContext (_fakeProject)
+		_ambience = BooBinding.BooAmbience ()
 
 		Model.Properties.InternalProperties.PropertyChanged += OnPropertyChanged
 		Model.RegisterOutputHandler (HandleOutput)
@@ -336,7 +338,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		elif ev.Key == Gdk.Key.period:
 			ret = super.OnKeyPressEvent(ev)
 			prepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark))
-			CompletionListWindow.ShowWindow(char('.'), CodeCompletionDataProvider (_parserContext, _fakeFileName, true), self)
+			CompletionListWindow.ShowWindow(char('.'), CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
 			return ret
 
 		// Short circuit to avoid getting moved back to the input line
@@ -379,7 +381,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		triggerIter.ForwardChar ()
 		
 		prepareCompletionDetails (triggerIter)
-		CompletionListWindow.ShowWindow (triggerChar, CodeCompletionDataProvider (_parserContext, _fakeFileName, true), self)
+		CompletionListWindow.ShowWindow (triggerChar, CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
 
 	// Mark to find the beginning of our next input line
 	private _endOfLastProcessing as TextMark
