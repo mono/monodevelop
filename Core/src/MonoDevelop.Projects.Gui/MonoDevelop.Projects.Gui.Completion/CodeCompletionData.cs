@@ -16,6 +16,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Ambience;
+using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -30,8 +31,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		bool convertedDocumentation = false;
 		
-		static MonoDevelop.Projects.Ambience.Ambience ambience = Services.Ambience.GenericAmbience;
-
 		public string CompletionString 
 		{
 			get 
@@ -137,7 +136,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.image = image;
 		}
 		
-		public CodeCompletionData (IClass c)
+		public CodeCompletionData (IClass c, Ambience_ ambience)
 		{
 			image = Services.Icons.GetIcon(c);
 			text = c.Name;
@@ -147,7 +146,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = c.Documentation;
 		}
 		
-		public CodeCompletionData (IMethod method)
+		public CodeCompletionData (IMethod method, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(method);
 			text        = method.Name;
@@ -157,7 +156,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = method.Documentation;
 		}
 		
-		public CodeCompletionData (IField field)
+		public CodeCompletionData (IField field, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(field);
 			text        = field.Name;
@@ -167,7 +166,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = field.Documentation;
 		}
 		
-		public CodeCompletionData (IProperty property)
+		public CodeCompletionData (IProperty property, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(property);
 			text        = property.Name;
@@ -177,7 +176,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = property.Documentation;
 		}
 		
-		public CodeCompletionData (IEvent e)
+		public CodeCompletionData (IEvent e, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(e);
 			text        = e.Name;
@@ -187,7 +186,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = e.Documentation;
 		}
 
-		public CodeCompletionData (IParameter o)
+		public CodeCompletionData (IParameter o, Ambience_ ambience)
 		{
 			image = MonoDevelop.Core.Gui.Stock.Field;
 			text  = o.Name;

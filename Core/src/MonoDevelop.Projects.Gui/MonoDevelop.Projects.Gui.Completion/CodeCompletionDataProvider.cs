@@ -17,6 +17,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects;
+using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 using Stock = MonoDevelop.Core.Gui.Stock;
 
@@ -35,6 +36,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		Hashtable insertedPropertiesElements = new Hashtable();
 		Hashtable insertedEventElements      = new Hashtable();
 		
+		Ambience_ ambience;
 		int caretLineNumber;
 		int caretColumn;
 		bool ctrlspace;
@@ -45,15 +47,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		ArrayList completionData = null;
 		
-		public CodeCompletionDataProvider (IParserContext parserContext, string fileName) : this (parserContext, fileName, false)
+		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience, string fileName) : this (parserContext, ambience, fileName, false)
 		{
 		}
 			
-		public CodeCompletionDataProvider (IParserContext parserContext, string fileName, bool ctrl) 
+		public CodeCompletionDataProvider (IParserContext parserContext, Ambience_ ambience, string fileName, bool ctrl) 
 		{
 			this.fileName = fileName;
 			this.parserContext = parserContext;
 			this.ctrlspace = ctrl;
+			this.ambience = ambience;
 			
 			onStartedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
 			onFinishedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
@@ -124,20 +127,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else if (o is IClass) {
 					IClass iclass = (IClass) o;
 					if (iclass.Name != null && insertedClasses[iclass.Name] == null) {
-						completionData.Add(new CodeCompletionData(iclass));
+						completionData.Add(new CodeCompletionData(iclass, ambience));
 						insertedClasses[iclass.Name] = iclass;
 					}
 				} else if (o is IProperty) {
 					IProperty property = (IProperty)o;
 					if (property.Name != null && insertedPropertiesElements[property.Name] == null) {
-						completionData.Add(new CodeCompletionData(property));
+						completionData.Add(new CodeCompletionData(property, ambience));
 						insertedPropertiesElements[property.Name] = property;
 					}
 				} else if (o is IMethod) {
 					IMethod method = (IMethod)o;
 					
 					if (method.Name != null &&!method.IsConstructor) {
-						CodeCompletionData ccd = new CodeCompletionData(method);
+						CodeCompletionData ccd = new CodeCompletionData(method, ambience);
 						if (insertedElements[method.Name] == null) {
 							completionData.Add(ccd);
 							insertedElements[method.Name] = ccd;
@@ -148,15 +151,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 						}
 					}
 				} else if (o is IField) {
-					completionData.Add(new CodeCompletionData((IField)o));
+					completionData.Add(new CodeCompletionData((IField)o, ambience));
 				} else if (o is IEvent) {
 					IEvent e = (IEvent)o;
 					if (e.Name != null && insertedEventElements[e.Name] == null) {
-						completionData.Add(new CodeCompletionData(e));
+						completionData.Add(new CodeCompletionData(e, ambience));
 						insertedEventElements[e.Name] = e;
 					}
 				} else if (o is IParameter) {
-					completionData.Add (new CodeCompletionData((IParameter)o));
+					completionData.Add (new CodeCompletionData((IParameter)o, ambience));
 				}
 			}
 		}
