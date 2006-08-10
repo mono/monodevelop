@@ -64,6 +64,10 @@ namespace MonoDevelop.Ide.Gui
 		bool IsViewOnly {
 			get;
 		}
+
+		string StockIconId {
+			get;
+		}
 		
 		/// <summary>
 		/// Saves this content to the last load/save location.

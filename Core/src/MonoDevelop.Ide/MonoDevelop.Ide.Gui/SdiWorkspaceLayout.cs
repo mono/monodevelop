@@ -593,12 +593,16 @@ namespace MonoDevelop.Ide.Gui
 		public IWorkbenchWindow ShowView(IViewContent content)
 		{	
 			Gtk.Image mimeimage = null;
-			if (content.IsUntitled && content.UntitledName == null) {
+			
+			if (content.StockIconId != null ) {
+				mimeimage = new Gtk.Image ( content.StockIconId, IconSize.Menu );
+			}
+			else if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForType ("gnome-fs-regular", 16));
 			} else {
 				mimeimage = new Gtk.Image (FileIconLoader.GetPixbufForFile (content.ContentName, 16));
-			}
-			
+			}			
+
 			TabLabel tabLabel = new TabLabel (new Label (), mimeimage != null ? mimeimage : new Gtk.Image (""));
 			tabLabel.Button.Clicked += new EventHandler (closeClicked);
 			tabLabel.Button.StateChanged += new StateChangedHandler (stateChanged);
