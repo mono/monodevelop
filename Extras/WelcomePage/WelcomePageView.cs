@@ -57,6 +57,12 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 		
+		public override string StockIconId {
+			get {
+				return Gtk.Stock.Home;
+			}
+		}
+		
 		public override void Load(string fileName) 
 		{
 			//Initialize(null);
