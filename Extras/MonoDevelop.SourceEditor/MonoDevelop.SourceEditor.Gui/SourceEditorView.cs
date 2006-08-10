@@ -136,7 +136,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 				HideLanguageItemWindow ();
 
-				languageItemWindow = new LanguageItemWindow (tipItem, GetParserContext ());
+				languageItemWindow = new LanguageItemWindow (tipItem, GetParserContext (), GetAmbience ());
 				
 				int ox, oy;
 				this.GetWindow (TextWindowType.Text).GetOrigin (out ox, out oy);
@@ -355,6 +355,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			else
 				return pdb.GetFileParserContext (file);
 		}
+		
+		MonoDevelop.Projects.Ambience.Ambience GetAmbience ()
+		{
+			Project project = ParentEditor.DisplayBinding.Project;
+			if (project != null)
+				return project.Ambience;
+			else {
+				string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
+				return MonoDevelop.Projects.Services.Ambience.GetAmbienceForFile (file);
+			}
+		}
 
 		CodeCompletionDataProvider GetCodeCompletionDataProvider (bool ctrl)
 		{
@@ -362,7 +373,7 @@ namespace MonoDevelop.SourceEditor.Gui
 				currentCompletionProvider.Dispose ();
 			IParserContext ctx = GetParserContext ();
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
-			currentCompletionProvider = new CodeCompletionDataProvider (ctx, file, ctrl);
+			currentCompletionProvider = new CodeCompletionDataProvider (ctx, GetAmbience (), file, ctrl);
 			return currentCompletionProvider;
 		}
 			

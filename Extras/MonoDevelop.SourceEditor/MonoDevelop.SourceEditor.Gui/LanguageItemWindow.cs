@@ -18,9 +18,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static ConversionFlags WindowConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup;
 		
-		static Ambience ambience = MonoDevelop.Projects.Services.Ambience.GenericAmbience;
-		
-		public LanguageItemWindow (ILanguageItem item, IParserContext ctx) : base (WindowType.Popup)
+		public LanguageItemWindow (ILanguageItem item, IParserContext ctx, Ambience ambience) : base (WindowType.Popup)
 		{
 			string s;
 			
