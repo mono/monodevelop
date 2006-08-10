@@ -133,7 +133,7 @@ namespace Freedesktop.RecentFiles
 			ArrayList list = new ArrayList ();
 			foreach (RecentItem ri in RecentItems)
 			{
-				if (Array.IndexOf (ri.Groups, group) == -1)
+				if ( ri.Groups == null || Array.IndexOf (ri.Groups, group) == -1)
 				{
 					list.Add (ri);
 				}
