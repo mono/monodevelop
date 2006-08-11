@@ -175,19 +175,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					list.Add (cls.FullyQualifiedName);
 		
 			// Ask what to do
-			
-			using (BindDesignDialog dialog = new BindDesignDialog (Name, list, Project.Project.BaseDirectory)) {
-				if (!dialog.Run ())
-					return false;
-				
-				if (dialog.CreateNew)
-					CreateClass (dialog.ClassName, dialog.Namespace, dialog.Folder);
 
-				string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
-				rootWidget.Wrapped.Name = fullName;
-				Save ();
+			try {
+				using (BindDesignDialog dialog = new BindDesignDialog (Name, list, Project.Project.BaseDirectory)) {
+					if (!dialog.Run ())
+						return false;
+					
+					if (dialog.CreateNew)
+						CreateClass (dialog.ClassName, dialog.Namespace, dialog.Folder);
+
+					string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
+					rootWidget.Wrapped.Name = fullName;
+					Save ();
+				}
+				return true;
+			} catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex);
+				return false;
 			}
-			return true;
 		}
 		
 		void CreateClass (string name, string namspace, string folder)
@@ -210,7 +215,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (prop.PropertyType.IsValueType)
 					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (Activator.CreateInstance (prop.PropertyType)));
 				else
-					ctor.BaseConstructorArgs.Add (null);
+					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (null));
 			}
 			
 			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
