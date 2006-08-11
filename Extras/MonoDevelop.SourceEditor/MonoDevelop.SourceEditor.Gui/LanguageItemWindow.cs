@@ -30,7 +30,7 @@ namespace MonoDevelop.SourceEditor
 				LocalVariable var = (LocalVariable) item;
 				s = "<small><i>" + GettextCatalog.GetString ("Local variable") + "</i></small>\n" + var.ReturnType.FullyQualifiedName + " " + var.Name;
 			} else if (item is Namespace)
-				s = item.Name;
+				s = "namespace " + "<b>" + item.Name + "</b>";
 			else
 				s = ambience.Convert (item, WindowConversionFlags);
 
