@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Text;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Autotools
@@ -64,7 +65,115 @@ namespace MonoDevelop.Autotools
 				Project project = entry as Project;
 				TemplateEngine templateEngine = new TemplateEngine();			
 				ISimpleAutotoolsSetup setup = FindSetupForProject ( project );
+		
+				bool pkgconfig = NeedsPCFile ( project );
 				
+				// store all refs for easy access
+				Set pkgs = new Set();
+				Set dlls = new Set();
+				
+				// strings for variables
+				StringWriter references = new StringWriter();
+				StringBuilder copy_dlls = new StringBuilder ();
+				StringWriter dllReferences = new StringWriter();
+				
+				// grab pkg-config references
+				foreach (ProjectReference reference in project.ProjectReferences) 
+				{
+					if (reference.ReferenceType == ReferenceType.Gac) 
+					{
+						// Get pkg-config keys
+						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
+						if (pkg != null && !pkg.IsCorePackage) 
+						{
+							if ( pkgs.Contains(pkg) ) continue;
+							pkgs.Add(pkg);
+
+							references.WriteLine (" \\");
+							references.Write ("\t$(");
+							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg.Name));
+							references.Write ("_LIBS)");
+							ctx.AddRequiredPackage (pkg.Name);
+						} 
+						else 
+						{
+							references.WriteLine (" \\");
+							references.Write ("\t-r:");
+							AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
+							references.Write (assembly.Name);
+							references.Write ("");
+						}
+					} 
+					else if (reference.ReferenceType == ReferenceType.Assembly) 
+					{
+						string assemblyPath = Path.GetFullPath (reference.Reference);
+						string libdll_path = ctx.AddReferencedDll ( assemblyPath );
+
+						string newPath = "$(BUILD_DIR)/" + Path.GetFileName ( assemblyPath );
+						copy_dlls.AppendFormat ( "	cp -f {0} {1}\n", 
+								project.GetRelativeChildPath (libdll_path), newPath );
+
+						dlls.Add ( Path.GetFileName (assemblyPath) );
+						
+						dllReferences.WriteLine (" \\");
+						dllReferences.Write ("\t");
+						dllReferences.Write ( newPath );
+					} 
+					else if (reference.ReferenceType == ReferenceType.Project) continue; // handled elsewhere
+					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not support yet", 
+								reference.ReferenceType.ToString() ) );
+				}
+				templateEngine.Variables["REFERENCES"] = references.ToString();
+				templateEngine.Variables["COPY_DLLS"] = copy_dlls.ToString();
+				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
+				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
+
+				// grab all project files
+				StringBuilder files = new StringBuilder ();
+				StringBuilder res_files = new StringBuilder ();
+				StringBuilder extras = new StringBuilder ();
+				StringBuilder datafiles = new StringBuilder ();
+				foreach (ProjectFile projectFile in project.ProjectFiles) 
+				{
+					switch ( projectFile.BuildAction )
+					{
+						case BuildAction.Compile:
+							
+							if ( projectFile.Subtype != Subtype.Code ) continue;
+							files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
+
+						case BuildAction.Nothing:
+							
+							extras.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
+
+						case BuildAction.EmbedAsResource:
+
+							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
+							{
+								// file is not within directory hierarchy, copy it in
+								string rdir = Path.GetDirectoryName (project.FileName) + "/" + resourcedir;
+								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
+								string newPath = rdir + "/" + Path.GetFileName ( projectFile.FilePath );
+								File.Copy ( projectFile.FilePath, newPath, true ) ;
+								res_files.AppendFormat ( "\\\n\t{0} ", project.GetRelativeChildPath ( newPath ) );
+							}
+							else res_files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							break;
+							
+						case BuildAction.FileCopy:
+						
+							datafiles.AppendFormat ("\\\n\t{0} ", projectFile.RelativePath);
+							break;
+					}
+				}
+				templateEngine.Variables["FILES"] = files.ToString();
+				templateEngine.Variables["RESOURCES"] = res_files.ToString();
+				templateEngine.Variables["EXTRAS"] = extras.ToString();
+				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
+				
+				// handle configuration specific variables
 				Set wrapped_exes = new Set ();
 				StringBuilder conf_vars = new StringBuilder ();
 				foreach ( DotNetProjectConfiguration config in project.Configurations )
@@ -122,6 +231,10 @@ namespace MonoDevelop.Autotools
 						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER = {0}\n", wrapper );
 						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER_IN = {0}.in\n", wrapper );
 					}
+					else if ( pkgconfig && config.CompileTarget == CompileTarget.Library )
+					{
+						conf_vars.AppendFormat ( "PC_FILES_IN = {0}.pc.in\n", GetUniqueName ( project ) );
+					}
 
 					// for project references, we need a ref to the dll for the current configuration
 					StringWriter projectReferences = new StringWriter();
@@ -129,18 +242,12 @@ namespace MonoDevelop.Autotools
 					{
 						if (reference.ReferenceType == ReferenceType.Project) 
 						{
-							Project refp = null;
-							Combine c = project.RootCombine;
-
-							if (c != null) refp = c.FindProject (reference.Reference);
-
-							if (refp == null)
-								throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
-											reference.Reference ) );
+							Project refp = GetProjectFromName ( reference.Reference, project );
 
 							DotNetProjectConfiguration dnpc = refp.Configurations[config.Name] as DotNetProjectConfiguration;
 							if ( dnpc == null )
-								throw new Exception ( GettextCatalog.GetString ("Could not add reference to project '{0}'", refp.Name) );
+								throw new Exception ( GettextCatalog.GetString 
+										("Could not add reference to project '{0}'", refp.Name) );
 							
 							projectReferences.WriteLine (" \\");
 							projectReferences.Write ("\t");
@@ -153,104 +260,8 @@ namespace MonoDevelop.Autotools
 				}
 				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();
 
-				// grab pkg-config references
-				StringWriter references = new StringWriter();
-				Set pkgs = new Set();
-				StringBuilder copy_dlls = new StringBuilder ();
-				StringWriter dllReferences = new StringWriter();
-				foreach(ProjectReference reference in project.ProjectReferences) 
-				{
-					if(reference.ReferenceType == ReferenceType.Gac) 
-					{
-						// Get pkg-config keys
-						SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (reference.Reference);
-						if (pkg != null && !pkg.IsCorePackage) 
-						{
-							if ( pkgs.Contains(pkg) ) continue;
-							pkgs.Add(pkg);
-
-							references.WriteLine (" \\");
-							references.Write ("\t$(");
-							references.Write (AutotoolsContext.GetPkgConfigVariable(pkg.Name));
-							references.Write ("_LIBS)");
-							ctx.AddRequiredPackage (pkg.Name);
-						} 
-						else 
-						{
-							references.WriteLine (" \\");
-							references.Write ("\t-r:");
-							AssemblyName assembly = Runtime.SystemAssemblyService.ParseAssemblyName (reference.Reference);
-							references.Write (assembly.Name);
-							references.Write ("");
-						}
-					} 
-					else if (reference.ReferenceType == ReferenceType.Assembly) 
-					{
-						string assemblyPath = Path.GetFullPath (reference.Reference);
-						string libdll_path = ctx.AddReferencedDll ( assemblyPath );
-
-						string newPath = "$(BUILD_DIR)/" + Path.GetFileName ( assemblyPath );
-						copy_dlls.AppendFormat ( "	cp -f {0} {1}\n", 
-								project.GetRelativeChildPath (libdll_path), newPath );
-
-						dllReferences.WriteLine (" \\");
-						dllReferences.Write ("\t");
-						dllReferences.Write ( newPath );
-					} 
-					else if (reference.ReferenceType == ReferenceType.Project) continue; // handled above
-					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not support yet", 
-								reference.ReferenceType.ToString() ) );
-				}
-				templateEngine.Variables["REFERENCES"] = references.ToString();
-				templateEngine.Variables["COPY_DLLS"] = copy_dlls.ToString();
-				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
-				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
-
-
-				// grab all project files
-				StringBuilder files = new StringBuilder ();
-				StringBuilder res_files = new StringBuilder ();
-				StringBuilder extras = new StringBuilder ();
-				StringBuilder datafiles = new StringBuilder ();
-				foreach (ProjectFile projectFile in project.ProjectFiles) 
-				{
-					switch ( projectFile.BuildAction )
-					{
-						case BuildAction.Compile:
-							
-							if ( projectFile.Subtype != Subtype.Code ) continue;
-							files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
-							break;
-
-						case BuildAction.Nothing:
-							
-							extras.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
-							break;
-
-						case BuildAction.EmbedAsResource:
-
-							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
-							{
-								string rdir = Path.GetDirectoryName (project.FileName) + "/" + resourcedir;
-								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
-								string newPath = rdir + "/" + Path.GetFileName ( projectFile.FilePath );
-								File.Copy ( projectFile.FilePath, newPath, true ) ;
-								res_files.AppendFormat ( "\\\n\t{0} ", project.GetRelativeChildPath ( newPath ) );
-							}
-							else res_files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
-							break;
-							
-						case BuildAction.FileCopy:
-						
-							datafiles.AppendFormat ("\\\n\t{0} ", projectFile.RelativePath);
-							break;
-					}
-				}
-				templateEngine.Variables["FILES"] = files.ToString();
-				templateEngine.Variables["RESOURCES"] = res_files.ToString();
-				templateEngine.Variables["EXTRAS"] = extras.ToString();
-				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
-
+				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
+				
 				// Create makefile
 				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");
 				StreamReader reader = new StreamReader (stream);			                                          
@@ -293,14 +304,127 @@ namespace MonoDevelop.Autotools
 
 			StreamReader reader = new StreamReader ( stream );
 			StreamWriter writer = new StreamWriter ( path + ".in");
-
 			templateEngine.Process (reader, writer);
-
 			writer.Close();
 			reader.Close();
 
 			context.AddAutoconfFile ( path );
 			return wrapperName;
+		}
+
+		void CreatePkgConfigFile ( Project project, 
+				Set packages, 
+				Set dlls,
+				IProgressMonitor monitor,  
+				AutotoolsContext context )
+		{
+			string projname = AutotoolsContext.EscapeStringForAutoconf (project.Name.ToUpper());
+			string uniquenm = GetUniqueName ( project );
+			
+			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating pkg-config file") );
+
+			TemplateEngine templateEngine = new TemplateEngine();			
+			templateEngine.Variables["NAME"] = uniquenm;
+			templateEngine.Variables["DESCRIPTION"] = project.Description;
+			templateEngine.Variables["VERSION"] = "@VERSION@"; // inherit from package
+			
+			// get the external pkg-config dependencies
+			StringBuilder pkgs = new StringBuilder ();
+			foreach ( SystemPackage pkg in packages )
+				pkgs.AppendFormat ( " {0}", pkg.Name );
+
+			// add internal pkg-config dependencies
+			foreach (ProjectReference reference in project.ProjectReferences) 
+			{
+				if (reference.ReferenceType == ReferenceType.Project) 
+				{
+					Project refp = GetProjectFromName ( reference.Reference, project );
+					pkgs.AppendFormat ( " {0}", GetUniqueName ( refp ) );
+				}
+			}
+			
+			templateEngine.Variables ["REQUIRES_PKGS"] = pkgs.ToString ();
+				
+			// build library variable so can be set at configure
+			StringBuilder vars = new StringBuilder ();
+			foreach ( DotNetProjectConfiguration config in project.Configurations )
+				vars.AppendFormat ( "@{0}_{1}_LIB@", projname, config.Name.ToUpper () );
+
+			// add additional assemblies to references
+			StringBuilder libs = new StringBuilder ();
+			StringBuilder libraries = new StringBuilder ();
+			foreach ( string dll in dlls )
+			{
+				libraries.Append ( " ${pkglibdir}/" + dll );
+				libs.Append ( " -r:${pkglibdir}/" + dll );
+			}
+			
+			// set the variables
+			templateEngine.Variables ["LIBS"] = " -r:${pkglibdir}/" + vars.ToString () + libs.ToString ();
+			templateEngine.Variables ["LIBRARIES"] = " ${pkglibdir}/" + vars.ToString () + libraries.ToString ();
+			
+			// write to file
+			string fileName = uniquenm + ".pc";
+			string path = string.Format ( "{0}/{1}.in", Path.GetDirectoryName (project.FileName), fileName );
+			StreamWriter writer = new StreamWriter( path );
+			Stream stream = context.GetTemplateStream ("package.pc.template");
+			StreamReader reader = new StreamReader(stream);
+			templateEngine.Process(reader, writer);
+			reader.Close();
+			writer.Close();
+			
+			// add for autoconf processing
+			context.AddAutoconfFile ( Path.GetDirectoryName (project.FileName) + "/" + fileName );
+		}
+		
+		// GetUniqueName: A way of getting a (hopefully) unique name for the pkg-config item
+		// Solution.[Solution].Project
+		// FIXME: makes assumption that the root combine is the top of the autotools setup
+		string GetUniqueName ( CombineEntry entry )
+		{
+			string name = entry.Name;
+			CombineEntry current = entry.ParentCombine;
+			while ( current != null )
+			{
+				name = string.Format ("{0}.{1}", current.Name, name);
+				current = current.ParentCombine;
+			}
+
+			return name;
+		}
+
+		// FIXME: makes assumption that the root combine is the top of the autotools setup
+		bool NeedsPCFile ( Project project ) 
+		{
+			//go up the chain and find the first non-null of the parm
+			CombineEntry current = project.ParentCombine;
+			while ( current != null )
+			{
+				IExtendedDataItem item = current as IExtendedDataItem;
+				if ( item != null )
+				{
+					object en_obj =  item.ExtendedProperties ["MakeLibPC"];
+					if (en_obj != null ) return (bool) en_obj;
+				}
+				
+				current = current.ParentCombine;
+			}
+			return true;
+		}
+
+		// FIXME: makes assumption that the root combine is the top of the autotools setup
+		Project GetProjectFromName ( string name, Project project )
+		{
+			Project refp = null;
+			Combine c = project.RootCombine;
+
+			if (c != null) refp = c.FindProject (name);
+
+			if (refp == null)
+				throw new Exception ( GettextCatalog.GetString ("Couldn't find referenced project '{0}'", 
+							name ) );
+			
+			return refp;
 		}
 	}
 }

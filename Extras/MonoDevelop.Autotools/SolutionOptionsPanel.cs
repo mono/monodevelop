@@ -37,34 +37,43 @@ namespace MonoDevelop.AutoTools
 	public class SolutionOptionsPanel : AbstractOptionPanel
 	{
 		CheckButton MakePkgConfigButton = new CheckButton();
+		CheckButton MakeLibPCButton = new CheckButton();
 		
 		IExtendedDataItem item;
 		
 		public override void LoadPanelContents()
 		{
 			VBox vbox = new VBox();
+			vbox.Spacing = 6;
 			this.Add(vbox);
 			
 			item = (IExtendedDataItem) IdeApp.ProjectOperations.CurrentOpenCombine;
 
-			object en_obj =  item.ExtendedProperties ["MakePkgConfig"];
-
-			bool enabled = false;
-			if (en_obj== null) 
-			{
-				item.ExtendedProperties["MakePkgConfig"] = false;
-			}
-			else enabled = (bool) en_obj;
+			MakeLibPCButton.Label = GettextCatalog.GetString ("Create pkg-config files for libraries");
+			MakeLibPCButton.Active = GetProperty ( item, "MakeLibPC", true );
+			vbox.PackStart (MakeLibPCButton, false, false, 0);
 			
-			MakePkgConfigButton.Label = GettextCatalog.GetString ("Create 'pkg-config' file");
-			MakePkgConfigButton.Active = enabled;
-	
+			MakePkgConfigButton.Label = GettextCatalog.GetString ("Create pkg-config file for entire solution");
+			MakePkgConfigButton.Active = GetProperty ( item, "MakePkgConfig", false );
 			vbox.PackStart (MakePkgConfigButton, false, false, 0);
+		}
+
+		static bool GetProperty ( IExtendedDataItem itm, string ke, bool initial )
+		{
+			object en_obj =  itm.ExtendedProperties [ke];
+
+			if (en_obj== null)
+			{	
+				itm.ExtendedProperties[ke] = initial;
+				return initial;
+			}
+			else return (bool) en_obj;
 		}
 		
 		public override bool StorePanelContents()
 		{
 			item.ExtendedProperties["MakePkgConfig"] = MakePkgConfigButton.Active;
+			item.ExtendedProperties["MakeLibPC"] = MakeLibPCButton.Active;
 			
 			return true;
 		}

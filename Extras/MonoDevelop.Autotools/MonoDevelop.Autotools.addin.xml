@@ -63,6 +63,8 @@
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Combine"
 			name = "MakePkgConfig" type = "System.Boolean" />
+		<ItemProperty class = "MonoDevelop.Projects.Combine"
+			name = "MakeLibPC" type = "System.Boolean" />
 	</Extension>
 	
 </AddIn>

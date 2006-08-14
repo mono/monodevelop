@@ -1,3 +1,12 @@
+2006-08-14  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SolutionDeployer.cs: 
+	* SimpleProjectMakefileHandler.cs: 
+	* MonoDevelop.Autotools.addin.xml:
+	* templates/Makefile.include:
+	* SolutionOptionsPanel.cs:
+	add support for creating pc files per library
+
 2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs:

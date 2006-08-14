@@ -250,7 +250,8 @@ namespace MonoDevelop.Autotools
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
-			templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";			
+			templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";		
+			
 			// add solution configuration options
 			StringBuilder config_options = new StringBuilder ();
 			foreach ( IConfiguration config in combine.Configurations )
@@ -258,34 +259,23 @@ namespace MonoDevelop.Autotools
 				string name = config.Name.ToLower();
 				string def = config == combine.ActiveConfiguration ? "YES" : "NO";
 				string ac_var = "enable_" + name;
+
+				// test to see if a configuration was enabled
 				config_options.AppendFormat ( "AC_ARG_ENABLE({0},\n", name );
 				config_options.AppendFormat ("	AC_HELP_STRING([--enable-{0}],\n", name );
 				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", config.Name, def );
 				config_options.AppendFormat ( "		{0}=yes, {0}=no)\n", ac_var );
 				config_options.AppendFormat ( "AM_CONDITIONAL({0}, test x${1} = xyes)\n", ac_var.ToUpper(), ac_var );
+
+				// if yes, populate some vars
 				config_options.AppendFormat ( "if test \"x${0}\" = \"xyes\" ; then\n", ac_var );
-				if ( pkgconfig )
-				{
-					string libs, refs;
-					GetAllLibs ( combine, config.Name, out libs, out refs );
-					config_options.AppendFormat ( "	{0}_CONFIG_LIBRARIES='{1}'\n", name.ToUpper(), libs);
-					config_options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n", name.ToUpper(), refs);
-				}
+				if ( pkgconfig ) AppendPkgConfigVariables ( combine, config.Name, config_options );
 				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
-				if ( pkgconfig )
-				{
-					config_options.AppendFormat ( "AC_SUBST({0}_CONFIG_LIBRARIES)\n", name.ToUpper() );
-					config_options.AppendFormat ( "AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
-				}
 			}
+
+			// if no configuration was specified, set to default
 			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
-			if ( pkgconfig )
-			{
-				string dlibs, drefs;
-				GetAllLibs ( combine, defaultConf, out dlibs, out drefs );
-				config_options.AppendFormat ( "	{0}_CONFIG_LIBRARIES='{1}'\n", defaultConf.ToUpper (), dlibs);
-				config_options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n", defaultConf.ToUpper (), drefs);
-			}
+			if ( pkgconfig ) AppendPkgConfigVariables ( combine, defaultConf, config_options );
 			config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
 					+ defaultConf.ToUpper()  );
 
@@ -337,9 +327,11 @@ namespace MonoDevelop.Autotools
 			reader.Close();
 			writer.Close();
 		}
-
-		void GetAllLibs ( Combine combine, string config, out string libs, out string refs )
+	
+		void AppendPkgConfigVariables ( Combine combine, string config, StringBuilder options )
 		{
+			string name = config.ToLower();
+
 			StringBuilder refb = new StringBuilder ();
 			StringBuilder libb = new StringBuilder ();
 			foreach ( CombineEntry ce in combine.GetAllBuildableEntries ( config ) )
@@ -352,12 +344,28 @@ namespace MonoDevelop.Autotools
 
 				if ( dnpc.CompileTarget != CompileTarget.Library ) continue;
 				
-				libb.Append ( " ${pkglibdir}/" +  Path.GetFileName ( dnpc.CompiledOutputName ) );
-				refb.Append ( " -r:${pkglibdir}/" +  Path.GetFileName ( dnpc.CompiledOutputName ) );
+				string filename = Path.GetFileName ( dnpc.CompiledOutputName );
+				string projname = AutotoolsContext.EscapeStringForAutoconf (p.Name.ToUpper());
+				
+				// provide these for per-library pc files
+				options.AppendFormat ( "	{0}_{1}_LIB='{2}'\n", projname , config.ToUpper(), filename);
+				options.AppendFormat ( "	AC_SUBST({0}_{1}_LIB)\n", projname, config.ToUpper() );
+				
+				libb.Append ( " ${pkglibdir}/" + filename  );
+				refb.Append ( " -r:${pkglibdir}/" +  filename );
 			}
-			//return sb.ToString ();
-			libs = libb.ToString ();
-			refs = refb.ToString ();
+
+			// must also add referenced dlls
+			foreach ( string dll in context.GetReferencedDlls () )
+			{
+				libb.Append ( " ${pkglibdir}/" + Path.GetFileName (dll) );
+				refb.Append ( " -r:${pkglibdir}/" + Path.GetFileName (dll) );
+			}
+			
+			options.AppendFormat ( "	{0}_CONFIG_LIBRARIES='{1}'\n", name.ToUpper(), libb.ToString ());
+			options.AppendFormat ( "	{0}_CONFIG_LIBS='{1}'\n", name.ToUpper(), refb.ToString ());
+			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBRARIES)\n", name.ToUpper() );
+			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
 		}
 		
 		void CreateMakefileInclude (IProgressMonitor monitor)
