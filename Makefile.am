@@ -49,7 +49,8 @@ PACKAGES = \
 	build/AddIns/WelcomePage/WelcomePage.addin.xml \
 	build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml \
 	build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml \
-	build/AddIns/AspNetAddIn/AspNetAddIn.addin.xml
+	build/AddIns/AspNetAddIn/AspNetAddIn.addin.xml \
+	build/AddIns/AspNetAddIn/AspNetEdit.addin.xml
 
 DOCFILES = \
 	build/bin/MonoDevelop.Core.dll \

@@ -1,3 +1,7 @@
+if ENABLE_ASPNETEDIT
+SUBDIRS=chrome
+endif
+
 ADDIN_BUILD = $(top_builddir)/build/AddIns/AspNetEdit
 ASSEMBLY = $(ADDIN_BUILD)/AspNetEdit.dll
 

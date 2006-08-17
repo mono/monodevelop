@@ -1,14 +1,33 @@
 INSTALLATION
 ============
-All the files in src/chrome/content should go in $MOZ_HOME/chrome/aspdesigner/content
-All the files in src/chrome/locale should go in $MOZ_HOME/chrome/aspdesigner/locale/en-US
+The addin has been packaged into a single file, aspdesigner.jar. This can be 
+anywhere on the filesystem, but must be registered as Mozilla chrome in order 
+to get the privileges it requires.
 
-The following lines should be added to the end of $MOZ_HOME/chrome/installed-chrome.txt:
-content,install,url,resource:/chrome/aspdesigner/content/
-locale,install,url,resource:/chrome/aspdesigner/locale/en-US/
+On Firefox 1.5 or Mozilla 1.8 or greater, an aspdesigner.manifest file should 
+be placed in $MOZILLA_HOME/chrome/. this should contain lines similar to the 
+following:
+  content aspdesigner jar:$PATH_TO_ADDIN/aspdesigner.jar!/content/aspdesigner/
+  locale aspdesigner en-US jar:$PATH_TO_ADDIN/aspdesigner.jar!/locale/en-US/aspdesigner/
 
-The extention will be available through the following URL:
-chrome://aspdesigner/content/editor.xul
+On Mozilla 1.7 or FF 1.0, .manifest files are not used. Instead, the file
+$MOZILLA_HOME/chrome/installed-chrome.txt file must be edited, and lines added 
+similar to the following:
+  content,install,url,jar:$PATH_TO_ADDIN/aspdesigner.jar!/content/aspdesigner/
+  locale,install,url,jar:$PATH_TO_ADDIN/aspdesigner.jar/locale/en-US/aspdesigner/  
+
+Once the chrome has been installed, the extention will be available through the
+URL chrome://aspdesigner/content/
+
+
+NOTES
+=====
+* The addin has a severe bug when used with Firefox 1.5. For some reason it 
+  becomes re-initialised, and this causes the ASP.NET controls to become 
+  unselectable. Other editing is still possible.
+
+* The installation instructions for installed-chrome.txt have not been tested.
+
 
 EDITOR COMMANDS
 ===============

@@ -1,3 +1,16 @@
+2006-08-17  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am:
+	* chrome/Makefile.am:
+	* chrome/aspdesigner.manifest.in: Make crome installation work on 
+	  FF1.5. It is most likely now broken for Mozilla < 1.8 and FF < 1.5.
+	  
+	* Extras/AspNetEdit/chrome/chrome.manifest:
+	* Extras/AspNetEdit/chrome/ChangeLog: Remove old files.
+	  
+	* Extras/AspNetEdit/chrome/README: Update to reflect new chrome 
+	  deployment mechanism.
+
 2006-08-05 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.mdp:

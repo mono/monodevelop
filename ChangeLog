@@ -1,3 +1,10 @@
+2006-08-17  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Extras/Makefile.am:
+	* Extras/Extras.mds:
+	* Makefile.am:
+	* configure.in: Add AspNetEdit to the build.
+
 2006-08-08  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in: Added support for enabling/disabling MonoQuery.

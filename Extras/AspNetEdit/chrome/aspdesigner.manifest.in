@@ -1,0 +1,2 @@
+content aspdesigner jar:@prefix@/lib/monodevelop/AddIns/AspNetEdit/aspdesigner.jar!/content/aspdesigner/
+locale aspdesigner en-US jar:@prefix@/lib/monodevelop/AddIns/AspNetEdit/aspdesigner.jar!/locale/en-US/aspdesigner/
