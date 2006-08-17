@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl_SI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-28 22:44+0200\n"
-"PO-Revision-Date: 2006-07-28 10:28+0200\n"
+"POT-Creation-Date: 2006-08-17 08:53+0200\n"
+"PO-Revision-Date: 2006-08-09 13:55+0200\n"
 "Last-Translator: Matej Urbas\n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgid "_Browse..."
 msgstr "_Razišči..."
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
-#: ../Extras/WelcomePage/WelcomePageView.cs:150
+#: ../Extras/WelcomePage/WelcomePageView.cs:165
 #, csharp-format
 msgid "Could not open the url {0}"
 msgstr "Ni bilo možno odpreti URL naslova '{0}'"
@@ -106,8 +106,8 @@ msgid "Loading..."
 msgstr "Nalagam..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:13
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:32
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
 msgid "MonoDevelop"
@@ -142,8 +142,8 @@ msgid "Register an on-line repository"
 msgstr "Registriraj omrežni repozitorij"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
 msgid "Select _All"
 msgstr "Ozn_ači vse"
 
@@ -654,7 +654,6 @@ msgid "Add-in Manager..."
 msgstr "Upravitelj E-_Dodatkov..."
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:10
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:114
 msgid "All Files"
 msgstr "Vse datoteke"
 
@@ -663,18 +662,22 @@ msgid "Always create backup copy"
 msgstr "Vedno ustvari varnostno kopijo"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:12
+msgid "Available encodings:"
+msgstr "Podprti formati:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:13
 msgid "Build and run options"
 msgstr "Nastavitve izgradnje in zaganjanja"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:13
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:14
 msgid "Case sensitive"
 msgstr "Občutljiv na velikost črk"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:14
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:15
 msgid "Creates a new C# Project"
 msgstr "Ustvari nov C# projekt"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:15
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:16
 msgid ""
 "Days\n"
 "Months"
@@ -682,67 +685,71 @@ msgstr ""
 "Dan\n"
 "Mesec"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:17
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:18
 msgid "Default _Solution location"
 msgstr "Privzeto mesto za nove _rešitve:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:18
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:19
 msgid "Did you know that you can design lots of cool things with glade?"
 msgstr "Ste vedeli, da lahko z Glade oblikujete veliko zanimih stvar?"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:19
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:20
 msgid "Did you know...?"
 msgstr "Ste vedeli...?"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:20
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:21
 msgid "Directory:"
 msgstr "Imenik:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:21
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
 msgid "Edit References"
 msgstr "Uredi reference"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:23
+msgid "Encodings shown in menu:"
+msgstr "Formati prikazani v meniju:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:24
 msgid "Every"
 msgstr "Vsak"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:23
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:25
 msgid "Filemask:"
 msgstr "Datotečna maska:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:24
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:26
 msgid "Find Dialog"
 msgstr "Najdi"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:25
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:27
 msgid "Find:"
 msgstr "Najdi:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:26
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:28
 msgid "Generate _additional comments"
 msgstr "Ustvari dodatne _komentarje"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:27
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:29
 msgid "Generate _documentation comments"
 msgstr "Ustvari _dokumentacijske komentarje"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:28
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:30
 msgid "Include Found Files"
 msgstr "Vključi najdene datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:29
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:31
 msgid "Layout name:"
 msgstr "Ime postavitve:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:30
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:32
 msgid "Load user-specific settings with the document"
 msgstr "Z dokumentom naloži nastavitve specifične za uporabnika"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:31
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:33
 msgid "Look for add-in updates at startup, with the following periodicity:"
 msgstr "Preveri ali obstajajo nadgradnje E-Dodatkov v naslednjem intervalu:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:33
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:35
 msgid ""
 "MonoDevelop can run without these add-ins, but the functionality they "
 "provide will be missing."
@@ -750,116 +757,120 @@ msgstr ""
 "MonoDevelop lahko deluje tudi, če so izbrani E-Dodatki onemogočeni, vendar "
 "funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo."
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:36
 msgid "MonoDevelop cannot start because a fatal error has been detected."
 msgstr "MonoDevelop se ne more zagnati, ker je prišlo do napake."
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:35
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:37
 msgid "N_ame:"
 msgstr "I_me:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:36
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:38
 msgid "New Files"
 msgstr "Nove datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:37
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:39
 msgid "New Files Only"
 msgstr "Samo nove datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:38
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
 msgid "New Solution"
 msgstr "Nova rešitev"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:39
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
 msgid "New layout"
 msgstr "Nova postavitev"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
 msgid "R_eplace All"
 msgstr "Nadomesti _vse"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:43
 msgid "Recurse subdirectories"
 msgstr "Rekurzivno preglej podimenike"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:44
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
 msgid "Remove"
 msgstr "Odstrani"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:43
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:45
 msgid "Replace Dialog"
 msgstr "Nadomesti"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:44
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
 msgid "Replace:"
 msgstr "Nadomesi:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:45
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
 msgid "Search in:"
 msgstr "Išči v:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
+msgid "Select Text Encodings"
+msgstr "Izberite tekstovni format"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
 msgid "Select command"
 msgstr "Izberi ukaz"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
 msgid "Select default location"
 msgstr "Izberi privzeto mesto"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
 msgid "Selected references"
 msgstr "Izbrane reference"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:53
 msgid "Show _output pad when build starts"
 msgstr "Prikaži okence _izhoda, ko se prične izgradnja projekta"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
 msgid "Show _task list pad if build finished with errors"
 msgstr ""
 "Prikaži okence seznama _opravil, če se izgradnja projekta konča z napakami"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:55
 msgid "Show extensions in project scout"
 msgstr "Prikaži končnice v projektnem izvidniku"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:53
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:56
 msgid "Show hidden files and directories"
 msgstr "Prikaži skrite datoteke in imenike"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:57
 msgid "The following add-ins could not be started:"
 msgstr "Naslednje E-Dodatke ni bilo možno zagnati:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:55
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:58
 msgid "Tip of the Day"
 msgstr "Predlog dneva"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:56
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:59
 msgid "Use _Output Window"
 msgstr "Uporabi okence _izhoda"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:57
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:60
 msgid "Use special search strategy:"
 msgstr "Uporabi posebno strategijo iskanja"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:58
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:61
 #: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewNodeBuilder.cs:57
 msgid "View"
 msgstr "Pogled"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:59
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
 msgid "Whole word only"
 msgstr "Samo celotne besede"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:60
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
 msgid "Whole words only"
 msgstr "Samo celotne besede"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:61
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:64
 msgid ""
 "You can start MonoDevelop without these add-ins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
@@ -868,83 +879,83 @@ msgstr ""
 "funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo.\n"
 "Želite nadaljevati?"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:65
 msgid "_Arguments:"
 msgstr "_Argumenti:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:66
 msgid "_Command:"
 msgstr "_Ukaz:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:64
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:67
 msgid "_Create separate Solution subdirectory"
 msgstr "_Ustvari posebno rešitev v podimeniku"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:65
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
 msgid "_Don't save changes to open documents "
 msgstr "_Ne shrani sprememb v odprtih dokumentih"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:66
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
 msgid "_Else on same line as closing bracket"
 msgstr "'_Else' naj bo v isti vrstici kot zaklepaj"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:67
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:70
 msgid "_Insert blank lines between members"
 msgstr "_Vstavi prazne vrstice med polji (spremenljivkami)"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:71
 msgid "_Load previous solution on startup"
 msgstr "Naloži prejšnjo _rešitev ob zagonu"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:72
 msgid "_Location:"
 msgstr "_Mesto"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:70
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:73
 msgid "_Mark All"
 msgstr "_Označi vse"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:71
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:74
 msgid "_Next Tip"
 msgstr "_Naslednji predlog"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:72
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:75
 msgid "_Prompt for arguments"
 msgstr "_Zahtevaj argumente"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:73
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:76
 msgid "_Prompt to save changes to open documents"
 msgstr "_Opozori na spremenjene dokumente, ki še niso bili shranjeni"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:74
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:77
 msgid "_Replace"
 msgstr "_Nadomesti"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:75
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:78
 msgid "_Save Changes to open documents"
 msgstr "_Shrani spremembe v odprih dokumentih"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:76
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:79
 msgid "_Show at startup"
 msgstr "_Prikaži ob zagonu"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:77
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:80
 msgid "_Solution name:"
 msgstr "_Ime rešitve"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:78
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:81
 msgid "_Start code block on the same line"
 msgstr "_Prični s kodo programa v isti vrstici"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:79
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:82
 msgid "_Title:"
 msgstr "_Naslov:"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:80
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:83
 msgid "_Use full type names"
 msgstr "_Uporabi polna imena tipov"
 
-#: ../Core/src/MonoDevelop.Ide/Base.glade.h:81
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:84
 msgid "_Working Directory:"
 msgstr "_Delovni imenik:"
 
@@ -1108,474 +1119,478 @@ msgid "Deploy target list"
 msgstr "Namesti seznam objektov"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:43
+msgid "Deploy to"
+msgstr "Namesti v"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
 msgid "Display Options List"
 msgstr "Prikaži seznam nastavitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
 msgid "Edit References..."
 msgstr "Uredi reference..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
 msgid "External Tools"
 msgstr "Zunanja orodja"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:47
 msgid "F_ind In Files..."
 msgstr "Išči v _datotekah..."
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:48
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:190
 msgid "Find"
 msgstr "Najdi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
 msgid "Find Next Selection"
 msgstr "Poišči naslednjo označeno vsebino"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
 msgid "Find _Next"
 msgstr "Poišči _naslednjega"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
 msgid "Find _Previous"
 msgstr "Poišči _prejšnjega"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
 msgid "Find _Previous Selection"
 msgstr "Poišči p_rejšnjo označeno vsebino"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
 msgid "Find next"
 msgstr "Poišči naslednjega"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
 msgid "GotDotNet"
 msgstr "GotDotNek"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
 msgid "Group members by access"
 msgstr "Združi člane po dostopu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
 msgid "Group members by member type"
 msgstr "Združi člane po njihovem tipu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
 msgid "Include"
 msgstr "Vključi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
 msgid "Include To Project"
 msgstr "Vključi k projektu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
 msgid "Layout List"
 msgstr "Seznam postavitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
 msgid "Load/Save"
 msgstr "Naloži/Shrani"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
 msgid "Local Copy Reference"
 msgstr "Lokalna kopija reference"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
 msgid "Mono Project"
 msgstr "Mono projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
 msgid "MonoDevelop Options"
 msgstr "MonoDevelop nastavitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
 msgid "N_ew Project..."
 msgstr "Novi _projekt..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
 msgid "Nested namespaces"
 msgstr "Vgnezdena imenska okolja"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
 msgid "New File..."
 msgstr "Nova datoteka..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
 msgid "New Folder"
 msgstr "Nov imenik"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
 msgid "New _File..."
 msgstr "Nova _datoteka..."
 
 #. FileCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:71
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
 msgid "O_pen..."
 msgstr "_Odpri..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
 msgid "Open"
 msgstr "Odpri"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
 msgid "Open With"
 msgstr "Odpri z..."
 
 #. FileCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:75
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
 msgid "Open file or solution"
 msgstr "Odpri datoteko ali rešitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
 msgid "OpenWidthList"
 msgstr "OpenWidthList"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
 msgid "Options..."
 msgstr "Nastavitve..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
 msgid "Paste"
 msgstr "Prilepi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
 msgid "Pause"
 msgstr "Premor"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
 msgid "Pre_ferences..."
 msgstr "_Nastavitve..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
 msgid "Project Files"
 msgstr "Projektne datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
 msgid "R_eplace In Files..."
 msgstr "Nadomesti v _datotekah"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
 msgid "Re_name"
 msgstr "P_reimenuj"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
 msgid "Rebuild"
 msgstr "Ponovno izgradi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
 msgid "Rebuild Solution"
 msgstr "Ponovno izgradi rešitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
 msgid "Recent Files"
 msgstr "Prejšnje datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
 msgid "Recent Projects"
 msgstr "Prejšnji projekti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
 msgid "Recent Solu_tions"
 msgstr "Prejšnje rešitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
 msgid "Recent _Files"
 msgstr "Prejšnje _datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
 msgid "Redo last undone action"
 msgstr "Uveljavi zadnjo razveljavljeno dejanje"
 
 #. RefactoryCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
 msgid "Refactory Operations"
 msgstr "Operacije 'Refactory'"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
 msgid "Refresh"
 msgstr "Osveži"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
 msgid "Replace"
 msgstr "Nadomesti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
 msgid "Reset Options"
 msgstr "Ponastavi nastavitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
 msgid "Run"
 msgstr "Zaženi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
 msgid "Save"
 msgstr "Shrani"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
 msgid "Save All"
 msgstr "Shrani vse"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
 msgid "Save _As..."
 msgstr "Shrani _kot..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
 msgid "Save all open files"
 msgstr "Shrani vse odprte datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
 msgid "Save the active document"
 msgstr "Shrani aktivni dokument"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
 msgid "Set As Startup Project"
 msgstr "Označi kot zagonski projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
 msgid "Show All Files"
 msgstr "Prikaži vse datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
 msgid "Show project structure"
 msgstr "Prikaži strukturo projekta"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
 msgid "Show public members only"
 msgstr "Prikaži samo javne elemente"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
 msgid "Solution"
 msgstr "Rešitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
 msgid "Solution Files"
 msgstr "Datoteke rešitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
 msgid "Standard"
 msgstr "Standard"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
 msgid "Step Into"
 msgstr "Vstopi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
 msgid "Step Out"
 msgstr "Izstopi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
 msgid "Step Over"
 msgstr "Prestopi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:65
 msgid "Stop"
 msgstr "Ustavi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
 msgid "Stop current build or application execution"
 msgstr "Ustavi trenutno opravilo"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
 msgid "Toggle Breakpoint"
 msgstr "Preklopi prelomno točko"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
 msgid "Tool List"
 msgstr "Seznam orodij"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
 msgid "Toolbars"
 msgstr "Orodne vrstice"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
 msgid "Tools"
 msgstr "Orodja"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
 msgid "Undo last action"
 msgstr "Razveljavi zadnje dejanje"
 
 #. ViewCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
 msgid "View List"
 msgstr "Seznam prikaza"
 
 #. <DialogPanel id = "SelectCulture"
 #. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 #. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
 msgid "Visual style"
 msgstr "Vizualni stil"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
 msgid "Window List"
 msgstr "Seznam oken"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
 msgid "[!] Any one character not in the set"
 msgstr "[!] Katerikoli znak, ki ni v seznamu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
 msgid "[] Any one character in the set"
 msgstr "[] Katerikoli znak, ki je v seznamu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
 msgid "_About..."
 msgstr "_O programu..."
 
 #. ToolCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
 msgid "_Add-in Manager..."
 msgstr "_Upravitelj E-Dodatkov..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
 msgid "_Advanced"
 msgstr "_Napredno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
 msgid "_Clear Recent Files"
 msgstr "_Počisti pretekle datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
 msgid "_Clear Recent Solutions"
 msgstr "_Počisti pretekle rešitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:136
 msgid "_Close File"
 msgstr "_Zapri datoteko"
 
 #. EditCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:137
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
 msgid "_Copy"
 msgstr "_Kopiraj"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
 msgid "_Delete"
 msgstr "_Izbriši"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
 msgid "_Delete Current Layout"
 msgstr "_Izbriši trenutno postavitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
 msgid "_Edit"
 msgstr "_Uredi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
 msgid "_File"
 msgstr "_Datoteka"
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
 msgid "_Find..."
 msgstr "_Najdi..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
 msgid "_Full Screen"
 msgstr "_Celozaslonski način"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
 msgid "_Help"
 msgstr "_Pomoč"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
 msgid "_Indent Selection"
 msgstr "_Pomakni označeno vsebino"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
 msgid "_Layouts"
 msgstr "_Postavitve"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
 msgid "_Lowercase Selection"
 msgstr "Označeno v _majhne črke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
 msgid "_New Layout..."
 msgstr "_Nova postavitev..."
 
 #. WindowCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
 msgid "_Next Window"
 msgstr "_Naslednje okno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
 msgid "_Paste"
 msgstr "_Prilepi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
 msgid "_Previous Window"
 msgstr "_Prejšnje okno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
 msgid "_Project"
 msgstr "_Projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
 msgid "_Quit"
 msgstr "I_zhod"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
 msgid "_Redo"
 msgstr "_Uveljavi razveljavljeno dejanje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
 msgid "_Reload File"
 msgstr "_Ponovno naloži datoteko"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
 msgid "_Remove From Project"
 msgstr "_Odstrani iz projekta"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
 msgid "_Replace..."
 msgstr "_Nadomesti..."
 
 #. HelpCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
 msgid "_Tip of the Day..."
 msgstr "_Predlog dneva..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
 msgid "_Tools"
 msgstr "_Orodja"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
 msgid "_Uncomment Line(s)"
 msgstr "_Dekomentiraj vrstice"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
 msgid "_Undo"
 msgstr "_Razveljavi dejanje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
 msgid "_Unindent Selection"
 msgstr "_Pomakni označeno vsebino nazaj"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
 msgid "_Uppercase Selection"
 msgstr "Označeno v _velike črke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
 msgid "_View"
 msgstr "_Pogled"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
 msgid "_Web"
 msgstr "_Splet"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
 msgid "_Window"
 msgstr "_Okno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
 msgid "_Word Count..."
 msgstr "_Število besed..."
 
@@ -1587,30 +1602,30 @@ msgstr "Ne morem naložiti nastavitvene datoteke za šablone"
 msgid "Application to Debug"
 msgstr "Program, ki ga želite razhroščevati"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:87
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:125
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:24
 msgid "File to Open"
 msgstr "Datoteka, ki jo želite odpreti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:187
 msgid "Are you sure you want to clear recent files list?"
 msgstr "Ste prepričani, da želite počistiti vsebino seznama preteklih datotek?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:216
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:187
 msgid "Clear recent files"
 msgstr "Počisti pretekle datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
 msgid "Are you sure you want to clear recent projects list?"
 msgstr ""
 "Ste prepričani, da želite počistiti vsebino seznama preteklih projektov?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
 msgid "Clear recent projects"
 msgstr "Počisti pretekle projekte"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:282
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:253
 #, csharp-format
 msgid "load solution {0}"
 msgstr "naloži rešitev {0}"
@@ -1646,7 +1661,11 @@ msgstr "Ponovno izgradi {0}"
 msgid "Clean {0}"
 msgstr "Počisti {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:402
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:412
+msgid "(default)"
+msgstr "(privzeto)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:418
 msgid "No deploy targets available"
 msgstr "Na voljo ni objektov za namestitev"
 
@@ -2096,16 +2115,16 @@ msgstr "Trenutna datoteka"
 msgid "Whole solution"
 msgstr "Celotna rešitev"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:145
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:156
 msgid "Save as..."
 msgstr "Shrani kot..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:169
 #, csharp-format
 msgid "File name {0} is invalid"
 msgstr "Ime datoteke '{0}' ni veljavno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:160
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:174
 #, csharp-format
 msgid "File {0} already exists.  Overwrite?"
 msgstr "Datoteka {0} že obstaja. Prepišem?"
@@ -2331,7 +2350,7 @@ msgstr "Vrstica"
 msgid "Description"
 msgstr "Opis"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:383
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:385
 #, csharp-format
 msgid "{0} Error"
 msgid_plural "{0} Errors"
@@ -2340,7 +2359,7 @@ msgstr[1] "{0} Napaki"
 msgstr[2] "{0} Napake"
 msgstr[3] "{0} Napak"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:388
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:390
 #, csharp-format
 msgid "{0} Warning"
 msgid_plural "{0} Warnings"
@@ -2349,7 +2368,7 @@ msgstr[1] "{0} Opozorili"
 msgstr[2] "{0} Opozorila"
 msgstr[3] "{0} Opozoril"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:393
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:395
 #, csharp-format
 msgid "{0} Message"
 msgid_plural "{0} Messages"
@@ -2582,70 +2601,74 @@ msgstr "Izhod programa"
 msgid "Saving..."
 msgstr "Shranjujem..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:264
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:467
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:265
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:478
 #, csharp-format
 msgid "File not found: {0}"
 msgstr "Nisem našel datoteke '{0}'"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:307
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:308
 msgid "Solution loaded."
 msgstr "Rešitev je bila naložena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:374
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:375
 msgid "Solution saved."
 msgstr "Rešitev je bila shranjena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:376
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:389
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:377
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:390
 msgid "Save failed."
 msgstr "Shranjevanje ni uspelo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:387
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:388
 msgid "Project saved."
 msgstr "Projekt je bil shranjen."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:476
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:502
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:477
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:503
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "Datoteke '{0}' ni bilo možno naložiti."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:492
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:493
 msgid "Add to Solution"
 msgstr "Dodaj k rešitvi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:697
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:730
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:678
+msgid "Deploy Output"
+msgstr "Izhod namestitve"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:718
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:751
 msgid "Execution failed."
 msgstr "Izvedba ni uspela."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:747
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:806
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:768
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:827
 msgid "No runnable executable found."
 msgstr "Ni bilo možno najti izvršilnih datotek."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:791
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:812
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "Datoteke '{0}' ni možno prevesti."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:842
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:902
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:863
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:923
 msgid "Build failed."
 msgstr "Izgradnja ni uspela-"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:858
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:879
 msgid "Save changed files?"
 msgstr "Shranim spremenjene datoteke?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:886
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:907
 #, csharp-format
 msgid "---------------------- Done ----------------------"
 msgstr "---------------------- Končano ----------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:892
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:364
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:913
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:369
 #, csharp-format
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -2654,8 +2677,8 @@ msgstr[1] "{0} Napaki"
 msgstr[2] "{0} Napake"
 msgstr[3] "{0} Napak"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:893
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:365
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:914
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:370
 #, csharp-format
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2664,40 +2687,40 @@ msgstr[1] "{0} Opozorili"
 msgstr[2] "{0} Opozorila"
 msgstr[3] "{0} Opozoril"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:896
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:917
 msgid "Build successful."
 msgstr "Izgradnja je uspela."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:898
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:900
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:919
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:921
 msgid "Build: "
 msgstr "Izgradnja:"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:935
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:956
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "Datotek iz '{0}' ni bilo mogoče naložiti."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:947
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "Imenika '{0}' ni bilo možno ustvariti."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:954
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:975
 msgid "Copying files..."
 msgstr "Kopiram datoteke..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:966
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:987
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "Datoteke '{0}' ni bilo mogoče ustvariti."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:988
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1009
 #, csharp-format
 msgid "File '{0}' could not be deleted."
 msgstr "Datoteke '{0}' ni bilo mogoče izbrisati."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1003
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1024
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "Imenika '{0}' ni bilo mogoče izbrisati."
@@ -2788,24 +2811,24 @@ msgstr "Ste prepričani, da želite ponovno naložiti datoteko?"
 msgid "Initializing Main Window"
 msgstr "Pripravljam glavno okno"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:296
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:306
 #, csharp-format
 msgid "Opening {0}"
 msgstr "Odpiram '{0}'"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:387
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:398
 msgid "Do you want to save the current changes?"
 msgstr "Ali želite shraniti trenutne spremembe?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:399
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:410
 msgid "Do you really want to discard your changes ?"
 msgstr "Ali resnično želite, da se spremembe ne shranijo?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:431
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:442
 msgid "Invalid file name"
 msgstr "Neveljavno ime datoteke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:451
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:462
 #, csharp-format
 msgid "{0} is a directory"
 msgstr "'{0}' ne predstavlja imenika"
@@ -3088,50 +3111,54 @@ msgid "Select target location"
 msgstr "Izberite ciljno lokacijo"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
+msgid "Set as Default"
+msgstr "Izberi kot privzetega"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
 msgid "Target type:"
 msgstr "Ciljni tip:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
 msgid "With _scriptfile"
 msgstr "S _skriptno datoteko"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
 msgid "_After build:"
 msgstr "_Po izgradnji:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
 msgid "_Before build:"
 msgstr "P_red izgradnjo:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
 msgid "_Deploy target:"
 msgstr "_Namesti tarčo:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
 msgid "_Description:"
 msgstr "_Opis:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
 msgid "_Include files in compile run"
 msgstr "_Vključi datoteke v izgradnji"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
 msgid "_Multiple Startup Project"
 msgstr "_Več zagonskih projektov"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:47
 msgid "_Name:"
 msgstr "_Ime:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:47
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:48
 msgid "_Project Files"
 msgstr "_Projektne datoteke"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:48
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:49
 msgid "_Single Startup Project"
 msgstr "Samo _eden zagonski projekt"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:50
 msgid "_Version:"
 msgstr "_Različica:"
 
@@ -3297,16 +3324,16 @@ msgstr "Nalagam rešitev: {0}"
 msgid "Refactoring project {0}"
 msgstr "Preoblikujem projekt '{0}'"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:603
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:599
 msgid "The solution does not have an active configuration."
 msgstr "Rešitev nima izbrane aktivne nastavitve."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:607
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:603
 #, csharp-format
 msgid "Building Solution {0}"
 msgstr "Gradim rešitev {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:614
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:610
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
@@ -3314,7 +3341,7 @@ msgstr ""
 "Krožne odvisnosti onemogočajo gradnjo projektov v tej različici programa.\n"
 "Načrtujemo, da bomo v novejših različicah dodali to funkcionalnost."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:143
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:148
 #, csharp-format
 msgid ""
 "Unknown language '{0}'. You may need to install an additional add-in to "
@@ -3322,7 +3349,7 @@ msgid ""
 msgstr ""
 "Neznan jezik '{0}'. Morali boste namestiti E-Dodatke, ki podpirajo ta jezik."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:154
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:159
 #, csharp-format
 msgid "Referenced project '{0}' not found in the solution."
 msgstr "Potrebovan projekt '{0}' ni bil najden v rešitvi."
@@ -3369,22 +3396,22 @@ msgstr "Nalaganje projekta '{0}' je spodletelo."
 msgid "Generating database"
 msgstr "Ustvarjam podatkovno bazo"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:341
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:346
 #, csharp-format
 msgid "Building Project: {0} Configuration: {1}"
 msgstr "Gradim projekt '{0}' z nastavitvijo '{1}'"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:367
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:372
 msgid "Build complete -- "
 msgstr "Izgradnja končana -- "
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:418
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:439
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:423
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:444
 #, csharp-format
 msgid "Executing: {0}"
 msgstr "Izvajam: {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:666
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:671
 #, csharp-format
 msgid "Performing main compilation..."
 msgstr "Izvajam osrednje prevajanje..."
@@ -3892,7 +3919,7 @@ msgstr "Ste prepričani da želite izbrisati gradnik '{0}'?"
 msgid "Are you sure you want to delete the window '{0}'?"
 msgstr "Ste prepričani da želite izbrisati okno '{0}'?"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:195
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:194
 msgid "The form designer could not be loaded"
 msgstr "Oblikovalca gradnikov ni bilo možno naložiti"
 
@@ -4173,11 +4200,11 @@ msgstr "Nov"
 msgid "Edit "
 msgstr "Uredi"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:156
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:154
 msgid "Source Editor"
 msgstr "Urejevalnik koda"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:269
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:272
 #, csharp-format
 msgid ""
 "This file {0} has been changed outside of MonoDevelop. Are you sure you want "
@@ -4186,15 +4213,15 @@ msgstr ""
 "Datoteka '{0}' je bila spremenjena zunaj MonoDevelop programa. Ste "
 "prepričani, da želite prepisati datoteko?"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:351
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:361
 msgid "This file has been changed outside of MonoDevelop"
 msgstr "Ta datoteka je bila spremenjena zunaj MonoDevelop programa."
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:355
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:365
 msgid "Reload"
 msgstr "Ponovno naloži"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:359
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:369
 msgid "Ignore"
 msgstr "Ignoriraj"
 
@@ -4865,11 +4892,11 @@ msgstr "Pozdravna stran"
 msgid "Show welcome page on startup"
 msgstr "Prikaži pozdravno stran ob zagonu"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:65
+#: ../Extras/WelcomePage/WelcomePageView.cs:73
 msgid "Welcome"
 msgstr "Dobrodošli"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:194
+#: ../Extras/WelcomePage/WelcomePageView.cs:215
 #, csharp-format
 msgid "{0} day"
 msgid_plural "{0} days"
@@ -4878,7 +4905,7 @@ msgstr[1] "pred {0} dnevoma"
 msgstr[2] "pred {0} dnevi"
 msgstr[3] "pred {0} dnevi"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:198
+#: ../Extras/WelcomePage/WelcomePageView.cs:219
 #, csharp-format
 msgid "{0} hour"
 msgid_plural "{0} hours"
@@ -4887,7 +4914,7 @@ msgstr[1] "pred {0} urama"
 msgstr[2] "pred {0} urami"
 msgstr[3] "pred {0} urami"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:202
+#: ../Extras/WelcomePage/WelcomePageView.cs:223
 #, csharp-format
 msgid "{0} minute"
 msgid_plural "{0} minutes"
@@ -4896,6 +4923,6 @@ msgstr[1] "pred {0} minutama"
 msgstr[2] "pred {0} minutami"
 msgstr[3] "pred {0} minutami"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:206
+#: ../Extras/WelcomePage/WelcomePageView.cs:227
 msgid "Less than a minute"
 msgstr "Pred manj kot minuto"
