@@ -1,3 +1,27 @@
+2006-08-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* gui.glade: Minor fix.
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs: Track api
+	  changes.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Stetic files don't need
+	  to be added as resource to projects.
+	* MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs: Make it
+	  work for action groups.
+	* lib/*: several fixes.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Added method
+	  for removing an action group.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Track API changes
+	  in Stetic. Properly bound edit commands from the main menu.
+	
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs:
+	* MonoDevelop.GtkCore.addin.xml: Implemented Open and Delete
+	  commands for global action groups.
+	  
+	* MonoDevelop.GtkCore.mdp: Updated.
+
 2006-08-11 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* lib/*: Updated from Stetic module. Includes fixes for

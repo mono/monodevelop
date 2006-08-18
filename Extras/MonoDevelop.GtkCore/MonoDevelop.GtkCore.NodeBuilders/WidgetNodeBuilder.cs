@@ -135,7 +135,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public void OnDelete ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
-			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, w.SourceCodeFile, !(w.RootWidget.Wrapped is Gtk.Window))) {
+			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, w.SourceCodeFile, w.RootWidget.Wrapped)) {
 				if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 					if (dialog.DeleteFile) {
 						ProjectFile file = w.Project.Project.GetProjectFile (w.SourceCodeFile);

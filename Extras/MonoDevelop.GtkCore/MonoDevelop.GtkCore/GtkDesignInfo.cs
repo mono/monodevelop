@@ -206,9 +206,9 @@ namespace MonoDevelop.GtkCore
 				sw.Close ();
 			}
 			
-			// The the stetic file to the project as a resource
+			// Add the stetic file to the project
 			if (!project.IsFileInProject (SteticFile))
-				project.AddFile (SteticFile, BuildAction.EmbedAsResource);
+				project.AddFile (SteticFile, BuildAction.Exclude);
 			
 			if (!File.Exists (SteticGeneratedFile)) {
 				// Generate an empty build class

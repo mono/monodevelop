@@ -48,9 +48,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		GuiBuilderEditSession editSession;
 		Gtk.EventBox designerPage;
 		VBox designerBox;
-		VBox actionsBox;
-		Stetic.Editor.ActionGroupEditor agroupEditor;
-		MonoDevelopActionGroupToolbar groupToolbar;
+		Stetic.ActionGroupDesigner actionsBox;
 		MonoDevelopWidgetActionBar widgetBar;
 		
 		Gtk.Widget currentDesigner;
@@ -67,16 +65,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Actions designer
 			
-			actionsBox = new Gtk.VBox ();
-			agroupEditor = new Stetic.Editor.ActionGroupEditor ();
-			agroupEditor.Project = editSession.SteticProject;
-			Gtk.Widget groupDesign = Stetic.EmbedWindow.Wrap (agroupEditor, -1, -1);
-			groupToolbar = new MonoDevelopActionGroupToolbar (editSession.RootWidget.LocalActionGroups);
-			groupToolbar.Bind (agroupEditor);
+			MonoDevelopActionGroupToolbar groupToolbar = new MonoDevelopActionGroupToolbar (editSession.RootWidget.LocalActionGroups);
 			groupToolbar.BindField += new EventHandler (OnBindActionField);
-			actionsBox.BorderWidth = 3;
-			actionsBox.PackStart (groupToolbar, false, false, 0);
-			actionsBox.PackStart (groupDesign, true, true, 3);
+			actionsBox = Stetic.UserInterface.CreateActionGroupDesigner (editSession.SteticProject, groupToolbar);
 			actionsBox.ShowAll ();
 			
 			// Widget toolbar
@@ -133,7 +124,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designerBox.PackStart (currentDesigner, true, true, 0);
 			widgetBar.RootWidget = editSession.RootWidget;
 			editSession.WrapperWidget.ShowAll ();
-			groupToolbar.ActionGroups = editSession.RootWidget.LocalActionGroups;
+			actionsBox.Toolbar.ActionGroups = editSession.RootWidget.LocalActionGroups;
 		}
 		
 		void OnBindWidgetField (object o, EventArgs a)
@@ -143,8 +134,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnBindActionField (object o, EventArgs a)
 		{
-			if (agroupEditor.SelectedAction != null)
-				editSession.BindAction (agroupEditor.SelectedAction);
+			if (actionsBox.Editor.SelectedAction != null)
+				editSession.BindAction (actionsBox.Editor.SelectedAction);
 		}
 		
 		public GuiBuilderEditSession EditSession {
@@ -153,8 +144,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
-			agroupEditor.Dispose ();
-			groupToolbar.Dispose ();
+			actionsBox.Dispose ();
 			widgetBar.Dispose ();
 			designerPage.Remove (editSession.WrapperWidget);
 			editSession.Dispose ();
@@ -199,7 +189,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (2);
 			foreach (Stetic.Wrapper.ActionGroup grp in editSession.RootWidget.LocalActionGroups) {
 				if (grp.Name == name)
-					groupToolbar.ActiveGroup = grp;
+					actionsBox.Toolbar.ActiveGroup = grp;
 			}
 		}
 		
@@ -208,31 +198,53 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			if (editSession.SteticProject.Selection != null) {
-				Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-				wrapper.Delete ();
-			}
+			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
+			wrapper.Delete ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		protected void OnUpdateDelete (CommandInfo cinfo)
+		{
+			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
+			cinfo.Enabled = wrapper != null;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			if (editSession.SteticProject.Selection != null)
-				Stetic.Clipboard.Copy (editSession.SteticProject.Selection);
+			Stetic.Clipboard.Copy (editSession.SteticProject.Selection);
+		}
+		
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo cinfo)
+		{
+			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
+			cinfo.Enabled = wrapper != null;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			if (editSession.SteticProject.Selection != null)
-				Stetic.Clipboard.Cut (editSession.SteticProject.Selection);
+			Stetic.Clipboard.Cut (editSession.SteticProject.Selection);
+		}
+		
+		[CommandUpdateHandler (EditCommands.Cut)]
+		protected void OnUpdateCut (CommandInfo cinfo)
+		{
+			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
+			cinfo.Enabled = wrapper != null;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			if (editSession.SteticProject.Selection != null)
-				Stetic.Clipboard.Cut (editSession.SteticProject.Selection as Stetic.Placeholder);
+			Stetic.Clipboard.Paste (editSession.SteticProject.Selection as Stetic.Placeholder);
+		}
+		
+		[CommandUpdateHandler (EditCommands.Paste)]
+		protected void OnUpdatePaste (CommandInfo cinfo)
+		{
+			cinfo.Enabled = editSession.SteticProject.Selection is Stetic.Placeholder;
 		}
 	}
 }

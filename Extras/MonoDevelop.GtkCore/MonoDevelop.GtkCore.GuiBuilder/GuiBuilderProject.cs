@@ -146,6 +146,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.RemoveWidget ((Gtk.Container) win.RootWidget.Wrapped);
 		}
 	
+		public void Remove (Stetic.Wrapper.ActionGroup group)
+		{
+			gproject.ActionGroups.Remove (group);
+		}
+	
 		void OnAddWidget (object s, Stetic.Wrapper.WidgetEventArgs args)
 		{
 			if (UpdatingWindow)

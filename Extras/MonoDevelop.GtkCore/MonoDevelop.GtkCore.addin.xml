@@ -116,6 +116,8 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ActionGroupNode">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">

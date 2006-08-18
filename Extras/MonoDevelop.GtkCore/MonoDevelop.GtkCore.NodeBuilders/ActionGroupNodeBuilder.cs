@@ -28,9 +28,11 @@
 
 using System;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
@@ -102,6 +104,44 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
 				Stetic.Wrapper.ActionGroup group = (Stetic.Wrapper.ActionGroup) CurrentNode.DataItem;
 				GuiBuilderService.OpenActionGroup (project, group);
+			}
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		public void OnUpdateDelete (CommandInfo cinfo)
+		{
+			// Don't allow deleting action groups local to a window
+			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			if (w != null)
+				cinfo.Enabled = false;
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		public void OnDelete ()
+		{
+			// Don't allow deleting action groups local to a window
+			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			if (w != null)
+				return;
+
+			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+			Stetic.Wrapper.ActionGroup group = (Stetic.Wrapper.ActionGroup) CurrentNode.DataItem;
+			GuiBuilderProject gproject = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			string sfile = gproject.GetSourceCodeFile (group);
+
+			if (sfile != null) {
+				using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (group.Name, sfile, group)) {
+					if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
+						if (dialog.DeleteFile) {
+							ProjectFile file = project.GetProjectFile (sfile);
+							if (file != null)
+								project.ProjectFiles.Remove (file);
+						}
+						gproject.Remove (group);
+						gproject.Save ();
+						project.Save (IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ());
+					}
+				}
 			}
 		}
 	}

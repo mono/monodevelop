@@ -48,7 +48,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		GuiBuilderWindow window;
 		Stetic.Project gproject;
 		Stetic.Wrapper.Container rootWidget;
-		Stetic.PreviewBox widget;
+		Stetic.WidgetDesigner widget;
 		CodeBinder codeBinder;
 		
 		public event EventHandler ModifiedChanged;
@@ -74,6 +74,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			
 			codeBinder = new CodeBinder (win.Project.Project, textFileProvider, rootWidget);
 			
+			gproject.Modified = false;
 			gproject.WidgetMemberNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			gproject.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			
@@ -99,8 +100,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 			get {
 				if (widget == null) {
 					Gtk.Container w = rootWidget.Wrapped as Gtk.Container;
-					widget = Stetic.EmbedWindow.Wrap (w, rootWidget.DesignWidth, rootWidget.DesignHeight);
-					widget.DesignSizeChanged += new EventHandler (OnDesignSizeChanged);
+					widget = Stetic.UserInterface.CreateWidgetDesigner (w, rootWidget.DesignWidth, rootWidget.DesignHeight);
 				}
 				return widget; 
 			}
@@ -136,14 +136,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 				ModifiedChanged (this, a);
 		}
 		
-		void OnDesignSizeChanged (object s, EventArgs a)
-		{
-			if (rootWidget.DesignHeight != widget.DesignHeight)
-				rootWidget.DesignHeight = widget.DesignHeight;
-			if (rootWidget.DesignWidth != widget.DesignWidth)
-				rootWidget.DesignWidth = widget.DesignWidth;
-		}
-		
 		public void BindCurrentWidget ()
 		{
 			if (widget.Selection is Gtk.Action)
@@ -173,10 +165,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 				rootWidget = Stetic.Wrapper.Container.Lookup (tops[0]);
 				if (rootWidget != null) {
 					codeBinder.TargetObject = rootWidget;
-					if (widget != null) {
-						widget.DesignSizeChanged -= new EventHandler (OnDesignSizeChanged);
-						widget = null;
-					}
+					widget = null;
 					if (RootWidgetChanged != null)
 						RootWidgetChanged (this, EventArgs.Empty);
 					return;
@@ -187,16 +176,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void SetErrorMode ()
 		{
-			if (widget != null)
-				widget.DesignSizeChanged -= new EventHandler (OnDesignSizeChanged);
-			
 			Gtk.Label lab = new Gtk.Label ();
 			lab.Markup = "<b>" + GettextCatalog.GetString ("The form designer could not be loaded") + "</b>";
 			Gtk.EventBox box = new Gtk.EventBox ();
 			box.Add (lab);
 			
-			widget = Stetic.EmbedWindow.Wrap (box, 100, 100);
-			widget.DesignSizeChanged += new EventHandler (OnDesignSizeChanged);
+			widget = Stetic.UserInterface.CreateWidgetDesigner (box, 100, 100);
 			
 			if (RootWidgetChanged != null)
 				RootWidgetChanged (this, EventArgs.Empty);

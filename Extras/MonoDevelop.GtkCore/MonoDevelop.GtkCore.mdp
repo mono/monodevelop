@@ -69,6 +69,7 @@
     <File name="./MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs" subtype="Code" buildaction="Compile" />
     <File name="./templates/ActionGroup.xft.xml" subtype="Code" buildaction="Compile" />
+    <File name="./gui.glade" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

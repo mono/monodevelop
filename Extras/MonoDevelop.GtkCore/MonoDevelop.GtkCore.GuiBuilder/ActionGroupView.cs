@@ -38,8 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class ActionGroupView: CombinedDesignView
 	{
-		Stetic.Editor.ActionGroupEditor editor;
-		Stetic.PreviewBox designer;
+		Stetic.ActionGroupDesigner designer;
 		Hashtable actionCopyMap = new Hashtable ();
 		Stetic.Wrapper.ActionGroup groupCopy;
 		Stetic.Wrapper.ActionGroup group;
@@ -47,30 +46,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		GuiBuilderProject project;
 		
 		MonoDevelopActionGroupToolbar toolbar;
-		Gtk.VBox vbox;
 		
 		public ActionGroupView (IViewContent content, Stetic.Wrapper.ActionGroup group, GuiBuilderProject project): base (content)
 		{
 			this.project = project;
 			
-			vbox = new Gtk.VBox ();
 			toolbar = new MonoDevelopActionGroupToolbar (true);
 			toolbar.BindField += new EventHandler (OnBindField);
-			vbox.PackStart (toolbar, false, false, 0);
-			vbox.ShowAll ();
 			
-			Gtk.EventBox b = new Gtk.EventBox ();
-			vbox.PackStart (b, true, true, 3);
-			b.ShowAll ();
-			AddButton (GettextCatalog.GetString ("Actions"), vbox);
+			designer = Stetic.UserInterface.CreateActionGroupDesigner (project.SteticProject, toolbar);
+			designer.ShowAll ();
+			AddButton (GettextCatalog.GetString ("Actions"), designer);
 			
-			editor = new Stetic.Editor.ActionGroupEditor ();
-			
-			designer = Stetic.EmbedWindow.Wrap (editor, -1, -1);
-			b.Add (designer);
-			toolbar.Bind (editor);
 			Load (group);
-			editor.GroupModified += new EventHandler (OnGroupModified);
+			designer.Editor.GroupModified += new EventHandler (OnGroupModified);
 
 			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), groupCopy);
 		}
@@ -135,7 +124,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void Dispose ()
 		{
 			designer.Dispose ();
-			editor.Dispose ();
 			base.Dispose ();
 		}
 		
@@ -148,7 +136,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			foreach (DictionaryEntry e in actionCopyMap) {
 				if (e.Value == action)
-					editor.SelectedAction = (Stetic.Wrapper.Action) e.Key;
+					designer.Editor.SelectedAction = (Stetic.Wrapper.Action) e.Key;
 			}
 		}
 		
@@ -176,7 +164,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnGroupModified (object s, EventArgs a)
 		{
 			OnContentChanged (a);
-			OnDirtyChanged (a);
+			IsDirty = true;
 		}
 		
 		void OnSignalAdded (object s, Stetic.SignalEventArgs a)
@@ -191,8 +179,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnBindField (object s, EventArgs args)
 		{
-			if (editor.SelectedAction != null) {
-				codeBinder.BindToField (editor.SelectedAction);
+			if (designer.Editor.SelectedAction != null) {
+				codeBinder.BindToField (designer.Editor.SelectedAction);
 			}
 		}
 	}
