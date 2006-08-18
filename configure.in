@@ -248,8 +248,6 @@ if test "x$enable_aspnetedit" = "xyes"; then
 		AC_MSG_RESULT([manifest file])
 	fi
 	
-	AM_CONDITIONAL(MOZILLA_EXTENSION_TYPE_TEXTFILE, test -f "$MOZILLA_HOME/chrome/installed-chrome.txt")
-	
 	AC_SUBST(MOZILLA_HOME)
 	AC_SUBST(MOZILLA_EXTENSION_TYPE)
 	
@@ -260,6 +258,7 @@ else
 	AC_SUBST(MOZILLA_HOME)
 fi
 
+AM_CONDITIONAL(MOZILLA_EXTENSION_TYPE_TEXTFILE, test -f "$MOZILLA_HOME/chrome/installed-chrome.txt")
 AM_CONDITIONAL(ENABLE_ASPNETEDIT, test x$enable_aspnetedit = xyes)
 
 
