@@ -38,8 +38,8 @@ uninstall-files:
 ### Handle the different chrome installation mechanisms ###
 
 if MOZILLA_EXTENSION_TYPE_TEXTFILE
-install-data-hook: install-files install-chrome-text
-uninstall-hook: uninstall-files uninstall-chrome-text
+install-data-hook: old-install-files install-chrome-text
+uninstall-hook: old-uninstall-files uninstall-chrome-text
 else
 install-data-hook: install-files install-manifest
 uninstall-hook: uninstall-files uninstall-manifest
@@ -57,14 +57,20 @@ uninstall-manifest:
 ### OLD MOZILLA STUFF - NOT TESTED RECENTLY
 ## TODO: on debian, call update-mozilla-chrome or update-firefox-chrome
 
-old_chrome_install_text = "content,install,url,jar:$(packagedir)/aspdesigner.jar!/content/aspdesigner/"		\
-                          "locale,install,url,jar:$(packagedir)/aspdesigner.jar/locale/en-US/aspdesigner/"
+old_chrome_install_text = "content,install,url,jar:resource:/chrome/aspdesigner.jar!/content/aspdesigner/"		\
+                          "locale,install,url,jar:resource:/chrome/aspdesigner.jar/locale/en-US/aspdesigner/"
+
+old-install-files:
+	cp $(packagename).jar $(chromedir)/
+
+old-uninstall-files:
+	rm -rf $(chromedir)/$(packagename).jar
 
 install-chrome-text:
 	if test -f $(installed_chrome_txt); then \
 		cp $(installed_chrome_txt) /tmp/chrome.old; \
 		sudo bash -c "sed -e'/aspdesigner/d' /tmp/chrome.old > $(installed_chrome_txt)"; \
-		for CHRM in $(chrome_install_text); do \
+		for CHRM in $(old_chrome_install_text); do \
 			cp $(installed_chrome_txt) /tmp/chrome.old; \
 			sudo bash -c "sed -e'\$$a$$CHRM' /tmp/chrome.old > $(installed_chrome_txt)"; \
 			rm /tmp/chrome.old; \
