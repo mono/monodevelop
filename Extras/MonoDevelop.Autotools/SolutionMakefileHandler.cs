@@ -62,6 +62,8 @@ namespace MonoDevelop.Autotools
 				Set children = new Set ();
 				foreach ( CombineConfiguration config in combine.Configurations )
 				{
+					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
+					
 					subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + config.Name.ToUpper () );
 					subdirs.Append (" SUBDIRS = ");
 					

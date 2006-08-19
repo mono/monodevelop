@@ -178,6 +178,8 @@ namespace MonoDevelop.Autotools
 				StringBuilder conf_vars = new StringBuilder ();
 				foreach ( DotNetProjectConfiguration config in project.Configurations )
 				{
+					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
+					
 					conf_vars.AppendFormat ("if ENABLE_{0}\n", config.Name.ToUpper () );
 					string assembly = project.GetRelativeChildPath ( config.CompiledOutputName );
 
@@ -348,7 +350,10 @@ namespace MonoDevelop.Autotools
 			// build library variable so can be set at configure
 			StringBuilder vars = new StringBuilder ();
 			foreach ( DotNetProjectConfiguration config in project.Configurations )
+			{
+				if ( !context.IsSupportedConfiguration ( config.Name ) ) continue;
 				vars.AppendFormat ( "@{0}_{1}_LIB@", projname, config.Name.ToUpper () );
+			}
 
 			// add additional assemblies to references
 			StringBuilder libs = new StringBuilder ();

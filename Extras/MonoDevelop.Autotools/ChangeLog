@@ -1,3 +1,14 @@
+2006-08-19  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SimpleProjectMakefileHandler.cs: 
+	* SolutionMakefileHandler.cs:
+	don't handle configurations which are not in the top-level deployed
+	solution
+	* SolutionDeployer.cs: provide combine configurations to AutotoolsContext.
+	always provide _LIB autoconf variables
+	* AutotoolsContext.cs: store supported configurations
+	* templates/exe.wrapper.in.template: cd into installed directory
+
 2006-08-14  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SolutionDeployer.cs: 

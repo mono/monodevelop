@@ -70,8 +70,13 @@ namespace MonoDevelop.Autotools
 			try
 			{
 				solution_dir = Path.GetDirectoryName(combine.FileName);
+
+				string[] configs = new string [ combine.Configurations.Count ];
+				for (int ii=0; ii < configs.Length; ii++ )
+					configs [ii] = combine.Configurations[ii].Name;
+					
+				context = new AutotoolsContext ( solution_dir, configs );
 				
-				context = new AutotoolsContext ( solution_dir );
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
 				if ( !handler.CanDeploy (combine) )
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
@@ -269,13 +274,13 @@ namespace MonoDevelop.Autotools
 
 				// if yes, populate some vars
 				config_options.AppendFormat ( "if test \"x${0}\" = \"xyes\" ; then\n", ac_var );
-				if ( pkgconfig ) AppendPkgConfigVariables ( combine, config.Name, config_options );
+				AppendConfigVariables ( combine, config.Name, config_options );
 				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
 			}
 
 			// if no configuration was specified, set to default
 			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
-			if ( pkgconfig ) AppendPkgConfigVariables ( combine, defaultConf, config_options );
+			AppendConfigVariables ( combine, defaultConf, config_options );
 			config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
 					+ defaultConf.ToUpper()  );
 
@@ -328,7 +333,7 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 		}
 	
-		void AppendPkgConfigVariables ( Combine combine, string config, StringBuilder options )
+		void AppendConfigVariables ( Combine combine, string config, StringBuilder options )
 		{
 			string name = config.ToLower();
 

@@ -50,9 +50,26 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public AutotoolsContext ( string base_directory )
+		string[] configurations;
+		public IEnumerable SupportedConfigurations {
+			get {
+				return configurations;
+			}
+		}
+		
+		public AutotoolsContext ( string base_directory, string[] configs )
 		{
 			base_dir = base_directory;
+			configurations = configs;
+		}
+
+		public bool IsSupportedConfiguration ( string name )
+		{
+			foreach ( string s in configurations )
+			{
+				if ( s == name ) return true;
+			}
+			return false;
 		}
 		
 		public void AddRequiredPackage ( string pkg_name )
