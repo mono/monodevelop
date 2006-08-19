@@ -1,3 +1,7 @@
+2006-08-19  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	
+	* cs.po: Updated for 0.12, correctly handled plurals
+
 2006-08-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* pl.po: Updated.
