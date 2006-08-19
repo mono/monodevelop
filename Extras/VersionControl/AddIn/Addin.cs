@@ -240,7 +240,11 @@ namespace VersionControlPlugin {
 		
 		protected virtual void SaveAs(string fileName) {
 		}
-
+		
+		string IViewContent.StockIconId {
+			get { return null; }
+		}
+		
 		void IViewContent.Load(string fileName) {
 			throw new InvalidOperationException();
 		}
