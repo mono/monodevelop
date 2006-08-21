@@ -23,7 +23,7 @@ namespace AspNetAddIn
 			foreach (ProjectFile file in proj.ProjectFiles) {
 				Document doc = aProj.GetDocument (file);
 			
-				if (doc.Info.InheritedClass == null)
+				if (doc == null || doc.Info.InheritedClass == null)
 					continue;
 			
 				IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (proj);
@@ -44,7 +44,7 @@ namespace AspNetAddIn
 			
 			Document doc = proj.GetDocument (file);
 			
-			if (doc.Info.InheritedClass == null)
+			if (doc == null || doc.Info.InheritedClass == null)
 				return null;
 			
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (proj);

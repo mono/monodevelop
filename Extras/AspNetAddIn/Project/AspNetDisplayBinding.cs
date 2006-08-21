@@ -39,6 +39,7 @@ namespace AspNetAddIn
 				case "application/x-ascx":
 				case "application/x-asmx":
 				case "application/x-ashx":
+				case "application/x-asax":
 					return true;
 				default:
 					return false;

@@ -1,5 +1,17 @@
 2006-08-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
+	* Project/AspNetDisplayBinding.cs:
+	* Project/AspNetAppProject.cs:
+	* Parser/PageInfoVisitor.cs: Add support for Global.asax CodeBehind.
+	
+	* Project/AspNetCodeBehindProvider.cs:
+	* Project/AspNetAppProject.cs: Don't try to create Documents for files 
+	  that we can't parse.
+	
+	* Project/AspNetAppProject.cs: Improve web server launch checking code.
+
+2006-08-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
 	* Project/VerifyCodeBehindBuildStep.cs: Make sure modified files are 
 	  saved before compilation.
 	  Update the parser database to make sure our parse information is 

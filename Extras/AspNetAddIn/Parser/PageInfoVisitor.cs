@@ -57,6 +57,9 @@ namespace AspNetAddIn.Parser
 				case "webhandler":
 					type = WebSubtype.WebHandler;
 					break;
+				case "application":
+					type = WebSubtype.Global;
+					break;
 				default:
 					type = WebSubtype.None;
 					return;

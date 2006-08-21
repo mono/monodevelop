@@ -144,7 +144,6 @@ namespace AspNetAddIn
 				monitor.CancelRequested += delegate {op.Cancel ();};
 				operationMonitor.AddOperation (op);
 				
-				//TODO: a choice of browsers, maybe an internal browser too
 				System.Threading.Thread t = new System.Threading.Thread (new System.Threading.ParameterizedThreadStart (LaunchWebBrowser));
 				t.Start (url);
 				
@@ -175,7 +174,17 @@ namespace AspNetAddIn
 			if (this.cachedDocuments [file] == null)
 				this.cachedDocuments [file] =  new Document (file);
 			
-			return (Document) this.cachedDocuments [file];
+			switch (DetermineWebSubtype (file)) {
+				case WebSubtype.WebForm:
+				case WebSubtype.MasterPage:
+				case WebSubtype.WebHandler:
+				case WebSubtype.WebControl:
+				case WebSubtype.WebService:
+				case WebSubtype.Global:
+					return (Document) this.cachedDocuments [file];
+				default:
+					return null;
+			}
 		}
 		
 		public WebSubtype DetermineWebSubtype (ProjectFile file)
@@ -198,6 +207,8 @@ namespace AspNetAddIn
 					return WebSubtype.WebControl;
 				case "asmx":
 					return WebSubtype.WebService;
+				case "asax":
+					return WebSubtype.Global;
 				case "gif":
 				case "png":
 				case "jpg":
@@ -211,6 +222,10 @@ namespace AspNetAddIn
 		
 		#endregion
 		
+		#region special files
+		
+		#endregion
+		
 		#region server/browser-related
 		
 		//confirm we can connect to server before opening browser; wait up to ten seconds
@@ -218,21 +233,47 @@ namespace AspNetAddIn
 		{
 			string url = (string) o;
 			
-			for (int i = 0; i < 10; i++) {
+			//wait a bit for server to start
+			System.Threading.Thread.Sleep (2000);
+			
+			//try to contact web server several times, because server may take a while to start
+			int noOfRequests = 5;
+			int timeout = 8000; //ms
+			int wait = 1000; //ms
+			
+			for (int i = 0; i < noOfRequests; i++) {
+				System.Net.WebRequest req = null;
+				System.Net.WebResponse resp = null;
+				
 				try {
-					System.Net.WebRequest req = System.Net.HttpWebRequest.Create (url);
-					req.Timeout = 1000;
-					System.Net.WebResponse resp = req.GetResponse ();
-					if (resp != null) {
-						Gnome.Url.Show (url);
-						return;
+					req = System.Net.HttpWebRequest.Create (url);
+					req.Timeout = timeout;
+					resp = req.GetResponse ();
+				} catch (System.Net.WebException exp) {
+					
+					// server has returned 404, 500 etc, which user will still want to see
+					if (exp.Status == System.Net.WebExceptionStatus.ProtocolError) {
+						resp = exp.Response;
+						
+					//last request has failed so show user the error
+					} else if (i >= (noOfRequests - 1)) {
+						string message = String.Format ("Could not connect to webserver {0}", url);
+						MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowError (exp, message);
+						
+					//we still have requests to go, so cancel the current one and sleep for a bit
+					} else {
+						req.Abort ();
+						System.Threading.Thread.Sleep (wait);
+						continue;
 					}
-				} catch (System.Net.WebException) {
-					System.Threading.Thread.Sleep (1000);
+				}
+			
+				if (resp != null) {
+					//TODO: a choice of browsers
+					Gnome.Url.Show (url);
+					break;
 				}
 			}
-			
-			MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowErrorFormatted ("Could not connect to webserver {0}", new string [] {url});
 		}
 		
 		#endregion
@@ -281,6 +322,15 @@ namespace AspNetAddIn
 		WebHandler,
 		WebSkin,
 		WebImage,
+		Global,
 		None
+	}
+	
+	public enum SpecialFiles
+	{
+	}
+	
+	public enum SpecialFiles20
+	{
 	}
 }
