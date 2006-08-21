@@ -1,3 +1,14 @@
+2006-08-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/MdsFileFormat.cs: Improve the error message
+	  when a project can't be loaded.
+	  
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	* MonoDevelop.Projects.Parser/FileEntry.cs:
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: When unloading
+	  a database, remove pending parse jobs belonging to that database.
+	  Fixes bug #79101.
+
 2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Ambience/AmbienceService.cs: 

@@ -366,6 +366,7 @@ namespace MonoDevelop.Projects.Parser
 		{
 			public object Data;
 			public JobCallback ParseCallback;
+			public CodeCompletionDatabase Database;
 		}
 
 		class CompilationUnitTypeResolver: ITypeResolver
@@ -408,6 +409,7 @@ namespace MonoDevelop.Projects.Parser
 		CombineEntryEventHandler combineEntryRemovedHandler;
 
 		Queue parseQueue = new Queue();
+		object parseQueueLock = new object ();
 		AutoResetEvent parseEvent = new AutoResetEvent (false);
 		
 		string codeCompletionPath;
@@ -745,8 +747,17 @@ namespace MonoDevelop.Projects.Parser
 			lock (databases)
 			{
 				db = databases [uri] as CodeCompletionDatabase;
-				if (db != null)
+				if (db != null) {
 					databases.Remove (uri);
+					lock (parseQueueLock) {
+						// Delete all pending parse jobs for this database
+						Queue newQueue = new Queue ();
+						foreach (ParsingJob pj in parseQueue)
+							if (pj.Database != db)
+								newQueue.Enqueue (pj);
+						parseQueue = newQueue;
+					}
+				}
 			}
 			if (db != null) {
 				db.Write ();
@@ -879,12 +890,13 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		internal void QueueParseJob (JobCallback callback, object data)
+		internal void QueueParseJob (CodeCompletionDatabase db, JobCallback callback, object data)
 		{
 			ParsingJob job = new ParsingJob ();
 			job.ParseCallback = callback;
 			job.Data = data;
-			lock (parseQueue)
+			job.Database = db;
+			lock (parseQueueLock)
 			{
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
@@ -1000,7 +1012,7 @@ namespace MonoDevelop.Projects.Parser
 					}
 					
 					ParsingJob job = null;
-					lock (parseQueue)
+					lock (parseQueueLock)
 					{
 						if (parseQueue.Count > 0)
 							job = (ParsingJob) parseQueue.Dequeue ();
@@ -1016,7 +1028,7 @@ namespace MonoDevelop.Projects.Parser
 						}
 					}
 					
-					lock (parseQueue)
+					lock (parseQueueLock)
 						pending = parseQueue.Count;
 					
 				}

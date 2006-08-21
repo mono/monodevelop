@@ -45,6 +45,9 @@ namespace MonoDevelop.Projects.Parser
 		[NonSerialized]
 		bool disableParse;
 		
+		[NonSerialized]
+		bool inParseQueue;
+		
 		public FileEntry (string path)
 		{
 			filePath = path;
@@ -59,6 +62,11 @@ namespace MonoDevelop.Projects.Parser
 		public bool DisableParse {
 			get { return disableParse; }
 			set { disableParse = value; }
+		}
+		
+		public bool InParseQueue {
+			get { return inParseQueue; }
+			set { inParseQueue = value; }
 		}
 		
 		public DateTime LastParseTime

@@ -444,17 +444,25 @@ namespace MonoDevelop.Projects.Parser
 		
 		protected void QueueParseJob (FileEntry file)
 		{
-			// Change date now, to avoid reparsing if CheckModifiedFiles is called again
-			// before the parse job is executed
-			
-			FileInfo fi = new FileInfo (file.FileName);
-			file.LastParseTime = fi.LastWriteTime;
-			parserDatabase.QueueParseJob (new JobCallback (ParseCallback), file.FileName);
+			if (file.InParseQueue)
+				return;
+
+			file.InParseQueue = true;
+			parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
 		}
 		
 		void ParseCallback (object ob, IProgressMonitor monitor)
 		{
-			ParseFile ((string)ob, monitor);
+			string fileName = (string) ob;
+			ParseFile (fileName, monitor);
+			lock (rwlock) {
+				FileEntry file = GetFile (fileName);
+				if (file != null) {
+					file.InParseQueue = false;
+					FileInfo fi = new FileInfo (fileName);
+					file.LastParseTime = fi.LastWriteTime;
+				}
+			}
 		}
 		
 		protected virtual void ParseFile (string fileName, IProgressMonitor monitor)

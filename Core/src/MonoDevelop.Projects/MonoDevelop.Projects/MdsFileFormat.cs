@@ -101,6 +101,9 @@ namespace MonoDevelop.Projects
 					return combineReader.ReadCombine (reader);
 				else
 					throw new UnknownProjectVersionException (file, version);
+			} catch (Exception ex) {
+				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution: {0}"), file), ex);
+				throw;
 			} finally {
 				reader.Close ();
 			}
