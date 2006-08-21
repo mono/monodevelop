@@ -1,3 +1,9 @@
+2006-08-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs:
+	  Disable CodeBehind display binding. Needs some works on Core to make 
+	  it work properly. 
+
 2006-08-05  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxPad.cs:

@@ -44,6 +44,9 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	{		
 		public bool CanAttachTo (IViewContent content)
 		{
+			//FIXME: disabled, this whole thing is fundamentally broken
+			return false;
+			
 			IClass cls = GetCodeBehindClass (content);
 			
 			if (cls != null) {
