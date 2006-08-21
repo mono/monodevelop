@@ -24,6 +24,7 @@ namespace AspNetAddIn
 				return null;
 			
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			ctx.UpdateDatabase ();
 			
 			foreach (ProjectFile file in project.ProjectFiles) {
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
@@ -47,8 +48,14 @@ namespace AspNetAddIn
 						monitor.ReportWarning (m.ToString ());
 					}
 				}
-				
 			}
+			
+			//make sure changed files are saved
+			Gtk.Application.Invoke ( delegate {
+				foreach (MonoDevelop.Ide.Gui.Document guiDoc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
+					if (guiDoc.IsDirty)
+						guiDoc.Save ();
+			});
 			
 			return null;
 		}

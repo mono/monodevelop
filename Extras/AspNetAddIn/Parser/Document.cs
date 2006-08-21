@@ -50,12 +50,15 @@ namespace AspNetAddIn.Parser
 			this.projectFile = file;
 			rootNode = new RootNode ();
 			
-			using (StreamReader sr = new StreamReader (file.FilePath)) {
-				try {
-					rootNode.Parse (file.FilePath, sr);
-				} catch (Exception e) {
-					MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowWarning ("The ASP.NET file parser failed for parse a page because: "+e.Message);
-				}	
+			StreamReader sr = null;
+			try {
+				sr = new StreamReader (file.FilePath);
+				rootNode.Parse (file.FilePath, sr);
+			} catch (Exception e) {
+					MonoDevelop.Ide.Gui.IdeApp.Services.MessageService.ShowWarning ("The ASP.NET file parser failed to parse " + file.FilePath + " because: "+e.Message);
+			} finally {
+				if (sr != null)
+					sr.Close ();
 			}
 		}
 		

@@ -1,3 +1,14 @@
+2006-08-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Project/VerifyCodeBehindBuildStep.cs: Make sure modified files are 
+	  saved before compilation.
+	  Update the parser database to make sure our parse information is 
+	  valid.
+	  
+	* Project/AspNetAppProject.cs: Add an operation cancel handler.
+	
+	* Parser/Document.cs: trap file loading exceptions.
+
 2006-08-05  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Project/VerifyCodeBehindBuildStep.cs:

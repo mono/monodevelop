@@ -141,6 +141,7 @@ namespace AspNetAddIn
 				}
 				
 				IProcessAsyncOperation op = handler.Execute (xsp, xspOptions, configuration.SourceDirectory, console);
+				monitor.CancelRequested += delegate {op.Cancel ();};
 				operationMonitor.AddOperation (op);
 				
 				//TODO: a choice of browsers, maybe an internal browser too
