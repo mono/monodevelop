@@ -53,8 +53,14 @@ namespace MonoDevelop.Components
 			// add default project path as a MD bookmark
 			string pathName = propertyService.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetFolderPath (Environment.SpecialFolder.Personal))).ToString ();
 
-			if (fileUtilityService.IsDirectory (pathName) && Array.IndexOf (this.ShortcutFolders, pathName) == -1)
-				this.AddShortcutFolder (pathName);
+			if (fileUtilityService.IsDirectory (pathName)) {
+				try {
+					this.AddShortcutFolder (pathName);
+				} catch {
+					// This may fail if the folder is already registered, and the ShortcutFolders is not
+					// giving the correct values, so there isn't another way to check it.
+				}
+			}
 
 			// FIXME: only set this once per-dialog
 			// perhaps in Dispose ()? or only when a file or dir is selected
