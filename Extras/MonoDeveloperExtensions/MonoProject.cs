@@ -324,10 +324,6 @@ namespace MonoDeveloper
 			return found;
 		}
 		
-		public override void GenerateMakefiles (Combine parentCombine)
-		{
-		}
-		
 		public override void Dispose ()
 		{
 			base.Dispose ();

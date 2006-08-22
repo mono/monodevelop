@@ -33,8 +33,5 @@ namespace MonoDeveloper
 {	
 	class MonoCombine: Combine
 	{
-		public override void GenerateMakefiles (Combine parentCombine)
-		{
-		}
 	}
 }
