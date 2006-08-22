@@ -21,7 +21,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandRouter
+	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandDelegatorRouter
 	{
 		IWorkbench workbench;
 		IViewContent content;
@@ -349,10 +349,20 @@ namespace MonoDevelop.Ide.Gui
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}
 
-		object ICommandRouter.GetNextCommandTarget ()
+		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
 			commandHandler.SetNextCommandTarget (Parent); 
 			return commandHandler;
+		}
+		
+		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		{
+			Gtk.Widget w = content as Gtk.Widget;
+			if (w != this.tabPage) {
+				// Route commands to the view
+				return content;
+			} else
+				return null;
 		}
 		
 		protected virtual void OnTitleChanged(EventArgs e)

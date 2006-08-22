@@ -612,14 +612,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Invoke(string fileName)
 		{
-			newContent = binding.CreateContentForFile (fileName);
-			if (newContent == null)
-				return;
+			try {
+				newContent = binding.CreateContentForFile (fileName);
+				if (newContent == null)
+					return;
 
-			if (fileInfo.Encoding != null && newContent is IEncodedTextContent)
-				((IEncodedTextContent)newContent).Load (fileName, fileInfo.Encoding);
-			else
-				newContent.Load (fileName);
+				if (fileInfo.Encoding != null && newContent is IEncodedTextContent)
+					((IEncodedTextContent)newContent).Load (fileName, fileInfo.Encoding);
+				else
+					newContent.Load (fileName);
+			} catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be opened."));
+				return;
+			}
 
 			if (project != null)
 				newContent.Project = project;

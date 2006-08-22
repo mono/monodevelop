@@ -173,8 +173,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		void AddClass (Project project, IClass cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
-			if (!builder.MoveToObject (project))
-				builder.MoveToRoot ();
+			if (!builder.MoveToObject (project)) {
+				if (!builder.MoveToRoot ())
+					return;	// The tree may have been cleaned
+			}
 			
 			if (cls.Namespace == "") {
 				builder.AddChild (new ClassData (project, cls));

@@ -1,3 +1,17 @@
+2006-08-22 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs: Fixed
+	  exception when trying to update an empty tree.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Don't crash if a file load fails.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Route commands through
+	  the view, before routing to the parent.
+	  
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Several fixes
+	  and code refactoring that closes bug #79099.
+
 2006-08-10 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: Don't show
