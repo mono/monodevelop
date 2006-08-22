@@ -1,3 +1,10 @@
+2006-08-22 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CombineEntry.cs: Removed obsolete code.
+	* MonoDevelop.Projects/Combine.cs: Properly bind combine configurations
+	  to project configurations. Fixes bug #79108. Removed some unused
+	  code.
+
 2006-08-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/MdsFileFormat.cs: Improve the error message

@@ -348,10 +348,6 @@ namespace MonoDevelop.Projects
 		public abstract void Execute (IProgressMonitor monitor, ExecutionContext context);
 		public abstract bool NeedsBuilding { get; set; }
 		
-		public virtual void GenerateMakefiles (Combine parentCombine)
-		{
-		}
-		
 		public event CombineEntryRenamedEventHandler NameChanged;
 		public event ConfigurationEventHandler ActiveConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
