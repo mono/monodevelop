@@ -7,8 +7,7 @@ installed_chrome_txt = $(chromedir)/installed-chrome.txt
 
 ### Build the JAR ###
 
-jar_files =	\
-		content/aspdesigner/JSCall.js	\
+local_jar_files = \
 		content/aspdesigner/contents.rdf \
 		content/aspdesigner/aspdesigner.xul \
 		content/aspdesigner/editorContent.css \
@@ -17,6 +16,9 @@ jar_files =	\
 		content/aspdesigner/constants.js \
 		content/aspdesigner/xpcom.js \
 		locale/en-US/aspdesigner/contents.rdf
+
+jar_files =	$(local_jar_files) \
+		content/aspdesigner/JSCall.js
 
 content/aspdesigner/JSCall.js: $(JSCALL_SCRIPT)
 	cp $^ $@
