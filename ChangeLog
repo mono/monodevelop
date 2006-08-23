@@ -1,3 +1,7 @@
+2006-08-23 Scott Ellington  <scott.ellington@gmail.com>
+
+	* monodevelop.xml: permit mds and mdp files to be opened from desktop
+
 2006-08-17  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Extras/Makefile.am:

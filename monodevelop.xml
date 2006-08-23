@@ -89,10 +89,12 @@
     <glob pattern="*.mdsx"/>
   </mime-type>
   <mime-type type="application/x-mdp">
+  	<sub-class-of type="text/plain"/>
     <comment xml:lang="en">MonoDevelop project</comment>
     <glob pattern="*.mdp"/>
   </mime-type>
   <mime-type type="application/x-mds">
+  	<sub-class-of type="text/plain"/>
     <comment xml:lang="en">MonoDevelop solution</comment>
     <glob pattern="*.mds"/>
   </mime-type>
