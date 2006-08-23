@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl_SI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-17 08:53+0200\n"
+"POT-Creation-Date: 2006-08-23 14:04+0200\n"
 "PO-Revision-Date: 2006-08-09 13:55+0200\n"
 "Last-Translator: Matej Urbas\n"
 "Language-Team:  <en@li.org>\n"
@@ -194,7 +194,7 @@ msgid "Home"
 msgstr "Domov"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:96
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:131
 msgid "Location"
 msgstr "Lokacija"
 
@@ -1801,7 +1801,7 @@ msgstr "OVR"
 msgid "Assemblies"
 msgstr "Zbirke"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:74
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:72
 #, csharp-format
 msgid "File '{0}' is not a valid .Net Assembly"
 msgstr "Datoteka '{0}' ni veljavna .Net zbirka."
@@ -1863,11 +1863,12 @@ msgid "_Template"
 msgstr "Ša_blona"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:34
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:94
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:129
 msgid "Reference Name"
 msgstr "Ime reference"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:47
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:157
 msgid "Package"
 msgstr "Paket"
 
@@ -1934,6 +1935,7 @@ msgid "Solution Location"
 msgstr "Lokacija rešitve"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
 msgid "Project"
 msgstr "Projekt"
 
@@ -1941,7 +1943,7 @@ msgstr "Projekt"
 msgid "Directory"
 msgstr "Direktorij"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:132
 #, csharp-format
 msgid ""
 "(Projects referencing '{0}' are not shown,\n"
@@ -2008,21 +2010,25 @@ msgstr "Neveljavno ime imenika: {0}"
 msgid "Invalid file mask: {0}"
 msgstr "Neveljavna datotečna maska: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:130
 msgid "Type"
 msgstr "Tip"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:138
 msgid "Packages"
 msgstr "Paketi"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:139
 msgid "Projects"
 msgstr "Projekti"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:140
 msgid ".Net Assembly"
 msgstr ".Net zbirka"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:158
+msgid "Assembly"
+msgstr "Zbirka"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
 #, csharp-format
@@ -2833,6 +2839,11 @@ msgstr "Neveljavno ime datoteke"
 msgid "{0} is a directory"
 msgstr "'{0}' ne predstavlja imenika"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:625
+#, csharp-format
+msgid "The file '{0}' could not be opened."
+msgstr "Datoteke '{0}' ni bilo možno odpreti."
+
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:55
 #, csharp-format
 msgid "Can't create solution with type : {0}"
@@ -3324,16 +3335,16 @@ msgstr "Nalagam rešitev: {0}"
 msgid "Refactoring project {0}"
 msgstr "Preoblikujem projekt '{0}'"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:599
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:615
 msgid "The solution does not have an active configuration."
 msgstr "Rešitev nima izbrane aktivne nastavitve."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:603
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:619
 #, csharp-format
 msgid "Building Solution {0}"
 msgstr "Gradim rešitev {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:610
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:626
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
@@ -3392,7 +3403,12 @@ msgstr "Nalagam projekt: {0}"
 msgid "Could not load project: {0}"
 msgstr "Nalaganje projekta '{0}' je spodletelo."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:516
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:105
+#, csharp-format
+msgid "Could not load solution: {0}"
+msgstr "Nisem mogel naložiti rešitve: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:518
 msgid "Generating database"
 msgstr "Ustvarjam podatkovno bazo"
 
@@ -3919,7 +3935,17 @@ msgstr "Ste prepričani da želite izbrisati gradnik '{0}'?"
 msgid "Are you sure you want to delete the window '{0}'?"
 msgstr "Ste prepričani da želite izbrisati okno '{0}'?"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:194
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:52
+#, csharp-format
+msgid "Are you sure you want to delete the action group '{0}'?"
+msgstr "Ste prepričani da želite izbrisati skupino akcij '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:54
+#, csharp-format
+msgid "Are you sure you want to delete '{0}'?"
+msgstr "Ste prepričani da želite izbrisati '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:180
 msgid "The form designer could not be loaded"
 msgstr "Oblikovalca gradnikov ni bilo možno naložiti"
 
@@ -3944,12 +3970,12 @@ msgstr ""
 msgid "Open Action Group"
 msgstr "Odpri skupino akcij"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:66
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:64
 msgid "Designer"
 msgstr "Oblikovalec"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:98
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:114
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:89
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:105
 msgid "Actions"
 msgstr "Akcije"
 
