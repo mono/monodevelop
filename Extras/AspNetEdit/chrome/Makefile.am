@@ -87,7 +87,7 @@ uninstall-chrome-text:
 	fi;
 
 
-EXTRA_DIST = $(jar_files) aspdesigner.manifest.in
+EXTRA_DIST = $(local_jar_files) aspdesigner.manifest.in
 
 CLEANFILES =			\
 	$(packagename).jar	\
