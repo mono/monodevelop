@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-18 23:42+0200\n"
-"PO-Revision-Date: 2006-08-19 00:06+0200\n"
+"POT-Creation-Date: 2006-08-23 13:50+0200\n"
+"PO-Revision-Date: 2006-08-23 13:50+0200\n"
 "Last-Translator: Marek Sieradzki <marek.sieradzki@gmail.com>\n"
 "Language-Team: Polish <gnomepl@pandora.info.bielsko.pl>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs:23
 msgid "_Browse..."
@@ -190,7 +190,7 @@ msgid "Home"
 msgstr "Dom"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:96
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:131
 msgid "Location"
 msgstr "Położenie"
 
@@ -1800,7 +1800,7 @@ msgstr "NAD"
 msgid "Assemblies"
 msgstr "Podzespoły"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:74
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:72
 #, csharp-format
 msgid "File '{0}' is not a valid .Net Assembly"
 msgstr "Plik '{0}' nie jest prawidłowym assembly .NET"
@@ -1862,11 +1862,12 @@ msgid "_Template"
 msgstr "_Szablon"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:34
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:94
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:129
 msgid "Reference Name"
 msgstr "Nazwa odnośnika"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:47
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:157
 msgid "Package"
 msgstr "Pakiet"
 
@@ -1933,6 +1934,7 @@ msgid "Solution Location"
 msgstr "Położenie rozwiązania"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
 msgid "Project"
 msgstr "Projekt"
 
@@ -1940,7 +1942,7 @@ msgstr "Projekt"
 msgid "Directory"
 msgstr "Katalog"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:132
 #, csharp-format
 msgid ""
 "(Projects referencing '{0}' are not shown,\n"
@@ -2007,21 +2009,25 @@ msgstr "Nieprawidłowa nazwa katalogu: {0)"
 msgid "Invalid file mask: {0}"
 msgstr "Nieprawidłowa maska pliku: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:130
 msgid "Type"
 msgstr "Typ"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:138
 msgid "Packages"
 msgstr "Pakiety"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:139
 msgid "Projects"
 msgstr "Projekty"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:140
 msgid ".Net Assembly"
 msgstr "Assembly .NET"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:158
+msgid "Assembly"
+msgstr "Assembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
 #, csharp-format
@@ -2819,6 +2825,11 @@ msgstr "Nieprawidłowa nazwa pliku"
 msgid "{0} is a directory"
 msgstr "{0} jest katalogiem"
 
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:625
+#, csharp-format
+msgid "The file '{0}' could not be opened."
+msgstr "Nie można otworzyć pliku '{0}'."
+
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:55
 #, csharp-format
 msgid "Can't create solution with type : {0}"
@@ -3308,16 +3319,16 @@ msgstr "Otwieranie rozwiązania: {0}"
 msgid "Refactoring project {0}"
 msgstr "Refaktoring projektu {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:599
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:615
 msgid "The solution does not have an active configuration."
 msgstr "Rozwiązanie nie posiada aktywnej konfiguracji."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:603
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:619
 #, csharp-format
 msgid "Building Solution {0}"
 msgstr "Budowanie rozwiązania {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:610
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:626
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
@@ -3331,8 +3342,8 @@ msgid ""
 "Unknown language '{0}'. You may need to install an additional add-in to "
 "support this language."
 msgstr ""
-"Nieznany język '{0}. 'Możesz potrzebować dodatkowych rozszerzeń dla"
-"wsparcia projektów w tym języku."
+"Nieznany język '{0}. 'Możesz potrzebować dodatkowych rozszerzeń dlawsparcia "
+"projektów w tym języku."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:159
 #, csharp-format
@@ -3377,7 +3388,12 @@ msgstr "Otwieranie projektu: {0}"
 msgid "Could not load project: {0}"
 msgstr "Nie można otworzyć projektu: {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:516
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:105
+#, csharp-format
+msgid "Could not load solution: {0}"
+msgstr "Nie można otworzyć rozwiązania: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:518
 msgid "Generating database"
 msgstr "Generowanie bazę danych"
 
@@ -4894,7 +4910,9 @@ msgstr "Witaj"
 #: ../Extras/WelcomePage/WelcomePageView.cs:215
 #, csharp-format
 msgid "{0} day"
-msgstr "{0} dzień"
+msgid_plural "{0} days"
+msgstr[0] "{0} dzień"
+msgstr[1] "{0} dni"
 
 #: ../Extras/WelcomePage/WelcomePageView.cs:219
 #, csharp-format
@@ -4906,7 +4924,9 @@ msgstr[1] "{0} godzin"
 #: ../Extras/WelcomePage/WelcomePageView.cs:223
 #, csharp-format
 msgid "{0} minute"
-msgstr "{0} minuta"
+msgid_plural "{0} minutes"
+msgstr[0] "{0} minuta"
+msgstr[1] "{0} minut"
 
 #: ../Extras/WelcomePage/WelcomePageView.cs:227
 msgid "Less than a minute"
