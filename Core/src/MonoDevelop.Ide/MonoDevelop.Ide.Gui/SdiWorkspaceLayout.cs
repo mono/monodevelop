@@ -580,14 +580,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void CloseWindowEvent(object sender, EventArgs e)
 		{
-			// FIXME: GTKize
-
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
+			
+			// Unsubscribe events to avoid memory leaks
+			f.TabLabel.Button.Clicked -= new EventHandler (closeClicked);
+			f.TabLabel.Button.StateChanged -= new StateChangedHandler (stateChanged);
+
 			if (f.ViewContent != null) {
 				((IWorkbench)wbWindow).CloseContent(f.ViewContent);
 				ActiveMdiChanged(this, null);
 			}
-
 		}
 		
 		public IWorkbenchWindow ShowView(IViewContent content)

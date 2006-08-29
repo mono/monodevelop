@@ -1,3 +1,15 @@
+2006-08-29 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Make the toolbar smaller
+	  and add some spacing.
+	* MonoDevelop.Ide.mdp: Removed unused file.
+	* MonoDevelop.Ide.Gui/Document.cs: Unsubscribe ActiveViewContentChanged
+	  event when the window is closed.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Fixed error message.
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Added some missing Destroys().
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Unsubscribe events to avoid
+	  memory leaks.
+
 2006-08-22 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ClassPad/NamespaceNodeBuilder.cs: Fixed

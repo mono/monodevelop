@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			control = new VBox ();
 
 			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			control.PackStart (toolbar, false, false, 0);
 			
 			errorBtn = new ToggleToolButton ();
@@ -382,17 +382,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errors), errors);
+			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errors), errors);
 		}
 		
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warns), warns); 
+			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warns), warns); 
 		}	
 		
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", msgs), msgs);
+			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", msgs), msgs);
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

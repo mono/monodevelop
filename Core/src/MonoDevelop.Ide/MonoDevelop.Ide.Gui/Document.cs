@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.Gui
 		internal Document (IWorkbenchWindow window)
 		{
 			this.window = window;
-			window.Closed += new EventHandler (OnClosed);
-			window.ActiveViewContentChanged += delegate { OnViewChanged (EventArgs.Empty); };
+			window.Closed += OnClosed;
+			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 		}
 		
 		public string FileName {
@@ -244,7 +244,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
+			window.Closed -= OnClosed;
+			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			OnClosed (a);
+		}
+		
+		void OnActiveViewContentChanged (object s, EventArgs args)
+		{
+			OnViewChanged (args);
 		}
 		
 		protected virtual void OnClosed (EventArgs args)

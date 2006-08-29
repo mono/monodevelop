@@ -77,6 +77,10 @@ namespace MonoDevelop.Ide.Gui
 				tabPage = value;
 			}
 		}
+		
+		internal TabLabel TabLabel {
+			get { return tabLabel; }
+		}
 
 		public bool ShowNotification {
 			get {
@@ -238,6 +242,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			this.Remove (this.Child);
 			content.Dispose ();
+			tabLabel.Dispose ();
 
 			OnClosed (null);
 			
@@ -246,6 +251,8 @@ namespace MonoDevelop.Ide.Gui
 			this.tabControl = null;
 			this.tabLabel = null;
 			this.tabPage = null;
+			Dispose ();
+			Destroy ();
 		}
 		
 		public void AttachSecondaryViewContent(ISecondaryViewContent subViewContent)

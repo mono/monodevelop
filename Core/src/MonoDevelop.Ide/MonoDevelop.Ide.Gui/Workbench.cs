@@ -622,7 +622,7 @@ namespace MonoDevelop.Ide.Gui
 				else
 					newContent.Load (fileName);
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be opened."));
+				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName));
 				return;
 			}
 
