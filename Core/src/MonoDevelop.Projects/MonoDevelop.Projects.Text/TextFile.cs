@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.Text
 			FileInfo f = new FileInfo (fileName);
 			byte[] content = new byte [f.Length];
 			
-			using (FileStream stream = f.OpenRead ()) {
+			using (FileStream stream = f.Open (FileMode.Open, FileAccess.Read, FileShare.Read)) {
 				int n = 0, nc;
 				while ((nc = stream.Read (content, n, (content.Length - n))) > 0)
 					n += nc;

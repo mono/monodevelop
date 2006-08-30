@@ -1,3 +1,9 @@
+2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Workaround a mono bug
+	  (FileInfo.OpenRead is not using Read share).
+	* MonoDevelop.Projects.mdp: Updated.
+
 2006-08-22 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/CombineEntry.cs: Removed obsolete code.

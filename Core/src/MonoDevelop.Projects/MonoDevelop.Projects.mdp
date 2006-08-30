@@ -16,8 +16,6 @@
   <DeployTargets />
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Ambience/AbstractAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Ambience/AmbienceReflectionDecorator.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/AmbienceService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/CodeDOMGeneratorUtility.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Ambience/IAmbience.cs" subtype="Code" buildaction="Compile" />
@@ -231,6 +229,7 @@
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.addin.xml" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Projects.Ambience/Ambience.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Documentation/IDocumentationService.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />
@@ -240,6 +239,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <DeploymentInformation strategy="File">
     <excludeFiles />
