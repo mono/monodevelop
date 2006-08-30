@@ -85,6 +85,7 @@ MonoDevelop.Core.AddIns.Setup/RepositoryEntry.cs \
 MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs \
 MonoDevelop.Core.AddIns.Setup/SetupService.cs \
 MonoDevelop.Core.AddIns.Setup/SetupTool.cs \
+MonoDevelop.Core.AddIns.Setup/SystemConfiguration.cs \
 MonoDevelop.Core.AddIns.Setup/UninstallInfo.cs \
 MonoDevelop.Core.Utils.ReportingStream/ReportingStream.cs \
 MonoDevelop.Core.Utils.DirectoryArchive/Bz2Support.cs \

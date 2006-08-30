@@ -125,6 +125,18 @@ namespace MonoDevelop.Core.AddIns.Setup
 				case "p":
 					BuildPackage (parms);
 					break;
+					
+				case "dir-link":
+					LinkDirectory (parms);
+					break;
+					
+				case "dir-unlink":
+					UnlinkDirectory (parms);
+					break;
+					
+				case "dir-list":
+					ListDirectories (parms);
+					break;
 				
 				case "help":
 				case "h":
@@ -327,6 +339,39 @@ namespace MonoDevelop.Core.AddIns.Setup
 			Runtime.SetupService.BuildPackage (new ConsoleProgressMonitor (), GetOption ("d", "."), GetArguments ());
 		}
 		
+		void LinkDirectory (string[] args)
+		{
+			if (args.Length < 1)
+				throw new InstallException ("A path is required.");
+				
+			try {
+				Runtime.SetupService.AddAddinPath (args[0]);
+				Console.WriteLine ("Directory '{0}' registered.", args [0]);
+			} catch (System.UnauthorizedAccessException) {
+				throw new InstallException ("The directory can't be registered with the current user permissions.");
+			}
+		}
+
+		void UnlinkDirectory (string[] args)
+		{
+			if (args.Length < 1)
+				throw new InstallException ("A path is required.");
+			try {
+				Runtime.SetupService.RemoveAddinPath (args[0]);
+				Console.WriteLine ("Directory '{0}' removed.", args [0]);
+			} catch (System.UnauthorizedAccessException) {
+				throw new InstallException ("The directory can't be unregistered with the current user permissions.");
+			}
+		}
+		
+		void ListDirectories (string[] args)
+		{
+			Console.WriteLine ("Registered add-in directories:");
+			foreach (string dir in Runtime.SetupService.GetAddinPaths ()) {
+				Console.WriteLine (dir);
+			}
+		}
+		
 		string[] GetArguments ()
 		{
 			return arguments;
@@ -371,6 +416,9 @@ namespace MonoDevelop.Core.AddIns.Setup
 				Console.WriteLine ("  list (l)         Lists installed add-ins");
 				Console.WriteLine ("  list-av (la)     Lists add-ins available in registered repositories");
 				Console.WriteLine ("  list-update (lu) Lists available add-in updates in registered repositories");
+				Console.WriteLine ("  dir-link         Adds a directory to the add-in search path list");
+				Console.WriteLine ("  dir-unlink       Removes a directory from the add-in search path list");
+				Console.WriteLine ("  dir-list         Lists all directories in the add-in search path list");
 				Console.WriteLine ();
 				Console.WriteLine ("Repository Commands:");
 				Console.WriteLine ("  rep-add (ra)     Registers repositories");
@@ -507,6 +555,33 @@ namespace MonoDevelop.Core.AddIns.Setup
 					Console.WriteLine ("Creates an add-in package (.mpack file) which includes all files ");
 					Console.WriteLine ("needed to deploy an add-in. The command parameter is the path to");
 					Console.WriteLine ("the add-in's configuration file.");
+					break;
+					
+				case "dir-link":
+					Console.WriteLine ("dir-link: Adds a directory to the add-in search path list.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup link-dir <directory-path>");
+					Console.WriteLine ();
+					Console.WriteLine ("Adds a directory to the add-in search path. All add-ins in");
+					Console.WriteLine ("the directory and subdirectories are automatically installed.");
+					break;
+					
+				case "dir-unlink":
+					Console.WriteLine ("dir-unlink: Removes a directory from the add-in search path list.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup unlink-dir <directory-path>");
+					Console.WriteLine ();
+					Console.WriteLine ("Removes a directory from the add-in search path. All add-ins in");
+					Console.WriteLine ("the directory and subdirectories are automatically uninstalled.");
+					break;
+					
+				case "dir-list":
+					Console.WriteLine ("dir-list: Lists all directories in the add-in search path list.");
+					Console.WriteLine ();
+					Console.WriteLine ("Usage: setup dir-list");
+					Console.WriteLine ();
+					Console.WriteLine ("Lists all directories in the add-in search path list. Directories");
+					Console.WriteLine ("can be added using the dir-link command and removed with dir-unlink.");
 					break;
 				
 				case "help":

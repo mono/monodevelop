@@ -50,25 +50,29 @@ namespace MonoDevelop.Core.AddIns.Setup
 		ArrayList addinSetupInfos;
 		AddInStatus addinStatus;
 		AddinSystemConfiguration config;
-		string[] addInDirs;
+		SystemConfiguration systemConfig;
+		
+		ArrayList addInDirs = new ArrayList ();
 		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		
 		internal void Initialize (string[] addInDirs, bool ignoreDefaultPath)
 		{
-			if (ignoreDefaultPath && addInDirs == null)
-				this.addInDirs = new string [0];
-			else if (ignoreDefaultPath)
-				this.addInDirs = addInDirs;
+			if (ignoreDefaultPath && addInDirs == null) {
+				// nothing
+			} else if (ignoreDefaultPath)
+				this.addInDirs.AddRange (addInDirs);
 			else if (addInDirs != null) {
-				this.addInDirs = new string [addInDirs.Length + 1];
-				this.addInDirs [0] = RootAddinPath;
-				addInDirs.CopyTo (this.addInDirs, 1);
+				this.addInDirs.Add (RootAddinPath);
+				this.addInDirs.AddRange (addInDirs);
 			} else {
-				this.addInDirs = new string [] { RootAddinPath, UserAddinPath };
+				this.addInDirs.Add (RootAddinPath);
+				this.addInDirs.Add (UserAddinPath);
 			}
+			foreach (string s in SystemConfiguration.AddinPaths)
+				this.addInDirs.Add (s);
 		}
 		
-		string[] AddinDirectories {
+		ArrayList AddinDirectories {
 			get { return addInDirs; }
 		}
 		
@@ -88,12 +92,50 @@ namespace MonoDevelop.Core.AddIns.Setup
 			get { return Path.Combine (BinPath, "../AddIns"); }
 		}
 		
-		string RootConfigFile {
+		string UserConfigFile {
 			get { return Path.Combine (UserConfigPath, "addins.config"); }
 		}
 		
 		string UserAddinPath {
 			get { return Path.Combine (UserConfigPath, "addins"); }
+		}
+		
+		string SystemConfigPath {
+			get {
+				if (Environment.OSVersion.Platform == PlatformID.Unix) {
+					if (BinPath.StartsWith ("/usr/lib"))
+						return "/etc/monodevelop";
+					else
+						return BinPath + "/../../../etc/monodevelop";
+				} else {
+					return BinPath;
+				}
+			}
+		}
+		
+		string SystemConfigFile {
+			get { return Path.Combine (SystemConfigPath, "monodevelop.config"); }
+		}
+		
+		public void AddAddinPath (string path)
+		{
+			if (!SystemConfiguration.AddinPaths.Contains (path)) {
+				SystemConfiguration.AddinPaths.Add (path);
+				SaveSystemConfiguration ();
+			}
+		}
+		
+		public void RemoveAddinPath (string path)
+		{
+			SystemConfiguration.AddinPaths.Remove (path);
+			SaveSystemConfiguration ();
+		}
+		
+		public string[] GetAddinPaths ()
+		{
+			string[] dirs = new string [SystemConfiguration.AddinPaths.Count];
+			SystemConfiguration.AddinPaths.CopyTo (dirs, 0);
+			return dirs;
 		}
 		
 		public bool Install (IProgressMonitor monitor, params string[] files)
@@ -1203,7 +1245,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		AddinSystemConfiguration Configuration {
 			get {
 				if (config == null) {
-					config = (AddinSystemConfiguration) ReadObject (RootConfigFile, typeof(AddinSystemConfiguration));
+					config = (AddinSystemConfiguration) ReadObject (UserConfigFile, typeof(AddinSystemConfiguration));
 					if (config == null) {
 						config = new AddinSystemConfiguration ();
 						RegisterRepository ("http://go-mono.com/md/main.mrep", false);
@@ -1213,10 +1255,29 @@ namespace MonoDevelop.Core.AddIns.Setup
 			}
 		}
 		
+		SystemConfiguration SystemConfiguration {
+			get {
+				if (systemConfig == null) {
+					systemConfig = (SystemConfiguration) ReadObject (SystemConfigFile, typeof(SystemConfiguration));
+					if (systemConfig == null) {
+						systemConfig = new SystemConfiguration ();
+					}
+				}
+				return systemConfig;
+			}
+		}
+		
 		void SaveConfiguration ()
 		{
 			if (config != null) {
-				WriteObject (RootConfigFile, config); 
+				WriteObject (UserConfigFile, config); 
+			}
+		}
+		
+		void SaveSystemConfiguration ()
+		{
+			if (systemConfig != null) {
+				WriteObject (SystemConfigFile, systemConfig); 
 			}
 		}
 		
