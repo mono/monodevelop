@@ -1,3 +1,8 @@
+2006-08-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Fixed bug about 
+	  adding the wrong widget as action designer page.
+
 2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore/GtkCoreService.cs: Only export properties which

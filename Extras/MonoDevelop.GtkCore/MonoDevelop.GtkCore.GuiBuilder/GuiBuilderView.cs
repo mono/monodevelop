@@ -121,8 +121,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActionGroupAdded (object s, Stetic.Wrapper.ActionGroupEventArgs args)
 		{
-			AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
+			AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 			editSession.RootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
+			actionsButtonVisible = true;
 		}
 		
 		void OnWindowChanged (object s, EventArgs args)
