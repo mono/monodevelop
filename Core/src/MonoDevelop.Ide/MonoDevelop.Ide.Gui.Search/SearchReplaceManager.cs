@@ -233,6 +233,8 @@ namespace MonoDevelop.Ide.Gui.Search
 			Document doc = IdeApp.Workbench.OpenDocument (fileName);
 			if (doc != null)
 				return doc.Window.ViewContent;
+			else
+				return null;
 		}
 		
 		internal static Gtk.Dialog DialogPointer 

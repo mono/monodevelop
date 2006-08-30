@@ -1,3 +1,7 @@
+2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Fix the build.
+	
 2006-08-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Properly report file open errors.
