@@ -1,3 +1,23 @@
+2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Only export properties which
+	  return primitive types. Fixes bug #79195.
+	* lib/*: Updated from stetic module.
+	* MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs: Unsubscribe close
+	  event when done.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Handle designer
+	  commands in its own tab page.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: Explicitely dispose
+	  custom widgets to avoid memory leaks.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Track api changes.
+	
+	* MonoDevelop.GtkCore.mdp: Updated.
+
 2006-08-18 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* gui.glade: Minor fix.

@@ -123,7 +123,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				ShowPage (i);
 		}
 		
-		protected void ShowPage (int npage)
+		public void ShowPage (int npage)
 		{
 			if (notebook.CurrentPage == npage)
 				return;
@@ -146,6 +146,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
+			Gtk.Widget w = content.Control;
+			content.Dispose ();
+			w.Destroy ();
+			content = null;
+			box.Destroy ();
+			box = null;
 			base.Dispose ();
 		}
 		

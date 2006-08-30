@@ -118,7 +118,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		{
 			gproject.WidgetMemberNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			GuiBuilderService.ActiveProject = null;
+			
+			// The global action group is being managed by the real stetic project,
+			// so we need to remove it from the project copy before disposing it.
+			gproject.ActionGroups = null;
 			gproject.Dispose ();
+			if (widget != null) {
+				widget.Dispose ();
+				widget.Destroy ();
+				widget = null;
+			}
+			gproject = null;
+			window = null;
+			rootWidget = null;
+			codeBinder = null;
 		}
 		
 		public void SetDesignerActive ()
@@ -189,7 +202,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder {
 		
 		void OnWidgetNameChanged (object s, Stetic.Wrapper.WidgetNameChangedArgs args)
 		{
-			codeBinder.UpdateField (args.Widget, args.OldName);
+			codeBinder.UpdateField (args.WidgetWrapper, args.OldName);
 		}
 		
 		void OnSignalAdded (object sender, Stetic.SignalEventArgs args)

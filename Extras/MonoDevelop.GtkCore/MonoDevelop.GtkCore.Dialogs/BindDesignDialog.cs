@@ -91,6 +91,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		void OnResponse (object ob, Gtk.ResponseArgs args)
 		{
+			dialog.Response -= new Gtk.ResponseHandler (OnResponse);
 			if (args.ResponseId == ResponseType.Ok && radioCreate.Active)
 				lastNamespace = Namespace;
 		}

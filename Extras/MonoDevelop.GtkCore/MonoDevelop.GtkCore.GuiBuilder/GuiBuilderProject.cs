@@ -155,8 +155,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (UpdatingWindow)
 				return;
-			if (args.Widget.ParentWrapper == null) {
-				GuiBuilderWindow win = RegisterWindow (args.Widget);
+			if (args.WidgetWrapper.ParentWrapper == null) {
+				GuiBuilderWindow win = RegisterWindow (args.WidgetWrapper);
 				if (WindowAdded != null)
 					WindowAdded (this, new WindowEventArgs (win));
 			}
@@ -166,8 +166,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (UpdatingWindow)
 				return;
-			if (args.Widget.ParentWrapper == null) {
-				GuiBuilderWindow win = GetWindowForWidget (args.Widget);
+			if (args.WidgetWrapper.ParentWrapper == null) {
+				GuiBuilderWindow win = GetWindowForWidget (args.WidgetWrapper);
 				if (win != null) {
 					UnregisterWindow (win);
 					if (WindowRemoved != null)

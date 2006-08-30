@@ -137,6 +137,7 @@ namespace MonoDevelop.GtkCore
 			XmlDocument doc = new XmlDocument ();
 			if (File.Exists (info.ObjectsFile))
 				doc.Load (info.ObjectsFile);
+				
 			UpdateClass (project, doc, widgetClass, wrapperClass);
 			
 			doc.Save (info.ObjectsFile);
@@ -144,6 +145,7 @@ namespace MonoDevelop.GtkCore
 		
 		static void UpdateClass (Project project, XmlDocument doc, IClass widgetClass, IClass wrapperClass)
 		{
+			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			string typeName = widgetClass.FullyQualifiedName;
 			XmlElement objectElem = (XmlElement) doc.SelectSingleNode ("objects/object[@type='" + typeName + "']");
 			
@@ -173,26 +175,26 @@ namespace MonoDevelop.GtkCore
 				doc.DocumentElement.AppendChild (objectElem);
 			}
 			
-			MergeObject (objectElem, widgetClass, wrapperClass);
+			MergeObject (ctx, objectElem, widgetClass, wrapperClass);
 		}
 		
-		static void MergeObject (XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
+		static void MergeObject (IParserContext ctx, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
 		{
 			foreach (IProperty prop in widgetClass.Properties)
-				if (IsBrowsable (prop))
+				if (IsBrowsable (ctx, prop))
 					MergeProperty (objectElem, prop);
 				
 			foreach (IEvent ev in widgetClass.Events)
-				if (IsBrowsable (ev))
+				if (IsBrowsable (ctx, ev))
 					MergeEvent (objectElem, ev);
 				
 			if (wrapperClass != null) {
 				foreach (IProperty prop in wrapperClass.Properties)
-					if (IsBrowsable (prop))
+					if (IsBrowsable (ctx, prop))
 						MergeProperty (objectElem, prop);
 					
 				foreach (IEvent ev in wrapperClass.Events)
-					if (IsBrowsable (ev))
+					if (IsBrowsable (ctx, ev))
 						MergeEvent (objectElem, ev);
 			}
 			
@@ -202,11 +204,11 @@ namespace MonoDevelop.GtkCore
 			foreach (XmlElement xprop in objectElem.SelectNodes ("itemgroups/itemgroup/property")) {
 				string cat = ((XmlElement)xprop.ParentNode).GetAttribute ("name");
 				IProperty prop = widgetClass.Properties [xprop.GetAttribute ("name")];
-				if (prop != null && cat == GetCategory (prop) && IsBrowsable (prop))
+				if (prop != null && cat == GetCategory (prop) && IsBrowsable (ctx, prop))
 					continue;
 				if (wrapperClass != null) {
 					prop = wrapperClass.Properties [xprop.GetAttribute ("name")];
-					if (prop != null && cat == GetCategory (prop) && IsBrowsable (prop))
+					if (prop != null && cat == GetCategory (prop) && IsBrowsable (ctx, prop))
 						continue;
 				}
 				toDelete.Add (xprop);
@@ -217,11 +219,11 @@ namespace MonoDevelop.GtkCore
 			foreach (XmlElement xevent in objectElem.SelectNodes ("signals/itemgroup/signal")) {
 				string cat = ((XmlElement)xevent.ParentNode).GetAttribute ("name");
 				IEvent evnt = widgetClass.Events [xevent.GetAttribute ("name")];
-				if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (evnt))
+				if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (ctx, evnt))
 					continue;
 				if (wrapperClass != null) {
 					evnt = wrapperClass.Events [xevent.GetAttribute ("name")];
-					if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (evnt))
+					if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (ctx, evnt))
 						continue;
 				}
 				toDelete.Add (xevent);
@@ -310,11 +312,15 @@ namespace MonoDevelop.GtkCore
 			return "";
 		}
 		
-		static bool IsBrowsable (IMember member)
+		static bool IsBrowsable (IParserContext ctx, IMember member)
 		{
 			IProperty prop = member as IProperty;
-			if (prop != null && (!prop.CanGet || !prop.CanSet))
-				return false;
+			if (prop != null) {
+				if (!prop.CanGet || !prop.CanSet)
+					return false;
+				if (!IsTypeSupported (ctx, prop.ReturnType))
+					return false;
+			}
 
 			foreach (IAttributeSection section in member.Attributes) {
 				foreach (IAttribute at in section.Attributes) {
@@ -355,6 +361,30 @@ namespace MonoDevelop.GtkCore
 			return false;
 		}
 		
+		static bool IsTypeSupported (IParserContext ctx, IReturnType rtype)
+		{
+			switch (rtype.FullyQualifiedName) {
+				case "Gtk.Adjustment":
+				case "System.DateTime":
+				case "System.TimeSpan":
+				case "System.String":
+				case "System.Boolean":
+				case "System.Char":
+				case "System.SByte":
+				case "System.Byte":
+				case "System.Int16":
+				case "System.UInt16":
+				case "System.Int32":
+				case "System.UInt32":
+				case "System.Int64":
+				case "System.UInt64":
+				case "System.Single":
+				case "System.Double":
+				case "System.Decimal":
+					return true;
+			}
+			return false;
+		}
 	}
 	
 	class GtkCoreStartupCommand: CommandHandler

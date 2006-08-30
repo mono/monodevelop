@@ -124,6 +124,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void Dispose ()
 		{
 			designer.Dispose ();
+			designer = null;
+			toolbar.BindField -= new EventHandler (OnBindField);
+			toolbar.Dispose ();
+			toolbar = null;
 			base.Dispose ();
 		}
 		

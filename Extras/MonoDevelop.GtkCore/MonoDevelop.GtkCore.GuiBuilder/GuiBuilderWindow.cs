@@ -134,10 +134,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnWidgetNameChanged (object s, Stetic.Wrapper.WidgetNameChangedArgs args)
 		{
-			if (!InsideWindow (args.Widget))
+			if (!InsideWindow (args.WidgetWrapper))
 				return;
 			
-			if (args.Widget == rootWidget && NameChanged != null) {
+			if (args.WidgetWrapper == rootWidget && NameChanged != null) {
 				NameChanged (this, new WindowEventArgs (this));
 			}
 			OnChanged ();

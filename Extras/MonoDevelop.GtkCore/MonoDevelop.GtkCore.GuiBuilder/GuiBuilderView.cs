@@ -50,6 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		VBox designerBox;
 		Stetic.ActionGroupDesigner actionsBox;
 		MonoDevelopWidgetActionBar widgetBar;
+		VBox actionsPage;
 		
 		Gtk.Widget currentDesigner;
 		bool actionsButtonVisible;
@@ -59,7 +60,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			editSession = window.CreateEditSession (new OpenDocumentFileProvider ());
 			editSession.ModifiedChanged += new EventHandler (OnWindowChanged);
 			
-			designerPage = new Gtk.EventBox ();
+			designerPage = new DesignerPage (editSession);
 			designerPage.Show ();
 			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
 			
@@ -68,7 +69,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			MonoDevelopActionGroupToolbar groupToolbar = new MonoDevelopActionGroupToolbar (editSession.RootWidget.LocalActionGroups);
 			groupToolbar.BindField += new EventHandler (OnBindActionField);
 			actionsBox = Stetic.UserInterface.CreateActionGroupDesigner (editSession.SteticProject, groupToolbar);
-			actionsBox.ShowAll ();
+			actionsPage = new ActionsPage (actionsBox.Editor);
+			actionsPage.PackStart (actionsBox, true, true, 0);
+			actionsPage.ShowAll ();
 			
 			// Widget toolbar
 			widgetBar = new MonoDevelopWidgetActionBar (editSession.RootWidget);
@@ -86,13 +89,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			currentDesigner = editSession.WrapperWidget;
 			
 			if (editSession.RootWidget.LocalActionGroups.Count > 0) {
-				AddButton (GettextCatalog.GetString ("Actions"), actionsBox);
+				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 				actionsButtonVisible = true;
 			} else {
 				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
 			}
 			
 			editSession.RootWidgetChanged += new EventHandler (OnRootWidgetChanged);
+		}
+		
+		public override void Dispose ()
+		{
+			actionsPage.Dispose ();
+			actionsBox.Destroy ();
+			widgetBar.Destroy ();
+			editSession.Dispose ();
+			designerPage.Dispose ();
+			editSession = null;
+			actionsBox = null;
+			widgetBar = null;
+			widgetBar = null;
+			designerPage = null;
+			designerBox = null;
+			base.Dispose ();
 		}
 		
 		protected override void OnDocumentActivated ()
@@ -142,15 +161,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return editSession; }
 		}
 		
-		public override void Dispose ()
-		{
-			actionsBox.Dispose ();
-			widgetBar.Dispose ();
-			designerPage.Remove (editSession.WrapperWidget);
-			editSession.Dispose ();
-			base.Dispose ();
-		}
-		
 		public override void Save (string fileName)
 		{
 			base.Save (fileName);
@@ -192,8 +202,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					actionsBox.Toolbar.ActiveGroup = grp;
 			}
 		}
+	}
+	
+	class DesignerPage: Gtk.EventBox
+	{
+		GuiBuilderEditSession editSession;
 		
-		/* Commands *********************************/
+		public DesignerPage (GuiBuilderEditSession editSession)
+		{
+			this.editSession = editSession;
+		}
 		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
@@ -245,6 +263,92 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected void OnUpdatePaste (CommandInfo cinfo)
 		{
 			cinfo.Enabled = editSession.SteticProject.Selection is Stetic.Placeholder;
+		}
+		
+		[CommandUpdateHandler (EditCommands.Undo)]
+		protected void OnUpdateUndo (CommandInfo cinfo)
+		{
+			// Not yet supported
+			cinfo.Enabled = false;
+		}
+		
+		[CommandUpdateHandler (EditCommands.Redo)]
+		protected void OnUpdateRedo (CommandInfo cinfo)
+		{
+			// Not yet supported
+			cinfo.Enabled = false;
+		}
+	}
+	
+	class ActionsPage: VBox
+	{
+		Stetic.Editor.ActionGroupEditor actionsBox;
+		
+		public ActionsPage (Stetic.Editor.ActionGroupEditor actionsBox)
+		{
+			this.actionsBox = actionsBox;
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		protected void OnDelete ()
+		{
+			actionsBox.Delete ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		protected void OnUpdateDelete (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			actionsBox.Copy ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Cut)]
+		protected void OnCut ()
+		{
+			actionsBox.Cut ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Cut)]
+		protected void OnUpdateCut (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Paste)]
+		protected void OnPaste ()
+		{
+			actionsBox.Paste ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Paste)]
+		protected void OnUpdatePaste (CommandInfo cinfo)
+		{
+			cinfo.Enabled = false;
+		}
+		
+		[CommandUpdateHandler (EditCommands.Undo)]
+		protected void OnUpdateUndo (CommandInfo cinfo)
+		{
+			// Not yet supported
+			cinfo.Enabled = false;
+		}
+		
+		[CommandUpdateHandler (EditCommands.Redo)]
+		protected void OnUpdateRedo (CommandInfo cinfo)
+		{
+			// Not yet supported
+			cinfo.Enabled = false;
 		}
 	}
 }
