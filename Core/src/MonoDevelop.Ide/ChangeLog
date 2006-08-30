@@ -1,3 +1,13 @@
+2006-08-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Properly report file open errors.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Don't crash if
+	  a file can't be opened.
+	
+	* MonoDevelop.Ide.Gui.Search/FileDocumentInformation.cs:
+	* MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Use Read file
+	  share for reading the file.
+
 2006-08-29 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Make the toolbar smaller

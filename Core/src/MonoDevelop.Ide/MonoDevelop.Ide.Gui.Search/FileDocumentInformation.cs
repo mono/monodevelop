@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public string GetLineTextAtOffset (int offset)
 		{
-			FileStream stream = new FileStream (fileName, FileMode.Open, FileAccess.Read);
+			FileStream stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			try {
 				ExtendedStreamReader streamReader = new ExtendedStreamReader (new StreamReader (stream));
 				streamReader.Position = offset;

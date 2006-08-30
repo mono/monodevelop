@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			this.document = document;
 			this.fileName = fileName;
-			stream = new FileStream (fileName, FileMode.Open, FileAccess.Read);
+			stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			streamReader = new StreamReader (stream);
 			reader = new ExtendedStreamReader (streamReader);
 			Reset();
@@ -191,6 +191,8 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 			else
 				reader.Close ();
+
+			streamReader.Close ();
 		}
 		
 		public bool SupportsSearch (SearchOptions options, bool reverse)
