@@ -549,9 +549,10 @@ namespace MonoDevelop.Components.Commands
 		
 		void UpdateToolbars ()
 		{
+			object activeWidget = GetActiveWidget (rootWidget);
 			foreach (CommandToolbar toolbar in toolbars) {
 				if (toolbar.Visible)
-					toolbar.Update ();
+					toolbar.Update (activeWidget);
 			}
 		}
 		

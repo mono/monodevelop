@@ -48,14 +48,17 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			Update ();
+			Update (null);
 		}
 		
-		internal void Update ()
+		internal void Update (object defaultTarget)
 		{
+			if (initialCommandTarget != null)
+				defaultTarget = initialCommandTarget;
+
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update (initialCommandTarget);
+					((ICommandUserItem)item).Update (defaultTarget);
 				else
 					item.Show ();
 			}
