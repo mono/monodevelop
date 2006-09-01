@@ -431,11 +431,6 @@ namespace MonoDevelop.NUnit
 			{
 				return test.Name == name;
 			}
-
-			// FIXME: added for nunit 2.6?
-			public bool Exclude {
-				get { return false; }
-			}
 		}
 	}
 }
