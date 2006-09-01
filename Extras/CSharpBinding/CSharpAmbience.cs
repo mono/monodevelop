@@ -182,11 +182,6 @@ namespace CSharpBinding
 					AppendPangoHtmlTag (builder, c.Name, "b", conversionFlags);
 			}
 			
-			if (UseFullyQualifiedMemberNames(conversionFlags))
-				AppendPangoHtmlTag (builder, c.FullyQualifiedName, "b", conversionFlags);
-			else
-				AppendPangoHtmlTag (builder, c.Name, "b", conversionFlags);
-				
 			// Display generic parameters only if told so
 			if (ShowGenericParameters(conversionFlags) && c.GenericParameters != null && c.GenericParameters.Count > 0) {
 				bool includeMarkup = IncludeHTMLMarkup(conversionFlags) || IncludePangoMarkup(conversionFlags);
