@@ -101,10 +101,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		protected void OnEditIcons ()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			Stetic.Project sp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject.SteticProject;
+			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
+			Stetic.Project sp = gp.SteticProject;
 			using (Stetic.Editor.EditIconFactoryDialog dlg = new Stetic.Editor.EditIconFactoryDialog (null, sp, sp.IconFactory)) {
 				dlg.Run ();
 			}
+			gp.Save ();
 		}
 		
 		public void AddNewWindow (string id)

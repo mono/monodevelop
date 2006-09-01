@@ -69,6 +69,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			 
 			this.project = project;
+			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (project).ResourceProvider;
+			
 			gproject.WidgetAdded += new Stetic.Wrapper.WidgetEventHandler (OnAddWidget);
 			gproject.WidgetRemoved += new Stetic.Wrapper.WidgetEventHandler (OnRemoveWidget);
 			
@@ -164,7 +166,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnRemoveWidget (object s, Stetic.Wrapper.WidgetEventArgs args)
 		{
-			if (UpdatingWindow)
+			if (UpdatingWindow || args.WidgetWrapper == null)
 				return;
 			if (args.WidgetWrapper.ParentWrapper == null) {
 				GuiBuilderWindow win = GetWindowForWidget (args.WidgetWrapper);

@@ -1,3 +1,11 @@
+2006-09-01 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* lib/*: Updated from stetic module.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	  Save the project after editing the icons.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Set the
+	  ResourceProvider for the main stetic project. Added null check.
+
 2006-08-30 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Fixed bug about 
