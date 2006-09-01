@@ -1,0 +1,5086 @@
+# Translation of monodevelop.po into Catalan
+# Copyright (C) 2006 The Mono Project
+# This file is distributed under the same license as the MonoDevelop package.
+# Jonathan Hernández Velasco <jbilbo@gmail.com>, 2006.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: MonoDevelop rev62170\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-08-31 01:07+0200\n"
+"PO-Revision-Date: 2006-08-31 02:13+0200\n"
+"Last-Translator: Jonathan Hernández Velasco <jbilbo@gmail.com>\n"
+"Language-Team: Catalan <ca@dodds.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/BaseFileEntry.cs:23
+msgid "_Browse..."
+msgstr "_Navega..."
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
+#: ../Extras/WelcomePage/WelcomePageView.cs:165
+#, csharp-format
+msgid "Could not open the url {0}"
+msgstr "No s'ha pogut obrir la URL {0}"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/FileSelector.cs:14
+msgid "Open file ..."
+msgstr "Obre fitxer ..."
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:34
+msgid "Go back"
+msgstr "Torna enrera"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:35
+msgid "Go forward"
+msgstr "Vés endavant"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:36
+msgid "Stop loading"
+msgstr "Atura càrrega"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:37
+msgid "Address"
+msgstr "Adreça"
+
+#: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:38
+msgid "Load address"
+msgstr "Carrega adreça"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:1
+msgid "<b>Select the add-ins to install and click on Next</b>"
+msgstr "<b>Selecciona les extensions a instal·lar i fes clic a Següent</b>"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:2
+msgid "<big><b>MonoDevelop Add-in Manager</b></big>"
+msgstr "<big><b>Gestor d'extensions de MonoDevelop</b></big>"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:3
+msgid "Add New Repository"
+msgstr "Afegeix nou repositori"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:4
+msgid "Add-in Installation"
+msgstr "Instalació d'Extensió"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:5
+msgid "Add-in Repository Management"
+msgstr "Gestió de repositoris d'extensions"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:6
+msgid "Cat_egories:"
+msgstr "Cat_egories:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:7
+msgid "Details"
+msgstr "Detalls"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:8
+msgid "Disable"
+msgstr "Desactiva"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:9
+msgid "Downloading add-ins..."
+msgstr "Baixant extensions..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:10
+msgid "Enable"
+msgstr "Activa"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:11
+msgid "Install from:"
+msgstr "Instal·lar des de:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:12
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:200
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:66
+msgid "Loading..."
+msgstr "S'està carregant..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:13
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:34
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
+msgid "MonoDevelop"
+msgstr "MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:14
+msgid "MonoDevelop Add-in Manager"
+msgstr "Gestor d'Extensions de MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:15
+msgid "MonoDevelop Package"
+msgstr "Paquet MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:16
+msgid "Options"
+msgstr "Opcions"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:17
+msgid "Overall Progress:"
+msgstr "Progrés General:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:18
+msgid "Path:"
+msgstr "Camí"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:19
+msgid "Register a local repository"
+msgstr "Registra un repositori local"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:20
+msgid "Register an on-line repository"
+msgstr "Registra un repositori en línia"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
+msgid "Select _All"
+msgstr "Seleccion_a tot"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:22
+msgid "Select the location of the repository you want to register:"
+msgstr "Selecciona la ubicació del repositori que voleu registrar:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:23
+msgid ""
+"Show all packages\n"
+"Show new versions only\n"
+"Show updates only"
+msgstr ""
+"Mostra tots els paquets\n"
+"Mostra només noves versions\n"
+"Mostra només actualitzacions"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:26
+msgid "The following add-ins are currently installed:"
+msgstr "Actualment estan instal·lades les següents extensions:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:27
+msgid "Url:"
+msgstr "Url:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:28
+msgid "_Install Add-ins..."
+msgstr "_Instal·la Extensions..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:29
+msgid "_Repositories..."
+msgstr "_Repositoris..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:30
+msgid "_Uninstall..."
+msgstr "D_esinstal·la..."
+
+#: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:31
+msgid "_Unselect All"
+msgstr "Tr_eu tota la selecció"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:67
+msgid "Go up one level"
+msgstr "Puja un nivell"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:72
+msgid "Home"
+msgstr "Carpeta d'inici"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:131
+msgid "Location"
+msgstr "Ubicació"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:173
+msgid "Directories"
+msgstr "Directoris"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:208
+msgid "Access denied"
+msgstr "Accés denegat"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:210
+msgid "Could not access to directory: "
+msgstr "No s'ha pogut accedir al directori: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:242
+msgid "Open with file browser"
+msgstr "Obre amb l'administrador de fitxers"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:245
+msgid "Open with terminal"
+msgstr "Obre amb la terminal"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:313
+msgid "Rename"
+msgstr "Canvia el nom"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
+msgid "Delete"
+msgstr "Suprimeix"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:254
+msgid "Create new folder"
+msgstr "Crea nova carpeta"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:322
+#, csharp-format
+msgid "Cannot enter '{0}' folder"
+msgstr "No es pot accedir a la carpeta '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:357
+#, csharp-format
+msgid "Could not rename folder '{0}' to '{1}'"
+msgstr "No s'ha pogut canviar el nom a la carpeta '{0}' a '{1}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:375
+#, csharp-format
+msgid "Could not create new folder '{0}'"
+msgstr "No s'ha pogut crear la nova carpeta '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Are you sure you want to delete this folder?"
+msgstr "Esteu segur de que voleu suprimir aquesta carpeta?"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:397
+msgid "Delete folder"
+msgstr "Suprimeix carpeta"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:407
+#, csharp-format
+msgid "Could not delete folder '{0}'"
+msgstr "No s'ha pogut suprimir la carpeta '{0}'"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:40
+#, csharp-format
+msgid "Can't remove directory {0}"
+msgstr "No puc suprimir el directori {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:48
+#, csharp-format
+msgid "Can't remove file {0}"
+msgstr "No puc suprimir el fitxer {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:62
+#, csharp-format
+msgid "Can't rename directory {0}"
+msgstr "No puc canviar el nom al directori {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs:70
+#, csharp-format
+msgid "Can't rename file {0}"
+msgstr "No puc canviar el nom al fitxer {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:76
+msgid "Version:"
+msgstr "Versió:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:79
+msgid "Author:"
+msgstr "Autor:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:82
+msgid "Copyright:"
+msgstr "Copyright:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs:85
+msgid "Add-in Dependencies:"
+msgstr "Dependències de l'extensió:"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:82
+msgid "All registered repositories"
+msgstr "Tots els repositoris registrats"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:181
+msgid "Are you sure you want to cancel the installation?"
+msgstr "Esteu segur de que voleu cancel·lar la instal·lació?"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:293
+msgid ""
+"<b>The following packages will be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>Els següents paquets es desinstal·laran:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:298
+msgid ""
+"<b>There are other add-ins that depend on the previous ones which will also "
+"be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>Hi ha altres extensions que depenen de les anteriors, les quals també es "
+"desinstal·laran:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:369
+msgid ""
+"<b><span foreground=\"red\">The selected add-ins can't be installed because "
+"there are dependency conflicts.</span></b>\n"
+msgstr ""
+"<b><span foreground=\"red\">Les extensions seleccionades no poden instal·lar-"
+"se perquè hi ha conflictes de dependències.</span></b>\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:371
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:378
+msgid "<b><span foreground=\"red\">"
+msgstr "<b><span foreground=\"red\">"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:371
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:378
+msgid "</span></b>\n"
+msgstr "</span></b>\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:383
+msgid ""
+"<b>The following packages will be installed:</b>\n"
+"\n"
+msgstr ""
+"<b>S'instal·laran els següents paquets:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:387
+msgid " (in user directory)"
+msgstr " (al directori d'usuari)"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:393
+msgid ""
+"<b>The following packages need to be uninstalled:</b>\n"
+"\n"
+msgstr ""
+"<b>S'han de desinstal·lar els següents paquets:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:401
+msgid ""
+"<b>The following dependencies could not be resolved:</b>\n"
+"\n"
+msgstr ""
+"<b>No s'han pogut resoldre les següents dependències:</b>\n"
+"\n"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:425
+msgid "The installation has been successfully completed."
+msgstr "La instal·lació s'ha completat amb èxit."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:426
+msgid "The instalation failed!"
+msgstr "La instal·lació ha fallat!"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:429
+msgid "The uninstallation has been successfully completed."
+msgstr "La desinstal·lació s'ha completat amb èxit."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:430
+msgid "The uninstallation failed!"
+msgstr "La desinstal·lació ha fallat!"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:446
+msgid "You need to restart MonoDevelop for the changes to take effect."
+msgstr "Reinicieu MonoDevelop per a que els canvis tinguin efecte."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:526
+msgid "Repository"
+msgstr "Repositori"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:56
+msgid "Add-in"
+msgstr "Extensió"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:28
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:55
+msgid "Version"
+msgstr "Versió"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:127
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:7
+msgid "Other"
+msgstr "Altre"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:24
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:54
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:6
+msgid "Name"
+msgstr "Nom"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs:25
+msgid "Url"
+msgstr "Url"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:187
+msgid "Operation completed with errors."
+msgstr "La operació s'ha completat amb errors."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:189
+msgid "Operation completed with warnings."
+msgstr "La operació s'ha completat amb advertiments."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:191
+msgid "Operation successfully completed."
+msgstr "La operació s'ha completat amb èxit."
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs:66
+msgid "Steps"
+msgstr "Passos"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:188
+msgid "MonoDevelop options"
+msgstr "Opcions de MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:281
+msgid "Back"
+msgstr "Enrera"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:284
+msgid "Next"
+msgstr "Següent"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs:287
+msgid "Finish"
+msgstr "Acaba"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadError.cs:28
+#, csharp-format
+msgid ""
+"Could not load the {0} '{1}'.\n"
+"\n"
+"{2}"
+msgstr ""
+"No s'ha pogut carregar el {0} '{1}'.\n"
+"\n"
+"{2}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:81
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:95
+#, csharp-format
+msgid "Exception occurred: {0}"
+msgstr "Ha llençat una excepció: {0}"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:145
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:188
+msgid "Question"
+msgstr "Pregunta"
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:125
+msgid "WARNING: "
+msgstr "ADVERTIMENT: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:147
+msgid "ERROR: "
+msgstr "ERROR: "
+
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs:20
+#, csharp-format
+msgid "Resource not found: {0}"
+msgstr "No s'ha trobat el recurs: {0}"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:158
+msgid "Loading Add-ins"
+msgstr "Carregant extensions"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:179
+#, csharp-format
+msgid "The add-in {0} is disabled."
+msgstr "La extensió '{0}' està inhabilitada."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:189
+msgid "Loading Addins"
+msgstr "Carregant extensions"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:197
+#, csharp-format
+msgid "Loading {0} add-in"
+msgstr "Carregant extensió {0}"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:234
+#, csharp-format
+msgid "The required addin '{0}' v{1} is disabled."
+msgstr "La extensió requerida '{0}' v{1} està inhabilitada."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs:236
+#, csharp-format
+msgid "The required addin '{0}' v{1} is not installed."
+msgstr "La extensió requerida '{0}' v{1} no està instal·lada."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AddinPackage.cs:209
+#, csharp-format
+msgid "The add-in '{0}' is not installed."
+msgstr "La extensió '{0}' no està instal·lada."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs:55
+#, csharp-format
+msgid "(provided by {0})"
+msgstr "(proporcionat per {0})"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:169
+msgid "Not all dependencies could be resolved."
+msgstr "No s'han pogut resoldre totes les dependències."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:177
+msgid "Installing add-ins..."
+msgstr "Instal·lant extensions..."
+
+#. Prepare install
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:181
+msgid "Initializing installation"
+msgstr "Iniciant instal·lació"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:215
+msgid "Installing"
+msgstr "Instal·lant"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:259
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:279
+msgid "Finishing installation"
+msgstr "Finalitzant instal·lació"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:438
+#, csharp-format
+msgid "The selected packages require MonoDevelop {0}"
+msgstr "Els paquets seleccionats requereixen MonoDevelop {0}"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:444
+#, csharp-format
+msgid "The package '{0}' could not be found in any repository"
+msgstr "El paquet '{0}' no s'ha pogut trobar en cap repositori."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:509
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:516
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:524
+msgid "Can't install two versions of the same add-in: '"
+msgstr "No es poden instal·lar dos versions d'una mateixa extensió: '"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:803
+msgid "The repository could not be registered"
+msgstr "No s'ha pogut eliminar el directori '{0}'."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:911
+msgid "Could not get information from repository"
+msgstr "No s'ha pogut obtenir informació del repositori"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1181
+msgid "Requesting "
+msgstr "Sol·licitant"
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1187
+msgid "Downloading "
+msgstr "Baixant "
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs:1286
+#, csharp-format
+msgid ""
+"The add-in '{0} v{1}' can't be uninstalled with the current user permissions."
+msgstr ""
+"La extensió '{0} v{1}' no s'ha pogut desinstal·lar amb els permissos de "
+"l'usuari actual."
+
+#: ../Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs:207
+msgid "Initializing service: "
+msgstr "Inicialitzant servei:"
+
+#. Hide menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:792
+msgid "Hide"
+msgstr "Ocultar"
+
+#. Lock menuitem
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:797
+msgid "Lock"
+msgstr "Bloquejar"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:84
+msgid "Iconify"
+msgstr "Iconitzar"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:84
+msgid "Iconify this dock"
+msgstr "Iconitzar aquest panell"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:85
+msgid "Close"
+msgstr "Tancar"
+
+#: ../Core/src/MonoDevelop.Dock/DockItemGrip.cs:85
+msgid "Close this dock"
+msgstr "Tancar aquest panell"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:1
+msgid "   "
+msgstr "   "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:2
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:1
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:3
+#: ../Extras/NemerleBinding/Nemerle.glade.h:1
+#: ../Extras/VBNetBinding/VB.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:3
+msgid "<b>Code generation options</b>"
+msgstr "<b>Opcions de generació de codi</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:4
+msgid "<b>Comment generation options</b>"
+msgstr "<b>Opcions de generació de comentaris</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:5
+msgid "<b>Load</b>"
+msgstr "<b>Carrega</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:6
+msgid "<b>Location</b>"
+msgstr "<b>Ubicació</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:7
+msgid "<b>Save</b>"
+msgstr "<b>Desa</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:8
+msgid "<b>Template</b>"
+msgstr "<b>Plantilla</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:9
+msgid "Add-in Manager..."
+msgstr "Gestor d'extensions..."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:10
+msgid "All Files"
+msgstr "Tots els fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:11
+msgid "Always create backup copy"
+msgstr "Crea sempre una còpia de seguretat"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:12
+msgid "Available encodings:"
+msgstr "<b>Codificacions disponibles</b>"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:13
+msgid "Build and run options"
+msgstr "Opcions de construcció i execució"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:14
+msgid "Case sensitive"
+msgstr "Sensible a majúscules/minúscules"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:15
+msgid "Creates a new C# Project"
+msgstr "Crea un nou projecte C#"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:16
+msgid ""
+"Days\n"
+"Months"
+msgstr ""
+"Dies\n"
+"Mesos"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:18
+msgid "Default _Solution location"
+msgstr "Ubicació de la _Solució predeterminada"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:19
+msgid "Did you know that you can design lots of cool things with glade?"
+msgstr "Sabeu que es poden dissenyar moltes coses interessants amb glade?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:20
+msgid "Did you know...?"
+msgstr "Sabeu què...?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:21
+msgid "Directory:"
+msgstr "Directori:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:22
+msgid "Edit References"
+msgstr "Edita referències"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:23
+msgid "Encodings shown in menu:"
+msgstr "Codificacions a mostrar al menú:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:24
+msgid "Every"
+msgstr "Cada"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:25
+msgid "Filemask:"
+msgstr "Màscara de fitxer:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:26
+msgid "Find Dialog"
+msgstr "Diàleg de cerca"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:27
+msgid "Find:"
+msgstr "Cerca:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:28
+msgid "Generate _additional comments"
+msgstr "Genera comentaris _addicionals"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:29
+msgid "Generate _documentation comments"
+msgstr "Genera comentaris a la _documentació"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:30
+msgid "Include Found Files"
+msgstr "Incloure fitxers trobats"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:31
+msgid "Layout name:"
+msgstr "Nom del format:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:32
+msgid "Load user-specific settings with the document"
+msgstr "Carrega configuració pròpia de l'usuari amb el document"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:33
+msgid "Look for add-in updates at startup, with the following periodicity:"
+msgstr ""
+"Busca actualitzacions de les extensions a l'inici, amb la següent "
+"periodicitat:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:35
+msgid ""
+"MonoDevelop can run without these add-ins, but the functionality they "
+"provide will be missing."
+msgstr ""
+"MonoDevelop pot executar-se sense aquestes extensions, però la funcionalitat "
+"que proporcionen no estarà disponible."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:36
+msgid "MonoDevelop cannot start because a fatal error has been detected."
+msgstr "MonoDevelop no pot iniciar-se perquè s'ha detectat un error greu."
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:37
+msgid "N_ame:"
+msgstr "N_om:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:38
+msgid "New Files"
+msgstr "Nous fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:39
+msgid "New Files Only"
+msgstr "Només nous fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Solution"
+msgstr "Nova solució"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:41
+msgid "New layout"
+msgstr "Nou format"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:42
+msgid "R_eplace All"
+msgstr "R_eemplaça tots"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:43
+msgid "Recurse subdirectories"
+msgstr "Busca recursivament a subdirectoris"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:44
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
+msgid "Remove"
+msgstr "Suprimeix"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:45
+msgid "Replace Dialog"
+msgstr "Diàleg de reemplaçament"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
+msgid "Replace:"
+msgstr "Reemplaça:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
+msgid "Search in:"
+msgstr "Cerca a:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
+msgid "Select Text Encodings"
+msgstr "Selecciona Codificacions de Text"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:50
+msgid "Select command"
+msgstr "Selecciona comanda"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:51
+msgid "Select default location"
+msgstr "Selecciona ubicació per defecte"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:52
+msgid "Selected references"
+msgstr "Referències seleccionades"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:53
+msgid "Show _output pad when build starts"
+msgstr "M_ostra panell de sortida quan s'iniciï el muntatge"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:54
+msgid "Show _task list pad if build finished with errors"
+msgstr "Mostra la llista de _tasques si el muntatge acaba amb errors"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:55
+msgid "Show extensions in project scout"
+msgstr "Mostra extensions en l'explorador del projecte"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:56
+msgid "Show hidden files and directories"
+msgstr "Mostra fitxers ocults i directoris"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:57
+msgid "The following add-ins could not be started:"
+msgstr "Les següents extensions no s'han pogut iniciar:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:58
+msgid "Tip of the Day"
+msgstr "Consell del dia"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:59
+msgid "Use _Output Window"
+msgstr "Fes servir finestra de _sortida"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:60
+msgid "Use special search strategy:"
+msgstr "Fes servir estrategia de cerca especial:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:61
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewNodeBuilder.cs:57
+msgid "View"
+msgstr "Visualitza"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:62
+msgid "Whole word only"
+msgstr "Només paraula completa"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:63
+msgid "Whole words only"
+msgstr "Només paraules completes"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:64
+msgid ""
+"You can start MonoDevelop without these add-ins, but the functionality they "
+"provide will be missing. Do you wish to continue?"
+msgstr ""
+"Podeu iniciar MonoDevelop sense aquestes extensions, però la funcionalitat "
+"que proporcionen no estarà disponible. Voleu continuar?"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:65
+msgid "_Arguments:"
+msgstr "_Arguments:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:66
+msgid "_Command:"
+msgstr "_Comanda:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:67
+msgid "_Create separate Solution subdirectory"
+msgstr "_Crea un subdirectori separat per la Solució"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
+msgid "_Don't save changes to open documents "
+msgstr "_No deseu canvis a fitxers oberts "
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:69
+msgid "_Else on same line as closing bracket"
+msgstr "_Else a la mateixa linia de la clau final"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:70
+msgid "_Insert blank lines between members"
+msgstr "_Insereix linies en blanc entre els membres"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:71
+msgid "_Load previous solution on startup"
+msgstr "_Carrega solució prèvia al inici"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:72
+msgid "_Location:"
+msgstr "_Ubicació:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:73
+msgid "_Mark All"
+msgstr "_Marca tots"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:74
+msgid "_Next Tip"
+msgstr "Consell _següent"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:75
+msgid "_Prompt for arguments"
+msgstr "_Pregunta arguments"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:76
+msgid "_Prompt to save changes to open documents"
+msgstr "_Pregunta abans de desar canvis en documents oberts"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:77
+msgid "_Replace"
+msgstr "_Reemplaça"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:78
+msgid "_Save Changes to open documents"
+msgstr "_Desa canvis a documents oberts"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:79
+msgid "_Show at startup"
+msgstr "_Mostra al inici"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:80
+msgid "_Solution name:"
+msgstr "Nom de la _solució:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:81
+msgid "_Start code block on the same line"
+msgstr "_Inicia bloc de codi a la mateixa linia"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:82
+msgid "_Title:"
+msgstr "_Títol:"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:83
+msgid "_Use full type names"
+msgstr "_Utilitza noms de tipus complets"
+
+#: ../Core/src/MonoDevelop.Ide/Base.glade.h:84
+msgid "_Working Directory:"
+msgstr "Directori de _Treball"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:1
+msgid "# Any single digit"
+msgstr "# Qualsevol dígit individual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:2
+msgid "* Zero or more of any character"
+msgstr "* Zero o més de qualsevol caracter"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:3
+msgid "? Any single character"
+msgstr "? Qualsevol caracter individual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:4
+msgid "Active Configuration"
+msgstr "Configuració Actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:5
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:308
+msgid "Add"
+msgstr "Afegeix"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:6
+msgid "Add Files..."
+msgstr "Afegeix Fitxers..."
+
+#. ProjectCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:8
+msgid "Add New Project..."
+msgstr "Afegeix Nou Projecte..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:9
+msgid "Add New Solution..."
+msgstr "Afegeix Nova Solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:10
+msgid "Add Resource"
+msgstr "Afegeix Recurs"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:11
+msgid "Add existing Solution"
+msgstr "Afegeix Solució existent"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:12
+msgid "Add existing _Project"
+msgstr "Afegeix _Projecte existent"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:13
+msgid "Add-ins"
+msgstr "Extensions"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:14
+msgid "Buil_d"
+msgstr "_Muntatge"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:15
+msgid "Buil_d Solution"
+msgstr "Munta _Solució"
+
+#. i8n the file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:17
+msgid "Build"
+msgstr "Muntatge"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:18
+msgid "Build the solution"
+msgstr "Munta la solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:19
+msgid "C#"
+msgstr "C#"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:20
+msgid "C# Corner"
+msgstr "C# Corner"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:21
+msgid "C# Help"
+msgstr "Ajuda de C#"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:22
+msgid "C_omment Line(s)"
+msgstr "C_omenta línia(s)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:23
+msgid "Classes"
+msgstr "Classes"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:24
+msgid "Clean"
+msgstr "Neteja"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:25
+msgid "Clean Solution"
+msgstr "Neteja solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:26
+msgid "Clear All Breakpoints"
+msgstr "Neteja punts de ruptura"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:27
+msgid "Close All"
+msgstr "Tanca tots"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:28
+msgid "Close Sol_ution"
+msgstr "Tanca sol_ució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:29
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:3
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:3
+msgid "Code Generation"
+msgstr "Generació de codi"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:30
+msgid "Coding"
+msgstr "Codificació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:31
+msgid "Configure deploy targets..."
+msgstr "Configura objectius de desplegament..."
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:33
+msgid "Copy the selection"
+msgstr "Copia la selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:34
+msgid "Create a new file"
+msgstr "Crea un nou fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:35
+msgid "Cu_t"
+msgstr "Re_talla"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:36
+msgid "Cut the selection"
+msgstr "Retalla la selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:37
+msgid "Debug"
+msgstr "Depura"
+
+#. DebugCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:39
+msgid "Debug Application..."
+msgstr "Depura aplicació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:40
+msgid "Delete the selection"
+msgstr "Suprimeix la selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:41
+msgid "Deploy"
+msgstr "Desplegament"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:42
+msgid "Deploy target list"
+msgstr "Llista de Desplegaments d'objectius:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:43
+msgid "Deploy to"
+msgstr "Desplega a"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
+msgid "Display Options List"
+msgstr "Llista d'opcions de visualizació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
+msgid "Edit References..."
+msgstr "Edita referències..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
+msgid "External Tools"
+msgstr "Eines externes"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:47
+msgid "F_ind In Files..."
+msgstr "C_erca a fitxers..."
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:190
+msgid "Find"
+msgstr "Cerca"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+msgid "Find Next Selection"
+msgstr "Cerca següent selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
+msgid "Find _Next"
+msgstr "Cerca _següent"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
+msgid "Find _Previous"
+msgstr "Cerca _anterior"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
+msgid "Find _Previous Selection"
+msgstr "Cerca _anterior selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
+msgid "Find next"
+msgstr "Cerca següent"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
+msgid "GotDotNet"
+msgstr "GotDotNet"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
+msgid "Group members by access"
+msgstr "Membres de grup per accés"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
+msgid "Group members by member type"
+msgstr "Membres de grup per tipus"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
+msgid "Include"
+msgstr "Inclou"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
+msgid "Include To Project"
+msgstr "Inclou al projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
+msgid "Layout List"
+msgstr "Lista de formats"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
+msgid "Load/Save"
+msgstr "Carrega/Desa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
+msgid "Local Copy Reference"
+msgstr "Referència a còpia local"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
+msgid "Mono Project"
+msgstr "Projecte Mono"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
+msgid "MonoDevelop Options"
+msgstr "Opcions de MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
+msgid "N_ew Project..."
+msgstr "Nou proj_ecte..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
+msgid "Nested namespaces"
+msgstr "Àmbits anidats"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
+msgid "New File..."
+msgstr "_Nou Fitxer..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:359
+msgid "New Folder"
+msgstr "Nova Carpeta"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
+msgid "New _File..."
+msgstr "_Nou Fitxer..."
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
+msgid "O_pen..."
+msgstr "_Obre..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
+msgid "Open"
+msgstr "Obre"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
+msgid "Open With"
+msgstr "Obre amb"
+
+#. FileCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
+msgid "Open file or solution"
+msgstr "Obre fitxer o solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+msgid "OpenWidthList"
+msgstr "OpenWidthList"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+msgid "Options..."
+msgstr "Opcions..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+msgid "Paste"
+msgstr "Enganxa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+msgid "Pause"
+msgstr "Pausa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+msgid "Pre_ferences..."
+msgstr "Pre_ferències..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
+msgid "Project Files"
+msgstr "Fitxers del Projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+msgid "R_eplace In Files..."
+msgstr "R_eemplaça a Fitxers..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+msgid "Re_name"
+msgstr "Ca_nvia el nom"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+msgid "Rebuild"
+msgstr "Remunta"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
+msgid "Rebuild Solution"
+msgstr "Remunta Solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
+msgid "Recent Files"
+msgstr "Fitxers Recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+msgid "Recent Projects"
+msgstr "Projectes Recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
+msgid "Recent Solu_tions"
+msgstr "Solu_cions Recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+msgid "Recent _Files"
+msgstr "_Fitxers Recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
+msgid "Redo last undone action"
+msgstr "Refés la última acció desfeta"
+
+#. RefactoryCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+msgid "Refactory Operations"
+msgstr "Opcions de Refactorizació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
+msgid "Refresh"
+msgstr "Refresca"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
+msgid "Replace"
+msgstr "Reemplaça"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+msgid "Reset Options"
+msgstr "Restableix Opcions per defecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+msgid "Run"
+msgstr "Executa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+msgid "Save"
+msgstr "Desa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
+msgid "Save All"
+msgstr "Desa tot"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+msgid "Save _As..."
+msgstr "_Anomena i Desa..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
+msgid "Save all open files"
+msgstr "Desa tots els fitxers oberts"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
+msgid "Save the active document"
+msgstr "Desa el document actiu"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+msgid "Set As Startup Project"
+msgstr "Estableix com a projecte d'inici"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+msgid "Show All Files"
+msgstr "Mostra tots els fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+msgid "Show project structure"
+msgstr "Mostra la estructura del projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+msgid "Show public members only"
+msgstr "Mostra només membres públics"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+msgid "Solution"
+msgstr "Solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+msgid "Solution Files"
+msgstr "Fitxers de la solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+msgid "Standard"
+msgstr "Estàndard"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+msgid "Step Into"
+msgstr "Avança"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+msgid "Step Out"
+msgstr "Avança al final"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+msgid "Step Over"
+msgstr "Avança sobre"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:65
+msgid "Stop"
+msgstr "Atura"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+msgid "Stop current build or application execution"
+msgstr "Atura el muntatge o execució actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+msgid "Toggle Breakpoint"
+msgstr "Commuta punt de ruptura"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+msgid "Tool List"
+msgstr "Llista d'eines"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
+msgid "Toolbars"
+msgstr "Barras d'eines"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+msgid "Tools"
+msgstr "Eines"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
+msgid "Undo last action"
+msgstr "Desfés l'última acció"
+
+#. ViewCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
+msgid "View List"
+msgstr "Llista de visualitzacions"
+
+#. <DialogPanel id = "SelectCulture"
+#. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+#. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+msgid "Visual style"
+msgstr "Estil visual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+msgid "Window List"
+msgstr "Llista de finestres"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+msgid "[!] Any one character not in the set"
+msgstr "[!] Qualsevol caràcter que no estigui al conjunt"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+msgid "[] Any one character in the set"
+msgstr "[] Qualsevol caràcter al conjunt"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
+msgid "_About..."
+msgstr "_Quant a..."
+
+#. ToolCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+msgid "_Add-in Manager..."
+msgstr "_Gestor d'extensions..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:17
+msgid "_Advanced"
+msgstr "_Avançat"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+msgid "_Clear Recent Files"
+msgstr "_Neteja fitxers recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+msgid "_Clear Recent Solutions"
+msgstr "_Neteja solucions recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:136
+msgid "_Close File"
+msgstr "_Tanca fitxer"
+
+#. EditCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+msgid "_Copy"
+msgstr "_Còpia"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+msgid "_Delete"
+msgstr "_Suprimeix"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+msgid "_Delete Current Layout"
+msgstr "_Suprimeix disposició actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+msgid "_Edit"
+msgstr "_Edita"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+msgid "_File"
+msgstr "_Fitxer"
+
+#. SearchCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+msgid "_Find..."
+msgstr "_Cerca..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+msgid "_Full Screen"
+msgstr "_Pantalla completa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
+msgid "_Help"
+msgstr "A_juda"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+msgid "_Indent Selection"
+msgstr "_Sagna la selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+msgid "_Layouts"
+msgstr "_Formats"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
+msgid "_Lowercase Selection"
+msgstr "Selecciona Minúscu_les"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
+msgid "_New Layout..."
+msgstr "_Nova disposició..."
+
+#. WindowCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+msgid "_Next Window"
+msgstr "_Següent finestra"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
+msgid "_Paste"
+msgstr "_Enganxa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+msgid "_Previous Window"
+msgstr "Finestra _anterior"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
+msgid "_Project"
+msgstr "_Projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
+msgid "_Quit"
+msgstr "_Surt"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+msgid "_Redo"
+msgstr "To_rna a fer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+msgid "_Reload File"
+msgstr "_Refresca fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+msgid "_Remove From Project"
+msgstr "Suprimi_r del projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
+msgid "_Replace..."
+msgstr "_Reemplaça..."
+
+#. HelpCommands
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+msgid "_Tip of the Day..."
+msgstr "_Consell del dia..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
+msgid "_Tools"
+msgstr "_Eines"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
+msgid "_Uncomment Line(s)"
+msgstr "_Descomenta linia(s)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
+msgid "_Undo"
+msgstr "_Desfés"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
+msgid "_Unindent Selection"
+msgstr "_Desagna la selecció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
+msgid "_Uppercase Selection"
+msgstr "Selecciona Maj_úscules"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
+msgid "_View"
+msgstr "_Visualitza"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
+msgid "_Web"
+msgstr "_Web"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
+msgid "_Window"
+msgstr "_Finestra"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
+msgid "_Word Count..."
+msgstr "C_ompta paraules..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs:103
+msgid "Can't load templates configuration file"
+msgstr "No s'ha pogut carregar el fitxer de configuració de plantilles"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/DebugCommands.cs:28
+msgid "Application to Debug"
+msgstr "Aplicació a depurar"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:87
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:125
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:24
+msgid "File to Open"
+msgstr "Fitxer per obrir"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:187
+msgid "Are you sure you want to clear recent files list?"
+msgstr "Esteu segur de que voleu netejar la llista de fitxers recents?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:187
+msgid "Clear recent files"
+msgstr "Neteja fitxers recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
+msgid "Are you sure you want to clear recent projects list?"
+msgstr "Esteu segur de que voleu netejar la llista de projectes recents?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
+msgid "Clear recent projects"
+msgstr "Neteja projectes recents"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:253
+#, csharp-format
+msgid "load solution {0}"
+msgstr "carrega solució {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:155
+msgid "Resume"
+msgstr "Reprendre"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:232
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:246
+#, csharp-format
+msgid "Build {0}"
+msgstr "Munta {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:234
+#, csharp-format
+msgid "Build Solution {0}"
+msgstr "Munta solució {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:236
+#, csharp-format
+msgid "Build Project {0}"
+msgstr "Munta projecte {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:283
+#, csharp-format
+msgid "Rebuild {0}"
+msgstr "Remunta {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#, csharp-format
+msgid "Clean {0}"
+msgstr "Neteja {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:412
+msgid "(default)"
+msgstr "(per defecte)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:418
+msgid "No deploy targets available"
+msgstr "No hi ha disponible cap objectiu de desplegament"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:108
+msgid "Go to declaration"
+msgstr "Vés a la declaració"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:112
+msgid "Find references"
+msgstr "Cerca referències"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:116
+#, csharp-format
+msgid "Class {0}"
+msgstr "Classe {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+msgid "Go to base"
+msgstr "Vés a la base"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:118
+msgid "Find derived classes"
+msgstr "Cerca classes derivades"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+#, csharp-format
+msgid "Field {0} : {1}"
+msgstr "Camp {0} : {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:124
+#, csharp-format
+msgid "Property {0} : {1}"
+msgstr "Propietat {0}: {1}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+#, csharp-format
+msgid "Event {0}"
+msgstr "Event {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
+#, csharp-format
+msgid "Method {0}"
+msgstr "Mètode {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:131
+#, csharp-format
+msgid "Indexer {0}"
+msgstr "Indexador {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+#, csharp-format
+msgid "Parameter {0}"
+msgstr "Paràmetre {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+#, csharp-format
+msgid "Variable {0}"
+msgstr "Variable {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:46
+msgid "Start tool"
+msgstr "Inicia eina"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+#, csharp-format
+msgid "Enter any arguments you want to use while launching tool, {0}:"
+msgstr ""
+"Introdueixi els arguments que voleu fer servir quan s'inicia l'eina, {0}:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:67
+#, csharp-format
+msgid "Command Arguments for {0}"
+msgstr "Arguments de la comanda per {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:103
+#, csharp-format
+msgid ""
+"External program execution failed.\n"
+"Error while starting:\n"
+" '{0} {1}'"
+msgstr ""
+"L'execució del programa extern ha fallat.\n"
+"S'ha produït un error al iniciar:\n"
+" '{0} {1}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:60
+msgid "Are you sure you want to delete the active layout?"
+msgstr "Esteu segur de que voleu suprimir el format actiu?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/WindowCommands.cs:69
+msgid "Activate this window"
+msgstr "Activa aquesta finestra"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:23
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:280
+msgid "New Tool"
+msgstr "Nova Eina"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ToolLoader.cs:83
+msgid "Can't load external tools configuration file"
+msgstr "No puc carregar el fitxer de configuració d'eines externes"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs:35
+msgid "Abstract Content"
+msgstr "Contingut abstracte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractViewContent.cs:25
+msgid "Change me"
+msgstr "Canvia'm"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:108
+msgid "New add-in updates are available:"
+msgstr "Hi ha disponibles noves actualitzacions d'extensions:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:43
+msgid "Web Browser"
+msgstr "Navegador web"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs:213
+msgid "Done."
+msgstr "Acabat."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
+msgid "INS"
+msgstr "INS"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultStatusBarService.cs:94
+msgid "OVR"
+msgstr "OVR"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:35
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:1
+msgid "Assemblies"
+msgstr "Assemblats"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:72
+#, csharp-format
+msgid "File '{0}' is not a valid .Net Assembly"
+msgstr "El fitxer '{0}' no és un assemblat .Net vàlid"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:78
+msgid "<b>Ported and developed by:</b>\n"
+msgstr "<b>Portat y desenvolupat per:</b>\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:86
+msgid "translator-credits"
+msgstr "Jonathan Hernández Velasco"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:89
+msgid ""
+"\n"
+"\n"
+"<b>Translated by:</b>\n"
+msgstr ""
+"\n"
+"\n"
+"<b>Traduït per:</b>\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:174
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:187
+msgid "About MonoDevelop"
+msgstr "Quant a MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:189
+msgid "Version Info"
+msgstr "Informació sobre la versió"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:22
+msgid "Save Files"
+msgstr "Desa Fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:29
+#, csharp-format
+msgid "Solution: {0}"
+msgstr "Solució: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:45
+#, csharp-format
+msgid "Project: {0}"
+msgstr "Projecte: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs:85
+msgid "_Save and Quit"
+msgstr "Desa i _Surt"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:60
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:171
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:208
+msgid "_Description"
+msgstr "_Descripció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:61
+msgid "_Template"
+msgstr "Plan_tilla"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:34
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:129
+msgid "Reference Name"
+msgstr "Nom de referència"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:47
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:157
+msgid "Package"
+msgstr "Paquet"
+
+#. set up dialog title
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs:51
+#, csharp-format
+msgid "Found new files in {0}"
+msgstr "S'han trobat nous fitxers a {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:99
+#, csharp-format
+msgid "Can't load bitmap {0} using default"
+msgstr "No es pot carregar el mapa de bits {0}. Es farà servir el predeterminat"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:484
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
+msgid "Name:"
+msgstr "Nom:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:73
+msgid "New Project"
+msgstr "Nou projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:264
+msgid "Project will be saved at"
+msgstr "El projecte es desarà a"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:307
+msgid ""
+"Illegal project name. \n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"Nom de projecte no vàlid. \n"
+"Feu servir només lletres, dígits, espais, '.' ó '_' "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:315
+msgid ""
+"Illegal project name.\n"
+"Only use letters, digits, space, '.' or '_'."
+msgstr ""
+"Nom de projecte no vàlid.\n"
+"Feu servir només lletres, dígits, espais, '.' ó '_' "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:320
+msgid "A Project with that name is already in your Project Space"
+msgstr "Ja existeix un projecte amb aquest nom al teu espai de projectes"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:337
+#, csharp-format
+msgid "Could not create directory {0}. File already exists."
+msgstr "No s'ha pogut crear el directori {0}. Ja existeix el fitxer."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:342
+#, csharp-format
+msgid "You do not have permission to create to {0}"
+msgstr "No té permissos per crear a {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:362
+msgid "The project could not be created"
+msgstr "No s'ha pogut crear el projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:437
+msgid "Solution Location"
+msgstr "Ubicació de la solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
+msgid "Project"
+msgstr "Projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:55
+msgid "Directory"
+msgstr "Directori"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:132
+#, csharp-format
+msgid ""
+"(Projects referencing '{0}' are not shown,\n"
+"since cyclic dependencies are not allowed)"
+msgstr ""
+"(Els projectes que referencien a '{0}' no es mostren,\n"
+"perquè no es permeten dependències cícliques)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:164
+msgid "Wildcards"
+msgstr "Comodins"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:165
+msgid "Regular Expressions"
+msgstr "Expressions regulars"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:157
+msgid "Current File"
+msgstr "Fitxer actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:158
+msgid "All Open Files"
+msgstr "Tots els fitxers oberts"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:159
+msgid "Entire Project"
+msgstr "Projecte sencer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:102
+msgid "Replace in Files"
+msgstr "Reemplaça a fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:174
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:303
+msgid "All open files"
+msgstr "Tots els fitxers oberts"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:175
+msgid "Whole project"
+msgstr "Tot el projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:266
+msgid "Select directory"
+msgstr "Selecciona directori"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:325
+msgid "Empty search pattern"
+msgstr "Patró de cerca buit"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:332
+msgid "Empty directory name"
+msgstr "Nom del directori buit"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:337
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:342
+#, csharp-format
+msgid "Invalid directory name: {0}"
+msgstr "Nom del directori no vàlid: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:347
+#, csharp-format
+msgid "Invalid file mask: {0}"
+msgstr "Màscara de fitxer no vàlida: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:130
+msgid "Type"
+msgstr "Tipus"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:138
+msgid "Packages"
+msgstr "Paquets"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:139
+msgid "Projects"
+msgstr "Projectes"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:140
+msgid ".Net Assembly"
+msgstr "Assemblat .Net"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:158
+msgid "Assembly"
+msgstr "Assemblat"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
+#, csharp-format
+msgid ""
+"<b>License</b>\n"
+"    {0}"
+msgstr ""
+"<b>Llicència</b>\n"
+"    {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
+msgid "Released under the GNU General Public license."
+msgstr "Lliurat sota la Llicència Pública General de GNU"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:37
+msgid ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 by icsharpcode.net\n"
+"    (c) 2004-2005 by MonoDevelop contributors"
+msgstr ""
+"<b>Copyright</b>\n"
+"    (c) 2000-2003 per icsharpcode.net\n"
+"    (c) 2004-2005 pels col·laboradors de MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:217
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:250
+msgid "Path"
+msgstr "Camí"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:80
+msgid "dynamic"
+msgstr "dinàmic"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:133
+msgid "total"
+msgstr "total"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:110
+msgid "You must save the file"
+msgstr "Has de desar el fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:123
+msgid "Unsaved changed to open files were not included in counting"
+msgstr "Els canvis no desats no s'han inclòs al recompte."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:130
+msgid "You must be in project mode"
+msgstr "T'has de posar en mode projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:232
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:278
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:215
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:246
+msgid "File"
+msgstr "Fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:233
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:282
+msgid "Chars"
+msgstr "Caràcters"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:286
+msgid "Words"
+msgstr "Paraules"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:290
+msgid "Lines"
+msgstr "Línies"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:261
+msgid "Word Count"
+msgstr "Compta Paraules"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:298
+msgid "_Count where"
+msgstr "_Compta on"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:302
+msgid "Current file"
+msgstr "Fitxer actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:304
+msgid "Whole solution"
+msgstr "Solució completa"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:156
+msgid "Save as..."
+msgstr "Anomesa i desa..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:169
+#, csharp-format
+msgid "File name {0} is invalid"
+msgstr "Nom de fitxer {0} no vàlid"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:174
+#, csharp-format
+msgid "File {0} already exists.  Overwrite?"
+msgstr "El fitxer {0} ja existeix-  El voleu sobreescriure?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs:28
+msgid "Documentation"
+msgstr "Documentació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:95
+msgid "Loading Workbench"
+msgstr "S'està carregant el banc de treball"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:92
+msgid ""
+"MonoDevelop failed to start.\n"
+"If you installed MonoDevelop using a binary installer, take a look at \n"
+"http://www.mono-project.com/InstallerInstructions for more info about "
+"possible\n"
+"causes of this error."
+msgstr ""
+"MonoDevelop no s'ha pogut iniciar.\n"
+"Si vas instal·lar MonoDevelop fent servir un instal·lador binari, consulta \n"
+"http://www.mono-project.com/InstallerInstructions per més informació sobre "
+"les\n"
+"possibles causes del error."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:111
+msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
+msgstr ""
+"MonoDevelop no s'ha pogut iniciar. El nom local del equip no es pot resoldre."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:112
+msgid ""
+"Your network may be misconfigured. Make sure the hostname of your system is "
+"added to the /etc/hosts file."
+msgstr ""
+"La xarxa pot estar mal configurada. Assegura't que el nom del equip del "
+"sistema existeix al fitxer /etc/hosts."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:127
+msgid "Initializing MonoDevelop"
+msgstr "Inicialitzant MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:170
+msgid "MonoDevelop failed to start. The following error has been reported: "
+msgstr "MonoDevelop no s'ha pogut iniciar. S'ha notificat el següent error: "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:286
+msgid ""
+"Some packages installed in your system are not compatible with MonoDevelop:\n"
+msgstr ""
+"Alguns paquets instal·lats al sistema no són compatibles amb MonoDevelop:\n"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:288
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:290
+#, csharp-format
+msgid "version required: {0}"
+msgstr "versió requerida: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:292
+msgid "You need to upgrade the previous packages to start using MonoDevelop."
+msgstr "Necessita actualitzar els paquets anteriors per començar a fer servir MonoDevelop."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:42
+msgid "Item Path"
+msgstr "Camí dels elements"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:66
+msgid "_Item Directory"
+msgstr "Directori d'_elements"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:44
+msgid "Item file name"
+msgstr "Nom del element"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:45
+msgid "Item extension"
+msgstr "Extensió del element"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:47
+msgid "Current line"
+msgstr "Línia actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:48
+msgid "Current column"
+msgstr "Columna actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:49
+msgid "Current text"
+msgstr "Text actual"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:51
+msgid "Target Path"
+msgstr "Camí del objectiu"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:68
+msgid "_Target Directory"
+msgstr "Directori del objectiu"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:69
+msgid "Target Name"
+msgstr "Nom del objectiu"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:54
+msgid "Target Extension"
+msgstr "Extensió del objectiu"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:71
+msgid "_Project Directory"
+msgstr "Directori del _projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:57
+msgid "Project file name"
+msgstr "Nom de fitxer del projecte"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:73
+msgid "_Solution Directory"
+msgstr "Directori de la _solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:60
+msgid "Solution File Name"
+msgstr "Nom de fitxer de la solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:75
+msgid "MonoDevelop Startup Directory"
+msgstr "Directori d'inici de MonoDevelop"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:319
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:157
+msgid "Control not found!"
+msgstr "No s'ha trobat el control!"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:340
+#, csharp-format
+msgid "The command of tool \"{0}\" is invalid."
+msgstr "La comanda d l'eina \"{0}\" no és vàlida"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:346
+#, csharp-format
+msgid "The working directory of tool \"{0}\" is invalid."
+msgstr "El directori de treball de l'eina \"{0}\" no és vàlid."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs:63
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:85
+#, csharp-format
+msgid "Solution {0}"
+msgstr "Solució {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:70
+msgid "Clear console"
+msgstr "Neteja la consola"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:40
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs:14
+msgid "Files"
+msgstr "Fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:43
+msgid "Size"
+msgstr "Tamany"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:46
+msgid "Last modified"
+msgstr "Última modificació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Are you sure you want to delete this file?"
+msgstr "Esteu segur de que voleu suprimir aquest fitxer?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:155
+msgid "Delete files"
+msgstr "Suprimeix fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:184
+msgid "Delete file"
+msgstr "Suprimeix fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:187
+msgid "Rename file"
+msgstr "Renombra fitxer"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:28
+msgid "Help"
+msgstr "Ajuda"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:37
+msgid "Mono Documentation"
+msgstr "Documentació de Mono"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:43
+msgid "Task List"
+msgstr "Llista de tasques"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:82
+msgid "Show Errors"
+msgstr "Mostra errors"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:93
+msgid "Show Warnings"
+msgstr "Mostra Advertiments"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:104
+msgid "Show Messages"
+msgstr "Mostra missatges"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:212
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:245
+msgid "Line"
+msgstr "Línia"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:213
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:115
+msgid "Description"
+msgstr "Descripció"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:385
+#, csharp-format
+msgid "{0} Error"
+msgid_plural "{0} Errors"
+msgstr[0] "{0} Error"
+msgstr[1] "{0} Errors"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:390
+#, csharp-format
+msgid "{0} Warning"
+msgid_plural "{0} Warnings"
+msgstr[0] "{0} advertiment"
+msgstr[1] "{0} advertiments"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs:395
+#, csharp-format
+msgid "{0} Message"
+msgid_plural "{0} Messages"
+msgstr[0] "{0} missatge"
+msgstr[1] "{0} missatges"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:88
+#, csharp-format
+msgid "Solution {0} (1 entry)"
+msgstr "Solució {0} (1 entrada)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:91
+#, csharp-format
+msgid "Solution {0} ({1} entries)"
+msgstr "Solució {0} ({1} entrades)"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:180
+#, csharp-format
+msgid "Solution name may not contain any of the following characters: {0}"
+msgstr "El nom de la solució no ha de contindre cap dels següents caràcters: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs:210
+#, csharp-format
+msgid "Do you really want to remove solution {0} from solution {1}?"
+msgstr "Esteu segur de que voleu suprimir la solució {0} de la solució {1}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:167
+#, csharp-format
+msgid ""
+"Do you really want to move the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr ""
+"Esteu segur de que voleu moure la carpeta '{0}' a la carpeta arrel del  "
+"projecte '{1}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:169
+#, csharp-format
+msgid "Do you really want to move the folder '{0}' to the folder '{1}'?"
+msgstr "Esteu segur de que voleu moure la carpeta '{0}' a la carpeta '{1}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:173
+#, csharp-format
+msgid ""
+"Do you really want to copy the folder '{0}' to the root folder of project "
+"'{1}'?"
+msgstr ""
+"Esteu segur de que voleu copiar la carpeta '{0}' a la carpeta arrel del "
+"projecte '{1}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:175
+#, csharp-format
+msgid "Do you really want to copy the folder '{0}' to the folder '{1}'?"
+msgstr "Esteu segur de que voleu copiar la carpeta '{0}' a la carpeta '{1}'?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:199
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the move operation?"
+msgstr "Voleu desar el fitxer '{0}' abans de l'operació de moviment?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:201
+#, csharp-format
+msgid ""
+"Do you want to save the following files before the move operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"Voleu desar els següents fitxers abans de l'operació de moviment?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:204
+#, csharp-format
+msgid "Do you want to save the file '{0}' before the copy operation?"
+msgstr "Voleu desar el fitxer '{0}' abans de l'operació de còpia?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:206
+#, csharp-format
+msgid ""
+"Do you want to save the following files before the copy operation?\n"
+"\n"
+"{0}"
+msgstr ""
+"Voleu desar els següents fitxers abans de la operació de còpia?\n"
+"\n"
+"{0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:218
+msgid "Save operation failed."
+msgstr "No s'ha pogut desar."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:225
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:335
+msgid "Copying files ..."
+msgstr "Copiant fitxers ..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:238
+#: ../Extras/NUnit/Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs:117
+msgid "Add files"
+msgstr "Afegeix fitxers"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:252
+msgid "Adding files..."
+msgstr "Afegint Fitxers..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:265
+#, csharp-format
+msgid "{0} is outside the project directory, what should I do?"
+msgstr "{0} està fora del directori del projecte, què faig?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:269
+msgid "Use the same action for all selected files."
+msgstr "Fes servir la mateixa acció per tots els fitxers seleccionats."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:273
+msgid "_Move"
+msgstr "_Mou"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:294
+msgid ""
+"An error occurred while attempt to move/copy that file. Please check your "
+"permissions."
+msgstr ""
+"S'ha produït un error al moure/copiar aquest fitxer. Si us plau, revisa els "
+"permissos."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:323
+#, csharp-format
+msgid "The file '{0}' already exists. Do you want to replace it?"
+msgstr "El fitxer '{0}' ja existeix. Voleu reemplaçar-lo?"
+
+#. assume duplicate file
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:105
+msgid "File or directory name is already in use, choose a different one."
+msgstr "El nom de fitxer o directori ja està en ús, tria un altre diferent."
+
+#. new file name with wildcard (*, ?) characters in it
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:107
+msgid ""
+"The file name you have chosen contains illegal characters. Please choose a "
+"different file name."
+msgstr ""
+"El nom de fitxer que has triat conté caràcters no vàlids. Si us plau, tria "
+"un nom de fitxer diferent."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:141
+#, csharp-format
+msgid "Are you sure you want to remove file {0} from project {1}?"
+msgstr "Esteu segur de que voleu suprimir el fitxer {0} del projecte {1}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:169
+#, csharp-format
+msgid "Do you want to remove folder {0}?"
+msgstr "Voleu suprimir la carpeta {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:120
+#, csharp-format
+msgid "{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>"
+msgstr "{0} <span foreground='red' size='small'>(Llenguatge desconegut '{1}')</span>"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:274
+#, csharp-format
+msgid "Project name may not contain any of the following characters: {0}"
+msgstr ""
+"El nom de projecte no hauria de contindre cap dels següents caràcters: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:304
+#, csharp-format
+msgid "Do you really want to remove project {0} from solution {1}"
+msgstr "Esteu segur de que voleu suprimir el projecte {0} de la solució {1}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:80
+msgid "References"
+msgstr "Referències"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
+msgid "Resources"
+msgstr "Recursos"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:143
+#, csharp-format
+msgid "Resource file '{0}' does not exist"
+msgstr "El fitxer de recursos '{0}' no existeix"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:123
+#, csharp-format
+msgid "Are you sure you want to permanently delete the file {0}?"
+msgstr "Esteu segur de que voleu suprimir permanentment el fitxer {0}?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:129
+#, csharp-format
+msgid "The file {0} could not be deleted"
+msgstr "No s'ha pogut suprimir el fitxer {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:138
+msgid "Search Results"
+msgstr "Resultats de la cerca"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:248
+msgid "Text"
+msgstr "Text"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:1029
+msgid "Display Options"
+msgstr "Opcions de visualització"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:54
+msgid "Build Output"
+msgstr "Sortida del muntatge"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:55
+msgid "Building..."
+msgstr "Muntant..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:61
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:76
+msgid "Application Output"
+msgstr "Sortida de l'aplicació"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs:71
+msgid "Saving..."
+msgstr "Desant..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:265
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:478
+#, csharp-format
+msgid "File not found: {0}"
+msgstr "Fitxer no trobat: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:308
+msgid "Solution loaded."
+msgstr "Solució carregada."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:375
+msgid "Solution saved."
+msgstr "Solució desada."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:377
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:390
+msgid "Save failed."
+msgstr "Error al desar"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:388
+msgid "Project saved."
+msgstr "Projecte desat."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:477
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:503
+#, csharp-format
+msgid "The file '{0}' could not be loaded."
+msgstr "El fitxer '{0}' no s'ha pogut carregar."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:493
+msgid "Add to Solution"
+msgstr "Afegeix a solució"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:678
+msgid "Deploy Output"
+msgstr "Sortida del Desplegament"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:718
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:751
+msgid "Execution failed."
+msgstr "Execució fallida."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:768
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:827
+msgid "No runnable executable found."
+msgstr "No s'ha trobat cap executable."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:812
+#, csharp-format
+msgid "The file {0} can't be compiled."
+msgstr "El fitxer {0} no es pot compilar."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:863
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:923
+msgid "Build failed."
+msgstr "Muntatge fallit."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:879
+msgid "Save changed files?"
+msgstr "Deso fitxers modificats?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:907
+#, csharp-format
+msgid "---------------------- Done ----------------------"
+msgstr "---------------------- Acabat ---------------------"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:913
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:369
+#, csharp-format
+msgid "{0} error"
+msgid_plural "{0} errors"
+msgstr[0] "{0} error"
+msgstr[1] "{0} errors"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:914
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:370
+#, csharp-format
+msgid "{0} warning"
+msgid_plural "{0} warnings"
+msgstr[0] "{0} advertiment"
+msgstr[1] "{0} advertiments"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:917
+msgid "Build successful."
+msgstr "Muntatge amb èxit."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:919
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:921
+msgid "Build: "
+msgstr "Muntatge: "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:956
+#, csharp-format
+msgid "Could not get any file from '{0}'."
+msgstr "No s'ha pogut obtenir cap fitxer des de '{0}'"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
+#, csharp-format
+msgid "Could not create directory '{0}'."
+msgstr "No s'ha pogut crear el directori '{0}'."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:975
+msgid "Copying files..."
+msgstr "Copiant fitxers..."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:987
+#, csharp-format
+msgid "File '{0}' could not be created."
+msgstr "No s'ha pogut crear el fitxer '{0}'."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1009
+#, csharp-format
+msgid "File '{0}' could not be deleted."
+msgstr "No s'ha pogut suprimir el fitxer '{0}'."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1024
+#, csharp-format
+msgid "Directory '{0}' could not be deleted."
+msgstr "No s'ha pogut suprimir el directori '{0}'."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
+#, csharp-format
+msgid "Error : {0}"
+msgstr "Error : {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
+#, csharp-format
+msgid ""
+" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
+"{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
+msgstr ""
+" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
+"{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:73
+#, csharp-format
+msgid "Match at offset {0}"
+msgstr "Coincidència a un desplaçament de {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:198
+msgid "Search pattern is invalid"
+msgstr "El patró de cerca no és vàlid"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:108
+#, csharp-format
+msgid "The search could not be finished: {0}"
+msgstr "No s'ha pogut finalitzar la cerca: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:110
+msgid "Search cancelled."
+msgstr "Cerca cancel·lada."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:112
+#, csharp-format
+msgid "Search completed. {0} matches found in {1} files."
+msgstr "Cerca completada. {0} resultats trobats a {1} fitxers."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:117
+#, csharp-format
+msgid "Search time: {0} seconds."
+msgstr "Temps de cerca: {0} segons."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:172
+msgid "There is a search already in progress. Do you want to cancel it?"
+msgstr "Ja hi ha una cerca en progrés. La voleu cancel·lar?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:135
+#, csharp-format
+msgid "Replacing '{0}' in {1}."
+msgstr "Reemplaçant '{0}' a {1}."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:181
+#, csharp-format
+msgid "Looking for '{0}' in {1}."
+msgstr "Cercant '{0}' a {1}."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:125
+msgid "Mark all completed"
+msgstr "Marca tot completat"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:151
+#, csharp-format
+msgid "Replace all finished. {0} matches found."
+msgstr "Reemplaça tot acabat. {0} resultats trobats."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:211
+msgid "Search string not found:"
+msgstr "No s'ha trobat la cadena cercada:"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:98
+msgid "Ready"
+msgstr "Preparat"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:117
+msgid "Are you sure that you want to reload the file?"
+msgstr "Esteu segur de que voleu actualitzar el fitxer?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:61
+msgid "Initializing Main Window"
+msgstr "Inicializant la finestra principal"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:306
+#, csharp-format
+msgid "Opening {0}"
+msgstr "Obrint {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:398
+msgid "Do you want to save the current changes?"
+msgstr "Voleu desar els canvis actuals?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:410
+msgid "Do you really want to discard your changes ?"
+msgstr "Esteu segur de que voleu descartar els canvis?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:442
+msgid "Invalid file name"
+msgstr "Nom de fitxer no vàlid"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:462
+#, csharp-format
+msgid "{0} is a directory"
+msgstr "{0} és un directori"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:618
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:627
+#, csharp-format
+msgid "The file '{0}' could not be opened."
+msgstr "El fitxer '{0}' no s'ha pogut obrir."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:55
+#, csharp-format
+msgid "Can't create solution with type : {0}"
+msgstr "No puc crear la solució amb tipus: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineDescriptor.cs:94
+#, csharp-format
+msgid ""
+"Solution file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"El fitxer de solució {0} ja existeix, voleu sobreescriure\n"
+"el fitxer existent ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:68
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:83
+#, csharp-format
+msgid "Can't create project with type : {0}"
+msgstr "No puc crear el projecte amb tipus: {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+#, csharp-format
+msgid ""
+"Project file {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"El fitxer de projecte {0} ja existeix, voleu sobreescriure\n"
+"el fitxer existent ?"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:89
+msgid "File already exists"
+msgstr "El fitxer ja existeix"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:203
+msgid "_Name"
+msgstr "_Nom"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:208
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:175
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:289
+#, csharp-format
+msgid "Error loading template from resource {0}"
+msgstr "Error al carregar el fitxer de plantilla des del recurs {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:120
+#, csharp-format
+msgid "File {0} could not be written."
+msgstr "El fitxer {0} no s'ha pogut desar."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:67
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:155
+#, csharp-format
+msgid "The file '{0}' already exists in the project."
+msgstr "El fitxer '{0}' ja existeix al projecte."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:89
+#, csharp-format
+msgid ""
+"File {0} already exists, do you want to overwrite\n"
+"the existing file ?"
+msgstr ""
+"El fitxer {0} ja existeix, voleu sobreescriure\n"
+"el fitxer existent?"
+
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:1
+msgid "Application Configuration File"
+msgstr "Fitxer de configuració de l'aplicació"
+
+#: ../Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml.h:2
+msgid "Creates a .NET application configuration file."
+msgstr "Crea un fitxer de configuració de l'aplicació .NET"
+
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:1
+msgid "A blank solution"
+msgstr "Una solució en blanc"
+
+#: ../Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml.h:2
+msgid "Blank Solution"
+msgstr "Solució en blanc"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:1
+msgid "Creates an empty class."
+msgstr "Crea una classe buida"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml.h:2
+msgid "Empty Class"
+msgstr "Classe buida"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:1
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:1
+msgid "Creates an empty interface."
+msgstr "Crea una interfície buida."
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyEnum.xft.xml.h:2
+msgid "Empty Enumeration"
+msgstr "Enumeració buida"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:1
+msgid "Creates an empty HTML file."
+msgstr "Crea un fitxer HTML buit"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyHTMLFile.xft.xml.h:2
+msgid "Empty HTML File"
+msgstr "Fitxer HTML buit"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyInterface.xft.xml.h:2
+msgid "Empty Interface"
+msgstr "Interfície buida"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:1
+msgid "Creates an empty resource file."
+msgstr "Crea un fitxer de recursos buit."
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyResourceFile.xft.xml.h:2
+msgid "Empty Resource File"
+msgstr "Fitxer de recursos buit"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyStruct.xft.xml.h:2
+msgid "Empty Struct"
+msgstr "Struct buit"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:1
+msgid "Creates an empty text file."
+msgstr "Crea un fitxer de text buit."
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml.h:2
+msgid "Empty Text File"
+msgstr "Fitxer de text buit"
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:1
+msgid "Creates an empty XML file."
+msgstr "Crea un fitxer XML buit."
+
+#: ../Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml.h:2
+msgid "Empty XML File"
+msgstr "Fitxer XML buit"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
+msgid "<b>Execute scripts </b>"
+msgstr "<b>Executar seqüències </b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
+msgid "<b>Include</b>"
+msgstr "<b>Inclou</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:4
+msgid "<b>On Project Load</b>"
+msgstr "<b>Al carregar el projecte</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:5
+msgid "<b>Output Directory</b>"
+msgstr "<b>Directori de sortida</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:6
+msgid "<b>Output</b>"
+msgstr "<b>Sortida</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:7
+msgid "<b>Project Information</b>"
+msgstr "<b>Informació del Projecte</b>"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
+msgid "Action"
+msgstr "Acció"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
+msgid "Add New Deploy Target"
+msgstr "Afegeix Nou Objectiu de Desplegament:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
+msgid "Are you sure you want to delete this configuration?"
+msgstr "Esteu segur de que voleu suprimir aquesta configuració?"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
+msgid "Assembly _name:"
+msgstr "_Nom del assemblat"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
+msgid "Automatically _include found files"
+msgstr "_Inclou automàticament fitxers trobats"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
+msgid "Compilation _target"
+msgstr "Objec_tiu de la compilació"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
+msgid "Create configurations for all solution items"
+msgstr "Crea configuracions per tots els elements de solució"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
+msgid "Delete Configuration"
+msgstr "Suprimeix configuració"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
+msgid "Delete also configurations in solution items"
+msgstr "Suprimeix també configuracions dels elements de solució"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
+msgid "Deployment Targets"
+msgstr "Objectius de Desplegament"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
+msgid "Edit Deploy Target"
+msgstr "Edita Objectiu de Desplegament:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:19
+msgid "Enable _viewstate"
+msgstr "Activa _estat de visualització"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:20
+msgid "Execute co_mmand:"
+msgstr "Executa co_manda"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
+msgid "New Configuration"
+msgstr "Nova configuració"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
+msgid "New name:"
+msgstr "Nou nom:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
+msgid "Output _path:"
+msgstr "Camí de _sortida"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:25
+msgid "Paramet_ers:"
+msgstr "Paràm_etres"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
+msgid "Pause _console output"
+msgstr "Pausa sortida de _consola"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
+msgid "Rename Configuration"
+msgstr "Canvia el nom de la configuració"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
+msgid "Rename configurations in all solution items"
+msgstr "Canvia el nom de les configuracions a tots els elements de la solució"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
+msgid "Run on e_xternal console"
+msgstr "Executa a una consola e_xterna"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
+msgid "Runtime _version:"
+msgstr "_Versió del Runtime:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
+msgid "Search for new _files on load"
+msgstr "Cerca nous _fitxers al carregar"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
+msgid "Select a target configuration for each solution item:"
+msgstr "Selecciona una configuració del objectiu per cada element de la solució:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
+msgid "Select deploy script"
+msgstr "Selecciona seqüència de desplegament"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
+msgid "Select output directory"
+msgstr "Selecciona directori de sortida"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
+msgid "Select output path"
+msgstr "Selecciona camí de sortida"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
+msgid "Select target location"
+msgstr "Selecciona la ubicació del objectiu."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
+msgid "Set as Default"
+msgstr "Definir com Predeterminat"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
+msgid "Target type:"
+msgstr "Tipus del objectiu:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
+msgid "With _scriptfile"
+msgstr "Amb fitxer de _seqüències"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
+msgid "_After build:"
+msgstr "_Després de muntar:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
+msgid "_Before build:"
+msgstr "_Abans de muntar:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
+msgid "_Deploy target:"
+msgstr "_Desplegament del objectiu:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
+msgid "_Description:"
+msgstr "_Descripció:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
+msgid "_Include files in compile run"
+msgstr "_Inclou fitxers a la compilació"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
+msgid "_Multiple Startup Project"
+msgstr "Projecte d'inici _múltiple"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:47
+msgid "_Name:"
+msgstr "_Nom:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:48
+msgid "_Project Files"
+msgstr "Fitxers del _projecte"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:49
+msgid "_Single Startup Project"
+msgstr "Projecte d'inici _individual"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:50
+msgid "_Version:"
+msgstr "_Versió:"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:1
+msgid "Build Properties"
+msgstr "Propietats de muntatge"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:2
+msgid "Common"
+msgstr "Comú"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:3
+msgid "Compile"
+msgstr "Compila"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
+msgid "Configurations"
+msgstr "Configuracions"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
+msgid "Deployment"
+msgstr "Desplegament"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:6
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:4
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:5
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:1
+msgid "General"
+msgstr "General"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
+msgid "Project options"
+msgstr "Opcions del projecte"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:8
+msgid "Solution Information"
+msgstr "Informació de la Solució"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:9
+msgid "Startup Properties"
+msgstr "Propietats d'inici"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
+msgid "Solution Options"
+msgstr "Opcions de la solució"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:72
+msgid "Configuration"
+msgstr "Configuracions"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:108
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:165
+msgid "Please enter a valid configuration name."
+msgstr "Si us plau, introdueix un nom de configuració vàlid."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:110
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:167
+#, csharp-format
+msgid "A configuration with the name '{0}' already exists."
+msgstr "Ja existeix un configuració amb el nom '{0}'."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:132
+msgid "There must be at least one configuration."
+msgstr "Ha d'existir almenys una configuració."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:71
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:200
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:27
+msgid "None"
+msgstr "Cap"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:72
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
+msgid "Execute"
+msgstr "Executa"
+
+#. tell the user we encountered and worked around an issue
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:105
+msgid ""
+"The Solution Execute Definitions for this Solution were invalid. A new empty "
+"set of Execute Definitions has been created."
+msgstr ""
+"Les definicions d'execució d'aquesta solució no eren vàlides. S'ha creat un "
+"nou conjunt de definicions d'execució."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
+#, csharp-format
+msgid "File {0} not found in {1}."
+msgstr "No s'ha trobat el fitxer {0} a {1}."
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:101
+msgid "Invalid deploy target specified"
+msgstr "Objectiu de desplegament especificat no vàlid"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:108
+msgid "Invalid deploy script specified"
+msgstr "Seqüència de desplegament especificada no vàlida"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:114
+msgid "Deploy script doesn't exist"
+msgstr "La seqüència de desplegament no existeix"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:62
+msgid "Invalid assembly name specified"
+msgstr "Nom d'assemblat no vàlid"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:67
+msgid "Invalid output directory specified"
+msgstr "Directori de sortida no vàlid"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:45
+msgid "Project Options"
+msgstr "Opcions del projecte"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:70
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:184
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:219
+msgid "(Active)"
+msgstr "(Actiu)"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
+msgid "Set as active"
+msgstr "Definir com actiu"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
+#, csharp-format
+msgid "Saving solution: {0}"
+msgstr "Desant solució: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
+#, csharp-format
+msgid "Could not save solution: {0}"
+msgstr "No s'ha pogut desar la solució: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:94
+#, csharp-format
+msgid ""
+"The file '{0}' is using an old solution file format. It will be "
+"automatically converted to the current format."
+msgstr ""
+"El fitxer '{0}' està fent servir un format de solució antic, però es "
+"convertirà automàticament al format actual."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:224
+#, csharp-format
+msgid "Loading solution: {0}"
+msgstr "Carregant solució: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:211
+#, csharp-format
+msgid "Refactoring project {0}"
+msgstr "Refactoritzant projecte {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:615
+msgid "The solution does not have an active configuration."
+msgstr "La solució no té una configuració activa."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:619
+#, csharp-format
+msgid "Building Solution {0}"
+msgstr "Muntant solució {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:626
+msgid ""
+"Cyclic dependencies can not be built with this version.\n"
+"But we are working on it."
+msgstr ""
+"No es poden muntar dependències cícliques a aquesta versió.\n"
+"Però estem treballant en això."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:148
+#, csharp-format
+msgid ""
+"Unknown language '{0}'. You may need to install an additional add-in to "
+"support this language."
+msgstr ""
+"Llenguatge desconegut: '{0}'. És probable que necessiti instal·lar una extensió "
+"addicional pel suport de d'aquest llenguatge."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:159
+#, csharp-format
+msgid "Referenced project '{0}' not found in the solution."
+msgstr "El projecte referenciat '{0}' no s'ha trobat a la solució."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
+#, csharp-format
+msgid "Saving project: {0}"
+msgstr "Desant projecte: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
+#, csharp-format
+msgid "Could not save project: {0}"
+msgstr "No s'ha pogut desar el projecte: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:115
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
+#, csharp-format
+msgid ""
+"The file '{0}' is using an old project file format. It will be automatically "
+"converted to the current format."
+msgstr ""
+"El fitxer '{0}' està fent servir un format de projecte antic, però es "
+"convertirà automàticament al format actual."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:117
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
+#, csharp-format
+msgid "Loading project: {0}"
+msgstr "Carregant projecte: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:123
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
+#: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
+#, csharp-format
+msgid "Could not load project: {0}"
+msgstr "No s'ha pogut carregar el projecte: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:105
+#, csharp-format
+msgid "Could not load solution: {0}"
+msgstr "No s'ha pogut carregar la solució: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:518
+msgid "Generating database"
+msgstr "Creant base de dades"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:346
+#, csharp-format
+msgid "Building Project: {0} Configuration: {1}"
+msgstr "Muntant projecte: {0} Configuració: {1}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:372
+msgid "Build complete -- "
+msgstr "Muntatge finalitzat -- "
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:423
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:444
+#, csharp-format
+msgid "Executing: {0}"
+msgstr "Executant: {0}"
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:671
+#, csharp-format
+msgid "Performing main compilation..."
+msgstr "Realitzant compilació principal..."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs:16
+#, csharp-format
+msgid "The file '{0}' has an unknown format version (version '{1}')'."
+msgstr "El fitxer '{0}' té un format de versió desconegut (versió '{1}')'."
+
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:1
+msgid "Boo Files"
+msgstr "Fitxers de Boo"
+
+#: ../Extras/BooBinding/BooBinding.addin.xml.h:2
+msgid "Boo Shell"
+msgstr "Shell de Boo"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:1
+msgid "ChangeLog"
+msgstr "ChangeLog"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:2
+msgid "ChangeLog Add-in"
+msgstr "Extensió ChangeLog"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:4
+msgid "Insert Entry"
+msgstr "Insereix entrada"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:5
+msgid "Insert Header"
+msgstr "Insereix capçalera"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:36
+msgid "Specify personal information used in ChangeLog entries"
+msgstr "Especifica informació personal utilitzada a les entrades del ChangeLog"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:40
+msgid "Full Name:"
+msgstr "Nom complet:"
+
+#: ../Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs:44
+msgid "Email Address:"
+msgstr "Direcció de correu electrònic:"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
+msgid "CSharp Files"
+msgstr "Fitxers de C#"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:4
+#: ../Extras/NUnit/Gui/TestPad.cs:289
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:131
+msgid "Output"
+msgstr "Sortida"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:5
+msgid "Resource Files"
+msgstr "Fitxers de Recursos"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:6
+msgid "Runtime Options"
+msgstr "Opcions del Runtime"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:7
+msgid "Web Files"
+msgstr "Fitxers Web"
+
+#: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:8
+msgid "Xml Files"
+msgstr "Fitxers Xml"
+
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:54
+#, csharp-format
+msgid "{0} could not be found or is invalid."
+msgstr "El fitxer {0} no s'ha pogut trobar o no es vàlid."
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:1
+#: ../Extras/JavaBinding/Java.glade.h:1
+#: ../Extras/NemerleBinding/Nemerle.glade.h:2
+#: ../Extras/VBNetBinding/VB.glade.h:2
+msgid "<b>Code Generation</b>"
+msgstr "<b>Generació de codi</b>"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:2
+#: ../Extras/JavaBinding/Java.glade.h:4 ../Extras/VBNetBinding/VB.glade.h:3
+msgid "<b>Warnings</b>"
+msgstr "<b>Advertiments</b>"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:3
+#: ../Extras/VBNetBinding/VB.glade.h:4
+msgid "Allow '_unsafe' code"
+msgstr "Permetre codi 'inseg_ur'"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:4
+#: ../Extras/JavaBinding/Java.glade.h:6
+msgid "Compile _Target:"
+msgstr "Compila _objectiu:"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:5
+#: ../Extras/JavaBinding/Java.glade.h:8
+msgid "Define S_ymbols:"
+msgstr "Defineix s_ímbols:"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:6
+#: ../Extras/JavaBinding/Java.glade.h:9
+msgid "Emit _debugging information"
+msgstr "Emet informació de _depuració"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:7
+#: ../Extras/JavaBinding/Java.glade.h:10 ../Extras/VBNetBinding/VB.glade.h:7
+msgid "Enable _optimizations"
+msgstr "Activa _optimizacions"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:8
+#: ../Extras/VBNetBinding/VB.glade.h:8
+msgid "Generate _xml documentation"
+msgstr "Genera documentació _xml"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:9
+#: ../Extras/JavaBinding/Java.glade.h:15 ../Extras/VBNetBinding/VB.glade.h:9
+msgid "Treat warnings as _errors"
+msgstr "Tracta advertiments com _errors"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:10
+#: ../Extras/VBNetBinding/VB.glade.h:10
+msgid "_Generate overflow checks"
+msgstr "_Genera comprovacions de desbordament"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:11
+#: ../Extras/JavaBinding/Java.glade.h:16
+msgid "_Main Class:"
+msgstr "Classe _principal:"
+
+#: ../Extras/CSharpBinding/CSharp.glade.h:12
+msgid "_Warning Level:"
+msgstr "Nivell d'_advertiment:"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:58
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:50
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:148
+msgid "Executable"
+msgstr "Executable"
+
+#: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:59
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:2
+#: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:51
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:150
+msgid "Library"
+msgstr "Biblioteca"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:1
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
+msgid "Console Project"
+msgstr "Projecte de consola"
+
+#: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
+msgid "Creates a new C# console project."
+msgstr "Crea un projecte C# de consola nou."
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
+msgid "Creates a secure C# Web Service, using SessionState"
+msgstr "Crea un servei web segur amb C#, fent servir SessionState"
+
+#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:2
+msgid "Secure Web Service"
+msgstr "Servei web segur"
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:1
+msgid "Creates a C# Web Service."
+msgstr "Crea un servei web amb C#."
+
+#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:2
+msgid "Web Service"
+msgstr "Servei web"
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
+msgid "Creates an empty C# file."
+msgstr "Crea un fitxer C# buit."
+
+#: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:2
+msgid "Empty File"
+msgstr "Fitxer buit"
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:1
+msgid "Creates an empty C# project."
+msgstr "Crea un projecte C# buit."
+
+#: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:2
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:2
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:2
+msgid "Empty Project"
+msgstr "Projecte buit"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:1
+msgid "Glade# 2.0 Project"
+msgstr "Projecte Glade# 2.0"
+
+#: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:2
+msgid "a Glade# 2.0 project with one window and button"
+msgstr "un projecte Glade# 2.0 amb una finestra i un botó"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
+msgid "Glade# 1.0 Project"
+msgstr "Projecte Glade# 1.0"
+
+#: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
+msgid "a Glade# project with one window and button"
+msgstr "un projecte Glade# amb una finestra i un botó"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:1
+msgid "Creates a Gnome# 2.0 project"
+msgstr "Crea un projecte Gnome# 2.0"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:2
+msgid "Gnome# 2.0 Project"
+msgstr "Projecte Gnome# 2.0"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:1
+msgid "Creates a Gnome# program."
+msgstr "Crea un programa Gnome#."
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:2
+msgid "Gnome# Program"
+msgstr "Programa Gnome#"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Gnome# project"
+msgstr "Crea un projecte Gnome#"
+
+#: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# 1.0 Project"
+msgstr "Projecte Gnome# 1.0"
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:1
+msgid "Creates a Gtk# 2.0 project."
+msgstr "Crea un projecte Gtk# 2.0."
+
+#: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:2
+msgid "Gtk# 2.0 Project"
+msgstr "Projecte Gtk# 2.0"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
+msgid "Creates a Gtk# project."
+msgstr "Crea un projecte Gtk#."
+
+#: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
+msgid "Gtk# 1.0 Project"
+msgstr "Projecte Gtk# 1.0"
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window."
+msgstr "Crea una finestra Gtk# principal."
+
+#: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:2
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:2
+msgid "Gtk# Window"
+msgstr "Finestra Gtk#"
+
+#: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:1
+msgid "Creates an empty C# class library"
+msgstr "Crea una biblioteca de classes C# buida"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:77
+msgid "Source Code"
+msgstr "Codi font"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:82
+msgid "Window Designer"
+msgstr "Dissenyador de finestres"
+
+#: ../Extras/GladeAddIn/GladeAddIn.Gui/WindowsFolderNodeBuilder.cs:63
+msgid "Windows and Dialogs"
+msgstr "Finestres i diàlegs"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
+msgid "Include debug information"
+msgstr "Inclou informació de depuració"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:59
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:51
+msgid "Output path"
+msgstr "Camí de sortida"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
+msgid "Assembly name"
+msgstr "Nom del assemblat"
+
+#: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
+#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
+msgid "Target options"
+msgstr "Opcions de l'objectiu"
+
+#: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:2
+msgid "ILAsm Console Project"
+msgstr "Projecte ILAsm de consola"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:30
+msgid "Javac"
+msgstr "Javac"
+
+#: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:31
+msgid "Gcj"
+msgstr "Gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:2
+msgid "<b>Compiler</b>"
+msgstr "<b>Compilador</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:3
+msgid "<b>Options</b>"
+msgstr "<b>Opcions</b>"
+
+#: ../Extras/JavaBinding/Java.glade.h:5
+msgid "Classpath:"
+msgstr "Classpath:"
+
+#: ../Extras/JavaBinding/Java.glade.h:7
+msgid "Compiler command:"
+msgstr "Comanda del compilador:"
+
+#: ../Extras/JavaBinding/Java.glade.h:11
+msgid "Enable deprecation warnings"
+msgstr "Activa advertiments d'obsolescència"
+
+#: ../Extras/JavaBinding/Java.glade.h:12
+msgid "Generate warnings"
+msgstr "Genera advertiments"
+
+#: ../Extras/JavaBinding/Java.glade.h:13
+msgid "IKVM path:"
+msgstr "Camí de IKVM:"
+
+#: ../Extras/JavaBinding/Java.glade.h:14
+msgid "Java compiler:"
+msgstr "Compilador Java:"
+
+#: ../Extras/JavaBinding/Java.glade.h:17
+msgid "gcj"
+msgstr "gcj"
+
+#: ../Extras/JavaBinding/Java.glade.h:18
+msgid "javac"
+msgstr "javac"
+
+#: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:1
+msgid "Creates an empty Java file."
+msgstr "Crea un fitxer Java buit."
+
+#: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:1
+msgid "Creates an empty Java solution."
+msgstr "Crea una solució Java buida."
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
+msgid "Create a console Java project with IKVM"
+msgstr "Crea un projecte Java de consola amb IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
+msgid "IKVM Console Project"
+msgstr "Projecte IKVM de consola"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:1
+msgid "Create a Glade# Java project with IKVM"
+msgstr "Crea un projecte Java Glade# amb IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:2
+msgid "IKVM Glade# Project"
+msgstr "Projecte Glade# IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
+msgid "Create a Gnome# Java project with IKVM"
+msgstr "Crea un projecte Java Gnome# amb IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
+msgid "IKVM Gnome# Project"
+msgstr "Projecte Gnome# IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:1
+msgid "Create a Gtk# Java project with IKVM"
+msgstr "Crea un projecte Java Gtk# amb IKVM"
+
+#: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:2
+msgid "IKVM Gtk# Project"
+msgstr "Projecte Gtk# IKVM"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:1
+msgid "AWT Applet"
+msgstr "Applet AWT"
+
+#: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:2
+msgid "Creates a Java AWT Applet"
+msgstr "Crea un Applet Java AWT"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:1
+msgid "AWT Project"
+msgstr "Projecte AWT"
+
+#: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:2
+msgid "Creates a Java AWT project."
+msgstr "Crea un projecte Java AWT."
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:1
+msgid "AWT Application"
+msgstr "Aplicació AWT"
+
+#: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:2
+msgid "Creates a Java AWT application."
+msgstr "Crea una aplicació Java AWT."
+
+#: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console Java project"
+msgstr "Crea un projecte Java de consola"
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:1
+msgid "Creates an AWT dialog."
+msgstr "Crea un diàleg AWT."
+
+#: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:2
+msgid "Java AWT Dialog"
+msgstr "Diàleg Java AWT"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:1
+msgid "AWT Frame"
+msgstr "Frame AWT"
+
+#: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:2
+msgid "Creates a Java AWT Frame"
+msgstr "Crea un Frame Java AWT"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:1
+msgid "AWT OK Dialog"
+msgstr "Diàleg OK d'AWT"
+
+#: ../Extras/JavaBinding/templates/JavaOKDialog.xft.xml.h:2
+msgid "Creates a Java AWT OK Dialog."
+msgstr "Crea un diàleg OK de Java AWT"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:1
+msgid "AWT Panel"
+msgstr "Panell AWT"
+
+#: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:2
+msgid "Creates a Java AWT panel."
+msgstr "Crea un panell Java AWT"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:1
+msgid "Edit Project Icons..."
+msgstr "Edita Icones del Projecte..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:2
+msgid "Import Glade file..."
+msgstr "Importa fitxer Glade..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:3
+msgid "New Action Group..."
+msgstr "Nou Grup d'Accions ..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:4
+msgid "New Dialog..."
+msgstr "Nou diàleg..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:5
+msgid "New Widget..."
+msgstr "Nou component..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:6
+msgid "New Window..."
+msgstr "Nova finestra..."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:7
+msgid "Widget Export"
+msgstr "Exportació de giny"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:8
+msgid "Widget Properties"
+msgstr "Propietats del giny"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:9
+msgid "Widget Tree"
+msgstr "Àrbre de ginys"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:10
+msgid "Widgets Palette"
+msgstr "Paleta de ginys"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:58
+#, csharp-format
+msgid "The widget design {0} is not currently bound to a class."
+msgstr "El disseny del giny {0} no està associat actualment a cap classe"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:48
+#, csharp-format
+msgid "Are you sure you want to delete the widget '{0}'?"
+msgstr "Esteu segur de que voleu suprimir el giny '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:50
+#, csharp-format
+msgid "Are you sure you want to delete the window '{0}'?"
+msgstr "Esteu segur de que voleu suprimir la finestra '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:52
+#, csharp-format
+msgid "Are you sure you want to delete the action group '{0}'?"
+msgstr "Esteu segur de que voleu suprimir el grup d'accions '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:54
+#, csharp-format
+msgid "Are you sure you want to delete '{0}'?"
+msgstr "Esteu segur de que voleu suprimir '{0}'?"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs:193
+msgid "The form designer could not be loaded"
+msgstr "El dissenyador de formularis no s'ha pogut carregar."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:61
+msgid "Properties"
+msgstr "Propietats"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:65
+msgid "Signals"
+msgstr "Senyals"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:141
+#, csharp-format
+msgid ""
+"The action '{0}' belongs to the global action group '{1}'. To modify it, "
+"open the action group file."
+msgstr ""
+"La acció '{0}' pertany al grup d'accions global '{1}'. Per modificar-lo, "
+"obriu el fitxer del grup d'accions."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:148
+msgid "Open Action Group"
+msgstr "Obre Grup d'Accions"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:65
+msgid "Designer"
+msgstr "Dissenyador"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:92
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:124
+msgid "Actions"
+msgstr "Accions"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:72
+msgid "User Interface"
+msgstr "Interfície d'usuari"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:1
+msgid "\n"
+msgstr "\n"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:4
+msgid "&"
+msgstr "&"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:5
+msgid "<b>Behavior</b>"
+msgstr "<b>Comportament</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:6
+msgid "<b>Elements</b>"
+msgstr "<b>Elements</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:7
+msgid "<b>File encoding</b>"
+msgstr "<b>Codificació del fitxer</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:8
+msgid "<b>Font</b>"
+msgstr "<b>Font</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:9
+msgid "<b>General Options</b>"
+msgstr "<b>Opcions generals</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:10
+msgid "<b>Markers</b>"
+msgstr "<b>Marcadors</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:11
+msgid "<b>Rulers</b>"
+msgstr "<b>Regles</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:12
+msgid "<b>Tabs</b>"
+msgstr "<b>Tabuladors</b>"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:13
+msgid "A_uto insert curly braces"
+msgstr "Insereix claus a_utomàticament"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:14
+msgid "Add Group"
+msgstr "Afegeix grup"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:15
+msgid "Automatic"
+msgstr "Automàtic"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:16
+msgid "Background:"
+msgstr "Fons:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:17
+msgid "C_onvert Tabs to Spaces"
+msgstr "C_onverteix tabuladors a espais"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:18
+msgid "Choose _encoding"
+msgstr "Tria _codificació"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:19
+msgid "Color:"
+msgstr "Color:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:20
+msgid "Edit Group"
+msgstr "Edita grup"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:21
+msgid "Enable code _completion"
+msgstr "Activa auto_completat de codi"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:22
+msgid "Enable code _folding"
+msgstr "Activa _plegat de codi"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:23
+msgid "Enable syntax highlighting"
+msgstr "Activa ressaltat de sintaxi"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:24
+msgid "Extension"
+msgstr "Extensió"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:25
+msgid "Highlight _matching bracket"
+msgstr "Ressalta claus _coincidents"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:26
+msgid "I_ndentation"
+msgstr "Sag_nat"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
+msgid "Remove Group"
+msgstr "Suprimir grup"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:29
+msgid "Restore default"
+msgstr "Restaura valors per defecte"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:30
+msgid "Show _column ruler,"
+msgstr "Mostra regla de _columna"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:31
+msgid "Show _line numbers"
+msgstr "Mostra números de _línia"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:32
+msgid "Smart"
+msgstr "Intel·ligent"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:33
+msgid "Use default _monospace font"
+msgstr "Utilitza la tipografia _monospace per defecte"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:34
+msgid "Use default _sans-serif font"
+msgstr "Utilitza la tipografia _sans-serif per defecte"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:35
+msgid "_Automatic template insertion"
+msgstr "Inserció _automàtica de plantilles"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
+msgid "_Indentation size:"
+msgstr "Tamany de _sagnat:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
+msgid "_Tab size"
+msgstr "Tamany del _tabulador"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:38
+msgid "_Underline errors"
+msgstr "_Subratlla errors"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:39
+msgid "_Use custom font:"
+msgstr "_Utilitza tipografia personalitzada:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:40
+msgid "at column:"
+msgstr "a columna:"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:1
+msgid "Behavior"
+msgstr "Comportament"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
+msgid "Buffer Options"
+msgstr "Opcions del buffer"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
+msgid "Clear Bookmarks"
+msgstr "Neteja adreces d'interés"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:4
+msgid "Code Templates"
+msgstr "Plantilles de codi"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
+msgid "Goto Matching _Brace"
+msgstr "Vés a la _Clau Coincident"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
+msgid "Markers And Rulers"
+msgstr "Marcadors I Regles"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
+msgid "Markers and Rulers"
+msgstr "Marcadors i Regles"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:9
+msgid "Next Bookmark"
+msgstr "Següent Adreça d'Interés"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:10
+msgid "Previous Bookmark"
+msgstr "Anterior Adreça d'Interés"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:11
+msgid "Print Previe_w"
+msgstr "_Visualització prèvia de la impressió"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:12
+msgid "Print current document"
+msgstr "Imprimeix el document actual"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:13
+msgid "Search"
+msgstr "Cerca"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:14
+msgid "Syntax highlighting"
+msgstr "Ressaltat de sintaxi"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:15
+msgid "Text Editor"
+msgstr "Editor de text"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:16
+msgid "Toggle Bookmark"
+msgstr "Commutar Adreça d'Interés"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:18
+msgid "_Goto Line..."
+msgstr "_Vés a la Línia..."
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:19
+msgid "_Print..."
+msgstr "Im_primeix..."
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:20
+msgid "_Search"
+msgstr "C_erca"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:21
+msgid "bogus_label"
+msgstr "etiqueta_falsa"
+
+#. FIXME: make this a resource in the resource file
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs:56
+#, csharp-format
+msgid "{0} Code Group"
+msgstr "Grup de codi {0}"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:111
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:125
+msgid "Template"
+msgstr "Plantilla"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:177
+msgid "New "
+msgstr "Nou "
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:190
+msgid "Edit "
+msgstr "Edita "
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:154
+msgid "Source Editor"
+msgstr "Editor de codi font"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:272
+#, csharp-format
+msgid ""
+"This file {0} has been changed outside of MonoDevelop. Are you sure you want "
+"to overwrite the file?"
+msgstr ""
+"Aquest fitxer {0} s'ha modificat fora de MonoDevelop. Esteu segur de que "
+"voleu sobreescriure'l?"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:361
+msgid "This file has been changed outside of MonoDevelop"
+msgstr "El fitxer s'ha modificat fora de MonoDevelop"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:365
+msgid "Reload"
+msgstr "Actualitza"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:369
+msgid "Ignore"
+msgstr "Ignora"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:171
+msgid "File:"
+msgstr "Fitxer:"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+msgid "Page"
+msgstr "Pàgina"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:185
+msgid "Print Source Code"
+msgstr "Imprimeix el codi font"
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:227
+msgid "Print Preview - Source Code"
+msgstr "_Visualització Prèvia - Codi Font"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:1
+msgid "Go to Line"
+msgstr "Vés a la Línia"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:2
+msgid "_Go to Line"
+msgstr "_Vés a la Línia"
+
+#: ../Extras/MonoDevelop.SourceEditor/texteditoraddin.glade.h:3
+msgid "_Line Number:"
+msgstr "Número de _línia:"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/AggregatesNodeBuilder.cs:56
+msgid "Aggregates"
+msgstr "Conjunts"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnNodeBuilder.cs:52
+msgid "Column"
+msgstr "Columna"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ColumnsNodeBuilder.cs:56
+msgid "Columns"
+msgstr "Columnes"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintNodeBuilder.cs:57
+msgid "Constraint"
+msgstr "Restricció"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:57
+msgid "Constraints"
+msgstr "Restriccions"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ConstraintsNodeBuilder.cs:74
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:74
+msgid "There was an error connecting to the database server."
+msgstr "S'ha produït un error al connectar amb el servidor de base de dades."
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/GroupsNodeBuilder.cs:56
+msgid "Groups"
+msgstr "Grups"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/LanguagesNodeBuilder.cs:56
+msgid "Languages"
+msgstr "Llenguatges"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/OperatorsNodeBuilder.cs:56
+msgid "Operators"
+msgstr "Operadors"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ParametersNodeBuilder.cs:56
+msgid "Parameters"
+msgstr "Paràmetres"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProcedureNodeBuilder.cs:61
+msgid "Procedure"
+msgstr "Procediment"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:61
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProceduresNodeBuilder.cs:66
+msgid "Procedures"
+msgstr "Procediments"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:57
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ProviderCollectionNodeBuilder.cs:62
+msgid "Database Connections"
+msgstr "Connexions de base de dades"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RolesNodeBuilder.cs:56
+msgid "Roles"
+msgstr "Rols"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/RulesNodeBuilder.cs:56
+msgid "Rules"
+msgstr "Regles"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/SequencesNodeBuilder.cs:56
+msgid "Sequences"
+msgstr "Seqüències"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:70
+msgid "Table"
+msgstr "Taula"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:155
+msgid "Table emptied"
+msgstr "Taula buida"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TableNodeBuilder.cs:165
+msgid "Table dropped"
+msgstr "Taula eliminada"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:80
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TablesNodeBuilder.cs:85
+msgid "Tables"
+msgstr "Taules"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TriggersNodeBuilder.cs:56
+msgid "Triggers"
+msgstr "Activadors"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/TypesNodeBuilder.cs:56
+msgid "Types"
+msgstr "Tipus"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UserNodeBuilder.cs:57
+msgid "User"
+msgstr "Usuari"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:51
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/UsersNodeBuilder.cs:56
+msgid "Users"
+msgstr "Usuaris"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:52
+#: ../Extras/MonoQuery/MonoQuery/Gui/NodeBuilders/ViewsNodeBuilder.cs:57
+msgid "Views"
+msgstr "Visualitzacions"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:222
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:259
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:469
+msgid "Executing sql query on"
+msgstr "Executant consulta SQL a"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:227
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:264
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:311
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:479
+msgid "Query sent, waiting for response."
+msgstr "Consulta enviada, esperant resposta."
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:283
+msgid "Query results received"
+msgstr "Resultats de la consulta rebuts"
+
+#: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:289
+msgid "Invalid select query"
+msgstr "Consulta SELECT no vàlida"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:1
+msgid "Add connection"
+msgstr "Afegeix connexió"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:2
+msgid "Database Browser"
+msgstr "Explorador de bases de dades"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:3
+msgid "Disconnect"
+msgstr "Desconnectar"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:4
+msgid "Drop table"
+msgstr "Eliminar taula"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:5
+msgid "Empty table"
+msgstr "Taula buida"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:8
+msgid "SQL Query Editor"
+msgstr "Editor de consultes SQL"
+
+#: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:9
+msgid "Show System Objects"
+msgstr "Mostra Objectes de Sistema"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:1
+msgid "<b>Advanced</b>"
+msgstr "<b>Avançat</b>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:2
+msgid ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Create new "
+"connection</span></span>"
+msgstr ""
+"<span weight=\"bold\" size=\"larger\"><span size=\"larger\">Crea nova "
+"connexió</span></span>"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:3
+msgid "Connection String"
+msgstr "Cadena de connexió"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:4
+msgid "Database"
+msgstr "Base de dades"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:8
+msgid "Password"
+msgstr "Contrasenya"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:9
+msgid "Provider"
+msgstr "Proveïdor"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:10
+msgid "Server"
+msgstr "Servidor"
+
+#: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:11
+msgid "User ID"
+msgstr "ID d'usuari"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:1
+msgid "Creates an empty Nemerle file"
+msgstr "Crea un fitxer Nemerle buit"
+
+#: ../Extras/NemerleBinding/EmptyNemerleFile.xft.xml.h:2
+msgid "Empty file"
+msgstr "Fitxer buit"
+
+#: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:1
+msgid "Creates an empty Nemerle project"
+msgstr "Crea un projecte Nemerle buit"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:3
+msgid "<b>Optimizations</b>"
+msgstr "<b>Optimitzacions</b>"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:4
+#: ../Extras/VBNetBinding/VB.glade.h:5
+msgid "Compile _Target"
+msgstr "Compila _objectiu"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:5
+msgid "Do not load standard library"
+msgstr "No carreguis la biblioteca estàndard"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:6
+msgid "Do not load standard macros"
+msgstr "No carreguis macros estàndards"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:7
+msgid "Enable pedantic checks for illegal characters"
+msgstr "Habilita comprovacions pedants per caràcters il·legals"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:8
+msgid ""
+"Executable\n"
+"Library"
+msgstr ""
+"Executable\n"
+"Biblioteca"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:10
+msgid "General tail call optimization"
+msgstr "Optimizació de crida de cua general"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:11
+msgid "Ignore warnings"
+msgstr "Ignora advertiments"
+
+#: ../Extras/NemerleBinding/Nemerle.glade.h:12
+msgid "Recursive loading references of assemblies"
+msgstr "Càrrega recursiva de referències d'assemblats"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gnome# project"
+msgstr "Crea un projecte Nermele/Gnome#"
+
+#: ../Extras/NemerleBinding/NemerleGnomeSharpProject.xpt.xml.h:2
+msgid "Gnome# Project"
+msgstr "Projecte Gnome#"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:1
+msgid "Creates a Nemerle/Gtk# project"
+msgstr "Crea un projecte Nermele/Gtk#"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:2
+msgid "Gtk# Project"
+msgstr "Projecte Gtk#"
+
+#: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
+msgid "Creates a top-level Gtk# window"
+msgstr "Crea una finestra Gtk# principal"
+
+#: ../Extras/NUnit/Gui/NUnitOptionsPanel.cs:78
+msgid "Category"
+msgstr "Categories"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:86
+msgid " (Loading)"
+msgstr " (S'està carregant)"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:90
+msgid " (Load failed)"
+msgstr " (Càrrega fallida)"
+
+#: ../Extras/NUnit/Gui/TestNodeBuilder.cs:114
+#, csharp-format
+msgid " ({0} success, {1} failed, {2} ignored)"
+msgstr " ({0} amb èxit, {1} fallides, {2} ignorades)"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:217
+msgid "Summary"
+msgstr "Sumari"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:242
+msgid "Regressions"
+msgstr "Regressions"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:267
+msgid "Failed tests"
+msgstr "Proves fallides"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:278
+msgid "Result"
+msgstr "Resultat"
+
+#: ../Extras/NUnit/Gui/TestPad.cs:506
+msgid "No regressions found."
+msgstr "No s'han trobat regressions."
+
+#: ../Extras/NUnit/Gui/TestPad.cs:515
+msgid "No failed tests found."
+msgstr "No s'han trobat proves fallides."
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:53
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:271
+msgid "<b>Failed</b>: "
+msgstr "<b>Fallides</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:54
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:272
+msgid "<b>Ignored</b>: "
+msgstr "<b>Ignorades</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:104
+msgid "Successful Tests"
+msgstr "Proves amb èxit"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:109
+msgid "Show Successful Tests"
+msgstr "Mostra proves amb èxit"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:113
+msgid "Failed Tests"
+msgstr "Proves fallides"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:118
+msgid "Show Failed Tests"
+msgstr "Mostra proves fallides"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:122
+msgid "Ignored Tests"
+msgstr "Proves ignorades"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:127
+msgid "Show Ignored Tests"
+msgstr "Mostra proves ignorades"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:136
+msgid "Show Output"
+msgstr "Mostra sortida"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:218
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:251
+msgid "Test results"
+msgstr "Resultats de les proves"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:309
+#, csharp-format
+msgid "Running tests for <b>{0}</b> configuration <b>{1}</b>"
+msgstr "Executant proves per <b>{0}</b> configuració <b>{1}</b>"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:322
+msgid "Internal error"
+msgstr "Error intern"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:329
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:460
+msgid "Stack Trace"
+msgstr "Traça de la pila"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "<b>Tests</b>: "
+msgstr "<b>Proves</b>:-"
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Failed</b>: "
+msgstr "  <b>Fallides</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:346
+msgid "  <b>Ignored</b>: "
+msgstr "  <b>Ignorades</b>: "
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:354
+msgid "Test execution cancelled."
+msgstr "Execució de prova cancel·lada."
+
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+msgid "Running "
+msgstr "Executant "
+
+#: ../Extras/NUnit/Gui/UnitTestOptionsDialog.cs:52
+msgid "Unit Test Options"
+msgstr "Opcions de prova unitàries"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:1
+msgid "Add assembly ..."
+msgstr "Afegir assemblat ..."
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:3
+msgid "NUnit Categories"
+msgstr "Categories NUnit"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:4
+msgid "NUnit options"
+msgstr "Opcions NUnit"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:5
+msgid "Proportional time scale"
+msgstr "Escala de temps proporcional"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:6
+msgid "Results chart"
+msgstr "Diagrama de resultats"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:7
+msgid "Run Test"
+msgstr "Executar prova"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:8
+msgid "Select test in tree"
+msgstr "Tria una prova de l'arbre"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:9
+msgid "Show Test Counters"
+msgstr "Mostra contadors de proves"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:10
+msgid "Show Test Time"
+msgstr "Mostra el Temps de la Prova"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:11
+msgid "Show failed tests"
+msgstr "Mostra proves fallides"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:12
+msgid "Show ignored tests"
+msgstr "Mostra proves ignorades"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:13
+msgid "Show one result per day"
+msgstr "Mostra un resultat per dia"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:14
+msgid "Show results pad"
+msgstr "Mostra el panell de resultats"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:15
+msgid "Show successful tests"
+msgstr "Mostra proves amb èxit"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:16
+msgid "Show test source code"
+msgstr "Mostra el codi font de la prova"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:17
+msgid "Time chart"
+msgstr "Diagrama de temps"
+
+#: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:18
+msgid "Unit Tests"
+msgstr "Proves unitàries"
+
+#: ../Extras/NUnit/nunit.glade.h:1
+msgid "Categories:"
+msgstr "Categories:"
+
+#: ../Extras/NUnit/nunit.glade.h:2
+msgid "Don't apply any filter"
+msgstr "No apliquis cap filtre"
+
+#: ../Extras/NUnit/nunit.glade.h:3
+msgid "Exclude the following categories"
+msgstr "Exclou les següents categories"
+
+#: ../Extras/NUnit/nunit.glade.h:4
+msgid "Include the following categories"
+msgstr "Inclou les següents categories"
+
+#: ../Extras/NUnit/nunit.glade.h:5
+msgid "NUnit Options"
+msgstr "Opcions NUnit"
+
+#: ../Extras/NUnit/nunit.glade.h:6
+msgid "The following filter will be applied when running the tests:"
+msgstr "El filtre següent s'aplicarà quan s'executin les proves:"
+
+#: ../Extras/NUnit/nunit.glade.h:7
+msgid "Use parent test settings"
+msgstr "Fes servir els paràmetres de la prova superior"
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:80
+msgid "Exclude the following categories: "
+msgstr "Exclou les següents categories: "
+
+#: ../Extras/NUnit/Services/NUnitOptions.cs:82
+msgid "Include the following categories: "
+msgstr "Inclou les següents categories: "
+
+#. <Icon>Java.Project.DOSProject</Icon>
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:2
+msgid "Create an NUnit assembly test collection"
+msgstr "Crea una colecció de proves d'assemblat de NUnit"
+
+#: ../Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml.h:3
+msgid "NUnit assembly test collection"
+msgstr "Colecció de proves d'assemblat de NUnit"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:456
+msgid "Importing project: "
+msgstr "Important projecte:"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:504
+msgid "Could not import project:"
+msgstr "No s'ha pogut importar el projecte:"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:519
+msgid "Importing solution"
+msgstr "Important solució"
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:533
+msgid "Project file not found: "
+msgstr "No s'ha trobat el fitxer de projecte: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:554
+msgid "The solution could not be imported."
+msgstr "No s'ha pogut importar la solució."
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:619
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:655
+msgid "Assembly reference could not be imported: "
+msgstr "No s'ha pogut importar la referència del assemblat: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:700
+msgid "Can't import file: "
+msgstr "No s'ha pogut importar el fitxer: "
+
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:746
+#, csharp-format
+msgid ""
+"Output directory '{0}' can't be mapped to a local directory. The directory "
+"'{1}' will be used instead"
+msgstr ""
+"El directori de sortida '{0}' no s'ha pogut mapar a un directori local. Es "
+"farà servir el directori '{1}' en el seu lloc"
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
+msgid "_Import Visual Studio .NET Project..."
+msgstr "_Importar projecte de Visual Studio .NET..."
+
+#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:52
+#, csharp-format
+msgid "Can't open file {0} as project"
+msgstr "No s'ha pogut obrir el fitxer {0} com un projecte"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:37
+msgid "Compiler:"
+msgstr "Compilador:"
+
+#: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:38
+msgid "Runtime:"
+msgstr "Runtime:"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:149
+msgid "WinEXE"
+msgstr "WinEXE"
+
+#: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:151
+msgid "Module"
+msgstr "Mòdul"
+
+#: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:1
+msgid "Creates an empty VB.Net file."
+msgstr "Crea un fitxer VB.Net buit."
+
+#: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:1
+msgid "Creates an empty VB.Net solution."
+msgstr "Crea una solució VB.NET buida."
+
+#: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:2
+msgid "Create a console VB.Net project"
+msgstr "Crea un projecte VB.Net de consola"
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# 2.0 project."
+msgstr "Crea un projecte VB.NET Gtk# 2.0."
+
+#: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:1
+msgid "Creates a VB.NET Gtk# project."
+msgstr "Crea un projecte VB.NET Gtk#."
+
+#: ../Extras/VBNetBinding/VB.glade.h:6
+msgid "Define S_ymbols"
+msgstr "Defineix s_ímbols"
+
+#: ../Extras/VBNetBinding/VB.glade.h:11
+msgid "_Main Class"
+msgstr "Classe _Principal"
+
+#: ../Extras/VBNetBinding/VB.glade.h:12
+msgid "_Warning Level"
+msgstr "Nivell d'_advertiment"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:1
+msgid "Diff"
+msgstr "Diff"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:2
+msgid "Log"
+msgstr "Log"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:3
+msgid "Show version control overlay icons"
+msgstr "Mostra distintius de control de versions pels icons"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:4
+msgid "Status/Commit..."
+msgstr "Estado/Inclusión..."
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:5
+msgid "Update"
+msgstr "Actualizar"
+
+#: ../Extras/VersionControl/AddIn/VersionControl.addin.xml.h:6
+msgid "Version Control"
+msgstr "Control de versiones"
+
+#: ../Extras/WelcomePage/WelcomePage.addin.xml.h:2
+msgid "Welcome Page"
+msgstr "Página de bienvenida"
+
+#: ../Extras/WelcomePage/WelcomePageOptionPanel.cs:17
+msgid "Show welcome page on startup"
+msgstr "Mostrar página de bienvenida al inicio"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:73
+msgid "Welcome"
+msgstr "Benvingut"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:215
+#, csharp-format
+msgid "{0} day"
+msgid_plural "{0} days"
+msgstr[0] "{0} dia"
+msgstr[1] "{0} dies"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:219
+#, csharp-format
+msgid "{0} hour"
+msgid_plural "{0} hours"
+msgstr[0] "{0} hora"
+msgstr[1] "{0} hores"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:223
+#, csharp-format
+msgid "{0} minute"
+msgid_plural "{0} minutes"
+msgstr[0] "{0} minut"
+msgstr[1] "{0} minuts"
+
+#: ../Extras/WelcomePage/WelcomePageView.cs:227
+msgid "Less than a minute"
+msgstr "Menys d'un minut"
+
+#~ msgid "_Run"
+#~ msgstr "_Executa"
+
+#~ msgid "Can't deploy: no deployment target set"
+#~ msgstr "No es pot desplegar: no s'ha definit l'objectiu"
+
+#~ msgid "Unknown language: {0}"
+#~ msgstr "Llenguatge desconegut: {0}"
+
+#~ msgid "Can't deploy: you forgot to specify a deployment script"
+#~ msgstr ""
+#~ "No es pot desplegar: No heu especificat la seqüència de desplegament"
+
+#~ msgid "Error while executing deploy script"
+#~ msgstr "Error al executar la seqüència de desplegament"
+
+#~ msgid "Bind to Field"
+#~ msgstr "Associar a camp"
+
+#~ msgid "Boolean constant matching optimization"
+#~ msgstr "Optimizació de coincidències booleanes constants"
+
+#~ msgid "Ordinal constant matching optimization"
+#~ msgstr "Optimizació de coincidències de ordinals constants"
+
+#~ msgid "String constant matching optimization"
+#~ msgstr "Optimizació de coincidències de cadenes constants"
+
+#~ msgid "Add-in Manager ..."
+#~ msgstr "Gestor de extensiones ..."
+
+#~ msgid "Choose Location"
+#~ msgstr "Escoger ubicación"
+
+#~ msgid "Create Database"
+#~ msgstr "Crear base de datos"
+
+#~ msgid "Finished"
+#~ msgstr "Terminado"
+
+#~ msgid "Setup"
+#~ msgstr "Configuración"
+
+#~ msgid "Use Existing File"
+#~ msgstr "Usar archivo existente"
+
+#~ msgid "cshrp.net"
+#~ msgstr "cshrp.net"
+
+#~ msgid ""
+#~ "<b>The following add-ins will be installed:</b>\n"
+#~ "\n"
+#~ "C# language binding\n"
+#~ "C# language IDE extension\n"
+#~ "\n"
+#~ "<b>The following add-ins are required by the selected add-ins</b>\n"
+#~ "\n"
+#~ "NUnit add-in\n"
+#~ "NAnt add-in\n"
+#~ "\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sda\n"
+#~ "sd\n"
+#~ "as\n"
+#~ "da\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ msgstr ""
+#~ "<b>Las siguientes extensiones serán instaladas:</b>\n"
+#~ "\n"
+#~ "C# language binding\n"
+#~ "C# language IDE extension\n"
+#~ "\n"
+#~ "<b>Las siguientes extensiones son requeridas por las extensiones "
+#~ "seleccionadas</b>\n"
+#~ "\n"
+#~ "Extensión NUnit\n"
+#~ "Extensión NAnt\n"
+#~ "\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sd\n"
+#~ "asd\n"
+#~ "asd\n"
+#~ "a\n"
+#~ "sda\n"
+#~ "sd\n"
+#~ "as\n"
+#~ "da\n"
+#~ "sd\n"
+#~ "asd\n"
+
+#~ msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
+#~ msgstr "<span weight=\"bold\" size=\"x-large\">Título</span>"
+
+#~ msgid "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
+#~ msgstr "Se ha lanzado una excepción 1 2 3 4 5 6 7 8 9 10 11 12 13 14"
+
+#~ msgid "Sh_ow updates only"
+#~ msgstr "M_ostrar sólo actualizaciones"
+
+#~ msgid ""
+#~ "You need to restart MonoDevelop\n"
+#~ "sdfsdf\n"
+#~ "sdfsf"
+#~ msgstr ""
+#~ "Debe reiniciar MonoDevelop\n"
+#~ "sdfsdf\n"
+#~ "sdfsf"
+
+#~ msgid ""
+#~ "aa a a a a a a a a aa a a a a aaa a a a a a a a a aa a a a a aaa a a a a "
+#~ "a a a a aa a a a a a"
+#~ msgstr ""
+#~ "aa a a a a a a a a aa a a a a aaa a a a a a a a a aa a a a a aaa a a a a "
+#~ "a a a a aa a a a a a"
+
+#~ msgid " > "
+#~ msgstr " > "
+
+#~ msgid "..."
+#~ msgstr "..."
+
+#~ msgid ">"
+#~ msgstr ">"
+
+#~ msgid "Project will be saved in: /dev/null"
+#~ msgstr "El proyecto se guardará en: /dev/null"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "Global Assembly Cache"
+#~ msgstr "Caché global de ensamblado"
+
+#~ msgid "Build complete -- {0} errors, {1} warnings"
+#~ msgstr "Construcción completa -- {0} errores, {1} advertencias"
+
+#~ msgid "The file '{0}' already exists. Do you want to replace it?."
+#~ msgstr "El archivo '{0}' ya existe. ¿Desea reemplazarlo?"
+
+#~ msgid "The file '{0}' could not be created."
+#~ msgstr "El archivo '{0}' no pudo ser creado."
+
+#~ msgid "Build: {0} errors, {1} warnings."
+#~ msgstr "Construcción: {0} errores, {1} advertencias."
