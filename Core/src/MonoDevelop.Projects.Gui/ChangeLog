@@ -1,3 +1,9 @@
+2006-09-01 Lluis Sanchez Gual  <lluis@novell.com>
+
+ 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: changed
+ 	  the icon shown in the tooltip when the parser db is being generated.
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
 2006-08-10 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:

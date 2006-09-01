@@ -300,7 +300,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				box.PackStart (new Gtk.HSeparator (), false, false, 0);
 				HBox hbox = new HBox ();
 				hbox.BorderWidth = 3;
-				hbox.PackStart (new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu), false, false, 0);
+				hbox.PackStart (new Gtk.Image ("md-parser", Gtk.IconSize.Menu), false, false, 0);
 				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Gathering class information..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
