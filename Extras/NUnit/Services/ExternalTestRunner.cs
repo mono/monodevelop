@@ -251,6 +251,11 @@ namespace MonoDevelop.NUnit
 			t.Status = TestStatus.Ready;
 			context.Monitor.EndTest (t, res);
 		}
+
+		public void TestOutput (TestOutput testOutput)
+		{
+			// FIXME: added for nunit 2.6?
+		}
 		
 		UnitTest GetLocalTest (Test t)
 		{
