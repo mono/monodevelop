@@ -237,6 +237,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Dispose ();
 			fsw.Dispose ();
 			se = null;
+			base.Dispose ();
 		}
 		
 		void OnModifiedChanged (object o, EventArgs e)
