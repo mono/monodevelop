@@ -1,3 +1,7 @@
+2006-09-01 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* lib/*: Updated from stetic module. Includes fix for bug #79247.
+	
 2006-09-01 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* lib/*: Updated from stetic module.
