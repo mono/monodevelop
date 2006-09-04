@@ -1,3 +1,8 @@
+2006-09-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: Workaround Mono bug. The watcher 
+	  seems to stop watching if an exception is thrown in the event handler.
+
 2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Workaround a mono bug

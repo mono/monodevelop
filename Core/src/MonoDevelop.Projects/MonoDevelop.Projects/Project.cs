@@ -556,7 +556,13 @@ namespace MonoDevelop.Projects
 			ProjectFile file = GetProjectFile (e.FullPath);
 			if (file != null) {
 				isDirty = true;
-				NotifyFileChangedInProject (file);
+				try {
+					NotifyFileChangedInProject (file);
+				} catch {
+					// Workaround Mono bug. The watcher seems to
+					// stop watching if an exception is thrown in
+					// the event handler
+				}
 			}
 
 		}
