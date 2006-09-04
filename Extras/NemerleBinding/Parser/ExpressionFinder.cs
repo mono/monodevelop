@@ -160,13 +160,13 @@ namespace NemerleBinding.Parser
 			int i;
 			for (i = offset + 1; i < inText.Length; ++i) {
 				char c = inText[i];
-				if (Char.IsLetterOrDigit(c) || c == '_') {
-					if (Char.IsWhiteSpace(inText, i - 1)) {
+				if (char.IsLetterOrDigit(c) || c == '_') {
+					if (char.IsWhiteSpace(inText, i - 1)) {
 						wordFollowing = true;
 						break;
 					}
 					b.Append(c);
-				} else if (Char.IsWhiteSpace(c)) {
+				} else if (char.IsWhiteSpace(c)) {
 					// ignore whitespace
 				} else if (c == '(' || c == '[') {
 					int otherBracket = SearchBracketForward(inText, i + 1, c, (c == '(') ? ')' : ']');
@@ -220,7 +220,7 @@ namespace NemerleBinding.Parser
 			int level = 0;
 			for (int i = offset; i < inText.Length; ++i) {
 				char c = inText[i];
-				if (Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)) {
+				if (char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)) {
 					// ignore identifiers and whitespace
 				} else if (c == ',' || c == '?' || c == '[' || c == ']') {
 					// ,  : seperating generic type parameters
@@ -637,16 +637,16 @@ namespace NemerleBinding.Parser
 		}
 		bool IsNumber(char ch)
 		{
-			if (!Char.IsDigit(ch))
+			if (!char.IsDigit(ch))
 				return false;
 			int n = 0;
 			while (true) {
 				ch = Peek(n);
-				if (Char.IsDigit(ch)) {
+				if (char.IsDigit(ch)) {
 					n++;
 					continue;
 				}
-				return n > 0 && !Char.IsLetter(ch);
+				return n > 0 && !char.IsLetter(ch);
 			}
 		}
 		bool ReadStringLiteral(char litStart)
@@ -748,7 +748,7 @@ namespace NemerleBinding.Parser
 		void ReadDigit(char ch)
 		{
 			//string digit = ch.ToString();
-			while (Char.IsDigit(Peek()) || Peek() == '.') {
+			while (char.IsDigit(Peek()) || Peek() == '.') {
 				GetNext();
 				//digit = GetNext() + digit;
 			}
@@ -757,7 +757,7 @@ namespace NemerleBinding.Parser
 		
 		bool IsIdentifierPart(char ch)
 		{
-			return Char.IsLetterOrDigit(ch) || ch == '_' || ch == '@';
+			return char.IsLetterOrDigit(ch) || ch == '_' || ch == '@';
 		}
 		#endregion
 		

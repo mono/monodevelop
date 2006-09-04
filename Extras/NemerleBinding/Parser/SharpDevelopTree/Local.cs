@@ -16,19 +16,19 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Local (Class declaringType, NCC.LocalValueCompletionPossibility tinfo)
+		public Local (Class declaringType, NCC.LocalValue tinfo)
 		{
 		    this.declaringType = declaringType;
 		
 		    ModifierEnum mod = ModifierEnum.Public;
             
-            if (!tinfo.Value.IsMutable)
+            if (!tinfo.IsMutable)
                 mod |= ModifierEnum.Readonly;
                 
 			modifiers = mod;
 			
-			this.FullyQualifiedName = tinfo.Value.Name;
-			returnType = new ReturnType (tinfo.Value.Type.Fix ());
+			this.FullyQualifiedName = tinfo.Name;
+			returnType = new ReturnType (tinfo.Type.Fix ());
 			this.region = Class.GetRegion ();
 	   }
 	}

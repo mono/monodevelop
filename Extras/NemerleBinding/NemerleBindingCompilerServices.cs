@@ -123,7 +123,7 @@ namespace NemerleBinding
 
 		public bool CanCompile(string fileName)
 		{
-			return (Path.GetExtension(fileName).ToLower() == ".n");
+			return (System.IO.Path.GetExtension(fileName).ToLower() == ".n");
 		} 
 
 		public ICompilerResult Compile (ProjectFileCollection projectFiles, ProjectReferenceCollection projectReferences, DotNetProjectConfiguration configuration, IProgressMonitor monitor)

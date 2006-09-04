@@ -49,7 +49,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             } 
         }
         
-        public Class(Type tinfo, CompilationUnit cu)
+        public Class(System.Type tinfo, CompilationUnit cu)
         {
             this.cu = cu;
             this.tinfo = null;
@@ -119,7 +119,7 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 events.Add (new Event (this, ev));
             }
             
-            foreach (Type i in tinfo.GetNestedTypes())
+            foreach (System.Type i in tinfo.GetNestedTypes())
             {
                 Class nested = new Class (i, cu);
                 innerClasses.Add (nested);

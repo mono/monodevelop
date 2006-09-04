@@ -313,44 +313,43 @@ namespace NemerleBinding.Parser
         
         ResolveResult GetResults (NCC.CompletionResult results, CompilationUnit cu, bool completeLocals)
         {
-            if (results.Overloads.Length == 0)
-                return null;
-            
-            bool complete_types = false;
-            NCC.OverloadPossibility head = results.Overloads.Head;
-            
-            if (head.Member.Name == ".ctor" || head.Member.Name == ".cctor" || head.Member is NCC.TypeInfo)
-                complete_types = true;
-            
-            if (complete_types)
+            try
             {
-                NCC.NamespaceTree.Node nsNode = head.From.tycon.NamespaceNode.Parent;
+            if (results == null || results.Elems.Count == 0)
+                return null;
+                        
+            if (results.Elems [0] is NCC.Elem.Node)
+            {
                 List<string> alreadyAdded = new List<string> ();
                 List<string> namespaces = new List<string> ();
                 LanguageItemCollection lang = new LanguageItemCollection ();
-                foreach (KeyValuePair<string, NCC.NamespaceTree.Node> node in nsNode.Children)
+                
+                foreach (NCC.Elem elem in results.Elems)
                 {
-                    if (node.Value.Value is NCC.NamespaceTree.TypeInfoCache.NamespaceReference)
+                    if (!(elem is NCC.Elem.Node))
+                        continue;
+                    
+                    NCC.Elem.Node enode = (NCC.Elem.Node)elem;
+                    if (enode.node.Value is NCC.NamespaceTree.TypeInfoCache.NamespaceReference)
                     {
-                        namespaces.Add (node.Key);
+                        namespaces.Add (enode.Name);
                     }
-                    else if (node.Value.Value is NCC.NamespaceTree.TypeInfoCache.Cached)
+                    else if (enode.node.Value is NCC.NamespaceTree.TypeInfoCache.Cached)
                     {
-                        if (!alreadyAdded.Contains (node.Key))
+                        if (!alreadyAdded.Contains (enode.Name))
                         {
-                            alreadyAdded.Add (node.Key);
-                            lang.Add (new Class (((NCC.NamespaceTree.TypeInfoCache.Cached)node.Value.Value).tycon, cu, false));
+                            alreadyAdded.Add (enode.Name);
+                            lang.Add (new Class (((NCC.NamespaceTree.TypeInfoCache.Cached)enode.node.Value).tycon, cu, false));
                         }
                     }
                 }
-                
                 return new ResolveResult (namespaces.ToArray (), lang);
             }
             else
             {
                 Class declaring = GetTheRealType (results.ObjectType, cu);
                 
-                if (declaring.FullyQualifiedName == "System.Object")
+                /*if (declaring.FullyQualifiedName == "System.Object")
                 {
                     // Try with any other member
                     NCC.TypeInfo found = null;
@@ -364,57 +363,87 @@ namespace NemerleBinding.Parser
                     }
                     if (found != null)
                         declaring = new Class (found, cu, false);
-                }
+                }*/
                 
                 LanguageItemCollection lang = new LanguageItemCollection ();
-                foreach (NCC.OverloadPossibility ov in results.Overloads)
+                
+                foreach (NCC.Elem elem in results.Elems)
                 {
-                    if (ov is NCC.LocalValueCompletionPossibility)
+                    if (elem is NCC.Elem.Local)
                     {
-                        if (completeLocals)
-                            lang.Add (new Local (new Class ("LOCALS", cu),
-                                (NCC.LocalValueCompletionPossibility)ov));
-                        else
+                        if (!completeLocals)
                             continue;
+                        
+                        NCC.Elem.Local lvalue = (NCC.Elem.Local)elem;
+                        lang.Add (new NemerleBinding.Parser.SharpDevelopTree.Local 
+                            (new Class ("LOCALS", cu), lvalue.Value));
                     }
-                    
-                    // Do not add property getters and setters, not events adders and removers,
-                    // nor overloaded operators, nor enum value__, not Nemerle internal methods
-                    if (ov.Member.Name.StartsWith("_N") || ov.Member.Name.StartsWith("get_") ||
-                        ov.Member.Name.StartsWith("set_") || ov.Member.Name == "value__" ||
-                        ov.Member.Name.StartsWith("op_") || ov.Member.Name.StartsWith("add_") ||
-                        ov.Member.Name.StartsWith("remove_"))
-                        continue;
-                    
-                    try
+                    else if (elem is NCC.Elem.Overloads)
                     {
-                        if (ov.Member is NCC.IField)
-                        {
-                            lang.Add (new Field (declaring, (NCC.IField)ov.Member));
-                        }
-                        else if (ov.Member is NCC.IMethod)
-                        {
-                            lang.Add (new Method (declaring, (NCC.IMethod)ov.Member));
-                        }
-                        else if (ov.Member is NCC.IProperty)
-                        {
-                            NCC.IProperty prop = (NCC.IProperty)ov.Member;
-                            if (prop.IsIndexer)
-                                lang.Add (new Indexer (declaring, prop));
-                            else
-                                lang.Add (new Property (declaring, prop));
-                        }
-                        else if (ov.Member is NCC.IEvent)
-                        {
-                            lang.Add (new Event (declaring, (NCC.IEvent)ov.Member));
-                        }
+                        NCC.Elem.Overloads lvalue = (NCC.Elem.Overloads)elem;
+                        foreach (NCC.OverloadPossibility ov in lvalue.Values)
+                            AddMember (declaring, lang, ov.Member); 
                     }
-                    catch (Exception e)
+                    else if (elem is NCC.Elem.Overload)
                     {
-                        System.Console.WriteLine (e.Message);
+                        NCC.Elem.Overload lvalue = (NCC.Elem.Overload)elem;
+                        AddMember (declaring, lang, lvalue.Value.Member);
+                    }
+                    else if (elem is NCC.Elem.Member)
+                    {
+                        NCC.Elem.Member lvalue = (NCC.Elem.Member)elem;
+                        AddMember (declaring, lang, lvalue.member);
                     }
                 }
+                
                 return new ResolveResult (declaring, lang);
+            }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine (ex.GetType().FullName);
+                System.Console.WriteLine (ex.Message);
+                System.Console.WriteLine (ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    System.Console.WriteLine (ex.InnerException.GetType().FullName);
+                    System.Console.WriteLine (ex.InnerException.Message);
+                    System.Console.WriteLine (ex.InnerException.StackTrace);
+                }
+                return null;
+            }
+        }
+        
+        private void AddMember (Class declaring, LanguageItemCollection lang, NCC.IMember member)
+        {
+            // Do not add property getters and setters, not events adders and removers,
+            // nor overloaded operators, nor enum value__, not Nemerle internal methods
+            if (member.Name.StartsWith("_N") || member.Name.StartsWith("get_") ||
+                member.Name.StartsWith("set_") || member.Name == "value__" ||
+                member.Name.StartsWith("op_") || member.Name.StartsWith("add_") ||
+                member.Name.StartsWith("remove_"))
+                return;
+                  
+            try
+            {
+                if (member is NCC.IField)
+                    lang.Add (new NemerleBinding.Parser.SharpDevelopTree.Field (declaring, (NCC.IField)member));
+                else if (member is NCC.IMethod)
+                    lang.Add (new Method (declaring, (NCC.IMethod)member));
+                else if (member is NCC.IProperty)
+                {
+                    NCC.IProperty prop = (NCC.IProperty)member;
+                    if (prop.IsIndexer)
+                        lang.Add (new Indexer (declaring, prop));
+                    else
+                        lang.Add (new Property (declaring, prop));
+                }
+                else if (member is NCC.IEvent)
+                    lang.Add (new Event (declaring, (NCC.IEvent)member));
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine (e.Message);
             }
         }
         
