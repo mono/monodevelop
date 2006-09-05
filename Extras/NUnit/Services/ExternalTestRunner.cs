@@ -39,6 +39,7 @@ using NUnit.Core;
 
 namespace MonoDevelop.NUnit
 {
+	[AddinDependency ("MonoDevelop.Projects")]
 	class ExternalTestRunner: RemoteProcessObject
 	{
 		string assemblyName;

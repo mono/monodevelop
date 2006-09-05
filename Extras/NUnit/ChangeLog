@@ -1,3 +1,8 @@
+2006-09-05 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Services/ExternalTestRunner.cs: Make sure the MonoDevelop.Projects
+	  add-in is loaded in the remote process.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp:
