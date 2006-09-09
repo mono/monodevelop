@@ -11,10 +11,7 @@ AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
 
 if test "x$MONO" = "x" ; then
-  AC_PATH_PROG(MINT, mint)
-  if test "x$MINT" = "x" ; then
-	AC_MSG_ERROR([Can't find "mono" or "mint" in your PATH])
-  fi
+	AC_MSG_ERROR([Can't find "mono" in your PATH])
 fi
 
 if test "x$MCS" = "x" ; then
