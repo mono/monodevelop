@@ -21,9 +21,9 @@
 	
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.Prj2Make.Commands.ImportSolution"
-			_label = "_Import Visual Studio .NET Project..."
+			_label = "_Import Visual Studio .NET 2003 Project..."
 			defaultHandler = "MonoDevelop.Prj2Make.ImportPrj"
-			description = "Imports solutions created with MS Visual Studio"
+			description = "Imports solutions created with MS Visual Studio .NET 2003"
 			icon = "md-visual-studio" />
 	</Extension>
 	

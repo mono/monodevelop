@@ -1,3 +1,9 @@
+2006-09-07 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* prj2make-sharp-lib.addin.xml: Added '2003' version to label so as not to 
+	confuse newcomers who may think VS2005 is supported. Of course, this should be 
+	removed	when 2005 support is added.
+
 2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Updated versions.

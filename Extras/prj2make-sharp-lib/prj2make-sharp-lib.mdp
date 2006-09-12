@@ -13,9 +13,7 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeploymentInformation strategy="File">
-    <excludeFiles />
-  </DeploymentInformation>
+  <DeployTargets />
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MsPrjHelper.cs" subtype="Code" buildaction="Compile" />
@@ -44,4 +42,7 @@
     <ProjectReference type="Project" localcopy="True" refto="CSharpBinding" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
   </References>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
 </Project>
