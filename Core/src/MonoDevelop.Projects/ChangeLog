@@ -1,3 +1,7 @@
+2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* .: Added svn:ignore for MonoDevelop.Projects.dll.config.
+
 2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Projects/ProjectService.cs: Win32 URI workaround.
