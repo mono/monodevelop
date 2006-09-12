@@ -423,7 +423,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			if (uninstallId == null) {
 				oper = new ThreadStart (RunInstall);
 				okmessage = GettextCatalog.GetString ("The installation has been successfully completed.");
-				errmessage = GettextCatalog.GetString ("The instalation failed!");
+				errmessage = GettextCatalog.GetString ("The installation failed!");
 			} else {
 				oper = new ThreadStart (RunUninstall);
 				okmessage = GettextCatalog.GetString ("The uninstallation has been successfully completed.");
