@@ -24,15 +24,24 @@ namespace MonoDevelop.SourceEditor
 			
 			if (item is IParameter) {
 				s = "<small><i>" + GettextCatalog.GetString ("Parameter") + "</i></small>\n";
-				s += ambience.Convert ((IParameter)item, WindowConversionFlags);
+				s += ambience.Convert((IParameter)item, WindowConversionFlags);
 			}
 			else if (item is LocalVariable) {
-				LocalVariable var = (LocalVariable) item;
-				s = "<small><i>" + GettextCatalog.GetString ("Local variable") + "</i></small>\n" + var.ReturnType.FullyQualifiedName + " " + var.Name;
-			} else if (item is Namespace)
+				s = "<small><i>" + GettextCatalog.GetString ("Local variable") + "</i></small>\n";
+				s += ambience.Convert((LocalVariable)item, WindowConversionFlags);
+			}
+			else if (item is IField) {				
+				s = "<small><i>" + GettextCatalog.GetString ("Field") + "</i></small>\n";
+				s += ambience.Convert((IField)item, WindowConversionFlags);
+			}
+			else if (item is IProperty) {				
+				s = "<small><i>" + GettextCatalog.GetString ("Property") + "</i></small>\n";
+				s += ambience.Convert((IProperty)item, WindowConversionFlags);
+			}
+			else if (item is Namespace)
 				s = "namespace " + "<b>" + item.Name + "</b>";
 			else
-				s = ambience.Convert (item, WindowConversionFlags);
+				s = ambience.Convert(item, WindowConversionFlags);
 
 			string doc = GetDocumentation (item.Documentation).Trim ('\n');
 			if (doc.Length > 0)

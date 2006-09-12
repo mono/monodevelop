@@ -517,6 +517,17 @@ namespace NemerleBinding
 			
 			return builder.ToString();
 		}
+
+		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags)
+		{
+			StringBuilder builder = new StringBuilder();
+
+			builder.Append(localVariable.Name);
+			builder.Append(" : ");
+			builder.Append(Convert(localVariable.ReturnType, conversionFlags));
+			
+			return builder.ToString();
+		}
 		
 		// pango has some problems with
 		// <i>static </i>bool <b>Equals</b> (<i></i>object a, <i></i>object b)

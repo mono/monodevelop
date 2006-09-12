@@ -16,7 +16,7 @@ using MonoDevelop.Projects.Ambience;
 
 namespace CSharpBinding
 {
-	public class CSharpAmbience :  Ambience
+	public class CSharpAmbience : Ambience
 	{
 		static string[,] typeConversionList = new string[,] {
 			{"System.Void",    "void"},
@@ -546,8 +546,23 @@ namespace CSharpBinding
 			
 			if (ShowParameterNames(conversionFlags)) {
 				builder.Append(' ');
+				builder.Append("<b>");
 				builder.Append(param.Name);
+				builder.Append("</b>");
 			}
+			return builder.ToString();
+		}
+
+		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags)
+		{
+			StringBuilder builder = new StringBuilder();						
+			
+			builder.Append(Convert(localVariable.ReturnType, conversionFlags));						
+			builder.Append(' ');
+			builder.Append("<b>");
+			builder.Append(localVariable.Name);
+			builder.Append("</b>");
+			
 			return builder.ToString();
 		}
 		

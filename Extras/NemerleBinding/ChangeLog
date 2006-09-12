@@ -1,3 +1,7 @@
+2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* NemerleAmbience.cs: Track changes in Ambience.
+
 2006-08-07 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* NemerleAmbience.cs: Track API changes in Ambience.

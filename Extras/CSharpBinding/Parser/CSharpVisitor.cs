@@ -13,8 +13,6 @@ using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 using ClassType = MonoDevelop.Projects.Parser.ClassType;
 using CSGenericParameter = CSharpBinding.Parser.SharpDevelopTree.GenericParameter;
 
-using MonoDevelop.Projects.Parser;
-
 namespace CSharpBinding.Parser
 {
 	public class Using : AbstractUsing

@@ -86,6 +86,8 @@ namespace MonoDevelop.Projects.Ambience
 				return Convert (item as IMethod, conversionFlags);
 			else if (item is IProperty)
 				return Convert (item as IProperty, conversionFlags);
+			else if (item is LocalVariable)
+				return Convert (item as LocalVariable, conversionFlags);
 			else
 				return item.Name;
 		}
@@ -144,6 +146,12 @@ namespace MonoDevelop.Projects.Ambience
 		{
 			return Convert(modifier, ConversionFlags.StandardConversionFlags);
 		}
+
+		public string Convert(LocalVariable localVariable)
+		{
+			return Convert(localVariable, ConversionFlags.StandardConversionFlags);
+		}
+
 		
 		public abstract string Convert(IClass c, ConversionFlags flags);
 		public abstract string ConvertEnd(IClass c, ConversionFlags flags);
@@ -156,6 +164,7 @@ namespace MonoDevelop.Projects.Ambience
 		public abstract string Convert(IParameter param, ConversionFlags flags);
 		public abstract string Convert(IReturnType returnType, ConversionFlags flags);
 		public abstract string Convert(ModifierEnum modifier, ConversionFlags flags);
+		public abstract string Convert(LocalVariable localVariable, ConversionFlags flags);
 		
 		public abstract string WrapAttribute(string attribute);
 		public abstract string WrapComment(string comment);

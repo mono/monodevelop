@@ -1,3 +1,7 @@
+2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* VBAmbience.cs: Track changes in Ambience.
+
 2006-07-11 Philip Turnbull <philip.turnbull@gmail.com>
 
 	* VBNetBinding/VBNetBinding.addin.xml:

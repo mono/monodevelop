@@ -410,7 +410,16 @@ class BooAmbience(Ambience):
 		builder.Append(Convert(param.ReturnType, conversionFlags))
 		
 		return builder.ToString()
-	
+
+	override def Convert(localVariable as LocalVariable, conversionFlags as ConversionFlags) as string:
+		builder as StringBuilder = StringBuilder()
+					
+		builder.Append(localVariable.Name)
+		builder.Append(' as ')
+		builder.Append(Convert(localVariable.ReturnType, conversionFlags))
+		
+		return builder.ToString()
+
 	private def AppendPangoHtmlTag (sb as StringBuilder, text as string, tag as string, conversionFlags as ConversionFlags):
 		sb.Append ('<').Append (tag).Append ('>') if IncludeHTMLMarkup(conversionFlags) or IncludePangoMarkup(conversionFlags)
 		sb.Append (text)

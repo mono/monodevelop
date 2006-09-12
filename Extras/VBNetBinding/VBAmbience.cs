@@ -553,6 +553,17 @@ namespace MonoDevelop.Core
 			return builder.ToString();
 		}
 
+		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags)
+		{
+			StringBuilder builder = new StringBuilder();
+										
+			builder.Append(localVariable.Name);
+			builder.Append(" As ");			
+			builder.Append(Convert(localVariable.ReturnType, conversionFlags));
+
+			return builder.ToString();
+		}
+
 		public override string WrapAttribute(string attribute)
 		{
 			return "<" + attribute + ">";

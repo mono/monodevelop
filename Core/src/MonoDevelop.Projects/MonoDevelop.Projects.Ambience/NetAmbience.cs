@@ -303,6 +303,17 @@ namespace MonoDevelop.Projects.Ambience
 			return builder.ToString();
 		}
 
+		public override string Convert(LocalVariable localVariable, ConversionFlags conversionFlags)
+		{
+			StringBuilder builder = new StringBuilder();
+
+			builder.Append(localVariable.Name);
+			builder.Append(" : ");
+			builder.Append(Convert(localVariable.ReturnType));
+
+			return builder.ToString();
+		}
+
 		public override string WrapAttribute(string attribute)
 		{
 			return "[" + attribute + "]";
