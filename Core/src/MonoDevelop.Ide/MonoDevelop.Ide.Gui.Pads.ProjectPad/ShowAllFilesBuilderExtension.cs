@@ -184,6 +184,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void AddFile (string file, Project project)
 		{
+			if (!file.StartsWith (project.BaseDirectory))
+				return;
+
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			string filePath = Path.GetDirectoryName (file);
 			
