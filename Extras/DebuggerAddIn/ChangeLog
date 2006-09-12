@@ -1,3 +1,7 @@
+2006-08-08 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+	
+	* .: Added svn:ignore for DebuggerPaths.cs
+
 2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.mdp: Updated.
