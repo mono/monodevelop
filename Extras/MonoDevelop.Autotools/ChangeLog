@@ -1,3 +1,9 @@
+2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* SimpleProjectMakefileHandler.cs: Win32 pathing vs autotools fixes.
+	* SolutionDeployer.cs: Win32 pathing vs autotools fixes, syscall workaround.
+	* SolutionMakefileHandler.cs: Win32 pathing fixes.
+
 2006-08-19  Scott Ellington  <scott.ellington@gmail.com> 
 
 	* SimpleProjectMakefileHandler.cs: 

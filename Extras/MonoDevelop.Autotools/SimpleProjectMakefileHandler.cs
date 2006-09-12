@@ -133,19 +133,21 @@ namespace MonoDevelop.Autotools
 				StringBuilder res_files = new StringBuilder ();
 				StringBuilder extras = new StringBuilder ();
 				StringBuilder datafiles = new StringBuilder ();
+				string pfpath = null;
 				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
+					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
 					switch ( projectFile.BuildAction )
 					{
 						case BuildAction.Compile:
 							
 							if ( projectFile.Subtype != Subtype.Code ) continue;
-							files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							break;
 
 						case BuildAction.Nothing:
 							
-							extras.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							extras.AppendFormat ( "\\\n\t{0} ", pfpath );
 							break;
 
 						case BuildAction.EmbedAsResource:
@@ -153,18 +155,19 @@ namespace MonoDevelop.Autotools
 							if ( !projectFile.FilePath.StartsWith ( ctx.BaseDirectory ) )
 							{
 								// file is not within directory hierarchy, copy it in
-								string rdir = Path.GetDirectoryName (project.FileName) + "/" + resourcedir;
+								string rdir = Path.Combine (Path.GetDirectoryName (project.FileName), resourcedir);
 								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
-								string newPath = rdir + "/" + Path.GetFileName ( projectFile.FilePath );
+								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
 								File.Copy ( projectFile.FilePath, newPath, true ) ;
-								res_files.AppendFormat ( "\\\n\t{0} ", project.GetRelativeChildPath ( newPath ) );
+								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
+								res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							}
-							else res_files.AppendFormat ( "\\\n\t{0} ", projectFile.RelativePath );
+							else res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							break;
 							
 						case BuildAction.FileCopy:
 						
-							datafiles.AppendFormat ("\\\n\t{0} ", projectFile.RelativePath);
+							datafiles.AppendFormat ("\\\n\t{0} ", pfpath );
 							break;
 					}
 				}
@@ -181,7 +184,7 @@ namespace MonoDevelop.Autotools
 					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
 					
 					conf_vars.AppendFormat ("if ENABLE_{0}\n", config.Name.ToUpper () );
-					string assembly = project.GetRelativeChildPath ( config.CompiledOutputName );
+					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.CompiledOutputName ) : project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
 
 					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
 							setup.GetCompilerCommand ( project, config.Name ) );
@@ -240,6 +243,7 @@ namespace MonoDevelop.Autotools
 
 					// for project references, we need a ref to the dll for the current configuration
 					StringWriter projectReferences = new StringWriter();
+					string pref = null;
 					foreach (ProjectReference reference in project.ProjectReferences) 
 					{
 						if (reference.ReferenceType == ReferenceType.Project) 
@@ -253,11 +257,13 @@ namespace MonoDevelop.Autotools
 							
 							projectReferences.WriteLine (" \\");
 							projectReferences.Write ("\t");
-							projectReferences.Write ( project.GetRelativeChildPath ( dnpc.CompiledOutputName ) );
+							pref = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( dnpc.CompiledOutputName ) : project.GetRelativeChildPath ( dnpc.CompiledOutputName ).Replace("\\","/");
+							projectReferences.Write ( pref );
 						} 
 					}
 					conf_vars.AppendFormat ( "PROJECT_REFERENCES = {0}\n", projectReferences.ToString() );
-					conf_vars.AppendFormat ( "BUILD_DIR = {0}\n", project.GetRelativeChildPath ( config.OutputDirectory ) );
+					pref = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.OutputDirectory ) : project.GetRelativeChildPath ( config.OutputDirectory ).Replace("\\","/");
+					conf_vars.AppendFormat ( "BUILD_DIR = {0}\n", pref);
 					conf_vars.Append ( "endif\n" );
 				}
 				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();

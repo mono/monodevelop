@@ -12,8 +12,10 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
+using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
@@ -52,7 +54,7 @@ namespace VBBinding {
 		{
 			StringBuilder sb = new StringBuilder();
 			
-			sb.Append("-out:");sb.Append(outputFileName);/*sb.Append('"');*/sb.Append(Environment.NewLine);
+			sb.Append("-out:");sb.Append("\"" + outputFileName + "\"");/*sb.Append('"');*/sb.Append(Environment.NewLine);
 			
 			sb.Append("-nologo");sb.Append(Environment.NewLine);
 			sb.Append("-utf8output");sb.Append(Environment.NewLine);
@@ -123,10 +125,8 @@ namespace VBBinding {
 			
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
-			//string stdResponseFileName = String.Concat(propertyService.DataDirectory, Path.DirectorySeparatorChar, "vb.rsp");
 			StreamWriter writer = new StreamWriter(responseFileName);
 			
-			//Console.WriteLine(GenerateOptions(compilerparameters,exe));	
 			writer.WriteLine(GenerateOptions (configuration, compilerparameters, exe));
 			
 			foreach (ProjectReference lib in references) {
@@ -139,12 +139,10 @@ namespace VBBinding {
 				if (finfo.Subtype != Subtype.Directory) {
 					switch (finfo.BuildAction) {
 						case BuildAction.Compile:
-							//Console.WriteLine(finfo.Name);
-							writer.WriteLine(finfo.Name);
+							writer.WriteLine("\"" + finfo.Name + "\"");
 						break;
 						
 						case BuildAction.EmbedAsResource:
-							//Console.WriteLine(String.Concat("-resource:", finfo.Name));
 							writer.WriteLine(String.Concat("-resource:", finfo.Name));
 						break;
 					}
@@ -157,16 +155,10 @@ namespace VBBinding {
 			string output = "";
 			string error  = "";
 			string compilerName = GetCompilerName(compilerparameters.VBCompilerVersion);
-			string outstr = String.Concat(compilerName, " @", responseFileName); //, " @", stdResponseFileName);
+			string outstr = String.Concat(compilerName, " @", responseFileName);
 			
-			//Console.WriteLine("Attempting to run: "+outstr);
 			
-			//Executor.ExecWaitWithCapture(outstr, tf, ref output, ref error);
 			DoCompilation(outstr,tf,ref output,ref error);
-			
-			//Console.WriteLine("Output: "+output);
-			//Console.WriteLine("Error: "+error);
-			
 			
 			ICompilerResult result = ParseOutput(tf, output);
 			ParseOutput(tf,error);
@@ -207,90 +199,13 @@ namespace VBBinding {
 			sw.Close();
 		}
 		
-/***** Legacy #D code, will remove if replacement code tests OK *****
-
-		CompilerResult ParseOutput(TempFileCollection tf, string file)
-		{
-			StringBuilder compilerOutput = new StringBuilder();
-			
-			StreamReader sr = File.OpenText(file);
-			
-			// skip fist whitespace line
-			sr.ReadLine();
-			
-			CompilerResults cr = new CompilerResults(tf);
-			
-			while (true) {
-				string next = sr.ReadLine();
-				compilerOutput.Append(next);compilerOutput.Append(Environment.NewLine);
-				if (next == null) {
-					break;
-				}
-				CompilerError error = new CompilerError();
-				
-				int index           = next.IndexOf(": ");
-				if (index < 0) {
-					continue;
-				}
-				
-				string description  = null;
-				string errorwarning = null;
-				string location     = null;
-				
-				string s1 = next.Substring(0, index);
-				string s2 = next.Substring(index + 2);
-				index  = s2.IndexOf(": ");
-				
-				if (index == -1) {
-					errorwarning = s1;
-					description = s2;
-				} else {
-					location = s1;
-					s1 = s2.Substring(0, index);
-					s2 = s2.Substring(index + 2);
-					errorwarning = s1;
-					description = s2;
-				}
-				
-				if (location != null) {
-					int idx1 = location.LastIndexOf('(');
-					int idx2 = location.LastIndexOf(')');
-					if (idx1 >= 0 &&  idx2 >= 0) {
-						string filename = location.Substring(0, idx1);
-						error.Line = Int32.Parse(location.Substring(idx1 + 1, idx2 - idx1 - 1));
-						error.FileName = Path.GetFullPath(filename.Trim()); // + "\\" + Path.GetFileName(filename);
-					}
-				}
-				
-				string[] what = errorwarning.Split(' ');
-				Console.WriteLine("Error is: "+what[0]);
-				error.IsWarning   = (what[0] == "warning" || what[0]=="MonoBASIC");
-				error.ErrorNumber = what[what.Length - 1];
-				
-				error.ErrorText = description;
-				
-				cr.Errors.Add(error);
-			}
-			sr.Close();
-			Console.WriteLine(compilerOutput.ToString());
-			return new DefaultCompilerResult(cr, compilerOutput.ToString());
-		}
-*/
-		
 		ICompilerResult ParseOutput(TempFileCollection tf, string file)
 		{
 			StringBuilder compilerOutput = new StringBuilder();
 			
 			StreamReader sr = File.OpenText(file);
 			
-			// skip fist whitespace line
-			//sr.ReadLine();
-			
 			CompilerResults cr = new CompilerResults(tf);
-			
-			// we have 2 formats for the error output the csc gives :
-			//Regex normalError  = new Regex(@"(?<file>.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
-			//Regex generalError = new Regex(@"(?<error>.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
 			
 			while (true) {
 				string curLine = sr.ReadLine();
@@ -346,16 +261,17 @@ namespace VBBinding {
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
-			string arguments = outstr + " > " + output + " 2> " + error;
-			string command = arguments;
-			ProcessStartInfo si = new ProcessStartInfo("/bin/sh","-c \"" + command + "\"");
-			si.RedirectStandardOutput = true;
-			si.RedirectStandardError = true;
-			si.UseShellExecute = false;
-			Process p = new Process();
-			p.StartInfo = si;
-			p.Start();
-			p.WaitForExit ();
+			StreamWriter outwr = new StreamWriter(output);
+			StreamWriter errwr = new StreamWriter(error);
+			string[] tokens = outstr.Split(' ');
+
+			outstr = outstr.Substring(tokens[0].Length+1);
+
+			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
+			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", ".", outwr, errwr, delegate{});
+			pw.WaitForExit();
+			outwr.Close();
+			errwr.Close();
 		}
 	}
 }

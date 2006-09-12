@@ -152,7 +152,8 @@ namespace MonoDevelop.Ide.Gui
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
-					file = file.Substring (7);
+					file = new Uri(file).LocalPath;
+
 					try {
 						if (Services.ProjectService.IsCombineEntryFile (file))
 							IdeApp.ProjectOperations.OpenCombine(file);

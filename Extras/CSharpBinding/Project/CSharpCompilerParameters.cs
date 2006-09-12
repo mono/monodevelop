@@ -28,7 +28,7 @@ namespace CSharpBinding
 		// Configuration parameters
 		
 		[ItemProperty ("compiler")]
-		CsharpCompiler csharpCompiler = CsharpCompiler.Csc;
+		CsharpCompiler csharpCompiler = CsharpCompiler.Mcs;
 		
 		[ItemProperty ("warninglevel")]
 		int  warninglevel       = 4;

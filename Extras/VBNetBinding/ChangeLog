@@ -1,3 +1,7 @@
+2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* VBBindingCompilerServices.cs: Fixed win32 pathing/compilation issues, removed /bin/sh dependence, removed \r.
+
 2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* VBAmbience.cs: Track changes in Ambience.

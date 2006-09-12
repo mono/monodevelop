@@ -77,7 +77,7 @@ namespace MonoDevelop.Autotools
 						
 						// add the subdirectory to the list
 						string path = Path.GetDirectoryName (ce.RelativeFileName);
-						if (path.StartsWith ("./") )
+						if (path.StartsWith ("." + Path.DirectorySeparatorChar) )
 							path = path.Substring (2);
 						subdirs.Append (" ");
 						subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
@@ -96,7 +96,7 @@ namespace MonoDevelop.Autotools
 					if ( handler.CanDeploy ( ce ) )
 					{
 						makefile = handler.Deploy ( ctx, ce, monitor );
-						string outpath = Path.GetDirectoryName(ce.FileName) + "/Makefile";
+						string outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
 						StreamWriter writer = new StreamWriter ( outpath + ".am" );
 						makefile.Write ( writer );
 						writer.Close ();

@@ -61,21 +61,26 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			Gnome.Vfs.Vfs.Initialize ();
 			MonoDevelopOptions options = new MonoDevelopOptions ();
 			options.ProcessArgs (args);
 			string[] remainingArgs = options.RemainingArguments;
+			string socket_filename = null;
+			EndPoint ep = null;
 			
-			string socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
-			listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
-			EndPoint ep = new UnixEndPoint (socket_filename);
-			
-			// Connect to existing monodevelop and pass filename(s) and exit
-			if (remainingArgs.Length > 0 && File.Exists (socket_filename)) {
-				try {
-					listen_socket.Connect (ep);
-					listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", remainingArgs)));
-					return 0;
-				} catch {}
+			if(!options.ipc_tcp){
+				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
+				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+				ep = new UnixEndPoint (socket_filename);
+				
+				// Connect to existing monodevelop and pass filename(s) and exit
+				if (remainingArgs.Length > 0 && File.Exists (socket_filename)) {
+					try {
+						listen_socket.Connect (ep);
+						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", remainingArgs)));
+						return 0;
+					} catch {}
+				}
 			}
 			
 			string name    = Assembly.GetEntryAssembly ().GetName ().Name;
@@ -181,18 +186,22 @@ namespace MonoDevelop.Ide.Gui
 			
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
-			try {
-				listen_socket.Bind (ep);
-				listen_socket.Listen (5);
-				listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
-			} catch {
-				// Socket already in use
+			if (!options.ipc_tcp) {
+				try {
+					listen_socket.Bind (ep);
+					listen_socket.Listen (5);
+					listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
+				} catch {
+					// Socket already in use
+				}
 			}
 
 			IdeApp.Run ();
 
 			// unloading services
-			File.Delete (socket_filename);
+			if (null != socket_filename)
+				File.Delete (socket_filename);
+
 			ServiceManager.UnloadAllServices ();
 			System.Environment.Exit (0);
 			return 0;
@@ -313,6 +322,10 @@ namespace MonoDevelop.Ide.Gui
 		public MonoDevelopOptions ()
 		{
 			base.ParsingMode = OptionsParsingMode.Both;
+		}
+
+		protected override void InitializeOtherDefaults () {
+			ipc_tcp = (PlatformID.Unix != Environment.OSVersion.Platform);
 		}
 
 		[Option ("Do not display splash screen.")]

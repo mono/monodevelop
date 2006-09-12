@@ -90,7 +90,7 @@ namespace MonoDevelop.Autotools
 				else pkgconfig = (bool) en_obj;
 				
 				Makefile makefile = handler.Deploy ( context, combine, monitor );
-				string path = solution_dir + "/Makefile";
+				string path = Path.Combine (solution_dir, "Makefile");
 				context.AddAutoconfFile ( path );
 
 				CreateAutoGenDotSH ( monitor );
@@ -210,13 +210,15 @@ namespace MonoDevelop.Autotools
 			{
 				string dll_name = Path.GetFileName  ( dll );
 
-				string libdir = solution_dir + "/lib/";
+				string libdir = Path.Combine (solution_dir, "lib");
 				if ( !Directory.Exists ( libdir ) ) Directory.CreateDirectory ( libdir );
 
-				string newPath = libdir + dll_name;
+				string newPath = Path.Combine (libdir, dll_name);
 				File.Copy ( dll, newPath , true );
 
 				newPath = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, newPath );
+				if (PlatformID.Unix != Environment.OSVersion.Platform) 
+					newPath = newPath.Replace ("\\","/");
 				sb.Append (' ');
 				sb.Append ( newPath );
 			}
@@ -235,7 +237,7 @@ namespace MonoDevelop.Autotools
 
 			templateEngine.Variables["NAME"] = solution_name;
 
-			string fileName = solution_dir + "/autogen.sh";
+			string fileName = Path.Combine (solution_dir, "autogen.sh");
 
 			StreamWriter writer = new StreamWriter( fileName );
 
@@ -248,7 +250,8 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 
 			// make autogen.sh executable
-			Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
+			if (PlatformID.Unix == Environment.OSVersion.Platform)
+				Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
 		void CreateConfigureDotAC ( Combine combine, string defaultConf, IProgressMonitor monitor )
@@ -299,9 +302,14 @@ namespace MonoDevelop.Autotools
 
 			// build list of *.in files
 			StringBuilder configFiles = new StringBuilder();
+			string tmpmf = null;
 			foreach (string makefile in context.GetAutoConfFiles () ) 
 			{
-				configFiles.Append( Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, makefile ) );
+				tmpmf = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, makefile );
+				if (PlatformID.Unix != Environment.OSVersion.Platform)
+					tmpmf = tmpmf.Replace("\\","/");
+
+				configFiles.Append(tmpmf); 
 				configFiles.Append("\n");
 			}
 			templateEngine.Variables["CONFIG_FILES"] = configFiles.ToString();
@@ -321,7 +329,7 @@ namespace MonoDevelop.Autotools
 			templateEngine.Variables["SOLUTION_NAME"] = solution_name;
 			templateEngine.Variables["VERSION"] = solution_version;
 
-			string configureFileName = solution_dir + "/configure.ac";
+			string configureFileName = Path.Combine (solution_dir, "configure.ac");
 
 			StreamWriter writer = new StreamWriter(configureFileName);
 			Stream stream = context.GetTemplateStream ("configure.ac.template");

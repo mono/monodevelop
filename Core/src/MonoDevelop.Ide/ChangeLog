@@ -1,3 +1,10 @@
+2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Win32 URI workaround.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Win32 URI workaround.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Autoinitialize VFS, TCP IPC fixes.
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Win32 URI workaround.
+
 2006-09-12 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:

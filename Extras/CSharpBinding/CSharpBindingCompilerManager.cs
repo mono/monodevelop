@@ -12,8 +12,10 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.CodeDom.Compiler;
+using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 namespace CSharpBinding
@@ -38,159 +40,114 @@ namespace CSharpBinding
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			StreamWriter writer = new StreamWriter(responseFileName);
+
+			writer.WriteLine("\"/out:" + exe + '"');
 			
-			if (compilerparameters.CsharpCompiler == CsharpCompiler.Csc) {
-				writer.WriteLine("\"/out:" + exe + '"');
-				
-				ArrayList pkg_references = new ArrayList ();
-				
-				if (references != null) {
-					foreach (ProjectReference lib in references) {
-						foreach (string fileName in lib.GetReferencedFileNames ()) {
-							switch (lib.ReferenceType) {
-							case ReferenceType.Gac:
-								SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
-								if (pkg == null) {
-									string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
-									monitor.ReportWarning (msg);
-									continue;
-								}
-								if (pkg.IsCorePackage) {
-									writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
-								} else if (!pkg_references.Contains (pkg.Name)) {
-									pkg_references.Add (pkg.Name);
-									writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
-								}
-								break;
-							default:
-								writer.WriteLine ("\"/r:" + fileName + "\"");
-								break;
+			ArrayList pkg_references = new ArrayList ();
+			
+			if (references != null) {
+				foreach (ProjectReference lib in references) {
+					foreach (string fileName in lib.GetReferencedFileNames ()) {
+						switch (lib.ReferenceType) {
+						case ReferenceType.Gac:
+							SystemPackage pkg = Runtime.SystemAssemblyService.GetPackageFromFullName (lib.Reference);
+							if (pkg == null) {
+								string msg = String.Format (GettextCatalog.GetString ("{0} could not be found or is invalid."), lib.Reference);
+								monitor.ReportWarning (msg);
+								continue;
 							}
+							if (pkg.IsCorePackage) {
+								writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
+							} else if (!pkg_references.Contains (pkg.Name)) {
+								pkg_references.Add (pkg.Name);
+								writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
+							}
+							break;
+						default:
+							writer.WriteLine ("\"/r:" + fileName + "\"");
+							break;
 						}
 					}
 				}
-				
-				writer.WriteLine("/noconfig");
-				writer.WriteLine("/nologo");
-				writer.WriteLine("/codepage:utf8");
-//				writer.WriteLine("/utf8output");
-//				writer.WriteLine("/w:" + compilerparameters.WarningLevel);;
-				
-				if (configuration.DebugMode) {
-					writer.WriteLine("/debug:+");
-					writer.WriteLine("/debug:full");
-					writer.WriteLine("/d:DEBUG");
-				}
-				
-				// mcs default is + but others might not be
-				if (compilerparameters.Optimize)
-					writer.WriteLine("/optimize+");
-				else
-					writer.WriteLine("/optimize-");
-				
-				if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists (compilerparameters.Win32Icon)) {
-					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
-				}
-				
-				if (compilerparameters.UnsafeCode) {
-					writer.WriteLine("/unsafe");
-				}
-				
-				if (compilerparameters.DefineSymbols.Length > 0) {
-					writer.WriteLine("/define:" + '"' + compilerparameters.DefineSymbols + '"');
-				}
-				
-				if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
-					writer.WriteLine("/main:" + compilerparameters.MainClass);
-				}
-				
-				switch (configuration.CompileTarget) {
-					case CompileTarget.Exe:
-						writer.WriteLine("/t:exe");
-						break;
-					case CompileTarget.WinExe:
-						writer.WriteLine("/t:winexe");
-						break;
-					case CompileTarget.Library:
-						writer.WriteLine("/t:library");
-						break;
-				}
-				
-				foreach (ProjectFile finfo in projectFiles) {
-					if (finfo.Subtype != Subtype.Directory) {
-						switch (finfo.BuildAction) {
-							case BuildAction.Compile:
-								if (CanCompile (finfo.Name))
-									writer.WriteLine('"' + finfo.Name + '"');
-								break;
-							case BuildAction.EmbedAsResource:
-								// FIXME: workaround 60990
-								writer.WriteLine(@"""/res:{0},{1}""", finfo.Name, Path.GetFileName (finfo.Name));
-								break;
-						}
-					}
-				}
-				if (compilerparameters.GenerateXmlDocumentation) {
-					writer.WriteLine("\"/doc:" + Path.ChangeExtension(exe, ".xml") + '"');
-				}
-			} 
-			else {
-				writer.WriteLine("-o " + exe);
-				
-				if (compilerparameters.UnsafeCode) {
-					writer.WriteLine("--unsafe");
-				}
-				
-				writer.WriteLine("--wlevel " + compilerparameters.WarningLevel);
-		
-				if (references != null) {		
-					foreach (ProjectReference lib in references) {
-						foreach (string fileName in lib.GetReferencedFileNames ())
-							writer.WriteLine("-r:" + fileName );
-					}
-				}
-				
-				switch (configuration.CompileTarget) {
-					case CompileTarget.Exe:
-						writer.WriteLine("--target exe");
-						break;
-					case CompileTarget.WinExe:
-						writer.WriteLine("--target winexe");
-						break;
-					case CompileTarget.Library:
-						writer.WriteLine("--target library");
-						break;
-				}
-				foreach (ProjectFile finfo in projectFiles) {
-					if (finfo.Subtype != Subtype.Directory) {
-						switch (finfo.BuildAction) {
-							case BuildAction.Compile:
-								writer.WriteLine('"' + finfo.Name + '"');
-								break;
-							
-							case BuildAction.EmbedAsResource:
-								writer.WriteLine("--linkres " + finfo.Name);
-								break;
-						}
-					}
-				}			
 			}
-			writer.Close();
 			
+			writer.WriteLine("/noconfig");
+			writer.WriteLine("/nologo");
+			writer.WriteLine("/codepage:utf8");
+//			writer.WriteLine("/utf8output");
+//			writer.WriteLine("/w:" + compilerparameters.WarningLevel);;
+				
+			if (configuration.DebugMode) {
+				writer.WriteLine("/debug:+");
+				writer.WriteLine("/debug:full");
+				writer.WriteLine("/d:DEBUG");
+			}
+			
+			// mcs default is + but others might not be
+			if (compilerparameters.Optimize)
+				writer.WriteLine("/optimize+");
+			else
+				writer.WriteLine("/optimize-");
+			
+			if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists (compilerparameters.Win32Icon)) {
+				writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
+			}
+			
+			if (compilerparameters.UnsafeCode) {
+				writer.WriteLine("/unsafe");
+			}
+			
+			if (compilerparameters.DefineSymbols.Length > 0) {
+				writer.WriteLine("/define:" + '"' + compilerparameters.DefineSymbols + '"');
+			}
+			
+			if (compilerparameters.MainClass != null && compilerparameters.MainClass.Length > 0) {
+				writer.WriteLine("/main:" + compilerparameters.MainClass);
+			}
+			
+			switch (configuration.CompileTarget) {
+				case CompileTarget.Exe:
+					writer.WriteLine("/t:exe");
+					break;
+				case CompileTarget.WinExe:
+					writer.WriteLine("/t:winexe");
+					break;
+				case CompileTarget.Library:
+					writer.WriteLine("/t:library");
+					break;
+			}
+			
+			foreach (ProjectFile finfo in projectFiles) {
+				if (finfo.Subtype != Subtype.Directory) {
+					switch (finfo.BuildAction) {
+						case BuildAction.Compile:
+							if (CanCompile (finfo.Name))
+								writer.WriteLine('"' + finfo.Name + '"');
+							break;
+						case BuildAction.EmbedAsResource:
+							// FIXME: workaround 60990
+							writer.WriteLine(@"""/res:{0},{1}""", finfo.Name, Path.GetFileName (finfo.Name));
+							break;
+					}
+				}
+			}
+			if (compilerparameters.GenerateXmlDocumentation) {
+				writer.WriteLine("\"/doc:" + Path.ChangeExtension(exe, ".xml") + '"');
+			}
+
+			writer.Close();
+
 			string output = String.Empty;
 			string error  = String.Empty;
 			
 			string mcs = configuration.ClrVersion == ClrVersion.Net_1_1 ? "mcs" : "gmcs";
 			
-			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName (configuration.ClrVersion) : System.Environment.GetEnvironmentVariable("ComSpec") + " /c " + mcs;
+			string compilerName = compilerparameters.CsharpCompiler == CsharpCompiler.Csc ? GetCompilerName (configuration.ClrVersion) : mcs;
 			string outstr = compilerName + " @" + responseFileName;
 			TempFileCollection tf = new TempFileCollection();
-			
-			//StreamReader t = File.OpenText(responseFileName);
-			
-			//Executor.ExecWaitWithCapture(outstr,  tf, ref output, ref error);
+
 			DoCompilation(outstr, tf, ref output, ref error);
-			
+
 			ICompilerResult result = ParseOutput(tf, output, error);
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
@@ -254,16 +211,17 @@ namespace CSharpBinding
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
-			string arguments = outstr + " > " + output + " 2> " + error;
-			string command = arguments;
-			ProcessStartInfo si = new ProcessStartInfo("/bin/sh","-c \"" + command + "\"");
-			si.RedirectStandardOutput = true;
-			si.RedirectStandardError = true;
-			si.UseShellExecute = false;
-			Process p = new Process();
-			p.StartInfo = si;
-			p.Start();
-			p.WaitForExit ();
+			StreamWriter outwr = new StreamWriter(output);
+			StreamWriter errwr = new StreamWriter(error);
+			string[] tokens = outstr.Split(' ');
+
+			outstr = outstr.Substring(tokens[0].Length+1);
+
+			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
+			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", ".", outwr, errwr, delegate{});
+			pw.WaitForExit();
+			outwr.Close();
+			errwr.Close();
 		}
 
 		// Snatched from our codedom code :-).

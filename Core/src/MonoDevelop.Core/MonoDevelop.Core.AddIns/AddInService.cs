@@ -78,7 +78,15 @@ namespace MonoDevelop.Core.AddIns
 		
 		string[] GetAddInDirectories (out bool ignoreDefaultPath)
 		{
-			ArrayList addInDirs = System.Configuration.ConfigurationSettings.GetConfig("AddInDirectories") as ArrayList;
+			ArrayList addInDirs = null;
+			
+			try {
+				addInDirs = System.Configuration.ConfigurationSettings.GetConfig ("AddInDirectories") as ArrayList;
+			} catch {
+				ignoreDefaultPath = false;
+				return null;
+			}
+
 			if (addInDirs != null) {
 				int i, count = addInDirs.Count;
 				if (count <= 1) {

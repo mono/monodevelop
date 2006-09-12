@@ -445,14 +445,8 @@ namespace MonoDevelop.Ide.Gui
 	
 				string origName = fileName;
 	
-				if (fileName.StartsWith ("file://")) {
-					fileName = fileName.Substring (7);
-					// FIXME: this is lame
-					fileName = fileName.Replace ("%3f", "?");
-					fileName = fileName.Replace ("%3F", "?");
-					fileName = fileName.Replace ("%23", "#");
-					fileName = fileName.Replace ("%25", "%");
-				}
+				if (fileName.StartsWith ("file://"))
+					fileName = new Uri(fileName).LocalPath;
 	
 				if (!fileName.StartsWith ("http://"))
 					fileName = System.IO.Path.GetFullPath (fileName);

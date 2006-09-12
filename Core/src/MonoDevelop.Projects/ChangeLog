@@ -1,3 +1,7 @@
+2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Projects/ProjectService.cs: Win32 URI workaround.
+
 2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects.Ambience/Ambience.cs:

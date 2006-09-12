@@ -81,7 +81,10 @@ namespace MonoDevelop.WelcomePage
 			htmlControl.OpenUri += new OpenUriHandler (CatchUri);
 			htmlControl.LinkMsg += new EventHandler (LinkMessage);
 			
-			datadir = Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
+			datadir = "file://" + Path.GetDirectoryName (typeof(ShowWelcomePageHandler).Assembly.Location) + "/";
+
+			if (PlatformID.Unix != Environment.OSVersion.Platform)
+				datadir = datadir.Replace("\\","/");
 
 			this.IsViewOnly = true;
 
@@ -136,6 +139,10 @@ namespace MonoDevelop.WelcomePage
 			e.RetVal = true;
 	
 			string URI = e.AURI;
+
+			// HACK: Necessary for win32; I have no idea why
+			if (PlatformID.Unix != Environment.OSVersion.Platform)
+				Console.WriteLine ("WelcomePage: Handling URI: " + URI);
 
 			if (URI.StartsWith("project://"))
 			{

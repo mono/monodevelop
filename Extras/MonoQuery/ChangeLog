@@ -1,3 +1,7 @@
+2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoQuery/MonoQueryService.cs: File existence check on unload.
+
 2006-08-08  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* Mono.Data.Sql/Makefile.am:

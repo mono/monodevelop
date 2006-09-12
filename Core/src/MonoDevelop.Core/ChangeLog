@@ -1,3 +1,11 @@
+2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: Added robustness for addin dir detection failure.
+	* MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs: Removed /bin/sh dependence.
+	* MonoDevelop.Core.Execution/ProcessService.cs: Default to TCP IPC on win32.
+	* MonoDevelop.Core/SystemAssemblyService.cs: Pathing and environment variable compatibility fixes.
+	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Win32 URI workaround.
+
 2006-09-12 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs: Don't crash if

@@ -103,9 +103,11 @@ namespace MonoQuery
 		
 		public override void UnloadService ()
 		{
-			using (FileStream fs = new FileStream(serializedFile, FileMode.Create)) {
-				XmlSerializer serializer = new XmlSerializer (typeof (DbProviderCollection));
-				serializer.Serialize (fs, providers);
+			if(File.Exists(serializedFile)) {
+				using (FileStream fs = new FileStream(serializedFile, FileMode.Create)) {
+					XmlSerializer serializer = new XmlSerializer (typeof (DbProviderCollection));
+					serializer.Serialize (fs, providers);
+				}
 			}
 		}
 	}

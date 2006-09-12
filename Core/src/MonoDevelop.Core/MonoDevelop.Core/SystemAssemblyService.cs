@@ -235,8 +235,8 @@ namespace MonoDevelop.Core
 
 			//Pull up assemblies from the installed mono system.
 			string prefix = Path.GetDirectoryName (typeof (int).Assembly.Location);
-			
-			if (prefix.IndexOf ("mono/" + versionDir) == -1)
+
+			if (prefix.IndexOf ( Path.Combine("mono", versionDir)) == -1)
 				prefix = Path.Combine (prefix, "mono");
 			else
 				prefix = Path.GetDirectoryName (prefix);
@@ -246,21 +246,24 @@ namespace MonoDevelop.Core
 
 			string search_dirs = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
 			string libpath = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBPATH");
+
 			if (String.IsNullOrEmpty (libpath)) {
 				string path_dirs = Environment.GetEnvironmentVariable ("PATH");
-				foreach (string pathdir in path_dirs.Split (':')) {
+				foreach (string pathdir in path_dirs.Split (Path.PathSeparator)) {
 					if (pathdir == null)
 						continue;
 					if (File.Exists (pathdir + Path.DirectorySeparatorChar + "pkg-config")) {
-						libpath = pathdir + Path.DirectorySeparatorChar + "../lib/pkgconfig/";
+						libpath = Path.Combine(pathdir,"..");
+						libpath = Path.Combine(libpath,"lib");
+						libpath = Path.Combine(libpath,"pkg-config");
 						break;
 					}
 				}
 			}
-			search_dirs += ":" + libpath;
+			search_dirs += Path.PathSeparator + libpath;
 			if (search_dirs != null && search_dirs.Length > 0) {
 				ArrayList scanDirs = new ArrayList ();
-				foreach (string potentialDir in search_dirs.Split (':')) {
+				foreach (string potentialDir in search_dirs.Split (Path.PathSeparator)) {
 					if (!scanDirs.Contains (potentialDir))
 						scanDirs.Add (potentialDir);
 				}
@@ -269,11 +272,9 @@ namespace MonoDevelop.Core
 						continue;
 	
 					if (Directory.Exists (pcdir)) {
-						//try  {
 							foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc")) {
 								ParsePCFile (pcfile);
 							}
-						//} catch { }
 					}
 				}
 			}
@@ -285,6 +286,10 @@ namespace MonoDevelop.Core
 			ArrayList list = new ArrayList ();
 			
 			string dir = Path.Combine (prefix, version);
+			if(!Directory.Exists(dir)) {
+				return;
+			}
+
 			foreach (string assembly in Directory.GetFiles (dir, "*.dll")) {
 				AddAssembly (assembly, package);
 				list.Add (assembly);
@@ -349,7 +354,7 @@ namespace MonoDevelop.Core
 				System.Reflection.AssemblyName an = System.Reflection.AssemblyName.GetAssemblyName (assemblyfile);
 				assemblyFullNameToPath[NormalizeAsmName (an.FullName)] = assemblyfile;
 				assemblyPathToPackage[assemblyfile] = package;
-			} catch { 
+			} catch {
 			}
 		}
 	
@@ -413,8 +418,8 @@ namespace MonoDevelop.Core
 			Process p = new Process ();
 			p.StartInfo = psi;
 			p.Start ();
-			p.WaitForExit ();
 			string ret = p.StandardOutput.ReadToEnd ().Trim ();
+			p.WaitForExit ();
 			if (String.IsNullOrEmpty (ret))
 				return String.Empty;
 			return ret;

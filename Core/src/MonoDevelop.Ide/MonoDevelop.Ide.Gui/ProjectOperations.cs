@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (filename.StartsWith ("file://"))
-				filename = filename.Substring (7);
+				filename = new Uri(filename).LocalPath;
 
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ();
 			

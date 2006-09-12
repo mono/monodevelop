@@ -1,3 +1,7 @@
+2006-09-01 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* *: Fixes for win32 support.
+
 2006-09-01 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Added catalan translation. Changed version to 0.12.

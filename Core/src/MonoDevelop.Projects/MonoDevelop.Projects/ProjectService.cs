@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects
 		public bool IsCombineEntryFile (string filename)
 		{
 			if (filename.StartsWith ("file://"))
-				filename = filename.Substring (7);
+				filename = new Uri(filename).LocalPath;
 				
 			IFileFormat format = formatManager.GetFileFormat (filename);
 			return format != null;

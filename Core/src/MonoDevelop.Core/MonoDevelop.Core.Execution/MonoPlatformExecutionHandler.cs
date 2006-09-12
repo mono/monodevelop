@@ -34,14 +34,18 @@ namespace MonoDevelop.Core.Execution
 	{
 		public override IProcessAsyncOperation Execute (string command, string arguments, string workingDirectory, IConsole console)
 		{
-			string args = string.Format (@"--debug {0} {1}", command.Replace (" ", "\\ "), arguments);
-			
-			if (console is ExternalConsole)
-				return base.Execute ("mono", args, workingDirectory, console);
-			else
-				// The use of 'sh' is a workaround. Looks like there is a bug
-				// in mono, Process can't start a "mono" process.
-				return base.Execute ("sh", string.Format ("-c \"mono {0}\"", args), workingDirectory, console);
+			string args = string.Format ("--debug \"{0}\" {1}", command, arguments);
+			return base.Execute ("mono", args, workingDirectory, console);
+
+// Old method - workaround should no longer be necessary.
+//			string args = string.Format (@"--debug {0} {1}", command.Replace (" ", "\\ "), arguments);
+//			
+//			if (console is ExternalConsole)
+//				return base.Execute ("mono", args, workingDirectory, console);
+//			else
+//				// The use of 'sh' is a workaround. Looks like there is a bug
+//				// in mono, Process can't start a "mono" process.
+//				return base.Execute ("sh", string.Format ("-c \"mono {0}\"", args), workingDirectory, console);
 		}
 	}
 }

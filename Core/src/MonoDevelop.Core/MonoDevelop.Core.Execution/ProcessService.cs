@@ -23,6 +23,9 @@ namespace MonoDevelop.Core.Execution
 		
 		public override void InitializeService ()
 		{
+			if (PlatformID.Unix != Environment.OSVersion.Platform) {
+				remotingChannel = "tcp";
+			}
 		}
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, EventHandler exited) 

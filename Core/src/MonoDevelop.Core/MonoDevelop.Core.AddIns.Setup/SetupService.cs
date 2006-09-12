@@ -1175,7 +1175,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		{
 			if (url.StartsWith ("file://")) {
 				string tmpfile = Path.GetTempFileName ();
-				string path = url.Substring (7);
+				string path = new Uri(url).LocalPath;
 				File.Delete (tmpfile);
 				File.Copy (path, tmpfile);
 				return tmpfile;

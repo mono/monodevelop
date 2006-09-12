@@ -1,3 +1,8 @@
+2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* CSharpBindingCompilerManager.cs: Fixed win32 pathing issues, removed old mcs-specific compiler options (that weren't being used since [g]mcs options have been aligned with csc options), removed /bin/sh dependence.
+	* Project/CSharpCompilerParameters.cs: Changed default compiler to mcs.
+
 2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 	
 	* Parser/CSharpVisitor.cs: Fixed compile warning.
