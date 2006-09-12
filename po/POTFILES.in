@@ -116,6 +116,7 @@ Core/src/MonoDevelop.Ide/templates/EmptyTextFile.xft.xml
 Core/src/MonoDevelop.Ide/templates/EmptyXMLFile.xft.xml
 Core/src/MonoDevelop.Projects.Gui/Base.glade
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml
+Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
@@ -188,6 +189,7 @@ Extras/JavaBinding/templates/JavaDialog.xft.xml
 Extras/JavaBinding/templates/JavaFrame.xft.xml
 Extras/JavaBinding/templates/JavaOKDialog.xft.xml
 Extras/JavaBinding/templates/JavaPanel.xft.xml
+Extras/MonoDevelop.GtkCore/gui.glade
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs
