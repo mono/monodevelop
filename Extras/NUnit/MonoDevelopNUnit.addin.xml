@@ -54,7 +54,7 @@
 		<Command id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowSuccessfulTests" _label = "Show successful tests" type="check"/>
 		<Command id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowFailedTests" _label = "Show failed tests" type="check"/>
 		<Command id = "MonoDevelop.NUnit.Commands.TestChartCommands.ShowIgnoredTests" _label = "Show ignored tests" type="check"/>
-		<Command id = "MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" _label = "Add assembly ..."/>
+		<Command id = "MonoDevelop.NUnit.Commands.NUnitProjectCommands.AddAssembly" _label = "Add assembly..."/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">

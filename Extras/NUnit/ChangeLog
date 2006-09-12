@@ -1,3 +1,7 @@
+2006-09-07 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelopNUnit.addin.xml: Improved string.
+
 2006-09-05 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Services/ExternalTestRunner.cs: Make sure the MonoDevelop.Projects
