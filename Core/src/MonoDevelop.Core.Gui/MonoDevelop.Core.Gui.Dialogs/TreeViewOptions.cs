@@ -185,7 +185,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 			TreeViewOptionDialog.TransientFor = parentWindow;
 			TreeViewOptionDialog.WindowPosition = Gtk.WindowPosition.CenterOnParent;
 		
-			TreeViewOptionDialog.Title = GettextCatalog.GetString ("MonoDevelop options");
+			TreeViewOptionDialog.Title = GettextCatalog.GetString ("MonoDevelop Preferences");
 
 			cmdManager = new CommandManager (TreeViewOptionDialog);
 			cmdManager.RegisterGlobalHandler (this); 

@@ -268,7 +268,7 @@
 		             _label = "Behavior"
 		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
 		<DialogPanel id = "SyntaxHighlighting"
-		             _label = "Syntax highlighting"
+		             _label = "Syntax Highlighting"
 		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.SyntaxHighlightingPanel"/>
 	</Extension>
 	
@@ -281,13 +281,13 @@
 			             _label = "General"
 			             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
 			<DialogPanel id = "Markers"
-			             _label = "Markers And Rulers"
+			             _label = "Markers and Rulers"
 			             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
 			<DialogPanel id = "Behavior"
 			             _label = "Behavior"
 			             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
 			<DialogPanel id = "SyntaxHighlighting"
-		             _label = "Syntax highlighting"
+		             _label = "Syntax Highlighting"
 		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.SyntaxHighlightingPanel"/>
 		</DialogPanel>
 	</Extension>

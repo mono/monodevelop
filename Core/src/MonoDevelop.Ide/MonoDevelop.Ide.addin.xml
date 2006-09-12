@@ -682,12 +682,12 @@
 	
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog" extension-nodes="DialogPanel" description="Dialog panels for global MonoDevelop options.">
 		<DialogPanel id    = "UIOptions"
-		             _label = "MonoDevelop Options">
+		             _label = "MonoDevelop Preferences">
 <!--			<DialogPanel id = "SelectCulture"
 			             _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 			             class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>-->
 			<DialogPanel id = "SelectStyle"
-				         _label = "Visual style"
+				         _label = "Visual Style"
 				         class = "MonoDevelop.Ide.Gui.OptionPanels.SelectStylePanel"/>
 			<DialogPanel id = "LoadSave"
 			             _label = "Load/Save"

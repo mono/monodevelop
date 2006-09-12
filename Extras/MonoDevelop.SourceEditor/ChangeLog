@@ -1,11 +1,16 @@
+2006-09-11 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.SourceEditor.addin.xml: A few minor
+	HIG updates.
+
 2006-09-01 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
 	  Added missing Dispose call to base class.
 
-2006-08-11  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+2006-08-11 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
-	*  MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Prepend
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Prepend
 	namespace tooltips with a namespace clause.
 
 2006-08-10 Lluis Sanchez Gual  <lluis@novell.com>
