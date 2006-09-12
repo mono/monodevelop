@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Commands
 			get { return defaultHandlerType; }
 			set {
 				if (!typeof (CommandHandler).IsAssignableFrom (value))
-					throw new ArgumentException ("Value must be a subclass of CommandHandler");
+					throw new ArgumentException ("Value must be a subclass of CommandHandler (" + value + ")");
 
 				defaultHandlerType = value;
 			}

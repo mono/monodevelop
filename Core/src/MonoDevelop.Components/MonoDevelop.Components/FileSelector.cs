@@ -11,7 +11,7 @@ namespace MonoDevelop.Components
 		PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
 		FileUtilityService fileUtilityService = (FileUtilityService) ServiceManager.GetService (typeof (FileUtilityService));
 
-		public FileSelector () : this (GettextCatalog.GetString ("Open file ..."), FileChooserAction.Open)
+		public FileSelector () : this (GettextCatalog.GetString ("Open file..."), FileChooserAction.Open)
 		{
 		}
 

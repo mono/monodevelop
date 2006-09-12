@@ -516,16 +516,6 @@ namespace MonoDevelop.Components.Commands
 				return widget;
 			}
 			return win;
-			
-/*			Gtk.Widget widget = win;
-			while (widget is Gtk.Container) {
-				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-				if (child != null)
-					widget = child;
-				else
-					break;
-			}
-			return widget;*/
 		}
 		
 		bool UpdateStatus ()
