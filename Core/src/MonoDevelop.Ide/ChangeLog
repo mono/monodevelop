@@ -1,3 +1,14 @@
+2006-09-07 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs:
+	* MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/Workbench.cs: Improved strings and fixed typo.
+
 2006-08-30 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Fix the build.

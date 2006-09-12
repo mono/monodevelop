@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			string source = ((SystemFile)dataObject).Path;
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, null, source, targetProject, targetPath, move, false);

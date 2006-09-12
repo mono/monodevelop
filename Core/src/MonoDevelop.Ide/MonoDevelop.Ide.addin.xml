@@ -221,7 +221,7 @@
 				_label = "Build" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy"
 				type="check"
-				_label = "Deploy" />
+				_label = "Deployment" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference"
 				type="check"
 				_label = "Local Copy Reference" />
@@ -359,7 +359,7 @@
 				_label = "Refresh" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
 				type = "array"
-				_label = "OpenWidthList" />
+				_label = "OpenWithList" />
 
 		<!-- ToolCommands -->
 		

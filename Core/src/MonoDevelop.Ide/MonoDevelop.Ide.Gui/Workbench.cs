@@ -407,7 +407,7 @@ namespace MonoDevelop.Ide.Gui
 						while (true) {
 							FindDocument (window).Save ();
 							if (window.ViewContent.IsDirty) {
-								if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Do you really want to discard your changes ?"))) {
+								if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Do you really want to discard your changes?"))) {
 									break;
 								}
 							} else {

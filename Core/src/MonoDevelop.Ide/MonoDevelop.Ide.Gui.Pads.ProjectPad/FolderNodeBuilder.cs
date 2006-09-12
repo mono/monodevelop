@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files ..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);

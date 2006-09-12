@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 			string file = GetFileName (project, language, baseDirectory, entryName);
 			
 			if (File.Exists (file)) {
-				if (!Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("File {0} already exists, do you want to overwrite\nthe existing file ?"), file), GettextCatalog.GetString ("File already exists"))) {
+				if (!Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("File {0} already exists, do you want to overwrite\nthe existing file?"), file), GettextCatalog.GetString ("File already exists"))) {
 					return null;
 				}
 			}
