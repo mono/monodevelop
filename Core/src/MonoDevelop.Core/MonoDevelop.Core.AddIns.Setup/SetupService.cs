@@ -912,6 +912,11 @@ namespace MonoDevelop.Core.AddIns.Setup
 				return;
 			}
 			
+			if (newRep == null) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not get information from repository") + ": " + absUri.ToString (), null);
+				return;
+			}
+			
 			monitor.Step (1);
 			
 			foreach (ReferenceRepositoryEntry re in newRep.Repositories) {
@@ -920,7 +925,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 				RepositoryRecord refRep = FindRepositoryRecord (refRepUrl);
 				if (refRep == null)
 					refRep = RegisterRepository (refRepUrl, true);
-				if (refRep.LastModified < re.LastModified) {
+				if (refRep != null && refRep.LastModified < re.LastModified) {
 					UpdateRepository (monitor, refRepUri, refRep);
 				}
 			}
@@ -934,9 +939,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			ArrayList allAddins = new ArrayList ();
 			
 			Repository rootrep = (Repository) ReadObject (mainPath, typeof(Repository));
-			if (rootrep == null) {
+			if (rootrep == null)
 				rootrep = new Repository ();
-			}
 			
 			BuildRepository (monitor, rootrep, path, "root.mrep", allAddins);
 			WriteObject (mainPath, rootrep);
@@ -952,9 +956,8 @@ namespace MonoDevelop.Core.AddIns.Setup
 			string mainPath = Path.GetDirectoryName (mainFile);
 			
 			Repository mainrep = (Repository) ReadObject (mainFile, typeof(Repository));
-			if (mainrep == null) {
+			if (mainrep == null)
 				mainrep = new Repository ();
-			}
 			
 			bool modified = false;
 			
@@ -996,7 +999,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			if (repEntry != null) {
 				if (repEntry.LastModified < lastModified)
 					repEntry.LastModified = lastModified;
-			} else {
+			} else if (File.Exists (mainFile)) {
 				repEntry = new ReferenceRepositoryEntry ();
 				repEntry.LastModified = lastModified;
 				repEntry.Url = relFilePath;
