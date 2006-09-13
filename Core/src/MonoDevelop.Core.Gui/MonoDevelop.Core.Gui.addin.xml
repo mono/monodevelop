@@ -115,7 +115,8 @@
 		<StockIcon stockid = "md-replace-in-files" resource = "Icons.16x16.ReplaceInFiles" />
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.16x16.ResourceFileIcon" size = "Menu" />
 		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />
-		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" />
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" size = "Menu"/>
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.24x24.SaveAllIcon" />
 		<StockIcon stockid = "md-selection-arrow" resource = "Icons.16x16.SelectionArrow" />
 		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon-22.png" />
 		<StockIcon stockid = "md-sharp-develop-icon" resource = "Icons.SharpDevelopIcon" size="Button"/>

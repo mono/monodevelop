@@ -1,3 +1,11 @@
+2006-09-13 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* icons/Icons.16x16.SaveAllIcon:
+	* icons/Icons.24x24.SaveAllIcon:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* Makefile.am: Updated the save all icon and added a new
+	  icon size. Icons provided by Michael Monreal.
+
 2006-09-11 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Changed

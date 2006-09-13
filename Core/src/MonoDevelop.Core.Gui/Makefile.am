@@ -173,6 +173,7 @@ icons/Icons.16x16.TipOfTheDay \
 icons/Icons.16x16.ToggleBookmark \
 icons/Icons.16x16.WebSearchIcon \
 icons/Icons.16x16.XMLFileIcon \
+icons/Icons.24x24.SaveAllIcon \
 icons/Icons.32x32.ASPFileIcon \
 icons/Icons.32x32.CombineIcon \
 icons/Icons.32x32.EmptyFileIcon \
