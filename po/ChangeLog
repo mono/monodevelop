@@ -1,3 +1,7 @@
+2006-09-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added stamp-it to svn:ignore.
+
 2006-09-12  Jordi Mas i Hernàndez <jmas@softcatala.org>
 
 	* ca.po: Fixes to Catalan translation
