@@ -145,7 +145,7 @@ namespace Mono.Data.Sql
 			ArrayList collection = new ArrayList ();
 
 			using (SqliteCommand command = new SqliteCommand ()) {
-				command.CommandText = "select * from sqlite_master";
+				command.CommandText = "select * from sqlite_master where type = 'table'";
 				command.Connection = this.connection;
 
 				SqliteDataReader r = command.ExecuteReader ();

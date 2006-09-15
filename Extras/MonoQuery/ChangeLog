@@ -1,3 +1,8 @@
+2005-09-15 Jimmy <jkernel1234@bellsouth.net>
+
+	* Mono.Data.Sql/Providers/SqliteDbProvider.cs:
+	Fix to not show indices in table view.
+
 2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoQuery/MonoQueryService.cs: File existence check on unload.
