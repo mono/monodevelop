@@ -68,7 +68,6 @@ namespace MonoDevelop.SourceEditor
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml   = new XmlTextReader(reader);
 			StringBuilder ret   = new StringBuilder();
-			Regex whitespace    = new Regex(@"(\s|\n)+", RegexOptions.Singleline);
 			
 			try {
 				xml.Read();
@@ -77,8 +76,10 @@ namespace MonoDevelop.SourceEditor
 						string elname = xml.Name.ToLower();
 						if (elname == "remarks") {
 							ret.Append("Remarks:\n");
+						// skip <example>-nodes
 						} else if (elname == "example") {
-							ret.Append("Example:\n");
+							xml.Skip();
+							xml.Skip();							
 						} else if (elname == "exception") {
 							ret.Append("Exception: " + GetCref(xml["cref"]) + ":\n");
 						} else if (elname == "returns") {
@@ -100,7 +101,7 @@ namespace MonoDevelop.SourceEditor
 							ret.Append("\n");
 						}
 					} else if (xml.NodeType == XmlNodeType.Text) {
-						ret.Append(whitespace.Replace(xml.Value, " "));
+						ret.Append(xml.Value);
 					}
 				} while (xml.Read ());
 			} catch {

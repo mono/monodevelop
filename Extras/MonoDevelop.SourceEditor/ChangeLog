@@ -1,3 +1,9 @@
+2006-09-15 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Makes
+	sure multiline documentation is shown correctly. Remove examples
+	from popup documentation. Fixes bug #79363.
+	
 2006-09-12 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs: Moved
