@@ -171,8 +171,10 @@ namespace AspNetAddIn
 		
 		public Document GetDocument (ProjectFile file)
 		{
-			if (this.cachedDocuments [file] == null)
-				this.cachedDocuments [file] =  new Document (file);
+			Document doc = this.cachedDocuments [file] as Document;
+			
+			if (doc != null)
+				return doc;
 			
 			switch (DetermineWebSubtype (file)) {
 				case WebSubtype.WebForm:
@@ -181,7 +183,9 @@ namespace AspNetAddIn
 				case WebSubtype.WebControl:
 				case WebSubtype.WebService:
 				case WebSubtype.Global:
-					return (Document) this.cachedDocuments [file];
+					doc = new Document (file);
+					this.cachedDocuments [file] = doc;
+					return doc;
 				default:
 					return null;
 			}

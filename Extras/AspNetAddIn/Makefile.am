@@ -25,10 +25,11 @@ FILES = \
 	Project/AspNetFileDescriptionTemplate.cs \
 	Project/AspNetCodeBehindProvider.cs \
 	Project/AspNetDisplayBinding.cs \
-	Project/XspParameters.cs \
 	Project/VerifyCodeBehindBuildStep.cs \
+	Project/XspParameters.cs \
 	\
 	Gui/XspOptionsPanel.cs \
+	Gui/AspNetConfigurationPanel.cs \
 	\
 	Parser/Document.cs \
 	Parser/MemberListVisitor.cs \

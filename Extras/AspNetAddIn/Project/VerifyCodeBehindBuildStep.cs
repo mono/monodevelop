@@ -23,8 +23,20 @@ namespace AspNetAddIn
 			if (aspProject == null)
 				return null;
 			
+			//check the codebehind verification options
+			//TODO: add options for warnings as errors, ignoring parse errors etc
+			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
+			if (!config.AutoGenerateCodeBehindMembers) {
+				monitor.Log.WriteLine ("Skipping CodeBehind verification.");
+				return null;
+			}
+			
+			monitor.Log.WriteLine ("Verifying CodeBehind...");
+			
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
 			ctx.UpdateDatabase ();
+			
+			int addedMembers = 0;
 			
 			foreach (ProjectFile file in project.ProjectFiles) {
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
@@ -38,24 +50,34 @@ namespace AspNetAddIn
 				IClass cls = ctx.GetClass (doc.Info.InheritedClass);
 				if (cls == null) {
 					monitor.ReportWarning ("Cannot find CodeBehind class \"" + doc.Info.InheritedClass  + "\" for  file \"" + file.Name + "\".");
-					return null;
+					continue;
 				}
 				
 				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
 					try {
-						BindingService.AddMemberToClass (cls, member, false);
+						MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
+						if (existingMember == null) {
+							BindingService.GetCodeGenerator ().AddMember (cls, member);
+							addedMembers++;
+						}
 					} catch (MemberExistsException m) {
 						monitor.ReportWarning (m.ToString ());
 					}
 				}
 			}
 			
-			//make sure changed files are saved
-			Gtk.Application.Invoke ( delegate {
-				foreach (MonoDevelop.Ide.Gui.Document guiDoc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
-					if (guiDoc.IsDirty)
-						guiDoc.Save ();
-			});
+			if (addedMembers > 0) {
+				monitor.Log.WriteLine (string.Format ("Added {0} member{1} to CodeBehind classes. Saving updated source files.", addedMembers, (addedMembers>1)?"s":""));
+				
+				//make sure updated files are saved before compilation
+				Gtk.Application.Invoke ( delegate {
+					foreach (MonoDevelop.Ide.Gui.Document guiDoc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
+						if (guiDoc.IsDirty)
+							guiDoc.Save ();
+				});
+			} else {
+				monitor.Log.WriteLine ("No changes made to CodeBehind classes.");
+			}
 			
 			return null;
 		}

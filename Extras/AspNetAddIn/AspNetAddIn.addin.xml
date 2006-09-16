@@ -64,6 +64,14 @@
 		</Conditional>
 	</Extension>
 	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Conditional activeproject="AspNetApp">
+			<DialogPanel id = "AspNetConfiguration"
+			             _label = "ASP.NET Options"
+			             class = "AspNetAddIn.AspNetConfigurationPanel"/>
+		</Conditional>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders">
 		<Class id="AspNetCodeBehindProvider" class="AspNetAddIn.AspNetCodeBehindProvider"/>
 	</Extension>
@@ -79,4 +87,5 @@
 			<Class insertbefore = "MainBuildStep" class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 		</Conditional>
 	</Extension>
+	
 </AddIn>

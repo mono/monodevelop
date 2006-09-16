@@ -1,3 +1,21 @@
+2006-09-16  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Gui/AspNetConfigurationPanel.cs:
+	* AspNetAddIn.glade:
+	* Project/AspNetAppProjectConfiguration.cs:
+	* AspNetAddIn.addin.xml:
+	* Project/VerifyCodeBehindBuildStep.cs:
+	  Added a new option that can be used to disable compilation-time 
+	  CodeBehind verification for different configurations.
+
+	* Makefile.am:
+	* AspNetAddIn.mdp: Add Gui/AspNetConfigurationPanel.cs to the build.
+
+2006-09-13  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Project/AspNetAppProject.cs: Fix parsed document caching. Check if file 
+	  can be parsed before parsing, instead of at cache lookup. 
+
 2006-08-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Project/AspNetDisplayBinding.cs:

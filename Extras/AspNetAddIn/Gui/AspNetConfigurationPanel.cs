@@ -1,0 +1,82 @@
+//
+// AspNetConfigurationPanel.cs: Edits complication configuration options 
+//   of an AspNetAppProject
+//
+// Authors:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2006 Michael Hutchinson
+//
+//
+// This source code is licenced under The MIT License:
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+using System;
+using Gtk;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Core.Properties;
+
+namespace AspNetAddIn
+{
+	
+	public class AspNetConfigurationPanel : AbstractOptionPanel
+	{
+		class AspNetConfigurationPanelWidget : MonoDevelop.Components.GladeWidgetExtract
+		{
+			AspNetAppProjectConfiguration configuration;
+			AspNetAppProject project;
+			
+			[Glade.Widget] CheckButton autogenerateCodeBehindMembers;
+			
+			public AspNetConfigurationPanelWidget  (IProperties customizationObject) : base ("AspNetAddIn.glade", "AspNetConfigurationPanel")
+			{
+				configuration = (AspNetAppProjectConfiguration)((IProperties)customizationObject).GetProperty("Config");
+				project = (AspNetAppProject)((IProperties)customizationObject).GetProperty("Project");
+				
+				autogenerateCodeBehindMembers.Active = configuration.AutoGenerateCodeBehindMembers;
+			}
+			
+			public void Store ()
+			{				
+				configuration.AutoGenerateCodeBehindMembers = autogenerateCodeBehindMembers.Active;
+			}
+		}
+		
+		AspNetConfigurationPanelWidget panel;
+		
+		public override void LoadPanelContents ()
+		{
+			panel = new AspNetConfigurationPanelWidget ((IProperties) this.CustomizationObject);
+			this.Child = panel;
+		}
+		
+		public override bool StorePanelContents ()
+		{
+			panel.Store ();
+ 			return true;
+		}
+	}
+	
+	//this should be a nested class, but MD code completion doesn't work with that
+
+}
+

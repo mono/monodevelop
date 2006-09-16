@@ -37,7 +37,17 @@ using MonoDevelop.Projects.Serialization;
 namespace AspNetAddIn
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
-	{		
+	{
+		[ItemProperty ("AspNet/AutoGenerateCodeBehindMembers")]
+		bool autoGenerateCodeBehindMembers = false;
+		
+		public bool AutoGenerateCodeBehindMembers {
+			get { return autoGenerateCodeBehindMembers; }
+			set { autoGenerateCodeBehindMembers = value; }
+		}
+		
+		#region //override behaviour of base class to make sure things compile to the right places
+		
 		public override CompileTarget CompileTarget {
 			get { return CompileTarget.Library; }
 			set {
@@ -54,6 +64,9 @@ namespace AspNetAddIn
 					return "bin";
 			}
 			set { }
-		}	
+		}
+		
+		#endregion
+		
 	}
 }
