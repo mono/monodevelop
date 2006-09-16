@@ -1,3 +1,9 @@
+2006-09-16  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Refactor a lot of code 
+	  from AddMemberToClass into GetCompatibleMemberInClass, because it's 
+	  useful separately.
+
 2006-08-31 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:

@@ -55,15 +55,14 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		
-		public static IMember AddMemberToClass (IClass cls, CodeTypeMember member, bool throwIfExists)
-		{		
-			
+		public static IMember GetCompatibleMemberInClass (IClass cls, CodeTypeMember member)
+		{
 			//check for identical property names
 			foreach (IProperty prop in cls.Properties) {
 				if (string.Compare (prop.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberProperty memProp = member as CodeMemberProperty;
 					
-					if (throwIfExists || (memProp == null))
+					if (memProp == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Property);
 					
 					if (memProp.Type.BaseType != prop.ReturnType.FullyQualifiedName)
@@ -78,7 +77,7 @@ namespace MonoDevelop.DesignerSupport
 				if (string.Compare (meth.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberMethod memMeth = member as CodeMemberMethod;
 					
-					if (throwIfExists || (memMeth == null))
+					if (memMeth == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
 					if (memMeth.ReturnType.BaseType != meth.ReturnType.FullyQualifiedName)
@@ -93,7 +92,7 @@ namespace MonoDevelop.DesignerSupport
 				if (string.Compare (ev.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberEvent memEv = member as CodeMemberEvent;
 					
-					if (throwIfExists || (memEv == null))
+					if (memEv == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Event);
 					
 					if (memEv.Type.BaseType != ev.ReturnType.FullyQualifiedName)
@@ -108,7 +107,7 @@ namespace MonoDevelop.DesignerSupport
 				if (string.Compare (field.Name, member.Name, ignoreCase) == 0) {
 					CodeMemberField memField = member as CodeMemberField;
 					
-					if (throwIfExists || (memField == null))
+					if (memField == null)
 						throw new MemberExistsException (cls.Name, member, MemberType.Method);
 					
 					if (memField.Type.BaseType != field.ReturnType.FullyQualifiedName)
@@ -118,10 +117,24 @@ namespace MonoDevelop.DesignerSupport
 				}
 			}
 			
-			return GetCodeGenerator ().AddMember (cls, member);
+			//return null if no match
+			return null;
 		}
 		
-		static CodeRefactorer GetCodeGenerator ()
+		public static IMember AddMemberToClass (IClass cls, CodeTypeMember member, bool throwIfExists)
+		{
+			IMember existingMember = GetCompatibleMemberInClass (cls, member);
+			
+			if (existingMember == null)
+				return GetCodeGenerator ().AddMember (cls, member);
+			
+			if (throwIfExists)
+				throw new MemberExistsException (cls.Name, member, MemberType.Method);
+			
+			return existingMember;
+		}
+		
+		public static CodeRefactorer GetCodeGenerator ()
 		{			
 			CodeRefactorer cr = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
 			cr.TextFileProvider = openedFileProvider;
