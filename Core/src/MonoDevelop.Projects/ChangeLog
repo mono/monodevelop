@@ -1,3 +1,7 @@
+2006-09-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* .: Added svn:ignore for MonoDevelop.Projects.pidb.
+
 2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* .: Added svn:ignore for MonoDevelop.Projects.dll.config.
