@@ -28,7 +28,7 @@ namespace MonoDevelop.Components
 					break;
 				case FileChooserAction.SelectFolder:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
-					AddButton ("Select Folder", ResponseType.Ok);
+					AddButton (GettextCatalog.GetString ("Select Folder"), ResponseType.Ok);
 					break;
 				case FileChooserAction.Save:
 					AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);

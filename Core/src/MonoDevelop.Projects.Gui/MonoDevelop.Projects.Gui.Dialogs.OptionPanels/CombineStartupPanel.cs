@@ -80,9 +80,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
  				store = new ListStore (typeof(string), typeof(string), typeof(CombineExecuteDefinition) );
 				entryTreeView.Model = store;
 				
- 				string entryHeader = Runtime.StringParserService.Parse("Entry");
+ 				string entryHeader = Runtime.StringParserService.Parse(GettextCatalog.GetString ("Entry"));
  				entryTreeView.AppendColumn (entryHeader, new CellRendererText (), "text", 0);
- 				string actionHeader = Runtime.StringParserService.Parse( "Action");
+ 				string actionHeader = Runtime.StringParserService.Parse(GettextCatalog.GetString ("Action"));
  				entryTreeView.AppendColumn (actionHeader, new CellRendererText (), "text", 1);
 				
 				// sanity check to ensure we had a proper execture definitions save last time rounf

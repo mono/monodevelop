@@ -36,17 +36,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				col.PackStart (sr, true);
 				col.Expand = true;
 				col.AddAttribute (sr, "text", 1);
-				col.Title = "Solution Item";
+				col.Title = GettextCatalog.GetString ("Solution Item");
 				configsList.AppendColumn (col);
 				
 				CellRendererToggle tt = new CellRendererToggle ();
 				tt.Activatable = true;
 				tt.Toggled += new ToggledHandler (OnBuildToggled);
-				configsList.AppendColumn ("Build", tt, "active", 2);
+				configsList.AppendColumn (GettextCatalog.GetString ("Build"), tt, "active", 2);
 				
 				CellRendererComboBox comboCell = new CellRendererComboBox ();
 				comboCell.Changed += new ComboSelectionChangedHandler (OnConfigSelectionChanged);
-				configsList.AppendColumn ("Configuration", comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
+				configsList.AppendColumn (GettextCatalog.GetString ("Configuration"), comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
 				
 				foreach (CombineConfigurationEntry ce in configuration.Entries) {
 					store.AppendValues (ce, ce.Entry.Name, ce.Build);
