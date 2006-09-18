@@ -1,3 +1,8 @@
+2006-09-18 Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
+
+	* MonoDevelop.Documentation.mdp: Updated.
+	* .: Added svn:ignore for MonoDevelop.Documentation.pidb.
+
 2006-08-04 Philip Turnbull <philip.turnbull@gmail.com>
 
 	* MonoDevelop.Documentation/DocumentationService.cs: Completed GetHelpUrl
