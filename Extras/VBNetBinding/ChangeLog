@@ -1,3 +1,11 @@
+2006-09-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* VBNetBinding.mdp:
+	* VBNetBinding.mds:
+	Updated.
+
+	* .: Added svn:ignore for VBNetBinding.pidb.
+	
 2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* VBBindingCompilerServices.cs: Fixed win32 pathing/compilation issues, removed /bin/sh dependence, removed \r.
