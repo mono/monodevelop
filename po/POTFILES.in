@@ -118,6 +118,7 @@ Core/src/MonoDevelop.Projects.Gui/Base.glade
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs
+Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
@@ -189,6 +190,7 @@ Extras/JavaBinding/templates/JavaDialog.xft.xml
 Extras/JavaBinding/templates/JavaFrame.xft.xml
 Extras/JavaBinding/templates/JavaOKDialog.xft.xml
 Extras/JavaBinding/templates/JavaPanel.xft.xml
+Extras/MonoDevelop.Autotools/SolutionOptionsPanel.cs
 Extras/MonoDevelop.GtkCore/gui.glade
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs
@@ -270,3 +272,4 @@ Extras/VersionControl/VersionControl/Subversion.cs
 Extras/WelcomePage/WelcomePage.addin.xml
 Extras/WelcomePage/WelcomePageOptionPanel.cs
 Extras/WelcomePage/WelcomePageView.cs
+

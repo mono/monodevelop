@@ -1,3 +1,8 @@
+2006-09-18  Jordi Mas i Hernàndez <jmas@softcatala.org>
+
+	* ca.po: Complete prof-read and update of the Catalan translation
+	* POTFILES.in: Include missing files containing localisable strings
+
 2006-09-15  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added stamp-it to svn:ignore.
