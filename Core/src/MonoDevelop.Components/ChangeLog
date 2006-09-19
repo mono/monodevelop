@@ -1,3 +1,7 @@
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added svn:ignore for MonoDevelop.Components.pidb
+
 2006-09-07 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.Components/FileSelector.cs: Improved string.
