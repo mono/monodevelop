@@ -1,3 +1,12 @@
+2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* AddIn/VersionControlAddIn.mdp:
+	* VersionControl/VersionControl.mdp:
+	* Diff/Diff.mdp:
+	* VersionControl.mds:
+	* DiffWidget/DiffWidget.mdp:
+	Updated.
+
 2006-08-19 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* AddIn/Addin.cs: Fix the build.

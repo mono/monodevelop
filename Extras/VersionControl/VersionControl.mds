@@ -13,6 +13,7 @@
       <Entry build="True" name="VersionControlAddIn" configuration="Debug" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <StartMode startupentry="VersionControl" single="True">
     <Execute type="None" entry="VersionControl" />
     <Execute type="None" entry="Diff" />
