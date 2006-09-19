@@ -1,5 +1,9 @@
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
+	* Extras/Extras.mds: Updated.
+
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
 	* MonoDevelop.mds: Updated.
 	* .: Added svn:ignore for MonoDevelop.userprefs.
 
