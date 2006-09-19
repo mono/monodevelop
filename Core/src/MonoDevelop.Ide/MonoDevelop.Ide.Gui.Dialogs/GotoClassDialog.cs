@@ -24,6 +24,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 
 using Gtk;
+using Gdk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {	
@@ -39,30 +40,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		private void SetupTreeView()
 		{
-			ListStore listStore = new ListStore(new Type[] { typeof(string), typeof(string), typeof(IRegion) });
+			ListStore listStore = new ListStore(new Type[] { typeof(Pixbuf), typeof(string), typeof(string), typeof(IRegion) });
 			TreeModelSort treeModelSort = new TreeModelSort(listStore); 			
 			treeview1.Model = treeModelSort;
 
 			TreeViewColumn classNameColumn = new TreeViewColumn();
-			classNameColumn.Title = "Class";
+			classNameColumn.Title = "Class";			
+			CellRendererPixbuf cellRendererPixbuf = new CellRendererPixbuf();
+			classNameColumn.PackStart(cellRendererPixbuf, false);
+			classNameColumn.AddAttribute(cellRendererPixbuf, "pixbuf", 0);			
 			CellRendererText cellRenderer = new CellRendererText();
 			classNameColumn.PackStart(cellRenderer, true);
-			classNameColumn.AddAttribute(cellRenderer, "text", 0);			
-			treeview1.AppendColumn(classNameColumn);
+			classNameColumn.AddAttribute(cellRenderer, "text", 1);			
+			treeview1.AppendColumn(classNameColumn);			
 			
 			TreeViewColumn nameSpaceColumn = new TreeViewColumn();
-			nameSpaceColumn.Title = "Namespace";
+			nameSpaceColumn.Title = "Namespace";			
 			cellRenderer = new CellRendererText();
 			nameSpaceColumn.PackStart(cellRenderer, true);
-			nameSpaceColumn.AddAttribute(cellRenderer, "text", 1);	
-			treeview1.AppendColumn(nameSpaceColumn);								
+			nameSpaceColumn.AddAttribute(cellRenderer, "text", 2);				
+			treeview1.AppendColumn(nameSpaceColumn);
 			
 			foreach (CombineEntry combineEntry in IdeApp.ProjectOperations.CurrentOpenCombine.Entries)
 			{
 				AddClassesToTreeView(combineEntry, listStore);
 			}					
 			
-			treeModelSort.SetSortColumnId(0, SortType.Ascending);
+			treeModelSort.SetSortColumnId(1, SortType.Ascending);
 			treeModelSort.ChangeSortColumn();			
 		}
 
@@ -81,8 +85,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext(project);
 
 				foreach (IClass c in ctx.GetProjectContents())
-				{					
-					listStore.AppendValues(c.Name, c.Namespace, c.Region);
+				{												
+					listStore.AppendValues(treeview1.RenderIcon(Services.Icons.GetIcon(c), Gtk.IconSize.Menu, ""), c.Name, c.Namespace, c.Region);
 				}
 			}
 		}
@@ -95,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (treeview1.Selection.GetSelected(out model, out iter))
 			{
-				region = (IRegion)model.GetValue(iter, 2);                        
+				region = (IRegion)model.GetValue(iter, 3);                        
 			}
 			else                
 			{

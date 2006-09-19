@@ -1,6 +1,11 @@
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
+	Added icons.
+
+2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
 	Fixed problem which occurred when the main solution
 	has multiple subsolutions.
 
