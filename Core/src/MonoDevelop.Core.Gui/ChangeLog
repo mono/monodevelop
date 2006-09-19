@@ -1,3 +1,7 @@
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added svn:ignore for MonoDevelop.Core.Gui.pidb
+
 2006-09-13 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* icons/Icons.16x16.SaveAllIcon:
