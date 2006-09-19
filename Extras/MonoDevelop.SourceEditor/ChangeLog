@@ -1,5 +1,10 @@
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
+	* MonoDevelop.SourceEditor.addin.xml: Fixed a couple
+	of HIG issues.	
+
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
 	* .: Added svn:ignore for MonoDevelop.SourceEditor.pidb
 
 2006-09-15 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
