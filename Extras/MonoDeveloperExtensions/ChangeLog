@@ -1,3 +1,7 @@
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* NUnit: Added svn:ignore for MonoDeveloperExtensions_nunit.pidb
+
 2006-08-22 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoCombine.cs:
