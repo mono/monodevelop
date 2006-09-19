@@ -1,3 +1,11 @@
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* src/Tools/Tools.mds:
+	* src/Tools/mdrun/mdrun.mdp:
+	Updated.
+
+	* src/Tools/mdrun: Added svn:ignore for mdrun.pidb
+
 2006-03-16  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* src/Makefile.am: Changed build order.
