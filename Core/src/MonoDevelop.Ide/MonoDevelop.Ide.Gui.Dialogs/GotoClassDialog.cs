@@ -55,14 +55,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			cellRenderer = new CellRendererText();
 			nameSpaceColumn.PackStart(cellRenderer, true);
 			nameSpaceColumn.AddAttribute(cellRenderer, "text", 1);	
-			treeview1.AppendColumn(nameSpaceColumn);
-						
-			Combine entry = IdeApp.ProjectOperations.CurrentOpenCombine;
+			treeview1.AppendColumn(nameSpaceColumn);								
 			
-			if (entry.Entries.Count > 0)
-			{			
-				AddClassesToTreeView(entry.Entries[0], listStore);
-			}
+			foreach (CombineEntry combineEntry in IdeApp.ProjectOperations.CurrentOpenCombine.Entries)
+			{
+				AddClassesToTreeView(combineEntry, listStore);
+			}					
 			
 			treeModelSort.SetSortColumnId(0, SortType.Ascending);
 			treeModelSort.ChangeSortColumn();			
