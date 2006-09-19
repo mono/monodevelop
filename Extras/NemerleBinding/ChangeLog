@@ -1,3 +1,8 @@
+2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* NemerleBinding.mdp: Updated.
+	* .: Added svn:ignore for NemerleBinding.pidb.
+
 2006-09-12 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* NemerleAmbience.cs: Track changes in Ambience.
