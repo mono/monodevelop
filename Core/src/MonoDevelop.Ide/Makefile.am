@@ -127,6 +127,7 @@ MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
+MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs \
 MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs \
 MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
@@ -237,7 +238,8 @@ MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 MonoDevelop.Ide/Services.cs \
 MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
-MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
+MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs \
+gtk-gui/generated.cs
 
 RES= \
 templates/AppConfigFile.xft.xml \

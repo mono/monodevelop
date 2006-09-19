@@ -1,3 +1,24 @@
+2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+	
+	* .: Added svn:ignore for MonoDevelop.Ide.pidb
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/gui.stetic:
+	GUI code for GotoClassDialog.
+
+	* MonoDevelop.Ide.mdp:
+	* Makefile.am:
+	Added GotoClassDialog.
+
+	* MonoDevelop.Ide.Commands/SearchCommands.cs:
+	Added GotoClassCommand.
+
+	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
+	The GotoClassDialog.
+
+	* MonoDevelop.Ide.addin.xml:
+	Added menu item for the GotoClassDialog.
+
 2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Win32 URI workaround.

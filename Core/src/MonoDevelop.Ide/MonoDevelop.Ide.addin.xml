@@ -471,7 +471,11 @@
 				_label = "R_eplace In Files..." 
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
-
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoClass"		
+		        defaultHandler = "MonoDevelop.Ide.Commands.GotoClassHandler"
+				_label = "Goto Class..." 
+                shortcut = "Control|Shift|C" />
+				
 		<!-- RefactoryCommands -->
 		
 		<Command id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations"
@@ -900,6 +904,11 @@
 			<SeparatorItem id = "Separator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.About" />
 		</ItemSet>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/Search">
+            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoClass"
+                insertafter = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />	        									
 	</Extension>
 
 	<Extension path = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
