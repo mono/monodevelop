@@ -1,3 +1,8 @@
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* WelcomePage.mdp: Updated.
+	* .: Added svn:ignore for WelcomePage.pidb.
+
 2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* WelcomePageView.cs: Win32 pathing fixes, and weird gecko#/win32 workaround.
