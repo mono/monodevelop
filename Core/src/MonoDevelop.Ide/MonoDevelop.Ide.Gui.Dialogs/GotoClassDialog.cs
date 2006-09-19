@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -31,10 +32,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public class GotoClassDialog : Gtk.Dialog
 	{
 		protected Gtk.TreeView treeview1;
+		private Dictionary<string, Pixbuf> icons;
 		
 		public GotoClassDialog()
 		{
 			Stetic.Gui.Build(this, typeof(GotoClassDialog));
+			
+			icons = new Dictionary<string, Pixbuf>();
 			SetupTreeView();						       								
 		}
 		
@@ -53,20 +57,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			classNameColumn.PackStart(cellRenderer, true);
 			classNameColumn.AddAttribute(cellRenderer, "text", 1);			
 			treeview1.AppendColumn(classNameColumn);			
-			
-			TreeViewColumn nameSpaceColumn = new TreeViewColumn();
-			nameSpaceColumn.Title = "Namespace";			
-			cellRenderer = new CellRendererText();
-			nameSpaceColumn.PackStart(cellRenderer, true);
-			nameSpaceColumn.AddAttribute(cellRenderer, "text", 2);				
-			treeview1.AppendColumn(nameSpaceColumn);
-			
+					
 			foreach (CombineEntry combineEntry in IdeApp.ProjectOperations.CurrentOpenCombine.Entries)
 			{
 				AddClassesToTreeView(combineEntry, listStore);
 			}					
 			
-			treeModelSort.SetSortColumnId(1, SortType.Ascending);
+			treeModelSort.SetSortColumnId(2, SortType.Ascending);
 			treeModelSort.ChangeSortColumn();			
 		}
 
@@ -85,10 +82,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext(project);
 
 				foreach (IClass c in ctx.GetProjectContents())
-				{												
-					listStore.AppendValues(treeview1.RenderIcon(Services.Icons.GetIcon(c), Gtk.IconSize.Menu, ""), c.Name, c.Namespace, c.Region);
+				{										
+					Pixbuf pixbuf = GetIcon(Services.Icons.GetIcon(c));				
+					listStore.AppendValues(pixbuf, c.Name + " (" + c.Namespace + " namespace)", c.Name, c.Region);
 				}
 			}
+		}
+
+		private Pixbuf GetIcon(string id)
+		{					
+			if (!icons.ContainsKey(id))
+			{
+				icons.Add(id, treeview1.RenderIcon(id, IconSize.Menu, "")); 
+			}
+		
+			return icons[id];
 		}
 
 		private void GotoClass()
@@ -99,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (treeview1.Selection.GetSelected(out model, out iter))
 			{
-				region = (IRegion)model.GetValue(iter, 3);                        
+				region = (IRegion)model.GetValue(iter, 3);
 			}
 			else                
 			{

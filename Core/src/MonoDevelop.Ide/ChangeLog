@@ -1,6 +1,12 @@
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
+	Added caching of icons. Removed namespace column
+	and added the namespace to the class column instead.
+
+2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
 	Added icons.
 
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
