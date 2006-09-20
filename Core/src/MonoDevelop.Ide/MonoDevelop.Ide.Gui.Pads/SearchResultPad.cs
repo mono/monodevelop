@@ -57,17 +57,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			buttonStop = new ToolButton ("gtk-stop");
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
-			buttonStop.SetTooltip (tips, "Stop", "Stop");
+			buttonStop.SetTooltip (tips, GettextCatalog.GetString ("Stop"), "Stop");
 			toolbar.Insert (buttonStop, -1);
 
 			ToolButton buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
-			buttonClear.SetTooltip (tips, "Clear results", "Clear results");
+			buttonClear.SetTooltip (tips, GettextCatalog.GetString ("Clear results"), "Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
 			buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
 			buttonOutput.Clicked += new EventHandler (OnButtonOutputClick);
-			buttonOutput.SetTooltip (tips, "Show output", "Show output");
+			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show output"), "Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
 			// Results list
@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
 			}
 			
-			status.Text = " " + statusText + " - " + matchCount + " matches";
+			status.Text = " " + statusText + " - " + matchCount + GettextCatalog.GetString (" matches");
 		}
 	}
 }
