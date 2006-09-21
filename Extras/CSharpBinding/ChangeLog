@@ -1,3 +1,7 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Fixed null check.
+
 2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* CSharpBindingCompilerManager.cs: Fixed win32 pathing issues, removed old mcs-specific compiler options (that weren't being used since [g]mcs options have been aligned with csc options), removed /bin/sh dependence.

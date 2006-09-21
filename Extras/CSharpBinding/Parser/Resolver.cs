@@ -946,7 +946,7 @@ namespace CSharpBinding.Parser
 			ClassCollection classes = new ClassCollection();
 			if (currentUnit != null) {
 				foreach (IClass c in currentUnit.Classes) {
-					if (c != null && c.Region != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
+					if (c != null && c.BodyRegion != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
 						if (c != GetInnermostClass()) {
 							GetOuterClasses(classes, c);
 							classes.Add(GetResolvedClass (c));
