@@ -37,6 +37,10 @@
     <File name="./ExportAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./AfterAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./DragNotebook.cs" subtype="Code" buildaction="Compile" />
+    <File name="./stock-close-12.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./stock-menu-left-12.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./stock-menu-right-12.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./layout.glade" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

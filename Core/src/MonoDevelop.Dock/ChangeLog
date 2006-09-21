@@ -1,3 +1,7 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Dock.mdp: Added missing resources.
+
 2006-07-18 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockPlaceholder.cs:
