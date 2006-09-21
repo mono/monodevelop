@@ -135,8 +135,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 	def ProjectChanged (sender, e as ProjectEventArgs):
 		_proj = e.Project
 
-	def ProjectCompiled (compiled as bool):
-		if _load_assembly_after_build and compiled:
+	def ProjectCompiled (sender, args as BuildEventArgs):
+		if _load_assembly_after_build and args.Success:
 			Model.Reset()
 			resetGui()
 			loadProjectAssemblies ()

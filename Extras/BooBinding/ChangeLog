@@ -1,3 +1,7 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Gui/ShellTextView.boo: Track API changes.
+
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* .: Added svn:ignore for BooBinding.pidb
