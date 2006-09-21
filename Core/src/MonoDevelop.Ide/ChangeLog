@@ -1,3 +1,13 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Track API changes.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fire the
+	  Begin/End build events in the GUI thread.
+	  
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fire the OnExiting
+	  and OnExited events when closing the IDE.
+
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:

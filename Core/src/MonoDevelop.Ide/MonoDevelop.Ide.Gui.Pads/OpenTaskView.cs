@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Services.TaskService.TasksChanged     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
-			IdeApp.ProjectOperations.EndBuild      += (ProjectCompileEventHandler) Services.DispatchService.GuiDispatch (new ProjectCompileEventHandler (SelectTaskView));
+			IdeApp.ProjectOperations.EndBuild      += new BuildEventHandler (SelectTaskView);
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 		}
 		
-		void SelectTaskView (bool success)
+		void SelectTaskView (object s, BuildEventArgs args)
 		{
 			if (Services.TaskService.Tasks.Count > 0) {
 				try {
@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			foreach (Task t in Services.TaskService.Tasks) {
 				AddTask (t);
 			}
-			SelectTaskView(true);
+			SelectTaskView (null, null);
 		}
 
 		private void Clear()

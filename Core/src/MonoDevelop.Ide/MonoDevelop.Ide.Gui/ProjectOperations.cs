@@ -842,8 +842,10 @@ namespace MonoDevelop.Ide.Gui
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
 			DoBeforeCompileAction ();
-
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			
+			BeginBuild (monitor);
+
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildCombineEntryAsync), new object[] {entry, monitor});
 			currentBuildOperation = monitor.AsyncOperation;
 			return currentBuildOperation;
@@ -856,14 +858,14 @@ namespace MonoDevelop.Ide.Gui
 			IProgressMonitor monitor = (IProgressMonitor) data [1];
 			ICompilerResult result = null;
 			try {
-				BeginBuild ();
 				result = entry.Build (monitor);
-				BuildDone (monitor, result);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
-			} finally {
-				monitor.Dispose ();
 			}
+			Services.DispatchService.GuiDispatch (
+				delegate {
+					BuildDone (monitor, result);	// BuildDone disposes the monitor
+			});
 		}
 
 		void DoBeforeCompileAction ()
@@ -894,36 +896,45 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void BeginBuild ()
+		void BeginBuild (IProgressMonitor monitor)
 		{
 			Services.TaskService.ClearTasks();
-			OnStartBuild ();
+			if (StartBuild != null) {
+				StartBuild (this, new BuildEventArgs (monitor, true));
+			}
 		}
 		
 		void BuildDone (IProgressMonitor monitor, ICompilerResult result)
 		{
-			lastResult = result;
-			monitor.Log.WriteLine ();
-			monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("---------------------- Done ----------------------")));
-			
-			foreach (CompilerError err in result.CompilerResults.Errors) {
-				Services.TaskService.AddTask (new Task(null, err));
-			}
-			
-			string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
-			string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
+			try {
+				if (result != null) {
+					lastResult = result;
+					monitor.Log.WriteLine ();
+					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("---------------------- Done ----------------------")));
+					
+					foreach (CompilerError err in result.CompilerResults.Errors) {
+						Services.TaskService.AddTask (new Task(null, err));
+					}
+					
+					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
+					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
 
-			if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
-				monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
-			} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
-				monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
-			} else if (result.ErrorCount > 0) {
-				monitor.ReportError(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString, null);
-			} else {
-				monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
+					if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
+						monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
+					} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
+						monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
+					} else if (result.ErrorCount > 0) {
+						monitor.ReportError(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString, null);
+					} else {
+						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
+					}
+					OnEndBuild (monitor, lastResult.FailedBuildCount == 0);
+				} else
+					OnEndBuild (monitor, false);
 			}
-			
-			OnEndBuild (lastResult.FailedBuildCount == 0);
+			finally {
+				monitor.Dispose ();
+			}
 		}
 		
 
@@ -1142,17 +1153,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OnStartBuild()
-		{
-			if (StartBuild != null) {
-				StartBuild(this, null);
-			}
-		}
-		
-		void OnEndBuild (bool success)
+		void OnEndBuild (IProgressMonitor monitor, bool success)
 		{
 			if (EndBuild != null) {
-				EndBuild(success);
+				EndBuild (this, new BuildEventArgs (monitor, success));
 			}
 		}
 		
@@ -1193,8 +1197,8 @@ namespace MonoDevelop.Ide.Gui
 		public event ProjectFileEventHandler FilePropertyChangedInProject;
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		
-		public event EventHandler StartBuild;
-		public event ProjectCompileEventHandler EndBuild;
+		public event BuildEventHandler StartBuild;
+		public event BuildEventHandler EndBuild;
 		public event EventHandler BeforeStartProject;
 		
 		public event CombineEventHandler CombineOpened;

@@ -445,6 +445,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Close() 
 		{
+			if (!IdeApp.OnExit ())
+				return false;
+
 			IdeApp.ProjectOperations.SaveCombinePreferences ();
 
 			bool showDirtyDialog = false;
@@ -466,6 +469,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IdeApp.ProjectOperations.CloseCombine (false);
 			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
+			IdeApp.OnExited ();
 			OnClosed (null);
 			return true;
 		}

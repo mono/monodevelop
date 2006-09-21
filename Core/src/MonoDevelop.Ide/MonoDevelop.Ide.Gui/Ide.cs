@@ -60,6 +60,9 @@ namespace MonoDevelop.Ide.Gui
 		static CommandService commandService;
 		static IdeServices ideServices;
 		
+		public static event ExitEventHandler Exiting;
+		public static event EventHandler Exited;
+		
 		IdeApp ()
 		{
 		}
@@ -165,6 +168,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (workbench.Close ())
 				Gtk.Application.Quit ();
+		}
+		
+		internal static bool OnExit ()
+		{
+			if (Exiting != null) {
+				ExitEventArgs args = new ExitEventArgs ();
+				Exiting (null, args);
+				return !args.Cancel;
+			}
+			return true;
+		}
+		
+		internal static void OnExited ()
+		{
+			if (Exited != null)
+				Exited (null, EventArgs.Empty);
 		}
 	}
 	
