@@ -1,3 +1,11 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* Gui/NUnitAssemblyGroupNodeBuilder.cs:
+	* MonoDevelopNUnit.addin.xml: Added delete command to the nunit
+	  assembly group context menu.
+	  
+	* Services/NUnitProjectTestSuite.cs: Track API changes.
+
 2006-09-07 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelopNUnit.addin.xml: Improved string.

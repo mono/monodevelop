@@ -56,7 +56,7 @@ namespace MonoDevelop.NUnit
 			this.project = project;
 			lastAssemblyTime = GetAssemblyTime ();
 			project.NameChanged += new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild += new ProjectCompileEventHandler (OnProjectBuilt);
+			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
 		}
 		
 		public static NUnitProjectTestSuite CreateTest (Project project)
@@ -84,7 +84,7 @@ namespace MonoDevelop.NUnit
 		public override void Dispose ()
 		{
 			project.NameChanged -= new CombineEntryRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild -= new ProjectCompileEventHandler (OnProjectBuilt);
+			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
 			base.Dispose ();
 		}
 		
@@ -95,7 +95,7 @@ namespace MonoDevelop.NUnit
 				parent.UpdateTests ();
 		}
 		
-		void OnProjectBuilt (bool success)
+		void OnProjectBuilt (object s, BuildEventArgs args)
 		{
 			if (lastAssemblyTime != GetAssemblyTime ()) {
 				lastAssemblyTime = GetAssemblyTime ();

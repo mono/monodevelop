@@ -31,9 +31,11 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 using GuiServices = MonoDevelop.Core.Gui.Services;
 
@@ -112,6 +114,14 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (NUnitProjectCommands.AddAssembly)]
 		protected void OnShowTest ()
 		{
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		protected void OnDeleteNUnitAssemblyGroup ()
+		{
+			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
+			project.ParentCombine.RemoveEntry (project);
+			IdeApp.ProjectOperations.SaveCombine ();
 		}
 	}
 }
