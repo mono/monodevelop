@@ -124,7 +124,10 @@ namespace MonoDevelop.Projects.Parser
 		
 		public bool IsAssembly
 		{
-			get { return filePath.ToLower().EndsWith (".dll"); }
+			get {
+				string ext = System.IO.Path.GetExtension (filePath).ToLower ();
+				return ext == ".dll" || ext == ".exe";
+			}
 		}
 	}
 }

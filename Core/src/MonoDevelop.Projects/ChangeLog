@@ -1,3 +1,18 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/BuildEventArgs.cs: New event handler
+	  which replaces ProjectCompileEventHandler.
+	* MonoDevelop.Projects/Project.cs: Cancel de build if cancellation
+	  is requested.
+	
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/FileEntry.cs:
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs:
+	  Check for .exe extensions when looking for an assembly.
+	  
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: Updated.
+
 2006-09-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* .: Added svn:ignore for MonoDevelop.Projects.pidb.

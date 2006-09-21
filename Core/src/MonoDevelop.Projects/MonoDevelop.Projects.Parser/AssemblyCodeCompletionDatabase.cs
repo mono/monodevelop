@@ -235,8 +235,9 @@ namespace MonoDevelop.Projects.Parser
 			references = null;
 			
 			AssemblyDefinition asm = null;
+			string ext = Path.GetExtension (assemblyName).ToLower ();
 			
-			if (assemblyName.ToLower().EndsWith (".dll")) 
+			if (ext == ".dll" || ext == ".exe") 
 			{
 				name = assemblyName.Substring (0, assemblyName.Length - 4);
 				name = name.Replace(',','_').Replace(" ","").Replace('/','_');
@@ -251,7 +252,7 @@ namespace MonoDevelop.Projects.Parser
 					return false;
 				}
 			}
-			else 
+			else
 			{
 				assemblyFile = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyName);
 

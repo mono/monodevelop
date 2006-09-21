@@ -222,7 +222,8 @@ namespace MonoDevelop.Projects.Parser
 					return new string[] { "Project:" + pr.Reference };
 				case ReferenceType.Gac:
 					string refId = pr.Reference;
-					if (refId.ToLower().EndsWith (".dll"))
+					string ext = Path.GetExtension (refId).ToLower ();
+					if (ext == ".dll" || ext == ".exe")
 						refId = refId.Substring (0, refId.Length - 4);
 					return new string[] { "Assembly:" + refId };
 				default:

@@ -331,6 +331,8 @@ namespace MonoDevelop.Projects
 						failedBuilds = 1;
 						break;
 					}
+					if (monitor.IsCancelRequested)
+						break;
 				}
 				monitor.EndTask ();
 				return new DefaultCompilerResult (cres, "", builds, failedBuilds);

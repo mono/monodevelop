@@ -157,7 +157,7 @@ MonoDevelop.Projects/DotNetProjectConfiguration.cs \
 MonoDevelop.Projects/IConfiguration.cs \
 MonoDevelop.Projects/IBuildStep.cs \
 MonoDevelop.Projects/Project.cs \
-MonoDevelop.Projects/ProjectCompileEventHandler.cs \
+MonoDevelop.Projects/BuildEventHandler.cs \
 MonoDevelop.Projects/ProjectFile.cs \
 MonoDevelop.Projects/ProjectFileEventArgs.cs \
 MonoDevelop.Projects/ProjectReference.cs \
