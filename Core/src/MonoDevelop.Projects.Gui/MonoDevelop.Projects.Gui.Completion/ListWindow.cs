@@ -67,6 +67,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			word = new StringBuilder ();
 			curPos = 0;
 			list.Reset ();
+			if (provider == null)
+				return;
 
 			if (list.VisibleRows >= provider.ItemCount) {
 				this.scrollbar.Hide();
@@ -288,6 +290,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void Reset ()
 		{
+			if (win.DataProvider == null) {
+				selection = -1;
+				return;
+			}
+			
 			if (win.DataProvider.ItemCount == 0)
 				selection = -1;
 			else

@@ -1,3 +1,7 @@
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added some null checks.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added svn:ignore for MonoDevelop.Projects.Gui.pidb
