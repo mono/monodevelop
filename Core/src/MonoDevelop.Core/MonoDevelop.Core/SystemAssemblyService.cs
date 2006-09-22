@@ -255,7 +255,7 @@ namespace MonoDevelop.Core
 					if (File.Exists (pathdir + Path.DirectorySeparatorChar + "pkg-config")) {
 						libpath = Path.Combine(pathdir,"..");
 						libpath = Path.Combine(libpath,"lib");
-						libpath = Path.Combine(libpath,"pkg-config");
+						libpath = Path.Combine(libpath,"pkgconfig");
 						break;
 					}
 				}
