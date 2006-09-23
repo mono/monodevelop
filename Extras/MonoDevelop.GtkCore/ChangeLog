@@ -1,3 +1,7 @@
+2006-09-23 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track api changes.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added svn:ignore for MonoDevelop.GtkCore.pidb

@@ -53,13 +53,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static Stetic.Project activeProject;
 	
 		static ProjectReferenceEventHandler referencesChangedHandler;
-		static ProjectCompileEventHandler projectCompileHandler;
+		static BuildEventHandler projectCompileHandler;
 		static Hashtable assemblyLibs = new Hashtable ();
 		
 		static GuiBuilderService ()
 		{
 			referencesChangedHandler = (ProjectReferenceEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnReferencesChanged));
-			projectCompileHandler = (ProjectCompileEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new ProjectCompileEventHandler (OnProjectCompiled));
+			projectCompileHandler = (BuildEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new BuildEventHandler (OnProjectCompiled));
 			
 			EmptyProject = new Stetic.Project ();
 			
@@ -189,7 +189,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CleanUnusedAssemblyLibs ();
 		}
 		
-		static void OnProjectCompiled (bool success)
+		static void OnProjectCompiled (object s, BuildEventArgs args)
 		{
 			// After compiling, discard the cached data, since it may have changed
 			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
