@@ -109,7 +109,11 @@ namespace MonoDevelop.Ide.Gui.Search
 			else if (cancelled)
 				msg = GettextCatalog.GetString ("Search cancelled.");
 			else
-				msg = string.Format (GettextCatalog.GetString ("Search completed. {0} matches found in {1} files."), find.MatchCount, find.SearchedFileCount);
+			{
+				string matches = string.Format(GettextCatalog.GetPluralString("{0} match found ", "{0} matches found ", find.MatchCount), find.MatchCount);
+				string files = string.Format(GettextCatalog.GetPluralString("in {0} file.", "in {0} files.", find.SearchedFileCount), find.SearchedFileCount);
+				msg = GettextCatalog.GetString("Search completed. ") + matches + files;
+			}
 				
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			

@@ -1,3 +1,10 @@
+2006-09-24 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	Fixed some pluralization issues.
+
 2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: Track API changes.

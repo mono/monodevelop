@@ -148,7 +148,8 @@ namespace MonoDevelop.Ide.Gui.Search
 				ISearchResult result = SearchReplaceManager.find.FindNext(SearchReplaceManager.searchOptions);
 				
 				if (result == null) {
-					Services.MessageService.ShowMessage( string.Format (GettextCatalog.GetString ("Replace all finished. {0} matches found."), find.MatchCount), DialogPointer );
+					string message = string.Format(GettextCatalog.GetPluralString("Replace all finished. {0} match found.", "Replace all finished. {0} matches found.", find.MatchCount), find.MatchCount);
+					Services.MessageService.ShowMessage(message, DialogPointer);
 					find.Reset();
 					return;
 				} else {

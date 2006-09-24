@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				store.AppendValues (stock, line, column, text, fileName, path, file, false, (int) Pango.Weight.Bold, file != null);
 			}
 			
-			status.Text = " " + statusText + " - " + matchCount + GettextCatalog.GetString (" matches");
+			status.Text = " " + statusText + " - " + string.Format(GettextCatalog.GetPluralString("{0} match", "{0} matches", matchCount), matchCount);	
 		}
 	}
 }
