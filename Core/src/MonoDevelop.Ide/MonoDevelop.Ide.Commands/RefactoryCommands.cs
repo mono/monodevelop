@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Commands
 			if (item is IClass) {
 				txt = GettextCatalog.GetString ("Class {0}", item.Name);
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to base"), new RefactoryOperation (refactorer.GoToBase));
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses)).Enabled = false;
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 			}
 			else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field {0} : {1}", item.Name, ((IField)item).ReturnType.Name);
