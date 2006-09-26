@@ -1,5 +1,5 @@
 <Combine name="Core" fileversion="2.0">
-  <Configurations active="Release">
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Core" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Core.Gui" configuration="Debug" />
@@ -9,10 +9,8 @@
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
-      <Entry build="True" configuration="Debug" />
       <Entry build="True" name="Tools" configuration="" />
       <Entry build="True" name="ICSharpCode.SharpRefactory" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
@@ -24,13 +22,12 @@
       <Entry build="True" name="MonoDevelop.Ide" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Projects.Gui" configuration="Debug" />
-      <Entry build="True" configuration="Debug" />
       <Entry build="True" name="Tools" configuration="" />
       <Entry build="True" name="ICSharpCode.SharpRefactory" configuration="Debug" />
-      <Entry build="True" name="MonoDevelop" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Startup" configuration="Debug" />
     </Configuration>
   </Configurations>
+  <DeployTargets />
   <StartMode startupentry="MonoDevelop.Core" single="True">
     <Execute type="None" entry="MonoDevelop.Core" />
     <Execute type="None" entry="MonoDevelop.Core.Gui" />
@@ -42,7 +39,6 @@
     <Execute type="None" entry="MonoDevelop.Projects.Gui" />
     <Execute type="None" entry="Tools" />
     <Execute type="None" entry="ICSharpCode.SharpRefactory" />
-    <Execute type="None" entry="MonoDevelop" />
     <Execute type="None" entry="MonoDevelop.Startup" />
   </StartMode>
   <Entries>
