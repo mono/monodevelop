@@ -1,3 +1,10 @@
+2006-09-26 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs:
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:
+	* MonoDevelop.Ide.addin.xml:
+	Added functionality to expand all nodes.
+
 2006-09-25 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:

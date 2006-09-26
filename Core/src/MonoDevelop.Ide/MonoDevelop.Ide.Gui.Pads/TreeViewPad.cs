@@ -1031,6 +1031,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				opset.AddItem (Command.Separator);
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 				opset.AddItem (ViewCommands.RefreshTree);
+				opset.AddItem (ViewCommands.CollapseAllTreeNodes);
 				IdeApp.CommandService.ShowContextMenu (eset, this);
 			}
 		}
@@ -1083,6 +1084,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tb.UpdateAll ();
 		}
 		
+		[CommandHandler (ViewCommands.CollapseAllTreeNodes)]
+		protected void CollapseTree ()
+		{
+			tree.CollapseAll();
+		}
+			
 		void OnPopupMenu (object o, Gtk.PopupMenuArgs args)
 		{
 			if (GetSelectedNode () != null)

@@ -357,6 +357,8 @@
 				_label = "Reset Options" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.RefreshTree"
 				_label = "Refresh" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CollapseAllTreeNodes"
+				_label = "Collapse All Nodes" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList"
 				type = "array"
 				_label = "OpenWithList" />

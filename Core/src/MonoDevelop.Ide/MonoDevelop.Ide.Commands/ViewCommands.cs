@@ -32,7 +32,8 @@ namespace MonoDevelop.Ide.Commands
 		OpenWithList,
 		TreeDisplayOptionList,
 		ResetTreeDisplayOptions,
-		RefreshTree
+		RefreshTree,
+		CollapseAllTreeNodes,
 	}
 	
 	internal class FullScreenHandler: CommandHandler
