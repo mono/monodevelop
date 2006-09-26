@@ -1,3 +1,9 @@
+2006-09-26  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
+
+	* DockMaster.cs: Changed lines to solid when dragging
+	a dock item will result in it being shown in a separate
+	window.
+
 2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Dock.mdp: Added missing resources.

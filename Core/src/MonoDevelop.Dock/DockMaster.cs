@@ -496,16 +496,12 @@ namespace Gdl
 						     Gdk.GCValuesMask.Subwindow);
 			}
 			
-			rootXorGC.SetLineAttributes (1, Gdk.LineStyle.OnOffDash,
+			rootXorGC.SetLineAttributes (1, Gdk.LineStyle.Solid,
 						     Gdk.CapStyle.NotLast,
-						     Gdk.JoinStyle.Bevel);
-
-			rootXorGC.SetDashes (1, new sbyte[] {1, 1}, 2);
+						     Gdk.JoinStyle.Bevel);		
 			
 			window.DrawRectangle (rootXorGC, false, request.X, request.Y,
-					      request.Width, request.Height);
-			
-			rootXorGC.SetDashes (0, new sbyte[] {1, 1}, 2);
+					      request.Width, request.Height);					
 
 			window.DrawRectangle (rootXorGC, false, request.X + 1,
 					      request.Y + 1, request.Width - 2,
