@@ -2,6 +2,7 @@
 
 	* SolutionDeployer.cs: fixed the case of autotooling empty projects
 	  i.e. projects with no active configuration.
+	* MonoDevelop.Autotools.mdp: Added...
 
 2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
