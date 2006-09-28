@@ -60,7 +60,11 @@ namespace MonoDevelop.Autotools
 		
 		public bool GenerateFiles (Combine combine, IProgressMonitor monitor )
 		{
-			 return GenerateFiles ( combine, combine.ActiveConfiguration.Name, monitor );
+			if (combine.ActiveConfiguration != null)
+				return GenerateFiles ( combine, combine.ActiveConfiguration.Name, monitor );
+			else
+				// Indicate with a null argument that there is no active configuration
+				return GenerateFiles ( combine, null, monitor );
 		}
 		
 		public bool GenerateFiles (Combine combine, string defaultConf, IProgressMonitor monitor )
@@ -281,11 +285,14 @@ namespace MonoDevelop.Autotools
 				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
 			}
 
-			// if no configuration was specified, set to default
-			config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
-			AppendConfigVariables ( combine, defaultConf, config_options );
-			config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
-					+ defaultConf.ToUpper()  );
+			// if no configuration was specified, set to default (if there is a default)
+			if (defaultConf != null)
+			{
+				config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
+				AppendConfigVariables ( combine, defaultConf, config_options );
+				config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
+						+ defaultConf.ToUpper()  );
+			}
 
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
 

@@ -73,6 +73,6 @@ namespace MonoDevelop.Autotools
 			{
 				deployer.GenerateFiles (combine, monitor);
 			}
-		}	
+		}
 	}
 }

@@ -1,3 +1,8 @@
+2006-09-28  Matej Urbas <matej.urbas@gmail.com>
+
+	* SolutionDeployer.cs: fixed the case of autotooling empty projects
+	  i.e. projects with no active configuration.
+
 2006-08-31 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* SimpleProjectMakefileHandler.cs: Win32 pathing vs autotools fixes.

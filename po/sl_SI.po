@@ -35,7 +35,7 @@ msgstr "Odpri datoteko..."
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/FileSelector.cs:31
 msgid "Select Folder"
-msgstr "Izbriši imenik"
+msgstr "Izberi imenik"
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components/Navbar.cs:34
 msgid "Go back"

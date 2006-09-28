@@ -20,6 +20,7 @@
       <Entry build="True" name="AspNetAddIn" configuration="Debug" />
       <Entry build="True" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -41,6 +42,7 @@
       <Entry build="True" name="AspNetAddIn" configuration="Debug" />
       <Entry build="True" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
     </Configuration>
   </Configurations>
   <DeployTargets />
@@ -64,6 +66,7 @@
     <Execute type="None" entry="AspNetAddIn" />
     <Execute type="None" entry="AspNetEdit" />
     <Execute type="None" entry="MonoDevelop.DesignerSupport" />
+    <Execute type="None" entry="MonoDevelop.Autotools" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -85,5 +88,6 @@
     <Entry filename="./AspNetAddIn/AspNetAddIn.mdp" />
     <Entry filename="./AspNetEdit/AspNetEdit.mdp" />
     <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
+    <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
   </Entries>
 </Combine>
