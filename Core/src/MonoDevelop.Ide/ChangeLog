@@ -1,3 +1,7 @@
+2006-10-06 Andrés G. Aragoneses <knocte@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs: Improved string.
+
 2006-09-26 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Commands/ViewCommands.cs:
