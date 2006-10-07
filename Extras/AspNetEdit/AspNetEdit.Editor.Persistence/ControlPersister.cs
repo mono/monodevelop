@@ -199,6 +199,10 @@ namespace AspNetEdit.Editor.Persistence
 		/// <returns>True if it does any writing</returns>
 		private static bool ProcessAttribute (PropertyDescriptor prop, object o, HtmlTextWriter writer, string prefix)
 		{
+			//FIXME: horrible hack around a NotImplementedException in Mono's ASP.NET 2.0
+			if ((prop.ComponentType == typeof(System.Web.UI.WebControls.TextBox)) && (prop.DisplayName == "AutoCompleteType"))
+				return false;
+			
 			//check whether we're serialising it
 			if (prop.SerializationVisibility == DesignerSerializationVisibility.Hidden
 				|| prop.DesignTimeOnly
