@@ -181,7 +181,18 @@ namespace AspNetEdit.Editor.Persistence
 		private static void ProcessEvent (EventDescriptor e, IComponent comp, HtmlTextWriter writer, IEventBindingService evtBind)
 		{
 			PropertyDescriptor prop = evtBind.GetEventProperty (e);
-			string value = prop.GetValue (comp) as string;
+			string value = null;
+			
+			//FIXME: there are several NotImplementedExceptions in Mono's ASP.NET 2.0
+			//this is a hack so it doesn't break when encountering them
+			try {
+				value = prop.GetValue (comp) as string;
+			} catch (Exception ex) {
+				if ((ex is NotImplementedException) || (ex.InnerException is NotImplementedException))
+					return;
+				else
+					throw;
+			}
 			
 			if (prop.SerializationVisibility != DesignerSerializationVisibility.Visible
 				|| value == null
@@ -199,9 +210,16 @@ namespace AspNetEdit.Editor.Persistence
 		/// <returns>True if it does any writing</returns>
 		private static bool ProcessAttribute (PropertyDescriptor prop, object o, HtmlTextWriter writer, string prefix)
 		{
-			//FIXME: horrible hack around a NotImplementedException in Mono's ASP.NET 2.0
-			if ((prop.ComponentType == typeof(System.Web.UI.WebControls.TextBox)) && (prop.DisplayName == "AutoCompleteType"))
-				return false;
+			//FIXME: there are several NotImplementedExceptions in Mono's ASP.NET 2.0
+			//this is a hack so it doesn't break when encountering them
+			try {
+				prop.GetValue (o);
+			} catch (Exception ex) {
+				if ((ex is NotImplementedException) || (ex.InnerException is NotImplementedException))
+					return false;
+				else
+					throw;
+			}
 			
 			//check whether we're serialising it
 			if (prop.SerializationVisibility == DesignerSerializationVisibility.Hidden
