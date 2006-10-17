@@ -73,10 +73,26 @@ namespace MonoDevelop.Ide.Gui
 
 		ICompilerResult lastResult = new DefaultCompilerResult ();
 		
+		ProjectFileEventHandler fileAddedToProjectHandler;
+		ProjectFileEventHandler fileRemovedFromProjectHandler;
+		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
+		ProjectFileEventHandler fileChangedInProjectHandler;
+		ProjectFileEventHandler filePropertyChangedInProjectHandler;
+		ProjectReferenceEventHandler referenceAddedToProjectHandler;
+		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
+
 		internal ProjectOperations ()
 		{
-			Services.FileService.FileRemoved += new FileEventHandler(CheckFileRemove);
-			Services.FileService.FileRenamed += new FileEventHandler(CheckFileRename);
+			fileAddedToProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
+			fileRemovedFromProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
+			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
+			fileChangedInProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileChangedInProject));
+			filePropertyChangedInProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFilePropertyChangedInProject));
+			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
+			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
+		
+			Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
+			Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
 			
 			parserDatabase = Services.ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
@@ -288,14 +304,14 @@ namespace MonoDevelop.Ide.Gui
 				openCombine = (Combine) entry;
 				
 				IdeApp.Workbench.RecentOpen.AddLastProject (filename, openCombine.Name);
-				
-				openCombine.FileAddedToProject += new ProjectFileEventHandler (NotifyFileAddedToProject);
-				openCombine.FileRemovedFromProject += new ProjectFileEventHandler (NotifyFileRemovedFromProject);
-				openCombine.FileRenamedInProject += new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject);
-				openCombine.FileChangedInProject += new ProjectFileEventHandler (NotifyFileChangedInProject);
-				openCombine.FilePropertyChangedInProject += new ProjectFileEventHandler (NotifyFilePropertyChangedInProject);
-				openCombine.ReferenceAddedToProject += new ProjectReferenceEventHandler (NotifyReferenceAddedToProject);
-				openCombine.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject);
+		
+				openCombine.FileAddedToProject += fileAddedToProjectHandler;
+				openCombine.FileRemovedFromProject += fileRemovedFromProjectHandler;
+				openCombine.FileRenamedInProject += fileRenamedInProjectHandler;
+				openCombine.FileChangedInProject += fileChangedInProjectHandler;
+				openCombine.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
+				openCombine.ReferenceAddedToProject += referenceAddedToProjectHandler;
+				openCombine.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
 				
 				SearchForNewFiles ();
 
