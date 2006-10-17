@@ -39,95 +39,47 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class ActionGroupView: CombinedDesignView
 	{
 		Stetic.ActionGroupDesigner designer;
-		Hashtable actionCopyMap = new Hashtable ();
-		Stetic.Wrapper.ActionGroup groupCopy;
-		Stetic.Wrapper.ActionGroup group;
 		CodeBinder codeBinder;
 		GuiBuilderProject project;
+		Stetic.ActionGroupComponent group;
 		
-		MonoDevelopActionGroupToolbar toolbar;
-		
-		public ActionGroupView (IViewContent content, Stetic.Wrapper.ActionGroup group, GuiBuilderProject project): base (content)
+		public ActionGroupView (IViewContent content, Stetic.ActionGroupComponent group, GuiBuilderProject project): base (content)
 		{
 			this.project = project;
+			this.group = group;
 			
-			toolbar = new MonoDevelopActionGroupToolbar (true);
-			toolbar.BindField += new EventHandler (OnBindField);
+			designer = project.SteticProject.CreateActionGroupDesigner (group, false);
+			designer.AllowActionBinding = true;
+			designer.BindField += new EventHandler (OnBindField);
 			
-			designer = Stetic.UserInterface.CreateActionGroupDesigner (project.SteticProject, toolbar);
 			designer.ShowAll ();
 			AddButton (GettextCatalog.GetString ("Actions"), designer);
-			
-			Load (group);
-			designer.Editor.GroupModified += new EventHandler (OnGroupModified);
+			designer.ModifiedChanged += new EventHandler (OnGroupModified);
+			designer.SignalAdded += OnSignalAdded;
+			designer.SignalChanged += OnSignalChanged;
 
-			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), groupCopy);
+			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), group);
 		}
 		
-		public Stetic.Wrapper.ActionGroup ActionGroup {
+		public Stetic.ActionGroupComponent ActionGroup {
 			get { return group; }
-			set { Load (value); }
-		}
-		
-		void Load (Stetic.Wrapper.ActionGroup group)
-		{
-			this.group = group;
-			actionCopyMap.Clear ();
-				
-			groupCopy = new Stetic.Wrapper.ActionGroup ();
-			groupCopy.Name = group.Name;
-			
-			foreach (Stetic.Wrapper.Action action in group.Actions) {
-				Stetic.Wrapper.Action dupaction = action.Clone ();
-				groupCopy.Actions.Add (dupaction);
-				actionCopyMap [dupaction] = action;
-			}
-			groupCopy.Changed += new EventHandler (UpdateName);
-			groupCopy.SignalAdded += new Stetic.SignalEventHandler (OnSignalAdded);
-			groupCopy.SignalChanged += new Stetic.SignalChangedEventHandler (OnSignalChanged);
-			toolbar.ActiveGroup = groupCopy;
+			set { Load (value.Name); }
 		}
 		
 		public override void Save (string fileName)
 		{
 			base.Save (fileName);
 			codeBinder.UpdateBindings (fileName);
-
-			if (group.Name != groupCopy.Name)
-				group.Name = groupCopy.Name;
 			
-			foreach (Stetic.Wrapper.Action actionCopy in groupCopy.Actions) {
-				Stetic.Wrapper.Action action = (Stetic.Wrapper.Action) actionCopyMap [actionCopy];
-				if (action != null)
-					action.CopyFrom (actionCopy);
-				else {
-					action = actionCopy.Clone ();
-					actionCopyMap [actionCopy] = action;
-					group.Actions.Add (action);
-				}
-			}
-			
-			ArrayList todelete = new ArrayList ();
-			foreach (Stetic.Wrapper.Action actionCopy in actionCopyMap.Keys) {
-				if (!groupCopy.Actions.Contains (actionCopy))
-					todelete.Add (actionCopy);
-			}
-			
-			foreach (Stetic.Wrapper.Action actionCopy in todelete) {
-				Stetic.Wrapper.Action action = (Stetic.Wrapper.Action) actionCopyMap [actionCopy];
-				group.Actions.Remove (action);
-				actionCopyMap.Remove (actionCopy);
-			}
+			designer.Save ();
 			project.Save ();
 		}
 		
 		public override void Dispose ()
 		{
+			designer.BindField -= new EventHandler (OnBindField);
 			designer.Dispose ();
 			designer = null;
-			toolbar.BindField -= new EventHandler (OnBindField);
-			toolbar.Dispose ();
-			toolbar = null;
 			base.Dispose ();
 		}
 		
@@ -136,12 +88,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (1);
 		}
 		
-		public void SelectAction (Stetic.Wrapper.Action action)
+		public void SelectAction (Stetic.ActionComponent action)
 		{
-			foreach (DictionaryEntry e in actionCopyMap) {
-				if (e.Value == action)
-					designer.Editor.SelectedAction = (Stetic.Wrapper.Action) e.Key;
-			}
+			designer.SelectedAction = action;
 		}
 		
 		public override void JumpToSignalHandler (Stetic.Signal signal)
@@ -158,33 +107,31 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		protected override void OnDocumentActivated ()
 		{
-			designer.UpdateObjectViewers ();
-		}
-		
-		void UpdateName (object s, EventArgs a)
-		{
+			// FIXME: uncomment
+			// designer.UpdateObjectViewers ();
 		}
 		
 		void OnGroupModified (object s, EventArgs a)
 		{
-			OnContentChanged (a);
-			IsDirty = true;
+			if (designer.Modified)
+				OnContentChanged (a);
+			IsDirty = designer.Modified;
 		}
 		
-		void OnSignalAdded (object s, Stetic.SignalEventArgs a)
+		void OnSignalAdded (object s, Stetic.ComponentSignalEventArgs a)
 		{
 			codeBinder.BindSignal (a.Signal);
 		}
 		
-		void OnSignalChanged (object s, Stetic.SignalChangedEventArgs a)
+		void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
 		{
 			codeBinder.UpdateSignal (a.OldSignal, a.Signal);
 		}
 		
 		void OnBindField (object s, EventArgs args)
 		{
-			if (designer.Editor.SelectedAction != null) {
-				codeBinder.BindToField (designer.Editor.SelectedAction);
+			if (designer.SelectedAction != null) {
+				codeBinder.BindToField (designer.SelectedAction);
 			}
 		}
 	}

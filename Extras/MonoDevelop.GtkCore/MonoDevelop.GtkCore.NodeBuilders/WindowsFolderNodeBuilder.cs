@@ -81,7 +81,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (info != null) {
 				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
 					builder.AddChild (fi);
-				foreach (Stetic.Wrapper.ActionGroup group in info.GuiBuilderProject.SteticProject.ActionGroups)
+				foreach (Stetic.ActionGroupComponent group in info.GuiBuilderProject.SteticProject.GetActionGroups ())
 					builder.AddChild (group);
 			}
 		}

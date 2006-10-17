@@ -31,6 +31,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -39,6 +40,9 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using Mono.Cecil;
 
 using MonoDevelop.GtkCore.WidgetLibrary;
 
@@ -47,32 +51,51 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	class GuiBuilderService
 	{
 		static GuiBuilderProjectPad widgetTreePad;
-		internal static Stetic.Project EmptyProject;
 		static string GuiBuilderLayout = "GUI Builder";
 		static string defaultLayout;
-		static Stetic.Project activeProject;
 	
 		static ProjectReferenceEventHandler referencesChangedHandler;
-		static BuildEventHandler projectCompileHandler;
 		static Hashtable assemblyLibs = new Hashtable ();
+		static Stetic.Application steticApp;
+		
+		static bool generating;
+		static CodeCompileUnit generatedUnit = null;
+		static Exception generatedException = null;
+		
+		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.None;
+//		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.ProcessUnix;
 		
 		static GuiBuilderService ()
 		{
 			referencesChangedHandler = (ProjectReferenceEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnReferencesChanged));
-			projectCompileHandler = (BuildEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new BuildEventHandler (OnProjectCompiled));
-			
-			EmptyProject = new Stetic.Project ();
 			
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
-			IdeApp.ProjectOperations.EndBuild += projectCompileHandler;
+			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
+			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
 			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
+			
+			IdeApp.Exited += delegate {
+				if (steticApp != null)
+					steticApp.Dispose ();
+			};
 		}
 		
 		internal static GuiBuilderProjectPad WidgetTreePad {
 			get { return widgetTreePad; }
 			set { widgetTreePad = value; }
+		}
+		
+		public static Stetic.Application SteticApp {
+			get {
+				if (steticApp == null) {
+					steticApp = new Stetic.Application (IsolationMode);
+					if (IsolationMode == Stetic.IsolationMode.None)
+						steticApp.WidgetLibraryResolver = OnResolveWidgetLibrary;
+				}
+				return steticApp;
+			}
 		}
 		
 		public static GuiBuilderProject GetGuiBuilderProject (Project project)
@@ -84,7 +107,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 		}
 		
-		public static ActionGroupView OpenActionGroup (Project project, Stetic.Wrapper.ActionGroup group)
+		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupComponent group)
 		{
 			GuiBuilderProject p = GetGuiBuilderProject (project);
 			string file = p != null ? p.GetSourceCodeFile (group) : null;
@@ -106,11 +129,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void OnActiveDocumentChanged (object s, EventArgs args)
 		{
 			if (IdeApp.Workbench.ActiveDocument == null) {
-				if (ActiveProject != null) {
-					NotifyWidgetLibraryChange ();
-					ActiveProject = null;
-					if (widgetTreePad != null)
-						widgetTreePad.Fill (null);
+				if (SteticApp.ActiveProject != null) {
+					SteticApp.ActiveProject = null;
 					RestoreLayout ();
 				}
 				return;
@@ -118,26 +138,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;
 			if (view != null) {
-				NotifyWidgetLibraryChange ();
-				ActiveProject = view.EditSession.SteticProject;
-				if (widgetTreePad != null)
-					widgetTreePad.Fill (view.EditSession.SteticProject);
+				view.SetActive ();
 				SetDesignerLayout ();
 			}
 			else if (IdeApp.Workbench.ActiveDocument.Content is ActionGroupView) {
-				if (ActiveProject != null) {
-					NotifyWidgetLibraryChange ();
-					ActiveProject = null;
-					if (widgetTreePad != null)
-						widgetTreePad.Fill (null);
+				if (SteticApp.ActiveProject != null) {
+					SteticApp.ActiveProject = null;
 					SetDesignerLayout ();
 				}
 			} else {
-				if (ActiveProject != null) {
-					NotifyWidgetLibraryChange ();
-					ActiveProject = null;
-					if (widgetTreePad != null)
-						widgetTreePad.Fill (null);
+				if (SteticApp.ActiveProject != null) {
+					SteticApp.ActiveProject = null;
 					RestoreLayout ();
 				}
 			}
@@ -170,79 +181,62 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			args.Combine.ReferenceAddedToProject += referencesChangedHandler;
 			args.Combine.ReferenceRemovedFromProject += referencesChangedHandler;
-			
-			UpdateWidgetRegistry ();
 		}
 		
 		static void OnCloseCombine (object s, CombineEventArgs args)
 		{
 			args.Combine.ReferenceAddedToProject -= referencesChangedHandler;
 			args.Combine.ReferenceRemovedFromProject -= referencesChangedHandler;
-			
-			UpdateWidgetRegistry ();
 		}
 		
 		static void OnReferencesChanged (object sender, ProjectReferenceEventArgs e)
 		{
-			UpdateWidgetRegistry ();
-			NotifyWidgetLibraryChange ();
 			CleanUnusedAssemblyLibs ();
 		}
 		
+		static void OnBeforeCompile (object s, BuildEventArgs args)
+		{
+			// Generate stetic files for all modified projects
+			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
+				GenerateSteticCode (args.ProgressMonitor, p);
+			}
+		}
+
 		static void OnProjectCompiled (object s, BuildEventArgs args)
 		{
-			// After compiling, discard the cached data, since it may have changed
-			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-				if (info != null && info.IsWidgetLibrary)
-					info.ProjectWidgetLibrary.ClearCachedInfo ();
-			}
-			UpdateWidgetRegistry ();
+			if (args.Success)
+				SteticApp.UpdateWidgetLibraries (false);
 		}
 		
-		public static void UpdateWidgetRegistry ()
+		static Stetic.WidgetLibrary OnResolveWidgetLibrary (string name)
 		{
-			ArrayList list = new ArrayList ();
-			
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
-					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-					if (info != null) {
-						if (info.IsWidgetLibrary)
-							list.Add (info.ProjectWidgetLibrary);
-						foreach (Stetic.WidgetLibrary lib in info.GetReferencedWidgetLibraries ())
-							if (!list.Contains (lib))
-								list.Add (lib);
-					}
-				}
-			}
-			
-			foreach (Stetic.WidgetLibrary lib in list) {
-				if (Stetic.Registry.IsRegistered (lib))
-					Stetic.Registry.ReloadWidgetLibrary (lib);
-				else
-					Stetic.Registry.RegisterWidgetLibrary (lib);
-			}
-			
-			foreach (Stetic.WidgetLibrary lib in Stetic.Registry.RegisteredWidgetLibraries)
-				if (!list.Contains (lib))
-					Stetic.Registry.UnregisterWidgetLibrary (lib);
+			if (name.StartsWith ("libstetic,"))
+				return null;
+
+			return GetAssemblyLibrary (name);
 		}
 		
 		public static AssemblyReferenceWidgetLibrary GetAssemblyLibrary (string assemblyReference)
 		{
-			AssemblyReferenceWidgetLibrary lib = assemblyLibs [assemblyReference] as AssemblyReferenceWidgetLibrary;
+			object lib = assemblyLibs [assemblyReference];
 			if (lib == null) {
 				string aname = IdeApp.ProjectOperations.ParserDatabase.LoadAssembly (assemblyReference);
-				lib = new AssemblyReferenceWidgetLibrary (assemblyReference, aname);
+				AssemblyReferenceWidgetLibrary wlib = new AssemblyReferenceWidgetLibrary (assemblyReference, aname);
+				if (!wlib.ExportsWidgets)
+					lib = new object ();
+				else
+					lib = wlib;
+
 				assemblyLibs [assemblyReference] = lib;
 			}
 			
 			// We are registering here all assembly references. Not all of them are widget libraries.
-			if (!lib.ExportsWidgets)
-				return null;
-			else
-				return lib;
+			return lib as AssemblyReferenceWidgetLibrary;
+		}
+		
+		public static bool IsWidgetLibrary (string assemblyReference)
+		{
+			return GetAssemblyLibrary (assemblyReference) != null;
 		}
 		
 		static void CleanUnusedAssemblyLibs ()
@@ -272,48 +266,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void OnAssemblyInfoChanged (object s, AssemblyInformationEventArgs args)
 		{
-			// Update the widget registry if a widget library has changed.
-			
-			bool changed = false;
-			
-			foreach (AssemblyReferenceWidgetLibrary lib in assemblyLibs.Values) {
-				if (lib.AssemblyName == args.AssemblyName) {
-					bool oldExport = lib.ExportsWidgets;
-					lib.LoadInfo ();
-					if (oldExport || lib.ExportsWidgets)
-						changed = true;
-				}
-			}
-			
-			if (changed)
-				UpdateWidgetRegistry ();
+			//SteticApp.UpdateWidgetLibraries (false);
 		}
 
-		public static Stetic.Project ActiveProject {
-			get { return activeProject; }
-			set {
-				activeProject = value;
-//				if (activeProject == null)
-//					activeProject = EmptyProject;
-
-				if (ActiveProjectChanged != null)
-					ActiveProjectChanged (null, null);
-			}
-		}
-		
-		public static Stetic.WidgetLibrary[] ActiveWidgetLibraries {
-			get {
-				Document doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-					Project p = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (doc.FileName);
-					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-					if (info != null)
-						return info.GetReferencedWidgetLibraries ();
-				}
-				return new Stetic.WidgetLibrary [0];
-			}
-		}
-		
 		public static Project GetProjectFromDesign (Stetic.Project project)
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
@@ -325,12 +280,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return prj;
 			}
 			return null;
-		}
-		
-		public static void NotifyWidgetLibraryChange ()
-		{
-			if (WidgetLibrariesChanged != null)
-				WidgetLibrariesChanged (null, null);
 		}
 		
 		internal static void AddCurrentWidgetToClass ()
@@ -358,7 +307,134 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			info.GuiBuilderProject.ImportGladeFile ();
 		}
 		
-		internal static event EventHandler ActiveProjectChanged; 
-		internal static event EventHandler WidgetLibrariesChanged; 
+		static void GenerateSteticCode (IProgressMonitor monitor, Project prj)
+		{
+			if (generating)
+				return;
+
+			DotNetProject project = prj as DotNetProject;
+			if (project == null)
+				return;
+				
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			if (info == null)
+				return;
+			
+			if (info.GuiBuilderProject.IsEmpty) 
+				return;
+				
+			// Check if the stetic file has been modified since last generation
+			if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
+				if (File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
+					return;
+			}
+			
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating GUI code for project '{0}'...", project.Name));
+			
+			// Make sure the referenced assemblies are up to date. It is necessary to do
+			// it now since they may contain widget libraries.
+			prj.CopyReferencesToOutputPath (false);
+			
+			ArrayList libs = new ArrayList ();
+			
+			info.GuiBuilderProject.UpdateLibraries ();
+			
+			if (info.IsWidgetLibrary) {
+				// Make sure the widget export file is up to date.
+				GtkCoreService.UpdateObjectsFile (project);
+			}
+
+			// Use Gettext for labels if there is a reference to Mono.Posix.
+			bool useGettext = false;
+			foreach (ProjectReference pref in project.ProjectReferences) {
+				if (pref.Reference.StartsWith ("Mono.Posix")) {
+					useGettext = true;
+					break;
+				}
+			}
+			
+			ArrayList projects = new ArrayList ();
+			projects.Add (info.GuiBuilderProject.File);
+			
+			foreach (string lib in info.GuiBuilderProject.SteticProject.GetWidgetLibraries())
+				libs.Add (lib);
+			
+			generating = true;
+			generatedUnit = null;
+			generatedException = null;
+			
+			// Run the generation in another thread to avoid freezing the GUI
+			System.Threading.ThreadPool.QueueUserWorkItem ( delegate {
+				try {
+					if (IsolationMode == Stetic.IsolationMode.None) {
+						// Generate the code in another process if stetic is not isolated
+						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
+						using (cob) {
+							generatedUnit = cob.GenerateCode (projects, libs, useGettext);
+						}
+					} else {
+						// No need to create another process, since stetic has its own backend process
+						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+						options.UseGettext = useGettext;
+						generatedUnit = SteticApp.GenerateProjectCode ("Stetic", options, info.GuiBuilderProject.SteticProject);
+					}
+				} catch (Exception ex) {
+					generatedException = ex;
+				} finally {
+					generating = false;
+				}
+			});
+			
+			while (generating) {
+				IdeApp.Services.DispatchService.RunPendingEvents ();
+				System.Threading.Thread.Sleep (100);
+			}
+			
+			if (generatedException != null) {
+				monitor.ReportError ("GUI code generation failed", generatedException);
+				monitor.AsyncOperation.Cancel ();
+				return;
+			}
+			
+			if (generatedUnit == null)
+				return;
+				
+			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			if (provider == null)
+				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
+			
+			ICodeGenerator gen = provider.CreateGenerator ();
+			StreamWriter fileStream = new StreamWriter (info.SteticGeneratedFile);
+			try {
+				gen.GenerateCodeFromCompileUnit (generatedUnit, fileStream, new CodeGeneratorOptions ());
+			} finally {
+				fileStream.Close ();
+			}
+		}
+	}
+
+
+	public class CodeGeneratorProcess: RemoteProcessObject
+	{
+		public CodeCompileUnit GenerateCode (ArrayList projectFiles, ArrayList libraries, bool useGettext)
+		{
+			Gtk.Application.Init ();
+			
+			Stetic.Application app = new Stetic.Application (Stetic.IsolationMode.None);
+			
+			foreach (string lib in libraries)
+				app.AddWidgetLibrary (lib);
+
+			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
+			for (int n=0; n < projectFiles.Count; n++) {
+				projects [n] = app.CreateProject ();
+				projects [n].Load ((string) projectFiles [n]);
+			}
+			
+			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+			options.UseGettext = useGettext;
+			
+			return app.GenerateProjectCode ("Stetic", options, projects);
+		}
 	}
 }

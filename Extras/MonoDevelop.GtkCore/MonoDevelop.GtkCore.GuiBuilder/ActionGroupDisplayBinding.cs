@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		Stetic.Wrapper.ActionGroup GetActionGroup (string file)
+		Stetic.ActionGroupComponent GetActionGroup (string file)
 		{
 			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (file);
 			if (project == null)
@@ -102,7 +102,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return info.GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
-		internal static string BindToClass (Project project, Stetic.Wrapper.ActionGroup group)
+		internal static string BindToClass (Project project, Stetic.ActionGroupComponent group)
 		{
 			GuiBuilderProject gproject = GuiBuilderService.GetGuiBuilderProject (project);
 			string file = gproject.GetSourceCodeFile (group);
@@ -132,7 +132,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static IClass CreateClass (Project project, Stetic.Wrapper.ActionGroup group, string name, string namspace, string folder)
+		static IClass CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
@@ -162,8 +162,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Add signal handlers
 			
-			foreach (Stetic.Wrapper.Action action in group.Actions) {
-				foreach (Stetic.Signal signal in action.Signals) {
+			foreach (Stetic.ActionComponent action in group.GetActions ()) {
+				foreach (Stetic.Signal signal in action.GetSignals ()) {
 					CodeMemberMethod met = new CodeMemberMethod ();
 					met.Name = signal.Handler;
 					met.Attributes = MemberAttributes.Family;

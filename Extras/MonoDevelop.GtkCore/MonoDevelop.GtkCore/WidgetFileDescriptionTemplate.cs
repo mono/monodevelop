@@ -104,12 +104,10 @@ namespace MonoDevelop.GtkCore
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
-				Gtk.Widget widget = Stetic.WidgetUtils.ImportWidget (gproject.SteticProject, doc.DocumentElement);
-				
-				gproject.SteticProject.AddWidget (widget);
+				Stetic.WidgetComponent w = gproject.AddNewComponent (doc.DocumentElement);
 				gproject.Save ();
 				
-				if (!(widget is Gtk.Window))
+				if (!w.IsWindow)
 					info.AddExportedWidget (fullName);
 				return;
 			}
@@ -122,9 +120,7 @@ namespace MonoDevelop.GtkCore
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
-				Stetic.Wrapper.ActionGroup group = new Stetic.Wrapper.ActionGroup ();
-				group.Read (gproject.SteticProject, doc.DocumentElement);
-				gproject.SteticProject.ActionGroups.Add (group);
+				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
 				gproject.Save ();
 				return;
 			}

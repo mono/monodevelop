@@ -73,10 +73,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
 			label = win.Name;
-			if (win.RootWidget.Wrapped is Gtk.Dialog)
+			
+//			if (win.RootWidget.IsWindow)
+//				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-window");
+			if (win.RootWidget.IsWindow)
 				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-dialog");
-			else if (win.RootWidget.Wrapped is Gtk.Window)
-				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-window");
 			else
 				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget");
 		}
@@ -84,7 +85,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			foreach (Stetic.Wrapper.ActionGroup agroup in win.RootWidget.LocalActionGroups) {
+			foreach (Stetic.ActionGroupComponent agroup in win.RootWidget.GetActionGroups ()) {
 				builder.AddChild (agroup);
 			}
 		}
@@ -92,7 +93,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			return win.RootWidget.LocalActionGroups.Count > 0;
+			return win.RootWidget.GetActionGroups().Length > 0;
 		}
 		
 		public override void OnNodeAdded (object dataObject)
@@ -135,7 +136,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public void OnDelete ()
 		{
 			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
-			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, w.SourceCodeFile, w.RootWidget.Wrapped)) {
+			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, w.SourceCodeFile, w.RootWidget)) {
 				if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 					if (dialog.DeleteFile) {
 						ProjectFile file = w.Project.Project.GetProjectFile (w.SourceCodeFile);

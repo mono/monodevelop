@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderPropertiesPad: AbstractPadContent, Stetic.IObjectViewer
+	public class GuiBuilderPropertiesPad: AbstractPadContent
 	{
 		Stetic.WidgetPropertyTree grid;
 		Stetic.SignalsEditor signalsEditor;
@@ -48,19 +48,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderPropertiesPad (): base ("")
 		{
-			GuiBuilderService.ActiveProjectChanged += new EventHandler (OnActiveProjectChanged);
-
-			grid = new Stetic.WidgetPropertyTree ();
+			grid = GuiBuilderService.SteticApp.PropertiesWidget;
 			
 			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad/bottom; right";
 			
 			tabs = new Notebook ();
 			
-			ScrolledWindow sw = new ScrolledWindow ();
-			sw.AddWithViewport (grid);
-			tabs.AppendPage (sw, new Label (GettextCatalog.GetString ("Properties")));
+			tabs.AppendPage (grid, new Label (GettextCatalog.GetString ("Properties")));
 			
-			signalsEditor = new Stetic.SignalsEditor ();
+			signalsEditor = GuiBuilderService.SteticApp.SignalsWidget;
 			signalsEditor.SignalActivated += new EventHandler (OnSignalActivated);
 			tabs.AppendPage (signalsEditor, new Label (GettextCatalog.GetString ("Signals")));
 			
@@ -73,19 +69,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			infoBox.Hide ();
 			
 			tabs.Page = 0;
-			
-			Stetic.UserInterface.DefaultPropertyViewer = this;
-			Stetic.UserInterface.DefaultSignalsViewer = this;
 		}
 		
 		public override Gtk.Widget Control {
 			get { return widget; }
-		}
-		
-		void OnActiveProjectChanged (object o, EventArgs a)
-		{
-			grid.Project = GuiBuilderService.ActiveProject;
-			signalsEditor.Project = GuiBuilderService.ActiveProject;
 		}
 		
 		void OnSignalActivated (object s, EventArgs a)
@@ -93,7 +80,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GuiBuilderService.JumpToSignalHandler (signalsEditor.SelectedSignal);
 		}
 		
-		public object TargetObject { 
+/*		public object TargetObject { 
 			get {
 				return grid.TargetObject;
 			}
@@ -165,6 +152,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 
+
 		public static Project GetProjectFromDesign (Stetic.Wrapper.ActionGroup group)
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
@@ -177,9 +165,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			return null;
 		}
-		
-		
-//		[CommandHandler (EditCommands.Copy)]
-//		void 
+*/
 	}
 }

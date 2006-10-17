@@ -47,6 +47,7 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		public override void Load ()
 		{
+			GetParserContext ().UpdateDatabase ();
 			XmlDocument doc = GetObjectsDocument ();
 			if (doc != null)
 				Load (doc);

@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.GtkCore
 {
-	public class ProjectResourceProvider: Stetic.IResourceProvider
+	public class ProjectResourceProvider: MarshalByRefObject, Stetic.IResourceProvider
 	{
 		Project project;
 		
@@ -76,6 +76,11 @@ namespace MonoDevelop.GtkCore
 					return;
 				}
 			}
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
 		}
 	}
 	

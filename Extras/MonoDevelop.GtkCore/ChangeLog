@@ -1,3 +1,50 @@
+2006-09-23 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* lib/*: Updated from Stetic module. It provides a redesigned API
+	  which will allow running designers in a separate process.
+	
+	* MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs:
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs:
+	* MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs:
+	* MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs:
+	  Track api changes.
+	
+	* MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs: Make sure
+	  parse information is up to date before loading an assembly library.
+	* MonoDevelop.GtkCore/ProjectResourceProvider.cs: Make sure this object
+	  is always alive when remoted.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Added null check.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs: Not needed anymore.
+	* MonoDevelop.GtkCore.addin.xml: Removed build step. Code generation
+	  is done now before compiling.
+	  
+	* MonoDevelop.GtkCore.WidgetLibrary/ProjectWidgetLibrary.cs:
+	* MonoDevelop.GtkCore.WidgetLibrary/CachedProjectWidgetLibrary.cs:
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: ProjectWidgetLibrary is not used
+	  anymore. All libraries are now handled by AssemblyReferenceWidgetLibrary.
+	  
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs:
+	  Moved to Stetic.
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.mdp: Updated.
+
 2006-09-23 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track api changes.

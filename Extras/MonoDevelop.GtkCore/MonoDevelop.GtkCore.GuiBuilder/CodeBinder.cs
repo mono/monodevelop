@@ -53,13 +53,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class CodeBinder
 	{
 		ITextFileProvider textFileProvider;
-		object targetObject;
+		Stetic.Component targetObject;
 		Project project;
 		GuiBuilderProject gproject;
 		string className;
 		string classFile;
 		
-		public CodeBinder (Project project, ITextFileProvider textFileProvider, object targetObject)
+		public CodeBinder (Project project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
 		{
 			this.project = project;
 			this.textFileProvider = textFileProvider;
@@ -70,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			TargetObject = targetObject;
 		}
 		
-		public object TargetObject {
+		public Stetic.Component TargetObject {
 			get { return targetObject; }
 			set {
 				this.targetObject = value;
@@ -88,29 +88,26 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			UpdateBindings (targetObject, GetClass ());
 		}
 		
-		void UpdateBindings (object obj, IClass cls)
+		void UpdateBindings (Stetic.Component obj, IClass cls)
 		{
 			// Remove signals for which there isn't a handler in the class
 			
-			Stetic.SignalCollection objectSignals = GetSignals (obj);
+			Stetic.SignalCollection objectSignals = obj.GetSignals ();
 			if (objectSignals != null) {
 				Stetic.Signal[] signals = new Stetic.Signal [objectSignals.Count];
 				objectSignals.CopyTo (signals, 0);
 				
 				foreach (Stetic.Signal signal in signals) {
 					if (FindSignalHandler (cls, signal) == null) {
-						objectSignals.Remove (signal);
+						obj.RemoveSignal (signal);
 					}
 				}
 			}
 
 			// Update children
 			
-			IEnumerable children = GetChildren (obj);
-			if (children != null) {
-				foreach (object ob in children)
-					UpdateBindings (ob, cls);
-			}
+			foreach (Stetic.Component ob in obj.GetChildren ())
+				UpdateBindings (ob, cls);
 		}
 		
 		IMethod FindSignalHandler (IClass cls, Stetic.Signal signal)
@@ -123,7 +120,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 
-		public void UpdateField (Stetic.ObjectWrapper obj, string oldName)
+		public void UpdateField (Stetic.Component obj, string oldName)
 		{
 			CodeRefactorer cr = GetCodeGenerator ();
 			
@@ -185,7 +182,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 
 		/// Adds a field to the class
-		public void BindToField (Stetic.ObjectWrapper obj)
+		public void BindToField (Stetic.Component obj)
 		{
 			string name = GetMemberName (obj);
 			IClass cls = GetClass ();
@@ -202,9 +199,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		CodeMemberField GetFieldCode (Stetic.ObjectWrapper obj, string name)
+		CodeMemberField GetFieldCode (Stetic.Component obj, string name)
 		{
-			string type = obj.ClassDescriptor.WrappedTypeName;
+			string type = obj.Type.ClassName;
 			CodeMemberField field = new CodeMemberField (type, name);
 			field.Attributes = MemberAttributes.Family;
 			return field;
@@ -247,7 +244,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (matches.Count == 1) {
 				cls = (IClass) matches [0];
 				className = cls.FullyQualifiedName;
-				SetObjectName (targetObject, className);
+				targetObject.Name = className;
 				return cls;
 			}
 			
@@ -260,7 +257,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						if (className == null)
 							return null;
 						else {
-							SetObjectName (targetObject, className);
+							targetObject.Name = className;
 							return gproject.FindClass (className);
 						}
 					}
@@ -272,10 +269,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		static bool IsValidClass (IParserContext ctx, IClass cls, object obj)
+		static bool IsValidClass (IParserContext ctx, IClass cls, Stetic.Component obj)
 		{
 			if (cls.BaseTypes != null) {
-				string typeName = GetObjectTypeName (obj);
+				string typeName = obj.Type.ClassName;
 				foreach (IReturnType bt in cls.BaseTypes) {
 					if (bt.FullyQualifiedName == typeName)
 						return true;
@@ -288,95 +285,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return false;
 		}
 		
-		internal static string GetClassName (object obj)
+		internal static string GetClassName (Stetic.Component obj)
 		{
 			return GetObjectName (obj);
 		}
 		
-		internal static string GetMemberName (object obj)
+		internal static string GetMemberName (Stetic.Component obj)
 		{
-			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
-			if (w != null)
-				return w.MemberName;
-			else
-				return GetObjectName (obj);
+			return obj.Name;
 		}
 		
-		internal static string GetObjectName (object obj)
+		internal static string GetObjectName (Stetic.Component obj)
 		{
-			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
-			if (w != null) {
-				return w.Wrapped.Name;
-			}
-			else if (obj is Stetic.Wrapper.Action) {
-				return ((Stetic.Wrapper.Action)obj).Name;
-			}
-			else if (obj is Stetic.Wrapper.ActionGroup) {
-				return ((Stetic.Wrapper.ActionGroup)obj).Name;
-			}
-			else {
-				return null;
-			}
-		}
-		
-		internal static void SetMemberName (object obj, string name)
-		{
-			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
-			if (w != null) {
-				w.Wrapped.Name = name;
-			} else
-				SetObjectName (obj, name);
-		}
-		
-		internal static void SetObjectName (object obj, string name)
-		{
-			Stetic.Wrapper.Widget w = GetWrapper (obj) as Stetic.Wrapper.Widget;
-			if (w != null) {
-				w.Wrapped.Name = name;
-			}
-			else if (obj is Stetic.Wrapper.Action) {
-				((Stetic.Wrapper.Action)obj).Name = name;
-			}
-			else if (obj is Stetic.Wrapper.ActionGroup) {
-				((Stetic.Wrapper.ActionGroup)obj).Name = name;
-			}
-			
-		}
-		
-		internal static string GetObjectTypeName (object obj)
-		{
-			Stetic.ObjectWrapper w = GetWrapper (obj);
-			if (w != null)
-				return w.ClassDescriptor.WrappedTypeName;
-			if (obj is Stetic.Wrapper.ActionGroup)
-				return "Gtk.ActionGroup";
-			else
-				return obj.GetType().FullName;
-		}
-		
-		static Stetic.SignalCollection GetSignals (object obj)
-		{
-			Stetic.ObjectWrapper w = GetWrapper (obj);
-			if (w != null) return w.Signals;
-			else return null;
-		}
-		
-		static IEnumerable GetChildren (object obj)
-		{
-			Stetic.Wrapper.Container w = GetWrapper (obj) as Stetic.Wrapper.Container;
-			if (w != null) return w.RealChildren;
-			
-			Stetic.Wrapper.ActionGroup grp = obj as Stetic.Wrapper.ActionGroup;
-			if (grp != null) return grp.Actions;
-			
-			return null;
-		}
-		
-		static Stetic.ObjectWrapper GetWrapper (object obj)
-		{
-			if (obj is Stetic.ObjectWrapper)
-				return (Stetic.ObjectWrapper) obj;
-			return Stetic.ObjectWrapper.Lookup (obj);
+			return obj.Name;
 		}
 	}
 }

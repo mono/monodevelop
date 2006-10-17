@@ -120,10 +120,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
-		<Class insertbefore = "MainBuildStep" class = "MonoDevelop.GtkCore.GeneratorBuildStep" />
-	</Extension>
-	
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Project"
 		              name = "GtkDesignInfo"

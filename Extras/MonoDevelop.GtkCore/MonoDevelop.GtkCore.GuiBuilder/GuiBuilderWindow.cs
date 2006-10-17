@@ -48,37 +48,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderWindow: IDisposable
 	{
-		Stetic.Wrapper.Widget rootWidget;
-		Stetic.Project gproject;
+		Stetic.WidgetComponent rootWidget;
 		GuiBuilderProject fproject;
+		Stetic.Project gproject;
+		string name;
 		
-		public event WindowEventHandler NameChanged;
 		public event WindowEventHandler Changed;
 		
-		internal GuiBuilderWindow (GuiBuilderProject fproject, Stetic.Project gproject, Stetic.Wrapper.Widget rootWidget)
+		internal GuiBuilderWindow (GuiBuilderProject fproject, Stetic.Project gproject, Stetic.WidgetComponent rootWidget)
 		{
 			this.fproject = fproject;
 			this.rootWidget = rootWidget;
 			this.gproject = gproject;
-			gproject.WidgetNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
-			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
-			rootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
-			rootWidget.LocalActionGroups.ActionGroupRemoved += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
+			name = rootWidget.Name;
+			gproject.ProjectReloaded += OnProjectReloaded;
+			rootWidget.Changed += OnChanged;
 		}
 		
-		void OnProjectReloaded (object s, EventArgs a)
-		{
-			string name = rootWidget.Wrapped.Name;
-			
-			foreach (Gtk.Widget w in gproject.Toplevels) {
-				if (w.Name == name) {
-					rootWidget = Stetic.Wrapper.Widget.Lookup (w);
-					break;
-				}
-			}
-		}
-		
-		public Stetic.Wrapper.Widget RootWidget {
+		public Stetic.WidgetComponent RootWidget {
 			get { return rootWidget; }
 		}
 		
@@ -87,78 +74,34 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		public string Name {
-			get { return rootWidget.Wrapped.Name; }
+			get { return rootWidget.Name; }
 		}
 		
 		public string SourceCodeFile {
 			get { return fproject.GetSourceCodeFile (rootWidget); }
 		}
 		
-		public GuiBuilderEditSession CreateEditSession (ITextFileProvider textFileProvider)
-		{
-			return new GuiBuilderEditSession (this, textFileProvider);
-		}
-		
-		internal void SetWidgetInfo (XmlElement data)
-		{
-			fproject.UpdatingWindow = true;
-			string oldName = rootWidget.Wrapped.Name;
-			rootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
-			rootWidget.LocalActionGroups.ActionGroupRemoved -= new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
-			
-			try {
-				rootWidget.Delete ();
-				Gtk.Widget w = Stetic.WidgetUtils.ImportWidget (gproject, data);
-				rootWidget = Stetic.Wrapper.Container.Lookup (w);
-				rootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
-				rootWidget.LocalActionGroups.ActionGroupRemoved += new Stetic.Wrapper.ActionGroupEventHandler (OnGroupsChanged);
-				gproject.AddWidget ((Gtk.Widget) rootWidget.Wrapped);
-			} finally {
-				fproject.UpdatingWindow = false;
-			}
-
-			if (rootWidget.Wrapped.Name != oldName && NameChanged != null)
-				NameChanged (this, new WindowEventArgs (this));
-		}
-		
 		public void Dispose ()
 		{
-			gproject.WidgetNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
-			gproject.ProjectReloaded -= new EventHandler (OnProjectReloaded);
+			gproject.ProjectReloaded -= OnProjectReloaded;
+			rootWidget.Changed -= OnChanged;
 		}
 		
-		internal void Save ()
+		void OnProjectReloaded (object s, EventArgs args)
 		{
-			fproject.Save ();
+			rootWidget.Changed -= OnChanged;
+			rootWidget = gproject.GetComponent (name);
+			if (rootWidget != null)
+				rootWidget.Changed += OnChanged;
 		}
 		
-		void OnWidgetNameChanged (object s, Stetic.Wrapper.WidgetNameChangedArgs args)
+		void OnChanged (object o, EventArgs args)
 		{
-			if (!InsideWindow (args.WidgetWrapper))
-				return;
+			// Update the name, it may have changed
+			name = rootWidget.Name;
 			
-			if (args.WidgetWrapper == rootWidget && NameChanged != null) {
-				NameChanged (this, new WindowEventArgs (this));
-			}
-			OnChanged ();
-		}
-		
-		void OnGroupsChanged (object s, Stetic.Wrapper.ActionGroupEventArgs args)
-		{
-			OnChanged ();
-		}
-		
-		protected virtual void OnChanged ()
-		{
 			if (Changed != null)
 				Changed (this, new WindowEventArgs (this));
-		}
-		
-		public bool InsideWindow (Stetic.Wrapper.Widget widget)
-		{
-			while (widget.ParentWrapper != null)
-				widget = widget.ParentWrapper;
-			return widget == rootWidget;
 		}
 		
 		public bool BindToClass ()
@@ -185,8 +128,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						CreateClass (dialog.ClassName, dialog.Namespace, dialog.Folder);
 
 					string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
-					rootWidget.Wrapped.Name = fullName;
-					Save ();
+					rootWidget.Name = fullName;
+					fproject.Save ();
 				}
 				return true;
 			} catch (Exception ex) {
@@ -204,19 +147,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
 			type.IsClass = true;
-			type.BaseTypes.Add (new CodeTypeReference (rootWidget.ClassDescriptor.WrappedTypeName));
+			type.BaseTypes.Add (new CodeTypeReference (rootWidget.Type.ClassName));
 			
 			// Generate the constructor. It contains the call that builds the widget.
 			
 			CodeConstructor ctor = new CodeConstructor ();
 			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			
-			foreach (Stetic.PropertyDescriptor prop in rootWidget.ClassDescriptor.InitializationProperties) {
-				if (prop.PropertyType.IsValueType)
-					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (Activator.CreateInstance (prop.PropertyType)));
-				else
-					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (null));
-			}
+			foreach (object val in rootWidget.Type.InitializationValues)
+				ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
 			
 			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
 				new CodeMethodReferenceExpression (
@@ -231,7 +170,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Add signal handlers
 			
-			foreach (Stetic.Signal signal in rootWidget.Signals) {
+			foreach (Stetic.Signal signal in rootWidget.GetSignals ()) {
 				CodeMemberMethod met = new CodeMemberMethod ();
 				met.Name = signal.Handler;
 				met.Attributes = MemberAttributes.Family;
@@ -260,7 +199,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullyQualifiedName == rootWidget.Wrapped.GetType().FullName)
+					if (bt.FullyQualifiedName == rootWidget.Type.ClassName)
 						return true;
 					
 					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);

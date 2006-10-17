@@ -21,7 +21,6 @@ REFS =	-r:System \
 FILES = \
 MonoDevelop.GtkCore/GtkCoreService.cs \
 MonoDevelop.GtkCore/GtkDesignInfo.cs \
-MonoDevelop.GtkCore/GeneratorBuildStep.cs \
 MonoDevelop.GtkCore/ProjectResourceProvider.cs \
 MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
 MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs \
@@ -29,8 +28,6 @@ MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectPropertyDescriptor.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectSignalDescriptor.cs \
-MonoDevelop.GtkCore.WidgetLibrary/ProjectWidgetLibrary.cs \
-MonoDevelop.GtkCore.WidgetLibrary/CachedProjectWidgetLibrary.cs \
 MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
 MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
@@ -54,9 +51,6 @@ MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderEditSession.cs \
-MonoDevelop.GtkCore.GuiBuilder/MonoDevelopActionGroupToolbar.cs \
-MonoDevelop.GtkCore.GuiBuilder/MonoDevelopWidgetActionBar.cs \
 MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs
 
 RES = \

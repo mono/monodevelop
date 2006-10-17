@@ -103,9 +103,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
-			using (Stetic.Editor.EditIconFactoryDialog dlg = new Stetic.Editor.EditIconFactoryDialog (null, sp, sp.IconFactory)) {
-				dlg.Run ();
-			}
+			sp.EditIcons ();
 			gp.Save ();
 		}
 		

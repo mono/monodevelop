@@ -38,26 +38,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class GuiBuilderProjectPad: AbstractPadContent
 	{
 		Stetic.ProjectView pview;
-		ScrolledWindow scrolledWindow;
 		
 		public GuiBuilderProjectPad (): base ("")
 		{
-			GuiBuilderService.ActiveProjectChanged += new EventHandler (OnActiveProjectChanged);
 			DefaultPlacement = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad/center; bottom";
-			pview = new Stetic.ProjectView ();
-			
-			scrolledWindow = new ScrolledWindow ();
-			scrolledWindow.Add (pview);
-			scrolledWindow.ShowAll ();
-		}
-		
-		void OnActiveProjectChanged (object o, EventArgs a)
-		{
-			pview.Project = GuiBuilderService.ActiveProject;
+			pview = GuiBuilderService.SteticApp.ProjectWidget;
+			pview.ShowAll ();
 		}
 		
 		public override Gtk.Widget Control {
-			get { return scrolledWindow; }
+			get { return pview; }
 		}
 		
 		public void Fill (object o)

@@ -206,7 +206,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
 		{
-			if (IdeApp.Workbench.ActiveDocument.Content == this)
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Content == this)
 				OnDocumentActivated ();
 		}
 		

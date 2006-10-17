@@ -48,22 +48,44 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		string fileName;
 		XmlDocument objects;
 		XmlDocument steticGui;
+		DateTime timestamp;
 		
 		public AssemblyReferenceWidgetLibrary (string assemblyReference, string assemblyName)
 		{
 			this.assemblyReference = assemblyReference;
-			this.assemblyName = assemblyName;
 			
 			if (!File.Exists (assemblyReference)) {
 				try {
 					fileName = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyReference);
+					this.assemblyName = assemblyReference;
 				} catch (Exception ex) {
 					Runtime.LoggingService.Error (ex);
 				}
-			} else
+			} else {
 				fileName = assemblyReference;
-
+				if (assemblyName != null)
+					this.assemblyName = assemblyName;
+				else
+					this.assemblyName = System.Reflection.AssemblyName.GetAssemblyName (fileName).FullName;
+			}
+			
 			LoadInfo ();
+		}
+		
+		public override string Name {
+			get { return fileName; }
+		}
+		
+		public override bool CanReload {
+			get { return true; }
+		}
+		
+		public override bool NeedsReload {
+			get {
+				if (!File.Exists (fileName))
+					return false;
+				return File.GetLastWriteTime (fileName) != timestamp;
+			}
 		}
 		
 		public bool ExportsWidgets {
@@ -83,11 +105,21 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			return objects;
 		}
 		
+		public override void Reload ()
+		{
+			LoadInfo ();
+			base.Reload ();
+		}
+
 		public void LoadInfo ()
 		{
 			objects = null;
+			steticGui = null;
+			
 			if (fileName == null)
 				return;
+			
+			timestamp = File.GetLastWriteTime (fileName);
 			
 			IAssemblyDefinition asm = AssemblyFactory.GetAssembly (fileName);
 			foreach (Resource res in asm.MainModule.Resources) {

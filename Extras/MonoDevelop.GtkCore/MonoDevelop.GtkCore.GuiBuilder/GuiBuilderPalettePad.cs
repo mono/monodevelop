@@ -40,11 +40,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderPalettePad (): base ("")
 		{
-			GuiBuilderService.ActiveProjectChanged += new EventHandler (OnActiveProjectChanged);
-			GuiBuilderService.WidgetLibrariesChanged += new EventHandler (OnWidgetLibrariesChanged);
-			
-			palette = new Stetic.Palette ();
-			palette.HideGroup ("window");
+			palette = GuiBuilderService.SteticApp.PaletteWidget;
+			palette.ShowWindowCategory = false;
 			
 			ScrolledWindow sw = new ScrolledWindow ();
 			sw.AddWithViewport (palette);
@@ -60,16 +57,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override Gtk.Widget Control {
 			get { return widget; }
-		}
-		
-		void OnActiveProjectChanged (object o, EventArgs a)
-		{
-			palette.Project = GuiBuilderService.ActiveProject;
-		}
-		
-		void OnWidgetLibrariesChanged (object o, EventArgs a)
-		{
-			palette.WidgetLibraries = GuiBuilderService.ActiveWidgetLibraries;
 		}
 	}
 }

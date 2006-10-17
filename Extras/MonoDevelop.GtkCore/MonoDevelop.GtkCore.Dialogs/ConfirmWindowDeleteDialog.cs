@@ -39,16 +39,16 @@ namespace MonoDevelop.GtkCore.Dialogs
 		[Glade.Widget] Gtk.Label label;
 		[Glade.Widget] Gtk.CheckButton checkbox;
 		
-		public ConfirmWindowDeleteDialog (string windowName, string fileName, object obj)
+		public ConfirmWindowDeleteDialog (string windowName, string fileName, Stetic.Component obj)
 		{
 			XML glade = new XML (null, "gui.glade", "ConfirmWindowDeleteDialog", null);
 			glade.Autoconnect (this);
 			
-			if (obj is Gtk.Window) {
-				label.Text = GettextCatalog.GetString ("Are you sure you want to delete the widget '{0}'?", windowName);
-			} else if (obj is Gtk.Widget) {
+			if (obj is Stetic.WidgetComponent && ((Stetic.WidgetComponent)obj).IsWindow) {
 				label.Text = GettextCatalog.GetString ("Are you sure you want to delete the window '{0}'?", windowName);
-			} else if (obj is Stetic.Wrapper.ActionGroup) {
+			} else if (obj is Stetic.WidgetComponent) {
+				label.Text = GettextCatalog.GetString ("Are you sure you want to delete the widget '{0}'?", windowName);
+			} else if (obj is Stetic.ActionGroupComponent) {
 				label.Text = GettextCatalog.GetString ("Are you sure you want to delete the action group '{0}'?", windowName);
 			} else
 				label.Text = GettextCatalog.GetString ("Are you sure you want to delete '{0}'?", windowName);

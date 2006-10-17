@@ -49,7 +49,6 @@ namespace MonoDevelop.GtkCore
 	{
 		ArrayList exportedWidgets = new ArrayList ();
 		DotNetProject project;
-		ProjectWidgetLibrary widgetLibrary;
 		GuiBuilderProject builderProject;
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
@@ -73,8 +72,8 @@ namespace MonoDevelop.GtkCore
 		
 		public void Dispose ()
 		{
-			if (widgetLibrary != null)
-				widgetLibrary.Dispose ();
+			if (resourceProvider != null)
+				System.Runtime.Remoting.RemotingServices.Disconnect (resourceProvider);
 			if (builderProject != null)
 				builderProject.Dispose ();
 		}
@@ -91,8 +90,10 @@ namespace MonoDevelop.GtkCore
 		
 		public ProjectResourceProvider ResourceProvider {
 			get {
-				if (resourceProvider == null)
+				if (resourceProvider == null) {
 					resourceProvider = new ProjectResourceProvider (project);
+					System.Runtime.Remoting.RemotingServices.Marshal (resourceProvider, null, typeof(Stetic.IResourceProvider));
+				}
 				return resourceProvider;
 			}
 		}
@@ -115,42 +116,6 @@ namespace MonoDevelop.GtkCore
 		
 		public bool IsWidgetLibrary {
 			get { return exportedWidgets.Count > 0; }
-		}
-		
-		public ProjectWidgetLibrary ProjectWidgetLibrary {
-			get {
-				if (!IsWidgetLibrary)
-					return null;
-				if (widgetLibrary == null)
-					widgetLibrary = new ProjectWidgetLibrary (project);
-				return widgetLibrary;
-			}
-		}
-		
-		public Stetic.WidgetLibrary[] GetReferencedWidgetLibraries ()
-		{
-			ArrayList list = new ArrayList ();
-
-			foreach (ProjectReference pref in project.ProjectReferences) {
-				if (pref.ReferenceType == ReferenceType.Project) {
-					Project p = project.RootCombine.FindProject (pref.Reference);
-					if (p != null) {
-						GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-						if (info != null && info.IsWidgetLibrary)
-							list.Add (info.ProjectWidgetLibrary);
-					}
-				} else if (pref.ReferenceType == ReferenceType.Gac || 
-						pref.ReferenceType == ReferenceType.Assembly) {
-					
-					Stetic.WidgetLibrary lib = GuiBuilderService.GetAssemblyLibrary (pref.Reference);
-					if (lib != null)
-						list.Add (lib);
-				}
-			}
-			if (IsWidgetLibrary)
-				list.Add (ProjectWidgetLibrary);
-
-			return (Stetic.WidgetLibrary[]) list.ToArray (typeof(Stetic.WidgetLibrary));
 		}
 		
 		public bool IsExported (IClass cls)
@@ -208,12 +173,12 @@ namespace MonoDevelop.GtkCore
 			
 			// Add the stetic file to the project
 			if (!project.IsFileInProject (SteticFile))
-				project.AddFile (SteticFile, BuildAction.Exclude);
+				project.AddFile (SteticFile, BuildAction.EmbedAsResource);
 			
 			if (!File.Exists (SteticGeneratedFile)) {
 				// Generate an empty build class
 				CodeDomProvider provider = GetCodeDomProvider ();
-				Stetic.CodeGenerator.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider);
+				MonoDevelop.GtkCore.GuiBuilder.GuiBuilderService.SteticApp.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider, null);
 			}
 
 			// Add the generated file to the project, if not already there

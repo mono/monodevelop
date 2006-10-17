@@ -42,25 +42,20 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			this.project = project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			WindowEventHandler updateDelegate = new WindowEventHandler (OnUpdateFiles);
-			info.GuiBuilderProject.WindowAdded += updateDelegate;
-			info.GuiBuilderProject.WindowRemoved += updateDelegate;
 			
-			Stetic.Wrapper.ActionGroupEventHandler updateDelegate2 = new Stetic.Wrapper.ActionGroupEventHandler (OnUpdateFiles);
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded += updateDelegate2;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved += updateDelegate2;
+			info.GuiBuilderProject.WindowAdded += OnUpdateFiles;
+			info.GuiBuilderProject.WindowRemoved += OnUpdateFiles;
+			info.GuiBuilderProject.SteticProject.ActionGroupsChanged += OnUpdateFiles;
+			info.GuiBuilderProject.SteticProject.ActionGroupsChanged += OnUpdateFiles;
 		}
 		
 		public void Dispose ()
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			WindowEventHandler updateDelegate = new WindowEventHandler (OnUpdateFiles);
-			info.GuiBuilderProject.WindowAdded -= updateDelegate;
-			info.GuiBuilderProject.WindowRemoved -= updateDelegate;
-			
-			Stetic.Wrapper.ActionGroupEventHandler updateDelegate2 = new Stetic.Wrapper.ActionGroupEventHandler (OnUpdateFiles);
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupAdded -= updateDelegate2;
-			info.GuiBuilderProject.SteticProject.ActionGroups.ActionGroupRemoved -= updateDelegate2;
+
+			info.GuiBuilderProject.WindowAdded -= OnUpdateFiles;
+			info.GuiBuilderProject.WindowRemoved -= OnUpdateFiles;
+			info.GuiBuilderProject.SteticProject.ActionGroupsChanged -= OnUpdateFiles;
 		}
 		
 		void OnUpdateFiles (object s, WindowEventArgs args)
@@ -68,7 +63,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			if (Changed != null) Changed (this, EventArgs.Empty);
 		}
 		
-		void OnUpdateFiles (object s, Stetic.Wrapper.ActionGroupEventArgs args)
+		void OnUpdateFiles (object s, EventArgs args)
 		{
 			if (Changed != null) Changed (this, EventArgs.Empty);
 		}

@@ -45,133 +45,155 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderView : CombinedDesignView
 	{
-		GuiBuilderEditSession editSession;
-		Gtk.EventBox designerPage;
-		VBox designerBox;
+		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
-		MonoDevelopWidgetActionBar widgetBar;
+		GuiBuilderWindow window;
+		
+		Gtk.EventBox designerPage;
 		VBox actionsPage;
 		
-		Gtk.Widget currentDesigner;
 		bool actionsButtonVisible;
+		
+		CodeBinder codeBinder;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
-			editSession = window.CreateEditSession (new OpenDocumentFileProvider ());
-			editSession.ModifiedChanged += new EventHandler (OnWindowChanged);
+			this.window = window;
 			
-			designerPage = new DesignerPage (editSession);
+			designer = window.Project.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
+			designer.AllowWidgetBinding = true;
+			
+			codeBinder = new CodeBinder (window.Project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
+			
+			designer.BindField += OnBindWidgetField;
+			designer.ModifiedChanged += OnWindowChanged;
+			designer.SignalAdded += OnSignalAdded;
+			designer.SignalRemoved += OnSignalRemoved;
+			designer.SignalChanged += OnSignalChanged;
+			designer.ComponentNameChanged += OnComponentNameChanged;
+			designer.RootComponentChanged += OnRootComponentChanged;
+			
+			// Designer page
+			designerPage = new DesignerPage (designer);
 			designerPage.Show ();
+			designerPage.Add (designer);
+
 			AddButton (GettextCatalog.GetString ("Designer"), designerPage);
 			
 			// Actions designer
+			actionsBox = designer.CreateActionGroupDesigner ();
+			actionsBox.AllowActionBinding = true;
+			actionsBox.BindField += new EventHandler (OnBindActionField);
+			actionsBox.ModifiedChanged += new EventHandler (OnActionshanged);
 			
-			MonoDevelopActionGroupToolbar groupToolbar = new MonoDevelopActionGroupToolbar (editSession.RootWidget.LocalActionGroups);
-			groupToolbar.BindField += new EventHandler (OnBindActionField);
-			actionsBox = Stetic.UserInterface.CreateActionGroupDesigner (editSession.SteticProject, groupToolbar);
-			actionsPage = new ActionsPage (actionsBox.Editor);
+			actionsPage = new ActionsPage (actionsBox);
 			actionsPage.PackStart (actionsBox, true, true, 0);
 			actionsPage.ShowAll ();
 			
-			// Widget toolbar
-			widgetBar = new MonoDevelopWidgetActionBar (editSession.RootWidget);
-			widgetBar.BorderWidth = 3;
-			widgetBar.BindField += new EventHandler (OnBindWidgetField);
-			
-			// Designer page
-			designerBox = new VBox ();
-			designerPage.Add (designerBox);
-			designerBox.PackStart (widgetBar, false, false, 0);
-			designerBox.ShowAll ();
-			
-			designerBox.PackStart (editSession.WrapperWidget, true, true, 0);
-			
-			currentDesigner = editSession.WrapperWidget;
-			
-			if (editSession.RootWidget.LocalActionGroups.Count > 0) {
+			if (actionsBox.HasData) {
 				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 				actionsButtonVisible = true;
-			} else {
-				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
 			}
 			
-			editSession.RootWidgetChanged += new EventHandler (OnRootWidgetChanged);
+			designer.ShowAll ();
+			designer.SetActive ();
+		}
+		
+		public void SetActive ()
+		{
+			designer.SetActive ();
 		}
 		
 		public override void Dispose ()
 		{
+			designer.BindField -= OnBindWidgetField;
+			designer.ModifiedChanged -= OnWindowChanged;
+			designer.SignalAdded -= OnSignalAdded;
+			designer.SignalRemoved -= OnSignalRemoved;
+			designer.SignalChanged -= OnSignalChanged;
+			designer.ComponentNameChanged -= OnComponentNameChanged;
+			designer.RootComponentChanged -= OnRootComponentChanged;
+			
 			actionsPage.Dispose ();
+			actionsBox.Dispose ();
 			actionsBox.Destroy ();
-			widgetBar.Destroy ();
-			editSession.Dispose ();
 			designerPage.Dispose ();
-			editSession = null;
 			actionsBox = null;
-			widgetBar = null;
-			widgetBar = null;
 			designerPage = null;
-			designerBox = null;
 			base.Dispose ();
 		}
 		
 		protected override void OnDocumentActivated ()
 		{
-			editSession.SetDesignerActive ();
+//			editSession.SetDesignerActive ();
+			// FIXME
 		}
 		
-		void OnActionGroupAdded (object s, Stetic.Wrapper.ActionGroupEventArgs args)
+		void OnRootComponentChanged (object s, EventArgs args)
 		{
-			AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
-			editSession.RootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
-			actionsButtonVisible = true;
+			codeBinder.TargetObject = designer.RootComponent;
+		}
+		
+		void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
+		{
+			codeBinder.UpdateField (args.Component, args.OldName);
+		}
+		
+		void OnActionshanged (object s, EventArgs args)
+		{
+			if (!actionsButtonVisible) {
+				actionsButtonVisible = true;
+				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
+			}
 		}
 		
 		void OnWindowChanged (object s, EventArgs args)
 		{
-			OnContentChanged (args);
+			if (IsDirty)
+				OnContentChanged (args);
 			OnDirtyChanged (args);
-		}
-		
-		void OnRootWidgetChanged (object o, EventArgs a)
-		{
-			if (!actionsButtonVisible) {
-				widgetBar.RootWidget.LocalActionGroups.ActionGroupAdded -= new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
-				editSession.RootWidget.LocalActionGroups.ActionGroupAdded += new Stetic.Wrapper.ActionGroupEventHandler (OnActionGroupAdded);
-			}
-			
-			designerBox.Remove (currentDesigner);
-			currentDesigner = editSession.WrapperWidget;
-			designerBox.PackStart (currentDesigner, true, true, 0);
-			widgetBar.RootWidget = editSession.RootWidget;
-			editSession.WrapperWidget.ShowAll ();
-			actionsBox.Toolbar.ActionGroups = editSession.RootWidget.LocalActionGroups;
 		}
 		
 		void OnBindWidgetField (object o, EventArgs a)
 		{
-			editSession.BindCurrentWidget ();
+			if (designer.Selection != null)
+				codeBinder.BindToField (designer.Selection);
 		}
 		
 		void OnBindActionField (object o, EventArgs a)
 		{
-			if (actionsBox.Editor.SelectedAction != null)
-				editSession.BindAction (actionsBox.Editor.SelectedAction);
+			if (actionsBox.SelectedAction != null)
+				codeBinder.BindToField (actionsBox.SelectedAction);
 		}
 		
-		public GuiBuilderEditSession EditSession {
-			get { return editSession; }
+		void OnSignalAdded (object sender, Stetic.ComponentSignalEventArgs args)
+		{
+			codeBinder.BindSignal (args.Signal);
+		}
+
+		void OnSignalRemoved (object sender, Stetic.ComponentSignalEventArgs args)
+		{
+		}
+
+		void OnSignalChanged (object sender, Stetic.ComponentSignalEventArgs args)
+		{
+			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
 		public override void Save (string fileName)
 		{
 			base.Save (fileName);
-			editSession.UpdateBindings (fileName);
-			editSession.Save ();
+			codeBinder.UpdateBindings (fileName);
+			designer.Save ();
+			actionsBox.Save ();
+			window.Project.Save ();
 		}
 		
 		public override bool IsDirty {
 			get {
-				return base.IsDirty || editSession.Modified;
+				// There is no need to check if the action group designer is modified
+				// since changes in the action group are as well changes in the designed widget
+				return base.IsDirty || designer.Modified;
 			}
 			set {
 				base.IsDirty = value;
@@ -180,7 +202,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
-			IClass cls = editSession.GetClass ();
+			IClass cls = codeBinder.GetClass ();
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == signal.Handler) {
 					ShowPage (1);
@@ -198,72 +220,65 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ShowActionDesignerView (string name)
 		{
 			ShowPage (2);
-			foreach (Stetic.Wrapper.ActionGroup grp in editSession.RootWidget.LocalActionGroups) {
-				if (grp.Name == name)
-					actionsBox.Toolbar.ActiveGroup = grp;
-			}
+			actionsBox.ActiveGroup = name;
 		}
 	}
 	
 	class DesignerPage: Gtk.EventBox
 	{
-		GuiBuilderEditSession editSession;
+		Stetic.WidgetDesigner designer;
 		
-		public DesignerPage (GuiBuilderEditSession editSession)
+		public DesignerPage (Stetic.WidgetDesigner designer)
 		{
-			this.editSession = editSession;
+			this.designer = designer;
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-			wrapper.Delete ();
+			designer.DeleteSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo cinfo)
 		{
-			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-			cinfo.Enabled = wrapper != null;
+			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCut;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			Stetic.Clipboard.Copy (editSession.SteticProject.Selection);
+			designer.CopySelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo cinfo)
 		{
-			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-			cinfo.Enabled = wrapper != null;
+			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCopy;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			Stetic.Clipboard.Cut (editSession.SteticProject.Selection);
+			designer.CutSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo cinfo)
 		{
-			Stetic.Wrapper.Widget wrapper = Stetic.Wrapper.Widget.Lookup (editSession.SteticProject.Selection);
-			cinfo.Enabled = wrapper != null;
+			cinfo.Enabled = designer.Selection != null && designer.Selection.CanCut;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			Stetic.Clipboard.Paste (editSession.SteticProject.Selection as Stetic.Placeholder);
+			designer.PasteToSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo cinfo)
 		{
-			cinfo.Enabled = editSession.SteticProject.Selection is Stetic.Placeholder;
+			cinfo.Enabled = designer.Selection != null && designer.Selection.CanPaste;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Undo)]
@@ -283,9 +298,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class ActionsPage: VBox
 	{
-		Stetic.Editor.ActionGroupEditor actionsBox;
+		Stetic.ActionGroupDesigner actionsBox;
 		
-		public ActionsPage (Stetic.Editor.ActionGroupEditor actionsBox)
+		public ActionsPage (Stetic.ActionGroupDesigner actionsBox)
 		{
 			this.actionsBox = actionsBox;
 		}
@@ -293,7 +308,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			actionsBox.Delete ();
+			actionsBox.DeleteSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -305,7 +320,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			actionsBox.Copy ();
+			actionsBox.CopySelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Copy)]
@@ -317,7 +332,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			actionsBox.Cut ();
+			actionsBox.CutSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Cut)]
@@ -329,7 +344,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			actionsBox.Paste ();
+			actionsBox.PasteToSelection ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Paste)]
