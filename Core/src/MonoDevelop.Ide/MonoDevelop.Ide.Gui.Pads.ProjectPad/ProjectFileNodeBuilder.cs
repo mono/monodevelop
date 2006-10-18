@@ -141,14 +141,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?"), Path.GetFileName (file.Name), project.Name));
 			if (!yes) return;
 
-			ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
-			if (inFolder.Length == 1 && inFolder [0] == file) {
-				// This is the last project file in the folder. Make sure we keep
-				// a reference to the folder, so it is not deleted from the tree.
-				ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
-				folderFile.Subtype = Subtype.Directory;
-				project.ProjectFiles.Add (folderFile);
+			if (!file.IsExternalToProject) {
+				ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
+				if (inFolder.Length == 1 && inFolder [0] == file) {
+					// This is the last project file in the folder. Make sure we keep
+					// a reference to the folder, so it is not deleted from the tree.
+					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
+					folderFile.Subtype = Subtype.Directory;
+					project.ProjectFiles.Add (folderFile);
+				}
 			}
+			
 			project.ProjectFiles.Remove (file);
 			IdeApp.ProjectOperations.SaveProject (project);
 		}

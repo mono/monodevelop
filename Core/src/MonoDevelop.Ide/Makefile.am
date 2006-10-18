@@ -150,6 +150,8 @@ MonoDevelop.Ide.Gui/HelpViewer.cs \
 MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs \
 MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
+MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
+MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs \
 MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs \
 MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs \
 MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs \
@@ -257,6 +259,7 @@ Base.glade \
 icons/SplashScreen.png \
 icons/mono-powered.png \
 icons/parsing.png \
+icons/Icons.16x16.LinkOverlay.png \
 icons/Icons.AboutImage
 
 GENERATED_FILES = \

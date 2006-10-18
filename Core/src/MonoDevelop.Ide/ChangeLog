@@ -1,3 +1,19 @@
+2006-10-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs: 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs:
+	* icons/Icons.16x16.LinkOverlay.png:
+	* MonoDevelop.Ide.addin.xml:
+	  Implemented support for files outside of a project directory.
+	  Fixes bug #79296.
+	
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp: Updated.
+
 2006-10-17 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Make sure combine events

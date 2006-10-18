@@ -636,6 +636,7 @@
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.CombineNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.LinkedFilesFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectReferenceNodeBuilder"/>

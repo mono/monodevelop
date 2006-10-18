@@ -135,6 +135,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			builder.AddChild (project.ProjectReferences);
 			builder.AddChild (new ResourceFolder (project));
 			
+			foreach (ProjectFile file in project.ProjectFiles) {
+				if (file.IsExternalToProject) {
+					builder.AddChild (new LinkedFilesFolder (project));
+					break;
+				}
+			}
+			
 			base.BuildChildNodes (builder, dataObject);
 		}
 		
@@ -161,8 +168,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void AddFile (ProjectFile file, Project project)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
-			if (file.BuildAction != BuildAction.EmbedAsResource)
-			{
+			
+			if (file.BuildAction == BuildAction.EmbedAsResource) {
+				// Resources have a special folder for them
+				if (tb.MoveToObject (new ResourceFolder (project)))
+					tb.AddChild (file);
+			}
+			else if (file.IsExternalToProject) {
+				// Files from outside the project folder are added in a special folder
+				if (!tb.MoveToObject (new LinkedFilesFolder (project))) {
+					// This will fill the folder, so there is no need to add the file again
+					if (tb.MoveToObject (project))
+						tb.AddChild (new LinkedFilesFolder (project));
+					return;
+				}
+				tb.AddChild (file);
+			}
+			else {
+				// It's a regular file, add it to the correct folder
 				string filePath = Path.GetDirectoryName (file.Name);
 				
 				object data;
@@ -189,10 +212,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						tb.AddChild (data);
 				}
 			}
-			else {
-				if (tb.MoveToObject (new ResourceFolder (project)))
-					tb.AddChild (file);
-			}
 		}
 		
 		ITreeBuilder FindParentFolderNode (string path, Project project)
@@ -214,6 +233,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void RemoveFile (ProjectFile file, Project project)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
+			
+			// We can't use IsExternalToProject here since the ProjectFile has
+			// already been removed from the project
+			
+			if (!file.Name.StartsWith (project.BaseDirectory)) {
+				// This ensures that the linked files folder is deleted if there are
+				// no more external files
+				if (tb.MoveToObject (project))
+					tb.UpdateAll ();
+				return;
+			}
 			
 			if (file.Subtype == Subtype.Directory) {
 				if (!tb.MoveToObject (new ProjectFolder (file.Name, project)))

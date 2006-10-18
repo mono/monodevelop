@@ -91,6 +91,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else
 					dir = file.Name;
 				
+				// add the directory if it isn't already present
 				if (dir.StartsWith (folderPrefix)) {
 					int i = dir.IndexOf (Path.DirectorySeparatorChar, folderPrefix.Length);
 					if (i != -1) dir = dir.Substring (0,i);
@@ -269,8 +270,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 									remember = new CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
 									md.VBox.PackStart (remember, false, false, 0);
 								}
-								md.AddButton (Gtk.Stock.Copy, 1);
-								md.AddButton (GettextCatalog.GetString ("_Move"), 2);
+								
+								int LINK_VALUE = 3;
+								int COPY_VALUE = 1;
+								int MOVE_VALUE = 2;
+								
+								md.AddButton (GettextCatalog.GetString ("_Link"), LINK_VALUE);
+								md.AddButton (Gtk.Stock.Copy, COPY_VALUE);
+								md.AddButton (GettextCatalog.GetString ("_Move"), MOVE_VALUE);
 								md.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 								md.VBox.ShowAll ();
 								
@@ -286,9 +293,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 								} else {
 									ret = action;
 								}
-
+								
 								try {
-									MoveCopyFile (project, CurrentNode, file, ret == 2, false);
+									MoveCopyFile (project, CurrentNode, file,
+												  (ret == MOVE_VALUE) || (ret == LINK_VALUE), ret == LINK_VALUE);
 								}
 								catch (Exception ex) {
 									Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
