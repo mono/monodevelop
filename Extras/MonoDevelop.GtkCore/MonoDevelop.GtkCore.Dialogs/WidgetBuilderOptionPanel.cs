@@ -91,7 +91,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 					selection.AddRange (designInfo.ExportedWidgets);
 				
 				foreach (IClass cls in GtkCoreService.GetExportableClasses (project)) {
-					bool exported = designInfo != null && designInfo.IsExported (cls);
+					bool exported = designInfo != null && designInfo.IsExported (cls.FullyQualifiedName);
 					string icon = IdeApp.Services.Icons.GetIcon (cls);
 					Pixbuf pic = IdeApp.Services.Resources.GetIcon (icon);
 					store.AppendValues (exported, pic, cls.FullyQualifiedName, cls);

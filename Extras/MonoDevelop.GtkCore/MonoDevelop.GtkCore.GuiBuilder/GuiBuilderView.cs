@@ -183,10 +183,27 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void Save (string fileName)
 		{
 			base.Save (fileName);
+			
+			string oldName = codeBinder.TargetObject.Name;
 			codeBinder.UpdateBindings (fileName);
 			designer.Save ();
 			actionsBox.Save ();
 			window.Project.Save ();
+			
+			if (codeBinder.TargetObject.Name != oldName) {
+				// The name of the component has changed. If this component is being
+				// exported by the library, then the component reference also has to
+				// be updated in the project configuration
+				
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
+				if (info.IsExported (oldName)) {
+					info.RemoveExportedWidget (oldName);
+					info.AddExportedWidget (codeBinder.TargetObject.Name);
+					info.UpdateGtkFolder ();
+					GtkCoreService.UpdateObjectsFile (window.Project.Project);
+					IdeApp.ProjectOperations.SaveProject (window.Project.Project);
+				}
+			}
 		}
 		
 		public override bool IsDirty {

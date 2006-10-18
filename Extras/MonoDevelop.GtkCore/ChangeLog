@@ -1,3 +1,12 @@
+2006-10-18 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Added RemoveExportedWidget method.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: track
+	  API changes.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: If the name of a
+	  widget changes and it is being exported, update it in the objects.xml
+	  file. Fixes bug #79656.
+
 2006-09-23 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* lib/*: Updated from Stetic module. It provides a redesigned API

@@ -118,9 +118,9 @@ namespace MonoDevelop.GtkCore
 			get { return exportedWidgets.Count > 0; }
 		}
 		
-		public bool IsExported (IClass cls)
+		public bool IsExported (string name)
 		{
-			return exportedWidgets.Contains (cls.FullyQualifiedName);
+			return exportedWidgets.Contains (name);
 		}
 		
 		public void AddExportedWidget (string name)
@@ -129,6 +129,11 @@ namespace MonoDevelop.GtkCore
 				exportedWidgets.Add (name);
 		}
 
+		public void RemoveExportedWidget (string name)
+		{
+			exportedWidgets.Remove (name);
+		}
+		
 		public IClass[] GetExportedClasses ()
 		{
 			IParserContext pctx = GuiBuilderProject.GetParserContext ();
