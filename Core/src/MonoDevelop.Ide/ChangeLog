@@ -9,7 +9,7 @@
 	* icons/Icons.16x16.LinkOverlay.png:
 	* MonoDevelop.Ide.addin.xml:
 	  Implemented support for files outside of a project directory.
-	  Fixes bug #79296.
+	  Fixes bug #79296. FolderNodeBuilder.cs code contributed by Chris Morgan.
 	
 	* Makefile.am:
 	* MonoDevelop.Ide.mdp: Updated.
