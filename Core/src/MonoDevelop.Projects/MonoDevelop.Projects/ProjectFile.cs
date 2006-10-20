@@ -153,6 +153,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public bool IsExternalToProject {
+			get {
+				return project != null && !Name.StartsWith (project.BaseDirectory);
+			}
+		}
+		
 		public object Clone()
 		{
 			ProjectFile pf = (ProjectFile) MemberwiseClone();
