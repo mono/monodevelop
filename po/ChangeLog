@@ -1,3 +1,8 @@
+2006-10-20  Wade Berrier  <wberrier@novell.com>
+
+	* POTFILES.in: Update to reflect removed file:
+	GuiBuilderEditSession.cs (which fixes make dist)
+
 2006-10-01  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* it.po: Updated. Thanks to Milo Casagrande.
