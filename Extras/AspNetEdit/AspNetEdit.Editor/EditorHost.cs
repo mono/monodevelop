@@ -106,7 +106,11 @@ namespace AspNetEdit.Editor
 		public void UseToolboxNode (ItemToolboxNode node)
 		{
 			ToolboxItemToolboxNode tiNode = node as ToolboxItemToolboxNode;
+			
 			if (tiNode != null) {
+				//load the type into this process
+				tiNode.Type.Load ();
+				
 				System.Drawing.Design.ToolboxItem ti = tiNode.GetToolboxItem ();
 				ti.CreateComponents (host);
 			}

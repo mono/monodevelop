@@ -1,3 +1,9 @@
+2006-10-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Editor/EditorHost.cs: Invoke the assembly loading 
+	  capability of ToolboxItemToolboxNode. Part 1 of getting custom 
+	  controls to load. 
+
 2006-10-11  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.Editor.Persistence/ControlPersister.cs: More general
