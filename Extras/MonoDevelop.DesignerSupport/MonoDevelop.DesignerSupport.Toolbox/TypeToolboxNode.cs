@@ -22,8 +22,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		}
 		
 		public TypeToolboxNode (string typeName, string assemblyName)
+		  : this (typeName, assemblyName, string.Empty)
 		{
-			this.type = new TypeReference (typeName, assemblyName);
+		}
+		
+		public TypeToolboxNode (string typeName, string assemblyName, string assemblyLocation)
+		{
+			this.type = new TypeReference (typeName, assemblyName, assemblyLocation);
 		}
 		
 		public TypeToolboxNode (Type type)
@@ -71,6 +76,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				assemblyLocation = type.Assembly.Location;
 		}
 		
+		public TypeReference (string typeName, string assemblyName, string assemblyLocation)
+			: this (typeName, assemblyName)
+		{
+			this.assemblyLocation = assemblyLocation;
+		}
+		
 		public string AssemblyName {
 			get { return assemblyName; }
 			set { assemblyName = value; }
@@ -86,13 +97,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { assemblyLocation = value; }
 		}
 		
+		//FIXME: three likely exceptions in here: need to handle them
 		public Type Load ()
 		{
-			Type type = System.Reflection.Assembly.Load (assemblyName).GetType (typeName, false);
+			System.Reflection.Assembly assem = null;
 			
-			if ((type == null) && (assemblyLocation.Length < 1)) {
-				System.Reflection.Assembly.LoadFile (assemblyLocation).GetType (typeName, false);
-			}
+			if (string.IsNullOrEmpty (assemblyLocation))
+				//GAC assembly
+				assem = System.Reflection.Assembly.Load (assemblyName);
+			else
+				//local assembly
+				assem = System.Reflection.Assembly.LoadFile (assemblyLocation);
+			
+			Type type = assem.GetType (typeName, true);
 			
 			return type;
 		}

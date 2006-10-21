@@ -70,6 +70,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			} 
 		}
 		
+		//ToolboxItems don't handle assembly locations, so hack around this
+		public ToolboxItemToolboxNode (ToolboxItem item, string assemblyLocation)
+		  : base (item.TypeName, item.AssemblyName.FullName)
+		{
+			base.Type.AssemblyLocation = assemblyLocation;
+		}
+				
+		
 		//for deserialisation
 		public ToolboxItemToolboxNode ()
 		{

@@ -1,3 +1,17 @@
+2006-10-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  Record the assembly location if it did not come from the GAC.
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs:
+	  Avoid trying to load from GAC when we actually have the assembly 
+	  location, so avoiding an exception.
+	  Together these are part 2 of getting custom controls to load.
+	
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:
+	  Helper constructors for recording assembly location for types that 
+	  come from non-GAC assemblies.
+
 2006-09-16  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Refactor a lot of code 

@@ -84,6 +84,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//create the ToolboxItem. The ToolboxItemToolboxNode will destry it, but need to
 				//be able to extract data from it first.
 				ToolboxItem item = (ToolboxItem) Activator.CreateInstance (toolboxItemType, new object[] {t});
+				
 				ToolboxItemToolboxNode node = new ToolboxItemToolboxNode (item);
 				
 				//Technically CategoryAttribute shouldn't be used for this purpose (intended for properties in the PropertyGrid)
@@ -102,6 +103,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					node.Category = "Web Controls";
 				
 				nodes.Add (node);
+			}
+			
+			//if assembly wasn't loaded from the GAC, record the path too
+			if (!scanAssem.GlobalAssemblyCache) {
+				string path = scanAssem.Location;
+				foreach (TypeToolboxNode n in nodes)
+					n.Type.AssemblyLocation = path;
 			}
 			
 			return (nodes);
