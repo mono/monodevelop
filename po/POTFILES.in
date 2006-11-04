@@ -267,7 +267,6 @@ Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml
 Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml
 Extras/VBNetBinding/VB.glade
 Extras/VersionControl/AddIn/VersionControl.addin.xml
-Extras/VersionControl/VersionControl/Subversion.cs
 Extras/WelcomePage/WelcomePage.addin.xml
 Extras/WelcomePage/WelcomePageOptionPanel.cs
 Extras/WelcomePage/WelcomePageView.cs

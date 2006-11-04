@@ -1,3 +1,8 @@
+2006-11-04  Wade Berrier  <wberrier@novell.com>
+
+	* POTFILES.in: Update to reflect removed file:
+	Extras/VersionControl/VersionControl/Subversion.cs (which fixes make dist)
+
 2006-10-20  Wade Berrier  <wberrier@novell.com>
 
 	* POTFILES.in: Update to reflect removed file:
