@@ -4,7 +4,7 @@ using System.IO;
 
 using Gtk;
 
-using VersionControl;
+using VersionControl.Service;
 
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
@@ -12,8 +12,10 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 using Algorithm.Diff.Gtk;
 
-namespace VersionControlPlugin {
-	public class DiffView : BaseView {
+namespace VersionControl.AddIn.Views 
+{
+	public class DiffView : BaseView 
+	{
 		object left, right;
 		Algorithm.Diff.Diff diff;
 		HBox box = new HBox(true, 0);
@@ -24,17 +26,16 @@ namespace VersionControlPlugin {
 		
 		double pos = -1;
 		
-		public static bool Show(string filepath, bool test) {
-			foreach (VersionControlSystem vc in VersionControlService.Providers) {
-				if (vc.IsDiffAvailable(filepath)) {
-					if (test) return true;
-					DiffView d = new DiffView(
-						Path.GetFileName(filepath),
-						vc.GetPathToBaseText(filepath),
-						filepath);
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
-					return true;
-				}
+		public static bool Show (Repository vc, string filepath, bool test)
+		{
+			if (vc.IsModified (filepath)) {
+				if (test) return true;
+				DiffView d = new DiffView(
+					Path.GetFileName(filepath),
+					vc.GetPathToBaseText(filepath),
+					filepath);
+				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+				return true;
 			}
 			return false;
 		}

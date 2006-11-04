@@ -6,10 +6,12 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using VersionControl.Service;
 
-namespace VersionControlPlugin {
-
-	public abstract class Task {
+namespace VersionControl.AddIn
+{
+	public abstract class Task 
+	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;
 		
@@ -20,14 +22,21 @@ namespace VersionControlPlugin {
 		
 		// This occurs on the main thread when the background
 		// task is complete.
-		protected abstract void Finished();
+		protected virtual void Finished()
+		{
+		}
 
 		protected Task() {
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
 			
 			/*tracker = ((TaskService)ServiceManager.GetService(typeof(TaskService)))
-				.GetStatusProgressMonitor("Version Control", null, true);*/
+				.GetVersionInfoProgressMonitor("Version Control", null, true);*/
 			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("Version Control", null, true, true);
+		}
+		
+		protected IProgressMonitor GetProgressMonitor ()
+		{
+			return tracker;
 		}
 		
 		public void Start() {

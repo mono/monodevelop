@@ -3,252 +3,19 @@ using System.Collections;
 using System.IO;
 
 using System.Runtime.InteropServices;
+using MonoDevelop.Core;
 
-namespace VersionControl {
-
-	public class SubversionVersionControl : VersionControlSystem {
-		SvnClient client;
-		
-		SvnClient Client {
-			get {
-				if (client == null) client = new SvnClient();
-				return client;
-			}
-		}
-	
-		string GetTextBase(string sourcefile) {
-			return Path.Combine(
-				Path.Combine(
-					Path.Combine(
-						Path.GetDirectoryName(sourcefile),
-						 ".svn"),
-					"text-base"),
-				Path.GetFileName(sourcefile) + ".svn-base"); 
-		}
-	
-		string GetDirectoryDotSvn(string sourcepath) {
-			return Path.Combine(sourcepath, ".svn");
-		}
-		
-		public override bool IsDiffAvailable(string sourcefile) {
-			try {
-				return File.Exists(GetTextBase(sourcefile))
-					&& IsStatusAvailable(sourcefile)
-					&& GetStatus(sourcefile, false).Status == NodeStatus.Modified;
-			} catch (Exception e) {
-				// GetStatus may throw an exception
-				return false;
-			}			
-		}
-		
-		public override bool IsHistoryAvailable(string sourcefile) {
-			return IsStatusAvailable(sourcefile);
-		}
-		
-		public override bool IsStatusAvailable(string sourcefile) {
-			return File.Exists(GetTextBase(sourcefile))
-				|| Directory.Exists(GetDirectoryDotSvn(sourcefile));
-		}
-
-		public override bool CanUpdate(string sourcepath) {
-			return IsStatusAvailable(sourcepath);
-		}
-		
-		public override bool CanCommit(string sourcepath) {
-			return CanUpdate(sourcepath);
-		}
-		
-		public override string GetPathToBaseText(string sourcefile) {
-			return GetTextBase(sourcefile);
-		}
-		
-		public override RevisionDescription[] GetHistory(string sourcefile, RevisionPtr since) {
-			ArrayList revs = new ArrayList();
-			
-			SvnClient.Rev startrev;
-			SvnRepoPath curPath;
-
-			// We need to know the URL and last committed revision of
-			// sourcefile.  We can GetStatus the sourcefile, unless
-			// this is the root directory of the repository, in which
-			// case GetStatus will throw an exception
-			try {
-				Node node = GetStatus(sourcefile, false);
-				startrev = ((SvnRevisionPtr)node.BaseRevision).ForApi();
-				curPath = (SvnRepoPath)node.RepositoryPath;
-			} catch (Exception e) {
-				startrev = SvnClient.Rev.Head;
-				curPath = new SvnRepoPath(Client.GetPathUrl(sourcefile));
-			} 
-			
-			SvnClient.Rev sincerev = SvnClient.Rev.First;
-			if (since != null)
-				sincerev = ((SvnRevisionPtr)since).ForApi();
-
-			foreach (SvnClient.LogEnt log in Client.Log(sourcefile, startrev, sincerev)) {
-				ArrayList changedPaths = new ArrayList();
-				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
-					changedPaths.Add(chg.Path + " (" + chg.Action + ")");
-				}
-				
-				RevisionDescription d = new RevisionDescription();
-				d.Author = log.Author;
-				d.Message = log.Message;
-				d.Revision = new SvnRevisionPtr(log.Revision);
-				d.RepositoryPath = curPath;
-				d.Time = log.Time;
-				d.ChangedFiles = (string[])changedPaths.ToArray(typeof(string));
-				revs.Add(d);
-
-				// Be aware of the change in path resulting from a copy.
-				// Not sure if this works.
-				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
-					if (curPath.Url.EndsWith(chg.Path) && chg.CopyFromPath != null) {
-						curPath = new SvnRepoPath(curPath.Url.Substring(0, curPath.Url.Length-chg.Path.Length) + chg.CopyFromPath);
-						break;
-					}
-				}
-			}
-			return (RevisionDescription[])revs.ToArray(typeof(RevisionDescription));
-		}
-		
-		public override string GetTextAtRevision(RepositoryPath repositoryPath, RevisionPtr revision) {
-			return Client.Cat(((SvnRepoPath)repositoryPath).Url, ((SvnRevisionPtr)revision).ForApi() );
-		}
-		
-		public override Node GetStatus(string sourcefile, bool getRemoteStatus) {
-			if (File.Exists(sourcefile))
-				return GetFileStatus(sourcefile, getRemoteStatus);
-			else if (Directory.Exists(sourcefile))
-				return GetDirStatus(sourcefile, getRemoteStatus);
-			else
-				throw new ArgumentException("Path does not exist.");
-		}
-		
-		private Node GetFileStatus(string sourcefile, bool getRemoteStatus) {
-			IList statuses = Client.Status(sourcefile, SvnClient.Rev.Head, false, false, getRemoteStatus);
-			if (statuses.Count == 0)
-				throw new ArgumentException("Path does not exist in the repository.");
-				
-			SvnClient.StatusEnt ent;
-			if (statuses.Count != 1)
-				throw new ArgumentException("Path does not refer to a file in the repository.");
-			ent = (SvnClient.StatusEnt)statuses[0];
-			if (ent.IsDirectory)
-				throw new ArgumentException("Path does not refer to a file.");
-			return CreateNode(ent);
-		}
-		
-		private Node GetDirStatus(string sourcefile, bool getRemoteStatus) {
-			string parent = Directory.GetParent(sourcefile).FullName;
-			IList statuses = Client.Status(parent, SvnClient.Rev.Head, false, false, getRemoteStatus);
-			foreach (SvnClient.StatusEnt ent in statuses) {
-				if (!ent.IsDirectory) continue;
-				if (ent.Name != Path.GetFileName(sourcefile)) continue;
-				return CreateNode(ent);
-			}
-			throw new ArgumentException("Path does not exist in the repository.");
-		}
-		
-		public override Node[] GetDirectoryStatus(string sourcepath, bool getRemoteStatus, bool recursive) {
-			IList ents = Client.Status(sourcepath, SvnClient.Rev.Head, recursive, true, getRemoteStatus);
-			return CreateNodes(ents);
-		}
-		
-		public override void Update(string path, bool recurse, UpdateCallback callback) {
-			Client.Update(path, recurse, callback);
-		}
-		
-		public override void Commit(string[] paths, string message, UpdateCallback callback) {
-			Client.Commit(paths, message, callback);
-		}
-		
-		private Node CreateNode(SvnClient.StatusEnt ent) {
-			Node ret = new Node();
-			ret.RepositoryPath = new SvnRepoPath(ent.Url);
-			ret.LocalPath = ent.LocalFilePath;
-			ret.IsDirectory = ent.IsDirectory;
-			ret.BaseRevision = new SvnRevisionPtr(ent.Revision);
-			ret.Status = ConvertStatus(ent.Schedule, ent.TextStatus);
-			
-			if (ent.RemoteTextStatus != SvnClient.NodeStatus.EMPTY) {
-				ret.RemoteStatus = ConvertStatus(SvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
-				ret.RemoteUpdate = new RevisionDescription();
-				ret.RemoteUpdate.RepositoryPath = new SvnRepoPath(ent.Url);
-				ret.RemoteUpdate.Revision = new SvnRevisionPtr(ent.LastCommitRevision);
-				ret.RemoteUpdate.Author = ent.LastCommitAuthor;
-				ret.RemoteUpdate.Message = "(unavailable)";
-				ret.RemoteUpdate.Time = ent.LastCommitDate;
-			}
-			
-			return ret;
-		}
-		
-		private Node[] CreateNodes(IList ent) {
-			Node[] ret = new Node[ent.Count];
-			for (int i = 0; i < ent.Count; i++)
-				ret[i] = CreateNode((SvnClient.StatusEnt)ent[i]);
-			return ret;
-		}
-		
-		private NodeStatus ConvertStatus(SvnClient.NodeSchedule schedule, SvnClient.NodeStatus status) {
-			switch (schedule) {
-				case SvnClient.NodeSchedule.Add: return NodeStatus.ScheduledAdd;
-				case SvnClient.NodeSchedule.Delete: return NodeStatus.ScheduledDelete;
-				case SvnClient.NodeSchedule.Replace: return NodeStatus.ScheduledReplace;
-			}
-		
-			switch (status) {
-				case SvnClient.NodeStatus.None: return NodeStatus.Unchanged;
-				case SvnClient.NodeStatus.Unversioned: return NodeStatus.Unversioned;
-				case SvnClient.NodeStatus.Modified: return NodeStatus.Modified;
-				case SvnClient.NodeStatus.Merged: return NodeStatus.Modified;
-				case SvnClient.NodeStatus.Conflicted: return NodeStatus.Conflicted;
-				case SvnClient.NodeStatus.Ignored: return NodeStatus.UnversionedIgnored;
-				case SvnClient.NodeStatus.Obstructed: return NodeStatus.Obstructed;
-			}
-			return NodeStatus.Unknown;
-		}
-		
-		private class SvnRepoPath : RepositoryPath {
-			public readonly string Url;
-			
-			public SvnRepoPath(string url) {
-				Url = url;
-			}
-			
-			public override string ToString() {
-				return Url;
-			}
-		}
-
-		private class SvnRevisionPtr : RevisionPtr {
-			public readonly int Rev;
-			public SvnRevisionPtr(int rev) { Rev = rev; }
-			
-			public override string ToString() {
-				return Rev.ToString();
-			}
-		
-			public override RevisionPtr GetPrevious() {
-				return new SvnRevisionPtr(Rev-1);
-			}
-			
-			public SvnClient.Rev ForApi() {
-				return SvnClient.Rev.Number(Rev);
-			}
-		}
-
-	}
-	
-	public class SvnClient {
+namespace VersionControl.Service.Subversion
+{
+	public class SvnClient
+	{
 		IntPtr pool;
 		IntPtr ctx;
 		
 		object sync = new object();
 		bool inProgress = false;
 		
-		UpdateCallback updatecallback;
+		IProgressMonitor updatemonitor;
 		string commitmessage = null;
 		
 		// retain this so the delegates aren't GC'ed
@@ -410,7 +177,7 @@ namespace VersionControl {
 			Cat(pathorurl, revision, memstream);
 			try {
 				return System.Text.Encoding.UTF8.GetString(memstream.GetBuffer());
-			} catch (Exception e) {
+			} catch {
 			}
 			return System.Text.Encoding.ASCII.GetString(memstream.GetBuffer());
 		}
@@ -430,8 +197,8 @@ namespace VersionControl {
 			}
 		}
 
-		public void Update(string path, bool recurse, UpdateCallback callback) {
-			if (path == null || callback == null) throw new ArgumentException();
+		public void Update(string path, bool recurse, IProgressMonitor monitor) {
+			if (path == null || monitor == null) throw new ArgumentException();
 			
 			lock (sync) {
 				if (inProgress)
@@ -439,7 +206,7 @@ namespace VersionControl {
 				inProgress = true;
 			}
 			
-			updatecallback = callback;
+			updatemonitor = monitor;
 			int result_rev;
 			Rev rev = Rev.Head;
 			IntPtr localpool = newpool(pool);
@@ -447,13 +214,54 @@ namespace VersionControl {
 				CheckError(svn_client_update(out result_rev, path, ref rev, recurse ? 1 : 0, ctx, localpool));
 			} finally {
 				apr_pool_destroy(localpool);
-				updatecallback = null;
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
+		public void Add(string path, bool recurse, IProgressMonitor monitor) {
+			if (path == null || monitor == null) throw new ArgumentException();
+			
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			updatemonitor = monitor;
+			IntPtr localpool = newpool(pool);
+			try {
+				CheckError(svn_client_add(path, (recurse ? 1 :0), ctx, localpool));
+			} finally {
+				apr_pool_destroy(localpool);
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
+		public void Checkout (string url, string path, Rev rev, bool recurse, IProgressMonitor monitor) {
+			if (url == null || monitor == null) throw new ArgumentException();
+			
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			updatemonitor = monitor;
+			Rev revision;
+			IntPtr localpool = newpool(pool);
+			try {
+				CheckError(svn_client_checkout(out revision, url, path, ref rev, (recurse ? 1 :0), ctx, localpool));
+			} finally {
+				apr_pool_destroy(localpool);
+				updatemonitor = null;
 				inProgress = false;
 			}
 		}
 
-		public void Commit(string[] paths, string message, UpdateCallback callback) {
-			if (paths == null || message == null || callback == null)
+		public void Commit(string[] paths, string message, IProgressMonitor monitor) {
+			if (paths == null || message == null || monitor == null)
 				throw new ArgumentNullException();
 		
 			lock (sync) {
@@ -461,7 +269,7 @@ namespace VersionControl {
 				inProgress = true;
 			}
 
-			updatecallback = callback;
+			updatemonitor = monitor;
 			
 			IntPtr localpool = newpool(pool);
 			try {
@@ -481,9 +289,142 @@ namespace VersionControl {
 					0, ctx, localpool));
 			} finally {
 				commitmessage = null;
-				updatecallback = null;
+				updatemonitor = null;
 				apr_pool_destroy(localpool);
 				inProgress = false;
+			}
+		}
+		
+		public void Mkdir (string[] paths, string message, IProgressMonitor monitor) 
+		{
+			if (paths == null || monitor == null)
+				throw new ArgumentNullException();
+		
+			lock (sync) {
+				if (inProgress) throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+
+			updatemonitor = monitor;
+			
+			IntPtr localpool = newpool(pool);
+			try {
+				// Put each item into an APR array.
+				IntPtr array = apr_array_make(localpool, paths.Length, IntPtr.Size);
+				foreach (string path in paths) {
+					IntPtr item = apr_array_push(array);
+					Marshal.WriteIntPtr(item, apr_pstrdup(localpool, path));
+				}
+				
+				commitmessage = message;
+
+				IntPtr commit_info = IntPtr.Zero;
+				IntPtr pp = svn_client_mkdir2 (ref commit_info, array, ctx, localpool); 
+				CheckError(pp);
+			} finally {	
+				commitmessage = null;
+				updatemonitor = null;
+				apr_pool_destroy(localpool);
+				inProgress = false;
+			}
+		}
+		
+		public void Delete(string path, bool force, IProgressMonitor monitor) {
+			if (path == null || monitor == null)
+				throw new ArgumentNullException();
+		
+			lock (sync) {
+				if (inProgress) throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+
+			updatemonitor = monitor;
+			
+			IntPtr localpool = newpool(pool);
+			try {
+				// Put each item into an APR array.
+				IntPtr array = apr_array_make(localpool, 0, IntPtr.Size);
+				//foreach (string path in paths) {
+					IntPtr item = apr_array_push(array);
+					Marshal.WriteIntPtr(item, apr_pstrdup(localpool, path));
+				//}
+
+				int result_rev;
+						
+				CheckError(svn_client_delete(out result_rev, array, (force ? 1 : 0), ctx, localpool));
+			} finally {
+				commitmessage = null;
+				updatemonitor = null;
+				apr_pool_destroy(localpool);
+				inProgress = false;
+			}
+		}
+		
+		public void Move(string srcPath, string destPath, Rev revision, bool force, IProgressMonitor monitor) {
+			if (srcPath == null || destPath == null || monitor == null) throw new ArgumentException();
+			
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			updatemonitor = monitor;
+			int result_rev;
+			IntPtr localpool = newpool(pool);
+			try {
+				CheckError(svn_client_move(out result_rev, srcPath, ref revision,
+											   destPath, (force ? 1 : 0), ctx, pool));
+			} finally {
+				apr_pool_destroy(localpool);
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
+		public string PathDiff (string path1, Rev revision1, string path2, Rev revision2, bool recursive)
+		{
+			IntPtr outfile = IntPtr.Zero;
+			IntPtr errfile = IntPtr.Zero;
+			string fout = null;
+			string ferr = null;
+			IntPtr localpool = newpool(pool);
+			
+			try {
+				IntPtr options = apr_array_make (localpool, 0, IntPtr.Size);
+				
+				fout = Path.GetTempFileName ();
+				ferr = Path.GetTempFileName ();
+				int res1 = apr_file_open (ref outfile, fout, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
+				int res2 = apr_file_open (ref errfile, ferr, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
+				
+				if (res1==0 && res2==0) {
+					CheckError (svn_client_diff (options, path1, ref revision1, path2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
+					return fout;
+				} else {
+					throw new Exception ("Could not get diff information");
+				}
+			} catch {
+				try {
+					if (outfile != IntPtr.Zero)
+						apr_file_close (outfile);
+					if (fout != null)
+						File.Delete (fout);
+					outfile = IntPtr.Zero;
+					fout = null;
+				} catch {}
+				throw;
+			} finally {
+				try {
+					// Cleanup
+					apr_pool_destroy (localpool);
+					if (outfile != IntPtr.Zero)
+						apr_file_close (outfile); 
+					if (errfile != IntPtr.Zero)
+						apr_file_close (errfile);
+					if (ferr != null)
+						File.Delete (ferr);
+				} catch {}
 			}
 		}
 		
@@ -492,6 +433,7 @@ namespace VersionControl {
 			IntPtr pool) {
 			log_msg = apr_pstrdup(pool, commitmessage);
 			tmp_file = IntPtr.Zero;
+			Console.WriteLine ("LOG FUNC");
 			return IntPtr.Zero;
 		}
 
@@ -530,8 +472,9 @@ namespace VersionControl {
 			BlameRevision*/
 				}
 			
-				if (updatecallback != null)
-					updatecallback(Marshal.PtrToStringAnsi(path), actiondesc);
+				if (updatemonitor != null) {
+					updatemonitor.Log.WriteLine (actiondesc + " " + Marshal.PtrToStringAnsi(path));
+				}
 		}
 		
 		private class StatusCollector {
@@ -639,24 +582,24 @@ namespace VersionControl {
   			public readonly DateTime LastCommitDate;
   			public readonly string LastCommitAuthor;	
  			
-			public readonly NodeStatus TextStatus;
-			public readonly NodeStatus PropsStatus;
+			public readonly VersionStatus TextStatus;
+			public readonly VersionStatus PropsStatus;
 			public readonly bool Locked;
 			public readonly bool Switched;
-			public readonly NodeStatus RemoteTextStatus;
-			public readonly NodeStatus RemotePropsStatus;
+			public readonly VersionStatus RemoteTextStatus;
+			public readonly VersionStatus RemotePropsStatus;
 			
 			static readonly DateTime Epoch = new DateTime(1970,1,1);
 
 			internal StatusEnt(svn_wc_status_t status, string localpath) {
 				LocalFilePath = localpath;
-				TextStatus = (NodeStatus)status.svn_wc_status_kind_text;
-				PropsStatus = (NodeStatus)status.svn_wc_status_kind_props;
+				TextStatus = (VersionStatus)status.svn_wc_status_kind_text;
+				PropsStatus = (VersionStatus)status.svn_wc_status_kind_props;
 				Locked = status.locked != 0;
 				Copied = status.copied != 0;
 				Switched = status.switched != 0;
-				RemoteTextStatus = (NodeStatus)status.svn_wc_status_kind_text_repo;
-				RemotePropsStatus = (NodeStatus)status.svn_wc_status_kind_props_repo;
+				RemoteTextStatus = (VersionStatus)status.svn_wc_status_kind_text_repo;
+				RemotePropsStatus = (VersionStatus)status.svn_wc_status_kind_props_repo;
 				
 				if (status.to_svn_wc_entry_t == IntPtr.Zero)
 					return;
@@ -734,7 +677,7 @@ namespace VersionControl {
 		
 		// Native Interop
 		
-		private const string aprlib = "libapr-0.so.0";
+		private const string aprlib = "libapr-1.so.0";
 
 		[DllImport(aprlib)] static extern void apr_initialize();
 		
@@ -753,6 +696,15 @@ namespace VersionControl {
 		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
 		
 		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
+
+		[DllImport(aprlib)] static extern int apr_file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
+
+		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 
+		
+		const int APR_OS_DEFAULT = 0xFFF;
+		const int APR_WRITE = 2;
+		const int APR_CREATE = 4;
+		const int APR_TRUNCATE = 16;
 
 		private const string svnclientlib = "libsvn_client-1.so.0";
 		
@@ -793,7 +745,7 @@ namespace VersionControl {
 			Replace
 		}
 		
-		public enum NodeStatus {
+		public enum VersionStatus {
 			EMPTY,
 			None,
 			Unversioned,
@@ -974,13 +926,43 @@ namespace VersionControl {
 			string path, ref Rev revision,
 			int recurse, IntPtr ctx, IntPtr pool);
 			
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_delete (
+			out int result_rev, IntPtr apr_array_header_t_targets, 
+			int force, IntPtr ctx, IntPtr pool);
+			
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_add (
+			string path, int recurse, IntPtr ctx, IntPtr pool);
+			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_commit (
 			ref IntPtr svn_client_commit_info_t_commit_info,
 			IntPtr apr_array_header_t_targets, int nonrecursive,
 			IntPtr ctx, IntPtr pool);
-	}
-
-	public class SubversionException : ApplicationException {
-		public SubversionException(string message) : base(message) { }
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_move(
+			out int result_rev, string srcPath, ref Rev rev,
+			string destPath, int force, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout(
+			out Rev revision, string url, string path, ref Rev rev, 
+			int recurse, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_mkdir2(
+			ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool);
+			
+		[DllImport(svnclientlib)]
+		static extern IntPtr svn_client_diff (
+			IntPtr diff_options,
+			string path1,
+			ref Rev revision1,
+			string path2,
+			ref Rev revision2,
+			int recurse,
+			int ignore_ancestry,
+			int no_diff_deleted,
+			IntPtr outfile,
+			IntPtr errfile,
+			IntPtr ctx,
+			IntPtr pool
+		);
+	
 	}
 }

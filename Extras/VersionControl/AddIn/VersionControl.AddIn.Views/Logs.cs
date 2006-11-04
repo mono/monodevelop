@@ -3,41 +3,42 @@ using System.Collections;
 using System.IO;
 
 using Gtk;
-using VersionControl;
+using VersionControl.Service;
 
 using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.Gui;
 
-namespace VersionControlPlugin {
-	public class LogView : BaseView {
+namespace VersionControl.AddIn.Views
+{
+	public class LogView : BaseView
+	{
 		string filepath;
 		Widget widget;
-		RevisionDescription[] history;
-		VersionControlSystem vc;
-		RevisionPtr since;
+		Revision[] history;
+		Repository vc;
+		VersionInfo vinfo;
 		
 		TreeView loglist;
 		ListStore changedpathstore;
 		
-		public static bool Show(string filepath, bool isDirectory, RevisionPtr since, bool test) {
-			foreach (VersionControlSystem vc in VersionControlService.Providers) {
-				if (vc.IsHistoryAvailable(filepath)) {
-					if (test) return true;
-					new Worker(vc, filepath, isDirectory, since).Start();
-					return true;
-				}
+		public static bool Show (Repository vc, string filepath, bool isDirectory, Revision since, bool test)
+		{
+			if (vc.IsVersioned (filepath)) {
+				if (test) return true;
+				new Worker(vc, filepath, isDirectory, since).Start();
+				return true;
 			}
 			return false;
 		}
 		
 		private class Worker : Task {
-			VersionControlSystem vc;
+			Repository vc;
 			string filepath;
 			bool isDirectory;
-			RevisionPtr since;
-			RevisionDescription[] history;
+			Revision since;
+			Revision[] history;
 						
-			public Worker(VersionControlSystem vc, string filepath, bool isDirectory, RevisionPtr since) {
+			public Worker (Repository vc, string filepath, bool isDirectory, Revision since) {
 				this.vc = vc;
 				this.filepath = filepath;
 				this.isDirectory = isDirectory;
@@ -49,7 +50,7 @@ namespace VersionControlPlugin {
 			}
 			
 			protected override void Run() {
-				history = vc.GetHistory(filepath, since);
+				history = vc.GetHistory (filepath, since);
 			}
 		
 			protected override void Finished() {
@@ -59,11 +60,13 @@ namespace VersionControlPlugin {
 			}
 		}
 		
-		public LogView(string filepath, bool isDirectory, RevisionDescription[] history, VersionControlSystem vc) 
+		public LogView (string filepath, bool isDirectory, Revision[] history, Repository vc) 
 			: base(Path.GetFileName(filepath) + " Log") {
 			this.vc = vc;
 			this.filepath = filepath;
 			this.history = history;
+			
+			this.vinfo = vc.GetVersionInfo (filepath, false);
 
 			// Widget setup
 			
@@ -72,7 +75,6 @@ namespace VersionControlPlugin {
 			widget = box;
 
 			loglist = new TreeView();
-			loglist.Selection.Changed += new EventHandler(TreeSelectionChanged);
 			ScrolledWindow loglistscroll = new ScrolledWindow();
 			loglistscroll.Add(loglist);
 			loglistscroll.HscrollbarPolicy = PolicyType.Never;
@@ -122,9 +124,9 @@ namespace VersionControlPlugin {
 			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string));
 			loglist.Model = logstore;
 			 
-			foreach (RevisionDescription d in history) {
+			foreach (Revision d in history) {
 				logstore.AppendValues(
-					d.Revision.ToString(),
+					d.ToString(),
 					d.Time.ToString(),
 					d.Author,
 					d.Message == "" ? "(No message.)" : d.Message);
@@ -137,9 +139,11 @@ namespace VersionControlPlugin {
 			
 			changedpathstore = new ListStore (typeof (string));
 			changedPaths.Model = changedpathstore;
+			
+			loglist.Selection.Changed += new EventHandler(TreeSelectionChanged);
 		}
 		
-		RevisionDescription GetSelectedRev() {
+		Revision GetSelectedRev() {
 			TreePath path;
 			TreeViewColumn col;
 			loglist.GetCursor(out path, out col);
@@ -148,22 +152,22 @@ namespace VersionControlPlugin {
 		}
 		
 		void TreeSelectionChanged(object o, EventArgs args) {
-			RevisionDescription d = GetSelectedRev();
+			Revision d = GetSelectedRev();
 			changedpathstore.Clear();
 			foreach (string n in d.ChangedFiles)
 				changedpathstore.AppendValues(n);
 		}
 		
 		void DiffButtonClicked(object src, EventArgs args) {
-			RevisionDescription d = GetSelectedRev();
+			Revision d = GetSelectedRev();
 			if (d == null) return;
-			new DiffWorker(Path.GetFileName(filepath), vc, d.RepositoryPath, d.Revision).Start();
+			new DiffWorker(Path.GetFileName(filepath), vc, vinfo.RepositoryPath, d).Start();
 		}
 		
 		void ViewTextButtonClicked(object src, EventArgs args) {
-			RevisionDescription d = GetSelectedRev();
+			Revision d = GetSelectedRev();
 			if (d == null) return;
-			HistoricalFileView.Show(filepath, vc, d.RepositoryPath, d.Revision);
+			HistoricalFileView.Show(filepath, vc, vinfo.RepositoryPath, d);
 		}
 		
 		public override Gtk.Widget Control { 
@@ -173,13 +177,13 @@ namespace VersionControlPlugin {
 		}
 		
 		internal class DiffWorker : Task {
-			VersionControlSystem vc;
+			Repository vc;
 			string name;
-			RepositoryPath revPath;
-			RevisionPtr revision;
+			Revision revision;
 			string text1, text2;
+			string revPath;
 						
-			public DiffWorker(string name, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
+			public DiffWorker(string name, Repository vc, string revPath, Revision revision) {
 				this.name = name;
 				this.vc = vc;
 				this.revPath = revPath;
@@ -211,7 +215,8 @@ namespace VersionControlPlugin {
 		
 	}
 
-	public class HistoricalFileView : BaseView {
+	public class HistoricalFileView : BaseView 
+	{
 		SourceEditor widget;
 	
 		public static void Show(string name, string file, string text) {
@@ -219,7 +224,7 @@ namespace VersionControlPlugin {
 			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
 		}
 			
-		public static void Show(string file, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
+		public static void Show(string file, Repository vc, string revPath, Revision revision) {
 			new Worker(Path.GetFileName(file) + " " + revision.ToString(),
 				file, vc, revPath, revision).Start();
 		}
@@ -242,13 +247,13 @@ namespace VersionControlPlugin {
 		}
 	
 		internal class Worker : Task {
-			VersionControlSystem vc;
+			Repository vc;
 			string name, file;
-			RepositoryPath revPath;
-			RevisionPtr revision;
+			string revPath;
+			Revision revision;
 			string text;
 						
-			public Worker(string name, string file, VersionControlSystem vc, RepositoryPath revPath, RevisionPtr revision) {
+			public Worker(string name, string file, Repository vc, string revPath, Revision revision) {
 				this.name = name;
 				this.file = file;
 				this.vc = vc;

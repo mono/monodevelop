@@ -1,3 +1,11 @@
+2006-11-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	Big reorganization of the add-in. Implemented support for saving
+	repository configuration. Implemented publish and checkout
+	commands. Made the add-in pluggable, so it can support other
+	repositories. Some of this work was	started	by Thiago Becker and
+	Rafael Giorgetti as part of a Google SoC project.
+
 2006-09-19 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* AddIn/VersionControlAddIn.mdp:

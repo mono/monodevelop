@@ -1,0 +1,10 @@
+<objects>
+  <object type="VersionControlAddIn.FileStatusHeader" palette-category="widget" allow-children="false">
+    <itemgroups>
+      <itemgroup ref="Gtk.Widget" />
+    </itemgroups>
+    <signals>
+      <itemgroup ref="Gtk.Widget" />
+    </signals>
+  </object>
+</objects>

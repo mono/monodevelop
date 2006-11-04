@@ -1,6 +1,25 @@
-build_sources = Addin.cs Diffs.cs Logs.cs Statuses.cs Task.cs Update.cs
+build_sources = VersionControl.AddIn/AddRemoveMoveCommand.cs \
+				VersionControl.AddIn/BaseView.cs \
+				VersionControl.AddIn/Checkout.cs \
+				VersionControl.AddIn/Commands.cs \
+				VersionControl.AddIn/CommitCommand.cs \
+				VersionControl.AddIn/Publish.cs \
+				VersionControl.AddIn/Task.cs \
+				VersionControl.AddIn/Update.cs \
+				VersionControl.AddIn/VersionControlNodeExtension.cs \
+				VersionControl.AddIn/VersionControlProjectService.cs \
+				VersionControl.AddIn.Dialogs/CommitDialog.cs \
+				VersionControl.AddIn.Dialogs/EditRepositoryDialog.cs \
+				VersionControl.AddIn.Dialogs/SelectRepositoryDialog.cs \
+				VersionControl.AddIn.Views/CellRendererDiff.cs \
+				VersionControl.AddIn.Views/FileStatusHeader.cs \
+				VersionControl.AddIn.Views/Diffs.cs \
+				VersionControl.AddIn.Views/Logs.cs \
+				VersionControl.AddIn.Views/Statuses.cs \
+				gtk-gui/generated.cs
 
-REFS = /r:$(ADDIN_BUILD)/Diff.dll \
+REFS = /r:Mono.Posix.dll \
+	   /r:$(ADDIN_BUILD)/Diff.dll \
 	   /r:$(ADDIN_BUILD)/DiffWidget.dll \
 	   /r:$(ADDIN_BUILD)/VersionControl.dll \
 	   /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -15,15 +34,25 @@ REFS = /r:$(ADDIN_BUILD)/Diff.dll \
        $(GCONF_SHARP_LIBS) \
        $(GTKSOURCEVIEW_SHARP_LIBS)
 
-RES = -resource:$(srcdir)/overlay_added.png,overlay_added.png \
-	  -resource:$(srcdir)/overlay_modified.png,overlay_modified.png \
-	  -resource:$(srcdir)/overlay_conflicted.png,overlay_conflicted.png \
-	  -resource:$(srcdir)/overlay_normal.png,overlay_normal.png \
-	  -resource:$(srcdir)/overlay_locked.png,overlay_locked.png \
-	  -resource:$(srcdir)/menu_log.png,menu_log.png \
-	  -resource:$(srcdir)/menu_diff.png,menu_diff.png \
-	  -resource:$(srcdir)/menu_update.png,menu_update.png \
-	  -resource:$(srcdir)/menu_status.png,menu_status.png
+RES = overlay_added.png \
+	  overlay_conflicted.png \
+	  overlay_controled.png \
+	  overlay_locked.png \
+	  overlay_modified.png \
+	  overlay_normal.png \
+	  overlay_removed.png \
+	  overlay_unversioned.png \
+	  repository.png \
+	  menu_add.png \
+	  menu_commit.png \
+	  menu_diff.png \
+	  menu_log.png \
+	  menu_remote_status.png \
+	  menu_remove.png \
+	  menu_status.png \
+	  menu_update.png \
+	  gtk-gui/objects.xml \
+	  vcs.glade
 
 ADDIN = VersionControl.addin.xml
 
@@ -48,10 +77,10 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(DLL): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS) $(RES)
+	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS) $(RES:%=/resource:%)
 
 CLEANFILES = $(DLL) $(DLL).mdb $(ADDIN_BUILD)/$(ADDIN)
 
-EXTRA_DIST = $(build_sources) $(ADDIN) overlay_added.png overlay_modified.png overlay_conflicted.png overlay_normal.png overlay_locked.png menu_log.png menu_diff.png menu_update.png menu_status.png
+EXTRA_DIST = $(build_sources) $(ADDIN) $(RES)
 
 
