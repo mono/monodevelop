@@ -79,7 +79,7 @@
 		<Command id = "VersionControl.AddIn.Commands.Checkout" 
 			defaultHandler = "VersionControl.AddIn.CheckoutCommand"
 			_label = "Checkout..."
-			icon = "vc-add"
+			icon = "vc-update"
 			description = "Checkout a project from repository."/>
 	</Extension>
 	

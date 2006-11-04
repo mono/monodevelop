@@ -30,7 +30,6 @@ REFS = /r:Mono.Posix.dll \
        /r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
        /r:System.Data.dll \
        $(GTK_SHARP_LIBS) \
-       $(GLADE_SHARP_LIBS) \
        $(GCONF_SHARP_LIBS) \
        $(GTKSOURCEVIEW_SHARP_LIBS)
 
@@ -51,8 +50,7 @@ RES = overlay_added.png \
 	  menu_remove.png \
 	  menu_status.png \
 	  menu_update.png \
-	  gtk-gui/objects.xml \
-	  vcs.glade
+	  gtk-gui/objects.xml
 
 ADDIN = VersionControl.addin.xml
 
