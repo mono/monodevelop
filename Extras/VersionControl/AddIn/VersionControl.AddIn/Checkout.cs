@@ -68,8 +68,8 @@ namespace VersionControl.AddIn
 				}	
 			}
 			
-				
-			IdeApp.ProjectOperations.OpenCombine (projectFn);
+			if (projectFn != null)
+				IdeApp.ProjectOperations.OpenCombine (projectFn);
 		}
 	}
 }

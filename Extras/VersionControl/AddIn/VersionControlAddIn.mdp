@@ -26,7 +26,6 @@
     <File name="./menu_status.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./VersionControl.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./overlay_removed.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="../vcs.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./vcs.glade" subtype="Code" buildaction="Nothing" />
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="Exclude" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />

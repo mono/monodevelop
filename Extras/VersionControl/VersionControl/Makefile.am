@@ -10,6 +10,7 @@ REFS = 	/r:Mono.Posix.dll \
 FILES = VersionControl.Service.Subversion/SubversionRepository.cs \
 		VersionControl.Service.Subversion/SvnClient.cs \
 		VersionControl.Service.Subversion/SubversionVersionControl.cs \
+		VersionControl.Service.Subversion/LibApr.cs \
 		VersionControl.Service.Cvs/CvsRepository.cs \
 		VersionControl.Service.Cvs/CvsSystem.cs \
 		VersionControl.Service/VersionControlSystem.cs \

@@ -1,3 +1,22 @@
+2006-11-06 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn/VersionControl.AddIn.Dialogs/SelectRepositoryDialog.cs:
+	  Some minor UI fixes.
+	* AddIn/VersionControl.AddIn/Checkout.cs: Added null check.
+	* AddIn/VersionControlAddIn.mdp: Removed unused resource.
+	
+	* AddIn/gtk-gui/gui.stetic:
+	* AddIn/gtk-gui/generated.cs: Regenerated.
+	
+	* VersionControl/VersionControl.Service.Subversion/LibApr.cs: 
+	* VersionControl/VersionControl.Service.Subversion/SvnClient.cs: 
+	  Moved apr pinvokes to the LibApr class, which can now support 
+	  libapr0 and libapr1.
+	  
+	* DiffWidget/DiffWidget.mdp:
+	* VersionControl/Makefile.am:
+	* VersionControl/VersionControl.mdp: Updated.
+
 2006-11-04 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddIn/VersionControl.addin.xml: Fix checkout command icon.

@@ -11,6 +11,7 @@ namespace VersionControl.Service.Subversion
 	{
 		IntPtr pool;
 		IntPtr ctx;
+		static LibApr apr;
 		
 		object sync = new object();
 		bool inProgress = false;
@@ -22,12 +23,12 @@ namespace VersionControl.Service.Subversion
 		svn_client_ctx_t ctxstruct;
 		
 		static SvnClient() {
-			apr_initialize();
+			apr = LibApr.GetLib ();
 		}
 
 		private IntPtr newpool(IntPtr parent) {
 			IntPtr p;
-			apr_pool_create_ex(out p, parent, IntPtr.Zero, IntPtr.Zero);
+			apr.pool_create_ex(out p, parent, IntPtr.Zero, IntPtr.Zero);
 			if (p == IntPtr.Zero)
 				throw new InvalidOperationException("Could not create an APR pool.");
 			return p;
@@ -70,7 +71,7 @@ namespace VersionControl.Service.Subversion
 		}
 
 		~SvnClient() {
-			apr_pool_destroy(pool);
+			apr.pool_destroy(pool);
 		}
 
 		// Wrappers for native interop
@@ -94,21 +95,21 @@ namespace VersionControl.Service.Subversion
 				CheckError(svn_client_ls(out hash, pathorurl, ref revision,
 	               recurse ? 1 : 0, ctx, localpool));
 	               
-	             IntPtr item = apr_hash_first(localpool, hash);
+	             IntPtr item = apr.hash_first(localpool, hash);
 	             while (item != IntPtr.Zero) {
 	             	IntPtr nameptr, val;
 	             	int namelen;
-	             	apr_hash_this(item, out nameptr, out namelen, out val);
+	             	apr.hash_this(item, out nameptr, out namelen, out val);
 	             
 	             	string name = Marshal.PtrToStringAnsi(nameptr);
 					svn_dirent_t ent = (svn_dirent_t)Marshal.PtrToStructure(val, typeof(svn_dirent_t));				
-	             	item = apr_hash_next(item);
+	             	item = apr.hash_next(item);
 	             	
 	             	items.Add(new DirEnt(name, ent));
 	             }	             
 	             
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 			}
 			return items;
 		}
@@ -124,10 +125,13 @@ namespace VersionControl.Service.Subversion
 			int result_rev = 0;
 
 			StatusCollector collector = new StatusCollector(ret);
+			Console.WriteLine ("result_rev:" + result_rev + " path:" + path + " revision:" + revision + " descendDirs:" + descendDirs + " changedItemsOnly:" + changedItemsOnly + " remoteStatus:" + remoteStatus);
 			CheckError(svn_client_status (ref result_rev, path, ref revision,
 				new svn_wc_status_func_t(collector.Func),
 				IntPtr.Zero,
-				descendDirs ? 1 : 0, changedItemsOnly ? 0 : 1, remoteStatus ? 1 : 0, 1,
+				descendDirs ? 1 : 0, 
+				changedItemsOnly ? 0 : 1, 
+				remoteStatus ? 1 : 0, 1,
 				ctx, pool));
 				
 			return ret;
@@ -140,8 +144,8 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			IntPtr strptr = IntPtr.Zero;
 			try {
-				IntPtr array = apr_array_make(localpool, 0, IntPtr.Size);
-				IntPtr first = apr_array_push(array);
+				IntPtr array = apr.array_make(localpool, 0, IntPtr.Size);
+				IntPtr first = apr.array_push(array);
 				strptr = Marshal.StringToHGlobalAnsi(path);
 				Marshal.WriteIntPtr(first, strptr);
 
@@ -158,7 +162,7 @@ namespace VersionControl.Service.Subversion
 			} finally {
 				if (strptr != IntPtr.Zero)
 					Marshal.FreeHGlobal(strptr);
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 			}
 			return ret;
 		}
@@ -193,7 +197,7 @@ namespace VersionControl.Service.Subversion
 				svn_stream_set_write(svnstream, new svn_readwrite_fn_t(collector.Func));
 				CheckError(svn_client_cat(svnstream, pathorurl, ref revision, ctx, localpool));
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 			}
 		}
 
@@ -213,7 +217,7 @@ namespace VersionControl.Service.Subversion
 			try {
 				CheckError(svn_client_update(out result_rev, path, ref rev, recurse ? 1 : 0, ctx, localpool));
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				updatemonitor = null;
 				inProgress = false;
 			}
@@ -233,7 +237,7 @@ namespace VersionControl.Service.Subversion
 			try {
 				CheckError(svn_client_add(path, (recurse ? 1 :0), ctx, localpool));
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				updatemonitor = null;
 				inProgress = false;
 			}
@@ -254,7 +258,7 @@ namespace VersionControl.Service.Subversion
 			try {
 				CheckError(svn_client_checkout(out revision, url, path, ref rev, (recurse ? 1 :0), ctx, localpool));
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				updatemonitor = null;
 				inProgress = false;
 			}
@@ -274,10 +278,10 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			try {
 				// Put each item into an APR array.
-				IntPtr array = apr_array_make(localpool, 0, IntPtr.Size);
+				IntPtr array = apr.array_make(localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
-					IntPtr item = apr_array_push(array);
-					Marshal.WriteIntPtr(item, apr_pstrdup(localpool, path));
+					IntPtr item = apr.array_push(array);
+					Marshal.WriteIntPtr(item, apr.pstrdup(localpool, path));
 				}
 
 				IntPtr commit_info = IntPtr.Zero;
@@ -290,7 +294,7 @@ namespace VersionControl.Service.Subversion
 			} finally {
 				commitmessage = null;
 				updatemonitor = null;
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				inProgress = false;
 			}
 		}
@@ -310,10 +314,10 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			try {
 				// Put each item into an APR array.
-				IntPtr array = apr_array_make(localpool, paths.Length, IntPtr.Size);
+				IntPtr array = apr.array_make(localpool, paths.Length, IntPtr.Size);
 				foreach (string path in paths) {
-					IntPtr item = apr_array_push(array);
-					Marshal.WriteIntPtr(item, apr_pstrdup(localpool, path));
+					IntPtr item = apr.array_push(array);
+					Marshal.WriteIntPtr(item, apr.pstrdup(localpool, path));
 				}
 				
 				commitmessage = message;
@@ -324,7 +328,7 @@ namespace VersionControl.Service.Subversion
 			} finally {	
 				commitmessage = null;
 				updatemonitor = null;
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				inProgress = false;
 			}
 		}
@@ -343,10 +347,10 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			try {
 				// Put each item into an APR array.
-				IntPtr array = apr_array_make(localpool, 0, IntPtr.Size);
+				IntPtr array = apr.array_make(localpool, 0, IntPtr.Size);
 				//foreach (string path in paths) {
-					IntPtr item = apr_array_push(array);
-					Marshal.WriteIntPtr(item, apr_pstrdup(localpool, path));
+					IntPtr item = apr.array_push(array);
+					Marshal.WriteIntPtr(item, apr.pstrdup(localpool, path));
 				//}
 
 				int result_rev;
@@ -355,7 +359,7 @@ namespace VersionControl.Service.Subversion
 			} finally {
 				commitmessage = null;
 				updatemonitor = null;
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				inProgress = false;
 			}
 		}
@@ -376,7 +380,7 @@ namespace VersionControl.Service.Subversion
 				CheckError(svn_client_move(out result_rev, srcPath, ref revision,
 											   destPath, (force ? 1 : 0), ctx, pool));
 			} finally {
-				apr_pool_destroy(localpool);
+				apr.pool_destroy(localpool);
 				updatemonitor = null;
 				inProgress = false;
 			}
@@ -391,12 +395,12 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			
 			try {
-				IntPtr options = apr_array_make (localpool, 0, IntPtr.Size);
+				IntPtr options = apr.array_make (localpool, 0, IntPtr.Size);
 				
 				fout = Path.GetTempFileName ();
 				ferr = Path.GetTempFileName ();
-				int res1 = apr_file_open (ref outfile, fout, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
-				int res2 = apr_file_open (ref errfile, ferr, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
+				int res1 = apr.file_open (ref outfile, fout, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
+				int res2 = apr.file_open (ref errfile, ferr, APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
 				
 				if (res1==0 && res2==0) {
 					CheckError (svn_client_diff (options, path1, ref revision1, path2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
@@ -407,7 +411,7 @@ namespace VersionControl.Service.Subversion
 			} catch {
 				try {
 					if (outfile != IntPtr.Zero)
-						apr_file_close (outfile);
+						apr.file_close (outfile);
 					if (fout != null)
 						File.Delete (fout);
 					outfile = IntPtr.Zero;
@@ -417,11 +421,11 @@ namespace VersionControl.Service.Subversion
 			} finally {
 				try {
 					// Cleanup
-					apr_pool_destroy (localpool);
+					apr.pool_destroy (localpool);
 					if (outfile != IntPtr.Zero)
-						apr_file_close (outfile); 
+						apr.file_close (outfile); 
 					if (errfile != IntPtr.Zero)
-						apr_file_close (errfile);
+						apr.file_close (errfile);
 					if (ferr != null)
 						File.Delete (ferr);
 				} catch {}
@@ -431,7 +435,7 @@ namespace VersionControl.Service.Subversion
 		IntPtr svn_client_get_commit_log_impl(ref IntPtr log_msg,
 			ref IntPtr tmp_file, IntPtr commit_items, IntPtr baton,
 			IntPtr pool) {
-			log_msg = apr_pstrdup(pool, commitmessage);
+			log_msg = apr.pstrdup(pool, commitmessage);
 			tmp_file = IntPtr.Zero;
 			Console.WriteLine ("LOG FUNC");
 			return IntPtr.Zero;
@@ -502,15 +506,15 @@ namespace VersionControl.Service.Subversion
 			
 				ArrayList items = new ArrayList();
 
-				IntPtr item = apr_hash_first(pool, apr_hash_changed_paths);
+				IntPtr item = apr.hash_first(pool, apr_hash_changed_paths);
 				while (item != IntPtr.Zero) {
 					IntPtr nameptr, val;
 					int namelen;
-					apr_hash_this(item, out nameptr, out namelen, out val);
+					apr.hash_this(item, out nameptr, out namelen, out val);
 	             
 					string name = Marshal.PtrToStringAnsi(nameptr);
 					svn_log_changed_path_t ch = (svn_log_changed_path_t)Marshal.PtrToStructure(val, typeof(svn_log_changed_path_t));				
-					item = apr_hash_next(item);
+					item = apr.hash_next(item);
 	             	
 					items.Add(new LogEntChangedPath(name, ch));
 	             }	             
@@ -677,29 +681,6 @@ namespace VersionControl.Service.Subversion
 		
 		// Native Interop
 		
-		private const string aprlib = "libapr-1.so.0";
-
-		[DllImport(aprlib)] static extern void apr_initialize();
-		
-		[DllImport(aprlib)] static extern void apr_pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
-
-		[DllImport(aprlib)] static extern void apr_pool_destroy(IntPtr pool);
-
-		[DllImport(aprlib)] static extern IntPtr apr_hash_first(IntPtr pool, IntPtr hash);
-
-		[DllImport(aprlib)] static extern IntPtr apr_hash_next(IntPtr hashindex);
-
-		[DllImport(aprlib)] static extern void apr_hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val);
-		
-		[DllImport(aprlib)] static extern IntPtr apr_array_make(IntPtr pool, int nelts, int elt_size);
-		
-		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
-		
-		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
-
-		[DllImport(aprlib)] static extern int apr_file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
-
-		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 
 		
 		const int APR_OS_DEFAULT = 0xFFF;
 		const int APR_WRITE = 2;

@@ -22,12 +22,14 @@ namespace VersionControl.AddIn.Dialogs
 		protected Gtk.Button buttonEdit;
 		ArrayList systems = new ArrayList ();
 		Gtk.TreeStore store;
+		SelectRepositoryMode mode;
 		
 		const int RepositoryCol = 0;
 		const int RepoNameCol = 1;
 		const int VcsName = 2;
 		const int FilledCol = 3;
 		const int IconCol = 4;
+		
 		protected Gtk.Entry entryFolder;
 		protected Gtk.Notebook notebook;
 		protected Gtk.Label labelName;
@@ -38,6 +40,7 @@ namespace VersionControl.AddIn.Dialogs
 		protected Gtk.HBox boxFolder;
 		protected Gtk.Label labelRepository;
 		protected Gtk.Entry entryMessage;
+		protected Gtk.Button buttonOk;
 		
 		public SelectRepositoryDialog (SelectRepositoryMode mode)
 		{
@@ -48,6 +51,7 @@ namespace VersionControl.AddIn.Dialogs
 				systems.Add (vcs);
 			}
 			repCombo.Active = 0;
+			this.mode = mode;
 			
 			store = new Gtk.TreeStore (typeof(object), typeof(string), typeof(string), typeof(bool), typeof(string));
 			repoTree.Model = store;
@@ -70,7 +74,7 @@ namespace VersionControl.AddIn.Dialogs
 				boxMessage.Visible = false;
 				labelMessage.Visible = false;
 				string pathName = MonoDevelop.Core.Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal)).ToString ();
-				labelTargetDir.Text = pathName;
+				entryFolder.Text = pathName;
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
@@ -270,6 +274,12 @@ namespace VersionControl.AddIn.Dialogs
 		protected virtual void OnNotebookChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)
 		{
 			UpdateRepoDescription ();
+		}
+
+		protected virtual void OnEntryFolderChanged(object sender, System.EventArgs e)
+		{
+			if (mode == SelectRepositoryMode.Checkout)
+				buttonOk.Sensitive = entryFolder.Text.Length > 0;
 		}
 	}
 }
