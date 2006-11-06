@@ -159,6 +159,7 @@ namespace MonoDevelop.Projects
 		{
 			base.Deserialize (handler, data);
 			projectReferences.SetProject (this);
+			isDirty = false;
 		}
 
 		public virtual string GetParseableFileContent(string fileName)
