@@ -1,3 +1,20 @@
+2006-11-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn/comment.png: New icon.
+	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs: Added setter for
+	  Message.
+	* AddIn/VersionControl.AddIn.Views/Statuses.cs, AddIn/gtk-gui/generated.cs,
+	  AddIn/gtk-gui/gui.stetic: Added an text view which allows entering
+	  commit comments for every file, with support for multiple selection.
+	* AddIn/VersionControl.addin.xml: Registered new icon.
+	* AddIn/VersionControl.AddIn/CommitCommand.cs: Added parameter for
+	  providing the commit message.
+	* AddIn/VersionControl.AddIn/VersionControlNodeExtension.cs: Dispatch file
+	  change events in the GUI thread.
+	* AddIn/VersionControlAddIn.mdp, AddIn/Makefile.am: Updated
+	* VersionControl/VersionControl.Service/Repository.cs: Minor fix.
+
+
 2006-11-06 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddIn/VersionControl.AddIn.Dialogs/SelectRepositoryDialog.cs:

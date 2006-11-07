@@ -191,7 +191,7 @@ namespace VersionControl.Service
 		{
 			ArrayList list = new ArrayList ();
 			using (StreamReader sr = new StreamReader (diffFile)) {
-				string line = sr.ReadLine ();
+				string line;
 				StringBuilder content = new StringBuilder ();
 				string fileName = null;
 				
@@ -212,8 +212,9 @@ namespace VersionControl.Service
 							fileName = null;
 					}
 				}
-				if (fileName != null)
+				if (fileName != null) {
 					list.Add (new DiffInfo (fileName, content.ToString ()));
+				}
 			}
 			return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
 		}

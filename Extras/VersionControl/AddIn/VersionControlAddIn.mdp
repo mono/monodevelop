@@ -58,6 +58,7 @@
     <File name="./overlay_unversioned.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./menu_add.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./menu_remove.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./comment.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Diff" />

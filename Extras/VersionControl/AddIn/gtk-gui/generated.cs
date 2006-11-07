@@ -27,7 +27,7 @@ namespace Stetic {
             if ((id == "VersionControl.AddIn.Dialogs.SelectRepositoryDialog")) {
                 Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
                 // Widget VersionControl.AddIn.Dialogs.SelectRepositoryDialog
-                cobj.Title = "Select Repository";
+                cobj.Title = Mono.Unix.Catalog.GetString("Select Repository");
                 cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                 cobj.HasSeparator = false;
                 cobj.Events = ((Gdk.EventMask)(256));
@@ -61,7 +61,7 @@ namespace Stetic {
                 w5.Name = "hbox1";
                 // Container child hbox1.Gtk.Box+BoxChild
                 Gtk.Label w6 = new Gtk.Label();
-                w6.LabelProp = "Type:";
+                w6.LabelProp = Mono.Unix.Catalog.GetString("Type:");
                 w6.Events = ((Gdk.EventMask)(0));
                 w6.Name = "label3";
                 bindings["label3"] = w6;
@@ -72,6 +72,7 @@ namespace Stetic {
                 w7.Fill = false;
                 // Container child hbox1.Gtk.Box+BoxChild
                 Gtk.ComboBox w8 = Gtk.ComboBox.NewText();
+                w8.Active = 0;
                 w8.Events = ((Gdk.EventMask)(0));
                 w8.Name = "repCombo";
                 bindings["repCombo"] = w8;
@@ -108,7 +109,7 @@ namespace Stetic {
                 w15.TabExpand = false;
                 // Notebook tab
                 Gtk.Label w16 = new Gtk.Label();
-                w16.LabelProp = "Connect to Repository";
+                w16.LabelProp = Mono.Unix.Catalog.GetString("Connect to Repository");
                 w16.Events = ((Gdk.EventMask)(0));
                 w16.Name = "label1";
                 bindings["label1"] = w16;
@@ -151,7 +152,7 @@ namespace Stetic {
                 w23.CanFocus = true;
                 w23.Events = ((Gdk.EventMask)(0));
                 w23.Name = "buttonAdd";
-                w23.Label = "gtk-add";
+                w23.Label = Mono.Unix.Catalog.GetString("gtk-add");
                 bindings["buttonAdd"] = w23;
                 w22.Add(w23);
                 Gtk.ButtonBox.ButtonBoxChild w24 = ((Gtk.ButtonBox.ButtonBoxChild)(w22[w23]));
@@ -164,7 +165,7 @@ namespace Stetic {
                 w25.CanFocus = true;
                 w25.Events = ((Gdk.EventMask)(0));
                 w25.Name = "buttonRemove";
-                w25.Label = "gtk-remove";
+                w25.Label = Mono.Unix.Catalog.GetString("gtk-remove");
                 bindings["buttonRemove"] = w25;
                 w22.Add(w25);
                 Gtk.ButtonBox.ButtonBoxChild w26 = ((Gtk.ButtonBox.ButtonBoxChild)(w22[w25]));
@@ -178,7 +179,7 @@ namespace Stetic {
                 w27.CanFocus = true;
                 w27.Events = ((Gdk.EventMask)(0));
                 w27.Name = "buttonEdit";
-                w27.Label = "gtk-edit";
+                w27.Label = Mono.Unix.Catalog.GetString("gtk-edit");
                 bindings["buttonEdit"] = w27;
                 w22.Add(w27);
                 Gtk.ButtonBox.ButtonBoxChild w28 = ((Gtk.ButtonBox.ButtonBoxChild)(w22[w27]));
@@ -198,7 +199,7 @@ namespace Stetic {
                 w30.TabExpand = false;
                 // Notebook tab
                 Gtk.Label w31 = new Gtk.Label();
-                w31.LabelProp = "Registered Repositories";
+                w31.LabelProp = Mono.Unix.Catalog.GetString("Registered Repositories");
                 w31.Events = ((Gdk.EventMask)(0));
                 w31.Name = "label2";
                 bindings["label2"] = w31;
@@ -214,157 +215,157 @@ namespace Stetic {
                 w33.Events = ((Gdk.EventMask)(0));
                 w33.Name = "table1";
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.HBox w34 = new Gtk.HBox();
-                w34.Spacing = 6;
+                Gtk.Label w34 = new Gtk.Label();
+                w34.LabelProp = Mono.Unix.Catalog.GetString("Repository:");
+                w34.Xalign = 0F;
                 w34.Events = ((Gdk.EventMask)(0));
-                w34.Name = "boxMessage";
-                // Container child boxMessage.Gtk.Box+BoxChild
-                Gtk.Entry w35 = new Gtk.Entry();
-                w35.IsEditable = true;
-                w35.InvisibleChar = '●';
-                w35.CanFocus = true;
-                w35.Events = ((Gdk.EventMask)(0));
-                w35.Name = "entryMessage";
-                bindings["entryMessage"] = w35;
-                w34.Add(w35);
-                Gtk.Box.BoxChild w36 = ((Gtk.Box.BoxChild)(w34[w35]));
-                w36.Position = 0;
-                // Container child boxMessage.Gtk.Box+BoxChild
-                Gtk.Button w37 = new Gtk.Button();
-                w37.UseStock = true;
-                w37.UseUnderline = true;
-                w37.CanFocus = true;
-                w37.Events = ((Gdk.EventMask)(0));
-                w37.Name = "buttonEditMessage";
-                w37.Label = "gtk-edit";
-                bindings["buttonEditMessage"] = w37;
-                w34.Add(w37);
-                Gtk.Box.BoxChild w38 = ((Gtk.Box.BoxChild)(w34[w37]));
-                w38.Position = 1;
-                w38.Expand = false;
-                w38.Fill = false;
-                bindings["boxMessage"] = w34;
+                w34.Name = "label5";
+                bindings["label5"] = w34;
                 w33.Add(w34);
-                Gtk.Table.TableChild w39 = ((Gtk.Table.TableChild)(w33[w34]));
-                w39.BottomAttach = ((uint)(4));
-                w39.LeftAttach = ((uint)(1));
-                w39.RightAttach = ((uint)(2));
-                w39.TopAttach = ((uint)(3));
-                w39.YOptions = ((Gtk.AttachOptions)(4));
-                w39.XOptions = ((Gtk.AttachOptions)(4));
+                Gtk.Table.TableChild w35 = ((Gtk.Table.TableChild)(w33[w34]));
+                w35.YOptions = ((Gtk.AttachOptions)(4));
+                w35.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.Label w40 = new Gtk.Label();
-                w40.LabelProp = "Message:";
-                w40.Xalign = 0F;
-                w40.Events = ((Gdk.EventMask)(0));
-                w40.Name = "labelMessage";
-                bindings["labelMessage"] = w40;
-                w33.Add(w40);
-                Gtk.Table.TableChild w41 = ((Gtk.Table.TableChild)(w33[w40]));
-                w41.BottomAttach = ((uint)(4));
-                w41.TopAttach = ((uint)(3));
-                w41.YOptions = ((Gtk.AttachOptions)(4));
-                w41.XOptions = ((Gtk.AttachOptions)(4));
+                Gtk.Label w36 = new Gtk.Label();
+                w36.LabelProp = Mono.Unix.Catalog.GetString("Target directory:");
+                w36.Xalign = 0F;
+                w36.Events = ((Gdk.EventMask)(0));
+                w36.Name = "labelTargetDir";
+                bindings["labelTargetDir"] = w36;
+                w33.Add(w36);
+                Gtk.Table.TableChild w37 = ((Gtk.Table.TableChild)(w33[w36]));
+                w37.BottomAttach = ((uint)(2));
+                w37.TopAttach = ((uint)(1));
+                w37.YOptions = ((Gtk.AttachOptions)(4));
+                w37.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.Entry w42 = new Gtk.Entry();
-                w42.IsEditable = true;
-                w42.InvisibleChar = '●';
-                w42.CanFocus = true;
-                w42.Events = ((Gdk.EventMask)(0));
-                w42.Name = "entryName";
-                bindings["entryName"] = w42;
-                w33.Add(w42);
-                Gtk.Table.TableChild w43 = ((Gtk.Table.TableChild)(w33[w42]));
-                w43.BottomAttach = ((uint)(3));
+                Gtk.HBox w38 = new Gtk.HBox();
+                w38.Spacing = 6;
+                w38.Events = ((Gdk.EventMask)(0));
+                w38.Name = "boxFolder";
+                // Container child boxFolder.Gtk.Box+BoxChild
+                Gtk.Entry w39 = new Gtk.Entry();
+                w39.IsEditable = true;
+                w39.InvisibleChar = '●';
+                w39.CanFocus = true;
+                w39.Events = ((Gdk.EventMask)(0));
+                w39.Name = "entryFolder";
+                bindings["entryFolder"] = w39;
+                w38.Add(w39);
+                Gtk.Box.BoxChild w40 = ((Gtk.Box.BoxChild)(w38[w39]));
+                w40.Position = 0;
+                // Container child boxFolder.Gtk.Box+BoxChild
+                Gtk.Button w41 = new Gtk.Button();
+                w41.CanFocus = true;
+                w41.Events = ((Gdk.EventMask)(0));
+                w41.Name = "buttonBrowse";
+                w41.Label = Mono.Unix.Catalog.GetString("Browse...");
+                bindings["buttonBrowse"] = w41;
+                w38.Add(w41);
+                Gtk.Box.BoxChild w42 = ((Gtk.Box.BoxChild)(w38[w41]));
+                w42.Position = 1;
+                w42.Expand = false;
+                w42.Fill = false;
+                bindings["boxFolder"] = w38;
+                w33.Add(w38);
+                Gtk.Table.TableChild w43 = ((Gtk.Table.TableChild)(w33[w38]));
+                w43.BottomAttach = ((uint)(2));
                 w43.LeftAttach = ((uint)(1));
                 w43.RightAttach = ((uint)(2));
-                w43.TopAttach = ((uint)(2));
+                w43.TopAttach = ((uint)(1));
                 w43.YOptions = ((Gtk.AttachOptions)(4));
                 w43.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
                 Gtk.Label w44 = new Gtk.Label();
-                w44.LabelProp = "Module name:";
+                w44.LabelProp = Mono.Unix.Catalog.GetString("");
                 w44.Xalign = 0F;
                 w44.Events = ((Gdk.EventMask)(0));
-                w44.Name = "labelName";
-                bindings["labelName"] = w44;
+                w44.Name = "labelRepository";
+                bindings["labelRepository"] = w44;
                 w33.Add(w44);
                 Gtk.Table.TableChild w45 = ((Gtk.Table.TableChild)(w33[w44]));
-                w45.BottomAttach = ((uint)(3));
-                w45.TopAttach = ((uint)(2));
+                w45.LeftAttach = ((uint)(1));
+                w45.RightAttach = ((uint)(2));
                 w45.YOptions = ((Gtk.AttachOptions)(4));
-                w45.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
                 Gtk.Label w46 = new Gtk.Label();
-                w46.LabelProp = "";
+                w46.LabelProp = Mono.Unix.Catalog.GetString("Module name:");
                 w46.Xalign = 0F;
                 w46.Events = ((Gdk.EventMask)(0));
-                w46.Name = "labelRepository";
-                bindings["labelRepository"] = w46;
+                w46.Name = "labelName";
+                bindings["labelName"] = w46;
                 w33.Add(w46);
                 Gtk.Table.TableChild w47 = ((Gtk.Table.TableChild)(w33[w46]));
-                w47.LeftAttach = ((uint)(1));
-                w47.RightAttach = ((uint)(2));
+                w47.BottomAttach = ((uint)(3));
+                w47.TopAttach = ((uint)(2));
                 w47.YOptions = ((Gtk.AttachOptions)(4));
+                w47.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.HBox w48 = new Gtk.HBox();
-                w48.Spacing = 6;
+                Gtk.Entry w48 = new Gtk.Entry();
+                w48.IsEditable = true;
+                w48.InvisibleChar = '●';
+                w48.CanFocus = true;
                 w48.Events = ((Gdk.EventMask)(0));
-                w48.Name = "boxFolder";
-                // Container child boxFolder.Gtk.Box+BoxChild
-                Gtk.Entry w49 = new Gtk.Entry();
-                w49.IsEditable = true;
-                w49.InvisibleChar = '●';
-                w49.CanFocus = true;
-                w49.Events = ((Gdk.EventMask)(0));
-                w49.Name = "entryFolder";
-                bindings["entryFolder"] = w49;
-                w48.Add(w49);
-                Gtk.Box.BoxChild w50 = ((Gtk.Box.BoxChild)(w48[w49]));
-                w50.Position = 0;
-                // Container child boxFolder.Gtk.Box+BoxChild
-                Gtk.Button w51 = new Gtk.Button();
-                w51.CanFocus = true;
-                w51.Events = ((Gdk.EventMask)(0));
-                w51.Name = "buttonBrowse";
-                w51.Label = "Browse...";
-                bindings["buttonBrowse"] = w51;
-                w48.Add(w51);
-                Gtk.Box.BoxChild w52 = ((Gtk.Box.BoxChild)(w48[w51]));
-                w52.Position = 1;
-                w52.Expand = false;
-                w52.Fill = false;
-                bindings["boxFolder"] = w48;
+                w48.Name = "entryName";
+                bindings["entryName"] = w48;
                 w33.Add(w48);
-                Gtk.Table.TableChild w53 = ((Gtk.Table.TableChild)(w33[w48]));
-                w53.BottomAttach = ((uint)(2));
-                w53.LeftAttach = ((uint)(1));
-                w53.RightAttach = ((uint)(2));
-                w53.TopAttach = ((uint)(1));
-                w53.YOptions = ((Gtk.AttachOptions)(4));
-                w53.XOptions = ((Gtk.AttachOptions)(4));
+                Gtk.Table.TableChild w49 = ((Gtk.Table.TableChild)(w33[w48]));
+                w49.BottomAttach = ((uint)(3));
+                w49.LeftAttach = ((uint)(1));
+                w49.RightAttach = ((uint)(2));
+                w49.TopAttach = ((uint)(2));
+                w49.YOptions = ((Gtk.AttachOptions)(4));
+                w49.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.Label w54 = new Gtk.Label();
-                w54.LabelProp = "Target directory:";
-                w54.Xalign = 0F;
-                w54.Events = ((Gdk.EventMask)(0));
-                w54.Name = "labelTargetDir";
-                bindings["labelTargetDir"] = w54;
-                w33.Add(w54);
-                Gtk.Table.TableChild w55 = ((Gtk.Table.TableChild)(w33[w54]));
-                w55.BottomAttach = ((uint)(2));
-                w55.TopAttach = ((uint)(1));
-                w55.YOptions = ((Gtk.AttachOptions)(4));
-                w55.XOptions = ((Gtk.AttachOptions)(4));
+                Gtk.Label w50 = new Gtk.Label();
+                w50.LabelProp = Mono.Unix.Catalog.GetString("Message:");
+                w50.Xalign = 0F;
+                w50.Events = ((Gdk.EventMask)(0));
+                w50.Name = "labelMessage";
+                bindings["labelMessage"] = w50;
+                w33.Add(w50);
+                Gtk.Table.TableChild w51 = ((Gtk.Table.TableChild)(w33[w50]));
+                w51.BottomAttach = ((uint)(4));
+                w51.TopAttach = ((uint)(3));
+                w51.YOptions = ((Gtk.AttachOptions)(4));
+                w51.XOptions = ((Gtk.AttachOptions)(4));
                 // Container child table1.Gtk.Table+TableChild
-                Gtk.Label w56 = new Gtk.Label();
-                w56.LabelProp = "Repository:";
-                w56.Xalign = 0F;
-                w56.Events = ((Gdk.EventMask)(0));
-                w56.Name = "label5";
-                bindings["label5"] = w56;
-                w33.Add(w56);
-                Gtk.Table.TableChild w57 = ((Gtk.Table.TableChild)(w33[w56]));
+                Gtk.HBox w52 = new Gtk.HBox();
+                w52.Spacing = 6;
+                w52.Events = ((Gdk.EventMask)(0));
+                w52.Name = "boxMessage";
+                // Container child boxMessage.Gtk.Box+BoxChild
+                Gtk.Entry w53 = new Gtk.Entry();
+                w53.IsEditable = true;
+                w53.InvisibleChar = '●';
+                w53.CanFocus = true;
+                w53.Events = ((Gdk.EventMask)(0));
+                w53.Name = "entryMessage";
+                bindings["entryMessage"] = w53;
+                w52.Add(w53);
+                Gtk.Box.BoxChild w54 = ((Gtk.Box.BoxChild)(w52[w53]));
+                w54.Position = 0;
+                // Container child boxMessage.Gtk.Box+BoxChild
+                Gtk.Button w55 = new Gtk.Button();
+                w55.UseStock = true;
+                w55.UseUnderline = true;
+                w55.CanFocus = true;
+                w55.Events = ((Gdk.EventMask)(0));
+                w55.Name = "buttonEditMessage";
+                w55.Label = Mono.Unix.Catalog.GetString("gtk-edit");
+                bindings["buttonEditMessage"] = w55;
+                w52.Add(w55);
+                Gtk.Box.BoxChild w56 = ((Gtk.Box.BoxChild)(w52[w55]));
+                w56.Position = 1;
+                w56.Expand = false;
+                w56.Fill = false;
+                bindings["boxMessage"] = w52;
+                w33.Add(w52);
+                Gtk.Table.TableChild w57 = ((Gtk.Table.TableChild)(w33[w52]));
+                w57.BottomAttach = ((uint)(4));
+                w57.LeftAttach = ((uint)(1));
+                w57.RightAttach = ((uint)(2));
+                w57.TopAttach = ((uint)(3));
                 w57.YOptions = ((Gtk.AttachOptions)(4));
                 w57.XOptions = ((Gtk.AttachOptions)(4));
                 bindings["table1"] = w33;
@@ -393,7 +394,7 @@ namespace Stetic {
                 w61.Events = ((Gdk.EventMask)(0));
                 w61.Name = "button559";
                 w61.CanDefault = true;
-                w61.Label = "gtk-cancel";
+                w61.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
                 bindings["button559"] = w61;
                 cobj.AddActionWidget(w61, -6);
                 Gtk.ButtonBox.ButtonBoxChild w62 = ((Gtk.ButtonBox.ButtonBoxChild)(w60[w61]));
@@ -407,7 +408,7 @@ namespace Stetic {
                 w63.Events = ((Gdk.EventMask)(0));
                 w63.Name = "buttonOk";
                 w63.CanDefault = true;
-                w63.Label = "gtk-ok";
+                w63.Label = Mono.Unix.Catalog.GetString("gtk-ok");
                 bindings["buttonOk"] = w63;
                 cobj.AddActionWidget(w63, -5);
                 Gtk.ButtonBox.ButtonBoxChild w64 = ((Gtk.ButtonBox.ButtonBoxChild)(w60[w63]));
@@ -434,18 +435,18 @@ namespace Stetic {
                 w17.Show();
                 w31.Show();
                 w3.Show();
-                w35.Show();
-                w37.Show();
                 w34.Show();
-                w40.Show();
-                w42.Show();
+                w36.Show();
+                w39.Show();
+                w41.Show();
+                w38.Show();
                 w44.Show();
                 w46.Show();
-                w49.Show();
-                w51.Show();
                 w48.Show();
-                w54.Show();
-                w56.Show();
+                w50.Show();
+                w53.Show();
+                w55.Show();
+                w52.Show();
                 w33.Show();
                 w2.Show();
                 w1.Show();
@@ -459,137 +460,152 @@ namespace Stetic {
                 w23.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnButtonAddClicked")));
                 w25.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnButtonRemoveClicked")));
                 w27.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnButtonEditClicked")));
-                w49.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnEntryFolderChanged")));
-                w51.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnButtonBrowseClicked")));
+                w39.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnEntryFolderChanged")));
+                w41.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnButtonBrowseClicked")));
             }
             else {
-                if ((id == "VersionControl.AddIn.Dialogs.RepositoryManager")) {
+                if ((id == "VersionControl.SelectRepositoryFolderDialog")) {
                     Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
-                    // Widget VersionControl.AddIn.Dialogs.RepositoryManager
-                    cobj.Title = "Repository Manager";
+                    // Widget VersionControl.SelectRepositoryFolderDialog
+                    cobj.Title = Mono.Unix.Catalog.GetString("Select Repository Folder");
                     cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                     cobj.HasSeparator = false;
                     cobj.DefaultWidth = 500;
                     cobj.DefaultHeight = 400;
                     cobj.Events = ((Gdk.EventMask)(0));
-                    cobj.Name = "VersionControl.AddIn.Dialogs.RepositoryManager";
-                    // Internal child VersionControl.AddIn.Dialogs.RepositoryManager.VBox
+                    cobj.Name = "VersionControl.SelectRepositoryFolderDialog";
+                    // Internal child VersionControl.SelectRepositoryFolderDialog.VBox
                     Gtk.VBox w1 = cobj.VBox;
                     w1.BorderWidth = ((uint)(2));
                     w1.Events = ((Gdk.EventMask)(256));
-                    w1.Name = "dialog-vbox2";
-                    // Container child dialog-vbox2.Gtk.Box+BoxChild
-                    Gtk.HBox w2 = new Gtk.HBox();
-                    w2.Spacing = 12;
+                    w1.Name = "dialog-vbox1";
+                    // Container child dialog-vbox1.Gtk.Box+BoxChild
+                    Gtk.VBox w2 = new Gtk.VBox();
+                    w2.Spacing = 6;
                     w2.BorderWidth = ((uint)(12));
                     w2.Events = ((Gdk.EventMask)(0));
-                    w2.Name = "hbox3";
-                    // Container child hbox3.Gtk.Box+BoxChild
-                    Gtk.ScrolledWindow w3 = new Gtk.ScrolledWindow();
-                    w3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-                    w3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-                    w3.ShadowType = ((Gtk.ShadowType)(1));
-                    w3.CanFocus = true;
+                    w2.Name = "vbox1";
+                    // Container child vbox1.Gtk.Box+BoxChild
+                    Gtk.HBox w3 = new Gtk.HBox();
+                    w3.Spacing = 6;
                     w3.Events = ((Gdk.EventMask)(0));
-                    w3.Name = "scrolledwindow2";
-                    // Container child scrolledwindow2.Gtk.Container+ContainerChild
-                    Gtk.TreeView w4 = new Gtk.TreeView();
-                    w4.CanFocus = true;
+                    w3.Name = "hbox1";
+                    // Container child hbox1.Gtk.Box+BoxChild
+                    Gtk.Label w4 = new Gtk.Label();
+                    w4.LabelProp = Mono.Unix.Catalog.GetString("Repository:");
                     w4.Events = ((Gdk.EventMask)(0));
-                    w4.Name = "repoList";
-                    bindings["repoList"] = w4;
+                    w4.Name = "label1";
+                    bindings["label1"] = w4;
                     w3.Add(w4);
-                    bindings["scrolledwindow2"] = w3;
+                    Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(w3[w4]));
+                    w5.Position = 0;
+                    w5.Expand = false;
+                    w5.Fill = false;
+                    // Container child hbox1.Gtk.Box+BoxChild
+                    Gtk.ComboBox w6 = new Gtk.ComboBox();
+                    w6.Events = ((Gdk.EventMask)(0));
+                    w6.Name = "repositoryCmb";
+                    bindings["repositoryCmb"] = w6;
+                    w3.Add(w6);
+                    Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(w3[w6]));
+                    w7.Position = 1;
+                    bindings["hbox1"] = w3;
                     w2.Add(w3);
-                    Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w2[w3]));
-                    w6.Position = 0;
-                    // Container child hbox3.Gtk.Box+BoxChild
-                    Gtk.VButtonBox w7 = new Gtk.VButtonBox();
-                    w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(3));
-                    w7.Spacing = 6;
-                    w7.Events = ((Gdk.EventMask)(0));
-                    w7.Name = "vbuttonbox1";
-                    // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
-                    Gtk.Button w8 = new Gtk.Button();
-                    w8.UseStock = true;
-                    w8.UseUnderline = true;
-                    w8.CanFocus = true;
-                    w8.Events = ((Gdk.EventMask)(0));
-                    w8.Name = "addButton";
-                    w8.CanDefault = true;
-                    w8.Label = "gtk-add";
-                    bindings["addButton"] = w8;
-                    w7.Add(w8);
-                    // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
-                    Gtk.Button w10 = new Gtk.Button();
-                    w10.UseStock = true;
-                    w10.UseUnderline = true;
+                    Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(w2[w3]));
+                    w8.Position = 0;
+                    w8.Expand = false;
+                    w8.Fill = false;
+                    // Container child vbox1.Gtk.Box+BoxChild
+                    Gtk.ScrolledWindow w9 = new Gtk.ScrolledWindow();
+                    w9.VscrollbarPolicy = ((Gtk.PolicyType)(1));
+                    w9.HscrollbarPolicy = ((Gtk.PolicyType)(1));
+                    w9.ShadowType = ((Gtk.ShadowType)(1));
+                    w9.CanFocus = true;
+                    w9.Events = ((Gdk.EventMask)(0));
+                    w9.Name = "scrolledwindow1";
+                    // Container child scrolledwindow1.Gtk.Container+ContainerChild
+                    Gtk.TreeView w10 = new Gtk.TreeView();
                     w10.CanFocus = true;
                     w10.Events = ((Gdk.EventMask)(0));
-                    w10.Name = "removeButton";
-                    w10.CanDefault = true;
-                    w10.Label = "gtk-remove";
-                    bindings["removeButton"] = w10;
-                    w7.Add(w10);
-                    Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[w10]));
-                    w11.Position = 1;
-                    // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
-                    Gtk.Button w12 = new Gtk.Button();
-                    w12.UseStock = true;
-                    w12.UseUnderline = true;
-                    w12.CanFocus = true;
-                    w12.Events = ((Gdk.EventMask)(0));
-                    w12.Name = "editButton";
-                    w12.CanDefault = true;
-                    w12.Label = "gtk-edit";
-                    bindings["editButton"] = w12;
-                    w7.Add(w12);
-                    Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[w12]));
-                    w13.Position = 2;
-                    bindings["vbuttonbox1"] = w7;
-                    w2.Add(w7);
-                    Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w2[w7]));
-                    w14.Position = 1;
-                    w14.Expand = false;
-                    w14.Fill = false;
-                    bindings["hbox3"] = w2;
-                    w1.Add(w2);
-                    Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(w1[w2]));
+                    w10.Name = "dirTree";
+                    bindings["dirTree"] = w10;
+                    w9.Add(w10);
+                    bindings["scrolledwindow1"] = w9;
+                    w2.Add(w9);
+                    Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(w2[w9]));
+                    w12.Position = 1;
+                    // Container child vbox1.Gtk.Box+BoxChild
+                    Gtk.HBox w13 = new Gtk.HBox();
+                    w13.Spacing = 6;
+                    w13.Events = ((Gdk.EventMask)(0));
+                    w13.Name = "hbox2";
+                    // Container child hbox2.Gtk.Box+BoxChild
+                    Gtk.Label w14 = new Gtk.Label();
+                    w14.LabelProp = Mono.Unix.Catalog.GetString("Path:");
+                    w14.Events = ((Gdk.EventMask)(0));
+                    w14.Name = "label2";
+                    bindings["label2"] = w14;
+                    w13.Add(w14);
+                    Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(w13[w14]));
                     w15.Position = 0;
-                    bindings["dialog-vbox2"] = w1;
-                    // Internal child VersionControl.AddIn.Dialogs.RepositoryManager.ActionArea
-                    Gtk.HButtonBox w16 = cobj.ActionArea;
-                    w16.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-                    w16.Spacing = 10;
-                    w16.BorderWidth = ((uint)(5));
-                    w16.Events = ((Gdk.EventMask)(256));
-                    w16.Name = "GtkDialog_ActionArea";
-                    // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-                    Gtk.Button w17 = new Gtk.Button();
-                    w17.CanFocus = true;
-                    w17.Events = ((Gdk.EventMask)(0));
-                    w17.Name = "button9";
-                    w17.CanDefault = true;
-                    w17.Label = "button9";
-                    bindings["button9"] = w17;
-                    cobj.AddActionWidget(w17, 0);
-                    Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[w17]));
+                    w15.Expand = false;
+                    w15.Fill = false;
+                    // Container child hbox2.Gtk.Box+BoxChild
+                    Gtk.Entry w16 = new Gtk.Entry();
+                    w16.IsEditable = true;
+                    w16.InvisibleChar = '●';
+                    w16.CanFocus = true;
+                    w16.Events = ((Gdk.EventMask)(0));
+                    w16.Name = "pathEntry";
+                    bindings["pathEntry"] = w16;
+                    w13.Add(w16);
+                    Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(w13[w16]));
+                    w17.Position = 1;
+                    bindings["hbox2"] = w13;
+                    w2.Add(w13);
+                    Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(w2[w13]));
+                    w18.Position = 2;
                     w18.Expand = false;
                     w18.Fill = false;
-                    bindings["GtkDialog_ActionArea"] = w16;
-                    bindings["VersionControl.AddIn.Dialogs.RepositoryManager"] = cobj;
+                    bindings["vbox1"] = w2;
+                    w1.Add(w2);
+                    Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(w1[w2]));
+                    w19.Position = 0;
+                    bindings["dialog-vbox1"] = w1;
+                    // Internal child VersionControl.SelectRepositoryFolderDialog.ActionArea
+                    Gtk.HButtonBox w20 = cobj.ActionArea;
+                    w20.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+                    w20.Spacing = 10;
+                    w20.BorderWidth = ((uint)(5));
+                    w20.Events = ((Gdk.EventMask)(256));
+                    w20.Name = "GtkDialog_ActionArea";
+                    // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+                    Gtk.Button w21 = new Gtk.Button();
+                    w21.CanFocus = true;
+                    w21.Events = ((Gdk.EventMask)(0));
+                    w21.Name = "button8";
+                    w21.CanDefault = true;
+                    w21.Label = Mono.Unix.Catalog.GetString("button8");
+                    bindings["button8"] = w21;
+                    cobj.AddActionWidget(w21, 0);
+                    Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w20[w21]));
+                    w22.Expand = false;
+                    w22.Fill = false;
+                    bindings["GtkDialog_ActionArea"] = w20;
+                    bindings["VersionControl.SelectRepositoryFolderDialog"] = cobj;
                     w4.Show();
+                    w6.Show();
                     w3.Show();
-                    w8.Show();
                     w10.Show();
-                    w12.Show();
-                    w7.Show();
+                    w9.Show();
+                    w14.Show();
+                    w16.Show();
+                    w13.Show();
                     w2.Show();
                     w1.Show();
-                    w17.Show();
-                    w16.Show();
+                    w21.Show();
+                    w20.Show();
                     cobj.Show();
-                    w8.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "on_addButton_clicked")));
                 }
                 else {
                     if ((id == "VersionControlAddIn.FileStatusHeader")) {
@@ -609,7 +625,7 @@ namespace Stetic {
                         w2.Events = ((Gdk.EventMask)(0));
                         w2.Name = "expander1";
                         Gtk.Label w3 = new Gtk.Label();
-                        w3.LabelProp = "";
+                        w3.LabelProp = Mono.Unix.Catalog.GetString("");
                         w3.UseUnderline = true;
                         w3.Events = ((Gdk.EventMask)(256));
                         w3.Name = "GtkLabel";
@@ -634,7 +650,7 @@ namespace Stetic {
                         w6.Fill = false;
                         // Container child hbox1.Gtk.Box+BoxChild
                         Gtk.Label w7 = new Gtk.Label();
-                        w7.LabelProp = "Modified";
+                        w7.LabelProp = Mono.Unix.Catalog.GetString("Modified");
                         w7.Events = ((Gdk.EventMask)(0));
                         w7.Name = "label3";
                         bindings["label3"] = w7;
@@ -654,315 +670,300 @@ namespace Stetic {
                         cobj.Show();
                     }
                     else {
-                        if ((id == "VersionControl.SelectRepositoryFolderDialog")) {
+                        if ((id == "VersionControl.AddIn.Dialogs.EditRepositoryDialog")) {
                             Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
-                            // Widget VersionControl.SelectRepositoryFolderDialog
-                            cobj.Title = "Select Repository Folder";
+                            // Widget VersionControl.AddIn.Dialogs.EditRepositoryDialog
+                            cobj.Title = Mono.Unix.Catalog.GetString("Repository Configuration");
                             cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                             cobj.HasSeparator = false;
                             cobj.DefaultWidth = 500;
-                            cobj.DefaultHeight = 400;
                             cobj.Events = ((Gdk.EventMask)(0));
-                            cobj.Name = "VersionControl.SelectRepositoryFolderDialog";
-                            // Internal child VersionControl.SelectRepositoryFolderDialog.VBox
+                            cobj.Name = "VersionControl.AddIn.Dialogs.EditRepositoryDialog";
+                            // Internal child VersionControl.AddIn.Dialogs.EditRepositoryDialog.VBox
                             Gtk.VBox w1 = cobj.VBox;
                             w1.BorderWidth = ((uint)(2));
                             w1.Events = ((Gdk.EventMask)(256));
-                            w1.Name = "dialog-vbox1";
-                            // Container child dialog-vbox1.Gtk.Box+BoxChild
+                            w1.Name = "dialog-vbox3";
+                            // Container child dialog-vbox3.Gtk.Box+BoxChild
                             Gtk.VBox w2 = new Gtk.VBox();
                             w2.Spacing = 6;
-                            w2.BorderWidth = ((uint)(12));
+                            w2.BorderWidth = ((uint)(6));
                             w2.Events = ((Gdk.EventMask)(0));
                             w2.Name = "vbox1";
                             // Container child vbox1.Gtk.Box+BoxChild
-                            Gtk.HBox w3 = new Gtk.HBox();
-                            w3.Spacing = 6;
+                            Gtk.Table w3 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+                            w3.RowSpacing = ((uint)(6));
+                            w3.ColumnSpacing = ((uint)(6));
                             w3.Events = ((Gdk.EventMask)(0));
-                            w3.Name = "hbox1";
-                            // Container child hbox1.Gtk.Box+BoxChild
+                            w3.Name = "table1";
+                            // Container child table1.Gtk.Table+TableChild
                             Gtk.Label w4 = new Gtk.Label();
-                            w4.LabelProp = "Repository:";
+                            w4.LabelProp = Mono.Unix.Catalog.GetString("Name:");
+                            w4.Xalign = 0F;
                             w4.Events = ((Gdk.EventMask)(0));
-                            w4.Name = "label1";
-                            bindings["label1"] = w4;
+                            w4.Name = "label8";
+                            bindings["label8"] = w4;
                             w3.Add(w4);
-                            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(w3[w4]));
-                            w5.Position = 0;
-                            w5.Expand = false;
-                            w5.Fill = false;
-                            // Container child hbox1.Gtk.Box+BoxChild
-                            Gtk.ComboBox w6 = new Gtk.ComboBox();
+                            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(w3[w4]));
+                            w5.BottomAttach = ((uint)(2));
+                            w5.TopAttach = ((uint)(1));
+                            w5.YOptions = ((Gtk.AttachOptions)(0));
+                            w5.XOptions = ((Gtk.AttachOptions)(4));
+                            // Container child table1.Gtk.Table+TableChild
+                            Gtk.Entry w6 = new Gtk.Entry();
+                            w6.IsEditable = true;
+                            w6.InvisibleChar = '●';
+                            w6.CanFocus = true;
                             w6.Events = ((Gdk.EventMask)(0));
-                            w6.Name = "repositoryCmb";
-                            bindings["repositoryCmb"] = w6;
+                            w6.Name = "entryName";
+                            bindings["entryName"] = w6;
                             w3.Add(w6);
-                            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(w3[w6]));
-                            w7.Position = 1;
-                            bindings["hbox1"] = w3;
-                            w2.Add(w3);
-                            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(w2[w3]));
-                            w8.Position = 0;
-                            w8.Expand = false;
-                            w8.Fill = false;
-                            // Container child vbox1.Gtk.Box+BoxChild
-                            Gtk.ScrolledWindow w9 = new Gtk.ScrolledWindow();
-                            w9.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-                            w9.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-                            w9.ShadowType = ((Gtk.ShadowType)(1));
-                            w9.CanFocus = true;
-                            w9.Events = ((Gdk.EventMask)(0));
-                            w9.Name = "scrolledwindow1";
-                            // Container child scrolledwindow1.Gtk.Container+ContainerChild
-                            Gtk.TreeView w10 = new Gtk.TreeView();
-                            w10.CanFocus = true;
+                            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(w3[w6]));
+                            w7.BottomAttach = ((uint)(2));
+                            w7.LeftAttach = ((uint)(1));
+                            w7.RightAttach = ((uint)(2));
+                            w7.TopAttach = ((uint)(1));
+                            w7.YOptions = ((Gtk.AttachOptions)(0));
+                            // Container child table1.Gtk.Table+TableChild
+                            Gtk.Label w8 = new Gtk.Label();
+                            w8.LabelProp = Mono.Unix.Catalog.GetString("Type:");
+                            w8.Xalign = 0F;
+                            w8.Events = ((Gdk.EventMask)(0));
+                            w8.Name = "label11";
+                            bindings["label11"] = w8;
+                            w3.Add(w8);
+                            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(w3[w8]));
+                            w9.YOptions = ((Gtk.AttachOptions)(0));
+                            w9.XOptions = ((Gtk.AttachOptions)(4));
+                            // Container child table1.Gtk.Table+TableChild
+                            Gtk.ComboBox w10 = Gtk.ComboBox.NewText();
                             w10.Events = ((Gdk.EventMask)(0));
-                            w10.Name = "dirTree";
-                            bindings["dirTree"] = w10;
-                            w9.Add(w10);
-                            bindings["scrolledwindow1"] = w9;
-                            w2.Add(w9);
-                            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(w2[w9]));
-                            w12.Position = 1;
+                            w10.Name = "versionControlType";
+                            bindings["versionControlType"] = w10;
+                            w3.Add(w10);
+                            Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(w3[w10]));
+                            w11.LeftAttach = ((uint)(1));
+                            w11.RightAttach = ((uint)(2));
+                            w11.YOptions = ((Gtk.AttachOptions)(4));
+                            w11.XOptions = ((Gtk.AttachOptions)(4));
+                            bindings["table1"] = w3;
+                            w2.Add(w3);
+                            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(w2[w3]));
+                            w12.Position = 0;
+                            w12.Expand = false;
+                            w12.Fill = false;
                             // Container child vbox1.Gtk.Box+BoxChild
-                            Gtk.HBox w13 = new Gtk.HBox();
-                            w13.Spacing = 6;
+                            Gtk.HSeparator w13 = new Gtk.HSeparator();
                             w13.Events = ((Gdk.EventMask)(0));
-                            w13.Name = "hbox2";
-                            // Container child hbox2.Gtk.Box+BoxChild
-                            Gtk.Label w14 = new Gtk.Label();
-                            w14.LabelProp = "Path:";
-                            w14.Events = ((Gdk.EventMask)(0));
-                            w14.Name = "label2";
-                            bindings["label2"] = w14;
-                            w13.Add(w14);
-                            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(w13[w14]));
-                            w15.Position = 0;
-                            w15.Expand = false;
-                            w15.Fill = false;
-                            // Container child hbox2.Gtk.Box+BoxChild
-                            Gtk.Entry w16 = new Gtk.Entry();
-                            w16.IsEditable = true;
-                            w16.InvisibleChar = '●';
-                            w16.CanFocus = true;
-                            w16.Events = ((Gdk.EventMask)(0));
-                            w16.Name = "pathEntry";
-                            bindings["pathEntry"] = w16;
-                            w13.Add(w16);
-                            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(w13[w16]));
-                            w17.Position = 1;
-                            bindings["hbox2"] = w13;
+                            w13.Name = "hseparator2";
+                            bindings["hseparator2"] = w13;
                             w2.Add(w13);
-                            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(w2[w13]));
-                            w18.Position = 2;
-                            w18.Expand = false;
-                            w18.Fill = false;
+                            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w2[w13]));
+                            w14.Position = 1;
+                            w14.Expand = false;
+                            w14.Fill = false;
+                            // Container child vbox1.Gtk.Box+BoxChild
+                            Gtk.EventBox w15 = new Gtk.EventBox();
+                            w15.Events = ((Gdk.EventMask)(0));
+                            w15.Name = "repoEditorContainer";
+                            bindings["repoEditorContainer"] = w15;
+                            w2.Add(w15);
+                            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(w2[w15]));
+                            w16.Position = 2;
                             bindings["vbox1"] = w2;
                             w1.Add(w2);
-                            Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(w1[w2]));
-                            w19.Position = 0;
-                            bindings["dialog-vbox1"] = w1;
-                            // Internal child VersionControl.SelectRepositoryFolderDialog.ActionArea
-                            Gtk.HButtonBox w20 = cobj.ActionArea;
-                            w20.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-                            w20.Spacing = 10;
-                            w20.BorderWidth = ((uint)(5));
-                            w20.Events = ((Gdk.EventMask)(256));
-                            w20.Name = "GtkDialog_ActionArea";
+                            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(w1[w2]));
+                            w17.Position = 0;
+                            bindings["dialog-vbox3"] = w1;
+                            // Internal child VersionControl.AddIn.Dialogs.EditRepositoryDialog.ActionArea
+                            Gtk.HButtonBox w18 = cobj.ActionArea;
+                            w18.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+                            w18.Spacing = 10;
+                            w18.BorderWidth = ((uint)(5));
+                            w18.Events = ((Gdk.EventMask)(256));
+                            w18.Name = "GtkDialog_ActionArea";
+                            // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+                            Gtk.Button w19 = new Gtk.Button();
+                            w19.UseStock = true;
+                            w19.UseUnderline = true;
+                            w19.CanFocus = true;
+                            w19.Events = ((Gdk.EventMask)(0));
+                            w19.Name = "button10";
+                            w19.CanDefault = true;
+                            w19.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
+                            bindings["button10"] = w19;
+                            cobj.AddActionWidget(w19, -6);
+                            Gtk.ButtonBox.ButtonBoxChild w20 = ((Gtk.ButtonBox.ButtonBoxChild)(w18[w19]));
+                            w20.Expand = false;
+                            w20.Fill = false;
                             // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
                             Gtk.Button w21 = new Gtk.Button();
+                            w21.UseStock = true;
+                            w21.UseUnderline = true;
                             w21.CanFocus = true;
                             w21.Events = ((Gdk.EventMask)(0));
-                            w21.Name = "button8";
+                            w21.Name = "button24";
                             w21.CanDefault = true;
-                            w21.Label = "button8";
-                            bindings["button8"] = w21;
-                            cobj.AddActionWidget(w21, 0);
-                            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w20[w21]));
+                            w21.Label = Mono.Unix.Catalog.GetString("gtk-ok");
+                            bindings["button24"] = w21;
+                            cobj.AddActionWidget(w21, -5);
+                            Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w18[w21]));
+                            w22.Position = 1;
                             w22.Expand = false;
                             w22.Fill = false;
-                            bindings["GtkDialog_ActionArea"] = w20;
-                            bindings["VersionControl.SelectRepositoryFolderDialog"] = cobj;
+                            bindings["GtkDialog_ActionArea"] = w18;
+                            cobj.DefaultHeight = 414;
+                            bindings["VersionControl.AddIn.Dialogs.EditRepositoryDialog"] = cobj;
                             w4.Show();
                             w6.Show();
-                            w3.Show();
+                            w8.Show();
                             w10.Show();
-                            w9.Show();
-                            w14.Show();
-                            w16.Show();
+                            w3.Show();
                             w13.Show();
+                            w15.Show();
                             w2.Show();
                             w1.Show();
+                            w19.Show();
                             w21.Show();
-                            w20.Show();
+                            w18.Show();
                             cobj.Show();
+                            w6.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnEntryNameChanged")));
+                            w10.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnVersionControlTypeChanged")));
                         }
                         else {
-                            if ((id == "VersionControl.AddIn.Dialogs.EditRepositoryDialog")) {
+                            if ((id == "VersionControl.AddIn.Dialogs.RepositoryManager")) {
                                 Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
-                                // Widget VersionControl.AddIn.Dialogs.EditRepositoryDialog
-                                cobj.Title = "Repository Configuration";
+                                // Widget VersionControl.AddIn.Dialogs.RepositoryManager
+                                cobj.Title = Mono.Unix.Catalog.GetString("Repository Manager");
                                 cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                                 cobj.HasSeparator = false;
                                 cobj.DefaultWidth = 500;
+                                cobj.DefaultHeight = 400;
                                 cobj.Events = ((Gdk.EventMask)(0));
-                                cobj.Name = "VersionControl.AddIn.Dialogs.EditRepositoryDialog";
-                                // Internal child VersionControl.AddIn.Dialogs.EditRepositoryDialog.VBox
+                                cobj.Name = "VersionControl.AddIn.Dialogs.RepositoryManager";
+                                // Internal child VersionControl.AddIn.Dialogs.RepositoryManager.VBox
                                 Gtk.VBox w1 = cobj.VBox;
                                 w1.BorderWidth = ((uint)(2));
                                 w1.Events = ((Gdk.EventMask)(256));
-                                w1.Name = "dialog-vbox3";
-                                // Container child dialog-vbox3.Gtk.Box+BoxChild
-                                Gtk.VBox w2 = new Gtk.VBox();
-                                w2.Spacing = 6;
-                                w2.BorderWidth = ((uint)(6));
+                                w1.Name = "dialog-vbox2";
+                                // Container child dialog-vbox2.Gtk.Box+BoxChild
+                                Gtk.HBox w2 = new Gtk.HBox();
+                                w2.Spacing = 12;
+                                w2.BorderWidth = ((uint)(12));
                                 w2.Events = ((Gdk.EventMask)(0));
-                                w2.Name = "vbox1";
-                                // Container child vbox1.Gtk.Box+BoxChild
-                                Gtk.Table w3 = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
-                                w3.RowSpacing = ((uint)(6));
-                                w3.ColumnSpacing = ((uint)(6));
+                                w2.Name = "hbox3";
+                                // Container child hbox3.Gtk.Box+BoxChild
+                                Gtk.ScrolledWindow w3 = new Gtk.ScrolledWindow();
+                                w3.VscrollbarPolicy = ((Gtk.PolicyType)(1));
+                                w3.HscrollbarPolicy = ((Gtk.PolicyType)(1));
+                                w3.ShadowType = ((Gtk.ShadowType)(1));
+                                w3.CanFocus = true;
                                 w3.Events = ((Gdk.EventMask)(0));
-                                w3.Name = "table1";
-                                // Container child table1.Gtk.Table+TableChild
-                                Gtk.ComboBox w4 = Gtk.ComboBox.NewText();
+                                w3.Name = "scrolledwindow2";
+                                // Container child scrolledwindow2.Gtk.Container+ContainerChild
+                                Gtk.TreeView w4 = new Gtk.TreeView();
+                                w4.CanFocus = true;
                                 w4.Events = ((Gdk.EventMask)(0));
-                                w4.Name = "versionControlType";
-                                bindings["versionControlType"] = w4;
+                                w4.Name = "repoList";
+                                bindings["repoList"] = w4;
                                 w3.Add(w4);
-                                Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(w3[w4]));
-                                w5.LeftAttach = ((uint)(1));
-                                w5.RightAttach = ((uint)(2));
-                                w5.YOptions = ((Gtk.AttachOptions)(4));
-                                w5.XOptions = ((Gtk.AttachOptions)(4));
-                                // Container child table1.Gtk.Table+TableChild
-                                Gtk.Label w6 = new Gtk.Label();
-                                w6.LabelProp = "Type:";
-                                w6.Xalign = 0F;
-                                w6.Events = ((Gdk.EventMask)(0));
-                                w6.Name = "label11";
-                                bindings["label11"] = w6;
-                                w3.Add(w6);
-                                Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(w3[w6]));
-                                w7.YOptions = ((Gtk.AttachOptions)(0));
-                                w7.XOptions = ((Gtk.AttachOptions)(4));
-                                // Container child table1.Gtk.Table+TableChild
-                                Gtk.Entry w8 = new Gtk.Entry();
-                                w8.IsEditable = true;
-                                w8.InvisibleChar = '●';
+                                bindings["scrolledwindow2"] = w3;
+                                w2.Add(w3);
+                                Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(w2[w3]));
+                                w6.Position = 0;
+                                // Container child hbox3.Gtk.Box+BoxChild
+                                Gtk.VButtonBox w7 = new Gtk.VButtonBox();
+                                w7.LayoutStyle = ((Gtk.ButtonBoxStyle)(3));
+                                w7.Spacing = 6;
+                                w7.Events = ((Gdk.EventMask)(0));
+                                w7.Name = "vbuttonbox1";
+                                // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
+                                Gtk.Button w8 = new Gtk.Button();
+                                w8.UseStock = true;
+                                w8.UseUnderline = true;
                                 w8.CanFocus = true;
                                 w8.Events = ((Gdk.EventMask)(0));
-                                w8.Name = "entryName";
-                                bindings["entryName"] = w8;
-                                w3.Add(w8);
-                                Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(w3[w8]));
-                                w9.BottomAttach = ((uint)(2));
-                                w9.LeftAttach = ((uint)(1));
-                                w9.RightAttach = ((uint)(2));
-                                w9.TopAttach = ((uint)(1));
-                                w9.YOptions = ((Gtk.AttachOptions)(0));
-                                // Container child table1.Gtk.Table+TableChild
-                                Gtk.Label w10 = new Gtk.Label();
-                                w10.LabelProp = "Name:";
-                                w10.Xalign = 0F;
+                                w8.Name = "addButton";
+                                w8.CanDefault = true;
+                                w8.Label = Mono.Unix.Catalog.GetString("gtk-add");
+                                bindings["addButton"] = w8;
+                                w7.Add(w8);
+                                // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
+                                Gtk.Button w10 = new Gtk.Button();
+                                w10.UseStock = true;
+                                w10.UseUnderline = true;
+                                w10.CanFocus = true;
                                 w10.Events = ((Gdk.EventMask)(0));
-                                w10.Name = "label8";
-                                bindings["label8"] = w10;
-                                w3.Add(w10);
-                                Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(w3[w10]));
-                                w11.BottomAttach = ((uint)(2));
-                                w11.TopAttach = ((uint)(1));
-                                w11.YOptions = ((Gtk.AttachOptions)(0));
-                                w11.XOptions = ((Gtk.AttachOptions)(4));
-                                bindings["table1"] = w3;
-                                w2.Add(w3);
-                                Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(w2[w3]));
-                                w12.Position = 0;
-                                w12.Expand = false;
-                                w12.Fill = false;
-                                // Container child vbox1.Gtk.Box+BoxChild
-                                Gtk.HSeparator w13 = new Gtk.HSeparator();
-                                w13.Events = ((Gdk.EventMask)(0));
-                                w13.Name = "hseparator2";
-                                bindings["hseparator2"] = w13;
-                                w2.Add(w13);
-                                Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w2[w13]));
+                                w10.Name = "removeButton";
+                                w10.CanDefault = true;
+                                w10.Label = Mono.Unix.Catalog.GetString("gtk-remove");
+                                bindings["removeButton"] = w10;
+                                w7.Add(w10);
+                                Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[w10]));
+                                w11.Position = 1;
+                                // Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
+                                Gtk.Button w12 = new Gtk.Button();
+                                w12.UseStock = true;
+                                w12.UseUnderline = true;
+                                w12.CanFocus = true;
+                                w12.Events = ((Gdk.EventMask)(0));
+                                w12.Name = "editButton";
+                                w12.CanDefault = true;
+                                w12.Label = Mono.Unix.Catalog.GetString("gtk-edit");
+                                bindings["editButton"] = w12;
+                                w7.Add(w12);
+                                Gtk.ButtonBox.ButtonBoxChild w13 = ((Gtk.ButtonBox.ButtonBoxChild)(w7[w12]));
+                                w13.Position = 2;
+                                bindings["vbuttonbox1"] = w7;
+                                w2.Add(w7);
+                                Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(w2[w7]));
                                 w14.Position = 1;
                                 w14.Expand = false;
                                 w14.Fill = false;
-                                // Container child vbox1.Gtk.Box+BoxChild
-                                Gtk.EventBox w15 = new Gtk.EventBox();
-                                w15.Events = ((Gdk.EventMask)(0));
-                                w15.Name = "repoEditorContainer";
-                                bindings["repoEditorContainer"] = w15;
-                                w2.Add(w15);
-                                Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(w2[w15]));
-                                w16.Position = 2;
-                                bindings["vbox1"] = w2;
+                                bindings["hbox3"] = w2;
                                 w1.Add(w2);
-                                Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(w1[w2]));
-                                w17.Position = 0;
-                                bindings["dialog-vbox3"] = w1;
-                                // Internal child VersionControl.AddIn.Dialogs.EditRepositoryDialog.ActionArea
-                                Gtk.HButtonBox w18 = cobj.ActionArea;
-                                w18.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-                                w18.Spacing = 10;
-                                w18.BorderWidth = ((uint)(5));
-                                w18.Events = ((Gdk.EventMask)(256));
-                                w18.Name = "GtkDialog_ActionArea";
+                                Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(w1[w2]));
+                                w15.Position = 0;
+                                bindings["dialog-vbox2"] = w1;
+                                // Internal child VersionControl.AddIn.Dialogs.RepositoryManager.ActionArea
+                                Gtk.HButtonBox w16 = cobj.ActionArea;
+                                w16.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
+                                w16.Spacing = 10;
+                                w16.BorderWidth = ((uint)(5));
+                                w16.Events = ((Gdk.EventMask)(256));
+                                w16.Name = "GtkDialog_ActionArea";
                                 // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-                                Gtk.Button w19 = new Gtk.Button();
-                                w19.UseStock = true;
-                                w19.UseUnderline = true;
-                                w19.CanFocus = true;
-                                w19.Events = ((Gdk.EventMask)(0));
-                                w19.Name = "button10";
-                                w19.CanDefault = true;
-                                w19.Label = "gtk-cancel";
-                                bindings["button10"] = w19;
-                                cobj.AddActionWidget(w19, -6);
-                                Gtk.ButtonBox.ButtonBoxChild w20 = ((Gtk.ButtonBox.ButtonBoxChild)(w18[w19]));
-                                w20.Expand = false;
-                                w20.Fill = false;
-                                // Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-                                Gtk.Button w21 = new Gtk.Button();
-                                w21.UseStock = true;
-                                w21.UseUnderline = true;
-                                w21.CanFocus = true;
-                                w21.Events = ((Gdk.EventMask)(0));
-                                w21.Name = "button24";
-                                w21.CanDefault = true;
-                                w21.Label = "gtk-ok";
-                                bindings["button24"] = w21;
-                                cobj.AddActionWidget(w21, -5);
-                                Gtk.ButtonBox.ButtonBoxChild w22 = ((Gtk.ButtonBox.ButtonBoxChild)(w18[w21]));
-                                w22.Position = 1;
-                                w22.Expand = false;
-                                w22.Fill = false;
-                                bindings["GtkDialog_ActionArea"] = w18;
-                                cobj.DefaultHeight = 414;
-                                bindings["VersionControl.AddIn.Dialogs.EditRepositoryDialog"] = cobj;
+                                Gtk.Button w17 = new Gtk.Button();
+                                w17.CanFocus = true;
+                                w17.Events = ((Gdk.EventMask)(0));
+                                w17.Name = "button9";
+                                w17.CanDefault = true;
+                                w17.Label = Mono.Unix.Catalog.GetString("button9");
+                                bindings["button9"] = w17;
+                                cobj.AddActionWidget(w17, 0);
+                                Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[w17]));
+                                w18.Expand = false;
+                                w18.Fill = false;
+                                bindings["GtkDialog_ActionArea"] = w16;
+                                bindings["VersionControl.AddIn.Dialogs.RepositoryManager"] = cobj;
                                 w4.Show();
-                                w6.Show();
+                                w3.Show();
                                 w8.Show();
                                 w10.Show();
-                                w3.Show();
-                                w13.Show();
-                                w15.Show();
+                                w12.Show();
+                                w7.Show();
                                 w2.Show();
                                 w1.Show();
-                                w19.Show();
-                                w21.Show();
-                                w18.Show();
+                                w17.Show();
+                                w16.Show();
                                 cobj.Show();
-                                w4.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnVersionControlTypeChanged")));
-                                w8.Changed += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "OnEntryNameChanged")));
+                                w8.Clicked += ((System.EventHandler)(System.Delegate.CreateDelegate(typeof(System.EventHandler), cobj, "on_addButton_clicked")));
                             }
                             else {
                                 if ((id == "VersionControl.AddIn.Dialogs.CommitDialog")) {
                                     Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
                                     // Widget VersionControl.AddIn.Dialogs.CommitDialog
-                                    cobj.Title = "Commit Files";
+                                    cobj.Title = Mono.Unix.Catalog.GetString("Commit Files");
                                     cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                                     cobj.HasSeparator = false;
                                     cobj.Events = ((Gdk.EventMask)(256));
@@ -980,7 +981,7 @@ namespace Stetic {
                                     w2.Name = "vbox1";
                                     // Container child vbox1.Gtk.Box+BoxChild
                                     Gtk.Label w3 = new Gtk.Label();
-                                    w3.LabelProp = "Select the files to commit:";
+                                    w3.LabelProp = Mono.Unix.Catalog.GetString("Select the files to commit:");
                                     w3.Xalign = 0F;
                                     w3.Events = ((Gdk.EventMask)(0));
                                     w3.Name = "label1";
@@ -1033,7 +1034,7 @@ namespace Stetic {
                                     w12.Fill = false;
                                     // Container child vbox1.Gtk.Box+BoxChild
                                     Gtk.Label w13 = new Gtk.Label();
-                                    w13.LabelProp = "Message:";
+                                    w13.LabelProp = Mono.Unix.Catalog.GetString("Message:");
                                     w13.Xalign = 0F;
                                     w13.Events = ((Gdk.EventMask)(0));
                                     w13.Name = "label2";
@@ -1064,7 +1065,7 @@ namespace Stetic {
                                     w17.Events = ((Gdk.EventMask)(0));
                                     w17.Name = "button29";
                                     w17.CanDefault = true;
-                                    w17.Label = "gtk-cancel";
+                                    w17.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
                                     bindings["button29"] = w17;
                                     cobj.AddActionWidget(w17, -6);
                                     Gtk.ButtonBox.ButtonBoxChild w18 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[w17]));
@@ -1078,7 +1079,7 @@ namespace Stetic {
                                     w19.Events = ((Gdk.EventMask)(0));
                                     w19.Name = "button31";
                                     w19.CanDefault = true;
-                                    w19.Label = "gtk-ok";
+                                    w19.Label = Mono.Unix.Catalog.GetString("gtk-ok");
                                     bindings["button31"] = w19;
                                     cobj.AddActionWidget(w19, -5);
                                     Gtk.ButtonBox.ButtonBoxChild w20 = ((Gtk.ButtonBox.ButtonBoxChild)(w16[w19]));

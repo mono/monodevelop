@@ -34,6 +34,10 @@ namespace VersionControl.AddIn.Views
 		TreeStore filestore;
 		ScrolledWindow scroller;
 		
+		Box commitBox;
+		TextView commitText;
+		Gtk.Label labelCommit;
+		
 		VersionInfo[] statuses;
 		Hashtable markedCommit = new Hashtable();
 		
@@ -42,6 +46,8 @@ namespace VersionControl.AddIn.Views
 		bool diffRunning = false;
 		Exception diffException;
 		DiffInfo[] difs;
+		Hashtable comments = new Hashtable ();
+		bool updatingComment;
 		
 		const int ColIcon = 0;
 		const int ColStatus = 1;
@@ -51,6 +57,7 @@ namespace VersionControl.AddIn.Views
 		const int ColFilled = 5;
 		const int ColFullPath = 6;
 		const int ColShowToggle = 7;
+		const int ColShowComment = 8;
 		
 		public static bool Show (Repository vc, string path, bool test)
 		{
@@ -102,8 +109,8 @@ namespace VersionControl.AddIn.Views
 			
 			scroller = new ScrolledWindow();
 			scroller.ShadowType = Gtk.ShadowType.In;
-			main.PackStart(scroller, true, true, 0);
 			filelist = new TreeView();
+			filelist.Selection.Mode = SelectionMode.Multiple;
 			scroller.Add(filelist);
 			scroller.HscrollbarPolicy = PolicyType.Automatic;
 			scroller.VscrollbarPolicy = PolicyType.Automatic;
@@ -111,12 +118,17 @@ namespace VersionControl.AddIn.Views
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
+			CellRendererPixbuf crc = new CellRendererPixbuf();
+			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
+			colCommit.Spacing = 2;
 			colCommit.Widget = new Gtk.Image ("vc-commit", Gtk.IconSize.Menu);
 			colCommit.Widget.Show ();
 			colCommit.PackStart (cellToggle, false);
+			colCommit.PackStart (crc, false);
 			colCommit.AddAttribute (cellToggle, "active", ColCommit);
 			colCommit.AddAttribute (cellToggle, "visible", ColShowToggle);
+			colCommit.AddAttribute (crc, "visible", ColShowComment);
 			
 			CellRendererText crt = new CellRendererText();
 			CellRendererPixbuf crp = new CellRendererPixbuf();
@@ -142,12 +154,31 @@ namespace VersionControl.AddIn.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
-
+			
+			commitBox = new VBox ();
+			labelCommit = new Gtk.Label (GettextCatalog.GetString ("Commit message:"));
+			labelCommit.Xalign = 0;
+			commitBox.PackStart (labelCommit, false, false, 0);
+			Gtk.ScrolledWindow frame = new Gtk.ScrolledWindow ();
+			frame.ShadowType = ShadowType.In;
+			commitText = new TextView ();
+			commitText.WrapMode = WrapMode.WordChar;
+			commitText.Buffer.Changed += OnCommitTextChanged;
+			frame.Add (commitText);
+			commitBox.PackStart (frame, true, true, 6);
+			
+			VPaned paned = new VPaned ();
+			paned.Pack1 (scroller, true, true);
+			paned.Pack2 (commitBox, false, false);
+			main.PackStart (paned, true, true, 0);
+			
 			main.ShowAll();
 			status.Visible = false;
+			
+			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
 			
 			StartUpdate();
 		}
@@ -209,12 +240,90 @@ namespace VersionControl.AddIn.Views
 				if (localpath == "") { localpath = "."; } // not sure if this happens
 				
 				string rstatus = n.RemoteStatus.ToString();
-				
+				bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
 				markedCommit [localpath] = true;
 				
-				TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, true, false, n.LocalPath, true);
-				filestore.AppendValues (it, null, "", "", "", false, true, null, false);
+				TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, true, false, n.LocalPath, true, hasComment);
+				filestore.AppendValues (it, null, "", "", "", false, true, n.LocalPath, false, hasComment);
 			}
+		}
+		
+		string[] GetCurrentFiles ()
+		{
+			TreePath[] paths = filelist.Selection.GetSelectedRows ();
+			string[] files = new string [paths.Length];
+			
+			for (int n=0; n<paths.Length; n++) {
+				TreeIter iter;
+				filestore.GetIter (out iter, paths [n]);
+				files [n] = (string) filestore.GetValue (iter, ColFullPath);
+			}
+			return files;
+		}
+		
+		void OnCursorChanged (object o, EventArgs args)
+		{
+			string[] files = GetCurrentFiles ();
+			if (files.Length > 0) {
+				commitBox.Visible = true;
+				updatingComment = true;
+				if (files.Length == 1)
+					labelCommit.Text = GettextCatalog.GetString ("Commit message:");
+				else
+					labelCommit.Text = GettextCatalog.GetString ("Commit message (multiple selection):");
+				
+				// If all selected files have the same message,
+				// then show it so it can be modified. If not, show
+				// a blank message
+				string msg = GetCommitMessage (files[0]);
+				foreach (string file in files) {
+					if (msg != GetCommitMessage (file)) {
+						commitText.Buffer.Text = "";
+						updatingComment = false;
+						return;
+					}
+				}
+				commitText.Buffer.Text = msg;
+				updatingComment = false;
+			} else {
+				updatingComment = true;
+				commitText.Buffer.Text = "";
+				updatingComment = false;
+				commitBox.Visible = false;
+			}
+		}
+		
+		void OnCommitTextChanged (object o, EventArgs args)
+		{
+			if (updatingComment)
+				return;
+				
+			string msg = commitText.Buffer.Text;
+			
+			string[] files = GetCurrentFiles ();
+			foreach (string file in files)
+				SetCommitMessage (file, msg);
+
+			TreePath[] paths = filelist.Selection.GetSelectedRows ();
+			foreach (TreePath path in paths) {
+				TreeIter iter;
+				filestore.GetIter (out iter, path);
+				if (msg.Length > 0)
+					filestore.SetValue (iter, ColShowComment, true);
+				else
+					filestore.SetValue (iter, ColShowComment, false);
+			}
+		}
+		
+		string GetCommitMessage (string file)
+		{
+			string txt = (string) comments [file];
+			return txt != null ? txt : "";
+		}
+		
+		void SetCommitMessage (string file, string text)
+		{
+			comments [file] = text;
 		}
 		
 		void OnRowActivated(object o, RowActivatedArgs args) {
@@ -258,20 +367,49 @@ namespace VersionControl.AddIn.Views
 		{
 			// Get a list of files to commit
 			StringCollection list = new StringCollection ();
+			ArrayList comms = new ArrayList ();
 			TreeIter iter;
 			if (filestore.GetIterFirst (out iter)) {
 				do {
-					if ((bool) filestore.GetValue (iter, ColCommit))
-						list.Add ((string) filestore.GetValue (iter, ColFullPath));
+					if ((bool) filestore.GetValue (iter, ColCommit)) {
+						string file = (string) filestore.GetValue (iter, ColFullPath);
+						list.Add (file);
+						string msg = GetCommitMessage (file);
+						
+						// Put files with the same commit message together
+						// For the commit message, use relative path names
+						file = (string) filestore.GetValue (iter, ColPath);
+						bool found = false;
+						if (msg.Length > 0) {
+							foreach (object[] com in comms) {
+								if (((string)com[0]) == msg) {
+									com[1] = ((string)com[1]) + ", " + file;
+									found = true;
+									break;
+								}
+							}
+						}
+						if (!found) {
+							comms.Add (new object[] { msg, file });
+						}
+					}
 				}
 				while (filestore.IterNext (ref iter));
+			}
+			
+			StringBuilder message = new StringBuilder ();
+			foreach (object[] com in comms) {
+				string msg = (string) com[1] + ": " + (string) com[0];
+				if (message.Length > 0)
+					message.Append ('\n');
+				message.Append ("* " + FormatText (msg, 0, 2, 75));
 			}
 			
 			// Nothing to commit
 			if (list.Count == 0)
 				return;
 				
-			if (!CommitCommand.Commit (vc, filepath, list, false))
+			if (!CommitCommand.Commit (vc, filepath, list, message.ToString (), false))
 				return;
 				
 			// Remove all entries which have been committed
@@ -283,6 +421,45 @@ namespace VersionControl.AddIn.Views
 						break;
 				}
 			}
+		}
+		
+		static string FormatText (string text, int initialLeftMargin, int leftMargin, int maxCols)
+		{
+			int n = 0;
+			int margin = initialLeftMargin;
+			
+			if (text == "")
+				return "";
+			
+			StringBuilder outs = new StringBuilder ();
+			while (n < text.Length)
+			{
+				int col = margin;
+				int lastWhite = -1;
+				int sn = n;
+				while ((col < maxCols || lastWhite==-1) && n < text.Length) {
+					if (char.IsWhiteSpace (text[n]))
+						lastWhite = n;
+					if (text[n] == '\n') {
+						lastWhite = n;
+						n++;
+						break;
+					}
+					col++;
+					n++;
+				}
+				
+				if (lastWhite == -1 || col < maxCols)
+					lastWhite = n;
+				else if (col >= maxCols)
+					n = lastWhite + 1;
+				
+				if (outs.Length > 0) outs.Append ('\n');
+				
+				outs.Append (new String (' ', margin) + text.Substring (sn, lastWhite - sn));
+				margin = leftMargin;
+			}
+			return outs.ToString ();
 		}
 		
 		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)

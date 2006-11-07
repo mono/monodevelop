@@ -61,6 +61,7 @@ namespace VersionControl.AddIn.Dialogs
 		
 		public string Message {
 			get { return textview.Buffer.Text; }
+			set { textview.Buffer.Text = value; }
 		}
 		
 		void OnCommitToggledHandler(object o, ToggledArgs args)

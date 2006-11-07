@@ -22,7 +22,13 @@ namespace VersionControl.AddIn
 	{
 		Hashtable projectsWatched = new Hashtable();
 		Hashtable fileStatus = new Hashtable();
+		ProjectFileEventHandler projectFileEventHandler;
 	
+		public VersionControlNodeExtension ()
+		{
+			projectFileEventHandler = (ProjectFileEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (Monitor));
+		}
+		
 		public override bool CanBuildNode (Type dataType)
 		{
 			//Console.Error.WriteLine(dataType);
@@ -122,7 +128,7 @@ namespace VersionControl.AddIn
 		{
 			if (projectsWatched.ContainsKey(project)) return;
 			projectsWatched[project] = projectsWatched;
-			project.FileChangedInProject += new ProjectFileEventHandler(Monitor);
+			project.FileChangedInProject += projectFileEventHandler;
 		}
 		
 		void Monitor (object sender, ProjectFileEventArgs args)
@@ -154,7 +160,7 @@ namespace VersionControl.AddIn
 		public override void Dispose() 
 		{
 			foreach (Project p in projectsWatched.Keys)
-				p.FileChangedInProject -= new ProjectFileEventHandler(Monitor);
+				p.FileChangedInProject -= projectFileEventHandler;
 			projectsWatched.Clear();
 		}
 		
@@ -301,7 +307,7 @@ namespace VersionControl.AddIn
 				case Commands.Status:
 					return StatusView.Show (repo, path, test);
 				case Commands.Commit:
-					return CommitCommand.Commit (repo, path, null, test);
+					return CommitCommand.Commit (repo, path, null, "", test);
 				case Commands.Add:
 					return AddCommand.Add (repo, path, test);
 				case Commands.Remove:

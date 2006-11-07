@@ -42,6 +42,7 @@
 		<StockIcon stockid = "vc-update" resource = "menu_update.png" />
 		<StockIcon stockid = "vc-commit" resource = "menu_commit.png" />
 		<StockIcon stockid = "vc-remote-status" resource = "menu_remote_status.png" />
+		<StockIcon stockid = "vc-comment" resource = "comment.png" />
 	</Extension>
         
 	<Extension path = "/SharpDevelop/Commands">

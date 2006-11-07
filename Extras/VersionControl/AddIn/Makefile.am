@@ -50,6 +50,7 @@ RES = overlay_added.png \
 	  menu_remove.png \
 	  menu_status.png \
 	  menu_update.png \
+	  comment.png \
 	  gtk-gui/objects.xml
 
 ADDIN = VersionControl.addin.xml
