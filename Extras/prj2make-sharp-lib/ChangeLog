@@ -1,3 +1,7 @@
+2006-11-11 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* prj2make-sharp-lib.mdp: Build the project using the 2.0 profile.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added svn:ignore for prj2make-sharp-lib.pidb
