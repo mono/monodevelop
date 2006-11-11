@@ -77,6 +77,20 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IdeApp.Workbench.SaveAll ();
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			bool enabled = false;
+			foreach (Document doc in IdeApp.Workbench.Documents)
+			{
+				if (doc.IsDirty)
+				{
+					enabled = true;
+					break;
+				}
+			}
+			info.Enabled = enabled;
+		}
 	}	
 	
 
