@@ -1,3 +1,7 @@
+2006-11-11 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* Gui/CodeGenerationPanel.cs: fix for bug 79199
+	
 2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Fixed null check.

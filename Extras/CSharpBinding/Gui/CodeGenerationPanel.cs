@@ -57,6 +57,7 @@ namespace CSharpBinding
 				ListStore store = new ListStore (typeof (string));
 				store.AppendValues (GettextCatalog.GetString ("Executable"));
 				store.AppendValues (GettextCatalog.GetString ("Library"));
+				store.AppendValues (GettextCatalog.GetString ("Executable with GUI"));
 				compileTargetCombo.Model = store;
 				CellRendererText cr = new CellRendererText ();
 				compileTargetCombo.PackStart (cr, true);
