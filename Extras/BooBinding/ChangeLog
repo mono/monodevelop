@@ -1,3 +1,7 @@
+2006-11-11 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * Gui/OptionPanels/CodeCompilationPanel.boo: fix for bug 79199
+
 2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Gui/ShellTextView.boo: Track API changes.

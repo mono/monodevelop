@@ -113,11 +113,9 @@ public class CodeGenerationPanel(AbstractOptionPanel):
 		stringArray[0] = GettextCatalog.GetString ("Library")
 		store.AppendValues (stringArray)
 
-		/*
 		stringArray = array(System.String, 1)
-		stringArray[0] = GettextCatalog.GetString ("Windows Executable")
+		stringArray[0] = GettextCatalog.GetString ("Executable with GUI")
 		store.AppendValues (stringArray)
-		*/
 
 		compileTargetCombo.Model = store
 		cr = CellRendererText()
