@@ -1,5 +1,10 @@
 2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 	
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:
+	* MonoDevelop.Ide.Tasks/UserTasksView.cs: added
+
+2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	
 	* Makefile.am:
 	* MonoDevelop.Ide.mdp:
 	* Base.glade: updated
