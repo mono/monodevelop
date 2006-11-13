@@ -1,3 +1,8 @@
+2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* Parser/SharpDevelopTree/CompilationUnit.cs: returning Tag colection
+	* Parser/Parser.cs: filling comments into compilation unit
+
 2006-11-11 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* Gui/CodeGenerationPanel.cs: fix for bug 79199

@@ -7,6 +7,8 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 	public class CompilationUnit : AbstractCompilationUnit
 	{
 		
+		TagCollection tagComments = new TagCollection ();
+		
 		public override CommentCollection MiscComments {
 			get {
 				return null;
@@ -19,7 +21,7 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		}
 		public override TagCollection TagComments {
 			get {
-				return null;
+				return tagComments;
 			}
 		}
 	}

@@ -71,24 +71,25 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnitBase Parse(string fileName)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StreamReader(fileName));
-			p.Parse ();
-			
-			CSharpVisitor visitor = new CSharpVisitor();
-			visitor.Visit(p.CompilationUnit, null);
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			foreach (IClass c in visitor.Cu.Classes)
-				c.Region.FileName = fileName;
-			return visitor.Cu;
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StreamReader(fileName))) {
+            	return Parse (p, fileName);
+            }
 		}
 		
 		public ICompilationUnitBase Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(fileContent));
-			p.Parse ();
-			
-			CSharpVisitor visitor = new CSharpVisitor();
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser (SupportedLanguage.CSharp, new StringReader(fileContent))) {
+            	return Parse (p, fileName);
+            }
+		}
+		
+		ICompilationUnit Parse (ICSharpCode.NRefactory.Parser.IParser p, string fileName)
+		{
+        	p.Lexer.SpecialCommentTags = lexerTags;
+            p.ParseMethodBodies = false;
+            p.Parse ();
+            
+            CSharpVisitor visitor = new CSharpVisitor();
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
@@ -97,8 +98,20 @@ namespace CSharpBinding.Parser
 			RetrieveRegions (visitor.Cu, p.Lexer.SpecialTracker);
 			foreach (IClass c in visitor.Cu.Classes)
 				c.Region.FileName = fileName;
-			return visitor.Cu;
-		}
+			AddCommentTags (visitor.Cu, p.Lexer.TagComments);
+            return visitor.Cu;
+      	}
+
+      	void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
+      	{
+	    	foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {	  		
+    	  		DefaultRegion tagRegion = new DefaultRegion (tagComment.StartPosition.Y, tagComment.StartPosition.X, tagComment.EndPosition.Y, tagComment.EndPosition.X);
+                Tag tag = new Tag (tagComment.Tag, tagRegion);
+                tag.CommentString = tagComment.CommentText;
+                cu.TagComments.Add (tag);
+            }
+      	}
+
 		
 		public LanguageItemCollection CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName)
 		{
