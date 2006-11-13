@@ -9,6 +9,7 @@ using System;
 using System.Drawing;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 
@@ -22,7 +23,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	internal class OpenTaskView : IPadContent
+	internal class ErrorListPad : IPadContent
 	{
 		VBox control;
 		ScrolledWindow sw;
@@ -31,7 +32,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
-		int errors = 0, warns = 0, msgs = 0;
 		Clipboard clipboard;
 		Hashtable tasks = new Hashtable ();
 		IPadWindow window;
@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
-			window.Title = GettextCatalog.GetString ("Task List");
-			window.Icon = MonoDevelop.Core.Gui.Stock.TaskListIcon;
+			window.Title = GettextCatalog.GetString ("Error List");
+			window.Icon = MonoDevelop.Core.Gui.Stock.Error;
 		}
 		
 		public Gtk.Widget Control {
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		}
 
 		public string Id {
-			get { return "MonoDevelop.Ide.Gui.Pads.OpenTaskView"; }
+			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 		
 		public string DefaultPlacement {
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		const int COL_TYPE = 0, COL_LINE = 1, COL_DESC = 2, COL_FILE = 3, COL_PATH = 4, COL_TASK = 5, COL_READ = 6, COL_MARKED = 7, COL_READ_WEIGHT = 8;
 		
-		public OpenTaskView()
+		public ErrorListPad ()
 		{
 			control = new VBox ();
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			store.DefaultSortFunc = sortFunc;
 			store.SetSortColumnId (COL_TASK, SortType.Ascending);
 			
-			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes); 
+			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
             filter.VisibleFunc = filterFunct;
 			
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.ShadowType = ShadowType.In;
 			sw.Add (view);
 			
-			Services.TaskService.TasksChanged     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
+			Services.TaskService.TasksCleared     += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (ShowResults));
 			Services.TaskService.TaskAdded        += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
 			IdeApp.ProjectOperations.EndBuild      += new BuildEventHandler (SelectTaskView);
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineOpen));
@@ -302,7 +302,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			store.Clear ();
 			tasks.Clear ();
-			errors = warns = msgs = 0;
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
@@ -310,25 +309,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void TaskAdded (object sender, TaskEventArgs e)
 		{
-			AddTask (e.Task);
+			if (e.Task.TaskType != TaskType.Comment) 
+				AddTask (e.Task);
 		}
 		
 		public void AddTask (Task t)
 		{
 			if (tasks.Contains (t)) return;
 			
-			
 			switch (t.TaskType) {
 				case TaskType.Error:
-					errors++;
 					UpdateErrorsNum ();
 					break; 
 				case TaskType.Warning:
-					warns++;
 					UpdateWarningsNum ();	
 					break;
 				default:
-					msgs++;
 					UpdateMessagesNum ();
 					break;
 			}
@@ -382,17 +378,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errors), errors);
+			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", IdeApp.Services.TaskService.ErrorsCount), IdeApp.Services.TaskService.ErrorsCount);
 		}
 		
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warns), warns); 
+			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", IdeApp.Services.TaskService.WarningsCount), IdeApp.Services.TaskService.WarningsCount); 
 		}	
 		
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", msgs), msgs);
+			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", IdeApp.Services.TaskService.MessagesCount), IdeApp.Services.TaskService.MessagesCount);
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.CodeDom.Compiler;
@@ -671,7 +672,7 @@ namespace MonoDevelop.Ide.Gui
 			string name = IdeApp.Workbench.ActiveDocument == null ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName;
 			properties.SetProperty("ActiveWindow", name == null ? String.Empty : name);
 			properties.SetProperty("ActiveConfiguration", combine.ActiveConfiguration == null ? String.Empty : combine.ActiveConfiguration.Name);
-			
+		
 			XmlElement propertynode = doc.CreateElement("Properties");
 			doc.DocumentElement.AppendChild(propertynode);
 			
@@ -914,7 +915,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void BeginBuild (IProgressMonitor monitor)
 		{
-			Services.TaskService.ClearTasks();
+			Services.TaskService.ClearExceptCommentTasks ();
 			if (StartBuild != null) {
 				StartBuild (this, new BuildEventArgs (monitor, true));
 			}
@@ -929,7 +930,7 @@ namespace MonoDevelop.Ide.Gui
 					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("---------------------- Done ----------------------")));
 					
 					foreach (CompilerError err in result.CompilerResults.Errors) {
-						Services.TaskService.AddTask (new Task(null, err));
+						Services.TaskService.Add (new Task (null, err));
 					}
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);

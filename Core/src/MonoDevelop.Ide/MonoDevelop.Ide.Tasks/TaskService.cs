@@ -6,53 +6,262 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.IO;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Properties;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	public class TaskService : GuiSyncAbstractService
 	{
-		ArrayList tasks  = new ArrayList();
-		string    compilerOutput = String.Empty;
 		
-		[FreeDispatch]
-		public ICollection Tasks {
-			get {
-				return tasks;
+		List<Task> tasks  = new List<Task> ();
+		Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int> ();
+		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
+		List<UserTask> userTasks = new List<UserTask> ();
+		string compilerOutput = String.Empty;
+		Combine combine;
+		
+		public TaskService ()
+			: base ()
+		{
+		}
+		
+		public override void InitializeService ()
+		{
+			base.InitializeService ();
+			ReloadPriories ();
+			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
+			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
+			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
+		}
+
+		void ProjectServiceSolutionOpened (object sender, CombineEventArgs e)
+		{
+			combine = e.Combine;
+			e.Combine.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
+			e.Combine.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
+			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+			
+			// Load all tags that are stored in pidb files
+            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
+            {
+                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+                foreach (ProjectFile file in p.ProjectFiles)
+                {
+                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+                	if (tags !=null)
+                		UpdateCommentTags (file.Name, tags);
+                }
+        	}
+        	
+        	// Load User Tasks from xml file
+        	string fileToLoad = GetUserTasksFilename (e.Combine);
+        	if (File.Exists (fileToLoad))
+        	{
+        		try
+        		{
+        			XmlSerializer serializer = new XmlSerializer (userTasks.GetType ());
+					Stream stream = new FileStream (fileToLoad, FileMode.Open, FileAccess.Read, FileShare.None);
+					userTasks = new List<UserTask>((IEnumerable<UserTask>)serializer.Deserialize (stream));
+					stream.Close ();
+					if (userTasks.Count > 0 && UserTasksChanged != null)
+						UserTasksChanged (this, EventArgs.Empty);
+				}
+				catch (Exception ex)
+				{
+					Runtime.LoggingService.Warn ("Could not load user tasks: " + fileToLoad as object, ex);
+				}
+        	}
+		}
+				
+		void ProjectServiceSolutionClosed (object sender, CombineEventArgs e)
+		{
+			combine = null;
+			e.Combine.FileRenamedInProject -= new ProjectFileRenamedEventHandler (ProjectFileRenamed);
+			e.Combine.FileRemovedFromProject -= new ProjectFileEventHandler (ProjectFileRemoved);
+			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged -= new CommentTasksChangedEventHandler (OnCommentTasksChanged);
+			
+			// Save UserTasks to xml file
+			string fileToSave = GetUserTasksFilename (e.Combine);
+			try
+			{
+				XmlSerializer serializer = new XmlSerializer (userTasks.GetType ());
+				Stream stream = new FileStream (fileToSave, FileMode.Create, FileAccess.Write, FileShare.None);
+				serializer.Serialize (stream, userTasks);
+				stream.Close ();
+			}
+			catch (Exception ex)
+			{
+				Runtime.LoggingService.Warn ("Could not save user tasks: " + fileToSave as object, ex);
+			}
+
+			//Cleanup
+			Clear ();			
+			userTasks.Clear ();
+			if (UserTasksChanged != null)
+				UserTasksChanged (this, EventArgs.Empty);
+		}
+		
+		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		{
+			bool change = false;
+			if (e.Key == "Monodevelop.TaskListTokens" && e.NewValue != e.OldValue)
+			{
+				ReloadPriories ();
+			}
+			if (combine != null)
+			{
+				// update priorities
+	            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
+	            {
+	                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+	                foreach (ProjectFile file in p.ProjectFiles)
+	                {
+	                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+	                	if (tags !=null)
+	                		UpdateCommentTags (file.Name, tags);
+	                }
+	        	}
 			}
 		}
 		
-		int warnings = 0;
-		int errors   = 0;
-		int comments = 0;
-		
-		public int Warnings {
-			get {
-				return warnings;
+		void ProjectFileRemoved (object sender, ProjectFileEventArgs e)
+		{
+			for (int i = 0; i < tasks.Count; ++i) {
+				Task curTask = tasks[i];
+				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.ProjectFile.Name)) {
+					Remove (curTask);
+					--i;
+				}
 			}
 		}
 		
-		public int Errors {
-			get {
-				return errors;
+		void ProjectFileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		{
+			for (int i = 0; i < tasks.Count; ++i) {
+				Task curTask = tasks[i];
+				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.OldName)) {
+					Remove (curTask);
+					curTask.FileName = Path.GetFullPath (e.NewName);
+					Add (curTask);
+					--i;
+				}
 			}
 		}
 		
-		public int Comments {
+		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
+		{
+			UpdateCommentTags (e.FileName, e.TagComments);
+		}
+
+		string GetUserTasksFilename (Combine combine)
+		{
+			string combineFilename = combine.FileName;
+			string combinePath = Path.GetDirectoryName (combineFilename);
+			string userTasksFilename = Path.Combine(combinePath, combine.Name + ".usertasks");
+			return userTasksFilename;
+		}
+		
+		void ReloadPriories ()
+		{
+			priorities.Clear ();
+				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "");
+				foreach (string token in tokens.Split (';'))
+				{
+					int pos = token.IndexOf (':');
+					if (pos != -1)
+					{
+						int priority;
+						if (! int.TryParse (token.Substring (pos + 1), out priority))
+							priority = 1;
+						priorities.Add (token.Substring (0, pos), (TaskPriority)priority);
+					} else
+					{
+						priorities.Add (token, TaskPriority.Normal);
+					}
+				}
+		}
+		
+		public int TaskCount {
 			get {
-				return comments;
+				return tasks.Count - GetCount (TaskType.Comment);
+			}
+		}
+		
+		public List<Task> Tasks {
+			get {
+				List<Task> retTasks = new List<Task> ();
+				foreach (Task task in tasks) {
+					if (task.TaskType != TaskType.Comment) {
+						retTasks.Add (task);
+					}
+				}
+				return retTasks;
+			}
+		}
+		
+		public List<Task> CommentTasks {
+			get {
+				List<Task> retTasks = new List<Task> ();
+				foreach (Task task in tasks) {
+					if (task.TaskType == TaskType.Comment) {
+						retTasks.Add (task);
+					}
+				}
+				return retTasks;
+			}
+		}
+		
+		public List<UserTask> UserTasks { get { return userTasks; } }
+		
+		int GetCount (TaskType type)
+		{
+			if (!taskCount.ContainsKey (type)) {
+				return 0;
+			}
+			return taskCount[type];
+		}
+		
+		public int ErrorsCount {
+			get {
+				return GetCount (TaskType.Error);
+			}
+		}
+		
+		public int WarningsCount {
+			get {
+				return GetCount (TaskType.Warning);
+			}
+		}
+		
+		public int MessagesCount {
+			get {
+				return GetCount (TaskType.Message);
 			}
 		}
 		
 		public bool SomethingWentWrong {
 			get {
-				return errors + warnings > 0;
+				return GetCount (TaskType.Error) + GetCount (TaskType.Warning) > 0;
+			}
+		}
+		
+		public bool HasCriticalErrors (bool treatWarningsAsErrors)
+		{
+			if (treatWarningsAsErrors) {
+				return SomethingWentWrong;
+			} else {
+				return GetCount (TaskType.Error) > 0;
 			}
 		}
 		
@@ -62,58 +271,125 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			set {
 				compilerOutput = value;
-				OnCompilerOutputChanged(null);
+				OnCompilerOutputChanged (null);
 			}
 		}
 		
-		public void AddTask (Task task)
+		public void Add (Task task)
 		{
 			tasks.Add (task);
-			
-			switch (task.TaskType) {
-				case TaskType.Warning:
-					++warnings;
-					break;
-				case TaskType.Error:
-					++errors;
-					break;
-				default:
-					++comments;
-					break;
+			if (!taskCount.ContainsKey (task.TaskType)) {
+				taskCount[task.TaskType] = 1;
+			} else {
+				taskCount[task.TaskType]++;
 			}
-			
 			OnTaskAdded (new TaskEventArgs (task));
 		}
 		
-		public void ClearTasks ()
+		public void AddRange (IEnumerable<Task> tasks)
 		{
-			tasks.Clear ();
-			warnings = errors = comments = 0;
-			OnTasksChanged (null);
-		}
-		
-		public void ShowTasks ()
-		{
-			Services.DispatchService.GuiDispatch (new MessageHandler (ShowTasksCallback));
-		}
-		
-		void ShowTasksCallback ()
-		{
-			Pad pad = IdeApp.Workbench.Pads [typeof(OpenTaskView)];
-			if (pad != null) pad.BringToFront ();
-		}
-		
-		protected virtual void OnCompilerOutputChanged(EventArgs e)
-		{
-			if (CompilerOutputChanged != null) {
-				CompilerOutputChanged(this, e);
+			foreach (Task task in tasks) {
+				Add (task);
 			}
 		}
 		
-		protected virtual void OnTasksChanged(EventArgs e)
+		public void AddUserTasksRange (IEnumerable<UserTask> tasks)
 		{
-			if (TasksChanged != null) {
-				TasksChanged(this, e);
+			userTasks.AddRange (tasks);
+			if (UserTasksChanged != null)
+				UserTasksChanged (this, EventArgs.Empty);
+		}
+		
+		public void Remove (Task task)
+		{
+			if (tasks.Contains (task)) {
+				tasks.Remove (task);
+				taskCount[task.TaskType]--;
+				OnTaskRemoved (new TaskEventArgs (task));
+			}
+		}
+		
+		public void Clear ()
+		{
+			taskCount.Clear ();
+			tasks.Clear ();
+			OnTasksCleared (EventArgs.Empty);
+		}
+		
+		public void ClearExceptCommentTasks ()
+		{
+			List<Task> commentTasks = new List<Task> (CommentTasks);
+			Clear ();
+			foreach (Task t in commentTasks) {
+				Add (t);
+			}
+		}
+
+		public void UpdateCommentTags (string fileName, TagCollection tagComments)
+		{
+			if (fileName == null || tagComments == null) {
+				return;
+			}
+			
+			List<Task> newTasks = new List<Task> ();
+			foreach (MonoDevelop.Projects.Parser.Tag tag in tagComments) {
+				newTasks.Add (new Task (fileName,
+				                      tag.Key + tag.CommentString,
+				                      tag.Region.BeginColumn - 1,
+				                      tag.Region.BeginLine,
+				                      TaskType.Comment, priorities[tag.Key]));
+			}
+			List<Task> oldTasks = new List<Task>();
+			
+			foreach (Task task in CommentTasks) {
+				if (Path.GetFullPath (task.FileName) == Path.GetFullPath (fileName)) {
+					oldTasks.Add (task);
+				}
+			}
+			
+			for (int i = 0; i < newTasks.Count; ++i) {
+				for (int j = 0; j < oldTasks.Count; ++j) {
+					if (oldTasks[j] != null &&
+					    newTasks[i].Line        == oldTasks[j].Line &&
+					    newTasks[i].Column      == oldTasks[j].Column &&
+					    newTasks[i].Description == oldTasks[j].Description &&
+					    newTasks[i].Priority 	== oldTasks[j].Priority)
+					{
+						newTasks[i] = null;
+						oldTasks[j] = null;
+						break;
+					}
+				}
+			}
+			
+			foreach (Task task in newTasks) {
+				if (task != null) {
+					Add (task);
+				}
+			}
+			
+			foreach (Task task in oldTasks) {
+				if (task != null) {
+					Remove (task);
+				}
+			}
+		}
+		
+		public void ShowErrors ()
+		{
+			Services.DispatchService.GuiDispatch (new MessageHandler (ShowErrorsCallback));
+		}
+		
+		void ShowErrorsCallback ()
+		{
+			Pad pad = IdeApp.Workbench.Pads [typeof(ErrorListPad)];
+			if (pad != null) pad.BringToFront ();
+		}
+	
+		protected virtual void OnCompilerOutputChanged (EventArgs e) 
+		{
+			if (CompilerOutputChanged != null) {
+				CompilerOutputChanged (this, e);
 			}
 		}
 		
@@ -124,53 +400,25 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public override void InitializeService()
+		protected virtual void OnTaskRemoved (TaskEventArgs e)
 		{
-			base.InitializeService();
-			Services.FileService.FileRenamed += new FileEventHandler(CheckFileRename);
-			Services.FileService.FileRemoved += new FileEventHandler(CheckFileRemove);
-		}
-		
-		void CheckFileRemove(object sender, FileEventArgs e)
-		{
-			bool somethingChanged = false;
-			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = (Task)tasks[i];
-				if (curTask.FileName == e.FileName) {
-					tasks.RemoveAt(i);
-					--i;
-					somethingChanged = true;
-				}
-			}
-			
-			if (somethingChanged) {
-				NotifyTaskChange();
+			if (TaskRemoved != null) {
+				TaskRemoved (this, e);
 			}
 		}
 		
-		void CheckFileRename(object sender, FileEventArgs e)
+		protected virtual void OnTasksCleared (EventArgs e)
 		{
-			bool somethingChanged = false;
-			foreach (Task curTask in tasks) {
-				if (curTask.FileName == e.SourceFile) {
-					curTask.FileName = e.TargetFile;
-					somethingChanged = true;
-				}
+			if (TasksCleared != null) {
+				TasksCleared (this, e);
 			}
-			
-			if (somethingChanged) {
-				NotifyTaskChange();
-			}
-		}
-		
-		public void NotifyTaskChange()
-		{
-			OnTasksChanged(null);
 		}
 		
 		public event TaskEventHandler TaskAdded;
-		public event EventHandler TasksChanged;
+		public event TaskEventHandler TaskRemoved;
+		public event EventHandler TasksCleared;
 		public event EventHandler CompilerOutputChanged;
+		public event EventHandler UserTasksChanged;
 	}
 
 	public delegate void TaskEventHandler (object sender, TaskEventArgs e);

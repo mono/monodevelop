@@ -42,7 +42,12 @@ MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 MonoDevelop.Ide.Tasks/Task.cs \
+MonoDevelop.Ide.Tasks/UserTask.cs \
 MonoDevelop.Ide.Tasks/TaskService.cs \
+MonoDevelop.Ide.Tasks/TaskPriority.cs \
+MonoDevelop.Ide.Tasks/ITaskListView.cs \
+MonoDevelop.Ide.Tasks/CommentTasksView.cs \
+MonoDevelop.Ide.Tasks/UserTasksView.cs \
 MonoDevelop.Ide.Codons/ContextPadCodon.cs \
 MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
 MonoDevelop.Ide.Codons/CombineOpenCondition.cs \
@@ -52,6 +57,7 @@ MonoDevelop.Ide.Codons/ProjectOpenCondition.cs \
 MonoDevelop.Ide.Codons/WindowActiveCondition.cs \
 MonoDevelop.Ide.Codons/WindowOpenCondition.cs \
 MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs \
+MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs \
@@ -123,6 +129,7 @@ MonoDevelop.Ide.Gui.OptionPanels/CodeGenerationPanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs \
 MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs \
+MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
@@ -130,7 +137,8 @@ MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs \
 MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
-MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs \
+MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
+MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \
 MonoDevelop.Ide.Gui.Pads.ClassPad/ClassData.cs \
 MonoDevelop.Ide.Gui.Pads.ClassPad/ClassNodeBuilder.cs \
 MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs \

@@ -1,3 +1,21 @@
+2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	
+	* Makefile.am:
+	* MonoDevelop.Ide.mdp:
+	* Base.glade: updated
+	* MonoDevelop.Ide.addin.xml: renamed Task List pad -> Error List pad, added Task List pad, added User and Comments Task List Pad Views
+	* MonoDevelop.Ide.Gui.Pads/OpenTaskView.cs: removed (renamed to ErrorView)
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:
+	* MonoDevelop.Ide.Codons/TaskListViewCodon.cs:
+	* MonoDevelop.Ide.Tasks/UserTask.cs:
+	* MonoDevelop.Ide.Tasks/ITaskListView.cs:
+	* MonoDevelop.Ide.Tasks/TaskPriority.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs: added
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: track API changes
+	* MonoDevelop.Ide.Tasks/Task.cs: changed TaskType enum, added Priority property, new Constructors
+	* MonoDevelop.Ide.Tasks/TaskService.cs: refactored, added User Tasks and Comment Tasks functionality
+
 2006-11-11 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* /MonoDevelop.Ide.Commands/FileCommands.cs: fix for bug 79410

@@ -628,9 +628,15 @@
 		            extensions = "*.*"/>
 	</Extension>-->
 	
+	<Extension path = "/MonoDevelop/TaskList/View" extension-nodes = "TaskListView">
+		<TaskListView _label = "Comments" class = "MonoDevelop.Ide.Tasks.CommentTasksView" />
+		<TaskListView _label = "User Tasks" class = "MonoDevelop.Ide.Tasks.UserTasksView" />
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Workbench/Pads" extension-nodes="Pad, SolutionPad" description="Pads shown in the workbench.">
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView" class = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
@@ -676,14 +682,16 @@
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		</WorkbenchContext>
 		<WorkbenchContext id = "Debug">
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.OpenTaskView"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultVisible = "False"/>
 		</WorkbenchContext>
 	</Extension>
 	
@@ -706,6 +714,9 @@
 			<DialogPanel id = "AddIns"
 			             _label = "Add-ins"
 			             class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel"/>
+			<DialogPanel id = "TaskList"
+			             _label = "Task List"
+			             class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel"/>
 		</DialogPanel>
 		<DialogPanel id    = "CodingOptions"
 		             _label = "Coding">
