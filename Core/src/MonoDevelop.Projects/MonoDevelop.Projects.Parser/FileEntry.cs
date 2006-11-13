@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Parser
 		DateTime parseTime;
 		ClassEntry firstClass;
 		int parseErrorRetries;
+		TagCollection commentTasks;
 		
 		[NonSerialized]
 		bool disableParse;
@@ -128,6 +129,12 @@ namespace MonoDevelop.Projects.Parser
 				string ext = System.IO.Path.GetExtension (filePath).ToLower ();
 				return ext == ".dll" || ext == ".exe";
 			}
+		}
+		
+		public TagCollection CommentTasks
+		{
+			get { return commentTasks; }
+			set { commentTasks = value; }
 		}
 	}
 }

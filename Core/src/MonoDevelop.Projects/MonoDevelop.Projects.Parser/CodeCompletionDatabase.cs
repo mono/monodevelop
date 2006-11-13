@@ -28,9 +28,11 @@
 
 
 using System;
+using System.Text;
 using System.Threading;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -47,7 +49,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		static readonly int MAX_ACTIVE_COUNT = 100;
 		static readonly int MIN_ACTIVE_COUNT = 50;
-		static protected readonly int FORMAT_VERSION = 13;
+		static protected readonly int FORMAT_VERSION = 15;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -73,6 +75,8 @@ namespace MonoDevelop.Projects.Parser
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
+			
+			Runtime.Properties.PropertyChanged += new PropertyEventHandler (OnPropertyUpdated);	
 		}
 		
 		public virtual void Dispose ()
@@ -166,6 +170,14 @@ namespace MonoDevelop.Projects.Parser
 					headers = new Hashtable ();
 				}
 			}
+			
+			// Notify read comments
+			foreach (FileEntry fe in files.Values)
+				parserDatabase.UpdatedCommentTasks (fe);
+			
+			// Update comments if needed...
+			PropertyEventArgs args = new PropertyEventArgs (null, "Monodevelop.TaskListTokens", LastValidTaskListTokens, Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", ""));
+			this.OnPropertyUpdated (null, args);
 		}
 		
 		public static Hashtable ReadHeaders (string baseDir, string name)
@@ -186,6 +198,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
+				headers["LastValidTaskListTokens"] = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "");
 							
 				Runtime.LoggingService.Debug ("Writing " + dataFile);
 				
@@ -407,13 +420,126 @@ namespace MonoDevelop.Projects.Parser
 			return ce.Class;
 		}
 		
+		void OnPropertyUpdated (object sender, PropertyEventArgs e)
+		{
+			if (e.Key == "Monodevelop.TaskListTokens")
+			{
+				// Update LastValidTagComments
+				headers["LastValidTagComments"] = (string)e.NewValue;
+				
+				List<string> oldTokensList = new List<string> ();
+				if (e.OldValue != null)
+				{
+					string[] tokens = ((string)e.OldValue).Split (';');
+					foreach (string token in tokens)
+					{
+						int pos = token.IndexOf (':');
+						if (pos != -1)
+							oldTokensList.Add (token.Substring (0, pos));
+					}
+				}
+				List<string> newTokensList = new List<string> ();
+				if (e.NewValue != null)
+				{
+					string[] tokens = ((string)e.NewValue).Split (';');
+					foreach (string token in tokens)
+					{
+						int pos = token.IndexOf (':');
+						if (pos != -1)
+							newTokensList.Add (token.Substring (0, pos));
+					}
+				}
+				
+				// Check if tokens just reordered or are the same
+				if (oldTokensList.Count == newTokensList.Count)
+				{
+					bool tokensFound = true;
+					foreach (string token in newTokensList)
+					{	
+						if (oldTokensList.Contains (token)) continue;
+						tokensFound = false;
+						break;
+					}
+					if (tokensFound) return;
+				}
+				
+				// Check if some token(s) just removed
+				if (oldTokensList.Count >= newTokensList.Count)
+				{
+					bool newTokenFound = false;
+					foreach (string token in newTokensList)
+					{	
+						if (oldTokensList.Contains (token)) continue;
+						newTokenFound = true;
+						break;
+					}
+					if (!newTokenFound)
+					{
+						List<string> removedTokensList = new List<string> ();
+						foreach (string token in oldTokensList)
+						{	
+							if (!newTokensList.Contains (token))
+								removedTokensList.Add (token);
+						}
+						
+						// Remove them from FileEntry data
+						foreach (string token in removedTokensList)
+							RemoveSpecialCommentTag (token);
+	                	return;
+					}
+				}
+				
+				QueueAllFilesForParse ();
+			}
+		}
+	
+		public TagCollection GetSpecialComments (string fileName)
+		{
+			lock (rwlock)
+			{
+				FileEntry fe = files[fileName] as FileEntry;
+				return fe != null ? fe.CommentTasks : null;
+			}
+		}
+		
+		public void UpdateTagComments (TagCollection tags, string fileName)
+		{
+			lock (rwlock)
+			{
+				FileEntry fe = files[fileName] as FileEntry;
+				if (fe != null)
+					fe.CommentTasks = tags;
+			}
+		}
+		
+		void RemoveSpecialCommentTag (string token)
+		{
+			foreach (FileEntry fe in files.Values)
+			{
+				List<Tag> markedTags = new List<Tag> ();
+				foreach (Tag tag in fe.CommentTasks)
+					if (tag.Key == token) markedTags.Add (tag);
+				foreach (Tag tag in markedTags)
+					fe.CommentTasks.Remove (tag);
+				parserDatabase.UpdatedCommentTasks (fe);
+			}
+		}
+		
+		string LastValidTaskListTokens
+		{
+			get
+			{
+				return (string)headers["LastValidTaskListTokens"];
+			}
+		}
+		
 		public void UpdateDatabase ()
 		{
 			ArrayList list = GetModifiedFileEntries ();
 			foreach (FileEntry file in list)
 				ParseFile (file.FileName, null);
 		}
-		
+
 		public virtual void CheckModifiedFiles ()
 		{
 			ArrayList list = GetModifiedFileEntries ();
@@ -449,6 +575,16 @@ namespace MonoDevelop.Projects.Parser
 
 			file.InParseQueue = true;
 			parserDatabase.QueueParseJob (this, new JobCallback (ParseCallback), file.FileName);
+		}
+		
+		protected void QueueAllFilesForParse ()
+		{
+			lock (rwlock)
+			{
+				foreach (FileEntry file in files.Values)
+					file.LastParseTime = DateTime.MinValue;
+			}
+			CheckModifiedFiles ();
 		}
 		
 		void ParseCallback (object ob, IProgressMonitor monitor)

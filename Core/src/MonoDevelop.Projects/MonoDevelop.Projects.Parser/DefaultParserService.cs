@@ -26,6 +26,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Utility;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Parser
 {
@@ -76,7 +77,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		string file;
 		
-		public FileParserContext (DefaultParserService parserService, ParserDatabase pdb, CodeCompletionDatabase db, string file): base (parserService, pdb, db)
+		public FileParserContext (DefaultParserService parserService, ParserDatabase pdb, CodeCompletionDatabase db, string file) : base (parserService, pdb, db)
 		{
 			this.file = file;
 		}
@@ -254,6 +255,11 @@ namespace MonoDevelop.Projects.Parser
 				Runtime.LoggingService.Error (ex);
 				return null;
 			}
+		}
+		
+		public TagCollection GetFileSpecialComments (string fileName)
+		{
+			return db.GetSpecialComments (fileName);
 		}
 			
 		public LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
@@ -1107,8 +1113,9 @@ namespace MonoDevelop.Projects.Parser
 
 					lastUpdateSize[fileName] = contentHash;
 					return parseInformation;
-				} else
+				} else {
 					return this.GetCachedParseInformation (fileName);
+				}
 			} catch (Exception e) {
 				Runtime.LoggingService.Error (e.ToString ());
 				return null;
@@ -1489,7 +1496,14 @@ namespace MonoDevelop.Projects.Parser
 				return null;
 			}
 			
-			parser.LexerTags = new string[] { "HACK", "TODO", "UNDONE", "FIXME" };
+			string[] tags = ((string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0")).Split (';');
+			for (int i = 0; i < tags.Length; i++)
+			{
+				int pos = tags[i].IndexOf (':');
+				if (pos != -1)
+					tags[i] = tags[i].Substring (0, pos);
+			}
+			parser.LexerTags = tags;
 			
 			ICompilationUnitBase parserOutput = null;
 			
@@ -1595,6 +1609,11 @@ namespace MonoDevelop.Projects.Parser
 			get { return nameTable; }
 		}
 		
+		internal void UpdatedCommentTasks (FileEntry fe)
+		{
+			OnCommentTasksChanged (new CommentTasksChangedEventArgs (fe.FileName, fe.CommentTasks));
+		}
+		
 		public void NotifyParseInfoChange (string file, ClassUpdateInformation res, Project project)
 		{
 			ClassInformationEventArgs args = new ClassInformationEventArgs (file, res, project);
@@ -1622,9 +1641,17 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		protected virtual void OnCommentTasksChanged (CommentTasksChangedEventArgs e)
+		{
+			if (CommentTasksChanged != null) {
+				CommentTasksChanged (this, e);
+			}
+		}
+		
 		public event ParseInformationEventHandler ParseInformationChanged;
 		public event ClassInformationEventHandler ClassInformationChanged;
 		public event AssemblyInformationEventHandler AssemblyInformationChanged;
+		public event CommentTasksChangedEventHandler CommentTasksChanged;
 		public event EventHandler ParseOperationStarted;
 		public event EventHandler ParseOperationFinished;
 	}

@@ -134,6 +134,7 @@ MonoDevelop.Projects.Parser/ReflectionMethod.cs \
 MonoDevelop.Projects.Parser/ReflectionParameter.cs \
 MonoDevelop.Projects.Parser/ReflectionProperty.cs \
 MonoDevelop.Projects.Parser/ReflectionReturnType.cs \
+MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs \
 MonoDevelop.Projects/CmbxFileFormat.cs \
 MonoDevelop.Projects/IFileFormat.cs \
 MonoDevelop.Projects/MdpFileFormat.cs \

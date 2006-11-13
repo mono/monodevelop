@@ -1,3 +1,15 @@
+2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Projects.mdp:
+	* Makefile.am: updated
+	* MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs: added
+	* MonoDevelop.Projects.Parser/FileEntry.cs: enhaced by CommentTasks property
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs:
+	* MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/IParserService.cs:
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: added functionality for Comment Tags
+	
 2006-11-06 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Projects.cs: Reset the isDirty flag

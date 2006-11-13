@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.Parser
 		public ClassUpdateInformation UpdateFromParseInfo (IParseInformation parserInfo)
 		{
 			ICompilationUnit cu = (ICompilationUnit)parserInfo.BestCompilationUnit;
+			UpdateTagComments (cu.TagComments, file);
 			ClassCollection resolved;
 			parserDatabase.ResolveTypes (null, cu, cu.Classes, out resolved);
 			ClassUpdateInformation res = UpdateClassInformation (resolved, file);

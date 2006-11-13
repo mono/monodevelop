@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		IProgressMonitorFactory ParseProgressMonitorFactory { get; set; }
 
+		event CommentTasksChangedEventHandler CommentTasksChanged;
 		event ParseInformationEventHandler ParseInformationChanged;
 		event ClassInformationEventHandler ClassInformationChanged;
 		event AssemblyInformationEventHandler AssemblyInformationChanged;
@@ -119,6 +120,9 @@ namespace MonoDevelop.Projects.Parser
 		
 		IClass[] GetFileContents (string fileName);
 		IClass[] GetProjectContents ();
+		
+		// Functions for generated tasks handling 
+		TagCollection GetFileSpecialComments (string fileName);
 		
 		////////////////////////////////////////////
 

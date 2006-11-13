@@ -262,6 +262,14 @@ namespace MonoDevelop.Projects.Parser
 			
 			FileEntry file = files [fileName] as FileEntry;
 			if (file != null) {
+				
+				if (file.CommentTasks != ((ICompilationUnit)parserInfo.BestCompilationUnit).TagComments)
+				{
+					file.CommentTasks = ((ICompilationUnit)parserInfo.BestCompilationUnit).TagComments;
+					parserDatabase.UpdatedCommentTasks (file);
+				}
+				
+				
 				if (!allResolved) {
 					if (file.ParseErrorRetries > 0) {
 						file.ParseErrorRetries--;
