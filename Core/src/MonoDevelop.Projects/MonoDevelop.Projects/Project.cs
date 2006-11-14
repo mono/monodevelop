@@ -207,12 +207,16 @@ namespace MonoDevelop.Projects
 						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
 						try {
 							if (destinationFileName != referenceFileName) {
+								// Make sure the target directory exists
+								if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
+									Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
+								// Copy the file
 								File.Copy(referenceFileName, destinationFileName, true);
 								if (File.Exists (referenceFileName + ".mdb"))
 									File.Copy (referenceFileName + ".mdb", destinationFileName + ".mdb", true);
 							}
 						} catch (Exception e) {
-							Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", referenceFileName, destinationFileName, e);
+							Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)referenceFileName, (object)destinationFileName, (object)e);
 						}
 					}
 				}

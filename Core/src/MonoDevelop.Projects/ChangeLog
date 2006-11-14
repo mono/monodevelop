@@ -1,3 +1,10 @@
+2006-11-14 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Project.cs: When copying files to output
+	  directory, make sure the directory exists.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Disabled
+	  UpdatedCommentTasks call until hang is fixed.
+
 2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.mdp:

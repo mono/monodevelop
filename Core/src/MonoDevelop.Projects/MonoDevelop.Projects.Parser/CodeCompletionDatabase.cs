@@ -172,9 +172,11 @@ namespace MonoDevelop.Projects.Parser
 			}
 			
 			// Notify read comments
+
+/*			Disabled until hang is fixed
 			foreach (FileEntry fe in files.Values)
 				parserDatabase.UpdatedCommentTasks (fe);
-			
+*/			
 			// Update comments if needed...
 			PropertyEventArgs args = new PropertyEventArgs (null, "Monodevelop.TaskListTokens", LastValidTaskListTokens, Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", ""));
 			this.OnPropertyUpdated (null, args);
