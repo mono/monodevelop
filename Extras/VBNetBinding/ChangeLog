@@ -1,3 +1,8 @@
+2006-11-14  Ankit Jain  <jankit@novell.com>
+
+	* Gui/CodeGenerationPanel.cs (CodeGenerationPanelWidget.SetValues): Fix
+	the order of the CompileTarget options.
+
 2006-09-18 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* VBNetBinding.mdp:

@@ -146,8 +146,8 @@ namespace VBBinding
 				
 				ListStore store = new ListStore (typeof (string));
 				store.AppendValues (GettextCatalog.GetString ("Executable"));
-				store.AppendValues (GettextCatalog.GetString ("WinEXE"));
 				store.AppendValues (GettextCatalog.GetString ("Library"));
+				store.AppendValues (GettextCatalog.GetString ("Executable with GUI"));
 				store.AppendValues (GettextCatalog.GetString ("Module")); 
 
 				compileTargetCombo.Model = store;

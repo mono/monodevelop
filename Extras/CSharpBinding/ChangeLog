@@ -1,3 +1,8 @@
+2006-11-14  Ankit Jain  <jankit@novell.com>
+
+	* Gui/CodeGenerationPanel.cs (CodeGenerationPanelWidget.ctor): Add
+	missing 'Module' option for compile target.
+
 2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* Parser/SharpDevelopTree/CompilationUnit.cs: returning Tag colection

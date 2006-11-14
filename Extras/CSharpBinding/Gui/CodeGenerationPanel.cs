@@ -58,6 +58,7 @@ namespace CSharpBinding
 				store.AppendValues (GettextCatalog.GetString ("Executable"));
 				store.AppendValues (GettextCatalog.GetString ("Library"));
 				store.AppendValues (GettextCatalog.GetString ("Executable with GUI"));
+				store.AppendValues (GettextCatalog.GetString ("Module"));
 				compileTargetCombo.Model = store;
 				CellRendererText cr = new CellRendererText ();
 				compileTargetCombo.PackStart (cr, true);
