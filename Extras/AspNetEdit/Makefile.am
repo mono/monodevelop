@@ -69,16 +69,22 @@ FILES =	\
 	AspNetEdit.Integration/AspNetEditDisplayBinding.cs \
 	AspNetEdit.Integration/AspNetEditViewContent.cs \
 	AspNetEdit.Integration/MonoDevelopProxy.cs \
+	AspNetEdit.Integration/ToolboxProvider.cs \
 	AspNetEdit.Integration/EditorProcess.cs
 
 
 RES = \
 	#
 
+DATA_FILES = \
+	data/WebControlsToolbox.xml
+
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD), $(DATA_FILES))
+
 ADDIN = AspNetEdit.addin.xml
 
 if ENABLE_ASPNETEDIT
-  all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
+  all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD)
 else
   all:
 endif
@@ -92,14 +98,18 @@ $(ASSEMBLY): $(build_sources) $(RES)
 	$(CSC) $(CSC_FLAGS) -debug -d:TRACE -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) $(build_sources)
 
+$(DATA_FILE_BUILD): $(srcdir)/data/$(notdir $@)
+	mkdir -p $(ADDIN_BUILD)/data
+	cp $(srcdir)/data/$(notdir $@) $(ADDIN_BUILD)/data/.
+
 if ENABLE_ASPNETEDIT
   aspneteditlibdir = $(MD_ADDIN_DIR)/AspNetEdit
-  aspneteditlib_DATA = $(ASSEMBLY) $(ADDIN)
+  aspneteditlib_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
 

@@ -73,6 +73,9 @@
     <File name="./AspNetEdit.Integration/EditorProcess.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Integration/MonoDevelopProxy.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/EventBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./data" subtype="Directory" buildaction="Compile" />
+    <File name="./data/WebControlsToolbox.xml" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

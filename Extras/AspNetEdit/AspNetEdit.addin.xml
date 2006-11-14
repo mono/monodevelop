@@ -27,4 +27,8 @@
 		                class = "AspNetEdit.Integration.AspNetEditDisplayBinding"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
+		<Class id="AspNetDefaultControlToolboxProvider" class="AspNetEdit.Integration.ToolboxProvider"/>
+	</Extension>
+	
 </AddIn>

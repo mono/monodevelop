@@ -1,3 +1,14 @@
+2006-11-14  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* data/WebControlsToolbox.xml: Default toolbox file of ASP.NET 2.0 
+	  controls, including simple icons.
+	* AspNetEdit.Integration/ToolboxProvider.cs: A new 
+	  IToolboxDefaultProvider that loads the default controls.
+	
+	* AspNetEdit.mdp:
+	* Makefile.am:
+	* AspNetEdit.addin.xml: added files to build and AddIn
+
 2006-10-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.Editor/EditorHost.cs: Invoke the assembly loading 
