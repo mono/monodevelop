@@ -51,12 +51,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return fileTypes; }
 		}
 		
+		
 		public IList<ItemToolboxNode> Load (string filename)
+		{		
+			System.Reflection.Assembly scanAssem = System.Reflection.Assembly.LoadFile (filename);
+			return Load (scanAssem);
+		}
+		
+		public IList<ItemToolboxNode> Load (System.Reflection.Assembly assem)
 		{
 			List<ItemToolboxNode> nodes = new List<ItemToolboxNode> ();
 			
-			System.Reflection.Assembly scanAssem = System.Reflection.Assembly.LoadFile (filename);
-			Type[] types = scanAssem.GetTypes ();
+			Type[] types = assem.GetTypes ();
 
 			foreach (Type t in types)
 			{
@@ -106,8 +112,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			
 			//if assembly wasn't loaded from the GAC, record the path too
-			if (!scanAssem.GlobalAssemblyCache) {
-				string path = scanAssem.Location;
+			if (!assem.GlobalAssemblyCache) {
+				string path = assem.Location;
 				foreach (TypeToolboxNode n in nodes)
 					n.Type.AssemblyLocation = path;
 			}

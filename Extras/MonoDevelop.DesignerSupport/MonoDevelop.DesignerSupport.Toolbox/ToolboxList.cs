@@ -1,5 +1,6 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// ToolboxList.cs: List of ItemToolboxNodes that can load or save them 
+//     from or to an XML file.
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -30,24 +31,42 @@
 //
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+
+using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public interface IToolboxConsumer
+	public class ToolboxList : List<ItemToolboxNode>
 	{
-		/*todo: drag/drop stuff */
 		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
+		public ToolboxList ()
+		{
 		}
 		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
+		public void SaveContents (string fileName)
+		{
+			using (StreamWriter writer = new StreamWriter (fileName)) {
+				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
+				serializer.Serialize (writer, this);
+			}
+		}
+		
+		//static methods shouldn't reallly replace contructors, but becuase of the way the Deserialize
+		//method works, this saves us copying all the items from one ToolboxList to another
+		public static ToolboxList LoadFromFile (string fileName)
+		{
+			object o;
+			
+			using (StreamReader reader = new StreamReader (fileName))
+			{
+				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
+				o = serializer.Deserialize (reader, typeof (ToolboxList));	
+			}
+			
+			return (ToolboxList) o;			
+		}
 	}
 }

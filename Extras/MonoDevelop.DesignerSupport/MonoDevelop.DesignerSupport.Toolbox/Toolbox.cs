@@ -1,4 +1,4 @@
- /* 
+/* 
  * Toolbox.cs - A toolbox widget
  * 
  * Authors: 
@@ -176,7 +176,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void toolboxAddButton_Clicked (object sender, EventArgs e)
 		{
-			toolboxService.UserAddItems ();
+			toolboxService.AddUserItems ();
 		}
 		
 		#endregion

@@ -32,6 +32,9 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/CodeBehindProviders" extension-nodes="Class" description="Used to load bind CodeBehind files to their associated files.">
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders" extension-nodes="Class" description="Provides items to the toolbox. Must implement MonoDevelop.DesignerSupport.Toolbox.IToolboxDefaultProvider and/or IToolboxDynamicProvider.">
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "CodeBehindView"
 		                supportedformats = "Source Code"

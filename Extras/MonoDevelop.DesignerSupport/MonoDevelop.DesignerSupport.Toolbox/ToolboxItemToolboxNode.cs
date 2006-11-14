@@ -83,6 +83,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 		}
 		
+		public override bool Equals (object obj)
+		{
+			ToolboxItemToolboxNode other = obj as ToolboxItemToolboxNode;
+			
+			return (other != null)
+			    && (this.toolboxItemType == null? other.toolboxItemType == null : this.toolboxItemType.Equals (other.toolboxItemType))
+		        && base.Equals (other);
+		}
+		
+		public bool Equals (ToolboxItemToolboxNode other)
+		{
+			return (other != null) && (this.toolboxItemType.Equals (other.toolboxItemType)) && base.Equals (other);
+		}
+		
 		public ToolboxItem GetToolboxItem ()
 		{
 			//get the type of the toolboxitem, and make sure it's loaded

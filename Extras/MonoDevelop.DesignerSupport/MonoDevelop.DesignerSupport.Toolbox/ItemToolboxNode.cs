@@ -108,6 +108,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
 		}
 		
+		public bool Equals (ItemToolboxNode node)
+		{
+			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
+		}
+		
 		#endregion Behaviours
 		
 		

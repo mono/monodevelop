@@ -1,3 +1,38 @@
+2006-11-14  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.mdp: Updated.
+	
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Renamed
+	  ToolboxService.(Load|Save)Contents to (Load|Save)SaveUserToolbox.
+	
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs: New file.
+	* MonoDevelop.DesignerSupport.addin.xml: 
+	* MonoDevelop.DesignerSupport/ToolboxService.cs:
+	  New IToolboxDefaultProvider and IToolboxDynamicProvider extension 
+	  points so that AddIns can provide default and dynamic toolbox items.
+	
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Split allItems source 
+	  of toolbox items. It now sources from userItems, defaultItems and 
+	  dynamicProviders.
+	
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs: New file. 
+	  Expanded ToolboxList to handle loading/saving functionality.
+	  
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs: Removed 
+	  GetDynamicItems method; this functionality can now be implemented 
+	  separately as a dynamic toolbox provider.
+	  
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs:
+	  Proper Equals implementation, so that we can avoid node duplication.
+	
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:
+	  New overload for Load using an Assembly instead of a filename.
+
 2006-10-21  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs:

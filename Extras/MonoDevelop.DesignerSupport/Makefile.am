@@ -65,6 +65,8 @@ FILES = \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
+	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs
 
 RES = \

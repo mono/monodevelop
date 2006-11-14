@@ -51,9 +51,12 @@ namespace MonoDevelop.DesignerSupport
 	public class ToolboxService
 	{
 		readonly static string toolboxLoaderPath = "/MonoDevelop/DesignerSupport/ToolboxLoaders";
+		readonly static string toolboxProviderPath = "/MonoDevelop/DesignerSupport/ToolboxProviders";
 		
-		ToolboxList allItems = new ToolboxList ();
+		ToolboxList userItems = new ToolboxList ();
+		ToolboxList defaultItems = new ToolboxList ();
 		List<IToolboxLoader> loaders = new List<IToolboxLoader> ();
+		List<IToolboxDynamicProvider> dynamicProviders  = new List<IToolboxDynamicProvider> ();
 		
 		IToolboxConsumer currentConsumer;
 		ItemToolboxNode selectedItem;
@@ -62,6 +65,7 @@ namespace MonoDevelop.DesignerSupport
 		{			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (onActiveDocChanged);
 			Runtime.AddInService.RegisterExtensionItemListener (toolboxLoaderPath, OnLoaderExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener (toolboxProviderPath, OnProviderExtensionChanged);
 		}
 		
 		#region Extension loading
@@ -70,9 +74,31 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (action == ExtensionAction.Add)
 				loaders.Add ((IToolboxLoader) item);
+			else if (action == ExtensionAction.Remove)
+				loaders.Remove ((IToolboxLoader) item);
 		}
 		
-		public void UserAddItems ()
+		void OnProviderExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
+				if (dyProv != null)
+					dynamicProviders.Add ((IToolboxDynamicProvider) item);
+				System.Console.WriteLine("Addin default items");;
+				IToolboxDefaultProvider defProv = item as IToolboxDefaultProvider;
+				if (defProv!= null) {
+					IList<ItemToolboxNode> newItems = defProv.GetItems ();
+					if (newItems != null)
+						defaultItems.AddRange (newItems);
+				}	
+			}
+			else if (action == ExtensionAction.Remove)
+				dynamicProviders.Remove ((IToolboxDynamicProvider) item);
+			
+			OnToolboxContentsChanged ();
+		}
+		
+		public void AddUserItems ()
 		{
 			Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog ("Add items to toolbox", (Gtk.Window) IdeApp.Services.MessageService.RootWindow, Gtk.FileChooserAction.Open);
 			fcd.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
@@ -86,12 +112,12 @@ namespace MonoDevelop.DesignerSupport
 			fcd.Hide ();
 			
 			if (response == Gtk.ResponseType.Ok && fcd.Filename != null)
-					AddItems (fcd.Filename);
+					AddUserItems (fcd.Filename);
 			
 			//fcd.Destroy();
 		}
 		
-		public void AddItems (string fileName)
+		public void AddUserItems (string fileName)
 		{			
 			foreach (IToolboxLoader loader in loaders) {
 				if (!fileName.EndsWith (loader.FileTypes[0]))
@@ -99,13 +125,19 @@ namespace MonoDevelop.DesignerSupport
 				
 				System.Collections.Generic.IList<ItemToolboxNode> loadedItems = loader.Load (fileName);
 				
+				//prevent user from loading the same items again
 				foreach (ItemToolboxNode node in loadedItems) {
 					bool found = false;
-					foreach (ItemToolboxNode n in allItems)
-						if (node == n)
+					foreach (ItemToolboxNode n in defaultItems) {
+						if (node.Equals (n))
 							found = true;
+					}
+					foreach (ItemToolboxNode n in userItems) {
+						if (node.Equals (n))
+							found = true;
+					}
 					if (!found)
-						allItems.Add (node);
+						userItems.Add (node);
 				}
 			}
 			
@@ -115,31 +147,21 @@ namespace MonoDevelop.DesignerSupport
 		~ToolboxService ()
 		{
 			Runtime.AddInService.UnregisterExtensionItemListener (toolboxLoaderPath, OnLoaderExtensionChanged);
+			Runtime.AddInService.UnregisterExtensionItemListener (toolboxProviderPath, OnLoaderExtensionChanged);
 		}
 		
 		#endregion
 		
 		#region Serializing/deserializing
 		
-		public void SaveContents (string fileName)
+		public void SaveUserToolbox (string fileName)
 		{
-			using (StreamWriter writer = new StreamWriter (fileName)) {
-				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
-				serializer.Serialize (writer, allItems as IList);
-			}
+			userItems.SaveContents (fileName);
 		}
 		
-		public void LoadContents (string fileName)
+		public void LoadUserToolbox (string fileName)
 		{
-			object o;
-			
-			using (StreamReader reader = new StreamReader (fileName))
-			{
-				XmlDataSerializer serializer = new XmlDataSerializer (IdeApp.Services.ProjectService.DataContext);
-				o = serializer.Deserialize (reader, typeof (ToolboxList));	
-			}
-			
-			allItems = (ToolboxList) o;
+			userItems = ToolboxList.LoadFromFile (fileName);
 			OnToolboxContentsChanged ();
 		}
 		
@@ -157,18 +179,24 @@ namespace MonoDevelop.DesignerSupport
 			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
 			
 			if (consumer != null) {
-				foreach (ItemToolboxNode node in allItems)
-					//hide unknown nodes --
-					//they're only there because deserialisation has failed, so they won't actaully be usable
+				//get the user items
+				foreach (ItemToolboxNode node in userItems)
+					//hide unknown nodes -- they're only there because deserialisation has failed, so they won't actually be usable
 					if ( !(node is UnknownToolboxNode))
 						if (IsSupported (node, consumer))
 							arr.Add (node);
 				
-				//merge the list of dynamic items
-				IList<ItemToolboxNode> dynamicItems = consumer.GetDynamicItems ();
-				if (dynamicItems != null)
-					foreach (ItemToolboxNode node in dynamicItems)
+				//merge the default items
+				foreach (ItemToolboxNode node in defaultItems)
+					if (IsSupported (node, consumer))
 						arr.Add (node);
+				
+				//merge the list of dynamic items from each provider
+				foreach (IToolboxDynamicProvider prov in dynamicProviders) {
+					IList<ItemToolboxNode> dynItems = prov.GetDynamicItems (consumer);
+					if (dynItems != null)
+						arr.AddRange (dynItems);
+				}
 			}
 			
 			return arr;
@@ -313,11 +341,6 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		#endregion
-		
-		private class ToolboxList : List<ItemToolboxNode>
-		{
-			
-		}
 	}
 	
 	public delegate void ToolboxConsumerChangedHandler (object sender, ToolboxConsumerChangedEventArgs e);

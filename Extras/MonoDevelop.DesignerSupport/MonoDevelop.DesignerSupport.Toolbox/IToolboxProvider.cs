@@ -1,5 +1,6 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// IToolbox(Default|Dynamic)Provider.cs: Interface for extensions that 
+//   provide toolbox items.
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -34,20 +35,19 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public interface IToolboxConsumer
+	
+	//Used to fetch or generate the default toolbox items at the beginning of each MD session
+	public interface IToolboxDefaultProvider
 	{
-		/*todo: drag/drop stuff */
-		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
-		}
-		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
+		IList<ItemToolboxNode> GetItems ();
+	}
+	
+	//Can provide dynamic toolbox items for a specific consumer. 
+	public interface IToolboxDynamicProvider
+	{
+		//This method will be called each time the consumer changes. Return null if not
+		//returning any items for a specific consumer.
+		//TODO: an event to update the dynamic items in the toolbox at any other time
+		IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer);
 	}
 }

@@ -69,6 +69,8 @@
     <File name="./MonoDevelop.DesignerSupport/MemberExistsException.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

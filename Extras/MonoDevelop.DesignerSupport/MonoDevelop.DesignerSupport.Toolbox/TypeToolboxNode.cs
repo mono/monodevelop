@@ -44,8 +44,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override bool Equals (object o)
 		{
 			TypeToolboxNode node = o as TypeToolboxNode;
-			return (node != null) && (node.Type == this.Type);
+			return (node != null)
+			    && (this.type == null? node.type == null : this.type.Equals (node.type))
+			    && base.Equals (node);
 		}
+		
+		
+		public bool Equals (TypeToolboxNode node)
+		{
+			return (node != null)
+			    && (this.type == null? node.type == null : this.type.Equals (node.type))
+			    && base.Equals (node);
+    	}
+		
+		
 	}
 	
 	[Serializable]
@@ -61,6 +73,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		//for deserialisation
 		public TypeReference ()
 		{
+		}
+		
+		public override bool Equals (System.Object obj)
+		{
+			TypeReference other = obj as TypeReference;
+			return (other != null)
+			    && (this.typeName == other.typeName)
+			    && (this.assemblyName == other.assemblyName)
+			    && (this.assemblyLocation == other.assemblyLocation);
+		}
+		
+		public bool Equals (TypeReference other)
+		{
+			return (other != null)
+			    && (this.typeName == other.typeName)
+			    && (this.assemblyName == other.assemblyName)
+			    && (this.assemblyLocation == other.assemblyLocation);
 		}
 		
 		public TypeReference (string typeName, string assemblyName)
