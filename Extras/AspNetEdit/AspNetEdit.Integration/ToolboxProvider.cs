@@ -43,7 +43,7 @@ namespace AspNetEdit.Integration
 		
 		public IList<ItemToolboxNode> GetItems ()
 		{
-			string dataDir = Path.Combine (Path.GetDirectoryName (typeof(ToolboxProvider).Assembly.Location), "data");
+			string dataDir = Path.GetDirectoryName (typeof(ToolboxProvider).Assembly.Location);
 			string file = Path.Combine (dataDir, "WebControlsToolbox.xml");
 			if (!File.Exists (file)) {
 				IdeApp.Services.MessageService.ShowWarning ("Could not find data file \""+file+"\"");

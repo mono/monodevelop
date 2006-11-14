@@ -84,7 +84,7 @@ namespace MonoDevelop.DesignerSupport
 				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
 				if (dyProv != null)
 					dynamicProviders.Add ((IToolboxDynamicProvider) item);
-				System.Console.WriteLine("Addin default items");;
+				
 				IToolboxDefaultProvider defProv = item as IToolboxDefaultProvider;
 				if (defProv!= null) {
 					IList<ItemToolboxNode> newItems = defProv.GetItems ();

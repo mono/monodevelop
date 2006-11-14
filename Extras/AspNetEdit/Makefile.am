@@ -99,8 +99,8 @@ $(ASSEMBLY): $(build_sources) $(RES)
 		$(RES:%=/resource:%) $(build_sources)
 
 $(DATA_FILE_BUILD): $(srcdir)/data/$(notdir $@)
-	mkdir -p $(ADDIN_BUILD)/data
-	cp $(srcdir)/data/$(notdir $@) $(ADDIN_BUILD)/data/.
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/data/$(notdir $@) $(ADDIN_BUILD)/.
 
 if ENABLE_ASPNETEDIT
   aspneteditlibdir = $(MD_ADDIN_DIR)/AspNetEdit
