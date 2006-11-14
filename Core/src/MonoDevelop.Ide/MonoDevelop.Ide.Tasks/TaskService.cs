@@ -40,8 +40,11 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			base.InitializeService ();
 			ReloadPriories ();
-			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
-			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
+			
+//			Disabled until hang is fixed
+//			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
+//			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
+
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}
 
@@ -114,7 +117,6 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void OnPropertyUpdated (object sender, PropertyEventArgs e)
 		{
-			bool change = false;
 			if (e.Key == "Monodevelop.TaskListTokens" && e.NewValue != e.OldValue)
 			{
 				ReloadPriories ();
@@ -159,6 +161,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
+		[AsyncDispatch]
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
 			UpdateCommentTags (e.FileName, e.TagComments);

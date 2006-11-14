@@ -1,3 +1,14 @@
+2006-11-14 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
+	  Fix warning.
+	* MonoDevelop.Ide.Tasks/UserTasksView.cs: Don't use CellRendererCombo
+	  since it's gtk 2.6.
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Disabled loading of tasks
+	  since it hangs when loading the MD solution. Fixed warning.
+	  Make sure OnCommentTasksChanged is called asynchronously to
+	  avoid deadlocks in the parser service.
+
 2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 	
 	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:

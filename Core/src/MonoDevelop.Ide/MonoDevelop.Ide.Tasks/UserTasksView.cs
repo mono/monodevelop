@@ -36,6 +36,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Tasks
 {	
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		Clipboard clipboard;
 		bool solutionLoaded = false;
-		
+		string[] priorities = { GettextCatalog.GetString ("High"), GettextCatalog.GetString ("Normal"), GettextCatalog.GetString ("Low")};
 		
 		public UserTasksView ()
 		{
@@ -92,17 +93,10 @@ namespace MonoDevelop.Ide.Tasks
 			
 			TreeViewColumn col;
 			
-			ListStore comboStore = new ListStore (typeof (string));
-			comboStore.AppendValues (GettextCatalog.GetString ("High"));
-			comboStore.AppendValues (GettextCatalog.GetString ("Normal"));
-			comboStore.AppendValues (GettextCatalog.GetString ("Low"));
-
-			CellRendererCombo cellRendPriority = new CellRendererCombo ();
-			cellRendPriority.Model = comboStore;
+			CellRendererComboBox cellRendPriority = new CellRendererComboBox ();
+			cellRendPriority.Values = priorities;
 			cellRendPriority.Editable = true;
-			cellRendPriority.TextColumn = 0;
-			cellRendPriority.HasEntry = false;
-			cellRendPriority.Edited += new EditedHandler (UserTaskPriorityEdited);
+			cellRendPriority.Changed += new ComboSelectionChangedHandler (UserTaskPriorityEdited);
 			col = view.AppendColumn (GettextCatalog.GetString ("Priority"), cellRendPriority, "text", Columns.Priority, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
 			col.Clickable = true;
 			col.Resizable = true;
@@ -231,22 +225,22 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		void UserTaskPriorityEdited (object o, EditedArgs args)
+		void UserTaskPriorityEdited (object o, ComboSelectionChangedArgs args)
 		{
 			Gtk.TreeIter iter;
 			if (store.GetIterFromString (out iter,  args.Path)) {
 				UserTask task = (UserTask) store.GetValue (iter, (int)Columns.UserTask);
-				if (args.NewText == GettextCatalog.GetString ("High"))
+				if (args.Active == 0)
 				{
 					task.Priority = TaskPriority.High;
-				} else if (args.NewText == GettextCatalog.GetString ("Normal"))
+				} else if (args.Active == 1)
 				{
 					task.Priority = TaskPriority.Normal;
 				} else
 				{
 					task.Priority = TaskPriority.Low;
 				}
-				store.SetValue (iter, (int)Columns.Priority, args.NewText);
+				store.SetValue (iter, (int)Columns.Priority, priorities [args.Active]);
 				store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
 			}
 		}
