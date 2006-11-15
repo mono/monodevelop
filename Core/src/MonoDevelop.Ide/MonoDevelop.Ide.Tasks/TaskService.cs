@@ -41,9 +41,8 @@ namespace MonoDevelop.Ide.Tasks
 			base.InitializeService ();
 			ReloadPriories ();
 			
-//			Disabled until hang is fixed
-//			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
-//			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
+			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
+			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
 
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}

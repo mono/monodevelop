@@ -1,3 +1,7 @@
+2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	
+	* MonoDevelop.Ide.Tasks/TaskService.cs: re-enabling handlers
+
 2006-11-14 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
