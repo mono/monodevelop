@@ -1,3 +1,7 @@
+2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: added checks for loaded file entry type, enabling code
+
 2006-11-14 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Project.cs: When copying files to output
