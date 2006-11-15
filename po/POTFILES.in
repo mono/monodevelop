@@ -88,6 +88,8 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilder
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TaskListPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs
@@ -103,6 +105,8 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs
 Core/src/MonoDevelop.Ide/templates/AppConfigFile.xft.xml
 Core/src/MonoDevelop.Ide/templates/BlankCombine.xpt.xml
 Core/src/MonoDevelop.Ide/templates/EmptyClass.xft.xml
