@@ -36,6 +36,7 @@
 		<StockIcon stockid = "vc-remove" resource = "overlay_removed.png" />
 		<StockIcon stockid = "vc-add-command" resource = "menu_add.png" />
 		<StockIcon stockid = "vc-remove-command" resource = "menu_remove.png" />
+		<StockIcon stockid = "vc-revert-command" resource = "menu_revert.png" />
 		<StockIcon stockid = "vc-diff" resource = "menu_diff.png" />
 		<StockIcon stockid = "vc-log" resource = "menu_log.png" />
 		<StockIcon stockid = "vc-status" resource = "menu_status.png" />
@@ -62,6 +63,10 @@
 			_label = "Diff"
 			icon = "vc-diff"
 			description = "Show the changes made to the local copy since the last update."/>
+		<Command id = "VersionControl.AddIn.Commands.Revert" 
+			_label = "Revert"
+			icon = "vc-revert-command"
+			description = "Restore pristine working copy file (undo most local edits)."/>
 		<Command id = "VersionControl.AddIn.Commands.Log" 
 			_label = "Log"
 			icon = "vc-log"
@@ -105,6 +110,8 @@
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Add"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Remove"/>
+			<CommandItem id = "VersionControl.AddIn.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator" />
 			<CommandItem id = "VersionControl.AddIn.Commands.Diff"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Log"/>
 		</ItemSet>
@@ -114,6 +121,8 @@
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeToProjectSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Add"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Remove"/>
+			<CommandItem id = "VersionControl.AddIn.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator" />
 			<CommandItem id = "VersionControl.AddIn.Commands.Diff"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Log"/>
 		</ItemSet>
@@ -123,6 +132,8 @@
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Add"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Remove"/>
+			<CommandItem id = "VersionControl.AddIn.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator" />
 			<CommandItem id = "VersionControl.AddIn.Commands.Update"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Status"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Commit"/>
@@ -133,6 +144,9 @@
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Publish"/>
+			<SeparatorItem id = "CommandSeparator1" />
+			<CommandItem id = "VersionControl.AddIn.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator2" />
 			<CommandItem id = "VersionControl.AddIn.Commands.Update"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Status"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Commit"/>
@@ -143,6 +157,9 @@
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "AddSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Publish"/>
+			<SeparatorItem id = "CommandSeparator1" />
+			<CommandItem id = "VersionControl.AddIn.Commands.Revert"/>
+			<SeparatorItem id = "CommandSeparator2" />
 			<CommandItem id = "VersionControl.AddIn.Commands.Update"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Status"/>
 			<CommandItem id = "VersionControl.AddIn.Commands.Commit"/>

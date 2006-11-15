@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Collections.Specialized;
 using VersionControl.Service;
 using VersionControl.AddIn.Dialogs;
@@ -8,21 +9,26 @@ namespace VersionControl.AddIn
 {
 	class CommitCommand
 	{
-		public static bool Commit (Repository vc, string path, StringCollection filesToCommit, string message, bool test)
+		public static bool Commit (Repository vc, string path, bool test)
 		{
 			if (vc.CanCommit (path)) {
 				if (test) return true;
-				
-				VersionInfo[] status = vc.GetDirectoryVersionInfo (path, false, true);
-				using (CommitDialog dlg = new CommitDialog (status, path, filesToCommit)) {
-					dlg.Message = message;
+				ChangeSet cset = vc.CreateChangeSet (path);
+				cset.AddFiles (vc.GetDirectoryVersionInfo (path, false, true));
+				Commit (vc, cset, false);
+			}
+			return false;
+		}
+		
+		public static bool Commit (Repository vc, ChangeSet changeSet, bool test)
+		{
+			if (vc.CanCommit (changeSet.BaseLocalPath)) {
+				if (test) return true;
+
+				using (CommitDialog dlg = new CommitDialog (changeSet)) {
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						if (filesToCommit != null) {
-							// Update the list of files to commit
-							filesToCommit.Clear ();
-							filesToCommit.AddRange (dlg.GetFilesToCommit ());
-						}
-						new CommitWorker (vc, path, dlg.GetFilesToCommit(), dlg.Message).Start();
+						if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet))
+							new CommitWorker (vc, changeSet).Start();
 						return true;
 					}
 				}
@@ -33,26 +39,34 @@ namespace VersionControl.AddIn
 		private class CommitWorker : Task
 		{
 			Repository vc;
-			string path;
-			string[] files;
-			string message;
+			ChangeSet changeSet;
 						
-			public CommitWorker (Repository vc, string path, string[] files, string message)
+			public CommitWorker (Repository vc, ChangeSet changeSet)
 			{
 				this.vc = vc;
-				this.path = path;
-				this.files = files;
-				this.message = message;
+				this.changeSet = changeSet;
 			}
 			
 			protected override string GetDescription()
 			{
-				return "Committing " + path + "...";
+				return "Committing " + changeSet.BaseLocalPath + "...";
 			}
 			
 			protected override void Run ()
 			{
-				vc.Commit (files, message, GetProgressMonitor ());
+				vc.Commit (changeSet, GetProgressMonitor ());
+				Gtk.Application.Invoke (delegate {
+					VersionControlProjectService.NotifyAfterCommit (vc, changeSet);
+					ArrayList dirs = new ArrayList ();
+					ArrayList files = new ArrayList ();
+					foreach (ChangeSetItem it in changeSet.Items)
+						if (it.IsDirectory) dirs.Add (it.LocalPath);
+						else files.Add (it.LocalPath);
+					foreach (string path in dirs)
+						VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
+					foreach (string path in files)
+						VersionControlProjectService.NotifyFileStatusChanged (vc, path, false);
+				});
 			}
 		}
 	}

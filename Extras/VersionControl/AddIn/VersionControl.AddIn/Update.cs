@@ -20,7 +20,7 @@ namespace VersionControl.AddIn
 	{
 		public static bool Update (Repository vc, string path, bool test)
 		{
-			if (vc.IsVersioned (path)) {
+			if (vc.CanUpdate (path)) {
 				if (test) return true;
 				new UpdateWorker(vc, path).Start();
 				return true;
@@ -41,8 +41,12 @@ namespace VersionControl.AddIn
 				return "Updating " + path + "...";
 			}
 			
-			protected override void Run() {
-				vc.Update(path, true, GetProgressMonitor ());
+			protected override void Run ()
+			{
+				vc.Update (path, true, GetProgressMonitor ());
+				Gtk.Application.Invoke (delegate {
+					VersionControlProjectService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+				});
 			}
 		}
 		

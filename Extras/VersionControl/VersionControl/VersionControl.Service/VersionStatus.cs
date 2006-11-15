@@ -5,7 +5,6 @@ namespace VersionControl.Service
 {
 	public enum VersionStatus
 	{
-		Unknown,
 		Unversioned,
 		UnversionedIgnored,
 		Missing,
@@ -18,6 +17,7 @@ namespace VersionControl.Service
 		ScheduledAdd,
 		ScheduledDelete,
 		ScheduledReplace,
+		ScheduledIgnore,
 		Conflicted
 	}
 }

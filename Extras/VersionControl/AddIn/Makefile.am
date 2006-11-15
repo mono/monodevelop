@@ -3,7 +3,10 @@ build_sources = VersionControl.AddIn/AddRemoveMoveCommand.cs \
 				VersionControl.AddIn/Checkout.cs \
 				VersionControl.AddIn/Commands.cs \
 				VersionControl.AddIn/CommitCommand.cs \
+				VersionControl.AddIn/CommitEventHandler.cs \
+				VersionControl.AddIn/FileUpdateEventHandler.cs \
 				VersionControl.AddIn/Publish.cs \
+				VersionControl.AddIn/RevertCommand.cs \
 				VersionControl.AddIn/Task.cs \
 				VersionControl.AddIn/Update.cs \
 				VersionControl.AddIn/VersionControlNodeExtension.cs \
@@ -48,6 +51,7 @@ RES = overlay_added.png \
 	  menu_log.png \
 	  menu_remote_status.png \
 	  menu_remove.png \
+	  menu_revert.png \
 	  menu_status.png \
 	  menu_update.png \
 	  comment.png \

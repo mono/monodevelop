@@ -1,3 +1,55 @@
+2006-11-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddIn/overlay_unversioned.png, AddIn/overlay_locked.png,
+	  AddIn/overlay_added.png, AddIn/overlay_conflicted.png,
+	  AddIn/overlay_modified.png, AddIn/overlay_normal.png,
+	  AddIn/overlay_controled.png:
+	  Updated icons.
+	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs: Use the new
+	  ChangeSet class.
+	* AddIn/VersionControl.AddIn.Views/Statuses.cs: Update the view when
+	  file status change. Added Revert command. Use the new ChangeSet class.
+	* AddIn/VersionControl.AddIn.Views/Logs.cs: Minor fix.
+	* AddIn/VersionControl.AddIn/VersionControlProjectService.cs: Added
+	  event for notifying changes in file status.
+	* AddIn/VersionControl.AddIn/Task.cs: Added some exception protection.
+	* AddIn/VersionControl.AddIn/VersionControlNodeExtension.cs: Simplified
+	  the code that keeps track of file status changes, but using the new
+	  version control service events. Implemented Revert.
+	* AddIn/VersionControl.AddIn/FileUpdateEventHandler.cs: new handlers
+	  for notifying version control events.
+	* AddIn/gtk-gui/generated.cs, AddIn/gtk-gui/gui.stetic: Updated the gui.
+	* VersionControl/VersionControl.Service/ChangeSet.cs: New class that holds
+	  all needed information for a commit.
+	
+	* VersionControl/VersionControl.Service/UnknownRepository.cs:
+	* VersionControl/VersionControl.Service.Cvs/CvsRepository.cs: Track api
+	  changes.
+	  
+	* VersionControl/VersionControl.Service/Repository.cs:
+	* VersionControl/VersionControl.Service.Subversion/SvnClient.cs:
+	* VersionControl/VersionControl.Service.Subversion/SubversionVersionControl.cs:
+	* VersionControl/VersionControl.Service.Subversion/SubversionRepository.cs:
+	  Implemented Revert. Use the new ChangeSet class. Fixes in several status
+	  check methods.
+	
+	* AddIn/VersionControl.AddIn/Commands.cs:
+	* AddIn/VersionControl.AddIn/RevertCommand.cs:
+	* AddIn/VersionControl.addin.xml: Added Revert command.
+	
+	* AddIn/VersionControl.AddIn/Update.cs:
+	* AddIn/VersionControl.AddIn/CommitCommand.cs:
+	* AddIn/VersionControl.AddIn/AddRemoveMoveCommand.cs: Notify changes
+	  in the status of files.
+	
+	* VersionControl/VersionControl.Service/VersionStatus.cs:
+	* VersionControl/VersionControl.Service/VersionInfo.cs:
+	  Removed Unknown status.
+	
+	* AddIn/Makefile.am:
+	* VersionControl/VersionControl.mdp:
+	* AddIn/VersionControlAddIn.mdp: Updated.
+
 2006-11-07 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddIn/comment.png: New icon.

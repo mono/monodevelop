@@ -59,9 +59,12 @@ namespace VersionControl.AddIn
 		}
 	
 		public void Wakeup() {
-			tracker.EndTask();
-			tracker.Dispose();
-			Finished();
+			try {
+				tracker.EndTask();
+				tracker.Dispose();
+			} finally {
+				Finished();
+			}
 		}
 		
 		protected void Log(string logtext) {

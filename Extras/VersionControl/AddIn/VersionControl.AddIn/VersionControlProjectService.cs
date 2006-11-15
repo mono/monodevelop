@@ -16,15 +16,15 @@ namespace VersionControl.AddIn
 {
 	public class VersionControlProjectService
 	{
-		static Gdk.Pixbuf overlay_normal;
 		static Gdk.Pixbuf overlay_modified;
 		static Gdk.Pixbuf overlay_removed;
 		static Gdk.Pixbuf overlay_conflicted;
 		static Gdk.Pixbuf overlay_added;
 		internal static Gdk.Pixbuf overlay_controled;
 		static Gdk.Pixbuf overlay_unversioned;
+		static Gdk.Pixbuf overlay_protected;
+		static Gdk.Pixbuf overlay_normal;
 
-		static Gdk.Pixbuf icon_normal;
 		static Gdk.Pixbuf icon_modified;
 		static Gdk.Pixbuf icon_removed;
 		static Gdk.Pixbuf icon_conflicted;
@@ -33,20 +33,22 @@ namespace VersionControl.AddIn
 		
 		static VersionControlProjectService ()
 		{
-			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			overlay_modified = Gdk.Pixbuf.LoadFromResource("overlay_modified.png");
 			overlay_removed = Gdk.Pixbuf.LoadFromResource("overlay_removed.png");
 			overlay_conflicted = Gdk.Pixbuf.LoadFromResource("overlay_conflicted.png");
 			overlay_added = Gdk.Pixbuf.LoadFromResource("overlay_added.png");
 			overlay_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			overlay_unversioned = Gdk.Pixbuf.LoadFromResource("overlay_unversioned.png");
+			overlay_protected = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
+			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
-			icon_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			icon_modified = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
 			icon_removed = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
 			icon_conflicted = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
+			
+			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
@@ -54,6 +56,8 @@ namespace VersionControl.AddIn
 			switch (status) {
 				case VersionStatus.Unchanged:
 					return null;
+				case VersionStatus.Protected:
+					return overlay_protected;
 				case VersionStatus.Modified:
 					return overlay_modified;
 				case VersionStatus.Conflicted:
@@ -63,7 +67,6 @@ namespace VersionControl.AddIn
 				case VersionStatus.ScheduledDelete:
 					return overlay_removed;
 				case VersionStatus.UnversionedIgnored:
-				case VersionStatus.Unknown:
 				case VersionStatus.Unversioned:
 					return overlay_unversioned;
 			}
@@ -74,7 +77,7 @@ namespace VersionControl.AddIn
 		{
 			switch (status) {
 				case VersionStatus.Unchanged:
-					return icon_normal;
+					return null;
 				case VersionStatus.Modified:
 					return icon_modified;
 				case VersionStatus.Conflicted:
@@ -84,7 +87,7 @@ namespace VersionControl.AddIn
 				case VersionStatus.ScheduledDelete:
 					return icon_removed;
 				default:
-					if (status != VersionStatus.Unknown && status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
+					if (status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
 						return icon_controled;
 					break;
 			}
@@ -105,7 +108,7 @@ namespace VersionControl.AddIn
 				case VersionStatus.ScheduledDelete:
 					return GettextCatalog.GetString ("Delete");
 				default:
-					if (status != VersionStatus.Unknown && status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
+					if (status != VersionStatus.Unversioned && status != VersionStatus.UnversionedIgnored)
 						return "";
 					break;
 			}
@@ -123,5 +126,48 @@ namespace VersionControl.AddIn
 			
 			return repo;
 		}
+		
+		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
+		{
+			if (BeforeCommit != null) {
+				try {
+					BeforeCommit (null, new CommitEventArgs (repo, changeSet));
+				} catch (Exception ex) {
+					IdeApp.Services.MessageService.ShowError (ex);
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet)
+		{
+			if (AfterCommit != null) {
+				try {
+					AfterCommit (null, new CommitEventArgs (repo, changeSet));
+				} catch (Exception ex) {
+					IdeApp.Services.MessageService.ShowError (ex);
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		internal static void NotifyFileStatusChanged (Repository repo, string localPath, bool isDirectory) 
+		{
+			if (FileStatusChanged != null)
+				FileStatusChanged (null, new FileUpdateEventArgs (repo, localPath, isDirectory));
+		}
+		
+		static void OnFileChanged (object s, ProjectFileEventArgs args)
+		{
+			Repository repo = GetRepository (args.Project, args.ProjectFile.FilePath);
+			if (repo != null)
+				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
+		}
+		
+		public static event FileUpdateEventHandler FileStatusChanged;
+		public static event CommitEventHandler BeforeCommit;
+		public static event CommitEventHandler AfterCommit;
 	}
 }

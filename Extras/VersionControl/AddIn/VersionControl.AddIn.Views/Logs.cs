@@ -23,7 +23,7 @@ namespace VersionControl.AddIn.Views
 		
 		public static bool Show (Repository vc, string filepath, bool isDirectory, Revision since, bool test)
 		{
-			if (vc.IsVersioned (filepath)) {
+			if (vc.IsHistoryAvailable (filepath)) {
 				if (test) return true;
 				new Worker(vc, filepath, isDirectory, since).Start();
 				return true;

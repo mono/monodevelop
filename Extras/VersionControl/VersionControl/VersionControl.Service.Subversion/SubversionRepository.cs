@@ -55,7 +55,7 @@ namespace VersionControl.Service.Subversion
 		
 		public override bool CanAdd (string sourcepath)
 		{
-			return Svn.CanAdd (sourcepath);
+			return Svn.CanAdd (this, sourcepath);
 		}
 		
 		public override string GetPathToBaseText (string sourcefile)
@@ -73,9 +73,9 @@ namespace VersionControl.Service.Subversion
 			return Svn.GetHistory (this, sourcefile, since);
 		}
 		
-		public override VersionInfo GetVersionInfo (string sourcefile, bool getRemoteStatus)
+		public override VersionInfo GetVersionInfo (string localPath, bool getRemoteStatus)
 		{
-			return Svn.GetVersionInfo (this, sourcefile, getRemoteStatus);
+			return Svn.GetVersionInfo (this, localPath, getRemoteStatus);
 		}
 		
 		public override VersionInfo[] GetDirectoryVersionInfo (string sourcepath, bool getRemoteStatus, bool recursive)
@@ -102,7 +102,11 @@ namespace VersionControl.Service.Subversion
 				PublishDir (dirs, Path.GetDirectoryName (file), true, monitor);
 				Add (file, false, monitor);
 			}
-			Commit (new string[] { localPath}, message, monitor);
+			
+			ChangeSet cset = CreateChangeSet (localPath);
+			cset.AddFile (localPath);
+			cset.GlobalComment = message;
+			Commit (cset, monitor);
 			
 			return new SubversionRepository (Svn, paths[0]);
 		}
@@ -127,9 +131,12 @@ namespace VersionControl.Service.Subversion
 			Svn.Update (path, recurse, monitor);
 		}
 		
-		public override void Commit (string[] paths, string message, IProgressMonitor monitor)
+		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			Svn.Commit (paths, message, monitor);
+			ArrayList list = new ArrayList ();
+			foreach (ChangeSetItem it in changeSet.Items)
+				list.Add (it.LocalPath);
+			Svn.Commit ((string[])list.ToArray (typeof(string)), changeSet.GlobalComment, monitor);
 		}
 		
 		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)
@@ -140,6 +147,11 @@ namespace VersionControl.Service.Subversion
 		public override void Checkout (string path, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			Svn.Checkout (this.Url, path, rev, recurse, monitor);
+		}
+		
+		public override void Revert (string localPath, bool recurse, IProgressMonitor monitor)
+		{
+			Svn.Revert (new string[] {localPath}, recurse, monitor);
 		}
 		
 		public override void Add (string path, bool recurse, IProgressMonitor monitor)

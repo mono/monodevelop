@@ -125,13 +125,14 @@ namespace VersionControl.Service.Subversion
 			int result_rev = 0;
 
 			StatusCollector collector = new StatusCollector(ret);
-			Console.WriteLine ("result_rev:" + result_rev + " path:" + path + " revision:" + revision + " descendDirs:" + descendDirs + " changedItemsOnly:" + changedItemsOnly + " remoteStatus:" + remoteStatus);
+
 			CheckError(svn_client_status (ref result_rev, path, ref revision,
 				new svn_wc_status_func_t(collector.Func),
 				IntPtr.Zero,
 				descendDirs ? 1 : 0, 
 				changedItemsOnly ? 0 : 1, 
-				remoteStatus ? 1 : 0, 1,
+				remoteStatus ? 1 : 0,
+				1,
 				ctx, pool));
 				
 			return ret;
@@ -201,8 +202,10 @@ namespace VersionControl.Service.Subversion
 			}
 		}
 
-		public void Update(string path, bool recurse, IProgressMonitor monitor) {
-			if (path == null || monitor == null) throw new ArgumentException();
+		public void Update(string path, bool recurse, IProgressMonitor monitor)
+		{
+			if (path == null || monitor == null)
+				throw new ArgumentException();
 			
 			lock (sync) {
 				if (inProgress)
@@ -211,11 +214,42 @@ namespace VersionControl.Service.Subversion
 			}
 			
 			updatemonitor = monitor;
+			
 			int result_rev;
 			Rev rev = Rev.Head;
 			IntPtr localpool = newpool(pool);
 			try {
-				CheckError(svn_client_update(out result_rev, path, ref rev, recurse ? 1 : 0, ctx, localpool));
+				CheckError (svn_client_update(out result_rev, path, ref rev, recurse ? 1 : 0, ctx, localpool));
+			} finally {
+				apr.pool_destroy(localpool);
+				updatemonitor = null;
+				inProgress = false;
+			}
+		}
+		
+		public void Revert (string[] paths, bool recurse, IProgressMonitor monitor)
+		{
+			if (paths == null || monitor == null)
+				throw new ArgumentException();
+			
+			lock (sync) {
+				if (inProgress)
+					throw new SubversionException("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+			
+			updatemonitor = monitor;
+			IntPtr localpool = newpool(pool);
+			
+			// Put each item into an APR array.
+			IntPtr array = apr.array_make(localpool, 0, IntPtr.Size);
+			foreach (string path in paths) {
+				IntPtr item = apr.array_push(array);
+				Marshal.WriteIntPtr (item, apr.pstrdup (localpool, path));
+			}
+			
+			try {
+				CheckError (svn_client_revert (array, recurse ? 1 : 0, ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
 				updatemonitor = null;
@@ -463,21 +497,21 @@ namespace VersionControl.Service.Subversion
 					case NotifyAction.CommitModified: actiondesc = "Modified"; break;
 					case NotifyAction.CommitReplaced: actiondesc = "Replaced"; break;
 					case NotifyAction.CommitPostfixTxDelta: actiondesc = "Sending Content"; break;
-			/*Add,
-			Copy,
-			Delete,
-			Restore,
-			Revert,
-			FailedRevert,
-			Resolved,
-			Skip,
-			StatusCompleted,
-			StatusExternal,
-			BlameRevision*/
+					/*Add,
+					Copy,
+					Delete,
+					Restore,
+					Revert,
+					FailedRevert,
+					Resolved,
+					Skip,
+					StatusCompleted,
+					StatusExternal,
+					BlameRevision*/
 				}
 			
 				if (updatemonitor != null) {
-					updatemonitor.Log.WriteLine (actiondesc + " " + Marshal.PtrToStringAnsi(path));
+					updatemonitor.Log.WriteLine (actiondesc + " " + Marshal.PtrToStringAnsi (path));
 				}
 		}
 		
@@ -485,9 +519,10 @@ namespace VersionControl.Service.Subversion
 			ArrayList statuses;
 			public StatusCollector(ArrayList statuses) { this.statuses = statuses; }
 			public void Func(IntPtr baton, IntPtr path, ref svn_wc_status_t status) {
-				if (status.to_svn_wc_entry_t == IntPtr.Zero)
-					return;				
 				string pathstr = Marshal.PtrToStringAnsi(path);
+/*				if (status.to_svn_wc_entry_t == IntPtr.Zero)
+					return;
+*/
 				statuses.Add(new StatusEnt(status, pathstr));
 			}
   
@@ -918,6 +953,11 @@ namespace VersionControl.Service.Subversion
 			ref IntPtr svn_client_commit_info_t_commit_info,
 			IntPtr apr_array_header_t_targets, int nonrecursive,
 			IntPtr ctx, IntPtr pool);
+			
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_revert (
+			IntPtr apr_array_header_t_targets, int recursive,
+			IntPtr ctx, IntPtr pool);
+			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move(
 			out int result_rev, string srcPath, ref Rev rev,
 			string destPath, int force, IntPtr ctx, IntPtr pool);

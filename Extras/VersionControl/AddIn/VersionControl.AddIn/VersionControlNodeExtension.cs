@@ -20,15 +20,8 @@ namespace VersionControl.AddIn
 {
 	public class VersionControlNodeExtension : NodeBuilderExtension
 	{
-		Hashtable projectsWatched = new Hashtable();
-		Hashtable fileStatus = new Hashtable();
-		ProjectFileEventHandler projectFileEventHandler;
+		Hashtable filePaths = new Hashtable();
 	
-		public VersionControlNodeExtension ()
-		{
-			projectFileEventHandler = (ProjectFileEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (Monitor));
-		}
-		
 		public override bool CanBuildNode (Type dataType)
 		{
 			//Console.Error.WriteLine(dataType);
@@ -37,7 +30,12 @@ namespace VersionControl.AddIn
 				|| typeof(Project).IsAssignableFrom (dataType)
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
 				|| typeof(Combine).IsAssignableFrom (dataType);
-		}		
+		}
+		
+		public VersionControlNodeExtension ()
+		{
+			VersionControlProjectService.FileStatusChanged += Monitor;
+		}
 		
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
@@ -46,17 +44,14 @@ namespace VersionControl.AddIn
 			if (dataObject is CombineEntry) {
 				CombineEntry ce = (CombineEntry) dataObject;
 				Repository rep = VersionControlProjectService.GetRepository (ce, ce.FileName);
-				if (rep != null) {
-					AddOverlay (ref icon, VersionControlProjectService.overlay_controled);
-				}
+				if (rep != null)
+					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
 				Repository rep = VersionControlProjectService.GetRepository (ce.Project, ce.Path);
-				if (rep != null) {
-					AddOverlay (ref icon, VersionControlProjectService.overlay_controled);
-					AddOverlay (ref closedIcon, VersionControlProjectService.overlay_controled);
-				}
+				if (rep != null)
+					AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
 				return;
 			}
 			
@@ -83,87 +78,91 @@ namespace VersionControl.AddIn
 			if (repo == null)
 				return;
 			
-			// TODO: Monitor changes not just to project files
-			// but also to .svn directories to catch commits
-			// and updates.
-			
-			WatchProject (prj);
-			
-			// When a file had a status and later has no status,
-			// for whatever reason, it needs to be removed from the hashtable.
-			fileStatus.Remove(file);
-			
 			VersionStatus status = GetVersionInfo (repo, file);
-			
-			fileStatus[file] = status;
-			
 			Gdk.Pixbuf overlay = VersionControlProjectService.LoadOverlayIconForStatus (status);
 			if (overlay != null)
 				AddOverlay (ref icon, overlay);
 		}
 		
+		void AddFolderOverlay (Repository rep, string folder, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		{
+			Gdk.Pixbuf overlay = null;
+			VersionInfo vinfo = rep.GetVersionInfo (folder, false);
+			if (vinfo == null) {
+				overlay = VersionControlProjectService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
+			} else if (vinfo.Status == VersionStatus.Unchanged) {
+				overlay = VersionControlProjectService.overlay_controled;
+			} else {
+				overlay = VersionControlProjectService.LoadOverlayIconForStatus (vinfo.Status);
+			}
+			AddOverlay (ref icon, overlay);
+			if (closedIcon != null)
+				AddOverlay (ref closedIcon, overlay);
+		}
+		
 		void AddOverlay (ref Gdk.Pixbuf icon, Gdk.Pixbuf overlay)
 		{
-			double scale = 1;//(double)(2*icon.Width/3) / (double)overlay.Width;
-			int w = (int)(overlay.Width*scale);
-			int h = (int)(overlay.Height*scale);
-			icon = icon.Copy();
-			overlay.Composite(icon,
-				icon.Width-w,  icon.Height-h,
-				w, h,
-				icon.Width-w, icon.Height-h,
-				scale,scale, Gdk.InterpType.Bilinear, 255); 
+			int dx = 2;
+			int dy = 3;
+			
+			Gdk.Pixbuf res = new Gdk.Pixbuf (icon.Colorspace, icon.HasAlpha, icon.BitsPerSample, icon.Width + dx, icon.Height + dy);
+			res.Fill (0);
+			icon.CopyArea (0, 0, icon.Width, icon.Height, res, 0, 0);
+			
+			overlay.Composite (res,
+				res.Width - overlay.Width,  res.Height - overlay.Height,
+				overlay.Width, overlay.Height,
+				res.Width - overlay.Width,  res.Height - overlay.Height,
+				1, 1, Gdk.InterpType.Bilinear, 255); 
+			
+			icon = res;
 		}
 		
 		VersionStatus GetVersionInfo (Repository vc, string filepath)
 		{
-			if (vc.IsVersioned (filepath)) {
-				VersionInfo node = vc.GetVersionInfo(filepath, false);
+			VersionInfo node = vc.GetVersionInfo (filepath, false);
+			if (node != null)
 				return node.Status;
-			}
-			return VersionStatus.Unknown;
+			return VersionStatus.Unversioned;
 		}
 		
-		void WatchProject (Project project) 
+		void Monitor (object sender, FileUpdateEventArgs args)
 		{
-			if (projectsWatched.ContainsKey(project)) return;
-			projectsWatched[project] = projectsWatched;
-			project.FileChangedInProject += projectFileEventHandler;
-		}
-		
-		void Monitor (object sender, ProjectFileEventArgs args)
-		{
-			// If the status of the file actually changed, then
-			// update the project pad so the overlays are updated.
-			
-			Repository repo = VersionControlProjectService.GetRepository (args.ProjectFile.Project, args.ProjectFile.FilePath);
-			if (repo == null)
-				return;
-			
-			string file = args.ProjectFile.FilePath;
-			
-			VersionStatus newstatus = GetVersionInfo (repo, file);
-			if (newstatus == VersionStatus.Unknown && !fileStatus.ContainsKey(file))
-				return; // had no status before, has no status now
-
-			if (!fileStatus.ContainsKey(file)
-				|| (fileStatus.ContainsKey(file) 
-					&& (VersionStatus)fileStatus[file] != newstatus)) {
-				// No status before and has status now, or
-				// status changed.  Refresh the project pad.
-				ITreeBuilder builder = Context.GetTreeBuilder(args.ProjectFile);
+			object obj = filePaths [args.FilePath];
+			if (obj != null) {
+				ITreeBuilder builder = Context.GetTreeBuilder (obj);
 				if (builder != null)
 					builder.UpdateAll();
 			}
 		}
 		
-		public override void Dispose() 
+		public override void OnNodeAdded (object dataObject)
 		{
-			foreach (Project p in projectsWatched.Keys)
-				p.FileChangedInProject -= projectFileEventHandler;
-			projectsWatched.Clear();
+			string path = GetPath (dataObject);
+			if (path != null)
+				filePaths [path] = dataObject;
 		}
 		
+		public override void OnNodeRemoved (object dataObject)
+		{
+			string path = GetPath (dataObject);
+			if (path != null)
+				filePaths.Remove (path);
+		}
+		
+		internal static string GetPath (object dataObject)
+		{
+			if (dataObject is ProjectFile) {
+				return ((ProjectFile) dataObject).FilePath;
+			} else if (dataObject is SystemFile) {
+				return ((SystemFile) dataObject).Path;
+			} else if (dataObject is CombineEntry) {
+				return ((CombineEntry)dataObject).BaseDirectory;
+			} else if (dataObject is ProjectFolder) {
+				return ((ProjectFolder)dataObject).Path;
+			}
+			return null;
+		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(AddinCommandHandler); }
@@ -252,6 +251,16 @@ namespace VersionControl.AddIn
 		protected void UpdatePublish(CommandInfo item) {
 			TestCommand(Commands.Publish, item);
 		}
+		
+		[CommandHandler (Commands.Revert)]
+		protected void OnRevert() {
+			RunCommand(Commands.Revert, false);
+		}
+		
+		[CommandUpdateHandler (Commands.Revert)]
+		protected void UpdateRevert(CommandInfo item) {
+			TestCommand(Commands.Revert, item);
+		}
 			
 		private void TestCommand(Commands cmd, CommandInfo item) {
 			item.Visible = RunCommand(cmd, true);
@@ -307,11 +316,13 @@ namespace VersionControl.AddIn
 				case Commands.Status:
 					return StatusView.Show (repo, path, test);
 				case Commands.Commit:
-					return CommitCommand.Commit (repo, path, null, "", test);
+					return CommitCommand.Commit (repo, path, test);
 				case Commands.Add:
 					return AddCommand.Add (repo, path, test);
 				case Commands.Remove:
 					return RemoveCommand.Remove (repo, path, test);
+				case Commands.Revert:
+					return RevertCommand.Revert (repo, path, test);
 				case Commands.Publish:
 					if (!isDir) return false;
 					return PublishCommand.Publish (pentry, path, test);

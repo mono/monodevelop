@@ -15,7 +15,7 @@ namespace VersionControl.Service
 		string name;
 		VersionControlSystem vcs;
 		
-		[ItemProperty ("VcsType")]
+		[ItemProperty ("VcsType")] 
 		string vcsName;
 		
 		public Repository ()
@@ -81,13 +81,35 @@ namespace VersionControl.Service
 		}
 		
 		// Returns true if the specified local file or directory is under version control
-		public abstract bool IsVersioned (string localPath);
+		public virtual bool IsVersioned (string localPath)
+		{
+			VersionInfo vinfo = GetVersionInfo (localPath, false);
+			if (vinfo == null)
+				return false;
+			return vinfo.Status != VersionStatus.Unversioned && vinfo.Status != VersionStatus.UnversionedIgnored;
+		}
 		
 		// Returns true if the specified file has been modified since the last commit
-		public abstract bool IsModified (string localFile);
+		public virtual bool IsModified (string localFile)
+		{
+			if (!File.Exists (localFile))
+				return false;
+			VersionInfo vinfo = GetVersionInfo (localFile, false);
+			if (vinfo == null)
+				return false;
+			return vinfo.Status == VersionStatus.Modified;
+		}
 		
 		// Returns true if the specified file or directory can be added to the repository
-		public abstract bool CanAdd (string localPath);
+		public virtual bool CanAdd (string localPath)
+		{
+			if (!File.Exists (localPath) && !Directory.Exists (localPath))
+				return false;
+			VersionInfo vinfo = GetVersionInfo (localPath, false);
+			if (vinfo == null)
+				return false;
+			return vinfo.Status == VersionStatus.Unversioned;
+		}
 		
 		// Returns true if the repository has history for the specified local file
 		public virtual bool IsHistoryAvailable (string localFile)
@@ -104,19 +126,29 @@ namespace VersionControl.Service
 		// Returns true if the specified path can be committed to the repository
 		public virtual bool CanCommit (string localPath)
 		{
-			return IsVersioned (localPath);
+			return GetVersionInfo (localPath, false) != null;
 		}
 		
 		// Returns true if the specified path can be removed from the repository
 		public virtual bool CanRemove (string localPath)
 		{
-			return IsVersioned (localPath);
+			if (!File.Exists (localPath) && !Directory.Exists (localPath))
+				return false;
+			VersionInfo vinfo = GetVersionInfo (localPath, false);
+			if (vinfo == null)
+				return false;
+			return vinfo.Status == VersionStatus.Unchanged || vinfo.Status == VersionStatus.Modified;
 		}
 		
 		// Returns true if the specified path can be reverted
 		public virtual bool CanRevert (string localPath)
 		{
-			return IsVersioned (localPath);
+			VersionInfo vinfo = GetVersionInfo (localPath, false);
+			return vinfo != null && 
+					vinfo.Status != VersionStatus.Unchanged && 
+					vinfo.Status != VersionStatus.Unversioned &&
+					vinfo.Status != VersionStatus.UnversionedIgnored &&
+					vinfo.Status != VersionStatus.Protected;
 		}
 		
 		public virtual bool CanLock (string localPath)
@@ -135,8 +167,9 @@ namespace VersionControl.Service
 		// Returns the revision history of a file
 		public abstract Revision[] GetHistory (string localFile, Revision since);
 		
-		// Returns the versioning status of a file
-		public abstract VersionInfo GetVersionInfo (string localFile, bool getRemoteStatus);
+		// Returns the versioning status of a file or directory
+		// Returns null if the file or directory is not versioned.
+		public abstract VersionInfo GetVersionInfo (string localPath, bool getRemoteStatus);
 		
 		// Returns the versioning status of all files in a directory
 		public abstract VersionInfo[] GetDirectoryVersionInfo (string localDirectory, bool getRemoteStatus, bool recursive);
@@ -147,14 +180,23 @@ namespace VersionControl.Service
 		public abstract Repository Publish (string serverPath, string localPath, string[] files, string message, IProgressMonitor monitor);
 		
 		// Updates a local file or directory from the repository
+		// Returns a list of updated files
 		public abstract void Update (string localPath, bool recurse, IProgressMonitor monitor);
 		
+		// Called to create a ChangeSet to be used for a commit operation
+		public virtual ChangeSet CreateChangeSet (string basePath)
+		{
+			return new ChangeSet (this, basePath);
+		}
+		
 		// Commits changes in a set of files or directories into the repository
-		public abstract void Commit (string[] localPath, string message, IProgressMonitor monitor);
+		public abstract void Commit (ChangeSet changeSet, IProgressMonitor monitor);
 		
 		// Gets the contents of this repositories into the specified local path
 		public void Checkout (string targetLocalPath, bool recurse, IProgressMonitor monitor) { Checkout (targetLocalPath, null, recurse, monitor); }
 		public abstract void Checkout (string targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor);
+		
+		public abstract void Revert (string localPath, bool recurse, IProgressMonitor monitor);
 		
 		// Adds a file or directory to the repository
 		public abstract void Add (string localPath, bool recurse, IProgressMonitor monitor);

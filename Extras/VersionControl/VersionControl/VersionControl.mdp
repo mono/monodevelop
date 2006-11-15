@@ -37,6 +37,7 @@
     <File name="./VersionControl.Service/VersionStatus.cs" subtype="Code" buildaction="Compile" />
     <File name="./VersionControl.Service.Subversion/SvnClient.cs" subtype="Code" buildaction="Compile" />
     <File name="./VersionControl.Service.Subversion/LibApr.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VersionControl.Service/ChangeSet.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

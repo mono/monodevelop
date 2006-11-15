@@ -73,13 +73,34 @@ namespace VersionControl.Service.Subversion
 			}
 		}
 		
-		public bool IsVersioned(string sourcefile) {
-			return File.Exists(GetTextBase(sourcefile))
-				|| Directory.Exists(GetDirectoryDotSvn(sourcefile));
+		public bool IsVersioned (string sourcefile)
+		{
+			return File.Exists (GetTextBase (sourcefile))
+				|| Directory.Exists (GetDirectoryDotSvn (sourcefile));
 		}
 
-		public bool CanAdd(string sourcepath) {
-			return !File.Exists(GetTextBase(sourcepath));
+		public bool CanAdd (Repository repo, string sourcepath)
+		{
+			// Do some trivial checks
+			
+			if (!Directory.Exists (GetDirectoryDotSvn (Path.GetDirectoryName (sourcepath))))
+				return false;
+
+			if (File.Exists (sourcepath)) {
+				if (File.Exists (GetTextBase (sourcepath)))
+					return false;
+			} else if (Directory.Exists (sourcepath)) {
+				if (Directory.Exists (GetTextBase (sourcepath)))
+					return false;
+			} else
+				return false;
+				
+			// Allow adding only if the path is not already scheduled for adding
+			
+			VersionInfo ver = this.GetVersionInfo (repo, sourcepath, false);
+			if (ver == null)
+				return true;
+			return ver.Status == VersionStatus.Unversioned;
 		}
 		
 		public string GetPathToBaseText(string sourcefile) {
@@ -135,38 +156,49 @@ namespace VersionControl.Service.Subversion
 			return Client.Cat (repositoryPath, ((SvnRevision)revision).ForApi() );
 		}
 		
-		public VersionInfo GetVersionInfo (Repository repo, string sourcefile, bool getRemoteStatus) {
-			if (File.Exists(GetTextBase(sourcefile)))
-				return GetFileStatus (repo, sourcefile, getRemoteStatus);
-			else if (Directory.Exists(GetDirectoryDotSvn(sourcefile)))
-				return GetDirStatus (repo, sourcefile, getRemoteStatus);
+		public VersionInfo GetVersionInfo (Repository repo, string localPath, bool getRemoteStatus)
+		{
+			if (File.Exists (GetTextBase(localPath)) || File.Exists (localPath))
+				return GetFileStatus (repo, localPath, getRemoteStatus);
+			else if (Directory.Exists (GetDirectoryDotSvn (localPath)) || Directory.Exists (localPath))
+				return GetDirStatus (repo, localPath, getRemoteStatus);
 			else
-				throw new ArgumentException("Path does not exist.");
+				return null;
 		}
 		
-		private VersionInfo GetFileStatus (Repository repo, string sourcefile, bool getRemoteStatus) {
+		private VersionInfo GetFileStatus (Repository repo, string sourcefile, bool getRemoteStatus)
+		{
+			// If the directory is not versioned, there is no version info
+			if (!Directory.Exists (GetDirectoryDotSvn (Path.GetDirectoryName (sourcefile))))
+				return null;
+				
 			IList statuses = Client.Status(sourcefile, SvnClient.Rev.Head, false, false, getRemoteStatus);
 			if (statuses.Count == 0)
-				throw new ArgumentException("Path does not exist in the repository.");
+				throw new ArgumentException("Path '" + sourcefile + "' does not exist in the repository.");
 				
 			SvnClient.StatusEnt ent;
 			if (statuses.Count != 1)
-				throw new ArgumentException("Path does not refer to a file in the repository.");
+				throw new ArgumentException("Path '" + sourcefile + "' does not refer to a file in the repository.");
 			ent = (SvnClient.StatusEnt)statuses[0];
 			if (ent.IsDirectory)
-				throw new ArgumentException("Path does not refer to a file.");
+				throw new ArgumentException("Path '" + sourcefile + "' does not refer to a file.");
 			return CreateNode (ent, repo);
 		}
 		
-		private VersionInfo GetDirStatus (Repository repo, string sourcefile, bool getRemoteStatus) {
-			string parent = Directory.GetParent(sourcefile).FullName;
-			IList statuses = Client.Status(parent, SvnClient.Rev.Head, false, false, getRemoteStatus);
+		private VersionInfo GetDirStatus (Repository repo, string localPath, bool getRemoteStatus)
+		{
+			string parent = Path.GetDirectoryName (localPath);
+			
+			// If the directory is not versioned, there is no version info
+			if (!Directory.Exists (GetDirectoryDotSvn (parent)))
+				return null;
+				
+			IList statuses = Client.Status (parent, SvnClient.Rev.Head, false, false, getRemoteStatus);
 			foreach (SvnClient.StatusEnt ent in statuses) {
-				if (!ent.IsDirectory) continue;
-				if (ent.Name != Path.GetFileName(sourcefile)) continue;
-				return CreateNode (ent, repo);
+				if (ent.LocalFilePath == localPath)
+					return CreateNode (ent, repo);
 			}
-			throw new ArgumentException("Path does not exist in the repository.");
+			return null;
 		}
 		
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, string sourcepath, bool getRemoteStatus, bool recursive) {
@@ -188,6 +220,10 @@ namespace VersionControl.Service.Subversion
 		
 		public void Checkout (string url, string path, Revision rev, bool recurse, IProgressMonitor monitor) {
 			Client.Checkout (url, path, SvnClient.Rev.Head, recurse, monitor);
+		}
+		
+		public void Revert (string[] paths, bool recurse, IProgressMonitor monitor) {
+			Client.Revert (paths, recurse, monitor);
 		}
 		
 		public void Add(string path, bool recurse, IProgressMonitor monitor) {
@@ -213,7 +249,7 @@ namespace VersionControl.Service.Subversion
 		
 		private VersionInfo CreateNode (SvnClient.StatusEnt ent, Repository repo) 
 		{
-			VersionStatus rs = VersionStatus.Unknown;
+			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 			
 			if (ent.RemoteTextStatus != SvnClient.VersionStatus.EMPTY) {
@@ -264,7 +300,7 @@ namespace VersionControl.Service.Subversion
 				case SvnClient.VersionStatus.Ignored: return VersionStatus.UnversionedIgnored;
 				case SvnClient.VersionStatus.Obstructed: return VersionStatus.Obstructed;
 			}
-			return VersionStatus.Unknown;
+			return VersionStatus.Unversioned;
 		}
 		
 		private class SvnRevision : Revision

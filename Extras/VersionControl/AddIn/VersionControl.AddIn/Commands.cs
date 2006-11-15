@@ -13,6 +13,7 @@ namespace VersionControl.AddIn
     	Publish,
     	Checkout,
     	Repository,
-    	Commit
+    	Commit,
+    	Revert
 	}
 }

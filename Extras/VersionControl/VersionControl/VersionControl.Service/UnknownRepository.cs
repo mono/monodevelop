@@ -17,21 +17,6 @@ namespace VersionControl.Service
 			}
 		}
 		
-		public override bool IsModified (string sourcefile)
-		{
-			return false;
-		}
-		
-		public override bool IsVersioned (string sourcefile)
-		{
-			return false;
-		}
-		
-		public override bool CanAdd (string sourcepath)
-		{
-			return false;
-		}
-		
 		public override string GetPathToBaseText (string sourcefile)
 		{
 			return null;
@@ -47,7 +32,7 @@ namespace VersionControl.Service
 			return null;
 		}
 		
-		public override VersionInfo GetVersionInfo (string sourcefile, bool getRemoteStatus)
+		public override VersionInfo GetVersionInfo (string localPath, bool getRemoteStatus)
 		{
 			return null;
 		}
@@ -67,11 +52,15 @@ namespace VersionControl.Service
 		{
 		}
 		
-		public override void Commit (string[] paths, string message, IProgressMonitor monitor)
+		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
 		}
 		
 		public override void Checkout (string path, Revision rev, bool recurse, IProgressMonitor monitor)
+		{
+		}
+		
+		public override void Revert (string localPath, bool recurse, IProgressMonitor monitor)
 		{
 		}
 		

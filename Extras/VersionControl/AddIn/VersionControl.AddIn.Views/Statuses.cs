@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Text;
@@ -38,16 +39,16 @@ namespace VersionControl.AddIn.Views
 		TextView commitText;
 		Gtk.Label labelCommit;
 		
-		VersionInfo[] statuses;
-		Hashtable markedCommit = new Hashtable();
+		List<VersionInfo> statuses;
 		
 		bool remoteStatus = false;
 		bool diffRequested = false;
 		bool diffRunning = false;
 		Exception diffException;
 		DiffInfo[] difs;
-		Hashtable comments = new Hashtable ();
 		bool updatingComment;
+		ChangeSet changeSet;
+		bool firstLoad = true;
 		
 		const int ColIcon = 0;
 		const int ColStatus = 1;
@@ -58,6 +59,7 @@ namespace VersionControl.AddIn.Views
 		const int ColFullPath = 6;
 		const int ColShowToggle = 7;
 		const int ColShowComment = 8;
+		const int ColIconFile = 9;
 		
 		public static bool Show (Repository vc, string path, bool test)
 		{
@@ -75,6 +77,7 @@ namespace VersionControl.AddIn.Views
 		{
 			this.vc = vc;
 			this.filepath = filepath;
+			changeSet = vc.CreateChangeSet (filepath);
 			
 			main = new VBox(false, 6);
 			widget = main;
@@ -89,10 +92,22 @@ namespace VersionControl.AddIn.Views
 			buttonCommit.Clicked += new EventHandler(OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
 			
+			Gtk.ToolButton btnRevert = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert"));
+			btnRevert.IsImportant = true;
+			btnRevert.Clicked += new EventHandler (OnRevert);
+			commandbar.Insert (btnRevert, -1);
+			
 			showRemoteStatus = new Gtk.ToolButton (new Gtk.Image ("vc-remote-status", Gtk.IconSize.Menu), "Show Remote Status");
 			showRemoteStatus.IsImportant = true;
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
 			commandbar.Insert (showRemoteStatus, -1);
+			
+			Gtk.ToolButton btnRefresh = new Gtk.ToolButton (Gtk.Stock.Refresh);
+			btnRefresh.IsImportant = true;
+			btnRefresh.Clicked += new EventHandler (OnRefresh);
+			commandbar.Insert (btnRefresh, -1);
+			
+			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
 			Gtk.ToolButton btnExpand = new Gtk.ToolButton (null, "Expand All");
 			btnExpand.IsImportant = true;
@@ -141,8 +156,13 @@ namespace VersionControl.AddIn.Views
 			
 			TreeViewColumn colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
+			colFile.Spacing = 2;
+			crp = new CellRendererPixbuf();
 			CellRendererDiff cdif = new CellRendererDiff ();
+			colFile.PackStart (crp, false);
 			colFile.PackStart (cdif, true);
+			colFile.AddAttribute (crp, "stock-id", ColIconFile);
+			colFile.AddAttribute (crp, "visible", ColShowToggle);
 			colFile.SetCellDataFunc (cdif, new TreeCellDataFunc (SetDiffCellData));
 			
 			colRemote = new TreeViewColumn("Remote Status", new CellRendererText(), "text", ColRemoteStatus);
@@ -154,7 +174,7 @@ namespace VersionControl.AddIn.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(string));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -179,8 +199,14 @@ namespace VersionControl.AddIn.Views
 			status.Visible = false;
 			
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
+			VersionControlProjectService.FileStatusChanged += OnFileStatusChanged;
 			
 			StartUpdate();
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
 		}
 		
 		public override Gtk.Widget Control { 
@@ -198,6 +224,7 @@ namespace VersionControl.AddIn.Views
 			
 			status.Visible = true;
 			scroller.Visible = false;
+			commitBox.Visible = false;
 			
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
@@ -205,47 +232,72 @@ namespace VersionControl.AddIn.Views
 			new Worker(vc, filepath, remoteStatus, this).Start();
 		}
 		
-		private void Update ()
+		void UpdateControlStatus ()
 		{
+			// Set controls to the correct state according to the changes found
 			showRemoteStatus.Sensitive = !remoteStatus;
 			
-			if (statuses.Length == 0) {
+			if (statuses.Count == 0) {
+				commitBox.Visible = false;
+				buttonCommit.Sensitive = false;
 				if (!remoteStatus)
 					status.Text = "No files have local modifications.";
 				else
 					status.Text = "No files have local or remote modifications.";
 				return;
+			} else {
+				status.Visible = false;
+				scroller.Visible = true;
+				commitBox.Visible = true;
+				colRemote.Visible = remoteStatus;
+				Console.WriteLine ("CC: " + vc.CanCommit(filepath) + " " + filepath);
+				
+				if (vc.CanCommit(filepath))
+					buttonCommit.Sensitive = true;
 			}
-			
-			status.Visible = false;
-			scroller.Visible = true;
-			
-			if (vc.CanCommit(filepath))
-				buttonCommit.Sensitive = true;
-						
-			filestore.Clear();
-
-			colRemote.Visible = remoteStatus;
+		}
 		
-			for (int i = 0; i < statuses.Length; i++) {
-				VersionInfo n = statuses[i];
-				if (n.Status == VersionStatus.Unversioned)
-					continue;
-				
-				Gdk.Pixbuf statusicon = VersionControlProjectService.LoadIconForStatus(n.Status);
-				string lstatus = VersionControlProjectService.GetStatusLabel (n.Status);
-				
-				string localpath = n.LocalPath.Substring(filepath.Length);
-				if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
-				if (localpath == "") { localpath = "."; } // not sure if this happens
-				
-				string rstatus = n.RemoteStatus.ToString();
-				bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
-				markedCommit [localpath] = true;
-				
-				TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, true, false, n.LocalPath, true, hasComment);
-				filestore.AppendValues (it, null, "", "", "", false, true, n.LocalPath, false, hasComment);
+		private void Update ()
+		{
+			UpdateControlStatus ();
+
+			filestore.Clear();
+			
+			if (statuses.Count > 0) {
+				foreach (VersionInfo n in statuses) {
+					if (FileVisible (n)) {
+						if (firstLoad)
+							changeSet.AddFile (n);
+						AppendFileInfo (n);
+					}
+				}
 			}
+			firstLoad = false;
+		}
+		
+		TreeIter AppendFileInfo (VersionInfo n)
+		{
+			Gdk.Pixbuf statusicon = VersionControlProjectService.LoadIconForStatus(n.Status);
+			string lstatus = VersionControlProjectService.GetStatusLabel (n.Status);
+			
+			string localpath = n.LocalPath.Substring(filepath.Length);
+			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
+			if (localpath == "") { localpath = "."; } // not sure if this happens
+			
+			string rstatus = n.RemoteStatus.ToString();
+			bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
+			bool commit = changeSet.ContainsFile (n.LocalPath);
+			
+			string fileIcon;
+			if (n.IsDirectory)
+				fileIcon = MonoDevelop.Core.Gui.Stock.ClosedFolder;
+			else
+				fileIcon = IdeApp.Services.Icons.GetImageForFile (n.LocalPath);
+
+			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon);
+			if (!n.IsDirectory)
+				filestore.AppendValues (it, null, "", "", "", false, true, n.LocalPath, false, hasComment, "");
+			return it;
 		}
 		
 		string[] GetCurrentFiles ()
@@ -317,13 +369,17 @@ namespace VersionControl.AddIn.Views
 		
 		string GetCommitMessage (string file)
 		{
-			string txt = (string) comments [file];
+			ChangeSetItem item = changeSet.GetFileItem (file);
+			string txt = item != null ? item.Comment : null;
 			return txt != null ? txt : "";
 		}
 		
 		void SetCommitMessage (string file, string text)
 		{
-			comments [file] = text;
+			ChangeSetItem item = changeSet.GetFileItem (file);
+			if (item == null)
+				item = changeSet.AddFile (file);
+			item.Comment = text;
 		}
 		
 		void OnRowActivated(object o, RowActivatedArgs args) {
@@ -337,15 +393,26 @@ namespace VersionControl.AddIn.Views
 			if (!filestore.GetIterFromString(out pos, args.Path))
 				return;
 
-			int index = int.Parse(args.Path); // why is it a string?
-			string localpath = ((VersionInfo)statuses[index]).LocalPath;
+			string localpath = (string) filestore.GetValue (pos, ColFullPath);
 			
-			if (markedCommit.ContainsKey(localpath)) {
-				markedCommit.Remove(localpath);
+			if (changeSet.ContainsFile (localpath)) {
+				changeSet.RemoveFile (localpath);
 			} else {
-				markedCommit[localpath] = markedCommit;
+				VersionInfo vi = GetVersionInfo (localpath);
+				if (vi != null) {
+					Console.WriteLine ("p1: " + vi.LocalPath);
+					changeSet.AddFile (vi);
+				}
 			}
-			filestore.SetValue (pos, ColCommit, markedCommit.ContainsKey(localpath));
+			filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
+		}
+		
+		VersionInfo GetVersionInfo (string file)
+		{
+			foreach (VersionInfo vi in statuses)
+				if (vi.LocalPath == file)
+					return vi;
+			return null;
 		}
 		
 		private void OnShowRemoteStatusClicked(object src, EventArgs args) {
@@ -353,114 +420,16 @@ namespace VersionControl.AddIn.Views
 			StartUpdate();
 		}
 		
-		/*private void OnShowLogClicked(object src, EventArgs args) {
-			RevItem file = (RevItem)buttonsShowLog[src];
-			LogView.Show(file.Path, false, file.BaseRev, false);
-		}
-		
-		private void OnShowDiffClicked(object src, EventArgs args) {
-			RevItem file = (RevItem)buttonsShowDiff[src];
-			DiffView.Show(file.Path, false);
-		}*/
-		
 		private void OnCommitClicked(object src, EventArgs args)
 		{
-			// Get a list of files to commit
-			StringCollection list = new StringCollection ();
-			ArrayList comms = new ArrayList ();
-			TreeIter iter;
-			if (filestore.GetIterFirst (out iter)) {
-				do {
-					if ((bool) filestore.GetValue (iter, ColCommit)) {
-						string file = (string) filestore.GetValue (iter, ColFullPath);
-						list.Add (file);
-						string msg = GetCommitMessage (file);
-						
-						// Put files with the same commit message together
-						// For the commit message, use relative path names
-						file = (string) filestore.GetValue (iter, ColPath);
-						bool found = false;
-						if (msg.Length > 0) {
-							foreach (object[] com in comms) {
-								if (((string)com[0]) == msg) {
-									com[1] = ((string)com[1]) + ", " + file;
-									found = true;
-									break;
-								}
-							}
-						}
-						if (!found) {
-							comms.Add (new object[] { msg, file });
-						}
-					}
-				}
-				while (filestore.IterNext (ref iter));
-			}
-			
-			StringBuilder message = new StringBuilder ();
-			foreach (object[] com in comms) {
-				string msg = (string) com[1] + ": " + (string) com[0];
-				if (message.Length > 0)
-					message.Append ('\n');
-				message.Append ("* " + FormatText (msg, 0, 2, 75));
-			}
-			
 			// Nothing to commit
-			if (list.Count == 0)
+			if (changeSet.IsEmpty)
 				return;
 				
-			if (!CommitCommand.Commit (vc, filepath, list, message.ToString (), false))
+			if (!CommitCommand.Commit (vc, changeSet, false))
 				return;
-				
-			// Remove all entries which have been committed
-			if (filestore.GetIterFirst (out iter)) {
-				while (!iter.Equals (TreeIter.Zero)) {
-					if (list.Contains ((string) filestore.GetValue (iter, ColFullPath)))
-						filestore.Remove (ref iter);
-					else if (!filestore.IterNext (ref iter))
-						break;
-				}
-			}
 		}
-		
-		static string FormatText (string text, int initialLeftMargin, int leftMargin, int maxCols)
-		{
-			int n = 0;
-			int margin = initialLeftMargin;
-			
-			if (text == "")
-				return "";
-			
-			StringBuilder outs = new StringBuilder ();
-			while (n < text.Length)
-			{
-				int col = margin;
-				int lastWhite = -1;
-				int sn = n;
-				while ((col < maxCols || lastWhite==-1) && n < text.Length) {
-					if (char.IsWhiteSpace (text[n]))
-						lastWhite = n;
-					if (text[n] == '\n') {
-						lastWhite = n;
-						n++;
-						break;
-					}
-					col++;
-					n++;
-				}
-				
-				if (lastWhite == -1 || col < maxCols)
-					lastWhite = n;
-				else if (col >= maxCols)
-					n = lastWhite + 1;
-				
-				if (outs.Length > 0) outs.Append ('\n');
-				
-				outs.Append (new String (' ', margin) + text.Substring (sn, lastWhite - sn));
-				margin = leftMargin;
-			}
-			return outs.ToString ();
-		}
+
 		
 		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
 		{
@@ -481,6 +450,86 @@ namespace VersionControl.AddIn.Views
 		void OnCollapseAll (object s, EventArgs args)
 		{
 			filelist.CollapseAll ();
+		}
+		
+		void OnRefresh (object s, EventArgs args)
+		{
+			StartUpdate ();
+		}
+		
+		void OnRevert (object s, EventArgs args)
+		{
+			string[] files = GetCurrentFiles ();
+			RevertCommand.Revert (vc, files, false);
+		}
+		
+		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
+		{
+			if (!args.FilePath.StartsWith (filepath))
+				return;
+				
+			if (args.IsDirectory) {
+				StartUpdate ();
+				return;
+			}
+
+			TreeIter it;
+			bool found = false;
+			if (filestore.GetIterFirst (out it)) {
+				do {
+					if (args.FilePath == (string) filestore.GetValue (it, ColFullPath)) {
+						found = true;
+						break;
+					}
+				} while (filestore.IterNext (ref it));
+			}
+			
+			VersionInfo newInfo = vc.GetVersionInfo (args.FilePath, remoteStatus);
+			
+			if (found) {
+				int n;
+				for (n=0; n<statuses.Count; n++) {
+					if (statuses [n].LocalPath == args.FilePath)
+						break;
+				}
+				
+				if (newInfo == null ||
+					newInfo.Status == VersionStatus.Unchanged ||
+				    newInfo.Status == VersionStatus.Protected ||
+				    newInfo.Status == VersionStatus.Unversioned
+				    ) {
+					// Just remove the file from the change set
+					changeSet.RemoveFile (args.FilePath);
+					statuses.RemoveAt (n);
+					filestore.Remove (ref it);
+					UpdateControlStatus ();
+					return;
+				}
+				
+				statuses [n] = newInfo;
+				
+				// Update the tree
+				TreeIter newi = AppendFileInfo (newInfo);
+				filestore.MoveAfter (newi, it);
+				filestore.Remove (ref it);
+			}
+			else {
+				if (FileVisible (newInfo)) {
+					AppendFileInfo (newInfo);
+					statuses.Add (newInfo);
+					changeSet.AddFile (newInfo);
+				}
+			}
+			UpdateControlStatus ();
+		}
+		
+		bool FileVisible (VersionInfo vinfo)
+		{
+			return vinfo != null && 
+					vinfo.Status != VersionStatus.Protected &&
+					vinfo.Status != VersionStatus.Unversioned &&
+					vinfo.Status != VersionStatus.UnversionedIgnored &&
+					vinfo.Status != VersionStatus.Unchanged;
 		}
 		
 		void SetFileDiff (TreeIter iter, string file)
@@ -591,7 +640,8 @@ namespace VersionControl.AddIn.Views
 			Repository vc;
 			string filepath;
 			bool remoteStatus;
-						
+			List<VersionInfo> newList = new List<VersionInfo> ();
+
 			public Worker(Repository vc, string filepath, bool remoteStatus, StatusView view) {
 				this.vc = vc;
 				this.filepath = filepath;
@@ -604,12 +654,12 @@ namespace VersionControl.AddIn.Views
 			}
 			
 			protected override void Run() {
-				System.Console.WriteLine(filepath);
-				view.statuses = vc.GetDirectoryVersionInfo(filepath, remoteStatus, true);
+				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
 			}
 		
-			protected override void Finished() {
-				if (view.statuses == null) return;
+			protected override void Finished()
+			{
+				view.statuses = newList;
 				view.Update();
 			}
 		}

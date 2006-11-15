@@ -13,6 +13,7 @@ FILES = VersionControl.Service.Subversion/SubversionRepository.cs \
 		VersionControl.Service.Subversion/LibApr.cs \
 		VersionControl.Service.Cvs/CvsRepository.cs \
 		VersionControl.Service.Cvs/CvsSystem.cs \
+		VersionControl.Service/ChangeSet.cs \
 		VersionControl.Service/VersionControlSystem.cs \
 		VersionControl.Service/VersionControlConfiguration.cs \
 		VersionControl.Service/Revision.cs \

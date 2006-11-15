@@ -51,7 +51,10 @@ namespace VersionControl.AddIn
 			
 			protected override void Run ()
 			{
-				vc.Add(path, true, GetProgressMonitor ());
+				vc.Add (path, true, GetProgressMonitor ());
+				Gtk.Application.Invoke (delegate {
+					VersionControlProjectService.NotifyFileStatusChanged (vc, path, Directory.Exists (path));
+				});
 			}
 		}
 		
@@ -137,7 +140,11 @@ namespace VersionControl.AddIn
 			}
 			
 			protected override void Run() {
+				bool isDir = Directory.Exists (path);
 				vc.Delete(path, true, GetProgressMonitor ());
+				Gtk.Application.Invoke (delegate {
+					VersionControlProjectService.NotifyFileStatusChanged (vc, path, isDir);
+				});
 			}
 		}
 		

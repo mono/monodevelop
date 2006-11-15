@@ -59,6 +59,10 @@
     <File name="./menu_add.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./menu_remove.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./comment.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./VersionControl.AddIn/CommitEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VersionControl.AddIn/FileUpdateEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VersionControl.AddIn/RevertCommand.cs" subtype="Code" buildaction="Compile" />
+    <File name="./menu_revert.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Diff" />

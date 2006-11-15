@@ -8,9 +8,9 @@ namespace VersionControl.Service
 		string localPath;
 		string repositoryPath;
  		bool isDirectory;
-		VersionStatus status = VersionStatus.Unknown;
+		VersionStatus status = VersionStatus.Unversioned;
 		Revision revision;
-		VersionStatus remoteStatus = VersionStatus.Unknown;
+		VersionStatus remoteStatus = VersionStatus.Unchanged;
 		Revision remoteRevision;
 		
 		public VersionInfo (string localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
