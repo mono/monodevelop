@@ -1496,7 +1496,14 @@ namespace MonoDevelop.Projects.Parser
 				return null;
 			}
 			
-			string[] tags = ((string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0")).Split (';');
+			string rawTags = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+			if (String.IsNullOrEmpty (rawTags))
+			{
+				Runtime.Properties.SetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
+				rawTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
+			}
+			
+			string[] tags = rawTags.Split (';');
 			for (int i = 0; i < tags.Length; i++)
 			{
 				int pos = tags[i].IndexOf (':');

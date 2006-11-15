@@ -1,4 +1,8 @@
-2006-11-13 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: added checks for empty Monodevelop.TaskListTokens property
+
+2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: added checks for loaded file entry type, enabling code
 
