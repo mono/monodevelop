@@ -1,11 +1,11 @@
-<AddIn id        = "VersionControlPlugin"
+<AddIn id        = "MonoDevelop.VersionControl"
        name      = "MonoDevelop Version Control Addin"
        author    = "Joshua Tauberer"
        copyright = "GPL"
        url       = "http://taubz.for.net/code/diff"
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "IDE extensions"
-       version   = "0.3">
+       version   = "0.12.0">
  
 	<Runtime>
 		<Import assembly="Diff.dll"/>
@@ -24,6 +24,9 @@
 	
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Class class = "VersionControl.Service.Subversion.SubversionVersionControl" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
@@ -89,23 +92,11 @@
 			description = "Checkout a project from repository."/>
 	</Extension>
 	
-	<!--<Extension path="/SharpDevelop/Workbench/Pads" extension-nodes="Pad" description="This is a Repository Viewer.">
-		<Pad 	id = "VersionControlPlugin.RepositoryView" 
-			defaultPlacement = "Left" 
-			defaultValue = "False" 
-			_label="Repositories" 
-			class = "VersionControlPlugin.RepositoryView"/>
-	</Extension>-->
-
 	<Extension path="/SharpDevelop/Workbench/MainMenu/File">
 		<CommandItem id="VersionControl.AddIn.Commands.Checkout" 
 			insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 	</Extension>	
 
-	<!--<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
-		<ContextPad id = "VersionControlPlugin.RepositoryView" />
-	</Extension>-->
-	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode">
 		<ItemSet id = "VersionControl" _label = "Version Control" insertafter = "IncludeSeparator">
 			<CommandItem id = "VersionControl.AddIn.Commands.Add"/>

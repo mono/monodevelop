@@ -127,11 +127,11 @@ namespace VersionControl.AddIn
 			return repo;
 		}
 		
-		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
+		internal static bool NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (BeforeCommit != null) {
+			if (PrepareCommit != null) {
 				try {
-					BeforeCommit (null, new CommitEventArgs (repo, changeSet));
+					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
 					IdeApp.Services.MessageService.ShowError (ex);
 					return false;
@@ -140,11 +140,24 @@ namespace VersionControl.AddIn
 			return true;
 		}
 		
-		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet)
+		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (AfterCommit != null) {
+			if (BeginCommit != null) {
 				try {
-					AfterCommit (null, new CommitEventArgs (repo, changeSet));
+					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
+				} catch (Exception ex) {
+					IdeApp.Services.MessageService.ShowError (ex);
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
+		{
+			if (EndCommit != null) {
+				try {
+					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
 					IdeApp.Services.MessageService.ShowError (ex);
 					return false;
@@ -167,7 +180,8 @@ namespace VersionControl.AddIn
 		}
 		
 		public static event FileUpdateEventHandler FileStatusChanged;
-		public static event CommitEventHandler BeforeCommit;
-		public static event CommitEventHandler AfterCommit;
+		public static event CommitEventHandler PrepareCommit;
+		public static event CommitEventHandler BeginCommit;
+		public static event CommitEventHandler EndCommit;
 	}
 }

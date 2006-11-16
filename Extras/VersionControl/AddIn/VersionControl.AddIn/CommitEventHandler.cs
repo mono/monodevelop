@@ -10,11 +10,13 @@ namespace VersionControl.AddIn
 	{
 		ChangeSet cset;
 		Repository repo;
+		bool success;
 
-		internal CommitEventArgs (Repository repo, ChangeSet cset)
+		internal CommitEventArgs (Repository repo, ChangeSet cset, bool success)
 		{
 			this.cset = cset;
 			this.repo = repo;
+			this.success = success;
 		}
 		
 		public ChangeSet ChangeSet {
@@ -23,6 +25,10 @@ namespace VersionControl.AddIn
 		
 		public Repository Repository {
 			get { return repo; }
+		}
+		
+		public bool Success {
+			get { return success; }
 		}
 	}
 }

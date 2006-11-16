@@ -5,16 +5,20 @@ using System.Collections;
 using Gtk;
 using VersionControl.Service;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace VersionControl.AddIn.Dialogs
 {
-	public class CommitDialog : Gtk.Dialog
+	class CommitDialog : Gtk.Dialog
 	{
 		protected Gtk.TreeView fileList;
 		ListStore store;
 		ArrayList selected = new ArrayList ();
+		ArrayList extensions = new ArrayList ();
 		ChangeSet changeSet;
+		string oldMessage;
 		protected Gtk.TextView textview;
+		protected Gtk.VBox vboxExtensions;
 
 		public CommitDialog (ChangeSet changeSet)
 		{
@@ -22,6 +26,7 @@ namespace VersionControl.AddIn.Dialogs
 			store = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
 			this.changeSet = changeSet;
+			oldMessage = changeSet.GlobalComment;
 
 			CellRendererText crt = new CellRendererText ();
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
@@ -40,6 +45,20 @@ namespace VersionControl.AddIn.Dialogs
 			fileList.AppendColumn(colCommit);
 			fileList.AppendColumn(colStatus);
 			fileList.AppendColumn(colFile);
+			
+			colCommit.Visible = false;
+			
+			object[] exts = Runtime.AddInService.GetTreeItems ("/MonoDevelop/VersionControl/CommitDialogExtensions");
+			foreach (object ob in exts) {
+				CommitDialogExtension ext = ob as CommitDialogExtension;
+				if (ext == null) {
+					IdeApp.Services.MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
+					continue;
+				}
+				vboxExtensions.PackEnd (ext, false, false, 0);
+				ext.Initialize (changeSet);
+				extensions.Add (ext);
+			}
 
 			foreach (ChangeSetItem info in changeSet.Items) {
 				Gdk.Pixbuf statusicon = VersionControlProjectService.LoadIconForStatus (info.Status);
@@ -57,11 +76,15 @@ namespace VersionControl.AddIn.Dialogs
 				Message = changeSet.GenerateGlobalComment (70);
 			else
 				Message = changeSet.GlobalComment;
+				
+			textview.Buffer.Changed += OnTextChanged;
 		}
 		
 		protected override void OnResponse (Gtk.ResponseType type)
 		{
 			if (type == Gtk.ResponseType.Ok) {
+			
+				// Update the change set
 				ArrayList todel = new ArrayList ();
 				foreach (ChangeSetItem it in changeSet.Items) {
 					if (!selected.Contains (it.LocalPath))
@@ -69,8 +92,50 @@ namespace VersionControl.AddIn.Dialogs
 				}
 				foreach (string file in todel)
 					changeSet.RemoveFile (file);
+				changeSet.GlobalComment = Message;
+				
+				// Perform the commit
+				
+				int n;
+				for (n=0; n<extensions.Count; n++) {
+					CommitDialogExtension ext = (CommitDialogExtension) extensions [n];
+					bool res;
+					try {
+						res = ext.OnBeginCommit (changeSet);
+					} catch (Exception ex) {
+						IdeApp.Services.MessageService.ShowError (ex);
+						res = false;
+					}
+					
+					if (!res) {
+						// Commit failed. Rollback the previous extensions
+						for (int m=0; m<n; m++) {
+							ext = (CommitDialogExtension) extensions [m];
+							try {
+								ext.OnEndCommit (changeSet, false);
+							} catch {}
+						}
+						return;
+					}
+				}
+			} else {
+				changeSet.GlobalComment = oldMessage;
 			}
 			base.OnResponse (type);
+		}
+		
+		void OnTextChanged (object s, EventArgs args)
+		{
+			changeSet.GlobalComment = Message;
+		}
+		
+		public void EndCommit (bool success)
+		{
+			foreach (CommitDialogExtension ext in extensions) {
+				try {
+					ext.OnEndCommit (changeSet, success);
+				} catch {}
+			}
 		}
 		
 		public string[] GetFilesToCommit ()

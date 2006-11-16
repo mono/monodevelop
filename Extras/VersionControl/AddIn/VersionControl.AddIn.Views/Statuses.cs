@@ -201,7 +201,44 @@ namespace VersionControl.AddIn.Views
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
 			VersionControlProjectService.FileStatusChanged += OnFileStatusChanged;
 			
+			filelist.HeadersClickable = true;
+			filestore.SetSortFunc (0, CompareNodes);
+			colStatus.SortColumnId = 0;
+			filestore.SetSortFunc (1, CompareNodes);
+			colRemote.SortColumnId = 1;
+			filestore.SetSortFunc (2, CompareNodes);
+			colCommit.SortColumnId = 2;
+			filestore.SetSortFunc (3, CompareNodes);
+			colFile.SortColumnId = 3;
+			
+			filestore.SetSortColumnId (3, Gtk.SortType.Ascending);
+			
 			StartUpdate();
+		}
+		
+		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+		{
+			int col, val=0;
+			SortType type;
+			filestore.GetSortColumnId (out col, out type);
+			
+			switch (col) {
+				case 0: val = ColStatus; break;
+				case 1: val = ColRemoteStatus; break;
+				case 2: val = ColCommit; break;
+				case 3: val = ColPath; break;
+			}
+			IComparable o1 = filestore.GetValue (a, val) as IComparable;
+			IComparable o2 = filestore.GetValue (b, val) as IComparable;
+			
+			if (o1 == null && o2 == null)
+				return 0;
+			else if (o1 == null)
+				return 1;
+			else if (o2 == null)
+				return -1;
+			
+			return o1.CompareTo (o2);
 		}
 		
 		public override void Dispose ()
@@ -250,7 +287,6 @@ namespace VersionControl.AddIn.Views
 				scroller.Visible = true;
 				commitBox.Visible = true;
 				colRemote.Visible = remoteStatus;
-				Console.WriteLine ("CC: " + vc.CanCommit(filepath) + " " + filepath);
 				
 				if (vc.CanCommit(filepath))
 					buttonCommit.Sensitive = true;
@@ -320,7 +356,7 @@ namespace VersionControl.AddIn.Views
 				commitBox.Visible = true;
 				updatingComment = true;
 				if (files.Length == 1)
-					labelCommit.Text = GettextCatalog.GetString ("Commit message:");
+					labelCommit.Text = GettextCatalog.GetString ("Commit message for file '{0}':", Path.GetFileName (files[0]));
 				else
 					labelCommit.Text = GettextCatalog.GetString ("Commit message (multiple selection):");
 				
@@ -525,11 +561,7 @@ namespace VersionControl.AddIn.Views
 		
 		bool FileVisible (VersionInfo vinfo)
 		{
-			return vinfo != null && 
-					vinfo.Status != VersionStatus.Protected &&
-					vinfo.Status != VersionStatus.Unversioned &&
-					vinfo.Status != VersionStatus.UnversionedIgnored &&
-					vinfo.Status != VersionStatus.Unchanged;
+			return vinfo != null && vinfo.NeedsCommit;
 		}
 		
 		void SetFileDiff (TreeIter iter, string file)

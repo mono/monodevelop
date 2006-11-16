@@ -9,6 +9,7 @@ build_sources = VersionControl.AddIn/AddRemoveMoveCommand.cs \
 				VersionControl.AddIn/RevertCommand.cs \
 				VersionControl.AddIn/Task.cs \
 				VersionControl.AddIn/Update.cs \
+				VersionControl.AddIn/CommitDialogExtension.cs \
 				VersionControl.AddIn/VersionControlNodeExtension.cs \
 				VersionControl.AddIn/VersionControlProjectService.cs \
 				VersionControl.AddIn.Dialogs/CommitDialog.cs \

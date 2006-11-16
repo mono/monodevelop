@@ -1,3 +1,26 @@
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs,
+	  AddIn/VersionControl.AddIn/CommitDialogExtension.cs: Added support
+	  for commit dialog extensions.
+	* AddIn/VersionControl.AddIn.Views/Statuses.cs: Add support for
+	  sorting.
+	* AddIn/VersionControl.addin.xml: Changed add-in id. Added new
+	  extension point.
+	* AddIn/VersionControl.AddIn/VersionControlProjectService.cs,
+	  AddIn/VersionControl.AddIn/CommitEventHandler.cs: Improved commit
+	  events.
+	* AddIn/VersionControl.AddIn/CommitCommand.cs: Moved some of the commit
+	  functionality to the commit dialog, since commit extensions now
+	  participate in the operation.
+	* AddIn/VersionControlAddIn.mdp, AddIn/gtk-gui/generated.cs,
+	  AddIn/gtk-gui/gui.stetic, AddIn/Makefile.am: Updated.
+	* VersionControl/VersionControl.Service/VersionInfo.cs: Added
+	  NeedsCommit property.
+	* VersionControl/VersionControl.Service/ChangeSet.cs: If a file does
+	  not have a comment, don't include it in the generated global
+	  message.
+
 2006-11-15 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddIn/overlay_unversioned.png, AddIn/overlay_locked.png,

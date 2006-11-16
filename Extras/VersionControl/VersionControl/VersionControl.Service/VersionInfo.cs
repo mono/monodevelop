@@ -51,5 +51,14 @@ namespace VersionControl.Service
 		public Revision RemoteRevision {
 			get { return remoteRevision; }
 		}
+		
+		public bool NeedsCommit {
+			get {
+				return status != VersionStatus.Protected &&
+						status != VersionStatus.Unversioned &&
+						status != VersionStatus.UnversionedIgnored &&
+						status != VersionStatus.Unchanged;
+			}
+		}
 	}
 }
