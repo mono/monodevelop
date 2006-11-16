@@ -1,3 +1,8 @@
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Added new overload to support
+	  modal warning dialogs.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* .: Added svn:ignore for MonoDevelop.Core.Gui.pidb

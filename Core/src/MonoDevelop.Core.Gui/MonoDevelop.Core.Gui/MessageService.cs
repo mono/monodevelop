@@ -104,12 +104,22 @@ namespace MonoDevelop.Core.Gui
 				dlg.Show ();
 		}
 
-		public void ShowWarning(string message)
+		public void ShowWarning (string message)
+		{
+			ShowWarning (message, false);
+		}
+		
+		public void ShowWarning (string message, bool modal)
 		{
 			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Warning, ButtonsType.Ok, EscapeBraces(message));
 			md.Response += new ResponseHandler(OnResponse);
 			md.Close += new EventHandler(OnClose);
-			md.ShowAll ();
+			
+			if (modal) {
+				md.Run ();
+				md.Dispose ();
+			} else
+				md.ShowAll ();
 		}		
 		
 		public void ShowWarningFormatted(string formatstring, params string[] formatitems)
