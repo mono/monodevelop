@@ -95,9 +95,11 @@ namespace VersionControl.AddIn
 			} else {
 				overlay = VersionControlProjectService.LoadOverlayIconForStatus (vinfo.Status);
 			}
-			AddOverlay (ref icon, overlay);
-			if (closedIcon != null)
-				AddOverlay (ref closedIcon, overlay);
+			if (overlay != null) {
+				AddOverlay (ref icon, overlay);
+				if (closedIcon != null)
+					AddOverlay (ref closedIcon, overlay);
+			}
 		}
 		
 		void AddOverlay (ref Gdk.Pixbuf icon, Gdk.Pixbuf overlay)

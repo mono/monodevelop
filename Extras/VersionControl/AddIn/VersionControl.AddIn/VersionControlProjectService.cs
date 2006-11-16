@@ -49,6 +49,9 @@ namespace VersionControl.AddIn
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
 			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
+			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+			IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
+			IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
@@ -177,6 +180,45 @@ namespace VersionControl.AddIn
 			Repository repo = GetRepository (args.Project, args.ProjectFile.FilePath);
 			if (repo != null)
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
+		}
+		
+		static void OnFileAdded (object s, ProjectFileEventArgs args)
+		{
+			string path = args.ProjectFile.FilePath;
+			Repository repo = GetRepository (args.Project, path);
+			if (!repo.IsVersioned (path) && repo.CanAdd (path)) {
+				using (IProgressMonitor monitor = GetStatusMonitor ()) {
+					repo.Add (path, false, monitor);
+				}
+				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
+			}
+		}
+		
+		static void OnFileRemoved (object s, ProjectFileEventArgs args)
+		{
+			string path = args.ProjectFile.FilePath;
+			Repository repo = GetRepository (args.Project, path);
+			if (repo.IsVersioned (path) && repo.CanRemove (path)) {
+				using (IProgressMonitor monitor = GetStatusMonitor ()) {
+					repo.Delete (path, true, monitor);
+				}
+				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
+			}
+		}
+		
+		static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
+		{
+/*			string path = args.ProjectFile.FilePath;
+			Repository repo = GetRepository (args.Project, path);
+			if (repo.IsVersioned (path) && repo.CanRemove (path)) {
+				repo.Remove (path);
+				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
+			}
+*/		}
+
+		static IProgressMonitor GetStatusMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Updating version control repository"), "vc-remote-status", true);
 		}
 		
 		public static event FileUpdateEventHandler FileStatusChanged;

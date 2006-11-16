@@ -1,5 +1,14 @@
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AddIn/VersionControl.AddIn/VersionControlProjectService.cs:
+	  Automatically add/remove files from the repository when
+	  added/removed from the project.
+	* AddIn/VersionControl.AddIn/VersionControlNodeExtension.cs: Fix
+	  nullref exception.
+	* AddIn/gtk-gui/generated.cs, AddIn/gtk-gui/gui.stetic: Updated.
+
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs: Hide the commit
 	  dialog before starting the commit operation.
 
