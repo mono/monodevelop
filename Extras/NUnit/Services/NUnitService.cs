@@ -54,6 +54,8 @@ namespace MonoDevelop.NUnit
 		{
 			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
+			IdeApp.ProjectOperations.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
+			IdeApp.ProjectOperations.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
 			
 			IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
@@ -98,18 +100,12 @@ namespace MonoDevelop.NUnit
 		protected virtual void OnOpenCombine (object sender, CombineEventArgs e)
 		{
 			rootTest = BuildTest (e.Combine);
-			e.Combine.ReferenceAddedToProject += new ProjectReferenceEventHandler (OnReferenceAddedToProject);
-			e.Combine.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
-			
 			if (TestSuiteChanged != null)
 				TestSuiteChanged (this, EventArgs.Empty);
 		}
 
 		protected virtual void OnCloseCombine (object sender, CombineEventArgs e)
 		{
-			e.Combine.ReferenceAddedToProject -= new ProjectReferenceEventHandler (OnReferenceAddedToProject);
-			e.Combine.ReferenceRemovedFromProject -= new ProjectReferenceEventHandler (OnReferenceRemovedFromProject);
-			
 			if (rootTest != null) {
 				((IDisposable)rootTest).Dispose ();
 				rootTest = null;
