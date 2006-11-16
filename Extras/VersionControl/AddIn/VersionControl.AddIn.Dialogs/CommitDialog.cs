@@ -117,6 +117,7 @@ namespace VersionControl.AddIn.Dialogs
 						}
 						return;
 					}
+					Hide ();
 				}
 			} else {
 				changeSet.GlobalComment = oldMessage;

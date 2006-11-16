@@ -1,5 +1,10 @@
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs: Hide the commit
+	  dialog before starting the commit operation.
+
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AddIn/VersionControl.AddIn.Dialogs/CommitDialog.cs,
 	  AddIn/VersionControl.AddIn/CommitDialogExtension.cs: Added support
 	  for commit dialog extensions.
