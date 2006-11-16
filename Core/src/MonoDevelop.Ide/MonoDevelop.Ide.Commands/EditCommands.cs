@@ -33,9 +33,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			new TreeViewOptions (IdeApp.Workbench.RootWindow,
-				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
-				Runtime.AddInService.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (null);
 		}
 	}
 }

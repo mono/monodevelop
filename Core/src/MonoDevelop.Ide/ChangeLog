@@ -1,5 +1,12 @@
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/EditCommands.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Created new method for showing
+	  the global preferences, with a parameter which allows showing a
+	  specific page.
+
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Use global events to keep track
 	  of renamed and removed files, instead of subscribing to a
 	  particular combine. Update the comment tags only if the

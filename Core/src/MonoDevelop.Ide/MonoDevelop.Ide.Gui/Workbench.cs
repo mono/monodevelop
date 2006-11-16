@@ -39,6 +39,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -363,6 +364,26 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			return WrapDocument (newContent.WorkbenchWindow);
+		}
+		
+		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow)
+		{
+			ShowGlobalPreferencesDialog (null, null);
+		}
+		
+		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
+		{
+			if (parentWindow == null)
+				parentWindow = IdeApp.Workbench.RootWindow;
+
+			TreeViewOptions ops = new TreeViewOptions (
+				parentWindow,
+				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
+				Runtime.AddInService.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
+
+			if (panelId != null)
+				ops.SelectPanel (panelId);
+			ops.Run ();
 		}
 		
 		void OnDocumentChanged (object s, EventArgs a)
