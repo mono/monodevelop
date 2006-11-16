@@ -1,3 +1,15 @@
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AddLogEntryDialog.cs: New dialog that shows a new entry to be added
+	  to a ChangeLog file.
+	* ChangeLogAddIn.addin.xml: Added dependency to VersionControl.
+	  Registered extension to the commit dialog. 
+	* ChangeLogAddIn.mdp, Makefile.am: Updated.
+	* ChangeLogAddInOptionsPanel.cs: Save the properties after changing
+	  user data.
+	* gtk-gui/generated.cs, gtk-gui/gui.stetic: New gui files.
+	* CommitDialogExtensionWidget.cs: New extension of the commit dialog.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* ChangeLogAddIn.mdp: Updated.

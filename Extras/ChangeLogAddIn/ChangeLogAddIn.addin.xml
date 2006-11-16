@@ -15,8 +15,13 @@
 		<AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
 	    <AddIn id="MonoDevelop.Projects" version="0.12.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
+		<AddIn id="MonoDevelop.VersionControl" version="0.12.0"/>
 	</Dependencies>
-
+	
+	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
+		<Class class="MonoDevelop.ChangeLogAddIn.CommitDialogExtensionWidget" />
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"
 			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertHeaderHandler"
@@ -25,7 +30,7 @@
 			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertEntryHandler"
 			_label = "Insert Entry" />
 	</Extension>
- 
+
 	<Extension path="/SharpDevelop/Workbench/MainMenu/Edit">
 		<ItemSet id="ChangeLogCommands" _label = "ChangeLog" insertafter="Separator5">
 			<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"/>

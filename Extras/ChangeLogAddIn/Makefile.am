@@ -6,6 +6,8 @@ REFS =	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControl.dll \
 	$(GECKO_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
@@ -14,6 +16,9 @@ REFS =	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 FILES = \
 	ChangeLogAddIn.cs \
 	ChangeLogAddInOptionsPanel.cs \
+	AddLogEntryDialog.cs \
+	gtk-gui/generated.cs \
+	CommitDialogExtensionWidget.cs \
 	AssemblyInfo.cs
 
 ADDIN = ChangeLogAddIn.addin.xml

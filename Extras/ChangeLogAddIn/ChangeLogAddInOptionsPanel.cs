@@ -37,7 +37,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			descriptionLabel.SetAlignment(0.0f, 0.5f);
 			hBox.PackStart(descriptionLabel, false, false, 10);
 			
-			Label nameLabel = new Label(GettextCatalog.GetString("Full Name:"));
+			Label nameLabel = new Label (GettextCatalog.GetString("Full Name:"));
 			nameLabel.SetAlignment(0.0f, 0.5f);
 			nameEntry.Text = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
 
@@ -60,6 +60,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			Runtime.Properties.SetProperty("ChangeLogAddIn.Name", nameEntry.Text);
 			Runtime.Properties.SetProperty("ChangeLogAddIn.Email", emailEntry.Text);
+			Runtime.Properties.SaveProperties ();
 			return true;
 		}
 	}
