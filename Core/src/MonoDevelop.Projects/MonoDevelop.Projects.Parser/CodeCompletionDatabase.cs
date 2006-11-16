@@ -519,12 +519,14 @@ namespace MonoDevelop.Projects.Parser
 		{
 			foreach (FileEntry fe in files.Values)
 			{
-				List<Tag> markedTags = new List<Tag> ();
-				foreach (Tag tag in fe.CommentTasks)
-					if (tag.Key == token) markedTags.Add (tag);
-				foreach (Tag tag in markedTags)
-					fe.CommentTasks.Remove (tag);
-				parserDatabase.UpdatedCommentTasks (fe);
+				if (fe.CommentTasks != null) {
+					List<Tag> markedTags = new List<Tag> ();
+					foreach (Tag tag in fe.CommentTasks)
+						if (tag.Key == token) markedTags.Add (tag);
+					foreach (Tag tag in markedTags)
+						fe.CommentTasks.Remove (tag);
+					parserDatabase.UpdatedCommentTasks (fe);
+				}
 			}
 		}
 		
