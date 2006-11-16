@@ -1,3 +1,11 @@
+2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Tasks/TaskService.cs: Use global events to keep track
+	  of renamed and removed files, instead of subscribing to a
+	  particular combine. Update the comment tags only if the
+	  TaskListTokens property changes. Added default values for the
+	  TaskListTokens property.
+
 2006-11-15 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 	
 	* MonoDevelop.Ide.Tasks/TaskService.cs: re-enabling handlers

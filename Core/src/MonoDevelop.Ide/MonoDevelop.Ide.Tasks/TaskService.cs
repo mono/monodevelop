@@ -43,6 +43,8 @@ namespace MonoDevelop.Ide.Tasks
 			
 			IdeApp.ProjectOperations.CombineOpened += new CombineEventHandler (ProjectServiceSolutionOpened);
 			IdeApp.ProjectOperations.CombineClosed += new CombineEventHandler (ProjectServiceSolutionClosed);
+			IdeApp.ProjectOperations.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
+			IdeApp.ProjectOperations.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}
@@ -50,8 +52,6 @@ namespace MonoDevelop.Ide.Tasks
 		void ProjectServiceSolutionOpened (object sender, CombineEventArgs e)
 		{
 			combine = e.Combine;
-			e.Combine.FileRenamedInProject += new ProjectFileRenamedEventHandler (ProjectFileRenamed);
-			e.Combine.FileRemovedFromProject += new ProjectFileEventHandler (ProjectFileRemoved);
 			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged += new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Load all tags that are stored in pidb files
@@ -89,8 +89,6 @@ namespace MonoDevelop.Ide.Tasks
 		void ProjectServiceSolutionClosed (object sender, CombineEventArgs e)
 		{
 			combine = null;
-			e.Combine.FileRenamedInProject -= new ProjectFileRenamedEventHandler (ProjectFileRenamed);
-			e.Combine.FileRemovedFromProject -= new ProjectFileEventHandler (ProjectFileRemoved);
 			IdeApp.ProjectOperations.ParserDatabase.CommentTasksChanged -= new CommentTasksChangedEventHandler (OnCommentTasksChanged);
 			
 			// Save UserTasks to xml file
@@ -119,20 +117,20 @@ namespace MonoDevelop.Ide.Tasks
 			if (e.Key == "Monodevelop.TaskListTokens" && e.NewValue != e.OldValue)
 			{
 				ReloadPriories ();
-			}
-			if (combine != null)
-			{
-				// update priorities
-	            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
-	            {
-	                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
-	                foreach (ProjectFile file in p.ProjectFiles)
-	                {
-	                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
-	                	if (tags !=null)
-	                		UpdateCommentTags (file.Name, tags);
-	                }
-	        	}
+				if (combine != null)
+				{
+					// update priorities
+		            foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ())
+		            {
+		                IProjectParserContext pContext = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (p);
+		                foreach (ProjectFile file in p.ProjectFiles)
+		                {
+		                	TagCollection tags = pContext.GetFileSpecialComments (file.Name); 
+		                	if (tags !=null)
+		                		UpdateCommentTags (file.Name, tags);
+		                }
+		        	}
+				}
 			}
 		}
 		
@@ -177,7 +175,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriories ()
 		{
 			priorities.Clear ();
-				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "");
+				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
 				foreach (string token in tokens.Split (';'))
 				{
 					int pos = token.IndexOf (':');
@@ -335,6 +333,8 @@ namespace MonoDevelop.Ide.Tasks
 			
 			List<Task> newTasks = new List<Task> ();
 			foreach (MonoDevelop.Projects.Parser.Tag tag in tagComments) {
+				if (!priorities.ContainsKey (tag.Key))
+					continue;
 				newTasks.Add (new Task (fileName,
 				                      tag.Key + tag.CommentString,
 				                      tag.Region.BeginColumn - 1,
