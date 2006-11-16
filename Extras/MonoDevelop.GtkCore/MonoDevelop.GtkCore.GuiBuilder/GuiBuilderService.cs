@@ -54,7 +54,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static string GuiBuilderLayout = "GUI Builder";
 		static string defaultLayout;
 	
-		static ProjectReferenceEventHandler referencesChangedHandler;
 		static Hashtable assemblyLibs = new Hashtable ();
 		static Stetic.Application steticApp;
 		
@@ -67,10 +66,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static GuiBuilderService ()
 		{
-			referencesChangedHandler = (ProjectReferenceEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnReferencesChanged));
+			IdeApp.ProjectOperations.ReferenceAddedToProject += OnReferencesChanged;
+			IdeApp.ProjectOperations.ReferenceRemovedFromProject += OnReferencesChanged;
 			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnOpenCombine));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCloseCombine));
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
@@ -175,18 +173,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				IdeApp.Workbench.CurrentLayout = defaultLayout;
 				defaultLayout = null;
 			}
-		}
-		
-		static void OnOpenCombine (object s, CombineEventArgs args)
-		{
-			args.Combine.ReferenceAddedToProject += referencesChangedHandler;
-			args.Combine.ReferenceRemovedFromProject += referencesChangedHandler;
-		}
-		
-		static void OnCloseCombine (object s, CombineEventArgs args)
-		{
-			args.Combine.ReferenceAddedToProject -= referencesChangedHandler;
-			args.Combine.ReferenceRemovedFromProject -= referencesChangedHandler;
 		}
 		
 		static void OnReferencesChanged (object sender, ProjectReferenceEventArgs e)
