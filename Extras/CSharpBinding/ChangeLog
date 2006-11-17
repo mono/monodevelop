@@ -1,3 +1,8 @@
+2006-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Parser.cs: Why ParseMethodModies was set to false?
+	  re-enabling. Fixes local variable code completion.
+
 2006-11-14  Ankit Jain  <jankit@novell.com>
 
 	* Gui/CodeGenerationPanel.cs (CodeGenerationPanelWidget.ctor): Add

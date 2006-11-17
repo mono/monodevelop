@@ -86,7 +86,6 @@ namespace CSharpBinding.Parser
 		ICompilationUnit Parse (ICSharpCode.NRefactory.Parser.IParser p, string fileName)
 		{
         	p.Lexer.SpecialCommentTags = lexerTags;
-            p.ParseMethodBodies = false;
             p.Parse ();
             
             CSharpVisitor visitor = new CSharpVisitor();
