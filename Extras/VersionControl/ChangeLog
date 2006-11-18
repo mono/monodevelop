@@ -1,3 +1,10 @@
+2006-11-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AddIn/VersionControl.AddIn.Views/Statuses.cs: Properly enable/disable
+	  toolbar buttons.
+	* AddIn/VersionControl.AddIn/RevertCommand.cs: Minor fix in log
+	  message.
+
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddIn/VersionControl.AddIn/VersionControlProjectService.cs:

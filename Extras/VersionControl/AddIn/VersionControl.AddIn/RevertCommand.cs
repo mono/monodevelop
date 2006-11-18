@@ -50,7 +50,7 @@ namespace VersionControl.AddIn
 			}
 			
 			protected override string GetDescription() {
-				return "Reverting " + paths + "...";
+				return "Reverting ...";
 			}
 			
 			protected override void Run ()

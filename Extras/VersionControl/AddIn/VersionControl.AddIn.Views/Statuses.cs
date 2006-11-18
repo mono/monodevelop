@@ -29,6 +29,7 @@ namespace VersionControl.AddIn.Views
 		Label status;
 		Gtk.ToolButton showRemoteStatus;
 		Gtk.ToolButton buttonCommit;
+		Gtk.ToolButton buttonRevert;
 		
 		TreeView filelist;
 		TreeViewColumn colCommit, colRemote;
@@ -92,10 +93,10 @@ namespace VersionControl.AddIn.Views
 			buttonCommit.Clicked += new EventHandler(OnCommitClicked);
 			commandbar.Insert (buttonCommit, -1);
 			
-			Gtk.ToolButton btnRevert = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert"));
-			btnRevert.IsImportant = true;
-			btnRevert.Clicked += new EventHandler (OnRevert);
-			commandbar.Insert (btnRevert, -1);
+			buttonRevert = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert"));
+			buttonRevert.IsImportant = true;
+			buttonRevert.Clicked += new EventHandler (OnRevert);
+			commandbar.Insert (buttonRevert, -1);
 			
 			showRemoteStatus = new Gtk.ToolButton (new Gtk.Image ("vc-remote-status", Gtk.IconSize.Menu), "Show Remote Status");
 			showRemoteStatus.IsImportant = true;
@@ -152,6 +153,7 @@ namespace VersionControl.AddIn.Views
 			colStatus.PackStart (crp, false);
 			colStatus.PackStart (crt, true);
 			colStatus.AddAttribute (crp, "pixbuf", ColIcon);
+			colStatus.AddAttribute (crp, "visible", ColShowToggle);
 			colStatus.AddAttribute (crt, "text", ColStatus);
 			
 			TreeViewColumn colFile = new TreeViewColumn ();
@@ -179,9 +181,15 @@ namespace VersionControl.AddIn.Views
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
 			commitBox = new VBox ();
+			
+			HBox labBox = new HBox ();
 			labelCommit = new Gtk.Label (GettextCatalog.GetString ("Commit message:"));
 			labelCommit.Xalign = 0;
-			commitBox.PackStart (labelCommit, false, false, 0);
+			labBox.PackStart (new Gtk.Image ("vc-comment", Gtk.IconSize.Menu), false, false, 0);
+			labBox.PackStart (labelCommit, true, true, 3);
+			
+			commitBox.PackStart (labBox, false, false, 0);
+			
 			Gtk.ScrolledWindow frame = new Gtk.ScrolledWindow ();
 			frame.ShadowType = ShadowType.In;
 			commitText = new TextView ();
@@ -273,15 +281,17 @@ namespace VersionControl.AddIn.Views
 		{
 			// Set controls to the correct state according to the changes found
 			showRemoteStatus.Sensitive = !remoteStatus;
+			TreeIter it;
 			
-			if (statuses.Count == 0) {
+			if (!filestore.GetIterFirst (out it)) {
 				commitBox.Visible = false;
 				buttonCommit.Sensitive = false;
+				scroller.Visible = false;
+				status.Visible = true;
 				if (!remoteStatus)
-					status.Text = "No files have local modifications.";
+					status.Text = GettextCatalog.GetString ("No files have local modifications.");
 				else
-					status.Text = "No files have local or remote modifications.";
-				return;
+					status.Text = GettextCatalog.GetString ("No files have local or remote modifications.");
 			} else {
 				status.Visible = false;
 				scroller.Visible = true;
@@ -291,12 +301,18 @@ namespace VersionControl.AddIn.Views
 				if (vc.CanCommit(filepath))
 					buttonCommit.Sensitive = true;
 			}
+			UpdateSelectionStatus ();
+		}
+		
+		void UpdateSelectionStatus ()
+		{
+			buttonRevert.Sensitive = filelist.Selection.CountSelectedRows () != 0;
+			buttonCommit.Sensitive = !changeSet.IsEmpty;
+			commitBox.Visible = filelist.Selection.CountSelectedRows () != 0;
 		}
 		
 		private void Update ()
 		{
-			UpdateControlStatus ();
-
 			filestore.Clear();
 			
 			if (statuses.Count > 0) {
@@ -308,7 +324,13 @@ namespace VersionControl.AddIn.Views
 					}
 				}
 			}
-			firstLoad = false;
+			UpdateControlStatus ();
+			if (firstLoad) {
+				TreeIter it;
+				if (filestore.GetIterFirst (out it))
+					filelist.Selection.SelectIter (it);
+				firstLoad = false;
+			}
 		}
 		
 		TreeIter AppendFileInfo (VersionInfo n)
@@ -332,7 +354,7 @@ namespace VersionControl.AddIn.Views
 
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath), rstatus, commit, false, n.LocalPath, true, hasComment, fileIcon);
 			if (!n.IsDirectory)
-				filestore.AppendValues (it, null, "", "", "", false, true, n.LocalPath, false, hasComment, "");
+				filestore.AppendValues (it, statusicon, "", "", "", false, true, n.LocalPath, false, false, fileIcon);
 			return it;
 		}
 		
@@ -351,6 +373,8 @@ namespace VersionControl.AddIn.Views
 		
 		void OnCursorChanged (object o, EventArgs args)
 		{
+			UpdateSelectionStatus ();
+			
 			string[] files = GetCurrentFiles ();
 			if (files.Length > 0) {
 				commitBox.Visible = true;
@@ -388,18 +412,22 @@ namespace VersionControl.AddIn.Views
 				
 			string msg = commitText.Buffer.Text;
 			
+			// Update the comment in all selected files
 			string[] files = GetCurrentFiles ();
 			foreach (string file in files)
 				SetCommitMessage (file, msg);
 
+			// Make the comment icon visible in all selected rows
 			TreePath[] paths = filelist.Selection.GetSelectedRows ();
 			foreach (TreePath path in paths) {
 				TreeIter iter;
 				filestore.GetIter (out iter, path);
-				if (msg.Length > 0)
-					filestore.SetValue (iter, ColShowComment, true);
-				else
-					filestore.SetValue (iter, ColShowComment, false);
+				if (filestore.IterDepth (iter) != 0)
+					filestore.IterParent (out iter, iter);
+				
+				bool curv = (bool) filestore.GetValue (iter, ColShowComment);
+				if (curv != (msg.Length > 0))
+					filestore.SetValue (iter, ColShowComment, msg.Length > 0);
 			}
 		}
 		
@@ -435,12 +463,11 @@ namespace VersionControl.AddIn.Views
 				changeSet.RemoveFile (localpath);
 			} else {
 				VersionInfo vi = GetVersionInfo (localpath);
-				if (vi != null) {
-					Console.WriteLine ("p1: " + vi.LocalPath);
+				if (vi != null)
 					changeSet.AddFile (vi);
-				}
 			}
 			filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
+			UpdateSelectionStatus ();
 		}
 		
 		VersionInfo GetVersionInfo (string file)
@@ -545,8 +572,7 @@ namespace VersionControl.AddIn.Views
 				statuses [n] = newInfo;
 				
 				// Update the tree
-				TreeIter newi = AppendFileInfo (newInfo);
-				filestore.MoveAfter (newi, it);
+				AppendFileInfo (newInfo);
 				filestore.Remove (ref it);
 			}
 			else {
