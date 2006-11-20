@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects
 		
 		public bool IsExternalToProject {
 			get {
-				return project != null && !Name.StartsWith (project.BaseDirectory);
+				return project != null && !Path.GetFullPath (Name).StartsWith (project.BaseDirectory);
 			}
 		}
 		
