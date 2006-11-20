@@ -761,12 +761,15 @@ namespace MonoDevelop.Prj2Make
 			return confObj;
 		}
 		
-		string MapPath (string basePath, string relPath)
+		internal static string MapPath (string basePath, string relPath)
 		{
 			if (relPath == null || relPath.Length == 0)
 				return null;
 			
-			string path = relPath.Replace ("\\", "/");
+			string path = relPath;
+			if (Path.DirectorySeparatorChar != '\\')
+				path = path.Replace ("\\", "/");
+
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':')
 				return null;
 			

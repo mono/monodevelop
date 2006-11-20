@@ -11,7 +11,9 @@ REFS =	-r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll
 
 
 FILES = \
@@ -24,7 +26,9 @@ pkgconfiginvoker.cs \
 sharp_d_cmbx.cs \
 sharp_d_prjx.cs \
 csproj_ver2003.cs \
-prj2make-sharp-lib-Commands.cs
+prj2make-sharp-lib-Commands.cs \
+MSBuildFileFormat.cs \
+SlnFileFormat.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs

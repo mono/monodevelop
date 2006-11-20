@@ -1,3 +1,16 @@
+2006-11-20  Ankit Jain  <jankit@novell.com>
+
+	* MsPrjHelper.cs (MapPath): Make "internal static". Change "\" to "/" only
+	if required.
+	* prj2make-sharp-lib.add.in.xml: Add extensions for ProjectFileFormats
+	and FileFilter.
+	* Makefile.am: Add references to MonoDevelop.Components and Mono.Cecil .
+	Add MSBuildFileFormat.cs and SlnFileFormat.cs
+
+	* SlnFileFormat.cs: VS2005 solution file support.
+	* MSBuildFileFormat.cs: MSBuild project file support.
+	Initial commit for support of vs2005 solutions/projects.
+
 2006-11-11 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* prj2make-sharp-lib.mdp: Build the project using the 2.0 profile.
