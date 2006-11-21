@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Tasks
 				{
 					do
 					{
-						UserTask task = (UserTask) store.GetValue (iter, (int)Columns.Task);
+						Task task = (Task) store.GetValue (iter, (int)Columns.Task);
 						store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
 					} while (store.IterNext (ref iter));
 				}
