@@ -313,8 +313,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
 			wnd.HideFooter ();
-			Reset ();
-			FillList ();
+			if (Visible) {
+				Reset ();
+				FillList ();
+			}
 		}
 	}
 }

@@ -1,3 +1,9 @@
+2006-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Fix bug
+	  that makes the code completion window appear randomly when an
+	  assembly is reparsed.
+
 2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added some null checks.
