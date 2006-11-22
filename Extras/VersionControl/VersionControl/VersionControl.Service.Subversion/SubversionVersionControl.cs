@@ -79,6 +79,15 @@ namespace VersionControl.Service.Subversion
 				|| Directory.Exists (GetDirectoryDotSvn (sourcefile));
 		}
 
+		public bool CanCommit (Repository repo, string sourcepath)
+		{
+			if (Directory.Exists (sourcepath) && Directory.Exists (GetDirectoryDotSvn (sourcepath)))
+				return true;
+			if (GetVersionInfo (repo, sourcepath, false) != null)
+				return true;
+			return false;
+		}
+		
 		public bool CanAdd (Repository repo, string sourcepath)
 		{
 			// Do some trivial checks

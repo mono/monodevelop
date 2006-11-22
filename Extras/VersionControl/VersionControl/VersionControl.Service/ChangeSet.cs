@@ -103,6 +103,10 @@ namespace VersionControl.Service
 			get { return items; }
 		}
 		
+		public Repository Repository {
+			get { return repo; }
+		}
+		
 		public bool ContainsFile (string fileName)
 		{
 			for (int n=0; n<items.Count; n++)

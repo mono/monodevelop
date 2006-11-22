@@ -58,6 +58,11 @@ namespace VersionControl.Service.Subversion
 			return Svn.CanAdd (this, sourcepath);
 		}
 		
+		public override bool CanCommit (string localPath)
+		{
+			return Svn.CanCommit (this, localPath);
+		}
+		
 		public override string GetPathToBaseText (string sourcefile)
 		{
 			return Svn.GetPathToBaseText (sourcefile);

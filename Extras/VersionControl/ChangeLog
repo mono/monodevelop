@@ -1,3 +1,17 @@
+2006-11-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AddIn/VersionControl.AddIn/VersionControlNodeExtension.cs: Don't show
+	  folder overlays if they are disabled. Cache overlay compositions.
+	* AddIn/gtk-gui/generated.cs, AddIn/gtk-gui/gui.stetic: Updated.
+	* VersionControl/VersionControl.Service.Subversion/SubversionRepository.cs,
+	  VersionControl/VersionControl.Service.Subversion/SubversionVersionControl.cs:
+	  Allow commiting directories that contain versioned files (even if
+	  the directory itself is not versioned).
+	* VersionControl/VersionControl.Service.Subversion/SvnClient.cs: Fix
+	  some memory leaks.
+	* VersionControl/VersionControl.Service/ChangeSet.cs: Added getter for
+	  the repository.
+
 2006-11-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddIn/VersionControl.AddIn/VersionControlProjectService.cs: Added

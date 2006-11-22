@@ -39,6 +39,9 @@ namespace VersionControl.AddIn
 		
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
+			if (!builder.Options["ShowVersionControlOverlays"])
+				return;
+		
 			// Add status overlays
 			
 			if (dataObject is CombineEntry) {
@@ -55,9 +58,6 @@ namespace VersionControl.AddIn
 				return;
 			}
 			
-			if (!builder.Options["ShowVersionControlOverlays"])
-				return;
-		
 			Project prj;
 			string file;
 			
@@ -77,7 +77,7 @@ namespace VersionControl.AddIn
 			Repository repo = VersionControlProjectService.GetRepository (prj, file);
 			if (repo == null)
 				return;
-			
+
 			VersionStatus status = GetVersionInfo (repo, file);
 			Gdk.Pixbuf overlay = VersionControlProjectService.LoadOverlayIconForStatus (status);
 			if (overlay != null)
@@ -104,6 +104,12 @@ namespace VersionControl.AddIn
 		
 		void AddOverlay (ref Gdk.Pixbuf icon, Gdk.Pixbuf overlay)
 		{
+			Gdk.Pixbuf cached = Context.GetComposedIcon (icon, overlay);
+			if (cached != null) {
+				icon = cached;
+				return;
+			}
+			
 			int dx = 2;
 			int dy = 3;
 			
@@ -117,6 +123,7 @@ namespace VersionControl.AddIn
 				res.Width - overlay.Width,  res.Height - overlay.Height,
 				1, 1, Gdk.InterpType.Bilinear, 255); 
 			
+			Context.CacheComposedIcon (icon, overlay, res);
 			icon = res;
 		}
 		

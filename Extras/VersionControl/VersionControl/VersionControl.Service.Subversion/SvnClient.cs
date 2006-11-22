@@ -126,14 +126,19 @@ namespace VersionControl.Service.Subversion
 
 			StatusCollector collector = new StatusCollector(ret);
 
-			CheckError(svn_client_status (ref result_rev, path, ref revision,
-				new svn_wc_status_func_t(collector.Func),
-				IntPtr.Zero,
-				descendDirs ? 1 : 0, 
-				changedItemsOnly ? 0 : 1, 
-				remoteStatus ? 1 : 0,
-				1,
-				ctx, pool));
+			IntPtr localpool = newpool(pool);
+			try {
+				CheckError(svn_client_status (ref result_rev, path, ref revision,
+					new svn_wc_status_func_t(collector.Func),
+					IntPtr.Zero,
+					descendDirs ? 1 : 0, 
+					changedItemsOnly ? 0 : 1, 
+					remoteStatus ? 1 : 0,
+					1,
+					ctx, localpool));
+			} finally {
+				apr.pool_destroy(localpool);
+			}
 				
 			return ret;
 		}
@@ -172,7 +177,12 @@ namespace VersionControl.Service.Subversion
 			if (path == null) throw new ArgumentNullException();
 			
 			IntPtr ret = IntPtr.Zero;
-			CheckError(svn_client_url_from_path(ref ret, path, pool));
+			IntPtr localpool = newpool(pool);
+			try {
+				CheckError(svn_client_url_from_path(ref ret, path, localpool));
+			} finally {
+				apr.pool_destroy(localpool);
+			}
 			if (ret == IntPtr.Zero) return null;
 			return Marshal.PtrToStringAnsi(ret);
 		}
@@ -412,7 +422,7 @@ namespace VersionControl.Service.Subversion
 			IntPtr localpool = newpool(pool);
 			try {
 				CheckError(svn_client_move(out result_rev, srcPath, ref revision,
-											   destPath, (force ? 1 : 0), ctx, pool));
+											   destPath, (force ? 1 : 0), ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
 				updatemonitor = null;
@@ -471,7 +481,6 @@ namespace VersionControl.Service.Subversion
 			IntPtr pool) {
 			log_msg = apr.pstrdup(pool, commitmessage);
 			tmp_file = IntPtr.Zero;
-			Console.WriteLine ("LOG FUNC");
 			return IntPtr.Zero;
 		}
 
