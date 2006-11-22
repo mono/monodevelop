@@ -1,3 +1,7 @@
+2006-11-22 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: remember last used filter
+	
 2006-11-21 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 	
 	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: fixed casting

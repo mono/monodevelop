@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects.Text;
 using Gtk;
 
@@ -41,6 +42,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public class FileSelectorDialog: FileSelector
 	{
 		Gtk.OptionMenu encodingMenu;
+		Hashtable filterPairs;
 		int selectOption;
 		int firstEncIndex;
 		
@@ -61,11 +63,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				//nothing there..	
 			}
 			
+			filterPairs = new Hashtable ();
 			foreach (string filterStr in filters)
 			{
 				string[] parts = filterStr.Split ('|');
 				Gtk.FileFilter filter = new Gtk.FileFilter ();
 				filter.Name = parts[0];
+				filterPairs[parts[0]] = parts[1];
 				foreach (string ext in parts[1].Split (';'))
 				{
 					filter.AddPattern (ext);
@@ -77,10 +81,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Gtk.FileFilter allFilter = new Gtk.FileFilter ();
 			allFilter.Name = GettextCatalog.GetString ("All Files");
 			allFilter.AddPattern ("*");
+			filterPairs[GettextCatalog.GetString ("All Files")] = ("*");
 			AddFilter (allFilter);
 			
-			// Add the text encoding selector
+			// Load last used filter
+			string lastPattern = (string)Runtime.Properties.GetProperty ("Monodevelop.FileSelector.LastPattern", "*");
+			foreach (FileFilter filter in this.Filters)
+			{
+				string pattern = filterPairs[filter.Name] as string;
+				if (! String.IsNullOrEmpty (pattern) && pattern == lastPattern)
+				{
+					this.Filter = filter;
+					break;
+				}
+			}
 			
+			// Add the text encoding selector
 			HBox box = new HBox ();
 			Label lab = new Label (GettextCatalog.GetString ("_Character Coding:"));
 			lab.Xalign = 0;
@@ -200,6 +216,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ExtraWidget.Sensitive = true;
 			} else
 				ExtraWidget.Sensitive = false;
+		}
+		
+		public override void Dispose ()
+		{
+			// Save active filter
+			string pattern = filterPairs[this.Filter.Name] as string;
+			if (pattern != null)
+				Runtime.Properties.SetProperty ("Monodevelop.FileSelector.LastPattern", pattern);
+
+			base.Dispose ();
 		}
 	}
 }
