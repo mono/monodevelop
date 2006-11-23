@@ -1,3 +1,11 @@
+2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.mdp, Makefile.am: Updated references to version
+	  control add-in.
+	* gtk-gui/generated.cs, gtk-gui/gui.stetic: Updated.
+	* CommitDialogExtensionWidget.cs: Don't try to commit the ChangeLog
+	  file if it is not really committable.
+
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddLogEntryDialog.cs: New dialog that shows a new entry to be added

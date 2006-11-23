@@ -85,10 +85,10 @@ namespace Stetic {
                 Gtk.Button w11 = new Gtk.Button();
                 w11.UseStock = true;
                 w11.UseUnderline = true;
+                w11.CanDefault = true;
                 w11.CanFocus = true;
                 w11.Events = ((Gdk.EventMask)(0));
                 w11.Name = "button7";
-                w11.CanDefault = true;
                 w11.Label = "gtk-cancel";
                 bindings["button7"] = w11;
                 cobj.AddActionWidget(w11, -6);
@@ -99,10 +99,10 @@ namespace Stetic {
                 Gtk.Button w13 = new Gtk.Button();
                 w13.UseStock = true;
                 w13.UseUnderline = true;
+                w13.CanDefault = true;
                 w13.CanFocus = true;
                 w13.Events = ((Gdk.EventMask)(0));
                 w13.Name = "button119";
-                w13.CanDefault = true;
                 w13.Label = "gtk-ok";
                 bindings["button119"] = w13;
                 cobj.AddActionWidget(w13, -5);

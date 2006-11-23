@@ -2,8 +2,7 @@
 using System;
 using System.IO;
 using Gtk;
-using VersionControl.AddIn;
-using VersionControl.Service;
+using MonoDevelop.VersionControl;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
@@ -66,8 +65,11 @@ namespace MonoDevelop.ChangeLogAddIn
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("There is no ChangeLog file in the path:") + "</span></b>";
 				pathLabel.Text = cset.BaseLocalPath;
 				logButton.Sensitive = false;
+			} else if (!cset.Repository.CanCommit (logf)){
+				msgLabel.Markup = GettextCatalog.GetString ("The following ChangeLog file (<b><span foreground='red'>not versioned</span></b>) will be updated:");
+				pathLabel.Text = logf;
 			} else {
-				msgLabel.Markup = GettextCatalog.GetString ("The following changelog will be updated:");
+				msgLabel.Markup = GettextCatalog.GetString ("The following ChangeLog file will be updated:");
 				pathLabel.Text = logf;
 			}
 			notConfigured = false;
@@ -79,7 +81,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (logf == null)
 				return true;
 
-			if (!changeSet.ContainsFile (logf))
+			if (!changeSet.ContainsFile (logf) && changeSet.Repository.CanCommit (logf))
 				changeSet.AddFile (logf);
 				
 			if (message == null)

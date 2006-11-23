@@ -31,10 +31,9 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Project" localcopy="True" refto="VersionControlAddIn" />
-    <ProjectReference type="Project" localcopy="True" refto="VersionControl" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.VersionControl" />
   </References>
   <GtkDesignInfo>
     <ExportedWidgets />
