@@ -178,10 +178,17 @@ fi
 
 AC_ARG_ENABLE(versioncontrol,
 	AC_HELP_STRING([--enable-versioncontrol],
-		[enable version control support [default=no]]),
-		enable_versioncontrol=yes, enable_versioncontrol=no)
+		[enable version control support [default=yes]]),
+		enable_versioncontrol=${enableval}, enable_versioncontrol=yes)
 
 AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
+
+AC_ARG_ENABLE(subversion,
+	AC_HELP_STRING([--enable-subversion],
+		[enable Subversion support [default=no]]),
+		enable_versioncontrol=yes, enable_subversion=no)
+
+AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 
 AC_ARG_ENABLE(monoquery,
 	AC_HELP_STRING([--enable-monoquery],
@@ -337,11 +344,11 @@ Extras/MonoQuery/Makefile
 Extras/MonoQuery/Mono.Data.Sql/Makefile
 Extras/MonoQuery/MonoQuery/Makefile
 Extras/NUnit/Makefile
-Extras/VersionControl/AddIn/Makefile
 Extras/VersionControl/Diff/Makefile
 Extras/VersionControl/DiffWidget/Makefile
+Extras/VersionControl/MonoDevelop.VersionControl/Makefile
+Extras/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 Extras/VersionControl/Makefile
-Extras/VersionControl/VersionControl/Makefile
 Extras/CSharpBinding/Makefile
 Extras/CSharpBinding/Autotools/Makefile
 Extras/ILAsmBinding/Makefile
@@ -395,6 +402,8 @@ echo "   * Nemerle support: $enable_nemerle"
 echo "   * NUnit support: $enable_nunit"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control support: $enable_versioncontrol"
+echo "   *   Providers:"
+echo "   *     Subversion: $enable_versioncontrol"
 echo "   * ASP.NET project support: $enable_aspnet"
 echo "   * ASP.NET Visual Designer: $enable_aspnetedit"
 echo ""
