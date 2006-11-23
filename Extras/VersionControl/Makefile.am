@@ -1,2 +1,2 @@
 
-SUBDIRS = Diff DiffWidget VersionControl AddIn
+SUBDIRS = Diff DiffWidget MonoDevelop.VersionControl MonoDevelop.VersionControl.Subversion

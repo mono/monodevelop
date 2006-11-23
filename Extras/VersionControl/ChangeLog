@@ -1,3 +1,10 @@
+2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Split the version control add-in in two add-ins: one that implements
+	the version control core, and one that implements the support for
+	Subversion. The VCS core is now built by default. The subversion add-in
+	is optional.
+
 2006-11-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AddIn/VersionControl.AddIn/VersionControlNodeExtension.cs: Don't show
