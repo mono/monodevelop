@@ -1,5 +1,13 @@
 2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp: Added
+	  missing reference.
+	* MonoDevelop.VersionControl/gtk-gui/generated.cs,
+	  MonoDevelop.VersionControl/gtk-gui/objects.xml: Updated.
+
+2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	Split the version control add-in in two add-ins: one that implements
 	the version control core, and one that implements the support for
 	Subversion. The VCS core is now built by default. The subversion add-in
