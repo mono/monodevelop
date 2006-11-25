@@ -1,3 +1,12 @@
+2006-11-24  Scott Ellington  <scott.ellington@gmail.com> 
+
+	* SolutionDeployer.cs: 
+	* AutotoolsContext.cs:
+	escape for periods for autoconf variables besides the version
+	(fixes #79857)
+	* templates/configure.ac.template: add a line to end of file to
+	avoid bug http://www.mail-archive.com/bug-m4@gnu.org/msg01841.html
+
 2006-09-28  Matej Urbas <matej.urbas@gmail.com>
 
 	* SolutionDeployer.cs: fixed the case of autotooling empty projects

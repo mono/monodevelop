@@ -148,11 +148,16 @@ namespace MonoDevelop.Autotools
 
 		public static string EscapeStringForAutoconf ( string str )
 		{
+			return EscapeStringForAutoconf(str, false);
+		}
+		
+		public static string EscapeStringForAutoconf ( string str, bool allowPeriods )
+		{
 			StringBuilder sb = new StringBuilder ();
 			foreach (char c in str)
 			{
-				if ( char.IsLetterOrDigit (c) || c == '.'  ) sb.Append ( c );
-				else if (c == '-' || c == '_' ) sb.Append ( '_' );
+				if ( char.IsLetterOrDigit (c) || (c == '.' && allowPeriods) ) sb.Append ( c );
+				else if (c == '-' || c == '_' || (c == '.' && !allowPeriods) ) sb.Append ( '_' );
 			}
 			return sb.ToString ();	
 		}

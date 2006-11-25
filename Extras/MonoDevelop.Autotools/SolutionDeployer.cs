@@ -86,7 +86,7 @@ namespace MonoDevelop.Autotools
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
 
 				solution_name = combine.Name;
-				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version);
+				solution_version = AutotoolsContext.EscapeStringForAutoconf (combine.Version, true);
 
 				// check if we need to create pkgconfig file
 				object en_obj =  ((IExtendedDataItem) combine).ExtendedProperties ["MakePkgConfig"];
