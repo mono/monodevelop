@@ -1,3 +1,7 @@
+2006-11-26  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	
+	* POTFILES.in: Corrected VersionControl.addin.xml path
+
 2006-11-18  Matej Urbas <matej.urbas@gmail.com>
 
 	* sl_SI.po: Refreshed the Slovenian translation.
