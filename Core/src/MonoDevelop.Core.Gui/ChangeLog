@@ -1,3 +1,7 @@
+2006-11-26 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* icons/Icons.16x16.FullScreen: replaced by Tango icon
+	
 2006-11-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Added new overload to support
