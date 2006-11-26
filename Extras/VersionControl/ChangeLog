@@ -1,3 +1,9 @@
+2006-11-26 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+	
+	* MonoDevelop.VersionControl.Subversion:
+	* MonoDevelop.VersionControl:
+	Added svn:ignores for Makefile and Makefile.in.
+
 2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
