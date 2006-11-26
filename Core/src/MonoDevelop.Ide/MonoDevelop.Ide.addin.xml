@@ -339,15 +339,24 @@
 				_label = "Layout List" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout"
 				defaultHandler = "MonoDevelop.Ide.Commands.NewLayoutHandler"
-				_label = "_New Layout..." />
+				_label = "_New Layout..."
+				icon = "gtk-add"
+				_description = "Create new layout" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout"
 				defaultHandler = "MonoDevelop.Ide.Commands.DeleteCurrentLayoutHandler"
-				_label = "_Delete Current Layout" />
+				_label = "_Delete Current Layout"
+				icon = "gtk-remove"
+				_description = "Delete Current layout" />
+		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector"
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.LayoutComboBox"
+				_label = "Active Layout"
+				_description = "Switch Active Layout" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen"
 				defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
 				_label = "_Full Screen" 
 				icon = "md-fullscreen" 
-				description = "Full Screen" />
+				_description = "Full Screen" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
 				_label = "Open" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.TreeDisplayOptionList"
@@ -771,6 +780,12 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
+		</ItemSet>
+		<ItemSet id = "Layout" _label = "Layout">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 	</Extension>
 

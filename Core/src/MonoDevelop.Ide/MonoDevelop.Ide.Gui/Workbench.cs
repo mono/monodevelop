@@ -56,6 +56,7 @@ namespace MonoDevelop.Ide.Gui
 		IStatusBarService statusBarService;
 		
 		public event EventHandler ActiveDocumentChanged;
+		public event EventHandler LayoutChanged;
 		
 		internal void Initialize (IProgressMonitor monitor)
 		{
@@ -109,6 +110,11 @@ namespace MonoDevelop.Ide.Gui
 			workbench.SetMemento ((IXmlConvertable)Runtime.Properties.GetProperty (workbenchMemento, workbench.CreateMemento()));
 			RootWindow.Visible = true;
 			workbench.Context = WorkbenchContext.Edit;
+			
+			// now we have an layout set notify it
+			if (LayoutChanged != null)
+				LayoutChanged (this, EventArgs.Empty);
+
 			workbench.RedrawAllComponents ();
 			RootWindow.Present ();
 		}
@@ -168,7 +174,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.CurrentLayout : ""; }
 			set {
 				if (value != workbench.WorkbenchLayout.CurrentLayout)
-					workbench.WorkbenchLayout.CurrentLayout = value; 
+				{
+					workbench.WorkbenchLayout.CurrentLayout = value;
+					if (LayoutChanged != null)
+						LayoutChanged (this, EventArgs.Empty);
+				}
 			}
 		}
 

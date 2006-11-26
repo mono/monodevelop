@@ -1,3 +1,12 @@
+2006-11-26 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Ide.Gui/LayoutComboBox.cs: added
+	* MonoDevelop.Ide.Gui/Workbench.cs: defined LayoutChanged event and firing
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: added LayoutSelector to ViewCommands enum
+	* MonoDevelop.Ide.addin.xml: new LayoutSelector action and added layout toolbar
+	* MonoDevelop.Ide/Makefile.am:
+	* MonoDevelop.Ide/MonoDevelop.Ide.mdp: newly added file
+	
 2006-11-22 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: remember last used filter

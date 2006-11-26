@@ -96,6 +96,7 @@ MonoDevelop.Ide.Gui/PadContentCollection.cs \
 MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 MonoDevelop.Ide.Gui/ViewContentCollection.cs \
 MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
+MonoDevelop.Ide.Gui/LayoutComboBox.cs \
 MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
 MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
