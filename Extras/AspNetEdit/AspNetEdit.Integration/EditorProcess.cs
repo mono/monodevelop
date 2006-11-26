@@ -76,7 +76,8 @@ namespace AspNetEdit.Editor
 		void LoadGui (MonoDevelopProxy proxy, string document, string fileName)
 		{
 			System.Diagnostics.Trace.WriteLine ("Creating AspNetEdit EditorHost");
-			host = new EditorHost (proxy, document, fileName);
+			host = new EditorHost (proxy);
+			host.Initialise (document, fileName);
 			System.Diagnostics.Trace.WriteLine ("Created AspNetEdit EditorHost");
 			
 			System.Diagnostics.Trace.WriteLine ("Building AspNetEdit GUI");
@@ -90,7 +91,7 @@ namespace AspNetEdit.Editor
 			Toolbar tb = BuildToolbar ();
 			outerBox.PackStart (tb, false, false, 0);
 			
-			outerBox.ShowAll ();	
+			outerBox.ShowAll ();
 			base.DesignerWidget = outerBox;
 			
 			//grid picks up some services from the designer host
@@ -157,7 +158,7 @@ namespace AspNetEdit.Editor
 		bool disposed = false;
 		public override void Dispose ()
 		{
-			System.Diagnostics.Trace.WriteLine("Disposing AspNetEdit editor process");
+			System.Diagnostics.Trace.WriteLine ("Disposing AspNetEdit editor process");
 			
 			if (disposed)
 				return;

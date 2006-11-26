@@ -1,3 +1,18 @@
+2006-11-26  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Integration/EditorProcess.cs:
+	* AspNetEdit.Editor/EditorHost.cs: Exceptions coming through the 
+	EditorHost constructor aren't being passed up to EditorProcess LoadGui 
+	method. Not sure why, and no time to follow it up right now, but 
+	implemented a workaround.
+	
+	* AspNetEdit.Editor/EditorHost.cs: When disposing, don't
+	assume that designerView was created successfully.
+	
+	* AspNetEdit.Integration/MonoDevelopProxy.cs: Added a way to
+	access the MessageService from the out-of-process designer.
+	
+
 2006-11-14  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* data/WebControlsToolbox.xml: Default toolbox file of ASP.NET 2.0 

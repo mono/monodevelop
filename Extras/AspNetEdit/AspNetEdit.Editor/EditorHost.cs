@@ -53,14 +53,7 @@ namespace AspNetEdit.Editor
 		MonoDevelopProxy proxy;
 		
 		public EditorHost (MonoDevelopProxy proxy)
-			: this (proxy, null, null)
 		{
-		}
-		
-		public EditorHost (MonoDevelopProxy proxy, string document, string fileName)
-		{
-			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
-			
 			this.proxy = proxy;
 			
 			//set up the services
@@ -75,16 +68,29 @@ namespace AspNetEdit.Editor
 			services.AddService (typeof (ITypeDescriptorFilterService), new TypeDescriptorFilterService ());
 			//services.AddService (typeof (IToolboxService), toolboxService);
 			
-			System.Diagnostics.Trace.WriteLine ("Creating AspNetEdit editor");
+			System.Diagnostics.Trace.WriteLine ("Creating DesignerHost");
 			host = new DesignerHost (services);
+			System.Diagnostics.Trace.WriteLine ("Created DesignerHost");
+		}
+		
+		public void Initialise ()
+		{
+		  		Initialise (null, null);
+		}
+		
+		public void Initialise (string document, string fileName)
+		{
+			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
 			
+			System.Diagnostics.Trace.WriteLine ("Loading document into DesignerHost");
 			if (document != null)
 				host.Load (document, fileName);
 			else
 				host.NewFile ();
+			System.Diagnostics.Trace.WriteLine ("Loaded document into DesignerHost");
 			
 			host.Activate ();
-			System.Diagnostics.Trace.WriteLine ("AspNetEdit host activated; getting designer view");
+			System.Diagnostics.Trace.WriteLine ("DesignerHost activated; getting designer view");
 			
 			IRootDesigner rootDesigner = (IRootDesigner) host.GetDesigner (host.RootComponent);
 			designerView = (RootDesignerView) rootDesigner.GetView (ViewTechnology.Passthrough);
@@ -92,7 +98,11 @@ namespace AspNetEdit.Editor
 		}
 		
 		public Gtk.Widget DesignerView {
-			get { return designerView; }
+			get {
+				if (designerView == null)
+					throw new InvalidOperationException ("DesignerView has not been initialised. Have you sucessfully called EditorHost.Initialise?");
+				return designerView;
+			}
 		}
 		
 		public ServiceContainer Services {
@@ -130,7 +140,7 @@ namespace AspNetEdit.Editor
 			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
 			string doc = "";
 			
-			System.Console.WriteLine("persisting document");
+			System.Diagnostics.Trace.WriteLine ("persisting document");
 			doc = host.PersistDocument ();
 				
 			return doc;
@@ -141,12 +151,17 @@ namespace AspNetEdit.Editor
 		bool disposed = false;
 		public virtual void Dispose ()
 		{
-			System.Console.WriteLine("disposing editor host");
+			System.Diagnostics.Trace.WriteLine ("disposing editor host");
+			
 			if (disposed)
 				return;
-			
 			disposed = true;
-			designerView.Dispose ();
+			
+			if (designerView == null) {
+				System.Diagnostics.Trace.WriteLine ("DesignerView is already null when disposing; was it created correctly?");
+			} else {
+				designerView.Dispose ();
+			}
 			
 			GC.SuppressFinalize (this);
 		}

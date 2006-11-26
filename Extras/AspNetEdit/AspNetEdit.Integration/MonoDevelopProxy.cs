@@ -50,6 +50,13 @@ namespace AspNetEdit.Integration
 			this.codeBehindClass = codeBehindClass;
 		}
 		
+		#region services (must all be GuiSyncObjects, i.e. MarshalByRef)
+		public MonoDevelop.Core.Gui.MessageService MessageService {
+			get {
+				return IdeApp.Services.MessageService;
+			}
+		}		
+		#endregion
 		
 		//TODO: make this work with inline code
 		#region event binding
