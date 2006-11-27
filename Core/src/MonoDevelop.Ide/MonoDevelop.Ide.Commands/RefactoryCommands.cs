@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 			if (item is IMember || item is IClass) {
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find references"), new RefactoryOperation (refactorer.FindReferences)).Enabled = false;
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find references"), new RefactoryOperation (refactorer.FindReferences));
 			}
 			
 			if (item is IClass) {
