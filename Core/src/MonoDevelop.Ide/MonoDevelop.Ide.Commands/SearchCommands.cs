@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Commands
 		FindPreviousSelection,
 		FindBox,
 		ReplaceInFiles,
-		GotoClass
+		GotoType
 	}
 
 	internal class FindInFilesHandler : CommandHandler
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	internal class GotoClassHandler : CommandHandler
+	internal class GotoTypeHandler : CommandHandler
 	{
 	    protected override void Run()
 	    {	        
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Commands
 	    		return;
 	    	}
 	    	
-	        GotoClassDialog dialog = new GotoClassDialog();
+	        GotoTypeDialog dialog = new GotoTypeDialog();
 	        dialog.Show();	               	        	        
 	    }
 	    

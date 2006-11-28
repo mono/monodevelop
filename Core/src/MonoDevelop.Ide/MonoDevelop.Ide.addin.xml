@@ -482,10 +482,10 @@
 				_label = "R_eplace In Files..." 
 				icon = "md-replace-in-files" 
 				description = "Replace in files" />
-		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoClass"		
-		        defaultHandler = "MonoDevelop.Ide.Commands.GotoClassHandler"
-				_label = "Goto Class..." 
-                shortcut = "Control|Shift|C" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
+		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
+				_label = "Goto Type..." 
+                shortcut = "Control|Shift|T" />
 				
 		<!-- RefactoryCommands -->
 		
@@ -936,7 +936,7 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/MainMenu/Search">
-            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoClass"
+            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
                 insertafter = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />	        									
 	</Extension>
 

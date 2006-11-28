@@ -19,15 +19,15 @@ namespace Stetic {
         
         public static void Build(object obj, string id) {
             System.Collections.Hashtable bindings = new System.Collections.Hashtable();
-            if ((id == "MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog")) {
+            if ((id == "MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog")) {
                 Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
-                // Widget MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog
-                cobj.Title = "Goto Class";
+                // Widget MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog
+                cobj.Title = Mono.Unix.Catalog.GetString("Goto Type");
                 cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                 cobj.HasSeparator = false;
                 cobj.Events = ((Gdk.EventMask)(256));
-                cobj.Name = "MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog";
-                // Internal child MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog.VBox
+                cobj.Name = "MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog";
+                // Internal child MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.VBox
                 Gtk.VBox w1 = cobj.VBox;
                 w1.BorderWidth = ((uint)(2));
                 w1.Events = ((Gdk.EventMask)(256));
@@ -53,14 +53,14 @@ namespace Stetic {
                 Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(w1[w2]));
                 w5.Position = 0;
                 bindings["dialog_VBox"] = w1;
-                // Internal child MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog.ActionArea
+                // Internal child MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.ActionArea
                 Gtk.HButtonBox w6 = cobj.ActionArea;
                 w6.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
                 w6.Spacing = 10;
                 w6.BorderWidth = ((uint)(5));
                 w6.Events = ((Gdk.EventMask)(256));
-                w6.Name = "MonoDevelop.Ide.GotoClassDialog_ActionArea";
-                // Container child MonoDevelop.Ide.GotoClassDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+                w6.Name = "MonoDevelop.Ide.GotoTypeDialog_ActionArea";
+                // Container child MonoDevelop.Ide.GotoTypeDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
                 Gtk.Button w7 = new Gtk.Button();
                 w7.UseStock = true;
                 w7.UseUnderline = true;
@@ -68,13 +68,13 @@ namespace Stetic {
                 w7.Events = ((Gdk.EventMask)(0));
                 w7.Name = "button1";
                 w7.CanDefault = true;
-                w7.Label = "gtk-cancel";
+                w7.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
                 bindings["button1"] = w7;
                 cobj.AddActionWidget(w7, -6);
                 Gtk.ButtonBox.ButtonBoxChild w8 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[w7]));
                 w8.Expand = false;
                 w8.Fill = false;
-                // Container child MonoDevelop.Ide.GotoClassDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
+                // Container child MonoDevelop.Ide.GotoTypeDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
                 Gtk.Button w9 = new Gtk.Button();
                 w9.UseStock = true;
                 w9.UseUnderline = true;
@@ -82,17 +82,17 @@ namespace Stetic {
                 w9.Events = ((Gdk.EventMask)(0));
                 w9.Name = "button4";
                 w9.CanDefault = true;
-                w9.Label = "gtk-ok";
+                w9.Label = Mono.Unix.Catalog.GetString("gtk-ok");
                 bindings["button4"] = w9;
                 cobj.AddActionWidget(w9, -5);
                 Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(w6[w9]));
                 w10.Position = 1;
                 w10.Expand = false;
                 w10.Fill = false;
-                bindings["MonoDevelop.Ide.GotoClassDialog_ActionArea"] = w6;
+                bindings["MonoDevelop.Ide.GotoTypeDialog_ActionArea"] = w6;
                 cobj.DefaultWidth = 400;
                 cobj.DefaultHeight = 300;
-                bindings["MonoDevelop.Ide.Gui.Dialogs.GotoClassDialog"] = cobj;
+                bindings["MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog"] = cobj;
                 w3.Show();
                 w2.Show();
                 w1.Show();

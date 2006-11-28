@@ -136,7 +136,7 @@ MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
-MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs \
+MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs \
 MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
 MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \

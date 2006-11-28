@@ -29,14 +29,14 @@ using Gdk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {	
-	public class GotoClassDialog : Gtk.Dialog
+	public class GotoTypeDialog : Gtk.Dialog
 	{
 		protected Gtk.TreeView treeview1;
 		private Dictionary<string, Pixbuf> icons;
 		
-		public GotoClassDialog()
+		public GotoTypeDialog()
 		{
-			Stetic.Gui.Build(this, typeof(GotoClassDialog));
+			Stetic.Gui.Build(this, typeof(GotoTypeDialog));
 			
 			icons = new Dictionary<string, Pixbuf>();
 			SetupTreeView();						       								
@@ -48,32 +48,32 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeModelSort treeModelSort = new TreeModelSort(listStore); 			
 			treeview1.Model = treeModelSort;
 
-			TreeViewColumn classNameColumn = new TreeViewColumn();
-			classNameColumn.Title = "Class";			
+			TreeViewColumn typeNameColumn = new TreeViewColumn();
+			typeNameColumn.Title = "Type";			
 			CellRendererPixbuf cellRendererPixbuf = new CellRendererPixbuf();
-			classNameColumn.PackStart(cellRendererPixbuf, false);
-			classNameColumn.AddAttribute(cellRendererPixbuf, "pixbuf", 0);			
+			typeNameColumn.PackStart(cellRendererPixbuf, false);
+			typeNameColumn.AddAttribute(cellRendererPixbuf, "pixbuf", 0);			
 			CellRendererText cellRenderer = new CellRendererText();
-			classNameColumn.PackStart(cellRenderer, true);
-			classNameColumn.AddAttribute(cellRenderer, "text", 1);			
-			treeview1.AppendColumn(classNameColumn);			
+			typeNameColumn.PackStart(cellRenderer, true);
+			typeNameColumn.AddAttribute(cellRenderer, "text", 1);			
+			treeview1.AppendColumn(typeNameColumn);			
 					
 			foreach (CombineEntry combineEntry in IdeApp.ProjectOperations.CurrentOpenCombine.Entries)
 			{
-				AddClassesToTreeView(combineEntry, listStore);
+				AddTypesToTreeView(combineEntry, listStore);
 			}					
 			
 			treeModelSort.SetSortColumnId(2, SortType.Ascending);
 			treeModelSort.ChangeSortColumn();			
 		}
 
-		private void AddClassesToTreeView(CombineEntry entry, ListStore listStore)
+		private void AddTypesToTreeView(CombineEntry entry, ListStore listStore)
 		{
 			if (entry is Combine)
 			{
 				foreach (CombineEntry ce in ((Combine)entry).Entries)
 				{
-					AddClassesToTreeView(ce, listStore);
+					AddTypesToTreeView(ce, listStore);
 				}
 			}
 			else if (entry is Project)
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return icons[id];
 		}
 
-		private void GotoClass()
+		private void GotoType()
 		{	
 			IRegion region;
 			TreeIter iter;
@@ -126,12 +126,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		protected virtual void RowActivated(object o, Gtk.RowActivatedArgs args)
 		{
-			GotoClass();
+			GotoType();
 		}
 
 		protected virtual void OkClicked(object sender, System.EventArgs e)
 		{
-			GotoClass();
+			GotoType();
 		}
 
 		protected virtual void CancelClicked(object sender, System.EventArgs e)

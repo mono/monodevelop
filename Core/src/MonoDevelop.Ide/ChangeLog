@@ -1,3 +1,15 @@
+2006-11-28 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.Commands/SearchCommands.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GotoClassDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.mdp:
+	* gtk-gui/generated.cs:
+	* gtk-gui/gui.stetic:
+	* Makefile.am:
+	Renamed Goto Class to Goto Type.
+
 2006-11-27  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs:
