@@ -371,6 +371,7 @@ Extras/MonoDevelop.DesignerSupport/Makefile
 Extras/AspNetEdit/Makefile
 Extras/AspNetEdit/chrome/Makefile
 Extras/AspNetEdit/chrome/aspdesigner.manifest
+Extras/MonoDevelop.WebReferences/Makefile
 Makefile
 monodevelop
 mdtool
@@ -406,4 +407,5 @@ echo "   *   Providers:"
 echo "   *     Subversion: $enable_versioncontrol"
 echo "   * ASP.NET project support: $enable_aspnet"
 echo "   * ASP.NET Visual Designer: $enable_aspnetedit"
+echo "   * Web References: yes"
 echo ""

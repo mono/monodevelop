@@ -1,3 +1,6 @@
+2006-11-28 Gideon de Swardt <gdeswardt@gmail.com>
+	* configure.in: Added the WebReference AddIn.
+
 2006-11-23 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Enable version control by default. Added new
