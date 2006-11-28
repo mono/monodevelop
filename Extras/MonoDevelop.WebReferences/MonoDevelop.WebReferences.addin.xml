@@ -1,0 +1,66 @@
+<AddIn
+	id = "MonoDevelop.WebReferences"
+	name = "Project Web References"
+	author = "Gideon de Swardt"
+	copyright = "LGPL"
+	url = "http://www.monodevelop.com"
+	description = "Provides support for adding and maintianing Web References for CSharp and VB projects."
+	category = "IDE extensions"
+	version = "0.1.3" >
+    
+    <Runtime>
+    	<Import assembly = "MonoDevelop.WebReferences.dll"/>
+    </Runtime>
+    
+	<Dependencies>
+		<AddIn id="MonoDevelop.Core" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.12.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.12.0"/>
+	</Dependencies>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder class = "MonoDevelop.WebReferences.NodeBuilders.ProjectFolderNodeBuilderExtension"/>
+		<NodeBuilder class = "MonoDevelop.WebReferences.NodeBuilders.ProjectNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.WebReferences.NodeBuilders.WebReferenceFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.WebReferences.NodeBuilders.WebReferenceNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Commands">
+		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"
+			_label = "Add Web Reference" 
+			icon = "md-webreference-item" />
+		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll"
+			_label = "Update Web References"
+			icon = "gtk-reload" />
+		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Update"
+			_label = "Update Web Reference"
+			icon = "gtk-reload" />
+		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll"
+			_label = "Delete All"
+			icon = "gtk-delete" />
+		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Delete"
+			_label = "Delete"
+			icon = "gtk-delete" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
+		<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WebReferenceFolder">
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add" />
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WebReferenceFolder/WebReferenceItem">
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Update" />
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Delete" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/StockIcons">
+		<StockIcon stockid = "md-webreference-item" resource = "WebReferenceItem.png" />
+	</Extension>
+</AddIn>

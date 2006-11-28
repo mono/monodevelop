@@ -1,0 +1,62 @@
+2006-11-28 Gideon de Swardt <gdeswardt@gmail.com>
+	* MonoDevelop.WebReferences:
+	Move the source code from Google Code project.
+
+2006-08-31 Gideon de Swardt <gdeswardt@gmail.com>
+	* MonoDevelop.WebReferences/CodeGenerator:
+	Changed the class to use the LanguageBinding from the DotNetProject.
+
+2006-08-26 Gideon de Swardt <gdeswardt@gmail.com>
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	Moved the UI code to stetic
+	* svnci:
+	Added the svn commit change log script from monodevelop
+
+2006-08-25 Gideon de Swardt <gdeswardt@gmail.com>
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:
+	Added an event handler to refresh the web reference folder node when a *.map project 
+	file has been removed from a project
+
+2006-08-15 Gideon de Swardt <gdeswardt@gmail.com>
+		
+	* MonoDevelop.WebReferences.addin.xml:
+	Removed the Delete All menu option on the Web Reference folder
+	Changed the version number
+	
+	* MonoDevelop.WebReferences/CodeGenerator.cs:
+	Added support for generating the code in VB.NET
+	
+	* MonoDevelop.WebReferences/Library.cs:
+	Added a method that checks if the project contains any web references
+	
+	* MonoDevelop.WebReferences/WebReferenceItemCollection.cs:
+	Optimized the WebReferenceItemCollection construct method by only looping through the 
+	project files collection once instead of previously seeking for the specific map file
+	after it found the reference file. This will also sort the problem with VB reference files
+	not being loaded.
+	
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	Check that the project options for the Runtime Version is set to 
+	"2.0", if it is set to "1.1" ask the user whether or not to
+	switch to "2.0" automatically. The project build will fail if
+	the Runtime is set to 1.1. Do not add the web reference if the
+	user chooses to keep the runtime version 1.1.
+	
+	Added functionality to add a ProjectReference for System.Web.Services to the project if
+	it does not currently contain a reference. This is required to successfully compile 
+	the project.
+	
+	* MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs:
+	Check if the project contains any web references before it adds the WebReferenceFolder
+	
+	* MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Add a check not to hide the web reference folder if the project options is set to show all
+	
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:
+	Changed the HasChildNodes method to use the new method to check if a project contains any 
+	web references rather than parsing and loading the collection of all web references in a project.
+	Changed the BuildChildNodes to parse the project every time the method is called.
+
+2006-08-11 Gideon de Swardt  <gdeswardt@gmail.com> 
+
+	Initial setup of the AddIn
