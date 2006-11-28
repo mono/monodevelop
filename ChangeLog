@@ -1,4 +1,17 @@
+2006-11-28 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* configure.in: Added a fallback search for MOZILLA_HOME, that is in 
+	  sync with the one in monodevelop.in. Reviewed and cleaned up by 
+	  Michael Hutchinson <m.j.hutchinson@gmail.com>.
+	
+	* monodevelop.in: Added a new way to detect MOZILLA_HOME, and improved 
+	  the existing ones. Incorporates patch by Mike Morano 
+	  <mmorano@mikeandwan.us>.
+	
+	* Makefile.am: Set MOZILLA_FIVE_HOME for the "make run" command.
+
 2006-11-28 Gideon de Swardt <gdeswardt@gmail.com>
+
 	* configure.in: Added the WebReference AddIn.
 
 2006-11-23 Lluis Sanchez Gual  <lluis@novell.com> 

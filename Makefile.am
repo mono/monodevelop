@@ -74,7 +74,7 @@ apidocs:
 run: runmd
 
 runmd: $(PROGRAM)
-	cd build/bin && LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` $(RUNTIME) --debug MonoDevelop.exe
+	cd build/bin && MOZILLA_FIVE_HOME=$(MOZILLA_HOME) LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'` $(RUNTIME) --debug MonoDevelop.exe
 
 pad: $(MONOPAD)
 
