@@ -1,3 +1,7 @@
+2006-11-29 Gideon de Swardt <gdeswardt@gmail.com>
+	* Makefile.in: 
+	Remove the Makefile.in from source, should not have been committed in the first place.
+
 2006-11-28 Gideon de Swardt <gdeswardt@gmail.com>
 	* MonoDevelop.WebReferences:
 	Move the source code from Google Code project.
