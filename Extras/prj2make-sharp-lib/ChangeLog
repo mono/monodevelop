@@ -1,3 +1,13 @@
+2006-11-29  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs: Add basic write/save support.
+	* MSBuildFileFormat.cs (WriteFile): OutputPath should be relative.
+	(ParseProject): Rename to ..
+	(LoadProject): .. this. Set default name of the project.
+	Create new config only if it doesn't already exist.	
+	(HandleRename): Change the name of the project file when the project is
+	renamed.
+
 2006-11-20  Ankit Jain  <jankit@novell.com>
 
 	* MsPrjHelper.cs (MapPath): Make "internal static". Change "\" to "/" only

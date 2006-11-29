@@ -154,7 +154,8 @@ namespace MonoDevelop.Prj2Make
 
 				EnsureChildValue (configNode, "OutputType", ns, config.CompileTarget);
 				EnsureChildValue (configNode, "AssemblyName", ns, config.OutputAssembly);
-				EnsureChildValue (configNode, "OutputPath", ns, config.OutputDirectory);
+				EnsureChildValue (configNode, "OutputPath", ns, 
+					Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, config.OutputDirectory));
 				EnsureChildValue (configNode, "DebugSymbols", ns, config.DebugMode);
 
 				if (project.LanguageName == "VBNet") {
@@ -215,10 +216,10 @@ namespace MonoDevelop.Prj2Make
 				return null;
 
 			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading project: {0}"), fileName), 1);
-				project = ParseProject (fileName, monitor);
+				monitor.BeginTask (GettextCatalog.GetString ("Loading project: {0}", fileName), 1);
+				project = LoadProject (fileName, monitor);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load project: {0}"), fileName), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not load project: {0}", fileName), ex);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -228,7 +229,7 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		//FIXME: Use monitor to report warnings/errors
-		DotNetProject ParseProject (string fname, IProgressMonitor monitor)
+		DotNetProject LoadProject (string fname, IProgressMonitor monitor)
 		{
 			FileStream fs = new FileStream (fname, FileMode.Open, FileAccess.Read);
 			XmlDocument doc = new XmlDocument ();
@@ -249,6 +250,8 @@ namespace MonoDevelop.Prj2Make
 			//Create the project
 			DotNetProject project = new DotNetProject (lang);
 			project.FileName = fname;
+			//Default project name
+			project.Name = Path.GetFileNameWithoutExtension (fname);
 			project.FileFormat = new MSBuildFileFormat (lang);
 			project.ClrVersion = ClrVersion.Net_2_0;
 
@@ -276,7 +279,7 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			if (guid != null)
-				project.ExtendedProperties ["guid"] = guid;
+				project.ExtendedProperties ["guid"] = guid.Trim (new char [] {'{', '}'});
 
 			//ReadItemGroups : References, Source files etc
 			ReadItemGroups (doc, project, globalConfig, basePath);
@@ -294,11 +297,16 @@ namespace MonoDevelop.Prj2Make
 					String.IsNullOrEmpty (dic ["CONFIGURATION"]))
 					continue;
 
-				DotNetProjectConfiguration config = (DotNetProjectConfiguration) globalConfig.Clone ();
-				config.Name = dic ["CONFIGURATION"];
+				DotNetProjectConfiguration config = 
+					(DotNetProjectConfiguration) project.GetConfiguration (dic ["CONFIGURATION"]);
+
+				if (config == null) {
+					config = (DotNetProjectConfiguration) globalConfig.Clone ();
+					config.Name = dic ["CONFIGURATION"];
+					project.Configurations.Add (config);
+				}
 
 				ReadConfig (iter.Current, config, project.LanguageName, basePath, ref tmp);
-				project.Configurations.Add (config);
 
 				project.ExtendedProperties [config] = iter.Current.UnderlyingObject;
 			}
@@ -322,7 +330,20 @@ namespace MonoDevelop.Prj2Make
 			//project.ConfigurationAdded += new ConfigurationEventHandler (HandleConfigurationAdded);
 			project.ConfigurationRemoved += new ConfigurationEventHandler (HandleConfigurationRemoved);
 
+			project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
+
 			return project;
+		}
+
+		static void HandleRename (object sender, CombineEntryRenamedEventArgs e)
+		{
+			string oldfname = e.CombineEntry.FileName;
+			string extn = Path.GetExtension (oldfname);
+			string dir = Path.GetDirectoryName (oldfname);
+			string newfname = Path.Combine (dir, e.NewName + extn);
+
+			File.Move (oldfname, newfname);
+			e.CombineEntry.FileName = newfname;
 		}
 
 		//Event handlers
@@ -546,7 +567,8 @@ namespace MonoDevelop.Prj2Make
 					case "Reference":
 						string hintPath = String.Empty;
 						string fullname = Runtime.SystemAssemblyService.GetAssemblyFullName (include);
-						if ((fullname != null && Runtime.SystemAssemblyService.FindInstalledAssembly (fullname) != null) ||
+						if ((fullname != null && 
+							Runtime.SystemAssemblyService.FindInstalledAssembly (fullname) != null) ||
 							!ReadAsString (node, "HintPath", ref hintPath, false)) {
 
 							//If the assembly is from a package file
@@ -560,8 +582,7 @@ namespace MonoDevelop.Prj2Make
 						project.ExtendedProperties [pr] = node;
 						break;
 					case "ProjectReference":
-						//Not using @include currently, instead using the Name
-						//string projGuid = GetChildValue (node, "Project");
+						//Not using @Include currently, instead using the Name
 						string projGuid = null;
 						string projName = null;
 
