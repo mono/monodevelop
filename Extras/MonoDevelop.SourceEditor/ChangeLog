@@ -1,3 +1,8 @@
+2006-11-30 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Fixed a typo.
+	Thanks to Mike Morano <mmorano@mikeandwan.us>.
+
 2006-10-06 Andrés G. Aragoneses  <knocte@gmail.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Added strings to l10n.
