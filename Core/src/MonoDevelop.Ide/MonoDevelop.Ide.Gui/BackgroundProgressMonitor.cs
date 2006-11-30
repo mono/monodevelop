@@ -47,20 +47,25 @@ namespace MonoDevelop.Ide.Gui
 			this.title = title;
 			Gdk.Pixbuf img = Services.Resources.GetBitmap (iconName, Gtk.IconSize.Menu);
 			icon = Services.StatusBar.ShowStatusIcon (img);
+			if (icon == null)
+				Runtime.LoggingService.Error ("Icon '" + iconName + "' not found.");
 		}
 		
 		protected override void OnProgressChanged ()
 		{
-			if (UnknownWork)
-				icon.ToolTip = string.Format ("{0}\n{1}", title, CurrentTask);
-			else
-				icon.ToolTip = string.Format ("{0} ({1}%)\n{2}", title, (int)(GlobalWork * 100), CurrentTask);
+			if (icon != null) {
+				if (UnknownWork)
+					icon.ToolTip = string.Format ("{0}\n{1}", title, CurrentTask);
+				else
+					icon.ToolTip = string.Format ("{0} ({1}%)\n{2}", title, (int)(GlobalWork * 100), CurrentTask);
+			}
 		}
 		
 		public override void Dispose()
 		{
 			base.Dispose ();
-			icon.Dispose ();
+			if (icon != null)
+				icon.Dispose ();
 		}
 	}
 }

@@ -79,7 +79,10 @@ namespace MonoDevelop.Ide.Tasks
 				return fileName;
 			}
 			set {
-				fileName = value;
+				if (System.IO.File.Exists (fileName))
+					fileName = System.IO.Path.GetFullPath (value);
+				else
+					fileName = value;
 			}
 		}
 		
@@ -122,10 +125,10 @@ namespace MonoDevelop.Ide.Tasks
 		public Task (string fileName, string description, int column, int line, TaskType type)
 		{
 			this.type        = type;
-			this.fileName    = fileName;
 			this.description = description.Trim();
 			this.column      = column;
 			this.line        = line;
+			FileName    = fileName;
 		}
 		
 		public Task (Project project, CompilerError error)
@@ -137,7 +140,7 @@ namespace MonoDevelop.Ide.Tasks
 			description = error.ErrorText;
 			if (error.ErrorNumber != String.Empty && error.ErrorNumber != null)
 				description += "(" + error.ErrorNumber + ")";
-			fileName    = error.FileName;
+			FileName    = error.FileName;
 		}
 		
 		public void JumpToPosition()

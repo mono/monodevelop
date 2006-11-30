@@ -261,6 +261,8 @@
     <File name="./MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./icons/Icons.16x16.LinkOverlay.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/mono-powered.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/parsing.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Ide.Gui/LayoutComboBox.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
@@ -271,7 +273,6 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Documentation" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Dock" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/log4net" />
     <ProjectReference type="Gac" localcopy="True" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
     <ProjectReference type="Gac" localcopy="True" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -301,6 +302,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.GetOptions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/log4net.dll" />
   </References>
   <GtkDesignInfo>
     <ExportedWidgets />

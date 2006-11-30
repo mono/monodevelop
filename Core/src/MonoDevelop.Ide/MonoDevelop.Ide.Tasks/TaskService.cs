@@ -138,7 +138,11 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			for (int i = 0; i < tasks.Count; ++i) {
 				Task curTask = tasks[i];
-				if (Path.GetFullPath (curTask.FileName) == Path.GetFullPath (e.ProjectFile.Name)) {
+				string fname = e.ProjectFile.Name;
+				// The method GetFullPath only works if the file exists
+				if (File.Exists (fname))
+					fname = Path.GetFullPath (fname);
+				if (curTask.FileName == fname) {
 					Remove (curTask);
 					--i;
 				}

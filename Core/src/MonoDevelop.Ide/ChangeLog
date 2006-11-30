@@ -1,3 +1,13 @@
+2006-11-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp: Added some missing resources.
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs: Added some null
+	  checks.
+	* MonoDevelop.Ide.Tasks/Task.cs, MonoDevelop.Ide.Tasks/TaskService.cs:
+	  Avoid relative path names in the task service.
+	* MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Fix endless loop
+	  issue. Fixes bug #79526.
+
 2006-11-28 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Commands/SearchCommands.cs:

@@ -185,14 +185,25 @@ namespace MonoDevelop.Ide.Gui.Search
 					find.Reset ();
 				else {
 					ITextBuffer textArea = OpenView (lastResult.FileName) as ITextBuffer;
-					if (textArea == null || (lastResult != null && textArea.CursorPosition != lastResult.DocumentOffset + lastResult.Length)) {
+					if (textArea == null || (lastResult != null && textArea.CursorPosition != lastResult.DocumentOffset + lastResult.Length))
 						find.Reset();
-					}
 				}
 			}
 			else
 				find.Reset ();
 				
+			try {
+				find.SearchStrategy.CompilePattern(searchOptions);
+			} catch {
+				Services.MessageService.ShowMessage (GettextCatalog.GetString ("Search pattern is invalid"), DialogPointer);
+				return;
+			}
+			
+			FindInternal (reverse);
+		}
+		
+		static void FindInternal (bool reverse)
+		{
 			try {
 				find.SearchStrategy.CompilePattern(searchOptions);
 			} catch {
@@ -219,7 +230,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					
 					if (startPos == textArea.SelectionStartPosition && endPos == textArea.SelectionEndPosition) {
 						// If the result is the same of what we have selected, search again.
-						Find (reverse);
+						FindInternal (reverse);
 						return;
 					}
 					
