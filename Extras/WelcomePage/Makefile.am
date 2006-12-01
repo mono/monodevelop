@@ -24,7 +24,8 @@ DATA_FILES = \
 	mono-bg.png \
 	mono-logo.png \
 	WelcomePage.css \
-	WelcomePage.xsl
+	WelcomePageContent.xml \
+	WelcomePage.xsl 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 

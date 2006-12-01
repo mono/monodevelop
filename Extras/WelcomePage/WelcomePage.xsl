@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:gtc="urn:MonoDevelop.Core.XslGettextCatalog">
 	<xsl:output method="xml" 
 		media-type="text/html" 
 		doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -12,7 +12,7 @@
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 				<link rel="copyright" href="http://www.gnu.org/copyleft/fdl.html" />
-				<title>Welcome Page</title>
+				<title><xsl:value-of select="gtc:GetString('Welcome Page')"/></title>
 				<!--<link rel="stylesheet" type="text/css" href="{ResourcePath}WelcomePage.css" />-->	
 				<style type="text/css">
 					@import "<xsl:value-of select="ResourcePath" />WelcomePage.css"; 
@@ -42,68 +42,61 @@
 					<div id="bigWrapper">
 						<div class="portlet" id="p-logo">
 							<a href="http://monodevelop.com/Main_Page"
-								title="MonoDevelop Home Page"></a>
+								title="{gtc:GetString(@_title)}"></a>
 						</div>
 						<div id="caption">
-							Free .Net Development Environment
+							<xsl:value-of select="gtc:GetString(@_desc)"/>
 						</div>
 						<div id="column-content">
 							<div>
 								<div id="bodyContent">
-									<h3 id="siteSub">From MonoDevelop</h3>
+									<h3 id="siteSub"><xsl:value-of select="gtc:GetString(Projects/_siteSub)"/></h3>
 									<div id="contentSub"></div>
 									<!-- start content -->
 									<table id="welcome_content" >
 										<tr>
 											<td id="leftTopic">
 
-												<h1>Common Actions</h1>
+												<h1><xsl:value-of select="gtc:GetString(Actions/@_title)"/></h1>
 												<ul>
-													<li><a href="monodevelop://NewProject">Start a New Project</a></li>
-													<li><a href="monodevelop://OpenFile">Open a Project / File</a></li>
+													<xsl:for-each select="Actions/Action">
+														<li><a href="{@href}"><xsl:value-of select="gtc:GetString(@_title)"/></a></li>
+													</xsl:for-each>
 												</ul>
 												<p />
-												<h1>Recent Projects</h1>
+												<h1><xsl:value-of select="gtc:GetString(Projects/@_title)"/></h1>
 												<p />
 												<table class="topic1" id="recentprojects">
 													<tr class="topicbar">
-														<th>Project</th>
-														<th class="proj_mod_col">Last Modified</th>
+														<th><xsl:value-of select="gtc:GetString(Projects/@_col1)"/></th>
+														<th class="proj_mod_col"><xsl:value-of select="gtc:GetString(Projects/@_col2)"/></th>
 													</tr>
+													<xsl:variable name="prjLinkTitle" select="Projects/@_linkTitle"/>
 
 													<xsl:for-each select="RecentProjects/Project">
-														<xsl:choose>
-															<xsl:when test="position() mod 2 = 0">
-																<tr class="evenrow">
-																	<td><a href="project://{Uri}" title="{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
-																	<td class="proj_mod_col"><xsl:value-of select="DateModified" /></td>
-																</tr>
-															</xsl:when>
-															<xsl:otherwise>
-																<tr >
-																	<td><a href="project://{Uri}" title="{Uri}" alt="Open Project {Name}"><xsl:value-of select="Name" /></a></td>
-																	<td class="proj_mod_col"><xsl:value-of select="DateModified" /></td>
-																</tr>
-															</xsl:otherwise>
-														</xsl:choose>
+														<tr>
+															<xsl:if test="position() mod 2 = 0"><xsl:attribute name="class">evenrow</xsl:attribute></xsl:if>
+															<td><a href="project://{Uri}" title="{Uri}" alt="{gtc:GetString($prjLinkTitle)} {Name}"><xsl:value-of select="Name" /></a></td>
+															<td class="proj_mod_col"><xsl:value-of select="DateModified" /></td>
+														</tr>
 													</xsl:for-each>	
 
 												</table>
 											
 											</td>
 											<td id="rightTopic">
-												<h1>Support Links</h1>
-												<ul>
-													<li><a href="http://www.monodevelop.com">MonoDevelop Home Page</a></li>
-													<li><a href="http://www.mono-project.com/Main_Page">Mono Project Home Page</a></li>
-												</ul>
-												<p />
-												<h1>Development Links</h1>
-												<ul>
-													<li><a href="http://www.go-mono.com/docs/">Mono Documentation Library</a> - Online documentation for Mono libraries.</li>
-													<li><a href="http://msdn2.microsoft.com/en-us/library/ms306608.aspx">MSDN Class Library Reference</a> - Documentation for Microsoft's implementation of the .NET framework.</li>
-													<li><a href="http://www.codeproject.com/">The Code Project</a> - A popular site for .NET articles, code snippets, and discussions.</li>
-												</ul>
+												<xsl:for-each select="Links">
+													<h1><xsl:value-of select="gtc:GetString(@_title)"/></h1>
+													<ul>
+														<xsl:for-each select="Link">
+															<li>
+																<a href="{@href}"><xsl:value-of select="gtc:GetString(@_title)"/></a>
+																<xsl:if test="string-length(@_desc) != 0"> - <xsl:value-of select="gtc:GetString(@_desc)"/></xsl:if>
+															</li>
+														</xsl:for-each>
+													</ul>
+													<p />
+												</xsl:for-each>
 											</td>
 										</tr>
 									</table>

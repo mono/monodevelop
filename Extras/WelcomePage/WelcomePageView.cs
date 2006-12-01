@@ -42,8 +42,23 @@ using System.Xml;
 using System.Xml.Xsl;
 using System.IO;
 
+namespace MonoDevelop.Core
+{
+	public class XslGettextCatalog
+	{
+		public XslGettextCatalog() {}
+		
+		public static string GetString (string str)
+		{
+			return GettextCatalog.GetString(str);
+		}
+	}
+}
+
 namespace MonoDevelop.WelcomePage
 {
+	
+	
 	public class WelcomePageView : AbstractViewContent
 	{
 		protected Frame control;
@@ -95,21 +110,17 @@ namespace MonoDevelop.WelcomePage
 		
 		void LoadContent ()
 		{
-			// build simple xml which XSLT will process into XHTML
-			string myxml = 	"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" +
-							"<WelcomePage>" +
-							"<ResourcePath>" + datadir + "</ResourcePath>" +
-							BuildRecentProjectsXml() +
-							"</WelcomePage>";
+			// Get the Xml
+			XmlDocument inxml = BuildXmlDocument();
 			
-			XmlDocument inxml = new XmlDocument();
-			inxml.LoadXml(myxml);
-
+			XsltArgumentList arg = new XsltArgumentList();
+			arg.AddExtensionObject("urn:MonoDevelop.Core.XslGettextCatalog", new MonoDevelop.Core.XslGettextCatalog());
+			
 			XslTransform xslt = new XslTransform();
-            xslt.Load(datadir + "WelcomePage.xsl");
+            		xslt.Load(datadir + "WelcomePage.xsl");
 			StringWriter fs = new StringWriter();
-			xslt.Transform(inxml, null, fs, null);
-
+			xslt.Transform(inxml, arg, fs, null);
+			
 			htmlControl.Html = fs.ToString();
 			//Initialize(null);
 		}
@@ -178,25 +189,44 @@ namespace MonoDevelop.WelcomePage
 				}
 			}
 		}
-
-		string BuildRecentProjectsXml()
+		
+		private XmlDocument BuildXmlDocument()
 		{
-			StringBuilder content = new StringBuilder();
+			XmlDocument xml = new XmlDocument();
+			xml.Load(datadir + "WelcomePageContent.xml");
+			
+			// Get the Parent node
+			XmlNode parent = xml.SelectSingleNode("/WelcomePage");
+			
+			// Resource Path
+			XmlElement element = xml.CreateElement("ResourcePath");
+			element.InnerText = datadir;
+			parent.AppendChild(element);
+			
 			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
 			if (recentOpen.RecentProject != null && recentOpen.RecentProject.Length > 0)
 			{
-				content.Append("<RecentProjects>");
+				XmlElement projectList  = xml.CreateElement("RecentProjects");
+				parent.AppendChild(projectList);
 				foreach (RecentItem ri in recentOpen.RecentProject)
 				{
-					content.Append("<Project>");
-					content.Append("<Uri>" + ri.Uri + "</Uri>");
-					content.Append("<Name>" + Path.GetFileNameWithoutExtension(ri.Uri) + "</Name>");
-					content.Append("<DateModified>" + TimeSinceEdited(ri.Timestamp) + "</DateModified>");
-					content.Append("</Project>");
+					XmlElement project = xml.CreateElement("Project");
+					projectList.AppendChild(project);
+					// Uri
+					element = xml.CreateElement("Uri");
+					element.InnerText = ri.Uri;
+					project.AppendChild(element);
+					// Name
+					element = xml.CreateElement("Name");
+					element.InnerText = Path.GetFileNameWithoutExtension(ri.Uri);
+					project.AppendChild(element);
+					// Date Modified
+					element = xml.CreateElement("DateModified");
+					element.InnerText = TimeSinceEdited(ri.Timestamp);
+					project.AppendChild(element);
 				}
-				content.Append("</RecentProjects>");
 			} 
-			return content.ToString();
+			return xml;
 		}
 
 		public void Initialize(object obj)
