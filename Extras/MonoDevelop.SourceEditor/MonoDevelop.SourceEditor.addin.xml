@@ -90,13 +90,13 @@
 				_description = "Clear bookmarks"
 				_label = "Clear Bookmarks" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber"
-				_label = "_Goto Line..." 
-				description = "Goto line"
+				_label = "_Go to Line..." 
+				description = "Go to line"
 				shortcut = "Control|G"
 				icon = "gtk-jump-to" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace"
-				_label = "Goto Matching _Brace" 
-				description = "Goto Matching Brace" 
+				_label = "Go to Matching _Brace" 
+				description = "Go to Matching Brace" 
 				shortcut = "Control|B" />
 		<Command id = "MonoDevelop.SourceEditor.EditorCommands.PrintDocument"
 				_label = "_Print..." 

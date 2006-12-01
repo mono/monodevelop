@@ -484,7 +484,7 @@
 				description = "Replace in files" />
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"		
 		        defaultHandler = "MonoDevelop.Ide.Commands.GotoTypeHandler"
-				_label = "Goto Type..." 
+				_label = "Go to Type..." 
                 shortcut = "Control|Shift|T" />
 				
 		<!-- RefactoryCommands -->

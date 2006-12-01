@@ -1,3 +1,7 @@
+2006-12-01 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Ide.addin.xml: Changed goto to go to.
+
 2006-11-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.mdp: Added some missing resources.
