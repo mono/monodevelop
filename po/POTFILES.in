@@ -273,4 +273,5 @@ Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml
 Extras/WelcomePage/WelcomePage.addin.xml
 Extras/WelcomePage/WelcomePageOptionPanel.cs
 Extras/WelcomePage/WelcomePageView.cs
+Extras/WelcomePage/WelcomePageContent.xml
 
