@@ -1,3 +1,20 @@
+2006-12-02  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (SetHandlers): Don't set handlers on contained
+	combines. Set *Added handler instead of *Modified.
+	(HandleCombineEntryModified): Remove.
+	(HandleCombineEntryAdded): New.
+	(ConvertToMSBuild): New. Convert a Mds/Mdp based project to msbuild
+	format (if required).
+	* MSBuildFileFormat.cs (WriteFile): Split into this and ..
+	(WriteFileInternal): .. this. Create a new XmlDocument if required.
+	(SaveProject): Save a DotNetProject to the corresponding .*proj .
+	(LoadProject): Set handlers.
+	(SetupHandlers): New.
+	(ReferenceToXmlNode): New.
+	(FileToXmlNode): New.
+	(HandleFileRenamed): New.
+
 2006-11-29  Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs: Add basic write/save support.

@@ -103,17 +103,58 @@ namespace MonoDevelop.Prj2Make
 			if (project == null)
 				//FIXME: Argument exception?
 				return;
+			
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Saving project: {0}", file), 1);
+				WriteFileInternal (file, project, monitor);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
+				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
+				throw;
+			} finally {
+				monitor.EndTask ();
+			}
+		}
+
+		void WriteFileInternal (string file, DotNetProject project, IProgressMonitor monitor)
+		{
+			string platform = "AnyCPU";
+			bool newdoc = false;
 
 			XmlDocument doc = project.ExtendedProperties ["xml_doc"] as XmlDocument;
+			if (doc == null) {
+				//Create a new XmlDocument
+				doc = new XmlDocument ();
+				project.ExtendedProperties ["xml_doc"] = doc;
+				newdoc = true;
+
+				XmlElement e = doc.CreateElement ("Project", ns);
+				doc.AppendChild (e);
+				e.SetAttribute ("DefaultTargets", "Build");
+			}
 
 			//Write out the Configurations
 			//FIXME: Not touching global config right now,
 			//instead just writing out everything in the individual configs
-			XmlNode globalConfigNode = project.ExtendedProperties ["global_config"] as XmlNode;
+			XmlElement globalConfigElement = project.ExtendedProperties ["global_config"] as XmlElement;
+			if (globalConfigElement == null) {
+				globalConfigElement = doc.CreateElement ("PropertyGroup", ns);
+				doc.DocumentElement.AppendChild (globalConfigElement);
+
+				project.ExtendedProperties ["global_config"] = globalConfigElement;
+				string guid = Guid.NewGuid ().ToString ().ToUpper ();
+				project.ExtendedProperties ["guid"] = guid.Trim (new char [] {'{', '}'});
+
+				//FIXME: EnsureChildValue for AssemblyName <-> OutputAssembly
+				//	Get this from where? different configs could have different ones.. 
+			}
+
+			EnsureChildValue (globalConfigElement, "ProjectGuid", ns, 
+				String.Concat ("{", (string) project.ExtendedProperties ["guid"], "}"));
 
 			//Set active config
 			//FIXME: >1 <Configuration elements?
-			XmlNode ac = MoveToChild (globalConfigNode, "Configuration");
+			XmlNode ac = MoveToChild (globalConfigElement, "Configuration");
 			if (ac != null) {
 				if (ac.Attributes ["Condition"] != null) {
 					Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
@@ -135,10 +176,21 @@ namespace MonoDevelop.Prj2Make
 			if (ac == null) {
 				//Add new xml element for active config
 				ac = doc.CreateElement ("Configuration", ns);
-				globalConfigNode.AppendChild (ac);
+				globalConfigElement.AppendChild (ac);
 				ac.InnerText = project.ActiveConfiguration.Name;
 
-				((XmlElement) ac).SetAttribute ("Condition", "'$(Configuration)' == ''");
+				((XmlElement) ac).SetAttribute ("Condition", " '$(Configuration)' == '' ");
+			}
+
+			//Platform
+			//FIXME: Using only 'AnyCPU' for now
+			ac = MoveToChild (globalConfigElement, "Platform");
+			if (ac == null) {
+				ac = doc.CreateElement ("Platform", ns);
+				globalConfigElement.AppendChild (ac);
+				ac.InnerText = "AnyCPU";
+
+				((XmlElement) ac).SetAttribute ("Condition", " '$(Platform)' == '' ");
 			}
 
 			foreach (DotNetProjectConfiguration config in project.Configurations) {
@@ -149,7 +201,8 @@ namespace MonoDevelop.Prj2Make
 					doc.DocumentElement.AppendChild (configNode);
 
 					configNode.SetAttribute ("Condition", 
-						String.Format (" '$(Configuration)' == '{0}'", config.Name));
+						String.Format (" '$(Configuration)|$(Platform)' == '{0}|{1}' ", config.Name, "AnyCPU"));
+					project.ExtendedProperties [config] = configNode;
 				}
 
 				EnsureChildValue (configNode, "OutputType", ns, config.CompileTarget);
@@ -189,6 +242,14 @@ namespace MonoDevelop.Prj2Make
 			//FIXME: Set ActiveConfiguration
 
 			CleanUpEmptyItemGroups (doc);
+			
+			if (newdoc) {
+				//MUST go at the end.. 
+				XmlElement el = doc.CreateElement ("Import", ns);
+				doc.DocumentElement.InsertAfter (el, doc.DocumentElement.LastChild);
+				el.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+			}
+
 			doc.Save (file);
 
 			return;
@@ -205,6 +266,21 @@ namespace MonoDevelop.Prj2Make
 
 			foreach (XmlNode n in del)
 				n.ParentNode.RemoveChild (n);
+		}
+
+		public void SaveProject (string file, DotNetProject project, IProgressMonitor monitor)
+		{
+			WriteFile (file, project, monitor);
+
+			XmlDocument doc = project.ExtendedProperties ["xml_doc"] as XmlDocument;
+			foreach (ProjectFile pfile in project.ProjectFiles)
+				project.ExtendedProperties [pfile] = FileToXmlNode (doc, project, pfile);
+
+			foreach (ProjectReference pref in project.ProjectReferences)
+				project.ExtendedProperties [pref] = ReferenceToXmlNode (doc, project, pref);
+
+			SetupHandlers (project);
+			doc.Save (project.FileName);
 		}
 
 		//Reader
@@ -314,6 +390,13 @@ namespace MonoDevelop.Prj2Make
 			if (project.Configurations [active_config] != null)
 				project.ActiveConfiguration = project.Configurations [active_config];
 
+			SetupHandlers (project);
+
+			return project;
+		}
+
+		static void SetupHandlers (DotNetProject project)
+		{
 			//Setup handlers
 			//References
 			project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (HandleReferenceRemoved);
@@ -331,8 +414,6 @@ namespace MonoDevelop.Prj2Make
 			project.ConfigurationRemoved += new ConfigurationEventHandler (HandleConfigurationRemoved);
 
 			project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
-
-			return project;
 		}
 
 		static void HandleRename (object sender, CombineEntryRenamedEventArgs e)
@@ -373,10 +454,19 @@ namespace MonoDevelop.Prj2Make
 
 		static void HandleReferenceAdded (object sender, ProjectReferenceEventArgs e)
 		{
-			XmlDocument doc = e.Project.ExtendedProperties ["xml_doc"] as XmlDocument;
+			try {
+				XmlDocument doc = e.Project.ExtendedProperties ["xml_doc"] as XmlDocument;
+				e.Project.ExtendedProperties [e.ProjectReference] =
+					ReferenceToXmlNode (doc, e.Project, e.ProjectReference);
+			} catch (Exception ex) {
+				Runtime.LoggingService.ErrorFormat ("{0}", ex.Message);
+				Console.WriteLine ("{0}", ex.Message);
+			}
+		}
 
-			ProjectReference projectRef = e.ProjectReference;
-			ReferenceType refType = e.ProjectReference.ReferenceType;
+		static XmlNode ReferenceToXmlNode (XmlDocument doc, Project project, ProjectReference projectRef)
+		{
+			ReferenceType refType = projectRef.ReferenceType;
 
 			string elemName;
 			if (refType == ReferenceType.Project)
@@ -405,21 +495,21 @@ namespace MonoDevelop.Prj2Make
 				reference = Mono.Cecil.AssemblyFactory.GetAssembly (reference).Name.ToString ();
 
 				AppendChild (elem, "HintPath", ns, 
-					Runtime.FileUtilityService.AbsoluteToRelativePath (e.Project.BaseDirectory, projectRef.Reference));
+					Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference));
 				AppendChild (elem, "SpecificVersion", ns, "False");
 				break;
 			case ReferenceType.Project:
-				Combine c = e.Project.ParentCombine;
+				Combine c = project.ParentCombine;
 				while (c.ParentCombine != null)
 					c = c.ParentCombine;
 
 				Project p = c.FindProject (projectRef.Reference);
 				//FIXME: if (p == null) : This should not happen!
 				reference = Runtime.FileUtilityService.AbsoluteToRelativePath (
-					e.Project.BaseDirectory, p.FileName);
+					project.BaseDirectory, p.FileName);
 
 				if (p.ExtendedProperties.Contains ("guid"))
-					AppendChild (elem, "Project", ns, (string) p.ExtendedProperties ["guid"]);
+					AppendChild (elem, "Project", ns, String.Concat ("{", (string) p.ExtendedProperties ["guid"], "}"));
 
 				AppendChild (elem, "Name", ns, p.Name);
 
@@ -431,54 +521,60 @@ namespace MonoDevelop.Prj2Make
 			//Add the Include attribute
 			elem.SetAttribute ("Include", reference);
 
-			e.Project.ExtendedProperties [projectRef] = elem;
+			return elem;
 		}
 
 		//ProjectFile-s
 
 		static void HandleFileRemoved (object sender, ProjectFileEventArgs e)
 		{
-			XmlNode node = e.Project.ExtendedProperties [e.ProjectFile] as XmlNode;
+			XmlElement elem = e.Project.ExtendedProperties [e.ProjectFile] as XmlElement;
 
-			node.ParentNode.RemoveChild (node);
+			elem.ParentNode.RemoveChild (elem);
 		}
 
 		static void HandleFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			XmlDocument doc = e.Project.ExtendedProperties ["xml_doc"] as XmlDocument;
+			e.Project.ExtendedProperties [e.ProjectFile] =
+				FileToXmlNode (doc, e.Project, e.ProjectFile);
+		}
 
-			string name = BuildActionToString (e.ProjectFile.BuildAction);
+		static XmlNode FileToXmlNode (XmlDocument doc, Project project, ProjectFile projectFile)
+		{
+			string name = BuildActionToString (projectFile.BuildAction);
 			if (name == null) {
-				Console.WriteLine ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
-				return;
+				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", projectFile.BuildAction);
+				Console.WriteLine ("BuildAction.{0} not supported!", projectFile.BuildAction);
+				return null;
 			}
 
 			//FIXME: Subtype
 
 			XmlElement elem = doc.CreateElement (name, ns);
-			elem.SetAttribute ("Include", e.ProjectFile.RelativePath);
+			elem.SetAttribute ("Include", projectFile.RelativePath);
 
-			XmlNode node = doc.SelectSingleNode (String.Format (
+			XmlNode n = doc.SelectSingleNode (String.Format (
 					"/tns:Project/tns:ItemGroup/tns:{0}", name), NamespaceManager);
 
-			if (node == null) {
-				node = doc.CreateElement ("ItemGroup", ns);
-				doc.DocumentElement.AppendChild (node);
-				node.AppendChild (elem);
+			if (n == null) {
+				n = doc.CreateElement ("ItemGroup", ns);
+				doc.DocumentElement.AppendChild (n);
+				n.AppendChild (elem);
 			} else {
-				node.ParentNode.AppendChild (elem);
+				n.ParentNode.AppendChild (elem);
 			}
 
-			e.Project.ExtendedProperties [e.ProjectFile] = elem;
+			return elem;
 		}
 
-		void HandleFileRenamed (object sender, ProjectFileRenamedEventArgs e)
+		static void HandleFileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
 			XmlElement node = e.Project.ExtendedProperties [e.ProjectFile] as XmlElement;
 			node.SetAttribute ("Include", e.ProjectFile.RelativePath);
 		}
 
-		void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
+		static void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
 		{
 			//Subtype, BuildAction, DependsOn, Data
 
@@ -488,6 +584,7 @@ namespace MonoDevelop.Prj2Make
 			//BuildAction
 			string buildAction = BuildActionToString (e.ProjectFile.BuildAction);
 			if (buildAction == null) {
+				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
 				Console.WriteLine ("BuildAction.{0} not supported!", e.ProjectFile.BuildAction);
 				return;
 			}

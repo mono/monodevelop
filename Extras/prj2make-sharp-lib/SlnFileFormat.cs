@@ -37,6 +37,8 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -180,41 +182,66 @@ namespace MonoDevelop.Prj2Make
 
 		static void SetHandlers (Combine combine)
 		{
-			foreach (CombineEntry ce in combine.Entries) {
-				Combine c = ce as Combine;
-				if (c == null)
-					continue;
-
-				SetHandlers (c);
-			}
-			  
-			combine.EntryModified += new CombineEntryEventHandler (HandleCombineEntryModified);
 			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
-		}
-
-		static void HandleCombineEntryModified (object sender, CombineEntryEventArgs e)
-		{
-			Combine c = (Combine) sender;
 		}
 
 		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
 		{
-			Combine newCombine = e.CombineEntry as Combine;
-			if (newCombine == null)
-				return;
+			try {
+				ConvertToMSBuild (e.CombineEntry, true);
 
-			//FIXME: Remove the empty mds created for this solution folder
-			//File.Delete (newCombine.FileName);
+				//Setting this so that the .sln file get rewritten with the 
+				//updated project details.. 
+				e.CombineEntry.RootCombine.FileName = e.CombineEntry.RootCombine.FileName;
+			} catch (Exception ex) {
+				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
+				Console.WriteLine ("{0}", ex.Message);
+			}
+		}
 
-			newCombine.FileFormat = new SlnFileFormat ();
-			newCombine.ExtendedProperties ["guid"] = Guid.NewGuid ().ToString ().ToUpper ();
+		static void ConvertToMSBuild (CombineEntry ce, bool prompt)
+		{
+			bool converted = false;
+			Combine newCombine = ce as Combine;
+			if (newCombine == null) {
+				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
+					DotNetProject project = (DotNetProject) ce;
 
-			//This is set to ensure that the solution folder's BaseDirectory
-			//(which is derived from .FileName) matches that of the root
-			//combine
-			newCombine.FileName = newCombine.RootCombine.FileName;
+					project.ExtendedProperties ["guid"] = Guid.NewGuid ().ToString ().ToUpper ();
 
-			SetHandlers (newCombine);
+					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
+					project.FileFormat = fileFormat;
+
+					string newname = fileFormat.GetValidFormatName (project.FileName);
+					project.FileName = newname;
+					fileFormat.SaveProject (newname, project, new NullProgressMonitor ());
+					converted = true;
+				}
+			} else {
+				//FIXME: Remove the empty mds created for this solution folder
+				//File.Delete (newCombine.FileName);
+
+				if (newCombine.ExtendedProperties ["guid"] == null)
+					newCombine.ExtendedProperties ["guid"] = Guid.NewGuid ().ToString ().ToUpper ();
+
+				if (String.Compare (Path.GetExtension (newCombine.FileName), ".mds", true) == 0) {
+					foreach (CombineEntry e in newCombine.Entries)
+						ConvertToMSBuild (e, false);
+
+					//FIXME: Set the FF before convesion of the projects?
+					newCombine.FileFormat = new SlnFileFormat ();
+					SetHandlers (newCombine);
+					converted = true;
+				}
+				//This is set to ensure that the solution folder's BaseDirectory
+				//(which is derived from .FileName) matches that of the root
+				//combine
+				newCombine.FileName = newCombine.RootCombine.FileName;
+			}
+
+			if (prompt && converted)
+				IdeApp.Services.MessageService.ShowWarningFormatted (
+					"{0} has been converted to MSBuild format.", ce.Name);
 		}
 
 		//ExtendedProperties
