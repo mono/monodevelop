@@ -1,5 +1,10 @@
 2006-12-02  Ankit Jain  <jankit@novell.com>
 
+	* SlnFileFormat.cs (SetHandlers): Add a 'setEntries' param. Setting
+	handlers on entries is required when loading from a file.
+
+2006-12-02  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (SetHandlers): Don't set handlers on contained
 	combines. Set *Added handler instead of *Modified.
 	(HandleCombineEntryModified): Remove.

@@ -169,7 +169,7 @@ namespace MonoDevelop.Prj2Make
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				combine = LoadSolution (fileName, monitor);
-				SetHandlers (combine);
+				SetHandlers (combine, true);
 			} catch (Exception ex) {
 				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution: {0}"), fileName), ex);
 				throw;
@@ -180,8 +180,18 @@ namespace MonoDevelop.Prj2Make
 			return combine;
 		}
 
-		static void SetHandlers (Combine combine)
+		static void SetHandlers (Combine combine, bool setEntries)
 		{
+			if (setEntries) {
+				foreach (CombineEntry ce in combine.Entries) {
+					Combine c = ce as Combine;
+					if (c == null)
+						continue;
+	 
+					SetHandlers (c, setEntries);
+				}
+			}
+
 			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
 		}
 
@@ -230,7 +240,7 @@ namespace MonoDevelop.Prj2Make
 
 					//FIXME: Set the FF before convesion of the projects?
 					newCombine.FileFormat = new SlnFileFormat ();
-					SetHandlers (newCombine);
+					SetHandlers (newCombine, false);
 					converted = true;
 				}
 				//This is set to ensure that the solution folder's BaseDirectory
