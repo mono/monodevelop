@@ -1,3 +1,8 @@
+2006-12-01  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Makefile.am: Only build if VersionControl AddIn is enabled, 
+	  because this AddIn depends on it.
+
 2006-11-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.mdp, Makefile.am: Updated references to version

@@ -22,7 +22,11 @@ FILES = \
 
 ADDIN = ChangeLogAddIn.addin.xml
 
+if ENABLE_VERSIONCONTROL
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) 
+else
+  all:
+endif
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
@@ -32,8 +36,10 @@ $(ASSEMBLY): $(FILES)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_sources) -out:$@ -target:library
 
+if ENABLE_VERSIONCONTROL
 assemblydir = $(MD_ADDIN_DIR)/ChangeLogAddIn
 assembly_DATA = $(ASSEMBLY) $(ADDIN)
+endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 EXTRA_DIST = $(FILES) $(ADDIN)
