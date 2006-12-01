@@ -22,7 +22,7 @@ namespace Stetic {
             if ((id == "MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog")) {
                 Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
                 // Widget MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog
-                cobj.Title = Mono.Unix.Catalog.GetString("Goto Type");
+                cobj.Title = Mono.Unix.Catalog.GetString("Go to Type");
                 cobj.WindowPosition = ((Gtk.WindowPosition)(4));
                 cobj.HasSeparator = false;
                 cobj.Events = ((Gdk.EventMask)(256));

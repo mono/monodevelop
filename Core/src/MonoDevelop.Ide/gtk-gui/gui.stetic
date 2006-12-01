@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog" design-size="400 300">
-    <property name="Title" translatable="yes">Goto Type</property>
+    <property name="Title" translatable="yes">Go to Type</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <property name="WindowPosition">CenterOnParent</property>
