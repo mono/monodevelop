@@ -200,6 +200,22 @@ namespace MonoDevelop.Prj2Make
 			try {
 				ConvertToMSBuild (e.CombineEntry, true);
 
+				//Update the project references
+				if (String.Compare (
+					Path.GetExtension (e.CombineEntry.FileName), ".mds", true) == 0) {
+
+					Combine c = (Combine) e.CombineEntry;
+					foreach (Project proj in c.GetAllProjects ()) { 
+						foreach (ProjectReference pref in proj.ProjectReferences) {
+							if (pref.ReferenceType != ReferenceType.Project)
+								continue;
+
+							XmlElement elem = (XmlElement) proj.ExtendedProperties [pref];
+							elem.SetAttribute ("Include", pref.Reference);
+						}
+					}
+				}
+
 				//Setting this so that the .sln file get rewritten with the 
 				//updated project details.. 
 				e.CombineEntry.RootCombine.FileName = e.CombineEntry.RootCombine.FileName;
