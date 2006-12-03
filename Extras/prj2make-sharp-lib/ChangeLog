@@ -1,5 +1,13 @@
 2006-12-03  Ankit Jain  <jankit@novell.com>
 
+	* SlnFileFormat.cs (WriteProjects): Add 'baseDirectory' param.
+	Path should be relative to solution file's directory.
+	(HandleCombineEntryAdded): Emit 'guid' with the project reference.
+	Path should be relative to the project's base directory.
+	* MSBuildFileFormat.cs (AppendChild): Make internal.
+
+2006-12-03  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (HandleCombineEntryAdded): Update project references
 	after conversion.
 

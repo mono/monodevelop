@@ -78,7 +78,7 @@ namespace MonoDevelop.Prj2Make
 				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version 9.00");
 
 				//Write the projects
-				WriteProjects (c, sw);
+				WriteProjects (c, c.RootCombine.BaseDirectory, sw);
 
 				//Write the Globals
 				sw.WriteLine ("Global");
@@ -117,7 +117,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		void WriteProjects (Combine combine, StreamWriter writer)
+		void WriteProjects (Combine combine, string baseDirectory, StreamWriter writer)
 		{
 			foreach (CombineEntry ce in combine.Entries) {
 				Combine c = ce as Combine;
@@ -125,7 +125,7 @@ namespace MonoDevelop.Prj2Make
 				writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
 					(c != null) ? folderTypeGuid.ToString ().ToUpper () : projectTypeGuid.ToString ().ToUpper (),
 					ce.Name, 
-					(c != null) ? ce.Name : ce.RelativeFileName, 
+					(c != null) ? ce.Name : Runtime.FileUtilityService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
 					//FIXME: "guid" is avail only incase of msbuild projects.. 
 					(string) ce.ExtendedProperties ["guid"]);
 
@@ -137,7 +137,7 @@ namespace MonoDevelop.Prj2Make
 
 				writer.WriteLine ("EndProject");
 				if (c != null)
-					WriteProjects (c, writer);
+					WriteProjects (c, baseDirectory, writer);
 			}
 		}
 
@@ -198,20 +198,30 @@ namespace MonoDevelop.Prj2Make
 		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
 		{
 			try {
+				bool isMds = String.Compare (
+					Path.GetExtension (e.CombineEntry.FileName), ".mds", true) == 0;
+
 				ConvertToMSBuild (e.CombineEntry, true);
 
 				//Update the project references
-				if (String.Compare (
-					Path.GetExtension (e.CombineEntry.FileName), ".mds", true) == 0) {
-
+				if (isMds) {
 					Combine c = (Combine) e.CombineEntry;
-					foreach (Project proj in c.GetAllProjects ()) { 
+					CombineEntryCollection allProjects = c.GetAllProjects ();
+
+					foreach (Project proj in allProjects) {
 						foreach (ProjectReference pref in proj.ProjectReferences) {
 							if (pref.ReferenceType != ReferenceType.Project)
 								continue;
 
+							Project p = (Project) allProjects [pref.Reference];
+
 							XmlElement elem = (XmlElement) proj.ExtendedProperties [pref];
-							elem.SetAttribute ("Include", pref.Reference);
+							elem.SetAttribute ("Include", 
+								Runtime.FileUtilityService.AbsoluteToRelativePath (
+									proj.BaseDirectory, p.FileName));
+
+							MSBuildFileFormat.AppendChild (elem, "Project", MSBuildFileFormat.ns,
+								String.Concat ("{", (string) p.ExtendedProperties ["guid"], "}"));
 						}
 					}
 				}
@@ -262,7 +272,7 @@ namespace MonoDevelop.Prj2Make
 				//This is set to ensure that the solution folder's BaseDirectory
 				//(which is derived from .FileName) matches that of the root
 				//combine
-				newCombine.FileName = newCombine.RootCombine.FileName;
+				//newCombine.FileName = newCombine.RootCombine.FileName;
 			}
 
 			if (prompt && converted)

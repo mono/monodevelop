@@ -46,7 +46,7 @@ namespace MonoDevelop.Prj2Make
 	public class MSBuildFileFormat : IFileFormat
 	{
 		string language;
-		const string ns = "http://schemas.microsoft.com/developer/msbuild/2003";
+		internal const string ns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
 		static XmlNamespaceManager manager;
 
@@ -981,7 +981,7 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		//Creates a <localName>Value</localName>
-		static XmlElement AppendChild (XmlElement e, string localName, string ns, string value)
+		internal static XmlElement AppendChild (XmlElement e, string localName, string ns, string value)
 		{
 			XmlElement elem = e.OwnerDocument.CreateElement (localName, ns);
 			elem.InnerText = value;
