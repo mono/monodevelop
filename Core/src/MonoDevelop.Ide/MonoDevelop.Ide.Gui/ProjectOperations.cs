@@ -284,13 +284,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				string validcombine = Path.ChangeExtension (filename, ".mds");
-				
-				if (Path.GetExtension (filename).ToLower() != ".mds") {
+				if (Path.GetExtension (filename).ToLower () == ".mdp") {
 					if (File.Exists (validcombine))
 						filename = validcombine;
-				} else if (Path.GetExtension (filename).ToLower () != ".cmbx") {
-					if (File.Exists (Path.ChangeExtension (filename, ".cmbx")))
-						filename = Path.ChangeExtension (filename, ".cmbx");
 				}
 			
 				CombineEntry entry = projectService.ReadFile (filename, monitor);
