@@ -460,7 +460,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 			try {
 				Runtime.SetupService.Install (installMonitor, packagesToInstall);
-			} catch (Exception ex) {
+			} catch {
 				// Nothing
 			} finally {
 				installMonitor.Dispose ();
@@ -471,7 +471,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		{
 			try {
 				Runtime.SetupService.Uninstall (installMonitor, uninstallId);
-			} catch (Exception ex) {
+			} catch {
 				// Nothing
 			} finally {
 				installMonitor.Dispose ();

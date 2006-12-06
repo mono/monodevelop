@@ -1,3 +1,10 @@
+2006-12-06 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/ResourceService.cs:
+	* Freedesktop.RecentFiles/RecentFiles.cs:
+	Fixed a few compiler warnings.
+
 2006-11-26 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* icons/Icons.16x16.FullScreen: replaced by Tango icon

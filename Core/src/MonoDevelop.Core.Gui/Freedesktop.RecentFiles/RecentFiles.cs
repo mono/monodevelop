@@ -169,7 +169,7 @@ namespace Freedesktop.RecentFiles
 				rf.Sort ();
 				return rf;
 			}
-			catch (IOException e)
+			catch (IOException)
 			{
 				// FIXME: this is wrong, because if we later save it, we blow away what was there
 				// somehow we should ask for the lock or wait for it...

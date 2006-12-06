@@ -262,7 +262,7 @@ namespace MonoDevelop.Core.Gui
 				// from the filename
 				stockMappings.Add (filename, stockId);
 			}
-			catch (GLib.GException ex) {
+			catch (GLib.GException) {
 				// just discard the exception, the icon simply can't be
 				// loaded
 				Runtime.LoggingService.Info(typeof(ResourceService).ToString(), "Warning: can't load " + filename +
