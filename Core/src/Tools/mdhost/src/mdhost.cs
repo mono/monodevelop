@@ -78,7 +78,7 @@ public class MonoDevelopProcessHost
 			if (unixPath != null)
 				File.Delete (unixPath);
 			
-		} catch (Exception ex) {
+		} catch {
 		}
 		
 		return 0;
@@ -117,7 +117,7 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 			Type t = Type.GetType (fullTypeName);
 			if (t == null) throw new InvalidOperationException ("Type not found: " + fullTypeName);
 			return CreateInstance (t);
-		} catch (Exception ex) {
+		} catch {
 			throw new InvalidOperationException ("Type not found: " + fullTypeName);
 		}
 	}

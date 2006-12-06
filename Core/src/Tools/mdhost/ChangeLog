@@ -1,3 +1,7 @@
+2006-12-06 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* src/mdhost.cs: Fixed a couple of compiler warnings.
+
 2006-07-25 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* src/mdhost.cs: Don't check for required add-ins here. The main
