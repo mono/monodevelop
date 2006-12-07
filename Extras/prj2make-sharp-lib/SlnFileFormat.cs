@@ -72,6 +72,8 @@ namespace MonoDevelop.Prj2Make
 			if (c.ParentCombine != null)
 				//Not the top most solution
 				return;
+			if (!c.ExtendedProperties.Contains (typeof (SlnFileFormat)))
+				throw new Exception ("Writing only supported for vs2005 projects (yet)");
 
 			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {
 				//Write Header
@@ -91,6 +93,7 @@ namespace MonoDevelop.Prj2Make
 					string s = (string) config.ExtendedProperties ["SolutionConfigurationPlatforms"];
 					if (String.IsNullOrEmpty (s))
 						//FIXME: Platforms
+						//FIXME: Add this new string to config.ExtendedProperties
 						sw.WriteLine ("\t\t{0}|{1} = {0}|{1}", config.Name, "Any CPU");
 					else
 						sw.WriteLine ("\t\t{0}", s);
@@ -107,9 +110,10 @@ namespace MonoDevelop.Prj2Make
 				//FIXME:  .ActiveCfg
 
 				//Write 'others'
-				List<string> others = c.ExtendedProperties ["global_extras"] as List<string>;
-				if (others != null) {
-					foreach (string s in others)
+
+				SlnData data = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
+				if (data.GlobalExtra != null) {
+					foreach (string s in data.GlobalExtra)
 						sw.WriteLine (s);
 				}
 				
@@ -122,14 +126,42 @@ namespace MonoDevelop.Prj2Make
 			foreach (CombineEntry ce in combine.Entries) {
 				Combine c = ce as Combine;
 
-				writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
-					(c != null) ? folderTypeGuid.ToString ().ToUpper () : projectTypeGuid.ToString ().ToUpper (),
-					ce.Name, 
-					(c != null) ? ce.Name : Runtime.FileUtilityService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
-					//FIXME: "guid" is avail only incase of msbuild projects.. 
-					(string) ce.ExtendedProperties ["guid"]);
+				List<string> l = null;
+				if (c == null) {
+					//Project
+					MSBuildData msbData = (MSBuildData) ce.ExtendedProperties [typeof (MSBuildFileFormat)];
+					if (msbData == null)
+						//This should not happen as any .mdp would've been converted to
+						//.*proj and so would have this object
+						//FIXME : But can happen for unsupported project types.. eg. md-unit
+						throw new Exception (String.Format (
+							"INTERNAL ERROR: Project named '{0}', filename = {1}, does not have a 'data' object.", 
+							ce.Name, ce.FileName));
 
-				List<string> l = ce.ExtendedProperties ["extra"] as List<string>;
+					l = msbData.Extra;
+
+					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
+						projectTypeGuid.ToString ().ToUpper (),
+						ce.Name, 
+						Runtime.FileUtilityService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
+						msbData.Guid);
+				} else {
+					//Solution
+					SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
+					if (slnData == null)
+						throw new Exception (String.Format (
+							"INTERNAL ERROR: Solution named '{0}', filename = {1}, does not have a 'data' object.", 
+							ce.Name, ce.FileName));
+
+					l = slnData.Extra;
+					
+					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
+						folderTypeGuid.ToString ().ToUpper (),
+						ce.Name, 
+						ce.Name,
+						slnData.Guid);
+				}
+
 				if (l != null) {
 					foreach (string s in l)
 						writer.WriteLine (s);
@@ -151,11 +183,28 @@ namespace MonoDevelop.Prj2Make
 				WriteNestedProjects (c, writer);
 			}
 
-			string guid = (string) combine.ExtendedProperties ["guid"];
+			SlnData data = (SlnData) combine.ExtendedProperties [typeof (SlnFileFormat)];
+			if (data == null)
+				throw new Exception (String.Format (
+					"INTERNAL ERROR: Solution named '{0}', filename = {1}, does not have a 'data' object.", 
+					combine.Name, combine.FileName));
+
+			string containerGuid = data.Guid;
 			Combine root = combine.RootCombine;
 			foreach (CombineEntry ce in combine.Entries) {
-				if (ce.ParentCombine != root)
-					writer.WriteLine (@"{0}{{{1}}} = {{{2}}}", "\t\t", (string) ce.ExtendedProperties ["guid"], guid);
+				if (ce.ParentCombine == root)
+					continue;
+
+				string containeeGuid = null;
+				if (ce is Combine) {
+					SlnData slnData = (SlnData) ce.ExtendedProperties [typeof (SlnFileFormat)];
+					containeeGuid = slnData.Guid;
+				} else {
+					MSBuildData msbData = (MSBuildData) ce.ExtendedProperties [typeof (MSBuildFileFormat)];
+					containeeGuid = msbData.Guid;
+				}
+
+				writer.WriteLine (@"{0}{{{1}}} = {{{2}}}", "\t\t", containeeGuid, containerGuid);
 			}
 		}
 
@@ -215,13 +264,17 @@ namespace MonoDevelop.Prj2Make
 
 							Project p = (Project) allProjects [pref.Reference];
 
-							XmlElement elem = (XmlElement) proj.ExtendedProperties [pref];
+							//FIXME: Move this to MSBuildFileFormat ?
+							MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
+							XmlElement elem = data.ProjectReferenceElements [pref];
 							elem.SetAttribute ("Include", 
 								Runtime.FileUtilityService.AbsoluteToRelativePath (
 									proj.BaseDirectory, p.FileName));
 
-							MSBuildFileFormat.AppendChild (elem, "Project", MSBuildFileFormat.ns,
-								String.Concat ("{", (string) p.ExtendedProperties ["guid"], "}"));
+							//Set guid of the ProjectReference
+							MSBuildData prefData = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
+							MSBuildFileFormat.EnsureChildValue (elem, "Project", MSBuildFileFormat.ns,
+								String.Concat ("{", prefData.Guid, "}"));
 						}
 					}
 				}
@@ -231,7 +284,7 @@ namespace MonoDevelop.Prj2Make
 				e.CombineEntry.RootCombine.FileName = e.CombineEntry.RootCombine.FileName;
 			} catch (Exception ex) {
 				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
-				Console.WriteLine ("{0}", ex.Message);
+				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
 			}
 		}
 
@@ -242,9 +295,6 @@ namespace MonoDevelop.Prj2Make
 			if (newCombine == null) {
 				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
 					DotNetProject project = (DotNetProject) ce;
-
-					project.ExtendedProperties ["guid"] = Guid.NewGuid ().ToString ().ToUpper ();
-
 					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
 					project.FileFormat = fileFormat;
 
@@ -257,8 +307,13 @@ namespace MonoDevelop.Prj2Make
 				//FIXME: Remove the empty mds created for this solution folder
 				//File.Delete (newCombine.FileName);
 
-				if (newCombine.ExtendedProperties ["guid"] == null)
-					newCombine.ExtendedProperties ["guid"] = Guid.NewGuid ().ToString ().ToUpper ();
+				SlnData slnData = (SlnData) newCombine.ExtendedProperties [typeof (SlnFileFormat)];
+				if (slnData == null) {
+					slnData = new SlnData ();
+					newCombine.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+				}
+
+			 	slnData.Guid = Guid.NewGuid ().ToString ().ToUpper ();
 
 				if (String.Compare (Path.GetExtension (newCombine.FileName), ".mds", true) == 0) {
 					foreach (CombineEntry e in newCombine.Entries)
@@ -269,6 +324,7 @@ namespace MonoDevelop.Prj2Make
 					SetHandlers (newCombine, false);
 					converted = true;
 				}
+
 				//This is set to ensure that the solution folder's BaseDirectory
 				//(which is derived from .FileName) matches that of the root
 				//combine
@@ -302,6 +358,7 @@ namespace MonoDevelop.Prj2Make
 
 			ListDictionary globals = null;
 			Combine combine = null;
+			SlnData data = null;
 			List<Section> projectSections = null;
 			List<string> lines = null;
 
@@ -311,6 +368,8 @@ namespace MonoDevelop.Prj2Make
 				combine.Name = Path.GetFileNameWithoutExtension (fileName);
 				combine.FileName = fileName;
 				combine.FileFormat = new SlnFileFormat ();
+				data = new SlnData ();
+				combine.ExtendedProperties [typeof (SlnFileFormat)] = data;
 
 				string s = null;
 				projectSections = new List<Section> ();
@@ -374,8 +433,11 @@ namespace MonoDevelop.Prj2Make
 					folder.FileName = projectPath;
 					folder.FileFormat = new SlnFileFormat ();
 
-					folder.ExtendedProperties ["guid"] = projectGuid.Trim (new char [] {'{', '}'});
-					folder.ExtendedProperties ["extra"] = lines.GetRange (sec.Start + 1, sec.Count - 2);
+					SlnData slnData = new SlnData ();
+					folder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+
+					slnData.Guid = projectGuid.Trim (new char [] {'{', '}'});
+					slnData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
 
 					entries [projectGuid] = folder;
 					
@@ -396,8 +458,8 @@ namespace MonoDevelop.Prj2Make
 						DotNetProject project = Services.ProjectService.ReadFile (projectPath, monitor) as DotNetProject;
 						project.Name = projectName;
 						entries [projectGuid] = project;
-						project.ExtendedProperties ["extra"] = 
-							lines.GetRange (sec.Start + 1, sec.Count - 2);
+						MSBuildData msbData = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
+						msbData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					} catch {
 						//
 					}
@@ -431,7 +493,7 @@ namespace MonoDevelop.Prj2Make
 			foreach (Section sec in globals.Values)
 				globalLines.InsertRange (globalLines.Count, lines.GetRange (sec.Start, sec.Count));
 
-			combine.ExtendedProperties ["global_extras"] = globalLines;
+			data.GlobalExtra = globalLines;
 			return combine;
 		}
 
@@ -497,10 +559,6 @@ namespace MonoDevelop.Prj2Make
 
 					config.ExtendedProperties.Add ("Platform", key_parts [1]);
 				}
-
-				//Add all the projects to the configurations
-				foreach (CombineEntry entry in combine.Entries)
-					config.AddEntry (entry);
 
 				config.ExtendedProperties.Add ("SolutionConfigurationPlatforms", s);
 			}
@@ -661,5 +719,35 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
+		class SlnData
+		{
+			string guid;
+			Dictionary<CombineConfiguration, string> configStrings;
+			List<string> globalExtra; // unused GlobalSections
+			List<string> extra; //used by solution folders..
+
+			public string Guid {
+				get { return guid; }
+				set { guid = value; }
+			}
+
+			public Dictionary<CombineConfiguration, string> ConfigStrings {
+				get {
+					if (configStrings == null)
+						configStrings = new Dictionary<CombineConfiguration, string> ();
+					return configStrings;
+				}
+			}
+
+			public List<string> GlobalExtra {
+				get { return globalExtra; }
+				set { globalExtra = value; }
+			}
+
+			public List<string> Extra {
+				get { return extra; }
+				set { extra = value; }
+			}
+		}
 	}
 }
