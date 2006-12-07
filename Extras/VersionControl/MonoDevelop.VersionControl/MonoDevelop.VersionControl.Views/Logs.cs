@@ -197,7 +197,7 @@ namespace MonoDevelop.VersionControl.Views
 				Log("Getting text of " + revPath + " at " + revision.GetPrevious() + "...");
 				try {
 					text1 = vc.GetTextAtRevision(revPath, revision.GetPrevious());
-				} catch (Exception e) {
+				} catch {
 					// If the file was added in this revision, no previous
 					// text exists.
 					text1 = "";
