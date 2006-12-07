@@ -147,8 +147,7 @@ namespace MonoDevelop.Prj2Make
 				doc.DocumentElement.AppendChild (globalConfigElement);
 
 				data.GlobalConfigElement = globalConfigElement;
-				string guid = Guid.NewGuid ().ToString ().ToUpper ();
-				data.Guid = guid.Trim (new char [] {'{', '}'});
+				data.Guid = Guid.NewGuid ().ToString ().ToUpper ();
 
 				//FIXME: EnsureChildValue for AssemblyName <-> OutputAssembly
 				//	Get this from where? different configs could have different ones.. 
@@ -527,7 +526,7 @@ namespace MonoDevelop.Prj2Make
 				//FIXME: if (p.ExtendedProperties.Contains ("guid"))
 
 				if (d.Guid != null & d.Guid.Length != 0)
-					EnsureChildValue (elem, "Project", ns, String.Concat ("{", (string) p.ExtendedProperties ["guid"], "}"));
+					EnsureChildValue (elem, "Project", ns, String.Concat ("{", d.Guid, "}"));
 
 				AppendChild (elem, "Name", ns, p.Name);
 

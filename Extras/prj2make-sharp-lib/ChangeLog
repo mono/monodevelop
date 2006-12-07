@@ -1,5 +1,11 @@
 2006-12-08  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (WriteFileInternal): Trimming '{', '}' not
+	required for new guids.
+	Use MSBuildData.Guid for project references.
+
+2006-12-08  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs: Move extra .sln specific info from
 	ExtendedProperties to SlnData and store that in the ExtendedProperties.
 	* MSBuildFileFormat.cs: Likewise, move to MSBuildData.
