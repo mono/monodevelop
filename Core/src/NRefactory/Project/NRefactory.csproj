@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -39,11 +39,27 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ICSharpCode.NRefactory</AssemblyName>
+    <OutputPath>../../../../bin/</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>TEST; DEBUG</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ICSharpCode.NRefactory</AssemblyName>
+    <OutputPath>../../../../bin/</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TEST</DefineConstants>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -122,9 +138,6 @@
     <Compile Include="Src\Parser\AST\General\LocalVariableDeclaration.cs" />
     <Compile Include="Src\Parser\AST\General\PrimitiveExpression.cs" />
     <Compile Include="Src\Parser\Visitors\AbstractAstTransformer.cs" />
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
