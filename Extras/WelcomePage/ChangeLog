@@ -1,3 +1,8 @@
+2006-12-07 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* WelcomePage.mdp: Updated so the add-in can be
+	built from MonoDevelop.
+
 2006-12-01 Gideon de Swardt <gdeswardt@gmail.com>
 	
 	* WelcomePageView.cs: Added an Extension Object to the Xslt 
