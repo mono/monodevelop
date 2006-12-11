@@ -523,7 +523,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public CombineEntry AddCombineEntry (Combine combine, string entryFileName)
 		{
-			AddEntryEventArgs args = new AddEntryEventArgs (entryFileName);
+			AddEntryEventArgs args = new AddEntryEventArgs (combine, entryFileName);
 			if (AddingEntryToCombine != null)
 				AddingEntryToCombine (this, args);
 			if (args.Cancel)

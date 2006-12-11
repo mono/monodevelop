@@ -1,5 +1,11 @@
 2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/AddEntryEventHandler.cs: Provide the combine
+	  when firing the AddingEntryToCombine event.
+
+2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp, Makefile.am,
 	  MonoDevelop.Ide.Gui/AddEntryEventHandler.cs: Added file
 	  AddEntryEventHandler.cs.

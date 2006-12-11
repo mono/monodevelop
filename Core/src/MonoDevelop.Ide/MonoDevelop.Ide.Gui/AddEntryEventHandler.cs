@@ -1,5 +1,6 @@
 
 using System;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -9,10 +10,16 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string fileName;
 		bool cancel;
+		Combine combine;
 		
-		public AddEntryEventArgs (string fileName)
+		public AddEntryEventArgs (Combine combine, string fileName)
 		{
+			this.combine = combine;
 			this.fileName = fileName;
+		}
+		
+		public Combine Combine {
+			get { return combine; }
 		}
 		
 		public string FileName {
