@@ -83,6 +83,7 @@ MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 MonoDevelop.Ide.Gui/AbstractSecondaryViewContent.cs \
 MonoDevelop.Ide.Gui/AbstractViewContent.cs \
+MonoDevelop.Ide.Gui/AddEntryEventHandler.cs \
 MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 MonoDevelop.Ide.Gui/FileViewer.cs \
 MonoDevelop.Ide.Gui/IBaseViewContent.cs \

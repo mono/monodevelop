@@ -1,3 +1,11 @@
+2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/AddEntryEventHandler.cs: Added file
+	  AddEntryEventHandler.cs.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Fire the
+	  AddingEntryToCombine event just before adding the entry.
+
 2006-12-05  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs (backgroundLoadCombine): Try

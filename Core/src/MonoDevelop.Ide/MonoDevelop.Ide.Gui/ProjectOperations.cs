@@ -482,15 +482,13 @@ namespace MonoDevelop.Ide.Gui
 				npdlg.SelectTemplate ("MonoDevelop.BlankSolution");
 
 			if (npdlg.Run () == (int) Gtk.ResponseType.Ok) {
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ();
 				try {
-					res = parentCombine.AddEntry (npdlg.NewCombineEntryLocation, monitor);
+					res = AddCombineEntry (parentCombine, npdlg.NewCombineEntryLocation);
 				}
 				catch {
 					Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), npdlg.NewCombineEntryLocation));
 					res = null;
 				}
-				monitor.Dispose ();
 			}
 
 			if (res != null)
@@ -508,9 +506,7 @@ namespace MonoDevelop.Ide.Gui
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
 					try {
-						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ()) {
-							res = parentCombine.AddEntry (fdiag.Filename, monitor);
-						}
+						res = AddCombineEntry (parentCombine, fdiag.Filename);
 					}
 					catch {
 						Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), fdiag.Filename));
@@ -525,6 +521,18 @@ namespace MonoDevelop.Ide.Gui
 			return res;
 		}
 		
+		public CombineEntry AddCombineEntry (Combine combine, string entryFileName)
+		{
+			AddEntryEventArgs args = new AddEntryEventArgs (entryFileName);
+			if (AddingEntryToCombine != null)
+				AddingEntryToCombine (this, args);
+			if (args.Cancel)
+				return null;
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ()) {
+				return combine.AddEntry (args.FileName, monitor);
+			}
+		}
+
 		public void CreateProjectFile (Project parentProject, string basePath)
 		{
 			CreateProjectFile (parentProject, basePath, null);
@@ -950,7 +958,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-
 		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, string sourcePath, Project targetProject, string targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			if (targetProject == null)
@@ -1222,6 +1229,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
+		
+		// Fired just before an entry is added to a combine
+		public event AddEntryEventHandler AddingEntryToCombine;
 
 		
 		// All methods inside this class are gui thread safe
