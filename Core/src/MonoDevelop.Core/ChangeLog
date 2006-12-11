@@ -1,3 +1,10 @@
+2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddInService.cs: In
+	  RegisterExtensionItemListener, avoid firing duplicate events by
+	  getting the list of tree items before registering the listener.
+	* MonoDevelop.Core.mdp: Updated.
+
 2006-09-12 Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Core.AddIns/AddInService.cs: Added robustness for addin dir detection failure.

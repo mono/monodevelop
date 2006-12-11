@@ -322,14 +322,21 @@ namespace MonoDevelop.Core.AddIns
 		
 		public void RegisterExtensionItemListener (string path, ExtensionItemListener listener, bool notifyCurrentNodes)
 		{
+			object[] items = null;
+			
+			// Get the items before registering the listener, to avoid firing duplicate events
+			if (notifyCurrentNodes)
+				items = GetTreeItems (path);
+				
 			ArrayList list = (ArrayList) listeners [path];
 			if (list == null) {
 				list = new ArrayList ();
 				listeners [path] = list;
 			}
 			list.Add (listener);
+			
 			if (notifyCurrentNodes) {
-				foreach (object ob in GetTreeItems (path))
+				foreach (object ob in items)
 					listener (ExtensionAction.Add, ob);
 			}
 		}
