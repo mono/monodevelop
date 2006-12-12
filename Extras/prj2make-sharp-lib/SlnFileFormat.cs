@@ -68,19 +68,63 @@ namespace MonoDevelop.Prj2Make
 		
 		public void WriteFile (string file, object obj, IProgressMonitor monitor)
 		{
-			Combine c = (Combine) obj;
+			Combine c = obj as Combine;
+			if (c == null)
+				return;
+
 			if (c.ParentCombine != null)
 				//Not the top most solution
 				return;
+
 			if (!c.ExtendedProperties.Contains (typeof (SlnFileFormat)))
 				throw new Exception ("Writing only supported for vs2005 projects (yet)");
+		
+			string tmpfilename = String.Empty;
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
+				try {
+					if (File.Exists (file))
+						tmpfilename = Path.GetTempFileName ();
+				} catch (IOException) {
+				}
 
+				if (tmpfilename == String.Empty) {
+					WriteFileInternal (file, c, monitor);
+				} else {
+					WriteFileInternal (tmpfilename, c, monitor);
+					File.Delete (file);
+					File.Move (tmpfilename, file);
+				}
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+				Console.WriteLine ("Could not save solution: {0}, {1}", file, ex);
+
+				if (tmpfilename != String.Empty)
+					File.Delete (tmpfilename);
+				throw;
+			} finally {
+				monitor.EndTask ();
+			}
+		}
+
+		void WriteFileInternal (string file, Combine c, IProgressMonitor monitor)
+		{
 			using (StreamWriter sw = new StreamWriter (file, false, Encoding.UTF8)) {
 				//Write Header
 				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version 9.00");
 
+				//FIXME: Write md version
+				sw.WriteLine ("#MonoDevelop");
+
 				//Write the projects
 				WriteProjects (c, c.RootCombine.BaseDirectory, sw);
+
+				//Write the lines for unknownProjects
+				SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
+				if (slnData != null) {
+					foreach (string l in slnData.UnknownProjects)
+						sw.WriteLine (l);
+				}
 
 				//Write the Globals
 				sw.WriteLine ("Global");
@@ -253,31 +297,8 @@ namespace MonoDevelop.Prj2Make
 				ConvertToMSBuild (e.CombineEntry, true);
 
 				//Update the project references
-				if (isMds) {
-					Combine c = (Combine) e.CombineEntry;
-					CombineEntryCollection allProjects = c.GetAllProjects ();
-
-					foreach (Project proj in allProjects) {
-						foreach (ProjectReference pref in proj.ProjectReferences) {
-							if (pref.ReferenceType != ReferenceType.Project)
-								continue;
-
-							Project p = (Project) allProjects [pref.Reference];
-
-							//FIXME: Move this to MSBuildFileFormat ?
-							MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
-							XmlElement elem = data.ProjectReferenceElements [pref];
-							elem.SetAttribute ("Include", 
-								Runtime.FileUtilityService.AbsoluteToRelativePath (
-									proj.BaseDirectory, p.FileName));
-
-							//Set guid of the ProjectReference
-							MSBuildData prefData = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
-							MSBuildFileFormat.EnsureChildValue (elem, "Project", MSBuildFileFormat.ns,
-								String.Concat ("{", prefData.Guid, "}"));
-						}
-					}
-				}
+				if (isMds)
+					UpdateProjectReferences ((Combine) e.CombineEntry, false);
 
 				//Setting this so that the .sln file get rewritten with the 
 				//updated project details.. 
@@ -288,11 +309,13 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		static void ConvertToMSBuild (CombineEntry ce, bool prompt)
+		internal static CombineEntry ConvertToMSBuild (CombineEntry ce, bool prompt)
 		{
-			bool converted = false;
 			Combine newCombine = ce as Combine;
+			CombineEntry ret = ce;
+
 			if (newCombine == null) {
+				//FIXME: Use MSBuildFileFormat.CanReadFile instead
 				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
 					DotNetProject project = (DotNetProject) ce;
 					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
@@ -300,13 +323,9 @@ namespace MonoDevelop.Prj2Make
 
 					string newname = fileFormat.GetValidFormatName (project.FileName);
 					project.FileName = newname;
-					fileFormat.SaveProject (newname, project, new NullProgressMonitor ());
-					converted = true;
+					fileFormat.SaveProject (project, new NullProgressMonitor ());
 				}
 			} else {
-				//FIXME: Remove the empty mds created for this solution folder
-				//File.Delete (newCombine.FileName);
-
 				SlnData slnData = (SlnData) newCombine.ExtendedProperties [typeof (SlnFileFormat)];
 				if (slnData == null) {
 					slnData = new SlnData ();
@@ -319,10 +338,9 @@ namespace MonoDevelop.Prj2Make
 					foreach (CombineEntry e in newCombine.Entries)
 						ConvertToMSBuild (e, false);
 
-					//FIXME: Set the FF before convesion of the projects?
 					newCombine.FileFormat = new SlnFileFormat ();
+					newCombine.FileName = newCombine.FileFormat.GetValidFormatName (newCombine.FileName);
 					SetHandlers (newCombine, false);
-					converted = true;
 				}
 
 				//This is set to ensure that the solution folder's BaseDirectory
@@ -331,21 +349,39 @@ namespace MonoDevelop.Prj2Make
 				//newCombine.FileName = newCombine.RootCombine.FileName;
 			}
 
-			if (prompt && converted)
-				IdeApp.Services.MessageService.ShowWarningFormatted (
-					"{0} has been converted to MSBuild format.", ce.Name);
+			return ret;
+		}
+
+		internal static void UpdateProjectReferences (Combine c, bool saveProjects)
+		{
+			CombineEntryCollection allProjects = c.GetAllProjects ();
+
+			foreach (Project proj in allProjects) {
+				foreach (ProjectReference pref in proj.ProjectReferences) {
+					if (pref.ReferenceType != ReferenceType.Project)
+						continue;
+
+					Project p = (Project) allProjects [pref.Reference];
+
+					//FIXME: Move this to MSBuildFileFormat ?
+					MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
+					XmlElement elem = data.ProjectReferenceElements [pref];
+					elem.SetAttribute ("Include", 
+						Runtime.FileUtilityService.AbsoluteToRelativePath (
+							proj.BaseDirectory, p.FileName));
+
+					//Set guid of the ProjectReference
+					MSBuildData prefData = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
+					MSBuildFileFormat.EnsureChildValue (elem, "Project", MSBuildFileFormat.ns,
+						String.Concat ("{", prefData.Guid, "}"));
+
+				}
+				if (saveProjects)
+					proj.FileFormat.WriteFile (proj.FileName, proj, new NullProgressMonitor ());
+			}
 		}
 
 		//ExtendedProperties
-		//	Toplevel solution:
-		//		global_extras : List<string> containing GlobalSections
-		//				not used by this addin
-		//	
-		//	Per project/folder:
-		//		guid
-		//		extra : List<string> containing "extra" strings,
-		//			not used by this addin
-		//
 		//	Per config
 		//		Platform : Eg. Any CPU
 		//		SolutionConfigurationPlatforms
@@ -357,14 +393,14 @@ namespace MonoDevelop.Prj2Make
 			//	throw new UnknownProjectVersionException (fileName, version);
 
 			ListDictionary globals = null;
-			Combine combine = null;
+			MSBuildSolution combine = null;
 			SlnData data = null;
 			List<Section> projectSections = null;
 			List<string> lines = null;
 
 			//Parse the .sln file
 			using (StreamReader reader = new StreamReader(fileName)) {
-				combine = new Combine ();
+				combine = new MSBuildSolution ();
 				combine.Name = Path.GetFileNameWithoutExtension (fileName);
 				combine.FileName = fileName;
 				combine.FileFormat = new SlnFileFormat ();
@@ -428,7 +464,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (projTypeGuid == folderTypeGuid) {
 					//Solution folder
-					Combine folder = new Combine ();
+					MSBuildSolution folder = new MSBuildSolution ();
 					folder.Name = projectName;
 					folder.FileName = projectPath;
 					folder.FileFormat = new SlnFileFormat ();
@@ -467,7 +503,9 @@ namespace MonoDevelop.Prj2Make
 				}
 				//FIXME: Non .csproj/.vbproj projects not supported (yet)
 				monitor.ReportWarning (GettextCatalog.GetString (
-					"{0}({1}): Unsupported or unrecognized project type for this solution. See logs.", fileName, sec.Start + 1));
+					"{0}({1}): Unsupported or unrecognized project : '{2}'. See logs.", fileName, sec.Start + 1, projectPath));
+
+				data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
 			}
 
 			if (globals != null && globals.Contains ("NestedProjects")) {
@@ -699,55 +737,122 @@ namespace MonoDevelop.Prj2Make
 				return path;
 		}
 
-		class Section {
-			public string Key;
-			public string Val;
 
-			public int Start = -1; //Line number
-			public int Count = 0;
+	
+	}
 
-			public Section ()
-			{
-			}
+	class Section {
+		public string Key;
+		public string Val;
 
-			public Section (string Key, string Val, int Start, int Count)
-			{
-				this.Key = Key;
-				this.Val = Val;
-				this.Start = Start;
-				this.Count = Count;
+		public int Start = -1; //Line number
+		public int Count = 0;
+
+		public Section ()
+		{
+		}
+
+		public Section (string Key, string Val, int Start, int Count)
+		{
+			this.Key = Key;
+			this.Val = Val;
+			this.Start = Start;
+			this.Count = Count;
+		}
+	}
+
+	class SlnData
+	{
+		string guid;
+		Dictionary<CombineConfiguration, string> configStrings;
+		List<string> globalExtra; // unused GlobalSections
+		List<string> extra; //used by solution folders..
+		List<string> unknownProjects;
+
+		public string Guid {
+			get { return guid; }
+			set { guid = value; }
+		}
+
+		public Dictionary<CombineConfiguration, string> ConfigStrings {
+			get {
+				if (configStrings == null)
+					configStrings = new Dictionary<CombineConfiguration, string> ();
+				return configStrings;
 			}
 		}
 
-		class SlnData
-		{
-			string guid;
-			Dictionary<CombineConfiguration, string> configStrings;
-			List<string> globalExtra; // unused GlobalSections
-			List<string> extra; //used by solution folders..
+		public List<string> GlobalExtra {
+			get { return globalExtra; }
+			set { globalExtra = value; }
+		}
 
-			public string Guid {
-				get { return guid; }
-				set { guid = value; }
+		public List<string> Extra {
+			get { return extra; }
+			set { extra = value; }
+		}
+		
+		public List<string> UnknownProjects {
+			get {
+				if (unknownProjects == null)
+					unknownProjects = new List<string> ();
+				return unknownProjects;
 			}
+		}
 
-			public Dictionary<CombineConfiguration, string> ConfigStrings {
-				get {
-					if (configStrings == null)
-						configStrings = new Dictionary<CombineConfiguration, string> ();
-					return configStrings;
+	}
+
+	class MSBuildSolution : Combine
+	{
+		public MSBuildSolution () : base ()
+		{
+			FileFormat = new SlnFileFormat ();
+		}
+
+		static MSBuildSolution ()
+		{
+			IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
+		}	
+
+		public SlnData Data {
+			get {
+				if (!ExtendedProperties.Contains (typeof (SlnFileFormat)))
+					return null;
+				return (SlnData) ExtendedProperties [typeof (SlnFileFormat)];
+			}
+			set {
+				ExtendedProperties [typeof (SlnFileFormat)] = value;
+			}
+		}
+
+		public static void HandleAddEntry (object s, AddEntryEventArgs args)
+		{
+			if (args.Combine.GetType () != typeof (MSBuildSolution))
+				return;
+
+			string extn = Path.GetExtension (args.FileName);
+
+			//FIXME: Use IFileFormat.CanReadFile 
+			if (String.Compare (extn, ".mdp", true) == 0 || String.Compare (extn, ".mds", true) == 0) {
+				if (!IdeApp.Services.MessageService.AskQuestionFormatted ( 
+					"Conversion required", "The project file {0} must be converted to " + 
+					"msbuild format to be added to a msbuild solution. Convert?", args.FileName)) {
+					args.Cancel = true;
+					return;
 				}
 			}
 
-			public List<string> GlobalExtra {
-				get { return globalExtra; }
-				set { globalExtra = value; }
-			}
+			IProgressMonitor monitor = new NullProgressMonitor ();
+			CombineEntry ce = Services.ProjectService.ReadFile (args.FileName, monitor);
+			ce = SlnFileFormat.ConvertToMSBuild (ce, false);
+			args.FileName = ce.FileName;
 
-			public List<string> Extra {
-				get { return extra; }
-				set { extra = value; }
-			}
+			if (String.Compare (extn, ".mds", true) == 0)
+				SlnFileFormat.UpdateProjectReferences ((Combine) ce, true);
+
+			ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
 		}
+
 	}
+
 }

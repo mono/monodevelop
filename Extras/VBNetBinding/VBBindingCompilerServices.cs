@@ -143,7 +143,7 @@ namespace VBBinding {
 						break;
 						
 						case BuildAction.EmbedAsResource:
-							writer.WriteLine(String.Concat("-resource:", finfo.Name));
+							writer.WriteLine(@"""-resource:{0},{1}""", finfo.Name, finfo.ResourceId);
 						break;
 					}
 				}

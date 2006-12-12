@@ -104,12 +104,28 @@ namespace MonoDevelop.Prj2Make
 				//FIXME: Argument exception?
 				return;
 			
+			string tmpfilename = String.Empty;
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Saving project: {0}", file), 1);
-				WriteFileInternal (file, project, monitor);
+				try {
+					if (File.Exists (file))
+						tmpfilename = Path.GetTempFileName ();
+				} catch (IOException) {
+				}
+
+				if (tmpfilename == String.Empty) {
+					WriteFileInternal (file, project, monitor);
+				} else {
+					WriteFileInternal (tmpfilename, project, monitor);
+					File.Delete (file);
+					File.Move (tmpfilename, file);
+				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
 				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
+
+				if (tmpfilename != String.Empty)
+					File.Delete (tmpfilename);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -198,38 +214,42 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			foreach (DotNetProjectConfiguration config in project.Configurations) {
-				XmlElement configNode = null;
+				XmlElement configElement = null;
 
 				if (data.ConfigElements.ContainsKey (config)) {
-					configNode = data.ConfigElements [config];
+					configElement = data.ConfigElements [config];
 				} else {
 					//Create node for new configuration
-					configNode = doc.CreateElement ("PropertyGroup", ns);
-					doc.DocumentElement.AppendChild (configNode);
+					configElement = doc.CreateElement ("PropertyGroup", ns);
+					doc.DocumentElement.AppendChild (configElement);
 
-					configNode.SetAttribute ("Condition", 
+					configElement.SetAttribute ("Condition", 
 						String.Format (" '$(Configuration)|$(Platform)' == '{0}|{1}' ", config.Name, "AnyCPU"));
-					data.ConfigElements [config] = configNode;
+					data.ConfigElements [config] = configElement;
 				}
 
-				EnsureChildValue (configNode, "OutputType", ns, config.CompileTarget);
-				EnsureChildValue (configNode, "AssemblyName", ns, config.OutputAssembly);
-				EnsureChildValue (configNode, "OutputPath", ns, 
+				EnsureChildValue (configElement, "OutputType", ns, config.CompileTarget);
+				EnsureChildValue (configElement, "AssemblyName", ns, config.OutputAssembly);
+				EnsureChildValue (configElement, "OutputPath", ns, 
 					Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, config.OutputDirectory));
-				EnsureChildValue (configNode, "DebugSymbols", ns, config.DebugMode);
+				EnsureChildValue (configElement, "DebugSymbols", ns, config.DebugMode);
 
 				if (project.LanguageName == "VBNet") {
 					VBCompilerParameters vbparams = 
 						(VBCompilerParameters) config.CompilationParameters;
 
-					EnsureChildValue (configNode, "RootNamespace", ns, vbparams.RootNamespace);
-					EnsureChildValue (configNode, "AllowUnsafeBlocks", ns, vbparams.UnsafeCode);
-					EnsureChildValue (configNode, "Optimize", ns, vbparams.Optimize);
-					EnsureChildValue (configNode, "CheckForOverflowUnderflow", ns, vbparams.GenerateOverflowChecks);
-					EnsureChildValue (configNode, "DefineConstants", ns, vbparams.DefineSymbols);
-					EnsureChildValue (configNode, "WarningLevel", ns, vbparams.WarningLevel);
-					EnsureChildValue (configNode, "OptionExplicit", ns, vbparams.OptionExplicit);
-					EnsureChildValue (configNode, "OptionStrict", ns, vbparams.OptionStrict);
+					EnsureChildValue (configElement, "RootNamespace", ns, vbparams.RootNamespace);
+					EnsureChildValue (configElement, "AllowUnsafeBlocks", ns, vbparams.UnsafeCode);
+					EnsureChildValue (configElement, "Optimize", ns, vbparams.Optimize);
+					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, vbparams.GenerateOverflowChecks);
+					EnsureChildValue (configElement, "DefineConstants", ns, vbparams.DefineSymbols);
+					EnsureChildValue (configElement, "WarningLevel", ns, vbparams.WarningLevel);
+					EnsureChildValue (configElement, "OptionExplicit", ns, vbparams.OptionExplicit);
+					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict);
+					if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
+						EnsureChildValue (configElement, "ApplicationIcon", ns,
+							Runtime.FileUtilityService.AbsoluteToRelativePath (
+								project.BaseDirectory, vbparams.Win32Icon));
 
 					//FIXME: VB.net Imports
 				}
@@ -238,11 +258,15 @@ namespace MonoDevelop.Prj2Make
 					CSharpCompilerParameters csparams =
 						(CSharpCompilerParameters) config.CompilationParameters;
 
-					EnsureChildValue (configNode, "AllowUnsafeBlocks", ns, csparams.UnsafeCode);
-					EnsureChildValue (configNode, "Optimize", ns, csparams.Optimize);
-					EnsureChildValue (configNode, "CheckForOverflowUnderflow", ns, csparams.GenerateOverflowChecks);
-					EnsureChildValue (configNode, "DefineConstants", ns, csparams.DefineSymbols);
-					EnsureChildValue (configNode, "WarningLevel", ns, csparams.WarningLevel);
+					EnsureChildValue (configElement, "AllowUnsafeBlocks", ns, csparams.UnsafeCode);
+					EnsureChildValue (configElement, "Optimize", ns, csparams.Optimize);
+					EnsureChildValue (configElement, "CheckForOverflowUnderflow", ns, csparams.GenerateOverflowChecks);
+					EnsureChildValue (configElement, "DefineConstants", ns, csparams.DefineSymbols);
+					EnsureChildValue (configElement, "WarningLevel", ns, csparams.WarningLevel);
+					if (csparams.Win32Icon != null && csparams.Win32Icon.Length > 0)
+						EnsureChildValue (configElement, "ApplicationIcon", ns,
+							Runtime.FileUtilityService.AbsoluteToRelativePath (
+								project.BaseDirectory, csparams.Win32Icon));
 				}
 			}
 
@@ -275,9 +299,9 @@ namespace MonoDevelop.Prj2Make
 				n.ParentNode.RemoveChild (n);
 		}
 
-		public void SaveProject (string file, DotNetProject project, IProgressMonitor monitor)
+		public void SaveProject (DotNetProject project, IProgressMonitor monitor)
 		{
-			WriteFile (file, project, monitor);
+			WriteFile (project.FileName, project, monitor);
 
 			MSBuildData d = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
 			if (d == null)
@@ -334,7 +358,7 @@ namespace MonoDevelop.Prj2Make
 			string basePath = Path.GetDirectoryName (fname);
 
 			//Create the project
-			DotNetProject project = new DotNetProject (lang);
+			MSBuildProject project = new MSBuildProject (lang);
 			project.FileName = fname;
 			//Default project name
 			project.Name = Path.GetFileNameWithoutExtension (fname);
@@ -354,6 +378,7 @@ namespace MonoDevelop.Prj2Make
 			string str_tmp = String.Empty;
 			string active_config = String.Empty;
 			string guid = null;
+			string rootNamespace = String.Empty;
 			while (iter.MoveNext ()) {
 				if (guid == null && 
 					ReadAsString (iter.Current, "ProjectGuid", ref str_tmp, false))
@@ -362,7 +387,15 @@ namespace MonoDevelop.Prj2Make
 				ReadConfig (iter.Current, globalConfig, project.LanguageName, basePath, ref active_config);
 				//FIXME: Handle case when >1 global PropertyGroups exist,
 				data.GlobalConfigElement = (XmlElement) iter.Current.UnderlyingObject;
+
+				//FIXME: RootNamespace can be specified per-config, but we are 
+				//taking the first occurrence
+				if (rootNamespace == String.Empty &&
+					ReadAsString (iter.Current, "RootNamespace", ref str_tmp, false)) {
+					rootNamespace = str_tmp;
+				}
 			}
+			project.DefaultNamespace = rootNamespace;
 
 			if (guid != null)
 				data.Guid = guid.Trim (new char [] {'{', '}'});
@@ -478,7 +511,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		static XmlElement ReferenceToXmlElement (MSBuildData d, Project project, ProjectReference projectRef)
+		internal static XmlElement ReferenceToXmlElement (MSBuildData d, Project project, ProjectReference projectRef)
 		{
 			ReferenceType refType = projectRef.ReferenceType;
 
@@ -514,22 +547,21 @@ namespace MonoDevelop.Prj2Make
 				AppendChild (elem, "SpecificVersion", ns, "False");
 				break;
 			case ReferenceType.Project:
-				Combine c = project.ParentCombine;
-				while (c.ParentCombine != null)
-					c = c.ParentCombine;
+				Combine c = project.RootCombine;
+				if (c != null) {
+					Project p = c.FindProject (projectRef.Reference);
+					//FIXME: if (p == null) : This should not happen!
+					reference = Runtime.FileUtilityService.AbsoluteToRelativePath (
+						project.BaseDirectory, p.FileName);
 
-				Project p = c.FindProject (projectRef.Reference);
-				//FIXME: if (p == null) : This should not happen!
-				reference = Runtime.FileUtilityService.AbsoluteToRelativePath (
-					project.BaseDirectory, p.FileName);
+					if (p.ExtendedProperties.Contains (typeof (MSBuildFileFormat))) {
+						MSBuildData data = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
+						if (data.Guid != null & data.Guid.Length != 0)
+							EnsureChildValue (elem, "Project", ns, String.Concat ("{", data.Guid, "}"));
+					}
 
-				//FIXME: if (p.ExtendedProperties.Contains ("guid"))
-
-				if (d.Guid != null & d.Guid.Length != 0)
-					EnsureChildValue (elem, "Project", ns, String.Concat ("{", d.Guid, "}"));
-
-				AppendChild (elem, "Name", ns, p.Name);
-
+					AppendChild (elem, "Name", ns, p.Name);
+				}
 				break;
 			case ReferenceType.Custom:
 				break;
@@ -589,6 +621,17 @@ namespace MonoDevelop.Prj2Make
 				n.ParentNode.AppendChild (elem);
 			}
 
+			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
+				MSBuildProject msproj = project as MSBuildProject;
+				if (msproj == null || 
+					msproj.GetDefaultResourceIdInternal (projectFile) != projectFile.ResourceId)
+					//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
+					//(eg. when converting a gtk-sharp project, it might depend on non-vs
+					// style resource naming)
+					//Or when the resourceId is different from the default one
+					EnsureChildValue (elem, "LogicalName", ns, projectFile.ResourceId);
+			}
+
 			return elem;
 		}
 
@@ -598,6 +641,7 @@ namespace MonoDevelop.Prj2Make
 			if (d == null || !d.ProjectFileElements.ContainsKey (e.ProjectFile))
 				return;
 
+			//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
 			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
 			elem.SetAttribute ("Include", e.ProjectFile.RelativePath);
 		}
@@ -643,6 +687,7 @@ namespace MonoDevelop.Prj2Make
 				d.ProjectFileElements [e.ProjectFile] = newElem;
 			}
 
+			//FIXME: EnsureChildValue for DependsOn
 			//FIXME: Subtype, DependsOn, Data
 		}
 
@@ -656,6 +701,7 @@ namespace MonoDevelop.Prj2Make
 			case BuildAction.EmbedAsResource:
 				return "EmbeddedResource";
 			case BuildAction.FileCopy:
+				return "Content";
 			case BuildAction.Exclude:
 				//FIXME:
 				break;
@@ -669,7 +715,7 @@ namespace MonoDevelop.Prj2Make
 		void ReadItemGroups (MSBuildData data, DotNetProject project, 
 				DotNetProjectConfiguration globalConfig, string basePath)
 		{
-			//FIXME: This can also be Config/Platform specific, handle it?
+			//FIXME: This can also be Config/Platform specific
 			XmlNodeList itemList = data.Document.SelectNodes ("/tns:Project/tns:ItemGroup", NamespaceManager);
 
 			StringBuilder importsBuilder = null;
@@ -694,6 +740,7 @@ namespace MonoDevelop.Prj2Make
 						//FIXME: Ignore, error??
 						continue;
 
+					string str_tmp = String.Empty;
 					switch (node.LocalName) {
 					case "Reference":
 						string hintPath = String.Empty;
@@ -742,8 +789,14 @@ namespace MonoDevelop.Prj2Make
 						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.Nothing);
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
+					case "Content":
+						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.FileCopy);
+						data.ProjectFileElements [pf] = (XmlElement) node;
+						break;
 					case "EmbeddedResource":
 						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.EmbedAsResource);
+						if (ReadAsString (node, "LogicalName", ref str_tmp, false))
+							pf.ResourceId = str_tmp;
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "Import":
@@ -752,8 +805,17 @@ namespace MonoDevelop.Prj2Make
 						importsBuilder.AppendFormat ("{0},", include);
 						break;
 					default:
-						Console.WriteLine ("Unrecognised ItemGroup element '{0}'", node.LocalName);
+						Console.WriteLine ("Unrecognised ItemGroup element '{0}', Include = '{1}'. Ignoring.", node.LocalName, include);
 						break;
+					}
+
+					if (pf != null) {
+						if (ReadAsString (node, "DependentUpon", ref str_tmp, false))
+							pf.DependsOn = str_tmp;
+
+						if (String.Compare (node.LocalName, "Content", true) != 0 && 
+							ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
+							Console.WriteLine ("Warning: CopyToOutputDirectory not supported for BuildAction '{0}', Include = '{1}'", node.LocalName, include);
 					}
 				}
 			}
@@ -835,6 +897,9 @@ namespace MonoDevelop.Prj2Make
 
 				if (ReadOffOnAsBool (nav, "OptionStrict", ref bool_tmp))
 					vbparams.OptionStrict = bool_tmp;
+
+				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
+					vbparams.Win32Icon = MapAndResolvePath (basePath, str_tmp);
 				//FIXME: OptionCompare, add support to VBnet binding, params etc
 			}
 
@@ -856,6 +921,9 @@ namespace MonoDevelop.Prj2Make
 
 				if (ReadAsInt (nav, "WarningLevel", ref int_tmp))
 					csparams.WarningLevel = int_tmp;
+
+				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
+					csparams.Win32Icon = MapAndResolvePath (basePath, str_tmp);
 			}
 		}
 
@@ -1071,6 +1139,7 @@ namespace MonoDevelop.Prj2Make
 			set { globalConfigElement = value; }
 		}
 
+		/* Guid w/o enclosing {} */
 		public string Guid {
 			get { return guid; }
 			set { guid = value; }
@@ -1103,6 +1172,59 @@ namespace MonoDevelop.Prj2Make
 		public List<string> Extra {
 			get { return extra; }
 			set { extra = value;}
+		}
+
+	}
+
+	class MSBuildProject : DotNetProject
+	{
+		public MSBuildProject () : base ()
+		{
+		}
+
+		public MSBuildProject (string languageName) : base (languageName)
+		{
+		}
+
+		public MSBuildData Data {
+			get {
+				if (!ExtendedProperties.Contains (typeof (MSBuildFileFormat)))
+					return null;
+				return (MSBuildData) ExtendedProperties [typeof (MSBuildFileFormat)];
+			}
+			set {
+				ExtendedProperties [typeof (MSBuildFileFormat)] = value;
+			}
+		}
+
+		protected override string GetDefaultResourceId (ProjectFile pf)
+		{
+			return GetDefaultResourceIdInternal (pf);
+		}
+
+		internal string GetDefaultResourceIdInternal (ProjectFile pf)
+		{
+			if (pf == null)
+				return null;
+
+			string fname = pf.RelativePath;
+			if (fname.StartsWith ("./"))
+				fname = fname.Substring (2);
+
+			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+				fname = Path.ChangeExtension (fname, ".resources");
+			
+			//FIXME: file must be !IsExternalToProject
+			//	vs ignores such resources with a warning
+			//FIXME: path used for naming must be relative
+			//FIXME: DependentUpon
+
+			string rname = fname.Replace ('/', '.');
+
+			if (DefaultNamespace == null || DefaultNamespace.Length == 0)
+				return rname;
+			else
+				return DefaultNamespace + "." + rname;
 		}
 
 	}

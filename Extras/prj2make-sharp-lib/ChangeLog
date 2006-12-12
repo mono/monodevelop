@@ -1,3 +1,35 @@
+2006-12-12  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (SlnFileFormat.WriteFile): Write to a temporary file
+	and if successful, then rename to the intended file.
+	Split into this and .. 
+	(SlnFileFormat.WriteFileInternal): .. this. Preserve text corresponding
+	to projects that we could not load.
+	(SlnFileFormat.LoadSolution): Use MSBuildSolution instead of Combine.
+	(SlnFileFormat.HandleCombineEntryAdded): Move code for updating project
+	references to .. 
+	(SlnFileFormat.UpdateProjectReferences): .. here.
+	(SlnFileFormat.ConvertToMSBuild): Return CombineEntry. Set file name for solution folder.
+	
+	(SlnFileFormat.Section): Make it top level class.
+	(SlnData): New class.
+	(MSBuildSolution): New class.
+
+	* MSBuildFileFormat.cs (MSBuildFileFormat.WriteFile): Write to a temporary file
+	and if successful, then rename to the intended file.
+	(MSBuildFileFormat.ReadConfig): Read ApplicationIcon also.
+	(MSBuildFileFormat.SaveProject): Remove @file param.
+	(MSBuildFileFormat.LoadProject): Set project's DefaultNamespace. Use
+	MSBuildProject instead of DotNetProject.
+	(MSBuildFileFormat.ReferenceToXmlElement): Set the correct guid for a
+	project reference.
+	(MSBuildFileFormat.FileToXmlElement): For EmbedAsResource, set the
+	LogicalName if required (see the comment in the code).
+	(MSBuildFileFormat.ReadItemGroups): Add "Content".
+	For EmbeddedResource, use LogicalName if available.
+
+	(MSBuildFileFormat.MSBuildProject): New.
+
 2006-12-08  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (WriteFileInternal): Trimming '{', '}' not

@@ -40,6 +40,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("Description", DefaultValue="")]
 		protected string description     = "";
 
+		[ItemProperty ("DefaultNamespace", DefaultValue="")]
+		protected string defaultNamespace = String.Empty;
+
 		[ItemProperty ("newfilesearch", DefaultValue = NewFileSearch.None)]
 		protected NewFileSearch newFileSearch  = NewFileSearch.None;
 
@@ -73,6 +76,11 @@ namespace MonoDevelop.Projects
 				description = value;
 				NotifyModified ();
 			}
+		}
+
+		public string DefaultNamespace {
+			get { return defaultNamespace; }
+		        set { defaultNamespace = value; }
 		}
 		
 		[Browsable(false)]
@@ -556,6 +564,11 @@ namespace MonoDevelop.Projects
 			projectFileWatcher.EnableRaisingEvents = false;
 			projectFileWatcher.Path = BaseDirectory;
 			projectFileWatcher.EnableRaisingEvents = true;
+		}
+
+		internal protected virtual string GetDefaultResourceId (ProjectFile pf)
+		{
+			return Path.GetFileName (pf.Name);
 		}
 		
 		void OnFileChanged (object source, FileSystemEventArgs e)

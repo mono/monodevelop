@@ -1,3 +1,10 @@
+2006-12-12  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects/ProjectFile.cs (ResourceId): New. ResourceId for
+	embedded resources.
+	* MonoDevelop.Projects/Project.cs (DefaultNamespace): New.
+	(GetDefaultResourceId): New.
+
 2006-11-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/ProjectFile.cs (IsExternalToProject): Use the

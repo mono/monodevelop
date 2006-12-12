@@ -47,6 +47,9 @@ namespace MonoDevelop.Projects
 		
 		[ItemProperty("data", DefaultValue="")]
 		string data;
+
+		[ItemProperty("resource_id", DefaultValue="")]
+		string resourceId = String.Empty;
 		
 		Project project;
 		
@@ -152,7 +155,17 @@ namespace MonoDevelop.Projects
 					project.NotifyFilePropertyChangedInProject (this);
 			}
 		}
-		
+
+		public string ResourceId {
+			get {
+				if ((resourceId == null || resourceId.Length == 0) && project != null)
+					return project.GetDefaultResourceId (this);
+
+				return resourceId;
+			}
+			set { resourceId = value; }
+		}
+
 		public bool IsExternalToProject {
 			get {
 				return project != null && !Path.GetFullPath (Name).StartsWith (project.BaseDirectory);
