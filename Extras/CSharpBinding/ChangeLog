@@ -1,3 +1,10 @@
+2006-12-13  Ankit Jain  <jankit@novell.com>
+
+	* Project/CSharpCompilerParameters.cs (Win32Resource): New.
+	* CSharpBindingCompilerManager.cs (Compile): Generate 
+	option for Win32Resource. Don't generate option for win32icon 
+	if win32resource is defined.
+
 2006-12-12  Ankit Jain  <jankit@novell.com>
 
 	* CSharpBindingCompilerManager.cs (Compile): Use ProjectFile.ResourceId

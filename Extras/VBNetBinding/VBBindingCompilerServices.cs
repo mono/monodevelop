@@ -53,6 +53,7 @@ namespace VBBinding {
 		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, string outputFileName)
 		{
 			StringBuilder sb = new StringBuilder();
+			bool hasWin32Resource = false;
 			
 			sb.Append("-out:");sb.Append("\"" + outputFileName + "\"");/*sb.Append('"');*/sb.Append(Environment.NewLine);
 			
@@ -78,8 +79,15 @@ namespace VBBinding {
 			//	sb.Append("--optionexplicit-");sb.Append(Environment.NewLine);
 			//}
 			
+			if (compilerparameters.Win32Resource != null && compilerparameters.Win32Resource.Length > 0 && File.Exists(compilerparameters.Win32Resource)) {
+				sb.Append("-win32resource:");sb.Append('"');sb.Append(compilerparameters.Win32Resource);sb.Append('"');sb.Append(Environment.NewLine);
+				hasWin32Resource = true;
+			}
 			if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists(compilerparameters.Win32Icon)) {
-				sb.Append("-win32icon:");sb.Append('"');sb.Append(compilerparameters.Win32Icon);sb.Append('"');sb.Append(Environment.NewLine);
+				if (hasWin32Resource)
+					Console.WriteLine ("Warning: Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
+				else
+					sb.Append("-win32icon:");sb.Append('"');sb.Append(compilerparameters.Win32Icon);sb.Append('"');sb.Append(Environment.NewLine);
 			}
 			
 			if (compilerparameters.RootNamespace!= null && compilerparameters.RootNamespace.Length > 0) {

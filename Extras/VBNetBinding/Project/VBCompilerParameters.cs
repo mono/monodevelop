@@ -67,6 +67,9 @@ namespace VBBinding {
 		[ProjectPathItemProperty("win32Icon")]
 		string win32Icon = String.Empty;
 		
+		[ProjectPathItemProperty("win32Resource")]
+		string win32Resource = String.Empty;
+
 		[ItemProperty("imports")]
 		string imports = String.Empty;
 		
@@ -175,6 +178,16 @@ namespace VBBinding {
 			}
 		}
 		
+		public string Win32Resource
+		{
+			get {
+				return win32Resource;
+			}
+			set {
+				win32Resource = value;
+			}
+		}
+
 		public string RootNamespace
 		{
 			get {

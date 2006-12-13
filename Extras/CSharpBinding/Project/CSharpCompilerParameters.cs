@@ -56,7 +56,10 @@ namespace CSharpBinding
 		
 		[ProjectPathItemProperty ("win32Icon", DefaultValue = "")]
 		string         win32Icon     = String.Empty;
-		
+
+		[ProjectPathItemProperty ("win32Resource", DefaultValue = "")]
+		string         win32Resource     = String.Empty;
+	
 		public object Clone ()
 		{
 			return MemberwiseClone ();
@@ -81,6 +84,17 @@ namespace CSharpBinding
 				win32Icon = value;
 			}
 		}
+		
+		[Browsable(false)]
+		public string Win32Resource {
+			get {
+				return win32Resource;
+			}
+			set {
+				win32Resource = value;
+			}
+		}
+
 #region Code Generation
 		[DefaultValue("")]
 		[LocalizedProperty("${res:BackendBindings.CompilerOptions.CodeGeneration.MainClass}",

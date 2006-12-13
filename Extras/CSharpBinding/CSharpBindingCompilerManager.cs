@@ -40,6 +40,7 @@ namespace CSharpBinding
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			StreamWriter writer = new StreamWriter(responseFileName);
+			bool hasWin32Res = false;
 
 			writer.WriteLine("\"/out:" + exe + '"');
 			
@@ -88,9 +89,17 @@ namespace CSharpBinding
 				writer.WriteLine("/optimize+");
 			else
 				writer.WriteLine("/optimize-");
-			
+
+			if (compilerparameters.Win32Resource != null && compilerparameters.Win32Resource.Length > 0 && File.Exists (compilerparameters.Win32Resource)) {
+				writer.WriteLine("\"/win32res:" + compilerparameters.Win32Resource + "\"");
+				hasWin32Res = true;
+			}
+		
 			if (compilerparameters.Win32Icon != null && compilerparameters.Win32Icon.Length > 0 && File.Exists (compilerparameters.Win32Icon)) {
-				writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
+				if (hasWin32Res)
+					Console.WriteLine ("Warning: Both Win32 icon and Win32 resource cannot be specified. Ignoring the icon.");
+				else
+					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
 			}
 			
 			if (compilerparameters.UnsafeCode) {

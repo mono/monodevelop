@@ -1,3 +1,9 @@
+2006-12-13  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReadConfig): Read Win32Resource.
+	(WriteFileInternal): Write Win32Resource.
+	(ReadItemGroups): Emit a warning if Include attribute is not found.
+
 2006-12-12  Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs (SlnFileFormat.WriteFile): Write to a temporary file

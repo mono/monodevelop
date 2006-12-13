@@ -251,6 +251,11 @@ namespace MonoDevelop.Prj2Make
 							Runtime.FileUtilityService.AbsoluteToRelativePath (
 								project.BaseDirectory, vbparams.Win32Icon));
 
+					if (vbparams.Win32Resource != null && vbparams.Win32Resource.Length > 0)
+						EnsureChildValue (configElement, "Win32Resource", ns,
+							Runtime.FileUtilityService.AbsoluteToRelativePath (
+								project.BaseDirectory, vbparams.Win32Resource));
+
 					//FIXME: VB.net Imports
 				}
 
@@ -267,6 +272,11 @@ namespace MonoDevelop.Prj2Make
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
 							Runtime.FileUtilityService.AbsoluteToRelativePath (
 								project.BaseDirectory, csparams.Win32Icon));
+
+					if (csparams.Win32Resource != null && csparams.Win32Resource.Length > 0)
+						EnsureChildValue (configElement, "Win32Resource", ns,
+							Runtime.FileUtilityService.AbsoluteToRelativePath (
+								project.BaseDirectory, csparams.Win32Resource));
 				}
 			}
 
@@ -729,9 +739,11 @@ namespace MonoDevelop.Prj2Make
 					if (node.NodeType != XmlNodeType.Element)
 						continue;
 
-					if (node.Attributes ["Include"] == null)
-						//FIXME: warning/error?
+					if (node.Attributes ["Include"] == null) {
+						Console.WriteLine ("Warning: Expected 'Include' attribute not found for ItemGroup '{0}'",
+							node.LocalName);
 						continue;
+					}
 
 					string include = node.Attributes ["Include"].Value;
 					pf = null;
@@ -900,6 +912,9 @@ namespace MonoDevelop.Prj2Make
 
 				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
 					vbparams.Win32Icon = MapAndResolvePath (basePath, str_tmp);
+
+				if (ReadAsString (nav, "Win32Resource", ref str_tmp, false))
+					vbparams.Win32Resource = MapAndResolvePath (basePath, str_tmp);
 				//FIXME: OptionCompare, add support to VBnet binding, params etc
 			}
 
@@ -924,6 +939,9 @@ namespace MonoDevelop.Prj2Make
 
 				if (ReadAsString (nav, "ApplicationIcon", ref str_tmp, false))
 					csparams.Win32Icon = MapAndResolvePath (basePath, str_tmp);
+				
+				if (ReadAsString (nav, "Win32Resource", ref str_tmp, false))
+					csparams.Win32Resource = MapAndResolvePath (basePath, str_tmp);
 			}
 		}
 

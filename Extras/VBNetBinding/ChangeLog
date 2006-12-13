@@ -1,3 +1,10 @@
+2006-12-13  Ankit Jain  <jankit@novell.com>
+
+	* Project/VBCompilerParameters.cs (Win32Resource): New.
+	* VBBindingCompilerServices.cs (GenerateOptions): Generate 
+	option for Win32Resource. Don't generate option for win32icon 
+	if win32resource is defined.
+
 2006-12-12  Ankit Jain  <jankit@novell.com>
 
 	* VBBindingCompilerServices.cs (Compile): Use ProjectFile.ResourceId for
