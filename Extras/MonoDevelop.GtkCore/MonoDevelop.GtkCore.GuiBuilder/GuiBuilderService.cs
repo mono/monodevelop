@@ -182,6 +182,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static void OnBeforeCompile (object s, BuildEventArgs args)
 		{
+			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			{
+				return;
+			}
+
 			// Generate stetic files for all modified projects
 			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
 				GenerateSteticCode (args.ProgressMonitor, p);
