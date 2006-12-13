@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandHandler
+	public abstract class CommandHandler
 	{
 		internal protected virtual void Run ()
 		{			
