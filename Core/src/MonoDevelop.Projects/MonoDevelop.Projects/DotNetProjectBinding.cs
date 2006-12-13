@@ -58,6 +58,7 @@ namespace MonoDevelop.Projects
 				ProjectCreateInformation info = new ProjectCreateInformation ();
 				info.ProjectName = Path.GetFileNameWithoutExtension (file);
 				info.CombinePath = Path.GetDirectoryName (file);
+				info.ProjectBasePath = Path.GetDirectoryName (file);
 				Project project = CreateProject (binding.Language, info, null);
 				project.ProjectFiles.Add (new ProjectFile (file));
 				return project;
