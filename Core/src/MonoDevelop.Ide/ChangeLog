@@ -1,5 +1,11 @@
 2006-12-13 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
+	* MonoDevelop.Ide.Commands/WindowCommands.cs: Ensure that
+	filenames containing underscores are escape correctly.
+	Fixes bug #79766. Thanks to John Millikin.
+
+2006-12-13 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
+
 	* Base.glade: Added a VPaned to the Edit References dialog.
 
 2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 

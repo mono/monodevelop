@@ -57,12 +57,13 @@ namespace MonoDevelop.Ide.Commands
 			for (int i = 0; i < contentCount; ++i) {
 				Document doc = IdeApp.Workbench.Documents [i];
 				
+				string escapedWindowTitle = doc.Window.Title.Replace("_", "__");
 				CommandInfo item = null;
 				if (doc.Window.ShowNotification) {
-					item = new CommandInfo ("<span foreground=\"blue\">" + doc.Window.Title + "</span>");
+					item = new CommandInfo ("<span foreground=\"blue\">" + escapedWindowTitle + "</span>");
 					item.UseMarkup = true;
 				} else {
-					item = new CommandInfo (doc.Window.Title);
+					item = new CommandInfo (escapedWindowTitle);
 				}
 				
 				item.Checked = (IdeApp.Workbench.ActiveDocument == doc);
