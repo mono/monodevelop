@@ -1,3 +1,19 @@
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp, Parser/SharpDevelopTree/Indexer.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/Parameter.cs,
+	  Parser/SharpDevelopTree/Event.cs, Parser/SharpDevelopTree/Field.cs,
+	  Parser/SharpDevelopTree/Property.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs, Makefile.am: Removed
+	  some unnecessary Default* subclasses.
+	* Parser/VBNetVisitor.cs, Parser/Resolver.cs,
+	  Parser/SharpDevelopTree/CompilationUnit.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs: Renamed Abstract* classes
+	  to Default*. Removed some unnecessary Default* subclasses.
+
 2006-12-13  Ankit Jain  <jankit@novell.com>
 
 	* Project/VBCompilerParameters.cs (Win32Resource): New.

@@ -125,12 +125,12 @@ namespace VBBinding.Parser
 			Class c       = (Class)currentClass.Peek();
 			
 			
-			Method method = new Method(String.Concat(methodDeclaration.Name), type, methodDeclaration.Modifier, region, bodyRegion);
+			DefaultMethod method = new DefaultMethod (c, String.Concat(methodDeclaration.Name), type, (ModifierEnum)methodDeclaration.Modifier, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
@@ -151,7 +151,7 @@ namespace VBBinding.Parser
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (constructor, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
@@ -171,9 +171,9 @@ namespace VBBinding.Parser
 					if (field.TypeReference != null) {
 						type = new ReturnType(field.TypeReference);
 					}
-					Field f = new Field(type, field.Name, fieldDeclaration.Modifier, region);
+					DefaultField f = new DefaultField (c, type, field.Name, (ModifierEnum)fieldDeclaration.Modifier, region);
 					if (type == null) {
-						f.SetModifiers(ModifierEnum.Const | ModifierEnum.SpecialName);
+						f.Modifiers = ModifierEnum.Const | ModifierEnum.SpecialName;
 					}
 					c.Fields.Add(f);
 				}
@@ -189,7 +189,7 @@ namespace VBBinding.Parser
 			ReturnType type = propertyDeclaration.TypeReference == null ? new ReturnType("System.Void") : new ReturnType(propertyDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
 			
-			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion);
+			DefaultProperty property = new DefaultProperty (c, propertyDeclaration.Name, type, (ModifierEnum)propertyDeclaration.Modifier, region, bodyRegion);
 			c.Properties.Add(property);
 			return null;
 		}
@@ -201,7 +201,7 @@ namespace VBBinding.Parser
 			
 			ReturnType type = eventDeclaration.TypeReference != null ? new ReturnType(eventDeclaration.TypeReference) : null;
 			Class c = (Class)currentClass.Peek();
-			Event e = new Event(eventDeclaration.Name, type, eventDeclaration.Modifier, region, bodyRegion);
+			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, (ModifierEnum)eventDeclaration.Modifier, region, bodyRegion);
 			c.Events.Add(e);
 			return null;
 		}

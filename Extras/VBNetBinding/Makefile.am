@@ -25,16 +25,9 @@ Parser/Parser.cs \
 Parser/Resolver.cs \
 Parser/TypeVisitor.cs \
 Parser/VBNetVisitor.cs \
-Parser/SharpDevelopTree/AttributeSection.cs \
 Parser/SharpDevelopTree/Class.cs \
 Parser/SharpDevelopTree/CompilationUnit.cs \
 Parser/SharpDevelopTree/Constructor.cs \
-Parser/SharpDevelopTree/Event.cs \
-Parser/SharpDevelopTree/Field.cs \
-Parser/SharpDevelopTree/Indexer.cs \
-Parser/SharpDevelopTree/Method.cs \
-Parser/SharpDevelopTree/Parameter.cs \
-Parser/SharpDevelopTree/Property.cs \
 Parser/SharpDevelopTree/ReturnType.cs \
 Project/VBCompilerParameters.cs
 

@@ -4,7 +4,7 @@ using MonoDevelop.Projects.Parser;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
-	public class CompilationUnit : AbstractCompilationUnit
+	public class CompilationUnit : DefaultCompilationUnit
 	{
 		
 		public override CommentCollection MiscComments {

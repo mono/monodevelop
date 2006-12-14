@@ -1102,7 +1102,7 @@ namespace VBBinding.Parser
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							result.Add(new Parameter (name, new ReturnType (v.TypeRef.SystemType)));
+							result.Add(new DefaultParameter (null, name, new ReturnType (v.TypeRef.SystemType)));
 							break;
 						}
 					}

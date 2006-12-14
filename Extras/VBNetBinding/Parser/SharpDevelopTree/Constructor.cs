@@ -5,13 +5,8 @@ using ICSharpCode.NRefactory.Parser.AST;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
-	public class Constructor : AbstractMethod
+	public class Constructor : DefaultMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Constructor(Modifier m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = "#ctor";

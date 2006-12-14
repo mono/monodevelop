@@ -8,13 +8,10 @@ using ClassType = MonoDevelop.Projects.Parser.ClassType;
 
 namespace VBBinding.Parser.SharpDevelopTree
 {
-	public class Class : AbstractClass
+	public class Class : DefaultClass
 	{
-		ICompilationUnit cu;
-		
-		public Class(CompilationUnit cu, ClassType t, Modifier m, IRegion region)
+		public Class(CompilationUnit cu, ClassType t, Modifier m, IRegion region): base (cu)
 		{
-			this.cu = cu;
 			classType = t;
 			this.region = region;
 			modifiers = (ModifierEnum)m;
@@ -23,7 +20,7 @@ namespace VBBinding.Parser.SharpDevelopTree
 		public void UpdateModifier()
 		{
 			if (classType == ClassType.Enum) {
-				foreach (Field f in Fields) {
+				foreach (DefaultField f in Fields) {
 					f.AddModifier(ModifierEnum.Public);
 				}
 				return;
@@ -37,30 +34,25 @@ namespace VBBinding.Parser.SharpDevelopTree
 			foreach (IMethod m in Methods) {
 				if (m is Constructor) {
 					((Constructor)m).AddModifier(ModifierEnum.Public);
-				} else if (m is Method) {
-					((Method)m).AddModifier(ModifierEnum.Public);
+				} else if (m is DefaultMethod) {
+					((DefaultMethod)m).AddModifier(ModifierEnum.Public);
 				} else {
 					Debug.Assert(false, "Unexpected type in method of interface. Can not set modifier to public!");
 				}
 			}
-			foreach (Event e in Events) {
+			foreach (DefaultEvent e in Events) {
 				e.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Field f in Fields) {
+			foreach (DefaultField f in Fields) {
 				f.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Indexer i in Indexer) {
+			foreach (DefaultIndexer i in Indexer) {
 				i.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Property p in Properties) {
+			foreach (DefaultProperty p in Properties) {
 				p.AddModifier(ModifierEnum.Public);
 			}
 			
-		}
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return cu;
-			}
 		}
 	}
 }
