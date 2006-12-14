@@ -12,7 +12,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentProperty : AbstractProperty
+	internal sealed class PersistentProperty : DefaultProperty
 	{
 		const uint canGetFlag = (uint)(1 << 29);
 		const uint canSetFlag = (uint)(1 << 30);

@@ -1,5 +1,53 @@
 2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/AbstractDecoration.cs,
+	  MonoDevelop.Projects.Parser/AbstractClass.cs,
+	  MonoDevelop.Projects.Parser/AbstractReturnType.cs,
+	  MonoDevelop.Projects.Parser/AbstractIndexer.cs,
+	  MonoDevelop.Projects.Parser/AbstractComment.cs,
+	  MonoDevelop.Projects.Parser/AbstractAttribute.cs,
+	  MonoDevelop.Projects.Parser/AbstractMember.cs,
+	  MonoDevelop.Projects.Parser/AbstractParameter.cs,
+	  MonoDevelop.Projects.Parser/AbstractEvent.cs,
+	  MonoDevelop.Projects.Parser/AbstractField.cs,
+	  MonoDevelop.Projects.Parser/AbstractProperty.cs,
+	  MonoDevelop.Projects.Parser/AbstractCompilationUnit.cs,
+	  MonoDevelop.Projects.Parser/AbstractMethod.cs: Renamed Abstract*
+	  classes to Default*. Provided default implementations for all
+	  abstract methods and properties, so those classes can be directly
+	  used by language bindings without having to create subclasses.
+	* MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs,
+	  MonoDevelop.Projects.Parser/ReflectionClass.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyField.cs,
+	  MonoDevelop.Projects.Parser/PersistentClass.cs,
+	  MonoDevelop.Projects.Parser/PersistentMethod.cs,
+	  MonoDevelop.Projects.Parser/PersistentProperty.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/PersistentAttribute.cs,
+	  MonoDevelop.Projects.Parser/ReflectionParameter.cs,
+	  MonoDevelop.Projects.Parser/ReflectionEvent.cs,
+	  MonoDevelop.Projects.Parser/ReflectionField.cs,
+	  MonoDevelop.Projects.Parser/PersistentParameter.cs,
+	  MonoDevelop.Projects.Parser/PersistentEvent.cs,
+	  MonoDevelop.Projects.Parser/PersistentReturnType.cs,
+	  MonoDevelop.Projects.Parser/PersistentField.cs,
+	  MonoDevelop.Projects.Parser/PersistentAttributeSection.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs,
+	  MonoDevelop.Projects.Parser/ReflectionMethod.cs,
+	  MonoDevelop.Projects.Parser/ReflectionProperty.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyClass.cs,
+	  MonoDevelop.Projects.Parser/ReflectionIndexer.cs,
+	  MonoDevelop.Projects.Parser/PersistentIndexer.cs,
+	  MonoDevelop.Projects.Parser/ReflectionReturnType.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyIndexer.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs: Track
+	  changes in the api. 
+
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am: Updated.
 	* MonoDevelop.Projects.Parser/CompoundClass.cs,
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added

@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Parser
 	}
 	
 	[Serializable]
-	public abstract class AbstractCompilationUnit : ICompilationUnit
+	public class DefaultCompilationUnit : ICompilationUnit
 	{
 		protected IUsingCollection usings = new IUsingCollection();
 		protected ClassCollection classes = new ClassCollection();
@@ -44,6 +44,9 @@ namespace MonoDevelop.Projects.Parser
 		protected object tag               = null;
 		protected ArrayList foldingRegions = new ArrayList();
 		protected ErrorInfo[] errorInfo;
+		TagCollection tagComments;
+		CommentCollection dokuComments;
+		CommentCollection miscComments;
 		
 		public bool ErrorsDuringCompile {
 			get {
@@ -96,16 +99,19 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 
-		public abstract CommentCollection MiscComments {
-			get;
+		public virtual CommentCollection MiscComments {
+			get { return miscComments; }
+			set { miscComments = value; }
 		}
 
-		public abstract CommentCollection DokuComments {
-			get;
+		public virtual CommentCollection DokuComments {
+			get { return dokuComments; }
+			set { dokuComments = value; }
 		}
 
-		public abstract TagCollection TagComments {
-			get;
+		public virtual TagCollection TagComments {
+			get { return tagComments; }
+			set { tagComments = value; }
 		}
 	}
 }

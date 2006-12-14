@@ -22,7 +22,7 @@ using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribu
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyAttribute : AbstractAttribute
+	internal class SharpAssemblyAttribute : DefaultAttribute
 	{
 		SharpAssemblyClass attributeType;
 		

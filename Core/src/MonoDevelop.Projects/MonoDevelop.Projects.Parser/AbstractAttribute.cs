@@ -12,19 +12,33 @@ using MonoDevelop.Projects.Utility;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public class AbstractAttributeSection : IAttributeSection
+	public class DefaultAttributeSection : IAttributeSection
 	{
-		protected AttributeTarget     attributeTarget;
-		protected AttributeCollection attributes = new AttributeCollection();
+		AttributeTarget attributeTarget;
+		AttributeCollection attributes = new AttributeCollection();
 
-		protected IRegion region;
+		IRegion region;
+		
+		public DefaultAttributeSection ()
+		{
+		}
+		
+		public DefaultAttributeSection (AttributeTarget target, IRegion region)
+		{
+			this.attributeTarget = target;
+			this.region = region;
+		}
+
+		public DefaultAttributeSection (AttributeTarget target, IRegion region, AttributeCollection attributes)
+		{
+			this.attributeTarget = target;
+			this.attributes = attributes;
+			this.region = region;
+		}
 
 		public virtual AttributeTarget AttributeTarget {
 			get {
 				return attributeTarget;
-			}
-			set {
-				attributeTarget = value;
 			}
 		}
 
@@ -69,13 +83,30 @@ namespace MonoDevelop.Projects.Parser
 		}
 	}
 	
-	public abstract class AbstractAttribute : IAttribute
+	public class DefaultAttribute : IAttribute
 	{
 		protected string name;
 		protected CodeExpression[] positionalArguments;
 		protected NamedAttributeArgument[] namedArguments;
 		protected IRegion region;
 
+		public DefaultAttribute ()
+		{
+		}
+		
+		public DefaultAttribute (string name, CodeExpression[] positionalArguments, NamedAttributeArgument[] namedArguments)
+		: this (name, positionalArguments, namedArguments, null)
+		{
+		}
+		
+		public DefaultAttribute (string name, CodeExpression[] positionalArguments, NamedAttributeArgument[] namedArguments, IRegion region)
+		{
+			this.name = name;
+			this.positionalArguments = positionalArguments;
+			this.namedArguments = namedArguments;
+			this.region = region;
+		}
+		
 		public virtual string Name {
 			get {
 				return name;

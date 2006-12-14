@@ -10,8 +10,21 @@ using System.Reflection;
 
 namespace MonoDevelop.Projects.Parser {
 	[Serializable]
-	public abstract class AbstractField : AbstractMember, IField
+	public class DefaultField : AbstractMember, IField
 	{
+		public DefaultField ()
+		{
+		}
+		
+		public DefaultField (IClass declaringType, IReturnType type, string fullyQualifiedName, ModifierEnum m, IRegion region)
+		{
+			this.returnType = type;
+			this.FullyQualifiedName = fullyQualifiedName;
+			this.region = region;
+			this.declaringType = declaringType;
+			modifiers = m;
+		}
+		
 		public override int CompareTo(object ob) 
 		{
 			IField field = (IField) ob;		// Just crash if this is not a field

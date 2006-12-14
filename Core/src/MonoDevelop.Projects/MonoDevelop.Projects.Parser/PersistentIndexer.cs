@@ -12,38 +12,38 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentIndexer : AbstractIndexer
+	internal sealed class PersistentIndexer
 	{
-		public static PersistentIndexer Resolve (IIndexer source, ITypeResolver typeResolver)
+		public static DefaultIndexer Resolve (IIndexer source, ITypeResolver typeResolver)
 		{
-			PersistentIndexer ind = new PersistentIndexer();
+			DefaultIndexer ind = new DefaultIndexer();
 			ind.FullyQualifiedName = source.FullyQualifiedName;
 			ind.Documentation = source.Documentation;
-			ind.modifiers = source.Modifiers;
-			ind.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			ind.Modifiers = source.Modifiers;
+			ind.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 
 			foreach (IParameter p in source.Parameters)
-				ind.parameters.Add (PersistentParameter.Resolve (p, typeResolver));
+				ind.Parameters.Add (PersistentParameter.Resolve (p, typeResolver));
 
-			ind.region = source.Region;
-			ind.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			ind.Region = source.Region;
+			ind.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return ind;
 		}
 		
-		public static PersistentIndexer Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultIndexer Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentIndexer ind = new PersistentIndexer();
+			DefaultIndexer ind = new DefaultIndexer();
 			ind.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			ind.Documentation = PersistentHelper.ReadString (reader, nameTable);
-			ind.modifiers = (ModifierEnum)reader.ReadUInt32();
-			ind.returnType = PersistentReturnType.Read (reader, nameTable);
+			ind.Modifiers = (ModifierEnum)reader.ReadUInt32();
+			ind.ReturnType = PersistentReturnType.Read (reader, nameTable);
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				ind.parameters.Add (PersistentParameter.Read (reader, nameTable));
+				ind.Parameters.Add (PersistentParameter.Read (reader, nameTable));
 			}
-			ind.region = PersistentRegion.Read (reader, nameTable);
-			ind.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			ind.Region = PersistentRegion.Read (reader, nameTable);
+			ind.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return ind;
 		}
 		

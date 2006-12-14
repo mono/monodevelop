@@ -13,7 +13,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionIndexer : AbstractIndexer
+	internal class ReflectionIndexer : DefaultIndexer
 	{
 /*		string GetIndexerName(PropertyInfo propertyInfo)
 		{

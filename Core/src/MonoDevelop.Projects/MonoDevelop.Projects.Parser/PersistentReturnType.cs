@@ -11,17 +11,17 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentReturnType : AbstractReturnType
+	internal sealed class PersistentReturnType
 	{
-		public static PersistentReturnType Resolve (IReturnType source, ITypeResolver typeResolver)
+		public static DefaultReturnType Resolve (IReturnType source, ITypeResolver typeResolver)
 		{
 			if (source == null) return null;
 			
-			PersistentReturnType rt = new PersistentReturnType ();
+			DefaultReturnType rt = new DefaultReturnType ();
 			rt.FullyQualifiedName = typeResolver.Resolve (source.FullyQualifiedName);
-			rt.byRef = source.ByRef;
-			rt.pointerNestingLevel = source.PointerNestingLevel;
-			rt.arrayDimensions = source.ArrayDimensions;
+			rt.ByRef = source.ByRef;
+			rt.PointerNestingLevel = source.PointerNestingLevel;
+			rt.ArrayDimensions = source.ArrayDimensions;
 			
 			if (source.GenericArguments != null && source.GenericArguments.Count > 0) {
 				rt.GenericArguments = new ReturnTypeList();
@@ -33,21 +33,21 @@ namespace MonoDevelop.Projects.Parser
 			return rt;
 		}
 
-		public static PersistentReturnType Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultReturnType Read (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (PersistentHelper.ReadNull (reader)) return null;
 			
-			PersistentReturnType rt = new PersistentReturnType ();
+			DefaultReturnType rt = new DefaultReturnType ();
 			rt.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			
-			rt.byRef = reader.ReadBoolean();
+			rt.ByRef = reader.ReadBoolean();
 
-			rt.pointerNestingLevel = reader.ReadInt32();
+			rt.PointerNestingLevel = reader.ReadInt32();
 
 			uint count = reader.ReadUInt32();
-			rt.arrayDimensions = new int[count];
-			for (uint i = 0; i < rt.arrayDimensions.Length; ++i) {
-				rt.arrayDimensions[i] = reader.ReadInt32();
+			rt.ArrayDimensions = new int[count];
+			for (uint i = 0; i < rt.ArrayDimensions.Length; ++i) {
+				rt.ArrayDimensions[i] = reader.ReadInt32();
 			}
 			
 			// Read the generic arguments

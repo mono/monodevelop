@@ -24,17 +24,24 @@ namespace MonoDevelop.Projects.Parser
 		}
 		
 		public virtual ModifierEnum Modifiers {
-			get {
-				return modifiers;
-			}
+			get { return modifiers;	}
+			set { modifiers = value; }
 		}
 
+		public void AddModifier (ModifierEnum m)
+		{
+			modifiers = modifiers | m;
+		}
+		
 		public virtual AttributeSectionCollection Attributes {
 			get {
 				if (attributes == null) {
 					attributes = new AttributeSectionCollection();
 				}
 				return attributes;
+			}
+			set {
+				attributes = value;
 			}
 		}
 

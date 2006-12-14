@@ -11,7 +11,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionParameter : AbstractParameter
+	internal class ReflectionParameter : DefaultParameter
 	{
 		public ReflectionParameter (ParameterDefinition parameterInfo, XmlNode methodNode)
 		{

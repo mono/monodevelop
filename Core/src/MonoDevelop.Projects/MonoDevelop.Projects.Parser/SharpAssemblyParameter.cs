@@ -21,7 +21,7 @@ using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribu
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyParameter : AbstractParameter
+	internal class SharpAssemblyParameter : DefaultParameter
 	{
 		public SharpAssemblyParameter(SharpAssembly_ asm, Param[] paramTable, uint index, IReturnType type)
 		{

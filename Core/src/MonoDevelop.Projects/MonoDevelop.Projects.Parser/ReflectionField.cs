@@ -13,7 +13,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionField : AbstractField
+	internal class ReflectionField : DefaultField
 	{
 		public ReflectionField(FieldDefinition fieldInfo, XmlDocument docs)
 		{

@@ -10,7 +10,7 @@ using System.Reflection;
 namespace MonoDevelop.Projects.Parser {
 
 	[Serializable]
-	public abstract class AbstractProperty : AbstractMember, IProperty
+	public class DefaultProperty : AbstractMember, IProperty
 	{
 		protected IRegion bodyRegion;
 		
@@ -21,12 +21,25 @@ namespace MonoDevelop.Projects.Parser {
 		protected IMethod     setterMethod;
 		protected ParameterCollection parameters = new ParameterCollection();
 		
+		public DefaultProperty ()
+		{
+		}
+		
+		public DefaultProperty (IClass declaringType, string fullyQualifiedName, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		{
+			this.FullyQualifiedName = fullyQualifiedName;
+			returnType = type;
+			this.region = region;
+			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
+			modifiers = m;
+		}
+		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
 		}
-
 
 		public virtual ParameterCollection Parameters {
 			get {
@@ -38,27 +51,23 @@ namespace MonoDevelop.Projects.Parser {
 		}
 
 		public IRegion GetterRegion {
-			get {
-				return getterRegion;
-			}
+			get { return getterRegion; }
+			set { getterRegion = value; }
 		}
 
 		public IRegion SetterRegion {
-			get {
-				return setterRegion;
-			}
+			get { return setterRegion; }
+			set { setterRegion = value; }
 		}
 
 		public IMethod GetterMethod {
-			get {
-				return getterMethod;
-			}
+			get { return getterMethod; }
+			set { getterMethod = value; }
 		}
 
 		public IMethod SetterMethod {
-			get {
-				return setterMethod;
-			}
+			get { return setterMethod; }
+			set { setterMethod = value; }
 		}
 
 		public virtual bool CanGet {

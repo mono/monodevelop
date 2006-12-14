@@ -17,9 +17,8 @@ namespace MonoDevelop.Projects.Parser
 		protected IRegion          region;
 		
 		public virtual IRegion Region {
-			get {
-				return region;
-			}
+			get { return region; }
+			set { region = value; }
 		}
 		
 		public IClass DeclaringType {

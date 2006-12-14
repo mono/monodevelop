@@ -11,17 +11,30 @@ using MonoDevelop.Projects.Utility;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractMethod : AbstractMember, IMethod
+	public class DefaultMethod : AbstractMember, IMethod
 	{
 		protected IRegion bodyRegion;
 		
 		protected GenericParameterList genericParameters;
 		protected ParameterCollection parameters = new ParameterCollection();
 
+		public DefaultMethod ()
+		{
+		}
+		
+		public DefaultMethod (IClass declaringType, string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		{
+			FullyQualifiedName = name;
+			returnType = type;
+			this.region     = region;
+			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
+			modifiers = m;
+		}
+		
 		public virtual IRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
+			get { return bodyRegion; }
+			set { bodyRegion = value; }
 		}
 		
 		public virtual ParameterCollection Parameters {
@@ -55,7 +68,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public override string ToString()
 		{
-			return String.Format("[AbstractMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}]",
+			return String.Format("[DefaultMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}]",
 			                     FullyQualifiedName,
 			                     ReturnType,
 			                     IsConstructor,

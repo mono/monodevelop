@@ -10,7 +10,7 @@ using System.Collections.Specialized;
 namespace MonoDevelop.Projects.Parser {
 
 	[Serializable]
-	public abstract class AbstractComment : System.MarshalByRefObject, IComment
+	public class DefaultComment : System.MarshalByRefObject, IComment
 	{
 		protected bool    isBlockComment;
 		protected string  commentTag;

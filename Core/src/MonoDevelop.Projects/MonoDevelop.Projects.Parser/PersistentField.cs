@@ -12,29 +12,29 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentField : AbstractField
+	internal sealed class PersistentField
 	{
-		public static PersistentField Resolve (IField source, ITypeResolver typeResolver)
+		public static DefaultField Resolve (IField source, ITypeResolver typeResolver)
 		{
-			PersistentField field = new PersistentField ();
+			DefaultField field = new DefaultField ();
 			field.FullyQualifiedName = source.FullyQualifiedName;
 			field.Documentation = source.Documentation;
-			field.modifiers = source.Modifiers;
-			field.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
-			field.region = source.Region;
-			field.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			field.Modifiers = source.Modifiers;
+			field.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			field.Region = source.Region;
+			field.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return field;
 		}
 		
-		public static PersistentField Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultField Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentField field = new PersistentField ();
+			DefaultField field = new DefaultField ();
 			field.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			field.Documentation = PersistentHelper.ReadString (reader, nameTable);
-			field.modifiers = (ModifierEnum)reader.ReadUInt32();
-			field.returnType = PersistentReturnType.Read (reader, nameTable);
-			field.region = PersistentRegion.Read (reader, nameTable);
-			field.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			field.Modifiers = (ModifierEnum)reader.ReadUInt32();
+			field.ReturnType = PersistentReturnType.Read (reader, nameTable);
+			field.Region = PersistentRegion.Read (reader, nameTable);
+			field.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return field;
 		}
 		

@@ -12,7 +12,7 @@ namespace MonoDevelop.Projects.Parser
 {
 
 	[Serializable]
-	public abstract class AbstractParameter : System.MarshalByRefObject, IParameter
+	public class DefaultParameter: IParameter
 	{
 		protected string              name;
 		protected string              documentation;
@@ -22,6 +22,17 @@ namespace MonoDevelop.Projects.Parser
 		protected AttributeCollection attributeCollection = new AttributeCollection();
 		protected IMember             declaringMember;
 
+		public DefaultParameter ()
+		{
+		}
+		
+		public DefaultParameter (IMember declaringMember, string name, IReturnType type)
+		{
+			this.name = name;
+			returnType = type;
+			this.declaringMember = declaringMember;
+		}
+		
 		public bool IsOut {
 			get {
 				return (modifier & ParameterModifier.Out) == ParameterModifier.Out;
@@ -78,6 +89,9 @@ namespace MonoDevelop.Projects.Parser
 		public string Documentation {
 			get {
 				return documentation == null ? "" : documentation;
+			}
+			set {
+				documentation = value;
 			}
 		}
 		

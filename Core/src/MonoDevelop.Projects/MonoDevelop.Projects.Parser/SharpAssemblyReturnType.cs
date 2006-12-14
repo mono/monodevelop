@@ -20,7 +20,7 @@ using AssemblyReader=MonoDevelop.SharpAssembly.Assembly.AssemblyReader;
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	public class SharpAssemblyReturnType : AbstractReturnType
+	public class SharpAssemblyReturnType : DefaultReturnType
 	{
 		ArrayList      arrayRanks = null;
 		

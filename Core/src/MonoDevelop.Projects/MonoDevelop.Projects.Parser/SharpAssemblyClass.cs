@@ -20,14 +20,12 @@ using SharpAssembly_ = MonoDevelop.SharpAssembly.Assembly.SharpAssembly;
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	public class SharpAssemblyClass : AbstractClass
+	public class SharpAssemblyClass : DefaultClass
 	{
 		ClassCollection baseTypeCollection = new ClassCollection();
 		
-		public ClassCollection BaseTypeCollection {
-			get {
-				return baseTypeCollection;
-			}
+		public SharpAssemblyClass (): base (null)
+		{
 		}
 		
 		public override ICompilationUnit CompilationUnit {
@@ -204,7 +202,7 @@ namespace MonoDevelop.Projects.Parser {
 			ArrayList attrib = assembly.Attributes.TypeDef[index] as ArrayList;
 			if (attrib == null) goto modifiers;
 			
-			AbstractAttributeSection sect = new AbstractAttributeSection();
+			DefaultAttributeSection sect = new DefaultAttributeSection();
 			
 			foreach(SharpCustomAttribute customattribute in attrib) {
 				sect.Attributes.Add(new SharpAssemblyAttribute(assembly, customattribute));

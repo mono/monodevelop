@@ -12,25 +12,25 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentParameter : AbstractParameter
+	internal sealed class PersistentParameter
 	{
-		public static PersistentParameter Resolve (IParameter source, ITypeResolver typeResolver)
+		public static DefaultParameter Resolve (IParameter source, ITypeResolver typeResolver)
 		{
-			PersistentParameter par = new PersistentParameter ();
-			par.name = source.Name;
-			par.documentation = source.Documentation;
-			par.modifier = source.Modifier;
-			par.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			DefaultParameter par = new DefaultParameter ();
+			par.Name = source.Name;
+			par.Documentation = source.Documentation;
+			par.Modifier = source.Modifier;
+			par.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 			return par;
 		}
 		
-		public static PersistentParameter Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultParameter Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentParameter par = new PersistentParameter ();
-			par.name = PersistentHelper.ReadString (reader, nameTable);
-			par.documentation = PersistentHelper.ReadString (reader, nameTable);
-			par.modifier = (ParameterModifier)reader.ReadByte();
-			par.returnType = PersistentReturnType.Read (reader, nameTable);
+			DefaultParameter par = new DefaultParameter ();
+			par.Name = PersistentHelper.ReadString (reader, nameTable);
+			par.Documentation = PersistentHelper.ReadString (reader, nameTable);
+			par.Modifier = (ParameterModifier)reader.ReadByte();
+			par.ReturnType = PersistentReturnType.Read (reader, nameTable);
 			return par;
 		}
 		

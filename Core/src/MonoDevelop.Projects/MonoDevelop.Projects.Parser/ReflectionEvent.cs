@@ -12,7 +12,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionEvent : AbstractEvent
+	internal class ReflectionEvent : DefaultEvent
 	{
 		public ReflectionEvent(EventDefinition eventInfo, XmlDocument docs)
 		{

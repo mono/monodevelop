@@ -12,23 +12,22 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Parser
 {
-	[Serializable]
-	internal sealed class PersistentMethod : AbstractMethod
+	internal sealed class PersistentMethod
 	{
-		public static PersistentMethod Resolve (IMethod source, ITypeResolver typeResolver)
+		public static DefaultMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{
-			PersistentMethod met = new PersistentMethod ();
+			DefaultMethod met = new DefaultMethod ();
 			met.FullyQualifiedName = source.FullyQualifiedName;
 			met.Documentation = source.Documentation;
-			met.modifiers = source.Modifiers;
-			met.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			met.Modifiers = source.Modifiers;
+			met.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 			
 			foreach (IParameter p in source.Parameters)
-				met.parameters.Add (PersistentParameter.Resolve (p, typeResolver));
+				met.Parameters.Add (PersistentParameter.Resolve (p, typeResolver));
 
-			met.region = source.Region;
-			met.bodyRegion = source.BodyRegion;
-			met.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			met.Region = source.Region;
+			met.BodyRegion = source.BodyRegion;
+			met.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			
 			if (source.GenericParameters != null && source.GenericParameters.Count > 0) {
 				met.GenericParameters = new GenericParameterList();
@@ -40,22 +39,22 @@ namespace MonoDevelop.Projects.Parser
 			return met;
 		}
 		
-		public static PersistentMethod Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultMethod Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentMethod met = new PersistentMethod ();
+			DefaultMethod met = new DefaultMethod ();
 			met.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			met.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			
-			met.modifiers = (ModifierEnum)reader.ReadUInt32();
-			met.returnType = PersistentReturnType.Read (reader, nameTable);
+			met.Modifiers = (ModifierEnum)reader.ReadUInt32();
+			met.ReturnType = PersistentReturnType.Read (reader, nameTable);
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				met.parameters.Add (PersistentParameter.Read (reader, nameTable));
+				met.Parameters.Add (PersistentParameter.Read (reader, nameTable));
 			}
-			met.region = PersistentRegion.Read (reader, nameTable);
-			met.bodyRegion = PersistentRegion.Read (reader, nameTable);
-			met.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			met.Region = PersistentRegion.Read (reader, nameTable);
+			met.BodyRegion = PersistentRegion.Read (reader, nameTable);
+			met.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			
 			// Read the generic parameters
 			count = reader.ReadUInt32();

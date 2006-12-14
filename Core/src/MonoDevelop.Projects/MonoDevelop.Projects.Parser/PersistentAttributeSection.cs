@@ -69,29 +69,27 @@ namespace MonoDevelop.Projects.Parser
 	}
 
 	[Serializable]
-	internal sealed class PersistentAttributeSection : AbstractAttributeSection
+	internal sealed class PersistentAttributeSection
 	{
-		public static PersistentAttributeSection Resolve (IAttributeSection source, ITypeResolver typeResolver)
+		public static DefaultAttributeSection Resolve (IAttributeSection source, ITypeResolver typeResolver)
 		{
-			PersistentAttributeSection ats = new PersistentAttributeSection ();
-			ats.AttributeTarget = source.AttributeTarget;
-			ats.region = source.Region;
+			DefaultAttributeSection ats = new DefaultAttributeSection (source.AttributeTarget, source.Region);
 			
 			foreach (IAttribute at in source.Attributes)
-				ats.attributes.Add (PersistentAttribute.Resolve (at, typeResolver));
+				ats.Attributes.Add (PersistentAttribute.Resolve (at, typeResolver));
 
 			return ats;
 		}
 		
-		public static PersistentAttributeSection Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultAttributeSection Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentAttributeSection ats = new PersistentAttributeSection ();
-			ats.AttributeTarget = (AttributeTarget) reader.ReadInt32 ();
-			ats.region = PersistentRegion.Read (reader, nameTable);
+			AttributeTarget tar = (AttributeTarget) reader.ReadInt32 ();
+			IRegion reg = PersistentRegion.Read (reader, nameTable);
+			DefaultAttributeSection ats = new DefaultAttributeSection (tar, reg);
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				ats.attributes.Add (PersistentAttribute.Read (reader, nameTable));
+				ats.Attributes.Add (PersistentAttribute.Read (reader, nameTable));
 			}
 			return ats;
 		}

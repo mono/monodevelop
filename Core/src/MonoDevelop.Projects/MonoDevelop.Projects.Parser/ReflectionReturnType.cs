@@ -11,7 +11,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionReturnType : AbstractReturnType
+	internal class ReflectionReturnType : DefaultReturnType
 	{
 		public ReflectionReturnType(TypeReference type)
 		{

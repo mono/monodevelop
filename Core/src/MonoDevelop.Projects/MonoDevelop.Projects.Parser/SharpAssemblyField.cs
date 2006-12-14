@@ -20,7 +20,7 @@ using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribu
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyField : AbstractField
+	internal class SharpAssemblyField : DefaultField
 	{
 		public SharpAssemblyField(SharpAssembly_ assembly, Field[] fieldTable, SharpAssemblyClass declaringtype, uint index)
 		{
@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Parser {
 			ArrayList attrib = assembly.Attributes.Field[index] as ArrayList;
 			if (attrib == null) goto noatt;
 			
-			AbstractAttributeSection sect = new AbstractAttributeSection();
+			DefaultAttributeSection sect = new DefaultAttributeSection();
 			
 			foreach(SharpCustomAttribute customattribute in attrib) {
 				sect.Attributes.Add(new SharpAssemblyAttribute(assembly, customattribute));

@@ -21,7 +21,7 @@ using SharpCustomAttribute=MonoDevelop.SharpAssembly.Assembly.SharpCustomAttribu
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyProperty : AbstractProperty
+	internal class SharpAssemblyProperty : DefaultProperty
 	{
 		public SharpAssemblyProperty(SharpAssembly_ asm, Property[] propertyTable, SharpAssemblyClass declaringtype, uint index)
 		{
@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects.Parser {
 			ArrayList attrib = asm.Attributes.Property[index] as ArrayList;
 			if (attrib == null) goto noatt;
 			
-			AbstractAttributeSection sect = new AbstractAttributeSection();
+			DefaultAttributeSection sect = new DefaultAttributeSection();
 			
 			foreach(SharpCustomAttribute customattribute in attrib) {
 				sect.Attributes.Add(new SharpAssemblyAttribute(asm, customattribute));

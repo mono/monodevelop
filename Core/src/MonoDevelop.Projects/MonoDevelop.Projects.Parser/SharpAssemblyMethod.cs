@@ -22,7 +22,7 @@ using AssemblyReader=MonoDevelop.SharpAssembly.Assembly.AssemblyReader;
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyMethod : AbstractMethod
+	internal class SharpAssemblyMethod : DefaultMethod
 	{
 		public SharpAssemblyMethod(SharpAssembly_ asm, Method[] methodTable, SharpAssemblyClass declaringtype, uint index)
 		{
@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Parser {
 			ArrayList attrib = asm.Attributes.Method[index] as ArrayList;
 			if (attrib == null) goto noatt;
 			
-			AbstractAttributeSection sect = new AbstractAttributeSection();
+			DefaultAttributeSection sect = new DefaultAttributeSection();
 			
 			foreach(SharpCustomAttribute customattribute in attrib) {
 				sect.Attributes.Add(new SharpAssemblyAttribute(asm, customattribute));

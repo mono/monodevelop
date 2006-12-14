@@ -17,7 +17,7 @@ using MonoDevelop.SharpAssembly.PE;
 namespace MonoDevelop.Projects.Parser {
 	
 	[Serializable]
-	internal class SharpAssemblyIndexer : AbstractIndexer
+	internal class SharpAssemblyIndexer : DefaultIndexer
 	{
 	}
 }

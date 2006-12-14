@@ -14,12 +14,13 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractClass : AbstractNamedEntity, IClass, IComparable
+	public class DefaultClass : AbstractNamedEntity, IClass, IComparable
 	{
 		protected ClassType        classType;
 		protected IRegion          region;
 		protected IRegion          bodyRegion;
 		protected object           declaredIn;
+		protected ICompilationUnit compilationUnit;
 		
 		protected GenericParameterList genericParamters;
 		protected ReturnTypeList     baseTypes    = new ReturnTypeList();
@@ -30,14 +31,26 @@ namespace MonoDevelop.Projects.Parser
 		protected MethodCollection   methods      = new MethodCollection();
 		protected EventCollection    events       = new EventCollection();
 		protected IndexerCollection  indexer      = new IndexerCollection();
+		
+		public DefaultClass ()
+		{
+		}
 
-		public abstract ICompilationUnit CompilationUnit {
-			get;
+		public DefaultClass (ICompilationUnit compilationUnit)
+		{
+			this.compilationUnit = compilationUnit;
+		}
+
+		public virtual ICompilationUnit CompilationUnit {
+			get { return compilationUnit; }
 		}
 
 		public virtual ClassType ClassType {
 			get {
 				return classType;
+			}
+			set {
+				classType = value;
 			}
 		}
 
@@ -45,17 +58,26 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				return region;
 			}
+			set {
+				region = value;
+			}
 		}
 		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
+			set {
+				bodyRegion = value;
+			}
 		}
 
 		public object DeclaredIn {
 			get {
 				return declaredIn;
+			}
+			set {
+				declaredIn = value;
 			}
 		}
 		

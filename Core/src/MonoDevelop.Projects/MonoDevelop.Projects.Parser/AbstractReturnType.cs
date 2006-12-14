@@ -10,7 +10,7 @@ using MonoDevelop.Projects.Utility;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractReturnType : System.MarshalByRefObject, IReturnType
+	public class DefaultReturnType : IReturnType
 	{
 		protected int    pointerNestingLevel;
 		protected int[]  arrayDimensions;
@@ -18,6 +18,23 @@ namespace MonoDevelop.Projects.Parser
 		protected ReturnTypeList genericArguments;
 		protected bool   byRef;
 		string fname;
+		
+		public DefaultReturnType ()
+		{
+		}
+		
+		public DefaultReturnType (string fullyQualifiedName)
+		{
+			FullyQualifiedName = fullyQualifiedName;
+		}
+		
+		public DefaultReturnType (string fullyQualifiedName, int[] arrayDimensions, int pointerNestingLevel, ReturnTypeList genericArguments)
+		{
+			this.FullyQualifiedName  = fullyQualifiedName;
+			this.arrayDimensions     = arrayDimensions;
+			this.pointerNestingLevel = pointerNestingLevel;
+			this.genericArguments    = genericArguments;
+		}
 		
 		public virtual string FullyQualifiedName {
 			get {
@@ -59,9 +76,8 @@ namespace MonoDevelop.Projects.Parser
 		}
 
 		public virtual int PointerNestingLevel {
-			get {
-				return pointerNestingLevel;
-			}
+			get { return pointerNestingLevel; }
+			set { pointerNestingLevel = value; }
 		}
 
 		public int ArrayCount {
@@ -75,15 +91,17 @@ namespace MonoDevelop.Projects.Parser
 				if (arrayDimensions == null) return new int[0];
 				return arrayDimensions;
 			}
+			set {
+				arrayDimensions = value;
+			}
 		}
 		 		
 		/// <summary>
 		/// Indicates whether the return type is passed by reference.
 		/// </summary>
 		public virtual bool ByRef {
-			get {
-				return byRef;
-			}
+			get { return byRef; }
+			set { byRef = value; }
 		}
 		 		
 		/// <summary>

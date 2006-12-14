@@ -17,16 +17,10 @@ using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionClass : AbstractClass
+	internal class ReflectionClass : DefaultClass
 	{
-		/// <value>
-		/// A reflection class doesn't have a compilation unit (because
-		/// it is not parsed the information is gathered using reflection)
-		/// </value>
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return null;
-			}
+		public ReflectionClass (): base (null)
+		{
 		}
 		
 		public static bool IsDelegate (TypeReference type)
@@ -46,7 +40,7 @@ namespace MonoDevelop.Projects.Parser
 			return false;
 		}
 		
-		public ReflectionClass(TypeDefinition type)
+		public ReflectionClass (TypeDefinition type): base (null)
 		{
 			FullyQualifiedName = type.FullName.Replace ('/','+');
 

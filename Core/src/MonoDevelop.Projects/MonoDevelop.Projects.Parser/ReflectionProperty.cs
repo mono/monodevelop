@@ -12,7 +12,7 @@ using Mono.Cecil;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionProperty : AbstractProperty 
+	internal class ReflectionProperty : DefaultProperty 
 	{
 		public ReflectionProperty (PropertyDefinition propertyInfo, XmlDocument docs)
 		{

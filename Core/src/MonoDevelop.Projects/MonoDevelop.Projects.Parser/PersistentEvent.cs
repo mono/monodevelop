@@ -12,29 +12,29 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentEvent : AbstractEvent
+	internal sealed class PersistentEvent
 	{
-		public static PersistentEvent Resolve (IEvent source, ITypeResolver typeResolver)
+		public static DefaultEvent Resolve (IEvent source, ITypeResolver typeResolver)
 		{
-			PersistentEvent ev = new PersistentEvent();
+			DefaultEvent ev = new DefaultEvent();
 			ev.FullyQualifiedName = source.FullyQualifiedName;
 			ev.Documentation = source.Documentation;
-			ev.modifiers = source.Modifiers;
-			ev.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
-			ev.region = source.Region;
-			ev.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
+			ev.Modifiers = source.Modifiers;
+			ev.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			ev.Region = source.Region;
+			ev.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return ev;
 		}
 		
-		public static PersistentEvent Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultEvent Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentEvent ev = new PersistentEvent();
+			DefaultEvent ev = new DefaultEvent();
 			ev.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			ev.Documentation = PersistentHelper.ReadString (reader, nameTable);
-			ev.modifiers = (ModifierEnum)reader.ReadUInt32();
-			ev.returnType = PersistentReturnType.Read (reader, nameTable);
-			ev.region = PersistentRegion.Read (reader, nameTable);
-			ev.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			ev.Modifiers = (ModifierEnum)reader.ReadUInt32();
+			ev.ReturnType = PersistentReturnType.Read (reader, nameTable);
+			ev.Region = PersistentRegion.Read (reader, nameTable);
+			ev.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return ev;
 		}
 

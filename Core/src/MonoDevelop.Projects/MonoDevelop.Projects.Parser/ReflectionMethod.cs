@@ -14,7 +14,7 @@ using MDGenericParameter = MonoDevelop.Projects.Parser.GenericParameter;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal class ReflectionMethod : AbstractMethod 
+	internal class ReflectionMethod : DefaultMethod 
 	{
 /*		string GetParamList(MethodBase methodBase)
 		{

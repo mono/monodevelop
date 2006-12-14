@@ -10,13 +10,26 @@ using MonoDevelop.Projects.Utility;
 
 namespace MonoDevelop.Projects.Parser {
 	[Serializable]
-	public abstract class AbstractEvent : AbstractMember, IEvent
+	public class DefaultEvent : AbstractMember, IEvent
 	{
 		protected IRegion          bodyRegion;
 		protected EventAttributes  eventAttributes;
 		protected IMethod          addMethod;
 		protected IMethod          removeMethod;
 		protected IMethod          raiseMethod;
+		
+		public DefaultEvent ()
+		{
+		}
+		
+		public DefaultEvent (string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		{
+			FullyQualifiedName = name;
+			returnType         = type;
+			this.region        = region;
+			this.bodyRegion    = bodyRegion;
+			modifiers          = m;
+		}
 		
 		public virtual IRegion BodyRegion {
 			get {

@@ -10,12 +10,26 @@ using MonoDevelop.Projects.Utility;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	public abstract class AbstractIndexer : AbstractMember, IIndexer
+	public class DefaultIndexer : AbstractMember, IIndexer
 	{
 		protected IRegion             bodyRegion;
 		protected IRegion             getterRegion;
 		protected IRegion             setterRegion;
 		protected ParameterCollection parameters = new ParameterCollection();
+		
+		public DefaultIndexer ()
+		{
+		}
+		
+		public DefaultIndexer (IClass declaringType, IReturnType type, ParameterCollection parameters, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		{
+			returnType      = type;
+			this.parameters = parameters;
+			this.region     = region;
+			this.bodyRegion = bodyRegion;
+			this.declaringType = declaringType;
+			modifiers = m;
+		}
 		
 		public virtual IRegion BodyRegion {
 			get {

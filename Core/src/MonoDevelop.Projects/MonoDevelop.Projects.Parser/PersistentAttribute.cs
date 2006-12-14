@@ -35,23 +35,23 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentAttribute : AbstractAttribute
+	internal sealed class PersistentAttribute
 	{
-		public static PersistentAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
+		public static DefaultAttribute Resolve (IAttribute source, ITypeResolver typeResolver)
 		{
-			PersistentAttribute par = new PersistentAttribute ();
-			par.name = source.Name;
-			par.positionalArguments = source.PositionalArguments;
-			par.namedArguments = source.NamedArguments;
+			DefaultAttribute par = new DefaultAttribute ();
+			par.Name = source.Name;
+			par.PositionalArguments = source.PositionalArguments;
+			par.NamedArguments = source.NamedArguments;
 			return par;
 		}
 		
-		public static PersistentAttribute Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultAttribute Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentAttribute par = new PersistentAttribute ();
-			par.name = PersistentHelper.ReadString (reader, nameTable);
-			par.positionalArguments = (CodeExpression[]) PersistentHelper.DeserializeObject (reader);
-			par.namedArguments = (NamedAttributeArgument[]) PersistentHelper.DeserializeObject (reader);
+			DefaultAttribute par = new DefaultAttribute ();
+			par.Name = PersistentHelper.ReadString (reader, nameTable);
+			par.PositionalArguments = (CodeExpression[]) PersistentHelper.DeserializeObject (reader);
+			par.NamedArguments = (NamedAttributeArgument[]) PersistentHelper.DeserializeObject (reader);
 			return par;
 		}
 		

@@ -17,63 +17,57 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Parser
 {
 	[Serializable]
-	internal sealed class PersistentClass : AbstractClass
+	internal class PersistentClass
 	{
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return null;
-			}
-		}
-
-		public static PersistentClass Resolve (IClass sclass, ITypeResolver typeResolver)
+		public static DefaultClass Resolve (IClass sclass, ITypeResolver typeResolver)
 		{
-			PersistentClass cls = new PersistentClass ();
+			DefaultClass cls = new DefaultClass ();
 			
 			cls.FullyQualifiedName = sclass.FullyQualifiedName;
 			cls.Documentation = sclass.Documentation;
 			
-			cls.modifiers          = sclass.Modifiers;
-			cls.classType          = sclass.ClassType;
+			cls.Modifiers          = sclass.Modifiers;
+			cls.ClassType          = sclass.ClassType;
 
 			foreach (IReturnType t in sclass.BaseTypes)
 			{
-				cls.baseTypes.Add (PersistentReturnType.Resolve(t, typeResolver));
+				cls.BaseTypes.Add (PersistentReturnType.Resolve(t, typeResolver));
 			}
 			
 			foreach (IClass c in sclass.InnerClasses) {
-				PersistentClass pc = PersistentClass.Resolve (c, typeResolver);
-				pc.declaredIn = cls;
-				cls.innerClasses.Add (pc);
+				DefaultClass pc = PersistentClass.Resolve (c, typeResolver);
+				pc.DeclaredIn = cls;
+				cls.InnerClasses.Add (pc);
 			}
 
 			foreach (IField f in sclass.Fields) {
-				PersistentField pf = PersistentField.Resolve (f, typeResolver);
+				DefaultField pf = PersistentField.Resolve (f, typeResolver);
 				pf.DeclaringType = cls;
-				cls.fields.Add (pf);
+				cls.Fields.Add (pf);
 			}
 
 			foreach (IProperty p in sclass.Properties) {
-				PersistentProperty pp = PersistentProperty.Resolve (p, typeResolver);
+				DefaultProperty pp = PersistentProperty.Resolve (p, typeResolver);
 				pp.DeclaringType = cls;
-				cls.properties.Add (pp);
+				cls.Properties.Add (pp);
 			}
 
 			foreach (IMethod m in sclass.Methods) {
-				PersistentMethod pm = PersistentMethod.Resolve (m, typeResolver);
+				DefaultMethod pm = PersistentMethod.Resolve (m, typeResolver);
 				pm.DeclaringType = cls;
-				cls.methods.Add (pm);
+				cls.Methods.Add (pm);
 			}
 
 			foreach (IEvent e in sclass.Events) {
-				PersistentEvent pe = PersistentEvent.Resolve (e, typeResolver);
+				DefaultEvent pe = PersistentEvent.Resolve (e, typeResolver);
 				pe.DeclaringType = cls;
-				cls.events.Add (pe);
+				cls.Events.Add (pe);
 			}
 
 			foreach (IIndexer i in sclass.Indexer) {
-				PersistentIndexer pi = PersistentIndexer.Resolve (i, typeResolver);
+				DefaultIndexer pi = PersistentIndexer.Resolve (i, typeResolver);
 				pi.DeclaringType = cls;
-				cls.indexer.Add (pi);
+				cls.Indexer.Add (pi);
 			}
 			
 			if (sclass.GenericParameters != null && sclass.GenericParameters.Count > 0) {
@@ -83,67 +77,77 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			cls.region = sclass.Region;
-			cls.bodyRegion = sclass.BodyRegion;
-			cls.attributes = PersistentAttributeSectionCollection.Resolve (sclass.Attributes, typeResolver);
+			cls.Region = sclass.Region;
+			cls.BodyRegion = sclass.BodyRegion;
+			cls.Attributes = PersistentAttributeSectionCollection.Resolve (sclass.Attributes, typeResolver);
 			return cls;
 		}
 		
-		public static PersistentClass Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultClass Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			PersistentClass cls = new PersistentClass ();
+			uint classCount = reader.ReadUInt32();
+			if (classCount > 1) {
+				// It's a compound class
+				CompoundClass ccls = new CompoundClass ();
+				for (uint i = 0; i < classCount; i++)
+					ccls.AddClass (Read (reader, nameTable));
+				ccls.UpdateInformationFromParts ();
+				return ccls;
+			}
+			
+			DefaultClass cls = new DefaultClass ();
 			
 			cls.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
 			cls.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			
-			cls.modifiers          = (ModifierEnum)reader.ReadUInt32();
-			cls.classType          = (ClassType)reader.ReadInt16();
+			cls.Modifiers          = (ModifierEnum)reader.ReadUInt32();
+			cls.ClassType          = (ClassType)reader.ReadInt16();
 
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				cls.baseTypes.Add (PersistentReturnType.Read (reader, nameTable));
+				cls.BaseTypes.Add (PersistentReturnType.Read (reader, nameTable));
 			}
 			
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentClass c = PersistentClass.Read (reader, nameTable);
-				c.declaredIn = cls;
-				cls.innerClasses.Add (c);
+				DefaultClass c = PersistentClass.Read (reader, nameTable);
+				c.DeclaredIn = cls;
+				cls.InnerClasses.Add (c);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentField f = PersistentField.Read (reader, nameTable);
+				DefaultField f = PersistentField.Read (reader, nameTable);
 				f.DeclaringType = cls;
-				cls.fields.Add (f);
+				cls.Fields.Add (f);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentProperty p = PersistentProperty.Read (reader, nameTable);
+				DefaultProperty p = PersistentProperty.Read (reader, nameTable);
 				p.DeclaringType = cls;
-				cls.properties.Add (p);
+				cls.Properties.Add (p);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentMethod m = PersistentMethod.Read (reader, nameTable);
+				DefaultMethod m = PersistentMethod.Read (reader, nameTable);
 				m.DeclaringType = cls;
-				cls.methods.Add(m);
+				cls.Methods.Add(m);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentEvent e = PersistentEvent.Read (reader, nameTable);
+				DefaultEvent e = PersistentEvent.Read (reader, nameTable);
 				e.DeclaringType = cls;
-				cls.events.Add (e);
+				cls.Events.Add (e);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				PersistentIndexer ind = PersistentIndexer.Read (reader, nameTable);
+				DefaultIndexer ind = PersistentIndexer.Read (reader, nameTable);
 				ind.DeclaringType = cls;
-				cls.indexer.Add (ind);
+				cls.Indexer.Add (ind);
 			}
 			
 			// Read the generic parameters
@@ -157,14 +161,26 @@ namespace MonoDevelop.Projects.Parser
 				// All the generic parameters have been added...
 			}
 			
-			cls.region = PersistentRegion.Read (reader, nameTable);
-			cls.bodyRegion = PersistentRegion.Read (reader, nameTable);
-			cls.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
+			cls.Region = PersistentRegion.Read (reader, nameTable);
+			cls.BodyRegion = PersistentRegion.Read (reader, nameTable);
+			cls.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return cls;
 		}
 
 		public static void WriteTo (IClass cls, BinaryWriter writer, INameEncoder nameTable)
 		{
+			if (cls is CompoundClass) {
+				// If it is a compound class, write each child class
+				CompoundClass comp = (CompoundClass) cls;
+				writer.Write ((uint) comp.Parts.Count);
+				foreach (IClass cc in comp.Parts)
+					WriteTo (cc, writer, nameTable);
+				return;
+			}
+			
+			// Not a compound class
+			writer.Write ((uint)1);
+			
 			PersistentHelper.WriteString (cls.FullyQualifiedName, writer, nameTable);
 			PersistentHelper.WriteString (cls.Documentation, writer, nameTable);
 				

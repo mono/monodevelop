@@ -1664,7 +1664,7 @@ namespace MonoDevelop.Projects.Parser
 	}
 	
 	[Serializable]
-	internal class DummyCompilationUnit : AbstractCompilationUnit
+	internal class DummyCompilationUnit : DefaultCompilationUnit
 	{
 		CommentCollection miscComments = new CommentCollection();
 		CommentCollection dokuComments = new CommentCollection();
