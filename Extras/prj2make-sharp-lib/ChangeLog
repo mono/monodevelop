@@ -1,3 +1,15 @@
+2006-12-15  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReadItemGroups): Add a 'monitor' param.
+	Resource file cannot be outside the project directory.		
+	DependentUpon is relative to the directory of the embedded resource.
+	(FileToXmlElement): Write DependentUpon info.
+	(HandleFilePropertyChanged): Likewise.
+
+	(MSBuildProject.GetDefaultResourceIdInternal): Build embedded resource
+	id when the file depends on a cs file.
+	(GetNextCSToken): Very Simple tokenizer for c# files.
+
 2006-12-13  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (ReadConfig): Read Win32Resource.

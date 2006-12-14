@@ -411,7 +411,7 @@ namespace MonoDevelop.Prj2Make
 				data.Guid = guid.Trim (new char [] {'{', '}'});
 
 			//ReadItemGroups : References, Source files etc
-			ReadItemGroups (data, project, globalConfig, basePath);
+			ReadItemGroups (data, project, globalConfig, basePath, monitor);
 
 			//Load configurations
 			iter = nav.Select ("/tns:Project/tns:PropertyGroup[@Condition]", NamespaceManager);
@@ -640,8 +640,13 @@ namespace MonoDevelop.Prj2Make
 					// style resource naming)
 					//Or when the resourceId is different from the default one
 					EnsureChildValue (elem, "LogicalName", ns, projectFile.ResourceId);
+				
+				//DependentUpon is relative to the basedir of the 'pf' (resource file)
+				EnsureChildValue (d.ProjectFileElements [projectFile], "DependentUpon", ns,
+						Runtime.FileUtilityService.AbsoluteToRelativePath (
+							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn));
 			}
-
+			
 			return elem;
 		}
 
@@ -697,8 +702,11 @@ namespace MonoDevelop.Prj2Make
 				d.ProjectFileElements [e.ProjectFile] = newElem;
 			}
 
-			//FIXME: EnsureChildValue for DependsOn
-			//FIXME: Subtype, DependsOn, Data
+			//DependentUpon is relative to the basedir of the 'pf' (resource file)
+			EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
+					Runtime.FileUtilityService.AbsoluteToRelativePath (
+						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn));
+			//FIXME: Subtype, Data
 		}
 
 		static string BuildActionToString (BuildAction ba)
@@ -723,7 +731,7 @@ namespace MonoDevelop.Prj2Make
 		//Reading
 
 		void ReadItemGroups (MSBuildData data, DotNetProject project, 
-				DotNetProjectConfiguration globalConfig, string basePath)
+				DotNetProjectConfiguration globalConfig, string basePath, IProgressMonitor monitor)
 		{
 			//FIXME: This can also be Config/Platform specific
 			XmlNodeList itemList = data.Document.SelectNodes ("/tns:Project/tns:ItemGroup", NamespaceManager);
@@ -806,7 +814,15 @@ namespace MonoDevelop.Prj2Make
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "EmbeddedResource":
-						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.EmbedAsResource);
+						string fname = MapAndResolvePath (basePath, include);
+						if (!fname.StartsWith (project.BaseDirectory)) {
+							monitor.ReportWarning (String.Format (
+								"The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include));
+							Console.WriteLine ("The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include);
+							continue;
+						}
+
+						pf = project.AddFile (fname, BuildAction.EmbedAsResource);
 						if (ReadAsString (node, "LogicalName", ref str_tmp, false))
 							pf.ResourceId = str_tmp;
 						data.ProjectFileElements [pf] = (XmlElement) node;
@@ -823,7 +839,8 @@ namespace MonoDevelop.Prj2Make
 
 					if (pf != null) {
 						if (ReadAsString (node, "DependentUpon", ref str_tmp, false))
-							pf.DependsOn = str_tmp;
+							//DependentUpon is relative to the basedir of the 'pf' (resource file)
+							pf.DependsOn = MapAndResolvePath (Path.GetDirectoryName (pf.Name), str_tmp);
 
 						if (String.Compare (node.LocalName, "Content", true) != 0 && 
 							ReadAsString (node, "CopyToOutputDirectory", ref str_tmp, false))
@@ -1222,28 +1239,148 @@ namespace MonoDevelop.Prj2Make
 
 		internal string GetDefaultResourceIdInternal (ProjectFile pf)
 		{
-			if (pf == null)
-				return null;
+			if (String.IsNullOrEmpty (pf.DependsOn)) {
+				string fname = pf.RelativePath;
+				if (fname.StartsWith ("./"))
+					fname = fname.Substring (2);
 
-			string fname = pf.RelativePath;
-			if (fname.StartsWith ("./"))
-				fname = fname.Substring (2);
+				if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+					fname = Path.ChangeExtension (fname, ".resources");
 
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0)
-				fname = Path.ChangeExtension (fname, ".resources");
-			
-			//FIXME: file must be !IsExternalToProject
-			//	vs ignores such resources with a warning
-			//FIXME: path used for naming must be relative
-			//FIXME: DependentUpon
+				string rname = fname.Replace ('/', '.');
 
-			string rname = fname.Replace ('/', '.');
+				if (DefaultNamespace == null || DefaultNamespace.Length == 0)
+					return rname;
+				else
+					return DefaultNamespace + "." + rname;
+			}
 
-			if (DefaultNamespace == null || DefaultNamespace.Length == 0)
-				return rname;
-			else
-				return DefaultNamespace + "." + rname;
+			//FIXME: Handle VB.NET files
+			//FIXME: Check that its a .cs file
+			string ns = null;
+			string classname = null;
+
+			using (StreamReader rdr = new StreamReader (pf.DependsOn)) {
+				int numopen = 0;
+				while (true) {
+					string tok = GetNextCSToken (rdr);
+				
+					if (String.Compare (tok, "namespace", false) == 0)
+						ns = GetNextCSToken (rdr);
+
+					if (tok == "{")
+						numopen ++;
+
+					if (tok == "}") {
+						numopen --;
+						if (numopen == 0)
+							ns = String.Empty;
+					}
+
+					if (String.Compare (tok, "class", false) == 0) {
+						classname = GetNextCSToken (rdr);
+						break;
+					}
+				}
+
+				if (ns != null)
+					return ns + '.' + classname + ".resources";
+				else
+					return classname + ".resources";
+			}
 		}
 
+		/* Special parser for C# files
+		 * Assumes that the file is compilable
+		 * skips comments, 
+		 * skips strings "foo", 
+		 * skips anything after a # , eg. #region, #if 
+		 * Won't handle #if false etc kinda blocks*/
+		string GetNextCSToken (StreamReader sr)
+		{
+			StringBuilder sb = new StringBuilder ();
+
+			while (true) {
+				int c = sr.Peek ();
+				if (c == -1)
+					return null;
+
+				if (c == '\r' || c == '\n') {
+					sr.ReadLine ();
+					if (sb.Length > 0)
+						break;
+
+					continue;
+				}
+
+				if (c == '/') {
+					sr.Read ();
+
+					if (sr.Peek () == '*') {
+						/* multi-line comment */
+						sr.Read ();
+
+						while (true) {
+							int n = sr.Read ();
+							if (n == -1)
+								break;
+							if (n != '*')
+								continue;
+
+							if (sr.Peek () == '/') {
+								/* End of multi-line comment */
+								if (sb.Length > 0) {
+									sr.Read ();
+									return sb.ToString ();
+								}
+								break;
+							}
+						}
+					} else if (sr.Peek () == '/') {
+						//Single line comment, skip the rest of the line
+						sr.ReadLine ();
+						continue;
+					}
+				} else if (c == '"') {
+					/* String "foo" */
+					sr.Read ();
+					while (true) {
+						int n = sr.Peek ();
+						if (n == '\r' || n == '\n' || n == -1)
+							throw new Exception ("String literal not closed");
+
+						if (n == '"') {
+							/* end of string */
+							if (sb.Length > 0) {
+								sr.Read ();
+								return sb.ToString ();
+							}
+
+							break;
+						}
+						sr.Read ();
+					}
+				} else if (c == '#') {
+					//skip rest of the line
+					sr.ReadLine ();
+				} else {
+					if (Char.IsLetterOrDigit ((char) c) || c == '_' || c == '.') {
+						sb.Append ((char) c);
+					} else {
+						if (sb.Length > 0)
+							break;
+
+						if (c != ' ' && c != '\t') {
+							sr.Read ();
+							return ((char) c).ToString ();
+						}
+					}
+				}
+
+				sr.Read ();
+			}
+
+			return sb.ToString ();
+		}
 	}
 }
