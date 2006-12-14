@@ -36,6 +36,7 @@ MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs \
 MonoDevelop.Projects.Parser/ClassProxy.cs \
 MonoDevelop.Projects.Parser/ClassProxyCollection.cs \
 MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs \
+MonoDevelop.Projects.Parser/CompoundClass.cs \
 MonoDevelop.Projects.Parser/DefaultParserService.cs \
 MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs \
 MonoDevelop.Projects.Parser/FileEntry.cs \

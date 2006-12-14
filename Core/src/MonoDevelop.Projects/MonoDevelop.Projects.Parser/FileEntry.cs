@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 
@@ -39,9 +40,13 @@ namespace MonoDevelop.Projects.Parser
 	{
 		string filePath;
 		DateTime parseTime;
-		ClassEntry firstClass;
 		int parseErrorRetries;
 		TagCollection commentTasks;
+		
+		// When the file contains only one class, this field has a reference to
+		// the only ClassEntry. If it has more than one class, it has a ClassEntry[]
+		// with references to all classes.
+		object classes;
 		
 		[NonSerialized]
 		bool disableParse;
@@ -76,9 +81,17 @@ namespace MonoDevelop.Projects.Parser
 			set { parseTime = value; }
 		}
 		
-		public ClassEntry FirstClass
-		{
-			get { return firstClass; }
+		public IEnumerable<ClassEntry> ClassEntries {
+			get {
+				if (classes == null)
+					yield break;
+				else if (classes is ClassEntry)
+					yield return (ClassEntry) classes;
+				else {
+					foreach (ClassEntry ce in (ClassEntry[]) classes)
+						yield return ce;
+				}
+			}
 		}
 		
 		public int ParseErrorRetries
@@ -89,38 +102,50 @@ namespace MonoDevelop.Projects.Parser
 		
 		public void SetClasses (ArrayList list)
 		{
-			firstClass = null;
+			classes = null;
 			foreach (ClassEntry ce in list)
 				AddClass (ce);
 		}
 		
 		public void AddClass (ClassEntry ce)
 		{
-			if (ce.FileEntry != null)
-				ce.FileEntry.RemoveClass (ce);
-				
-			ce.NextInFile = firstClass;
-			firstClass = ce;
+			if (classes == null)
+				// No classes so far in the file. Add the first one.
+				classes = ce;
+			else if (classes is ClassEntry) {
+				// There is already one class. Create an array to hold the old and new reference.
+				ClassEntry[] list = new ClassEntry [] { (ClassEntry) classes, ce };
+				classes = list;
+			} else {
+				// It's already an array of class entries. Extend the array.
+				ClassEntry[] list = (ClassEntry[]) classes;
+				ClassEntry[] newList = new ClassEntry [list.Length + 1];
+				Array.Copy (list, newList, list.Length);
+				newList [newList.Length - 1] = ce;
+				classes = newList;
+			}
 		}
 		
 		public void RemoveClass (ClassEntry ce)
 		{
-			ClassEntry oldent = null;
-			ClassEntry curent = firstClass;
-			
-			while (curent != null && curent != ce) {
-				oldent = curent;
-				curent = curent.NextInFile;
-			}
-			
-			if (curent == null) 
+			if (classes == null)
 				return;
-			else if (oldent == null)
-				firstClass = curent.NextInFile;
-			else
-				oldent.NextInFile = curent.NextInFile;
-				
-			ce.FileEntry = null;
+			if ((classes is ClassEntry) && ((ClassEntry)classes == ce))
+				classes = null;
+			else {
+				ClassEntry[] list = (ClassEntry[]) classes;
+				ClassEntry[] newList = new ClassEntry [list.Length - 1];
+				int i = 0;
+				for (int n=0; n<list.Length; n++) {
+					if (list [n] == ce)
+						continue;
+					if (i >= newList.Length)	// Element to remove not found
+						return;
+					newList [i] = list [n];
+					i++;
+				}
+				classes = newList;
+			}
 		}
 		
 		public bool IsAssembly

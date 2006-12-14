@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.Parser
 		SpecialName         = 0x20000,
 		
 		Final               = 0x40000,
+		VisibilityMask = Private | Internal | Protected | Public,
 	}
 }
 

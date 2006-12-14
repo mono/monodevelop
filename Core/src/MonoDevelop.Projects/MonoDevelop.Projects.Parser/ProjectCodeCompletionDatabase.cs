@@ -46,8 +46,6 @@ namespace MonoDevelop.Projects.Parser
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase parserDatabase)
 		: base (parserDatabase)
 		{
-			initialFileCheck = true;
-			
 			SetLocation (project.BaseDirectory, project.Name);
 			
 			this.project = project;
@@ -66,6 +64,8 @@ namespace MonoDevelop.Projects.Parser
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (OnFileRenamed);
 			project.Modified += new CombineEntryEventHandler (OnProjectModified);
+
+			initialFileCheck = true;
 		}
 		
 		public Project Project {

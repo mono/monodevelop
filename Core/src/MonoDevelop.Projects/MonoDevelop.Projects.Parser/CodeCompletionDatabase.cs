@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		static readonly int MAX_ACTIVE_COUNT = 100;
 		static readonly int MIN_ACTIVE_COUNT = 50;
-		static protected readonly int FORMAT_VERSION = 15;
+		static protected readonly int FORMAT_VERSION = 16;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -224,45 +224,40 @@ namespace MonoDevelop.Projects.Parser
 					BinaryWriter bufWriter = new BinaryWriter (buffer);
 					
 					// Write all class data
-					foreach (FileEntry fe in files.Values) 
+					foreach (ClassEntry ce in GetAllClasses ()) 
 					{
-						ClassEntry ce = fe.FirstClass;
-						while (ce != null)
-						{
-							IClass c = ce.Class;
-							byte[] data;
-							int len;
+						IClass c = ce.Class;
+						byte[] data;
+						int len;
+						
+						if (c == null) {
+							// Copy the data from the source file
+							if (datareader == null) {
+								datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+								datareader = new BinaryReader (datafile);
+							}
+							datafile.Position = ce.Position;
+							len = datareader.ReadInt32 ();
 							
-							if (c == null) {
-								// Copy the data from the source file
-								if (datareader == null) {
-									datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-									datareader = new BinaryReader (datafile);
-								}
-								datafile.Position = ce.Position;
-								len = datareader.ReadInt32 ();
+							// Sanity check to avoid allocating huge byte arrays if something
+							// goes wrong when reading the file contents
+							if (len > 1024*1024*10 || len < 0)
+								throw new InvalidOperationException ("pidb file corrupted: " + dataFile);
 								
-								// Sanity check to avoid allocating huge byte arrays if something
-								// goes wrong when reading the file contents
-								if (len > 1024*1024*10 || len < 0)
-									throw new InvalidOperationException ("pidb file corrupted: " + dataFile);
-									
-								data = new byte[len];
-								datafile.Read (data, 0, len);
-							}
-							else {
-								buffer.Position = 0;
-								PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
-								bufWriter.Flush ();
-								data = buffer.GetBuffer ();
-								len = (int)buffer.Position;
-							}
-							
-							ce.Position = dfile.Position;
-							bw.Write (len);
-							bw.Write (data, 0, len);
-							ce = ce.NextInFile;
+							data = new byte[len];
+							datafile.Read (data, 0, len);
 						}
+						else {
+							buffer.Position = 0;
+							PersistentClass.WriteTo (c, bufWriter, parserDatabase.DefaultNameEncoder);
+							bufWriter.Flush ();
+							data = buffer.GetBuffer ();
+							len = (int)buffer.Position;
+						}
+						
+						ce.Position = dfile.Position;
+						bw.Write (len);
+						bw.Write (data, 0, len);
 					}
 					
 					bw.Flush ();
@@ -311,7 +306,12 @@ namespace MonoDevelop.Projects.Parser
 		{
 			return files [name] as FileEntry;
 		}
-				
+
+		internal IEnumerable<ClassEntry> GetAllClasses ()
+		{
+			return rootNamespace.GetAllClasses ();
+		}
+		
 		public void Flush ()
 		{
 			// Saves the database if it has too much information
@@ -321,25 +321,18 @@ namespace MonoDevelop.Projects.Parser
 
 			int activeCount = 0;
 			
-			foreach (FileEntry fe in files.Values) {
-				ClassEntry ce = fe.FirstClass;
-				while (ce != null) { 
-					if (ce.Class != null) activeCount++;
-					ce = ce.NextInFile;
-				}
+			foreach (ClassEntry ce in GetAllClasses ()) {
+				if (ce.Class != null)
+					activeCount++;
 			}
 			
 			if (activeCount <= MAX_ACTIVE_COUNT) return;
 			
 			Write ();
 			
-			foreach (FileEntry fe in files.Values) {
-				ClassEntry ce = fe.FirstClass;
-				while (ce != null) { 
-					if (ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT)
-						ce.Class = null;
-					ce = ce.NextInFile;
-				}
+			foreach (ClassEntry ce in GetAllClasses ()) {
+				if (ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT)
+					ce.Class = null;
 			}
 		}
 		
@@ -672,10 +665,11 @@ namespace MonoDevelop.Projects.Parser
 				FileEntry fe = files [fileName] as FileEntry;
 				if (fe == null) return;
 				
-				ClassEntry ce = fe.FirstClass;
-				while (ce != null) {
-					ce.NamespaceRef.Remove (ce.Name);
-					ce = ce.NextInFile;
+				foreach (ClassEntry ce in fe.ClassEntries) {
+					if (ce.Class == null) ce.Class = ReadClass (ce);
+					ce.Class = CompoundClass.RemoveFile (ce.Class, fileName);
+					if (ce.Class == null)
+						ce.NamespaceRef.Remove (ce.Name);
 				}
 				
 				files.Remove (fileName);
@@ -705,8 +699,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				if (fe != null)
 				{
-					ClassEntry ce = fe.FirstClass;
-					while (ce != null)
+					foreach (ClassEntry ce in fe.ClassEntries)
 					{
 						IClass newClass = null;
 						for (int n=0; n<newClasses.Count && newClass == null; n++) {
@@ -718,23 +711,29 @@ namespace MonoDevelop.Projects.Parser
 						}
 						
 						if (newClass != null) {
-							// Class found, replace it
-							ce.Class = CopyClass (newClass);
+							// Class found, update it
+							if (ce.Class == null) ce.Class = ReadClass (ce);
+							ce.Class = CompoundClass.MergeClass (ce.Class, CopyClass (newClass));
+							
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
 						}
 						else {
-							// Class not found, it has to be deleted, unless it has
-							// been added in another file
-							if (ce.FileEntry == fe) {
-								IClass c = ce.Class;
-								if (c == null) c = ReadClass (ce);
+							// Class not found, it has to be deleted
+							IClass c = ce.Class;
+							if (c == null) c = ReadClass (ce);
+							IClass removed = CompoundClass.RemoveFile (c, fileName);
+							if (removed != null) {
+								// It's still a compound class
+								ce.Class = removed;
+								res.Modified.Add (removed);
+							} else {
+								// It's not a compound class. Remove it.
 								res.Removed.Add (c);
 								ce.NamespaceRef.Remove (ce.Name);
 							}
 						}
-						ce = ce.NextInFile;
 					}
 				}
 				
@@ -746,11 +745,22 @@ namespace MonoDevelop.Projects.Parser
 				for (int n=0; n<newClasses.Count; n++) {
 					if (!added[n]) {
 						IClass c = CopyClass (newClasses[n]);
-						ClassEntry ce = new ClassEntry (c, fe, newNss[n]);
-						ce.LastGetTime = currentGetTime++;
-						newNss[n].Add (c.Name, ce);
+						
+						// A ClassEntry may already exist if part of the class is defined in another file
+						ClassEntry ce = newNss[n].GetClass (c.Name, true);
+						if (ce != null) {
+							// The entry exists, just update it
+							if (ce.Class == null) ce.Class = ReadClass (ce);
+							ce.Class = CompoundClass.MergeClass (ce.Class, c);
+							res.Modified.Add (ce.Class);
+						} else {
+							// It's a new class
+							ce = new ClassEntry (c, fe, newNss[n]);
+							newNss[n].Add (c.Name, ce);
+							res.Added.Add (c);
+						}
 						newFileClasses.Add (ce);
-						res.Added.Add (c);
+						ce.LastGetTime = currentGetTime++;
 					}
 				}
 				
@@ -800,12 +810,8 @@ namespace MonoDevelop.Projects.Parser
 			lock (rwlock)
 			{
 				ArrayList list = new ArrayList ();
-				foreach (FileEntry fe in files.Values) {
-					ClassEntry ce = fe.FirstClass;
-					while (ce != null) {
-						list.Add (GetClass (ce));
-						ce = ce.NextInFile;
-					}
+				foreach (ClassEntry ce in GetAllClasses ()) {
+					list.Add (GetClass (ce));
 				}
 				return (IClass[]) list.ToArray (typeof(IClass));
 			}
@@ -847,10 +853,8 @@ namespace MonoDevelop.Projects.Parser
 			if (fe == null) return new IClass [0];
 
 			ArrayList classes = new ArrayList ();
-			ClassEntry ce = fe.FirstClass;
-			while (ce != null) {
+			foreach (ClassEntry ce in fe.ClassEntries) {
 				classes.Add (GetClass (ce));
-				ce = ce.NextInFile;
 			}
 			return (IClass[]) classes.ToArray (typeof(IClass));
 		}

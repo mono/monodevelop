@@ -37,11 +37,12 @@ namespace MonoDevelop.Projects.Parser
 	[Serializable]
 	class ClassEntry
 	{
+		// Position of the complete class information in the pidb file
 		long position;
+		
 		NamespaceEntry namespaceRef;
 		string name;
 		FileEntry fileEntry;
-		ClassEntry nextInFile;
 		
 		[NonSerialized]
 		int lastGetTime;
@@ -91,19 +92,12 @@ namespace MonoDevelop.Projects.Parser
 		public FileEntry FileEntry
 		{
 			get { return fileEntry; }
-			set { fileEntry = value; }
 		}
 		
 		public int LastGetTime
 		{
 			get { return lastGetTime; }
 			set { lastGetTime = value; }
-		}
-		
-		public ClassEntry NextInFile
-		{
-			get { return nextInFile; }
-			set { nextInFile = value; }
 		}
 	}
 }

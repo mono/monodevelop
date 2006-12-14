@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 
@@ -42,6 +43,18 @@ namespace MonoDevelop.Projects.Parser
 		// This is the case insensitive version of the hashtable.
 		// It is constructed only when needed.
 		[NonSerialized] Hashtable contents_ci;
+		
+		public IEnumerable<ClassEntry> GetAllClasses ()
+		{
+			foreach (object ob in contents.Values) {
+				if (ob is ClassEntry)
+					yield return (ClassEntry)ob;
+				else if (ob is NamespaceEntry) {
+					foreach (ClassEntry ce in ((NamespaceEntry)ob).GetAllClasses ())
+						yield return ce;
+				}
+			}
+		}
 		
 		// All methods with the caseSensitive parameter, first check for an
 		// exact match, and if not found, they try with the case insensitive table.

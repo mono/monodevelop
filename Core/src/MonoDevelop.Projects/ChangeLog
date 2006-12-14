@@ -1,3 +1,23 @@
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Updated.
+	* MonoDevelop.Projects.Parser/CompoundClass.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added
+	  support for partial classes.
+	* MonoDevelop.Projects.Parser/NamespaceEntry.cs: Added method for
+	  getting all classes in a namespace.
+	* MonoDevelop.Projects.Parser/FileEntry.cs,
+	  MonoDevelop.Projects.Parser/ClassEntry.cs: A class can now be
+	  implemented in several files, so the linked list built by
+	  ClassEntry.NextInFile has been changed to an array of ClassEntry in
+	  FileEntry.
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Set the
+	  initialFileCheck flag at the end of the constructor, since
+	  CheckModifiedFiles may be called during the construction by the
+	  base constructor.
+	* MonoDevelop.Projects.Parser/ModifierEnum.cs: Added VisibilityMask
+	  member.
+
 2006-12-13 Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Projects/DotNetProjectBinding.cs: Remember to
