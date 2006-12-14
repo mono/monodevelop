@@ -39,7 +39,7 @@ namespace CSharpBinding.Parser
 			return System.IO.Path.GetExtension(fileName).ToUpper() == ".CS";
 		}
 		
-		void RetrieveRegions(CompilationUnit cu, SpecialTracker tracker)
+		void RetrieveRegions (DefaultCompilationUnit cu, SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
 				PreProcessingDirective directive = tracker.CurrentSpecials[i] as PreProcessingDirective;
@@ -101,12 +101,14 @@ namespace CSharpBinding.Parser
             return visitor.Cu;
       	}
 
-      	void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
+      	void AddCommentTags(DefaultCompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
       	{
 	    	foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {	  		
     	  		DefaultRegion tagRegion = new DefaultRegion (tagComment.StartPosition.Y, tagComment.StartPosition.X, tagComment.EndPosition.Y, tagComment.EndPosition.X);
                 Tag tag = new Tag (tagComment.Tag, tagRegion);
                 tag.CommentString = tagComment.CommentText;
+	      		if (cu.TagComments == null)
+	      			cu.TagComments = new TagCollection ();
                 cu.TagComments.Add (tag);
             }
       	}

@@ -22,16 +22,10 @@ FILES = \
 Gui/ChooseRuntimePanel.cs \
 Gui/CodeGenerationPanel.cs \
 Parser/SharpDevelopTree/Destructor.cs \
-Parser/SharpDevelopTree/Event.cs \
-Parser/SharpDevelopTree/Indexer.cs \
 Parser/SharpDevelopTree/Constructor.cs \
 Parser/SharpDevelopTree/Method.cs \
 Parser/SharpDevelopTree/Class.cs \
-Parser/SharpDevelopTree/Parameter.cs \
 Parser/SharpDevelopTree/AttributeSection.cs \
-Parser/SharpDevelopTree/CompilationUnit.cs \
-Parser/SharpDevelopTree/Property.cs \
-Parser/SharpDevelopTree/Field.cs \
 Parser/SharpDevelopTree/ReturnType.cs \
 Parser/SharpDevelopTree/GenericParameter.cs \
 Parser/TypeVisitor.cs \

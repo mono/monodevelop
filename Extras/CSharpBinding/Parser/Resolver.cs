@@ -963,7 +963,7 @@ namespace CSharpBinding.Parser
 		{
 			if (curClass != null) {
 				foreach (IClass c in curClass.InnerClasses) {
-					if (c != null && c.Region != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
+					if (c != null && c.BodyRegion != null && c.BodyRegion.IsInside(caretLine, caretColumn)) {
 						if (c != GetInnermostClass()) {
 							GetOuterClasses(classes, c);
 							classes.Add(GetResolvedClass (c));
@@ -1063,7 +1063,7 @@ namespace CSharpBinding.Parser
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							result.Add(new Parameter (null, name, new ReturnType (v.TypeRef.SystemType)));
+							result.Add(new DefaultParameter (null, name, new ReturnType (v.TypeRef.SystemType)));
 							break;
 						}
 					}

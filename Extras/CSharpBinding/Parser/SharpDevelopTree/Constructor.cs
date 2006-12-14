@@ -6,13 +6,8 @@ using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
-	public class Constructor : AbstractMethod
+	public class Constructor : DefaultMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Constructor (IClass declaringType, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = "ctor";

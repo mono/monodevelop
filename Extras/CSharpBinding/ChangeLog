@@ -1,3 +1,20 @@
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp, Parser/SharpDevelopTree/CompilationUnit.cs,
+	  Parser/SharpDevelopTree/Indexer.cs,
+	  Parser/SharpDevelopTree/Parameter.cs,
+	  Parser/SharpDevelopTree/Event.cs, Parser/SharpDevelopTree/Field.cs,
+	  Parser/SharpDevelopTree/Property.cs, Makefile.am: Removed some
+	  unnecessary Default* subclasses.
+	* Parser/Parser.cs, Parser/CSharpVisitor.cs, Parser/Resolver.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs: Renamed Abstract*
+	  classes to Default*. Removed some unnecessary Default* subclasses.
+
 2006-12-13  Ankit Jain  <jankit@novell.com>
 
 	* Project/CSharpCompilerParameters.cs (Win32Resource): New.

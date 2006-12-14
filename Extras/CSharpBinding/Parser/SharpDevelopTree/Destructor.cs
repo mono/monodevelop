@@ -5,13 +5,8 @@ using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
-	public class Destructor : AbstractMethod
+	public class Destructor : DefaultMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Destructor (IClass declaringType, string className, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = "~" + className;

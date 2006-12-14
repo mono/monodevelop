@@ -6,7 +6,7 @@ using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
-	public class Method : AbstractMethod
+	public class Method : DefaultMethod
 	{
 		public void AddModifier(ModifierEnum m)
 		{

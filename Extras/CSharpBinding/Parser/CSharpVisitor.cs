@@ -21,12 +21,12 @@ namespace CSharpBinding.Parser
 	
 	public class CSharpVisitor : RefParser.AbstractAstVisitor
 	{
-		CompilationUnit cu = new CompilationUnit();
+		DefaultCompilationUnit cu = new DefaultCompilationUnit();
 		Stack currentNamespace = new Stack();
 		Stack currentClass = new Stack();
 		static ICSharpCode.NRefactory.Parser.CodeDOMVisitor domVisitor = new ICSharpCode.NRefactory.Parser.CodeDOMVisitor ();
 		
-		public CompilationUnit Cu {
+		public DefaultCompilationUnit Cu {
 			get {
 				return cu;
 			}
@@ -82,7 +82,7 @@ namespace CSharpBinding.Parser
 		{
 			// TODO Expressions???
 			foreach (AST.AttributeSection section in attributes) {
-				AttributeSection resultSection = new AttributeSection (GetAttributeTarget (section.AttributeTarget), GetRegion (section.StartLocation, section.EndLocation));
+				DefaultAttributeSection resultSection = new DefaultAttributeSection (GetAttributeTarget (section.AttributeTarget), GetRegion (section.StartLocation, section.EndLocation));
 				foreach (AST.Attribute attribute in section.Attributes)
 				{
 					CodeExpression[] positionals = new CodeExpression [attribute.PositionalArguments.Count];
@@ -96,7 +96,7 @@ namespace CSharpBinding.Parser
 						named [n] = new NamedAttributeArgument (arg.Name, GetDomExpression (arg.Expression));
 					}
 					
-					CSharpBinding.Parser.SharpDevelopTree.Attribute resultAttribute = new CSharpBinding.Parser.SharpDevelopTree.Attribute (attribute.Name, positionals, named, GetRegion (attribute.StartLocation, attribute.EndLocation));
+					DefaultAttribute resultAttribute = new DefaultAttribute (attribute.Name, positionals, named, GetRegion (attribute.StartLocation, attribute.EndLocation));
 					resultSection.Attributes.Add (resultAttribute);
 				}
 				decoration.Attributes.Add (resultSection);				
@@ -220,7 +220,7 @@ namespace CSharpBinding.Parser
 			if (typeDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in typeDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter (method, par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
@@ -250,7 +250,7 @@ namespace CSharpBinding.Parser
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter (method, par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
@@ -281,7 +281,7 @@ namespace CSharpBinding.Parser
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter (constructor, par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (constructor, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}
@@ -322,8 +322,8 @@ namespace CSharpBinding.Parser
 			}
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
-					Field f;
-					f = new Field (c, type, field.Name, fieldDeclaration.Modifier, region);	
+					DefaultField f;
+					f = new DefaultField (c, type, field.Name, (ModifierEnum) fieldDeclaration.Modifier, region);	
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
 				}
@@ -341,7 +341,7 @@ namespace CSharpBinding.Parser
 			Class c = (Class)currentClass.Peek();
 			
 			ModifierFlags mf = propertyDeclaration.Modifier;
-			Property property = new Property (c, propertyDeclaration.Name, type, mf, region, bodyRegion);
+			DefaultProperty property = new DefaultProperty (c, propertyDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 			
 			FillAttributes (property, propertyDeclaration.Attributes);
 			
@@ -360,18 +360,19 @@ namespace CSharpBinding.Parser
 			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
 			ReturnType type = new ReturnType(eventDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
-			Event e = null;
+			DefaultEvent e = null;
 			
 /*			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
 					ModifierFlags mf = eventDeclaration.Modifier;
-					e = new Event (c, varDecl.Name, type, mf, region, bodyRegion);
+					e = new DefaultEvent (c, varDecl.Name, type, mf, region, bodyRegion);
 					FillAttributes (e, eventDeclaration.Attributes);
 					c.Events.Add(e);
 				}
 			} else {
 */				ModifierFlags mf = eventDeclaration.Modifier;
-				e = new Event (c, eventDeclaration.Name, type, mf, region, bodyRegion);
+				e = new DefaultEvent (eventDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
+				e.DeclaringType = c;
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
 //			}
@@ -385,11 +386,11 @@ namespace CSharpBinding.Parser
 			ParameterCollection parameters = new ParameterCollection();
 			Class c = (Class)currentClass.Peek();
 			ModifierFlags mf = indexerDeclaration.Modifier;
-			Indexer i = new Indexer (c, new ReturnType(indexerDeclaration.TypeReference), parameters, mf, region, bodyRegion);
+			DefaultIndexer i = new DefaultIndexer (c, new ReturnType(indexerDeclaration.TypeReference), parameters, (ModifierEnum)mf, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter (i, par.ParameterName, parType);
+					DefaultParameter p = new DefaultParameter (i, par.ParameterName, parType);
 					parameters.Add(p);
 				}
 			}

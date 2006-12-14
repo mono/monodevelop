@@ -9,13 +9,10 @@ using ModifierFlags = ICSharpCode.NRefactory.Parser.AST.Modifier;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
-	public class Class : AbstractClass
+	public class Class : DefaultClass
 	{
-		ICompilationUnit cu;
-		
-		public Class(CompilationUnit cu, ClassType t, ModifierFlags m, IRegion region, IRegion bodyRegion)
+		public Class (DefaultCompilationUnit cu, ClassType t, ModifierFlags m, IRegion region, IRegion bodyRegion): base (cu)
 		{
-			this.cu = cu;
 			classType = t;
 			this.region = region;
 			this.bodyRegion = bodyRegion;
@@ -25,7 +22,7 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		public void UpdateModifier()
 		{
 			if (classType == ClassType.Enum) {
-				foreach (Field f in fields) {
+				foreach (DefaultField f in fields) {
 					f.AddModifier(ModifierEnum.Public);
 				}
 				return;
@@ -45,24 +42,19 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 					Debug.Assert(false, "Unexpected type in method of interface. Can not set modifier to public!");
 				}
 			}
-			foreach (Event e in events) {
+			foreach (DefaultEvent e in events) {
 				e.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Field f in fields) {
+			foreach (DefaultField f in fields) {
 				f.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Indexer i in indexer) {
+			foreach (DefaultIndexer i in indexer) {
 				i.AddModifier(ModifierEnum.Public);
 			}
-			foreach (Property p in properties) {
+			foreach (DefaultProperty p in properties) {
 				p.AddModifier(ModifierEnum.Public);
 			}
 			
-		}
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return cu;
-			}
 		}
 	}
 }

@@ -4,37 +4,15 @@ using MonoDevelop.Projects.Parser;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
-	public class ReturnType : AbstractReturnType
+	public class ReturnType : DefaultReturnType
 	{
-		public new int PointerNestingLevel {
-			get {
-				return base.pointerNestingLevel;
-			}
-			set {
-				base.pointerNestingLevel = value;
-			}
-		}
-		
-		public new int[] ArrayDimensions {
-			get {
-				return base.arrayDimensions;
-			}
-			set {
-				base.arrayDimensions = value;
-			}
-		}
-		
-		public ReturnType(string fullyQualifiedName)
+		public ReturnType (string fullyQualifiedName): base (fullyQualifiedName)
 		{
-			base.FullyQualifiedName = fullyQualifiedName;
 		}
 		
 		public ReturnType(string fullyQualifiedName, int[] arrayDimensions, int pointerNestingLevel, ReturnTypeList genericArguments)
+		: base (fullyQualifiedName, arrayDimensions, pointerNestingLevel, genericArguments)
 		{
-			this.FullyQualifiedName  = fullyQualifiedName;
-			this.arrayDimensions     = arrayDimensions;
-			this.pointerNestingLevel = pointerNestingLevel;
-			this.genericArguments    = genericArguments;
 		}
 		
 		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type): this (type, null)
