@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Xml;
+using System.Runtime.Serialization.Formatters.Binary;
 
 using Gtk;
 
@@ -28,6 +30,8 @@ namespace MonoDevelop.VersionControl
 		static Gdk.Pixbuf icon_conflicted;
 		static Gdk.Pixbuf icon_added;
 		internal static Gdk.Pixbuf icon_controled;
+		
+		static Hashtable comments;
 		
 		static VersionControlProjectService ()
 		{
@@ -128,6 +132,103 @@ namespace MonoDevelop.VersionControl
 			return repo;
 		}
 		
+		internal static void SetCommitComment (string file, string comment, bool save)
+		{
+			Hashtable doc = GetCommitComments ();
+			if (comment == null || comment.Length == 0) {
+				if (doc.ContainsKey (file)) {
+					doc.Remove (file);
+					if (save) SaveComments ();
+				}
+			} else {
+				CommitComment cm = new CommitComment ();
+				cm.Comment = comment;
+				cm.Date = DateTime.Now;
+				doc [file] = cm;
+				if (save) SaveComments ();
+			}
+		}
+		
+		internal static string GetCommitComment (string file)
+		{
+			Hashtable doc = GetCommitComments ();
+			CommitComment cm = doc [file] as CommitComment;
+			if (cm != null) {
+				cm.Date = DateTime.Now;
+				return cm.Comment;
+			}
+			else
+				return null;
+		}
+		
+		static Hashtable GetCommitComments ()
+		{
+			if (comments != null)
+				return comments;
+			
+			string file = Path.Combine (Runtime.Properties.ConfigDirectory, "version-control-commit-msg");
+			if (File.Exists (file)) {
+				FileStream stream = null;
+				try {
+					stream = File.OpenRead (file);
+					BinaryFormatter formatter = new BinaryFormatter ();
+					comments = (Hashtable) formatter.Deserialize (stream);
+				
+					// Remove comments for files that don't exists
+					// Remove comments more than 60 days old
+					
+					ArrayList toDelete = new ArrayList ();
+					foreach (DictionaryEntry e in comments) {
+						if (!File.Exists ((string)e.Key))
+							toDelete.Add (e.Key);
+						if ((DateTime.Now - ((CommitComment)e.Value).Date).TotalDays > 60)
+							toDelete.Add (e.Key);
+					}
+					foreach (string f in toDelete)
+						comments.Remove (f);
+						
+				} catch (Exception ex) {
+					// If there is an error, just discard the file
+					Runtime.LoggingService.Error (ex);
+					comments = new Hashtable ();
+				} finally {
+					if (stream != null)
+						stream.Close ();
+				}
+			} else {
+				comments = new Hashtable ();
+			}
+			return comments;
+		}
+		
+		static void SaveComments ()
+		{
+			if (comments == null)
+				return;
+				
+			FileStream stream = null;
+			try {
+				string file = Path.Combine (Runtime.Properties.ConfigDirectory, "version-control-commit-msg");
+				if (comments.Count == 0) {
+					if (File.Exists (file))
+						File.Delete (file);
+					return;
+				}
+			
+				if (!Directory.Exists (Runtime.Properties.ConfigDirectory))
+					Directory.CreateDirectory (Runtime.Properties.ConfigDirectory);
+				stream = new FileStream (file, FileMode.Create, FileAccess.Write);
+				BinaryFormatter formatter = new BinaryFormatter ();
+				formatter.Serialize (stream, comments);
+			} catch (Exception ex) {
+				// If there is an error, just discard the file
+				Runtime.LoggingService.Error (ex);
+			} finally {
+				if (stream != null)
+					stream.Close ();
+			}
+		}
+		
 		internal static bool NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
 			if (PrepareCommit != null) {
@@ -163,6 +264,11 @@ namespace MonoDevelop.VersionControl
 					IdeApp.Services.MessageService.ShowError (ex);
 					return false;
 				}
+			}
+			if (success) {
+				foreach (ChangeSetItem it in changeSet.Items)
+					SetCommitComment (it.LocalPath, null, false);
+				SaveComments ();
 			}
 			return true;
 		}
@@ -223,5 +329,12 @@ namespace MonoDevelop.VersionControl
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
 		public static event CommitEventHandler EndCommit;
+	}
+	
+	[Serializable]
+	class CommitComment
+	{
+		public string Comment;
+		public DateTime Date;
 	}
 }

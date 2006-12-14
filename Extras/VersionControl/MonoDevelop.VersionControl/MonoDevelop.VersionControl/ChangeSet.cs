@@ -163,8 +163,11 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string Comment {
-			get { return comment; }
-			set { comment = value; }
+			get {
+				string txt = VersionControlProjectService.GetCommitComment (LocalPath);
+				return txt != null ? txt : "";
+			}
+			set { VersionControlProjectService.SetCommitComment (LocalPath, value, true); }
 		}
 		
 		public string LocalPath {
