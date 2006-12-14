@@ -39,7 +39,7 @@ class Using(AbstractUsing):
 
 class Visitor(AbstractVisitorCompilerStep):
 	[Getter(Cu)]
-	_cu as CompilationUnit = CompilationUnit()
+	_cu as DefaultCompilationUnit = DefaultCompilationUnit()
 	
 	_currentClass as Stack = Stack()
 	_firstModule = true
@@ -220,7 +220,7 @@ class Visitor(AbstractVisitorCompilerStep):
 		parameters = ParameterCollection()
 		return parameters if params == null
 		for par as AST.ParameterDeclaration in params:
-			parameters.Add(Parameter(par.Name, ReturnType(par.Type)))
+			parameters.Add(DefaultParameter(null, par.Name, ReturnType(par.Type)))
 		return parameters
 	
 	override def OnConstructor(node as AST.Constructor):
@@ -281,7 +281,7 @@ class Visitor(AbstractVisitorCompilerStep):
 	
 	override def OnEvent (node as AST.Event):
 		try:
-			ev = Event (node.FullName, ReturnType(node.Type), GetModifier(node), GetRegion(node), GetClientRegion(node))
+			ev = DefaultEvent (node.FullName, ReturnType(node.Type), GetModifier(node), GetRegion(node), GetClientRegion(node))
 			ev.Documentation = node.Documentation
 			cast(Class, _currentClass.Peek()).Events.Add(ev)
 		except ex:

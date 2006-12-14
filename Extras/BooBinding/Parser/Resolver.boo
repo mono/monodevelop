@@ -111,8 +111,8 @@ class Resolver:
 	
 	def InnerGetTypeFromLocal(name as string) as IReturnType:
 		member = self.CurrentMember
-		if member isa BooAbstractMethod:
-			method as BooAbstractMethod = member
+		if member isa BooDefaultMethod:
+			method as BooDefaultMethod = member
 			for para as IParameter in method.Parameters:
 				return para.ReturnType if para.Name == name
 			if method.Node != null and method.Node.Body != null:
@@ -186,7 +186,7 @@ class Resolver:
 				result.Add(method)
 		
 		parseInfo = _parserContext.GetParseInformation(fileName)
-		cu = parseInfo.MostRecentCompilationUnit as CompilationUnit
+		cu = parseInfo.MostRecentCompilationUnit as DefaultCompilationUnit
 		_compilationUnit = cu
 		if cu != null:
 			curClass = GetInnermostClass(cu) as IClass
@@ -203,13 +203,13 @@ class Resolver:
 			member = self.CurrentMember
 			if member != null:
 				varList as Hashtable = null
-				if member isa BooAbstractMethod:
-					method as BooAbstractMethod = member
+				if member isa BooDefaultMethod:
+					method as BooDefaultMethod = member
 					for para as IParameter in method.Parameters:
 						result.Add(Field(para.ReturnType, para.Name, ModifierEnum.Private, null))
 					if method.Node != null:
 						varLookup = VariableListLookupVisitor(Resolver: self)
-						varLookup.Visit(cast(BooAbstractMethod, member).Node.Body)
+						varLookup.Visit(cast(BooDefaultMethod, member).Node.Body)
 						varList = varLookup.Results
 				elif member isa Property:
 					property as Property = member
@@ -236,7 +236,7 @@ class Resolver:
 			result.Add(field) if (field.Modifiers & ModifierEnum.Static) == ModifierEnum.Static
 		for property as IProperty in curClass.Properties:
 			result.Add(property) if (property.Modifiers & ModifierEnum.Static) == ModifierEnum.Static
-		for e as Event in curClass.Events:
+		for e as DefaultEvent in curClass.Events:
 			result.Add(e) if (e.Modifiers & ModifierEnum.Static) == ModifierEnum.Static
 		return result
 	#endregion
@@ -256,7 +256,7 @@ class Resolver:
 		_caretColumn = caretColumn
 		
 		parseInfo = _parserContext.GetParseInformation(fileName)
-		cu = parseInfo.MostRecentCompilationUnit as CompilationUnit
+		cu = parseInfo.MostRecentCompilationUnit as DefaultCompilationUnit
 		_compilationUnit = cu
 		if _compilationUnit == null:
 			Log ("BooResolver: No parse information!")

@@ -36,7 +36,7 @@ import MonoDevelop.Ide.Gui;
 /////////////////////////////////////
 ///          Return Type          ///
 /////////////////////////////////////
-class ReturnType(AbstractReturnType):
+class ReturnType(DefaultReturnType):
 	def constructor(fullyQualifiedName as string):
 		self(fullyQualifiedName, array(int, 0), 0)
 	
@@ -127,7 +127,7 @@ class ReturnType(AbstractReturnType):
 /////////////////////////////////////
 ///     Namespace Return Type     ///
 /////////////////////////////////////
-class NamespaceReturnType(AbstractReturnType):
+class NamespaceReturnType(DefaultReturnType):
 	def constructor(fullyQualifiedName as string):
 		self.FullyQualifiedName = fullyQualifiedName
 		self.arrayDimensions = array(int, 0)
@@ -139,7 +139,7 @@ class NamespaceReturnType(AbstractReturnType):
 /////////////////////////////////////
 ///      Inferred Return Type     ///
 /////////////////////////////////////
-class InferredReturnType(AbstractReturnType):
+class InferredReturnType(DefaultReturnType):
 	_expression as AST.Expression
 	
 	_filename as string

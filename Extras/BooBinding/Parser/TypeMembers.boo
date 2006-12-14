@@ -29,39 +29,28 @@ import System
 import MonoDevelop.Projects.Parser
 import Boo.Lang.Compiler.Ast as AST
 
-class Constructor(BooAbstractMethod):
+class Constructor(BooDefaultMethod):
 	def constructor(m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
 		FullyQualifiedName = 'ctor'
 		self.region = region
 		self.bodyRegion = bodyRegion
 		modifiers = m
 
-class Destructor(BooAbstractMethod):
+class Destructor(BooDefaultMethod):
 	def constructor(className as string, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
 		FullyQualifiedName = '~' + className
 		self.region = region
 		self.bodyRegion = bodyRegion
 		modifiers = m
 
-class BooAbstractMethod(AbstractMethod):
+class BooDefaultMethod(DefaultMethod):
 	[Property(Node)]
 	_node as AST.Method
 	
 	def AddModifier(m as ModifierEnum):
 		modifiers = modifiers | m
 
-class Event(AbstractEvent):
-	def AddModifier(m as ModifierEnum):
-		modifiers = modifiers | m
-	
-	def constructor(name as string, rtype as IReturnType, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
-		FullyQualifiedName = name
-		returnType = rtype
-		self.region = region
-		self.bodyRegion = bodyRegion
-		modifiers = m
-
-class Field(AbstractField):
+class Field(DefaultField):
 	def AddModifier(m as ModifierEnum):
 		modifiers = modifiers | m
 	
@@ -74,7 +63,7 @@ class Field(AbstractField):
 	def SetModifiers(m as ModifierEnum):
 		modifiers = m
 
-class Indexer(AbstractIndexer):
+class Indexer(DefaultIndexer):
 	def AddModifier(m as ModifierEnum):
 		modifiers = modifiers | m
 	
@@ -85,7 +74,7 @@ class Indexer(AbstractIndexer):
 		self.bodyRegion = bodyRegion
 		modifiers = m
 
-class Method(BooAbstractMethod):
+class Method(BooDefaultMethod):
 	def constructor(name as string, rtype as IReturnType, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
 		FullyQualifiedName = name
 		self.returnType = rtype
@@ -93,7 +82,7 @@ class Method(BooAbstractMethod):
 		self.bodyRegion = bodyRegion
 		modifiers = m
 
-class Property(AbstractProperty):
+class Property(DefaultProperty):
 	[Property(Node)]
 	_node as AST.Property
 	

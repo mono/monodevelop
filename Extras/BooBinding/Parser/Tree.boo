@@ -33,33 +33,12 @@ import MonoDevelop.Projects.Parser
 import Boo.Lang.Compiler.Ast as AST
 
 /////////////////////////////////////
-///       Compilation Unit        ///
-/////////////////////////////////////
-class CompilationUnit(AbstractCompilationUnit):
-	override MiscComments as CommentCollection:
-		get:
-			return null
-	
-	override DokuComments as CommentCollection:
-		get:
-			return null
-	
-	override TagComments as TagCollection:
-		get:
-			return null
-
-/////////////////////////////////////
 ///             Class             ///
 /////////////////////////////////////
-class Class(AbstractClass):
-	_cu as ICompilationUnit
-	
-	override CompilationUnit as ICompilationUnit:
-		get:
-			return _cu
-	
-	def constructor(cu as CompilationUnit, t as ClassType, m as ModifierEnum, region as IRegion):
-		_cu = cu
+class Class(DefaultClass):
+
+	def constructor(cu as DefaultCompilationUnit, t as ClassType, m as ModifierEnum, region as IRegion):
+		super (cu)
 		classType = t
 		self.region = region
 		modifiers = m
@@ -82,12 +61,12 @@ class Class(AbstractClass):
 			c.modifiers = c.modifiers | ModifierEnum.Public
 		
 		for m as IMethod in Methods:
-			if m isa BooAbstractMethod:
-				cast(BooAbstractMethod, m).AddModifier(ModifierEnum.Public)
+			if m isa BooDefaultMethod:
+				cast(BooDefaultMethod, m).AddModifier(ModifierEnum.Public)
 			else:
 				Debug.Assert(false, 'Unexpected type in method of interface. Can not set modifier to public!')
 		
-		for e as Event in Events:
+		for e as DefaultEvent in Events:
 			e.AddModifier(ModifierEnum.Public)
 		
 		for f as Field in Fields:
@@ -99,30 +78,4 @@ class Class(AbstractClass):
 		for p as Property in Properties:
 			p.AddModifier(ModifierEnum.Public)
 		
-	
-
-
-/////////////////////////////////////
-///           Parameter           ///
-/////////////////////////////////////
-class Parameter(AbstractParameter):
-	def constructor(name as string, rtype as ReturnType):
-		Name = name
-		returnType = rtype
-
-/////////////////////////////////////
-///          Attributes           ///
-/////////////////////////////////////
-class AttributeSection(AbstractAttributeSection):
-	def constructor(attributeTarget as AttributeTarget, attributes as AttributeCollection):
-		self.attributeTarget = attributeTarget
-		self.attributes = attributes
-
-class ASTAttribute(AbstractAttribute):
-	def constructor(name as string, positionalArguments as (CodeExpression), namedArguments as (NamedAttributeArgument)):
-		self.name = name
-		self.positionalArguments = positionalArguments
-		self.namedArguments = namedArguments
-	
-
 

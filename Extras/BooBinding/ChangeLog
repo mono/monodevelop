@@ -1,3 +1,10 @@
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.boo, Parser/ReturnType.boo, Parser/BooParser.boo,
+	  Parser/TypeMembers.boo, Parser/Tree.boo, Parser/Visitor.boo:
+	  Renamed Abstract* classes to Default*. Removed some unnecessary
+	  Default* subclasses.
+
 2006-11-11 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
         * Gui/OptionPanels/CodeCompilationPanel.boo: fix for bug 79199
