@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Parameter : AbstractParameter
+	public class Parameter : DefaultParameter
 	{
 	    void LoadXml(XmlNode methodNode)
 	    {

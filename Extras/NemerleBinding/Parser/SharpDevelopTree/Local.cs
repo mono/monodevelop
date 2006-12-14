@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Local : AbstractField
+	public class Local : DefaultField
 	{
 		public void AddModifier(ModifierEnum m)
 		{

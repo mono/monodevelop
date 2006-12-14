@@ -26,8 +26,6 @@ Parser/SharpDevelopTree/Constructor.cs \
 Parser/SharpDevelopTree/Method.cs \
 Parser/SharpDevelopTree/Class.cs \
 Parser/SharpDevelopTree/Parameter.cs \
-Parser/SharpDevelopTree/AttributeSection.cs \
-Parser/SharpDevelopTree/CompilationUnit.cs \
 Parser/SharpDevelopTree/Property.cs \
 Parser/SharpDevelopTree/Field.cs \
 Parser/SharpDevelopTree/Local.cs \

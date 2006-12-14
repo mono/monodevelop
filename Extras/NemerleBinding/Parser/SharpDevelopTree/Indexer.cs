@@ -10,15 +10,10 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Indexer : AbstractIndexer
+	public class Indexer : DefaultIndexer
 	{
 	    XmlNode node;
 	
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		void LoadXml (Class declaring)
         {
 			if (declaring.xmlHelp != null) {

@@ -6,29 +6,10 @@ using NCC = Nemerle.Compiler;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class ReturnType : AbstractReturnType
+	public class ReturnType : DefaultReturnType
 	{
-		public new int PointerNestingLevel {
-			get {
-				return base.pointerNestingLevel;
-			}
-			set {
-				base.pointerNestingLevel = value;
-			}
-		}
-		
-		public new int[] ArrayDimensions {
-			get {
-				return base.arrayDimensions;
-			}
-			set {
-				base.arrayDimensions = value;
-			}
-		}
-		
-		public ReturnType(string fullyQualifiedName)
+		public ReturnType (string fullyQualifiedName): base (fullyQualifiedName)
 		{
-			base.FullyQualifiedName = fullyQualifiedName;
 		}
 
         public ReturnType(NCC.MType type)

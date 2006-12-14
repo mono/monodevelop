@@ -16,17 +16,15 @@ using NemerleBinding.Parser;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-    public class Class : AbstractClass
+    public class Class : DefaultClass
     {
-        ICompilationUnit cu;
         NCC.TypeInfo tinfo;
         internal XmlDocument xmlHelp;
         
-        public Class(string name, CompilationUnit cu)
+        public Class(string name, DefaultCompilationUnit cu): base (cu)
         {
             this.FullyQualifiedName = name;
             this.modifiers = (ModifierEnum)0;
-            this.cu = cu;
         }
         
         void LoadXml ()
@@ -49,9 +47,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             } 
         }
         
-        public Class(System.Type tinfo, CompilationUnit cu)
+        public Class(System.Type tinfo, DefaultCompilationUnit cu): base (cu)
         {
-            this.cu = cu;
             this.tinfo = null;
             this.FullyQualifiedName = tinfo.FullName.TrimEnd('*');
             if (this.FullyQualifiedName.Contains("`"))
@@ -128,13 +125,12 @@ namespace NemerleBinding.Parser.SharpDevelopTree
             LoadXml ();
         }
         
-        public Class(NCC.TypeInfo tinfo, CompilationUnit cu)
+        public Class(NCC.TypeInfo tinfo, DefaultCompilationUnit cu)
           : this (tinfo, cu, true)
         { }
         
-        public Class(NCC.TypeInfo tinfo, CompilationUnit cu, bool addMembers)
+        public Class(NCC.TypeInfo tinfo, DefaultCompilationUnit cu, bool addMembers): base (cu)
         {
-            this.cu = cu;
             this.tinfo = tinfo;
             
             this.FullyQualifiedName = tinfo.FrameworkTypeName.TrimEnd('*');
@@ -266,11 +262,6 @@ namespace NemerleBinding.Parser.SharpDevelopTree
                 constraints.Add (new ReturnType (constraint));
                 
             return new GenericParameter (tyvar.Name, constraints, tyvar.SpecialConstraints);
-        }
-        
-        public override ICompilationUnit CompilationUnit
-        {
-            get { return cu; }
         }
     }
 }

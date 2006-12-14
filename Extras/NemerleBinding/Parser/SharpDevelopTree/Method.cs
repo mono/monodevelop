@@ -15,13 +15,8 @@ namespace NemerleBinding.Parser.SharpDevelopTree
         NCC.IMethod Member { get; }
     }
     
-    public class Method : AbstractMethod, INemerleMethod
+    public class Method : DefaultMethod, INemerleMethod
     {
-        public void AddModifier(ModifierEnum m)
-        {
-            modifiers = modifiers | m;
-        }
-        
         NCC.IMethod _member;
         public NCC.IMethod Member
         {

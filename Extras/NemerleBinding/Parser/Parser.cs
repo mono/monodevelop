@@ -108,7 +108,7 @@ namespace NemerleBinding.Parser
         }
         
         static object syncObject = new object ();
-        CompilationUnit cu;
+        DefaultCompilationUnit cu;
         private ICompilationUnitBase parse_the_file (string fileName, string contents)
         {
             if (IdeApp.ProjectOperations.CurrentSelectedProject == null)
@@ -122,7 +122,7 @@ namespace NemerleBinding.Parser
                     ReloadFiles (fileName, contents);
                     
                     CompletionStageHandler handler = new CompletionStageHandler (make_type);
-                    cu = new CompilationUnit ();
+                    cu = new DefaultCompilationUnit ();
                     engine.GetTypeTree (handler);
                     return cu;
                 }
@@ -181,16 +181,16 @@ namespace NemerleBinding.Parser
         {
             try
             {
-                CompilationUnit comp = (CompilationUnit)parserContext.GetParseInformation (fileName).MostRecentCompilationUnit;
+                DefaultCompilationUnit comp = (DefaultCompilationUnit)parserContext.GetParseInformation (fileName).MostRecentCompilationUnit;
                 Class the_class = null;
-                foreach (AbstractClass cl in comp.Classes)
+                foreach (DefaultClass cl in comp.Classes)
                 {
                     if (cl.BodyRegion.BeginLine <= caretLineNumber &&
                         cl.BodyRegion.EndLine >= caretLineNumber)
                     {
                         the_class = (Class)cl;
                     }
-                    foreach (AbstractClass nc in cl.InnerClasses)
+                    foreach (DefaultClass nc in cl.InnerClasses)
                     {
                         if (nc.BodyRegion.BeginLine <= caretLineNumber &&
                             nc.BodyRegion.EndLine >= caretLineNumber)
@@ -207,7 +207,7 @@ namespace NemerleBinding.Parser
                 {
                     INemerleMethod the_method = null;
                     int line = 0, column = 0, end_line = 0, end_column = 0;
-                    foreach (AbstractMethod m in the_class.Methods)
+                    foreach (DefaultMethod m in the_class.Methods)
                     {
                         if (m.BodyRegion.BeginLine <= caretLineNumber &&
                             m.BodyRegion.EndLine >= caretLineNumber &&
@@ -311,7 +311,7 @@ namespace NemerleBinding.Parser
             }
         }
         
-        ResolveResult GetResults (NCC.CompletionResult results, CompilationUnit cu, bool completeLocals)
+        ResolveResult GetResults (NCC.CompletionResult results, DefaultCompilationUnit cu, bool completeLocals)
         {
             try
             {
@@ -375,9 +375,9 @@ namespace NemerleBinding.Parser
                             continue;
                         
                         NCC.Elem.Local lvalue = (NCC.Elem.Local)elem;
-                        lang.Add (new NemerleBinding.Parser.SharpDevelopTree.Local 
+/*                        lang.Add (new NemerleBinding.Parser.SharpDevelopTree.Local 
                             (new Class ("LOCALS", cu), lvalue.Value));
-                    }
+*/                    }
                     else if (elem is NCC.Elem.Overloads)
                     {
                         NCC.Elem.Overloads lvalue = (NCC.Elem.Overloads)elem;
@@ -447,7 +447,7 @@ namespace NemerleBinding.Parser
             }
         }
         
-        private Class GetTheRealType (NCC.MType objectType, CompilationUnit cu)
+        private Class GetTheRealType (NCC.MType objectType, DefaultCompilationUnit cu)
         {
             if (objectType is NCC.MType.Class)
             {

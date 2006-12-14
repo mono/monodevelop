@@ -8,13 +8,8 @@ using Nemerle.Compiler.Typedtree;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Constructor : AbstractMethod, INemerleMethod
+	public class Constructor : DefaultMethod, INemerleMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		NCC.IMethod _member;
 		public NCC.IMethod Member
 		{

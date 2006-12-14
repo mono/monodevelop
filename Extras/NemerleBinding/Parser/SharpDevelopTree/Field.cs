@@ -9,13 +9,8 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Field : AbstractField
+	public class Field : DefaultField
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		void LoadXml (Class declaring)
         {
 			if (declaring.xmlHelp != null) {

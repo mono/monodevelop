@@ -9,13 +9,8 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-    public class Property : AbstractProperty
+    public class Property : DefaultProperty
     {
-        public void AddModifier(ModifierEnum m)
-        {
-            modifiers = modifiers | m;
-        }
-        
         internal Method Getter;
         internal Method Setter;
         
@@ -103,16 +98,6 @@ namespace NemerleBinding.Parser.SharpDevelopTree
 			}
 			
 			LoadXml (declaringType);
-        }
-        
-        public new IRegion GetterRegion {
-            get { return getterRegion; }
-            set { getterRegion = value; }
-        }
-
-        public new IRegion SetterRegion {
-            get { return setterRegion; }
-            set { setterRegion = value; }
         }
     }
 }

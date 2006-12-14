@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace NemerleBinding.Parser.SharpDevelopTree
 {
-	public class Event : AbstractEvent
+	public class Event : DefaultEvent
 	{
 		public void AddModifier(ModifierEnum m)
 		{
