@@ -10,6 +10,7 @@ using System.IO;
 using System.Drawing;
 using Gtk;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Properties;
@@ -25,10 +26,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		TreeView resultListView;
 		TreeStore store;
 		ComboBox locationComboBox;
-		ArrayList items;
+		IList<Report> items;
 		Report total;
 		
-		internal class Report
+		class Report
 		{
 			public string name;
 			public long chars;
@@ -41,16 +42,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.chars = chars;
 				this.words = words;
 				this.lines = lines;
-			}
-			
-			public string[] ToListItem()
-			{
-				return new string[] {System.IO.Path.GetFileName (name), chars.ToString (), words.ToString (), lines.ToString ()};
-			}
+			}						
 			
 			public static Report operator+(Report r, Report s)
 			{
-				Report tmpReport = new Report (GettextCatalog.GetString("total"), s.chars, s.words, s.lines);
+				Report tmpReport = new Report (GettextCatalog.GetString("Total"), s.chars, s.words, s.lines);
 				
 				tmpReport.chars += r.chars;
 				tmpReport.words += r.words;
@@ -59,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		Report GetReport(string filename)
+		static Report GetReport(string filename)
 		{
 			long numLines = 0;
 			long numWords = 0;
@@ -82,9 +78,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return new Report(filename, numChars, numWords, numLines);
 		}
 		
-		void startEvent(object sender, System.EventArgs e)
+		void StartEvent(object sender, System.EventArgs e)
 		{
-			items = new ArrayList();
+			items = new List<Report>();
 			total = null;
 			
 			switch (locationComboBox.Active) {
@@ -136,7 +132,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			}
 			
-			UpdateList(0);
+			UpdateList();
 		}
 		
 		void CountCombine(Combine combine, ref Report all)
@@ -156,95 +152,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		void UpdateList(int SortKey)
+		void UpdateList()
 		{
 			if (items == null) {
 				return;
 			}
+
 			// clear it here
-			store = new TreeStore (typeof (string), typeof (string), typeof (string), typeof (string));
+			store = new TreeStore (typeof (string), typeof (long), typeof (long), typeof (long));
 			
 			if (items.Count == 0) {
 				return;
 			}
 			
-			ReportComparer rc = new ReportComparer(SortKey);
-			items.Sort(rc);
-			
-			for (int i = 0; i < items.Count; ++i) {
-				string[] tmp = ((Report)items[i]).ToListItem();
-				store.AppendValues (tmp[0], tmp[1], tmp[2], tmp[3]);
+			foreach (Report report in items) {
+				store.AppendValues (System.IO.Path.GetFileName(report.name), report.chars, report.words, report.lines);
 			}
 			
 			if (total != null) {
-				store.AppendValues ("", "", "", "");
-				string[] tmp = total.ToListItem();
-				store.AppendValues (tmp[0], tmp[1], tmp[2], tmp[3]);
+				store.AppendValues (System.IO.Path.GetFileName(total.name), total.chars, total.words, total.lines);						
 			}
 			
 			resultListView.Model = store;
-			resultListView.HeadersClickable = true;
-		}		
-		
-		internal class ReportComparer : IComparer
-		{
-			int sortKey;
-		
-			public ReportComparer(int SortKey)
-			{
-				sortKey = SortKey;
-			}
-			
-			public int Compare(object x, object y)
-			{
-				Report xr = x as Report;
-				Report yr = y as Report;
-				
-				if (x == null || y == null) return 1;
-				
-				switch (sortKey) {
-				case 0:  // files
-					return String.Compare(xr.name, yr.name);
-				case 1:  // chars
-					return xr.chars.CompareTo(yr.chars);
-				case 2:  // words
-					return xr.words.CompareTo(yr.words);
-				case 3:  // lines
-					return xr.lines.CompareTo(yr.lines);
-				default:
-					return 1;
-				}
-			}
-		}
-		
-		private SortType ReverseSort (SortType st)
-		{
-			//Runtime.LoggingService.Info (st);
-			if (st == SortType.Ascending)
-				return SortType.Descending;
-			else
-				return SortType.Ascending;
-		}
-		
-		void SortEvt (object sender, EventArgs e)
-		{
-			TreeViewColumn col = (TreeViewColumn) sender;
-			string file = GettextCatalog.GetString ("File");
-			string chars = GettextCatalog.GetString ("Chars");
-			string words = GettextCatalog.GetString ("Words");
-			string lines = GettextCatalog.GetString ("Lines");
-			
-			if (file == col.Title)
-				store.SetSortColumnId (0, ReverseSort (col.SortOrder));
-			else if (chars == col.Title)
-				store.SetSortColumnId (1, ReverseSort (col.SortOrder));
-			else if (words == col.Title)
-				store.SetSortColumnId (2, ReverseSort (col.SortOrder));
-			else if (lines == col.Title)
-				store.SetSortColumnId (3, ReverseSort (col.SortOrder));
-			
-			//UpdateList ((TreeViewColumn)e.Column);
-		}
+		}				
 		
 		public WordCountDialog ()
 		{
@@ -260,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.SetDefaultSize (300, 300);
 			this.Title = GettextCatalog.GetString ("Word Count");
 			Button startButton = new Button (Gtk.Stock.Execute);
-			startButton.Clicked += new EventHandler (startEvent);
+			startButton.Clicked += new EventHandler (StartEvent);
 
 			// dont emit response
 			this.ActionArea.PackStart (startButton);
@@ -276,19 +206,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			resultListView.RulesHint = true;
 
 			TreeViewColumn fileColumn = new TreeViewColumn (GettextCatalog.GetString ("File"), new CellRendererText (), "text", 0);
-			fileColumn.Clicked += new EventHandler (SortEvt);
+			fileColumn.SortIndicator = true;
+			fileColumn.SortColumnId = 0;
 			resultListView.AppendColumn (fileColumn);
 			
 			TreeViewColumn charsColumn = new TreeViewColumn (GettextCatalog.GetString ("Chars"), new CellRendererText (), "text", 1);
-			charsColumn.Clicked += new EventHandler (SortEvt);
+			charsColumn.SortIndicator = true;
+			charsColumn.SortColumnId = 1;
 			resultListView.AppendColumn (charsColumn);
 			
 			TreeViewColumn wordsColumn = new TreeViewColumn (GettextCatalog.GetString ("Words"), new CellRendererText (), "text", 2);
-			wordsColumn.Clicked += new EventHandler (SortEvt);
+			wordsColumn.SortIndicator = true;
+			wordsColumn.SortColumnId = 2;
 			resultListView.AppendColumn (wordsColumn);
 			
 			TreeViewColumn linesColumn = new TreeViewColumn (GettextCatalog.GetString ("Lines"), new CellRendererText (), "text", 3);
-			linesColumn.Clicked += new EventHandler (SortEvt);
+			linesColumn.SortIndicator = true;
+			linesColumn.SortColumnId = 3;
 			resultListView.AppendColumn (linesColumn);
 			
 			this.Icon = Services.Resources.GetIcon ("gtk-find");
