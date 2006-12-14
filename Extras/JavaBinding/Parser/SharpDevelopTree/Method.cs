@@ -5,13 +5,8 @@ using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Method : AbstractMethod
+	public class Method : DefaultMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Method(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion)
 		{
 			FullyQualifiedName = name;

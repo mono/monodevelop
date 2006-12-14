@@ -1,3 +1,18 @@
+2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/SharpDevelopTree/CompilationUnit.cs,
+	  Parser/SharpDevelopTree/Indexer.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/Parameter.cs,
+	  Parser/SharpDevelopTree/Event.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Field.cs,
+	  Parser/SharpDevelopTree/Property.cs,
+	  Parser/SharpDevelopTree/Class.cs,
+	  Parser/SharpDevelopTree/Constructor.cs,
+	  Parser/SharpDevelopTree/AttributeSection.cs: Renamed Abstract*
+	  classes to Default*.
+
 2006-09-18 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 	
 	* JavaBinding.mdp: Updated.

@@ -7,13 +7,10 @@ using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Class : AbstractClass
+	public class Class : DefaultClass
 	{
-		ICompilationUnit cu;
-		
-		public Class(CompilationUnit cu, ClassType t, Modifier m, IRegion region)
+		public Class(CompilationUnit cu, ClassType t, Modifier m, IRegion region): base (cu)
 		{
-			this.cu = cu;
 			classType = t;
 			this.region = region;
 			modifiers = (ModifierEnum)m;
@@ -55,11 +52,6 @@ namespace JavaBinding.Parser.SharpDevelopTree
 				p.AddModifier(ModifierEnum.Public);
 			}
 			
-		}
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return cu;
-			}
 		}
 	}
 }

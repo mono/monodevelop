@@ -5,7 +5,7 @@ using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Event : AbstractEvent
+	public class Event : DefaultEvent
 	{
 		public void AddModifier(ModifierEnum m)
 		{

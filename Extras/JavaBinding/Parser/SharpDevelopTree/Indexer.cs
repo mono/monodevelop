@@ -5,7 +5,7 @@ using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Indexer : AbstractIndexer
+	public class Indexer : DefaultIndexer
 	{
 		public void AddModifier(ModifierEnum m)
 		{

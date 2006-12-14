@@ -5,7 +5,7 @@ using JRefactory.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Property : AbstractProperty
+	public class Property : DefaultProperty
 	{
 		public void AddModifier(ModifierEnum m)
 		{

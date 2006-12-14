@@ -4,7 +4,7 @@ using MonoDevelop.Projects.Parser;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class Parameter : AbstractParameter
+	public class Parameter : DefaultParameter
 	{
 		public Parameter(string name, ReturnType type)
 		{

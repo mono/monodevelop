@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace JavaBinding.Parser.SharpDevelopTree
 {
-	public class AttributeSection : AbstractAttributeSection
+	public class AttributeSection : DefaultAttributeSection
 	{
 		public AttributeSection(AttributeTarget attributeTarget,
 		                        AttributeCollection attributes) {
@@ -13,7 +13,7 @@ namespace JavaBinding.Parser.SharpDevelopTree
 			this.attributes = attributes;
 		}
 	}
-	public class ASTAttribute : AbstractAttribute
+	public class ASTAttribute : DefaultAttribute
 	{
 		public ASTAttribute(string name, ArrayList positionalArguments, SortedList namedArguments)
 		{
