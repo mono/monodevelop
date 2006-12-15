@@ -1,5 +1,10 @@
 2006-12-15  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (GetDefaultResourceIdInternal): Return null if
+	no class name is found.
+
+2006-12-15  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (ReadItemGroups): Add a 'monitor' param.
 	Resource file cannot be outside the project directory.		
 	DependentUpon is relative to the directory of the embedded resource.

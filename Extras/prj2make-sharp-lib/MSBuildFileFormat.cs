@@ -1264,6 +1264,8 @@ namespace MonoDevelop.Prj2Make
 				int numopen = 0;
 				while (true) {
 					string tok = GetNextCSToken (rdr);
+					if (tok == null)
+						break;
 				
 					if (String.Compare (tok, "namespace", false) == 0)
 						ns = GetNextCSToken (rdr);
@@ -1283,10 +1285,15 @@ namespace MonoDevelop.Prj2Make
 					}
 				}
 
-				if (ns != null)
-					return ns + '.' + classname + ".resources";
-				else
+				if (classname == null) {
+					Console.WriteLine ("Warning: No class found in '{0}'.", pf.DependsOn);	
+					return null;
+				}
+
+				if (ns == null)
 					return classname + ".resources";
+				else
+					return ns + '.' + classname + ".resources";
 			}
 		}
 
