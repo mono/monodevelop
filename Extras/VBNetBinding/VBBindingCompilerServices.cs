@@ -142,6 +142,11 @@ namespace VBBinding {
 					writer.WriteLine(String.Concat("-r:", fileName));
 			}
 			
+			string resgen = "resgen";
+			//ClrVersion.Default ?
+			if (configuration.ClrVersion == ClrVersion.Net_2_0)
+				resgen = "resgen2";
+
 			// write source files and embedded resources
 			foreach (ProjectFile finfo in projectFiles) {
 				if (finfo.Subtype != Subtype.Directory) {
@@ -151,7 +156,34 @@ namespace VBBinding {
 						break;
 						
 						case BuildAction.EmbedAsResource:
-							writer.WriteLine(@"""-resource:{0},{1}""", finfo.Name, finfo.ResourceId);
+							//FIXME: Duplicate of code from CSharpBindingCompilerManager
+							string fname = finfo.Name;
+							string resourceId = finfo.ResourceId;
+							if (resourceId == null) {
+								Console.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
+								monitor.Log.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
+								continue;
+							}
+
+							if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
+								using (StringWriter sw = new StringWriter ()) {
+									ProcessWrapper pw = Runtime.ProcessService.StartProcess (
+										resgen, String.Format ("/compile {0}", fname), null, 
+										sw, sw, null);
+
+									pw.WaitForOutput ();
+									if (pw.ExitCode == 0) {
+										fname = Path.ChangeExtension (fname, ".resources");
+									} else {
+										Console.WriteLine ("Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n", resgen, fname, sw.ToString ());
+										monitor.Log.WriteLine (
+											"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n", resgen, fname, sw.ToString ());
+										continue;
+									}
+								}
+							}
+
+							writer.WriteLine(@"""-resource:{0},{1}""", fname, resourceId);
 						break;
 					}
 				}

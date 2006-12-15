@@ -1,5 +1,21 @@
 2006-12-15  Ankit Jain  <jankit@novell.com>
 
+	* IResourceIdBuilder.cs: New.
+	* CSharpResourceIdBuilder.cs: New.
+	* VBNetResourceIdBuilder.cs: New.
+
+	* MSBuildFileFormat.cs: Move MSBuildData and MSBuildProject classes to ..
+	* MSBuildData.cs: .. this and ..
+	* MSBuildProject.cs: .. this.
+
+	* SlnFileFormat.cs: Move SlnData and MSBuildSolution classes to .. 
+	* SlnData.cs: .. this and ..
+	* MSBuildSolution.cs : .. this.
+
+	* Makefile.am: Add new files.
+
+2006-12-15  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (GetDefaultResourceIdInternal): Return null if
 	no class name is found.
 

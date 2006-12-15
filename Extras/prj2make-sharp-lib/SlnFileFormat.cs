@@ -2,7 +2,7 @@
 // SlnFileFormat.cs
 //
 // Author:
-//   Ankit Jain
+//   Ankit Jain <jankit@novell.com>
 //
 // Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
@@ -34,6 +34,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
@@ -759,100 +760,6 @@ namespace MonoDevelop.Prj2Make
 			this.Start = Start;
 			this.Count = Count;
 		}
-	}
-
-	class SlnData
-	{
-		string guid;
-		Dictionary<CombineConfiguration, string> configStrings;
-		List<string> globalExtra; // unused GlobalSections
-		List<string> extra; //used by solution folders..
-		List<string> unknownProjects;
-
-		public string Guid {
-			get { return guid; }
-			set { guid = value; }
-		}
-
-		public Dictionary<CombineConfiguration, string> ConfigStrings {
-			get {
-				if (configStrings == null)
-					configStrings = new Dictionary<CombineConfiguration, string> ();
-				return configStrings;
-			}
-		}
-
-		public List<string> GlobalExtra {
-			get { return globalExtra; }
-			set { globalExtra = value; }
-		}
-
-		public List<string> Extra {
-			get { return extra; }
-			set { extra = value; }
-		}
-		
-		public List<string> UnknownProjects {
-			get {
-				if (unknownProjects == null)
-					unknownProjects = new List<string> ();
-				return unknownProjects;
-			}
-		}
-
-	}
-
-	class MSBuildSolution : Combine
-	{
-		public MSBuildSolution () : base ()
-		{
-			FileFormat = new SlnFileFormat ();
-		}
-
-		static MSBuildSolution ()
-		{
-			IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
-		}	
-
-		public SlnData Data {
-			get {
-				if (!ExtendedProperties.Contains (typeof (SlnFileFormat)))
-					return null;
-				return (SlnData) ExtendedProperties [typeof (SlnFileFormat)];
-			}
-			set {
-				ExtendedProperties [typeof (SlnFileFormat)] = value;
-			}
-		}
-
-		public static void HandleAddEntry (object s, AddEntryEventArgs args)
-		{
-			if (args.Combine.GetType () != typeof (MSBuildSolution))
-				return;
-
-			string extn = Path.GetExtension (args.FileName);
-
-			//FIXME: Use IFileFormat.CanReadFile 
-			if (String.Compare (extn, ".mdp", true) == 0 || String.Compare (extn, ".mds", true) == 0) {
-				if (!IdeApp.Services.MessageService.AskQuestionFormatted ( 
-					"Conversion required", "The project file {0} must be converted to " + 
-					"msbuild format to be added to a msbuild solution. Convert?", args.FileName)) {
-					args.Cancel = true;
-					return;
-				}
-			}
-
-			IProgressMonitor monitor = new NullProgressMonitor ();
-			CombineEntry ce = Services.ProjectService.ReadFile (args.FileName, monitor);
-			ce = SlnFileFormat.ConvertToMSBuild (ce, false);
-			args.FileName = ce.FileName;
-
-			if (String.Compare (extn, ".mds", true) == 0)
-				SlnFileFormat.UpdateProjectReferences ((Combine) ce, true);
-
-			ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
-		}
-
 	}
 
 }

@@ -28,7 +28,14 @@ sharp_d_prjx.cs \
 csproj_ver2003.cs \
 prj2make-sharp-lib-Commands.cs \
 MSBuildFileFormat.cs \
-SlnFileFormat.cs
+SlnFileFormat.cs \
+IResourceIdBuilder.cs \
+CSharpResourceIdBuilder.cs \
+VBNetResourceIdBuilder.cs \
+MSBuildProject.cs \
+MSBuildData.cs \
+SlnData.cs \
+MSBuildSolution.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs

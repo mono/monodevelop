@@ -1,3 +1,8 @@
+2006-12-15  Ankit Jain  <jankit@novell.com>
+
+	* VBBindingCompilerServices.cs (Compile): Use resgen to convert .resx
+	to embeddable resource format (.resources). Handle 'null' resourceId.
+
 2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp, Parser/SharpDevelopTree/Indexer.cs,
