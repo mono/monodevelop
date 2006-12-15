@@ -168,7 +168,7 @@ namespace VBBinding {
 							if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 								using (StringWriter sw = new StringWriter ()) {
 									ProcessWrapper pw = Runtime.ProcessService.StartProcess (
-										resgen, String.Format ("/compile {0}", fname), null, 
+										resgen, String.Format ("/compile \"{0}\" ", fname), null, 
 										sw, sw, null);
 
 									pw.WaitForOutput ();
