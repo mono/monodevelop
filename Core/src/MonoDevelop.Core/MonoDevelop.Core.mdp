@@ -18,7 +18,6 @@
     <File name="./MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core/FileUtilityService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IStringTagProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/PropertyService.cs" subtype="Code" buildaction="Compile" />
@@ -148,6 +147,11 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Core.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.Core/FileService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core.FileSystem" subtype="Directory" buildaction="Compile" />
+    <File name="./MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Cecil.dll" />

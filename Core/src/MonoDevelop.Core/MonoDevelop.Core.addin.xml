@@ -39,7 +39,8 @@
 					platform = "Native"
 		            class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
 	</Extension>
-	  
-
+	
+	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
+	</Extension>
 
 </AddIn>

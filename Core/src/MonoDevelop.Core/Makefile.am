@@ -4,7 +4,8 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 FILES= \
 MonoDevelop.Core/AbstractService.cs \
 MonoDevelop.Core/ClrVersion.cs \
-MonoDevelop.Core/FileUtilityService.cs \
+MonoDevelop.Core/FileService.cs \
+MonoDevelop.Core/FileEventArgs.cs \
 MonoDevelop.Core/IService.cs \
 MonoDevelop.Core/IStringTagProvider.cs \
 MonoDevelop.Core/PropertyService.cs \
@@ -127,6 +128,8 @@ MonoDevelop.Core.Execution/IProcessAsyncOperation.cs \
 MonoDevelop.Core.Execution/MintPlatformExecutionHandler.cs \
 MonoDevelop.Core.Execution/MonoPlatformExecutionHandler.cs \
 MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
+MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs \
+MonoDevelop.Core.FileSystem/FileSystemExtension.cs \
 MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
 MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 MonoDevelop.Core.ProgressMonitoring/SynchronizedProgressMonitor.cs

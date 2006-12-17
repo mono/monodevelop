@@ -42,7 +42,7 @@ namespace MonoDevelop.Core
 		static PropertyService propertyService;
 		static StringParserService stringParserService;
 		static SystemAssemblyService systemAssemblyService;
-		static FileUtilityService fileUtilityService;
+		static FileService fileService;
 		static ILoggingService loggingService;
 		static AddInService addInService;
 		static SetupService setupService;
@@ -58,6 +58,10 @@ namespace MonoDevelop.Core
 				return;
 			initialized = true;
 			AddInService.Initialize ();
+		}
+		
+		internal static bool Initialized {
+			get { return initialized; }
 		}
 		
 		public static void Shutdown ()
@@ -81,11 +85,11 @@ namespace MonoDevelop.Core
 			}
 		}	
 	
-		public static FileUtilityService FileUtilityService {
+		public static FileService FileService {
 			get {
-				if (fileUtilityService == null)
-					fileUtilityService = (FileUtilityService) ServiceManager.GetService (typeof(FileUtilityService));
-				return fileUtilityService; 
+				if (fileService == null)
+					fileService = new FileService ();
+				return fileService; 
 			}
 		}
 		

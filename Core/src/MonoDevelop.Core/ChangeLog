@@ -1,3 +1,20 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddIn.cs,
+	  MonoDevelop.Core.AddIns.Setup/SetupService.cs: Track changes in
+	  FileService API.
+	* Makefile.am, MonoDevelop.Core/FileEventArgs.cs: Moved from
+	  MonoDevelop.Core.Gui.
+	* MonoDevelop.Core.addin.xml: Registered new extension point for file
+	  system extensions.
+	* MonoDevelop.Core.mdp: Updated.
+	* MonoDevelop.Core/Runtime.cs: Added FileService.
+	* MonoDevelop.Core/FileUtilityService.cs: Merged with FileService.
+	* MonoDevelop.Core/ServiceManager.cs: Added null check.
+	* MonoDevelop.Core/FileService.cs: Moved from MonoDevelop.Core.Gui and
+	  added some new features. It is now possible to register extensions
+	  which can hook into the file operations such as Copy or Move.
+
 2006-12-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddInService.cs: In

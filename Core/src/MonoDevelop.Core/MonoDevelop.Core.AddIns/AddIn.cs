@@ -42,8 +42,6 @@ namespace MonoDevelop.Core.AddIns
 		
 		ArrayList        extensions = new ArrayList();
 		
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-		
 		/// <summary>
 		/// returns the filename of the xml definition in which
 		/// this AddIn is defined.
@@ -247,7 +245,7 @@ namespace MonoDevelop.Core.AddIns
 					continue;
 
 				string assemblyName = curEl.Attributes["assembly"].InnerText;
-				string pathName     = Path.IsPathRooted(assemblyName) ? assemblyName : fileUtilityService.GetDirectoryNameWithSeparator(path) + assemblyName;
+				string pathName     = Path.IsPathRooted(assemblyName) ? assemblyName : Runtime.FileService.GetDirectoryNameWithSeparator(path) + assemblyName;
 				Assembly asm = AddInTreeSingleton.AddInTree.LoadAssembly(pathName);
 				RuntimeLibraries[assemblyName] = asm;
 			}
@@ -347,7 +345,7 @@ namespace MonoDevelop.Core.AddIns
 							} else {
 								PathAttribute pathAttribute = (PathAttribute)Attribute.GetCustomAttribute(fieldInfo, typeof(PathAttribute));
 								if (pathAttribute != null) {
-									fieldInfo.SetValue(customizer, fileUtilityService.GetDirectoryNameWithSeparator(Path.GetDirectoryName(fileName)) + Convert.ChangeType(node.Value, fieldInfo.FieldType).ToString());
+									fieldInfo.SetValue(customizer, Runtime.FileService.GetDirectoryNameWithSeparator(Path.GetDirectoryName(fileName)) + Convert.ChangeType(node.Value, fieldInfo.FieldType).ToString());
 								} else {
 									fieldInfo.SetValue(customizer, Convert.ChangeType(node.Value, fieldInfo.FieldType));
 								}

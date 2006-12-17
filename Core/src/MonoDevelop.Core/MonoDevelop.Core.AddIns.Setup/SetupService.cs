@@ -53,7 +53,6 @@ namespace MonoDevelop.Core.AddIns.Setup
 		SystemConfiguration systemConfig;
 		
 		ArrayList addInDirs = new ArrayList ();
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		
 		internal void Initialize (string[] addInDirs, bool ignoreDefaultPath)
 		{
@@ -656,7 +655,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 			foreach (string dir in AddinDirectories) {
 				if (!Directory.Exists (dir))
 					continue;
-				StringCollection files = fileUtilityService.SearchDirectory (dir, "*.addin.xml");
+				StringCollection files = Runtime.FileService.SearchDirectory (dir, "*.addin.xml");
 				foreach (string file in files)
 					addinSetupInfos.Add (new AddinSetupInfo (file));
 			}

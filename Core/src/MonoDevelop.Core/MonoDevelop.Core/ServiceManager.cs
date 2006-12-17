@@ -89,7 +89,6 @@ namespace MonoDevelop.Core
 			// add 'core' services
 			AddService(new PropertyService());
 			AddService(new StringParserService());
-			AddService(new FileUtilityService());
 		}
 		
 		/// <remarks>
@@ -129,7 +128,8 @@ namespace MonoDevelop.Core
 					IAddInTreeNode node = (IAddInTreeNode) de.Value;
 					if (node.Codon.AddIn == qaddin) {
 						IService service = (IService) rootNode.BuildChildItem ((string)de.Key, defaultServiceManager);
-//						service.InitializeService();
+						if (service == null)
+							throw new InvalidOperationException ("Could not create service: " + de.Key);
 //						Console.WriteLine ("     Added service " + service.GetType ());
 						AddService (service);
 					}
