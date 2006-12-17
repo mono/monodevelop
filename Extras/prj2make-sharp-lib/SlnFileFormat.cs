@@ -228,11 +228,16 @@ namespace MonoDevelop.Prj2Make
 					continue;
 
 				foreach (CombineConfigurationEntry cce in cc.Entries) {
-					//FIXME: Bug in md :/ Workaround, setting the config name explicitly
-					//Solution folder's cce.ConfigurationName doesn't get set
-					if (cce.Entry is Combine) {
+					MSBuildProject p = cce.Entry as MSBuildProject;
+					if (p == null) {
+						Combine combine = cce.Entry as Combine;
+						if (combine == null)
+							continue;
+
+						//FIXME: Bug in md :/ Workaround, setting the config name explicitly
+						//Solution folder's cce.ConfigurationName doesn't get set
 						if (cce.ConfigurationName == String.Empty) {
-							if (((Combine) cce.Entry).GetConfiguration (rootConfigName) != null)
+							if (combine.GetConfiguration (rootConfigName) != null)
 								cce.ConfigurationName = rootConfigName;
 						}
 
@@ -241,19 +246,20 @@ namespace MonoDevelop.Prj2Make
 							//so that its the same throughout the tree
 							//this ensures that _all_ the projects are
 							//relative to rootconfigname
-							Console.WriteLine ("Known Problem: Invalid setting!");
-							throw new Exception ("Known Problem: Invalid setting!");
+							//FIXME: Could be either:
+							//	1. Invalid setting
+							//	2. New imported project, which doesn't yet have
+							//	   a config named rootConfigName
+							Console.WriteLine ("Known Problem: Invalid setting. Ignoring.");
+							continue;
 						}
-					}
 
-					MSBuildProject p = cce.Entry as MSBuildProject;
-					if (p == null) {
-						Combine combine = cce.Entry as Combine;
-						if (combine != null)
-							WriteProjectConfigurations (combine, list, ind + 1, cc.Name);
+						WriteProjectConfigurations (combine, list, ind + 1, cc.Name);
 
 						continue;
 					}
+
+					/* Project */
 
 					list.Add (String.Format (
 						"\t\t{{{0}}}.{1}.ActiveCfg = {2}", p.Data.Guid, cc.Name, cce.ConfigurationName));
@@ -645,7 +651,7 @@ namespace MonoDevelop.Prj2Make
 
 				string [] parts = s.Split (new char [] {'='}, 2);
 				if (parts.Length < 2) {
-					Console.WriteLine ("{0} ({1}) : Warning: Invalid format. Ignoring", sln.FileName, i + sec.Start + 1);
+					Console.WriteLine ("{0} ({1}) : Warning: Invalid format. Ignoring", sln.FileName, lineNum + 1);
 					continue;
 				}
 				string projConfig = parts [1].Trim ();
@@ -653,7 +659,7 @@ namespace MonoDevelop.Prj2Make
 				string [] left = parts [0].Split (new char [] {'.'}, 3);
 				if (left.Length != 3) {
 					Console.WriteLine ("{0} ({1}) : Warning: Invalid format of the left side. Ignoring",
-						sln.FileName, lineNum);
+						sln.FileName, lineNum + 1);
 					continue;
 				}
 
@@ -663,7 +669,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (!sln.ProjectsByGuid.ContainsKey (projGuid)) {
 					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found. Ignoring", 
-						sln.FileName, lineNum, projGuid);
+						sln.FileName, lineNum + 1, projGuid);
 					continue;
 				}
 
@@ -679,7 +685,7 @@ namespace MonoDevelop.Prj2Make
 						Console.WriteLine (
 							"{0} ({1}) : Warning: No config entry found corresponding to solution config named '{2}'" +
 							"and project named '{3}'.",
-							sln.FileName, lineNum, slnConfig, project.Name);
+							sln.FileName, lineNum + 1, slnConfig, project.Name);
 						continue;
 					}
 
@@ -753,7 +759,7 @@ namespace MonoDevelop.Prj2Make
 
 				if (pair.Key.IndexOf ('|') < 0) {
 					//Config must of the form ConfigName|Platform
-					Console.WriteLine ("{0} ({1}) : Invalid config name '{2}'", combine.FileName, lineNum, pair.Key);
+					Console.WriteLine ("{0} ({1}) : Invalid config name '{2}'", combine.FileName, lineNum + 1, pair.Key);
 					continue;
 				}
 				
