@@ -172,10 +172,10 @@ namespace MonoDevelop.Projects
 				if (Path.GetFileName (finfo.Name).ToUpper () == "app.config".ToUpper() &&
 					Path.GetDirectoryName (finfo.Name) == BaseDirectory)
 				{
-					File.Copy (finfo.Name, conf.CompiledOutputName + ".config",true);
+					Runtime.FileService.CopyFile (finfo.Name, conf.CompiledOutputName + ".config");
 				}
 				if (finfo.BuildAction == BuildAction.FileCopy) {
-					File.Copy (finfo.Name, Path.Combine (Path.GetDirectoryName (conf.CompiledOutputName), Path.GetFileName (finfo.Name)), true);
+					Runtime.FileService.CopyFile (finfo.Name, Path.Combine (Path.GetDirectoryName (conf.CompiledOutputName), Path.GetFileName (finfo.Name)));
 				}
 			}
 

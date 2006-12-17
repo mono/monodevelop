@@ -219,9 +219,9 @@ namespace MonoDevelop.Projects
 								if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
 									Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
 								// Copy the file
-								File.Copy(referenceFileName, destinationFileName, true);
+								Runtime.FileService.CopyFile(referenceFileName, destinationFileName);
 								if (File.Exists (referenceFileName + ".mdb"))
-									File.Copy (referenceFileName + ".mdb", destinationFileName + ".mdb", true);
+									Runtime.FileService.CopyFile (referenceFileName + ".mdb", destinationFileName + ".mdb");
 							}
 						} catch (Exception e) {
 							Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)referenceFileName, (object)destinationFileName, (object)e);
@@ -243,9 +243,9 @@ namespace MonoDevelop.Projects
 						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
 						try {
 							if (destinationFileName != referenceFileName) {
-								File.Delete (destinationFileName);
+								Runtime.FileService.DeleteFile (destinationFileName);
 								if (File.Exists (destinationFileName + ".mdb"))
-									File.Delete (destinationFileName + ".mdb");
+									Runtime.FileService.DeleteFile (destinationFileName + ".mdb");
 							}
 						} catch (Exception e) {
 							Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
@@ -304,9 +304,9 @@ namespace MonoDevelop.Projects
 			string file = GetOutputFileName ();
 			if (file != null) {
 				if (File.Exists (file))
-					File.Delete (file);
+					Runtime.FileService.DeleteFile (file);
 				if (File.Exists (file + ".mdb"))
-					File.Delete (file + ".mdb");
+					Runtime.FileService.DeleteFile (file + ".mdb");
 			}
 
 			// Delete referenced assemblies

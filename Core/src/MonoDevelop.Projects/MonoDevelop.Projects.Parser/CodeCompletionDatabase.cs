@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.Parser
 				CloseReader ();
 				
 				if (File.Exists (oldDataFile))
-					File.Move (oldDataFile, dataFile);
+					Runtime.FileService.MoveFile (oldDataFile, dataFile);
 			}
 		}
 		
@@ -282,14 +282,14 @@ namespace MonoDevelop.Projects.Parser
 					CloseReader ();
 					
 					if (File.Exists (dataFile))
-						File.Delete (dataFile);
+						Runtime.FileService.DeleteFile (dataFile);
 						
-					File.Move (tmpDataFile, dataFile);
+					Runtime.FileService.MoveFile (tmpDataFile, dataFile);
 				} catch {
 					if (dfile != null)
 						dfile.Close ();
 					if (File.Exists (tmpDataFile))
-						File.Delete (tmpDataFile);
+						Runtime.FileService.DeleteFile (tmpDataFile);
 				}
 			}
 		}

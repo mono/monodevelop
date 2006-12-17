@@ -1,3 +1,22 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectReference.cs,
+	  MonoDevelop.Projects/MdpFileFormat.cs,
+	  MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/DotNetProject.cs,
+	  MonoDevelop.Projects/PrjxFileFormat.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs,
+	  MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,
+	  MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs: Track changes
+	  in FileService API.
+	* MonoDevelop.Projects/Project.cs: Use the file service for copying
+	  files.
+	* MonoDevelop.Projects.mdp: Updated.
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Use the file
+	  service for file operations.
+
 2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AbstractDecoration.cs,

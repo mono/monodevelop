@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects
 			string refto = reference;
 			if (referenceType == ReferenceType.Assembly) {
 				string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
-				refto = Runtime.FileUtilityService.AbsoluteToRelativePath (basePath, refto);
+				refto = Runtime.FileService.AbsoluteToRelativePath (basePath, refto);
 			} else if (referenceType == ReferenceType.Gac && loadedReference != null)
 				refto = loadedReference;
 
@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects
 				UpdateGacReference ();
 				if (referenceType == ReferenceType.Assembly) {
 					string basePath = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
-					reference = Runtime.FileUtilityService.RelativeToAbsolutePath (basePath, reference);
+					reference = Runtime.FileService.RelativeToAbsolutePath (basePath, reference);
 				}
 			}
 		}

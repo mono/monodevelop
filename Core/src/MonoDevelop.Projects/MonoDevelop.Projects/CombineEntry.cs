@@ -141,6 +141,13 @@ namespace MonoDevelop.Projects
 			get { return parentCombine != null ? parentCombine.RootCombine : this as Combine; }
 		}
 		
+		// Returns a path which can be used to store local data related to the combine entry
+		public string LocalDataPath {
+			get {
+				return Path.Combine (BaseDirectory, "." + Path.GetFileName (FileName) + ".local");
+			}
+		}
+		
 		public virtual void Save (string fileName, IProgressMonitor monitor)
 		{
 			FileName = fileName;
@@ -252,12 +259,12 @@ namespace MonoDevelop.Projects
 			if (Path.IsPathRooted (relPath))
 				return relPath;
 			else
-				return Runtime.FileUtilityService.RelativeToAbsolutePath (BaseDirectory, relPath);
+				return Runtime.FileService.RelativeToAbsolutePath (BaseDirectory, relPath);
 		}
 		
 		public string GetRelativeChildPath (string absPath)
 		{
-			return Runtime.FileUtilityService.AbsoluteToRelativePath (BaseDirectory, absPath);
+			return Runtime.FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
 		}
 		
 		public virtual void Dispose()

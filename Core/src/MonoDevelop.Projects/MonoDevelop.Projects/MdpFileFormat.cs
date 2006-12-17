@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects
 					StreamReader sr = new StreamReader (tempFile);
 					string fdata = sr.ReadToEnd ();
 					sr.Close ();
-					File.Delete (tempFile);
+					Runtime.FileService.DeleteFile (tempFile);
 					reader = new XmlTextReader (new StringReader (fdata));
 					projectReader = new ProjectReaderV1 (serializer);
 				}

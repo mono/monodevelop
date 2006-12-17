@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Deployment
 			string targetDir = Path.GetDirectoryName (dest);
 			if (!Directory.Exists (targetDir))
 				Directory.CreateDirectory (targetDir);
-			File.Copy (src, dest, true);
+			Runtime.FileService.CopyFile (src, dest);
 		}
 	}
 }
