@@ -1,5 +1,9 @@
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.FileSystem: Added missing files.
+
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.AddIns/AddIn.cs,
 	  MonoDevelop.Core.AddIns.Setup/SetupService.cs: Track changes in
 	  FileService API.
