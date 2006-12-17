@@ -31,13 +31,16 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 
-using System.IO;
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.Prj2Make
 {
 	class MSBuildSolution : Combine
 	{
+		Dictionary<string, DotNetProject> projectsByGuidTable;
+
 		public MSBuildSolution () : base ()
 		{
 			FileFormat = new SlnFileFormat ();
@@ -56,6 +59,14 @@ namespace MonoDevelop.Prj2Make
 			}
 			set {
 				ExtendedProperties [typeof (SlnFileFormat)] = value;
+			}
+		}
+
+		public Dictionary<string, DotNetProject> ProjectsByGuid {
+			get {
+				if (projectsByGuidTable == null)
+					projectsByGuidTable = new Dictionary<string, DotNetProject> ();
+				return projectsByGuidTable;
 			}
 		}
 
@@ -82,7 +93,7 @@ namespace MonoDevelop.Prj2Make
 			args.FileName = ce.FileName;
 
 			if (String.Compare (extn, ".mds", true) == 0)
-				SlnFileFormat.UpdateProjectReferences ((Combine) ce, true);
+				SlnFileFormat.UpdateProjectReferences (((Combine) ce), true);
 
 			ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
 		}

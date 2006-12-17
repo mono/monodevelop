@@ -172,6 +172,8 @@ namespace MonoDevelop.Prj2Make
 			EnsureChildValue (globalConfigElement, "ProjectGuid", ns, 
 				String.Concat ("{", data.Guid, "}"));
 
+			string [] activeConfigPlatform = GetConfigPlatform (project.ActiveConfiguration.Name);
+
 			//Set active config
 			//FIXME: >1 <Configuration elements?
 			XmlNode ac = MoveToChild (globalConfigElement, "Configuration");
@@ -183,7 +185,7 @@ namespace MonoDevelop.Prj2Make
 							ac.Attributes ["Condition"].Value);
 					if (dic.ContainsKey ("CONFIGURATION") && String.IsNullOrEmpty (dic ["CONFIGURATION"]))
 						// '$(Configuration)' == ''
-						ac.InnerText = project.ActiveConfiguration.Name;
+						ac.InnerText = activeConfigPlatform [0];
 					else
 						//New Element needs to be added for active config
 						ac = null;
@@ -197,18 +199,18 @@ namespace MonoDevelop.Prj2Make
 				//Add new xml element for active config
 				ac = doc.CreateElement ("Configuration", ns);
 				globalConfigElement.AppendChild (ac);
-				ac.InnerText = project.ActiveConfiguration.Name;
+				ac.InnerText = activeConfigPlatform [0];
 
 				((XmlElement) ac).SetAttribute ("Condition", " '$(Configuration)' == '' ");
 			}
 
 			//Platform
-			//FIXME: Using only 'AnyCPU' for now
+			//FIXME: Do same as done for Configuration above.. (check/set condition etc)
 			ac = MoveToChild (globalConfigElement, "Platform");
 			if (ac == null) {
 				ac = doc.CreateElement ("Platform", ns);
 				globalConfigElement.AppendChild (ac);
-				ac.InnerText = "AnyCPU";
+				ac.InnerText = activeConfigPlatform [0];
 
 				((XmlElement) ac).SetAttribute ("Condition", " '$(Platform)' == '' ");
 			}
@@ -223,8 +225,9 @@ namespace MonoDevelop.Prj2Make
 					configElement = doc.CreateElement ("PropertyGroup", ns);
 					doc.DocumentElement.AppendChild (configElement);
 
+					string [] t = GetConfigPlatform (config.Name);
 					configElement.SetAttribute ("Condition", 
-						String.Format (" '$(Configuration)|$(Platform)' == '{0}|{1}' ", config.Name, "AnyCPU"));
+						String.Format (" '$(Configuration)|$(Platform)' == '{0}|{1}' ", t [0], t [1]));
 					data.ConfigElements [config] = configElement;
 				}
 
@@ -422,16 +425,17 @@ namespace MonoDevelop.Prj2Make
 						regex, 
 						iter.Current.GetAttribute ("Condition", NamespaceManager.DefaultNamespace));
 
-				if (!dic.ContainsKey ("CONFIGURATION") || 
-					String.IsNullOrEmpty (dic ["CONFIGURATION"]))
+				string configname = GetConfigName (dic);
+				if (configname == null)
 					continue;
 
 				DotNetProjectConfiguration config = 
-					(DotNetProjectConfiguration) project.GetConfiguration (dic ["CONFIGURATION"]);
+					(DotNetProjectConfiguration) project.GetConfiguration (configname);
 
 				if (config == null) {
 					config = (DotNetProjectConfiguration) globalConfig.Clone ();
-					config.Name = dic ["CONFIGURATION"];
+					config.Name = configname;
+
 					project.Configurations.Add (config);
 				}
 
@@ -462,11 +466,9 @@ namespace MonoDevelop.Prj2Make
 			project.FileRenamedInProject += new ProjectFileRenamedEventHandler (HandleFileRenamed);
 
 			//Configurations
-			//Create nodes for this in Writefile
-			//project.ConfigurationAdded += new ConfigurationEventHandler (HandleConfigurationAdded);
 			project.ConfigurationRemoved += new ConfigurationEventHandler (HandleConfigurationRemoved);
 
-			project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
+			//FIXME: project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
 		}
 
 		static void HandleRename (object sender, CombineEntryRenamedEventArgs e)
@@ -1128,7 +1130,40 @@ namespace MonoDevelop.Prj2Make
 			return elem;
 		}
 
-		string MapAndResolvePath (string basePath, string relPath)
+		static string GetConfigName (StringDictionary dic)
+		{
+			if (!dic.ContainsKey ("CONFIGURATION") || 
+				String.IsNullOrEmpty (dic ["CONFIGURATION"]))
+				return null;
+
+			string configname = dic ["CONFIGURATION"];
+			if (dic.ContainsKey ("PLATFORM") && !String.IsNullOrEmpty (dic ["PLATFORM"])) {
+				if (String.Compare (dic ["PLATFORM"], "AnyCPU", true) == 0)
+					configname = configname + "|Any CPU";
+				else
+					configname = configname + "|" + dic ["PLATFORM"];
+			}
+
+			return configname;
+		}
+
+		/* Returns [0] : Config name, [1] : Platform */
+		static string [] GetConfigPlatform (string name)
+		{
+			//FIXME: Handle Abc|Foo|x64 ? VS2005 doesn't allow a config
+			//name with |
+			string [] tmp = name.Split (new char [] {'|'}, 2);
+			string [] ret = new string [2];
+			ret [0] = tmp [0];
+			if (tmp.Length < 2)
+				ret [1] = "AnyCPU";
+			else
+				ret [1] = tmp [1];
+
+			return ret;
+		}
+
+		internal static string MapAndResolvePath (string basePath, string relPath)
 		{
 			string ret = SlnMaker.MapPath (basePath, relPath);
 			if (ret == null)

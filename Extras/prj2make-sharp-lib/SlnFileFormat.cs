@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -134,15 +135,20 @@ namespace MonoDevelop.Prj2Make
 				//FIXME: SolutionConfigurations?
 				sw.WriteLine ("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
 
-				foreach (CombineConfiguration config in c.Configurations) {
-					string s = (string) config.ExtendedProperties ["SolutionConfigurationPlatforms"];
-					if (String.IsNullOrEmpty (s))
-						//FIXME: Platforms
-						//FIXME: Add this new string to config.ExtendedProperties
-						sw.WriteLine ("\t\t{0}|{1} = {0}|{1}", config.Name, "Any CPU");
-					else
-						sw.WriteLine ("\t\t{0}", s);
-				}
+				foreach (CombineConfiguration config in c.Configurations)
+					sw.WriteLine ("\t\t{0} = {0}", config.Name);
+
+				sw.WriteLine ("\tEndGlobalSection");
+
+				//Write ProjectConfigurationPlatforms
+				sw.WriteLine ("\tGlobalSection(ProjectConfigurationPlatforms) = postSolution");
+
+				List<string> list = new List<string> ();
+				WriteProjectConfigurations (c, list, 0, null);
+
+				list.Sort (StringComparer.Create (CultureInfo.InvariantCulture, true));
+				foreach (string s in list)
+					sw.WriteLine (s);
 
 				sw.WriteLine ("\tEndGlobalSection");
 
@@ -151,11 +157,7 @@ namespace MonoDevelop.Prj2Make
 				WriteNestedProjects (c, sw);
 				sw.WriteLine ("\tEndGlobalSection");
 
-				//FIXME: ProjectConfigurationPlatforms
-				//FIXME:  .ActiveCfg
-
 				//Write 'others'
-
 				SlnData data = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
 				if (data.GlobalExtra != null) {
 					foreach (string s in data.GlobalExtra)
@@ -215,6 +217,51 @@ namespace MonoDevelop.Prj2Make
 				writer.WriteLine ("EndProject");
 				if (c != null)
 					WriteProjects (c, baseDirectory, writer);
+			}
+		}
+
+		void WriteProjectConfigurations (Combine c, List<string> list, int ind, string config)
+		{
+			foreach (CombineConfiguration cc in c.Configurations) {
+				string rootConfigName = config ?? cc.Name;
+				if (cc.Name != rootConfigName)
+					continue;
+
+				foreach (CombineConfigurationEntry cce in cc.Entries) {
+					//FIXME: Bug in md :/ Workaround, setting the config name explicitly
+					//Solution folder's cce.ConfigurationName doesn't get set
+					if (cce.Entry is Combine) {
+						if (cce.ConfigurationName == String.Empty) {
+							if (((Combine) cce.Entry).GetConfiguration (rootConfigName) != null)
+								cce.ConfigurationName = rootConfigName;
+						}
+
+						if (cce.ConfigurationName != rootConfigName) {
+							//Sln folder's config must match the root,
+							//so that its the same throughout the tree
+							//this ensures that _all_ the projects are
+							//relative to rootconfigname
+							Console.WriteLine ("Known Problem: Invalid setting!");
+							throw new Exception ("Known Problem: Invalid setting!");
+						}
+					}
+
+					MSBuildProject p = cce.Entry as MSBuildProject;
+					if (p == null) {
+						Combine combine = cce.Entry as Combine;
+						if (combine != null)
+							WriteProjectConfigurations (combine, list, ind + 1, cc.Name);
+
+						continue;
+					}
+
+					list.Add (String.Format (
+						"\t\t{{{0}}}.{1}.ActiveCfg = {2}", p.Data.Guid, cc.Name, cce.ConfigurationName));
+
+					if (cce.Build)
+						list.Add (String.Format (
+							"\t\t{{{0}}}.{1}.Build.0 = {2}", p.Data.Guid, cc.Name, cce.ConfigurationName));
+				}
 			}
 		}
 
@@ -292,18 +339,23 @@ namespace MonoDevelop.Prj2Make
 		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
 		{
 			try {
-				bool isMds = String.Compare (
-					Path.GetExtension (e.CombineEntry.FileName), ".mds", true) == 0;
-
 				ConvertToMSBuild (e.CombineEntry, true);
 
-				//Update the project references
-				if (isMds)
-					UpdateProjectReferences ((Combine) e.CombineEntry, false);
+				MSBuildSolution rootSln = (MSBuildSolution) e.CombineEntry.RootCombine;
+				MSBuildSolution sln = e.CombineEntry as MSBuildSolution;
+				if (sln != null) {
+					foreach (KeyValuePair<string, DotNetProject> pair in sln.ProjectsByGuid)
+						rootSln.ProjectsByGuid [pair.Key] = pair.Value;
+				} else {
+					//Add guid for the new project
+					MSBuildProject project = e.CombineEntry as MSBuildProject;
+					if (project != null)
+						rootSln.ProjectsByGuid [project.Data.Guid] = project;
+				}
 
 				//Setting this so that the .sln file get rewritten with the 
 				//updated project details.. 
-				e.CombineEntry.RootCombine.FileName = e.CombineEntry.RootCombine.FileName;
+				rootSln.FileName = rootSln.FileName;
 			} catch (Exception ex) {
 				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
 				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
@@ -492,13 +544,17 @@ namespace MonoDevelop.Prj2Make
 				{
 					projectPath = Path.GetFullPath (MapPath (Path.GetDirectoryName (fileName), projectPath));
 					try {
-						DotNetProject project = Services.ProjectService.ReadFile (projectPath, monitor) as DotNetProject;
+						MSBuildProject project = Services.ProjectService.ReadFile (projectPath, monitor) as MSBuildProject;
 						project.Name = projectName;
 						entries [projectGuid] = project;
-						MSBuildData msbData = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
-						msbData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
-					} catch {
-						//
+						combine.ProjectsByGuid [project.Data.Guid] = project;
+
+						project.Data.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
+					} catch (Exception e) {
+						Console.WriteLine ("Error while trying to load the project {0}", projectPath);
+						Console.WriteLine (e);
+						monitor.ReportWarning (String.Format (
+								"Error while trying to load the project {0}. Exception : ", projectPath, e.Message));
 					}
 					continue;
 				}
@@ -521,10 +577,18 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			//FIXME: This can be just SolutionConfiguration also!
-			if (globals != null && globals.Contains ("SolutionConfigurationPlatforms")) {
-				LoadConfigurations (globals ["SolutionConfigurationPlatforms"] as Section, lines,
-					combine, monitor);
-				globals.Remove ("SolutionConfigurationPlatforms");
+			if (globals != null) {
+				if (globals.Contains ("SolutionConfigurationPlatforms")) {
+					LoadSolutionConfigurations (globals ["SolutionConfigurationPlatforms"] as Section, lines,
+						combine, monitor);
+					globals.Remove ("SolutionConfigurationPlatforms");
+				}
+
+				if (globals.Contains ("ProjectConfigurationPlatforms")) {
+					LoadProjectConfigurationMappings (globals ["ProjectConfigurationPlatforms"] as Section, lines,
+						combine, monitor);
+					globals.Remove ("ProjectConfigurationPlatforms");
+				}
 			}
 
 			//Save the global sections that we dont use
@@ -563,43 +627,144 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		void LoadConfigurations (Section sec, List<string> lines, Combine combine, IProgressMonitor monitor)
+		void LoadProjectConfigurationMappings (Section sec, List<string> lines, MSBuildSolution sln, IProgressMonitor monitor)
+		{
+			if (sec == null || String.Compare (sec.Val, "postSolution", true) != 0)
+				return;
+
+			List<CombineConfigurationEntry> noBuildList = new List<CombineConfigurationEntry> ();
+			Dictionary<string, CombineConfigurationEntry> cache = new Dictionary<string, CombineConfigurationEntry> ();
+
+			for (int i = 0; i < sec.Count - 2; i ++) {
+				int lineNum = i + sec.Start + 1;
+				string s = lines [lineNum].Trim ();
+				
+				//Format:
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.ActiveCfg = ProjConfigName|ProjPlatform
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.Build.0 = ProjConfigName|ProjPlatform
+
+				string [] parts = s.Split (new char [] {'='}, 2);
+				if (parts.Length < 2) {
+					Console.WriteLine ("{0} ({1}) : Warning: Invalid format. Ignoring", sln.FileName, i + sec.Start + 1);
+					continue;
+				}
+				string projConfig = parts [1].Trim ();
+
+				string [] left = parts [0].Split (new char [] {'.'}, 3);
+				if (left.Length != 3) {
+					Console.WriteLine ("{0} ({1}) : Warning: Invalid format of the left side. Ignoring",
+						sln.FileName, lineNum);
+					continue;
+				}
+
+				string projGuid = left [0].Trim (new char [] {'{', '}'});
+				string slnConfig = left [1].Trim ();
+				string action = left [2].Trim (); // ActiveCfg or Build.0
+
+				if (!sln.ProjectsByGuid.ContainsKey (projGuid)) {
+					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found. Ignoring", 
+						sln.FileName, lineNum, projGuid);
+					continue;
+				}
+
+				DotNetProject project = sln.ProjectsByGuid [projGuid];
+
+				string key = projGuid + "." + slnConfig;
+				CombineConfigurationEntry combineConfigEntry = null;
+				if (cache.ContainsKey (key)) {
+					combineConfigEntry = cache [key];
+				} else {
+					combineConfigEntry = FindCombineConfigurationEntry (sln, slnConfig, project.Name);
+					if (combineConfigEntry == null) {
+						Console.WriteLine (
+							"{0} ({1}) : Warning: No config entry found corresponding to solution config named '{2}'" +
+							"and project named '{3}'.",
+							sln.FileName, lineNum, slnConfig, project.Name);
+						continue;
+					}
+
+					cache [key] = combineConfigEntry;
+				}
+
+				/* If both ActiveCfg & Build.0 entries are missing
+				 * for a project, then default values :
+				 *	ActiveCfg : same as the solution config
+				 *	Build : true
+				 *
+				 * ELSE
+				 * if Build (true/false) for the project will 
+				 * will depend on presence/absence of Build.0 entry
+				 */
+				if (String.Compare (action, "ActiveCfg", false) == 0) {
+					combineConfigEntry.ConfigurationName = projConfig;
+					noBuildList.Add (combineConfigEntry);
+				} else if (String.Compare (action, "Build.0", false) == 0) {
+					noBuildList.Remove (combineConfigEntry);
+				}
+			}
+
+			foreach (CombineConfigurationEntry e in noBuildList) {
+				//Mark (build=false) of all projects for which 
+				//ActiveCfg was found but no Build.0
+				e.Build = false;
+			}
+		}
+
+		/* Finds a CombineConfigurationEntry corresponding to the @configName for a project (@projectName) 
+		 * in @combine */
+		CombineConfigurationEntry FindCombineConfigurationEntry (Combine combine, string configName, string projectName)
+		{
+			CombineConfiguration cc = combine.GetConfiguration (configName) as CombineConfiguration;
+			if (cc == null)
+				return null;
+
+			foreach (CombineConfigurationEntry cce in cc.Entries) {
+				Combine c = cce.Entry as Combine;
+				if (c != null) {
+					CombineConfigurationEntry r = FindCombineConfigurationEntry (c, configName, projectName);
+					if (r != null)
+						return r;
+
+					continue;
+				}
+
+				//Project
+				if (cce.Entry.Name == projectName)
+					return cce;
+			}
+
+			return null;
+		}
+
+		void LoadSolutionConfigurations (Section sec, List<string> lines, Combine combine, IProgressMonitor monitor)
 		{
 			if (sec == null || String.Compare (sec.Val, "preSolution", true) != 0)
 				return;
 
 			for (int i = 0; i < sec.Count - 2; i ++) {
 				//FIXME: expects both key and val to be on the same line
-				string s = lines [i + sec.Start + 1].Trim ();
+				int lineNum = i + sec.Start + 1;
+				string s = lines [lineNum].Trim ();
 				if (s.Length == 0)
 					//Skip blank lines
 					continue;
 
 				KeyValuePair<string, string> pair = SplitKeyValue (s);
 
-				//key : Debug|Any CPU
-				string [] key_parts = pair.Key.Split (new char [] {'|'}, 2);
-				if (key_parts.Length == 0)
+				if (pair.Key.IndexOf ('|') < 0) {
+					//Config must of the form ConfigName|Platform
+					Console.WriteLine ("{0} ({1}) : Invalid config name '{2}'", combine.FileName, lineNum, pair.Key);
 					continue;
+				}
 				
 				CombineConfiguration config = (CombineConfiguration) 
-					combine.GetConfiguration (key_parts [0]);
+					combine.GetConfiguration (pair.Key);
 				
 				if (config == null) {
 					config = (CombineConfiguration) 
-						combine.CreateConfiguration (key_parts [0]);
+						combine.CreateConfiguration (pair.Key);
 					combine.Configurations.Add (config);
 				}
-				
-				if (key_parts.Length > 1) {
-					if (String.Compare (key_parts [1], "Any CPU", true) != 0)
-						Runtime.LoggingService.Debug (GettextCatalog.GetString (
-							"Platform specific configurations not supported. Only (default) 'Any CPU' supported."));
-
-					config.ExtendedProperties.Add ("Platform", key_parts [1]);
-				}
-
-				config.ExtendedProperties.Add ("SolutionConfigurationPlatforms", s);
 			}
 		}
 
