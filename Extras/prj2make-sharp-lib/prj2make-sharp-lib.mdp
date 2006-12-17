@@ -27,6 +27,17 @@
     <File name="./csproj_ver2003.cs" subtype="Code" buildaction="Compile" />
     <File name="./prj2make-sharp-lib-Commands.cs" subtype="Code" buildaction="Compile" />
     <File name="./prj2make-sharp-lib.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./MSBuildFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MSBuildProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MSBuildSolution.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MSBuildData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="./SlnData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./SlnFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VBNetResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./CSharpResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./IResourceIdBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

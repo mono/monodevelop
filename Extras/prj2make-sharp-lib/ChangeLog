@@ -1,3 +1,9 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.mdp: Added missing files.
+	* SlnFileFormat.cs, MSBuildFileFormat.cs: Track changes in the
+	  FileService class.
+
 2006-12-15  Ankit Jain  <jankit@novell.com>
 
 	* IResourceIdBuilder.cs: New.

@@ -117,15 +117,15 @@ namespace MonoDevelop.Prj2Make
 					WriteFileInternal (file, project, monitor);
 				} else {
 					WriteFileInternal (tmpfilename, project, monitor);
-					File.Delete (file);
-					File.Move (tmpfilename, file);
+					Runtime.FileService.DeleteFile (file);
+					Runtime.FileService.MoveFile (tmpfilename, file);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
 				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
 
 				if (tmpfilename != String.Empty)
-					File.Delete (tmpfilename);
+					Runtime.FileService.DeleteFile (tmpfilename);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -231,7 +231,7 @@ namespace MonoDevelop.Prj2Make
 				EnsureChildValue (configElement, "OutputType", ns, config.CompileTarget);
 				EnsureChildValue (configElement, "AssemblyName", ns, config.OutputAssembly);
 				EnsureChildValue (configElement, "OutputPath", ns, 
-					Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, config.OutputDirectory));
+					Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, config.OutputDirectory));
 				EnsureChildValue (configElement, "DebugSymbols", ns, config.DebugMode);
 
 				if (project.LanguageName == "VBNet") {
@@ -248,12 +248,12 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict);
 					if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							Runtime.FileUtilityService.AbsoluteToRelativePath (
+							Runtime.FileService.AbsoluteToRelativePath (
 								project.BaseDirectory, vbparams.Win32Icon));
 
 					if (vbparams.Win32Resource != null && vbparams.Win32Resource.Length > 0)
 						EnsureChildValue (configElement, "Win32Resource", ns,
-							Runtime.FileUtilityService.AbsoluteToRelativePath (
+							Runtime.FileService.AbsoluteToRelativePath (
 								project.BaseDirectory, vbparams.Win32Resource));
 
 					//FIXME: VB.net Imports
@@ -270,12 +270,12 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (configElement, "WarningLevel", ns, csparams.WarningLevel);
 					if (csparams.Win32Icon != null && csparams.Win32Icon.Length > 0)
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							Runtime.FileUtilityService.AbsoluteToRelativePath (
+							Runtime.FileService.AbsoluteToRelativePath (
 								project.BaseDirectory, csparams.Win32Icon));
 
 					if (csparams.Win32Resource != null && csparams.Win32Resource.Length > 0)
 						EnsureChildValue (configElement, "Win32Resource", ns,
-							Runtime.FileUtilityService.AbsoluteToRelativePath (
+							Runtime.FileService.AbsoluteToRelativePath (
 								project.BaseDirectory, csparams.Win32Resource));
 				}
 			}
@@ -476,7 +476,7 @@ namespace MonoDevelop.Prj2Make
 			string dir = Path.GetDirectoryName (oldfname);
 			string newfname = Path.Combine (dir, e.NewName + extn);
 
-			File.Move (oldfname, newfname);
+			Runtime.FileService.MoveFile (oldfname, newfname);
 			e.CombineEntry.FileName = newfname;
 		}
 
@@ -553,7 +553,7 @@ namespace MonoDevelop.Prj2Make
 				reference = Mono.Cecil.AssemblyFactory.GetAssembly (reference).Name.ToString ();
 
 				AppendChild (elem, "HintPath", ns, 
-					Runtime.FileUtilityService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference));
+					Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference));
 				AppendChild (elem, "SpecificVersion", ns, "False");
 				break;
 			case ReferenceType.Project:
@@ -561,7 +561,7 @@ namespace MonoDevelop.Prj2Make
 				if (c != null) {
 					Project p = c.FindProject (projectRef.Reference);
 					//FIXME: if (p == null) : This should not happen!
-					reference = Runtime.FileUtilityService.AbsoluteToRelativePath (
+					reference = Runtime.FileService.AbsoluteToRelativePath (
 						project.BaseDirectory, p.FileName);
 
 					if (p.ExtendedProperties.Contains (typeof (MSBuildFileFormat))) {
@@ -643,7 +643,7 @@ namespace MonoDevelop.Prj2Make
 				
 				//DependentUpon is relative to the basedir of the 'pf' (resource file)
 				EnsureChildValue (d.ProjectFileElements [projectFile], "DependentUpon", ns,
-						Runtime.FileUtilityService.AbsoluteToRelativePath (
+						Runtime.FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn));
 			}
 			
@@ -704,7 +704,7 @@ namespace MonoDevelop.Prj2Make
 
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)
 			EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
-					Runtime.FileUtilityService.AbsoluteToRelativePath (
+					Runtime.FileService.AbsoluteToRelativePath (
 						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn));
 			//FIXME: Subtype, Data
 		}

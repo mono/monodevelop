@@ -93,15 +93,15 @@ namespace MonoDevelop.Prj2Make
 					WriteFileInternal (file, c, monitor);
 				} else {
 					WriteFileInternal (tmpfilename, c, monitor);
-					File.Delete (file);
-					File.Move (tmpfilename, file);
+					Runtime.FileService.DeleteFile (file);
+					Runtime.FileService.MoveFile (tmpfilename, file);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 				Console.WriteLine ("Could not save solution: {0}, {1}", file, ex);
 
 				if (tmpfilename != String.Empty)
-					File.Delete (tmpfilename);
+					Runtime.FileService.DeleteFile (tmpfilename);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -188,7 +188,7 @@ namespace MonoDevelop.Prj2Make
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
 						projectTypeGuid.ToString ().ToUpper (),
 						ce.Name, 
-						Runtime.FileUtilityService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
+						Runtime.FileService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
 						msbData.Guid);
 				} else {
 					//Solution
@@ -368,7 +368,7 @@ namespace MonoDevelop.Prj2Make
 					MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
 					XmlElement elem = data.ProjectReferenceElements [pref];
 					elem.SetAttribute ("Include", 
-						Runtime.FileUtilityService.AbsoluteToRelativePath (
+						Runtime.FileService.AbsoluteToRelativePath (
 							proj.BaseDirectory, p.FileName));
 
 					//Set guid of the ProjectReference
