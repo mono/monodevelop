@@ -40,7 +40,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 			// Services
 			Project project;
-			static FileUtilityService fileUtilityService = Runtime.FileUtilityService;
 
 			public DeployFileOptionsWidget (IProperties CustomizationObject) : 
 				base ("Base.glade", "DeployFileOptionsPanel")
@@ -62,7 +61,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 				foreach (ProjectFile info in project.ProjectFiles) {
 					if (info.BuildAction != BuildAction.Exclude) {
-						string name = fileUtilityService.AbsoluteToRelativePath(project.BaseDirectory, info.Name);
+						string name = Runtime.FileService.AbsoluteToRelativePath(project.BaseDirectory, info.Name);
 						store.AppendValues (project.DeployInformation.IsFileExcluded(info.Name) ? true : false, name);
 					}
 				}
@@ -97,14 +96,14 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			public bool Store () 
 			{
 				if (selectTargetButton.Filename.Length > 0) {
-					if (!fileUtilityService.IsValidFileName(selectTargetButton.Filename)) {
+					if (!Runtime.FileService.IsValidFileName(selectTargetButton.Filename)) {
 						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy target specified"));
 						return false;
 					}
 				}
 				
 				if (selectScriptButton.Filename.Length > 0) {
-					if (!fileUtilityService.IsValidFileName(selectScriptButton.Filename)) {
+					if (!Runtime.FileService.IsValidFileName(selectScriptButton.Filename)) {
 						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy script specified"));
 						return false;				
 					}
@@ -132,7 +131,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
  			project.DeployInformation.ClearExcludedFiles();
 			for (int i = 0; i < store.IterNChildren() ; ++i) {
 				if ( (bool) store.GetValue(current, 0)){
-					project.DeployInformation.AddExcludedFile(fileUtilityService.RelativeToAbsolutePath(
+					project.DeployInformation.AddExcludedFile(Runtime.FileService.RelativeToAbsolutePath(
 											  project.BaseDirectory, 
 											  (string) store.GetValue(current, 1)));
 							}

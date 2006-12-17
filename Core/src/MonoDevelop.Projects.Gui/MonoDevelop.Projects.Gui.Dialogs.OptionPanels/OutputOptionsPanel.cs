@@ -58,12 +58,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					return true;
 				}
 				
-				if (!Runtime.FileUtilityService.IsValidFileName(assemblyNameEntry.Text)) {
+				if (!Runtime.FileService.IsValidFileName(assemblyNameEntry.Text)) {
 					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
 					return false;
 				}
 
-				if (!Runtime.FileUtilityService.IsValidFileName (outputPathButton.Filename)) {
+				if (!Runtime.FileService.IsValidFileName (outputPathButton.Filename)) {
 					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
 					return false;
 				}

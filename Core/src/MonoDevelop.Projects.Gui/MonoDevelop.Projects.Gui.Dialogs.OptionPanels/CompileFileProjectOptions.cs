@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 				foreach (ProjectFile info in project.ProjectFiles) {
 					if (info.BuildAction == BuildAction.Nothing || info.BuildAction == BuildAction.Compile) {
-						string name = Runtime.FileUtilityService.AbsoluteToRelativePath(
+						string name = Runtime.FileService.AbsoluteToRelativePath(
 							project.BaseDirectory, info.Name).Substring(2);
 						store.AppendValues (info.BuildAction == BuildAction.Compile ? true : false, name);
 					}
@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				for (int i = 0; i < store.IterNChildren (); i++) {
 					if (i != 0)
 						store.IterNext(ref current);
-					string name = Runtime.FileUtilityService.RelativeToAbsolutePath(
+					string name = Runtime.FileService.RelativeToAbsolutePath(
 						project.BaseDirectory, "." + System.IO.Path.DirectorySeparatorChar + store.GetValue(current, 1));
 					int j = 0;
 					while (j < project.ProjectFiles.Count && project.ProjectFiles[j].Name != name) {
