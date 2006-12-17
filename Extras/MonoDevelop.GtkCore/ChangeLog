@@ -1,3 +1,8 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Track API changes in
+	  FileService.
+
 2006-12-13 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Don't

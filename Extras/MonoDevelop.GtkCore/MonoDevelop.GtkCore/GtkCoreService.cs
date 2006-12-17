@@ -46,7 +46,7 @@ namespace MonoDevelop.GtkCore
 	{
 		internal static void Initialize ()
 		{
-			IdeApp.Services.FileService.FileChanged += new FileEventHandler (OnFileChanged);
+			Runtime.FileService.FileChanged += new FileEventHandler (OnFileChanged);
 		}
 		
 		public static GtkDesignInfo GetGtkInfo (Project project)
@@ -349,9 +349,10 @@ namespace MonoDevelop.GtkCore
 		
 		static bool IsWidget (IClass cls, IParserContext pctx)
 		{
-			foreach (IReturnType bt in cls.BaseTypes)
+			foreach (IReturnType bt in cls.BaseTypes) {
 				if (bt.FullyQualifiedName == "Gtk.Widget")
 					return true;
+			}
 
 			foreach (IReturnType bt in cls.BaseTypes) {
 				IClass bcls = pctx.GetClass (bt.FullyQualifiedName, true, true);
