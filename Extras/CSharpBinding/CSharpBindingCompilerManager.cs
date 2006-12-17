@@ -25,8 +25,6 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpBindingCompilerManager
 	{	
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-		
 		public bool CanCompile(string fileName)
 		{
 			return Path.GetExtension(fileName).ToUpper() == ".CS";
@@ -192,15 +190,15 @@ namespace CSharpBinding
 			if (result.CompilerOutput.Trim () != "")
 				monitor.Log.WriteLine (result.CompilerOutput);
 			
-			File.Delete(responseFileName);
-			File.Delete(output);
-			File.Delete(error);
+			Runtime.FileService.DeleteFile (responseFileName);
+			Runtime.FileService.DeleteFile (output);
+			Runtime.FileService.DeleteFile (error);
 			return result;
 		}
 		
 		string GetCompilerName (ClrVersion version)
 		{
-			string runtimeDir = fileUtilityService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+			string runtimeDir = Runtime.FileService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
 			// The following regex foo gets the index of the
 			// last match of lib/lib32/lib64 and uses
 			// the text before that as the 'prefix' in order
