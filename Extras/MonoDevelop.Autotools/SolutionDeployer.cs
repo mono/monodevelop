@@ -176,7 +176,7 @@ namespace MonoDevelop.Autotools
 
 				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ); 
 				
-				File.Copy ( baseDir + "/" + filename, targetDir + "/" + filename, true );
+				Runtime.FileService.CopyFile ( baseDir + "/" + filename, targetDir + "/" + filename );
 				monitor.Step ( 1 );
 			}
 			catch ( Exception e )
@@ -194,14 +194,14 @@ namespace MonoDevelop.Autotools
 		void DeleteGeneratedFiles ( AutotoolsContext context )
 		{
 			foreach ( string file in context.GetAutoConfFiles () )
-				if ( File.Exists ( file ) ) File.Delete ( file );
+				if ( File.Exists ( file ) ) Runtime.FileService.DeleteFile ( file );
 
 			string[] other_files = new string [] { "autogen.sh", "configure.ac", "Makefile.include" };
 
 			foreach ( string file in other_files )
 			{
 				string path = solution_dir + "/" + file;
-				if ( File.Exists ( path ) ) File.Delete ( path );
+				if ( File.Exists ( path ) ) Runtime.FileService.DeleteFile ( path );
 			}
 		}
 
@@ -218,9 +218,9 @@ namespace MonoDevelop.Autotools
 				if ( !Directory.Exists ( libdir ) ) Directory.CreateDirectory ( libdir );
 
 				string newPath = Path.Combine (libdir, dll_name);
-				File.Copy ( dll, newPath , true );
+				Runtime.FileService.CopyFile ( dll, newPath );
 
-				newPath = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, newPath );
+				newPath = Runtime.FileService.AbsoluteToRelativePath ( solution_dir, newPath );
 				if (PlatformID.Unix != Environment.OSVersion.Platform) 
 					newPath = newPath.Replace ("\\","/");
 				sb.Append (' ');
@@ -312,7 +312,7 @@ namespace MonoDevelop.Autotools
 			string tmpmf = null;
 			foreach (string makefile in context.GetAutoConfFiles () ) 
 			{
-				tmpmf = Runtime.FileUtilityService.AbsoluteToRelativePath ( solution_dir, makefile );
+				tmpmf = Runtime.FileService.AbsoluteToRelativePath ( solution_dir, makefile );
 				if (PlatformID.Unix != Environment.OSVersion.Platform)
 					tmpmf = tmpmf.Replace("\\","/");
 

@@ -158,7 +158,7 @@ namespace MonoDevelop.Autotools
 								string rdir = Path.Combine (Path.GetDirectoryName (project.FileName), resourcedir);
 								if ( !Directory.Exists ( rdir ) ) Directory.CreateDirectory ( rdir );
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
-								File.Copy ( projectFile.FilePath, newPath, true ) ;
+								Runtime.FileService.CopyFile ( projectFile.FilePath, newPath ) ;
 								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
 								res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							}
