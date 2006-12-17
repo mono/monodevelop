@@ -96,7 +96,7 @@ namespace MonoQuery
 					}
 				} catch (Exception e) {
 					Runtime.LoggingService.Error ("Invalid monoquery file.");
-					File.Delete (serializedFile);
+					Runtime.FileService.DeleteFile (serializedFile);
 				}
 			}
 		}
