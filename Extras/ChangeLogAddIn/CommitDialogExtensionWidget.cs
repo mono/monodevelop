@@ -92,7 +92,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			
 			// Make a backup copy of the log file
 			string auxf = System.IO.Path.GetTempFileName ();
-			File.Copy (logf, auxf, true);
+			Runtime.FileService.CopyFile (logf, auxf);
 			tmpFile = auxf;
 			
 			// Read the log file and add the new entry
@@ -102,7 +102,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				tf.Save ();
 			} catch {
 				// Restore the log file
-				File.Copy (auxf, logf, true);
+				Runtime.FileService.CopyFile (auxf, logf);
 				throw;
 			}
 			return true;
@@ -113,11 +113,11 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (!success) {
 				if (tmpFile != null && File.Exists (tmpFile)) {
 					string logf = GetChangelogFile (changeSet.BaseLocalPath);
-					File.Copy (tmpFile, logf, true);
+					Runtime.FileService.CopyFile (tmpFile, logf);
 				}
 			}
 			if (tmpFile != null && File.Exists (tmpFile))
-				File.Delete (tmpFile);
+				Runtime.FileService.DeleteFile (tmpFile);
 		}
 		
 		void OnClickButton (object s, EventArgs args)
