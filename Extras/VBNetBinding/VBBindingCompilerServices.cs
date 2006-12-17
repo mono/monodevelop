@@ -27,12 +27,9 @@ namespace VBBinding {
 	/// </summary>
 	public class VBBindingCompilerServices
 	{	
-	
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*))?\)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 		RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-	
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		PropertyService propertyService       = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 		
 		public bool CanCompile(string fileName)
@@ -203,9 +200,9 @@ namespace VBBinding {
 			ICompilerResult result = ParseOutput(tf, output);
 			ParseOutput(tf,error);
 			
-			File.Delete(responseFileName);
-			File.Delete(output);
-			File.Delete(error);
+			Runtime.FileService.DeleteFile (responseFileName);
+			Runtime.FileService.DeleteFile (output);
+			Runtime.FileService.DeleteFile (error);
 			if (configuration.CompileTarget != CompileTarget.Library) {
 				WriteManifestFile(exe);
 			}

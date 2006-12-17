@@ -26,7 +26,6 @@ namespace VBBinding
 {
 	public class VBNodeBuilder : IProjectNodeBuilder
 	{
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		IconService iconService = (IconService)ServiceManager.GetService(typeof(IconService));
 		
 		public bool CanBuildProjectTree(Project project)
@@ -44,7 +43,7 @@ namespace VBBinding
 			// create 'empty' directories			
 			for (int i = 0; i < project.ProjectFiles.Count; ++i) {
 				if (project.ProjectFiles[i].Subtype == Subtype.Directory) {
-					string directoryName   = fileUtilityService.AbsoluteToRelativePath(project.BaseDirectory, project.ProjectFiles[i].Name);
+					string directoryName   = Runtime.FileService.AbsoluteToRelativePath(project.BaseDirectory, project.ProjectFiles[i].Name);
 
 					// if directoryname starts with ./ oder .\
 					if (directoryName.StartsWith(".")) {
@@ -69,7 +68,7 @@ namespace VBBinding
 				if (project.ProjectFiles[i].Subtype != Subtype.Directory) {
 					ProjectFile fileInformation = project.ProjectFiles[i];
 					
-					string relativeFile = fileUtilityService.AbsoluteToRelativePath(project.BaseDirectory, fileInformation.Name);
+					string relativeFile = Runtime.FileService.AbsoluteToRelativePath(project.BaseDirectory, fileInformation.Name);
 					
 					string fileName     = Path.GetFileName(fileInformation.Name);
 					
@@ -118,7 +117,7 @@ namespace VBBinding
 				
 				if (node == null) {
 					if (create) {
-						DirectoryNode newFolderNode  = new DirectoryNode(fileUtilityService.GetDirectoryNameWithSeparator(ConstructFolderName(curpathnode)) + path);
+						DirectoryNode newFolderNode  = new DirectoryNode(Runtime.FileService.GetDirectoryNameWithSeparator(ConstructFolderName(curpathnode)) + path);
 						curpathnode.Nodes.Add(newFolderNode);
 						curpathnode = newFolderNode;
 						continue;

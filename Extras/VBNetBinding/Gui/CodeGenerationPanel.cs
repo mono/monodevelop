@@ -28,7 +28,6 @@ namespace VBBinding
 		/*
 		
 		ResourceService resourceService = (ResourceService)ServiceManager.GetService(typeof(IResourceService));
-		static FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
@@ -36,8 +35,6 @@ namespace VBBinding
 				if (compilerParameters == null) {
 					return true;
 				}
-				FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-				
 				
 				compilerParameters.DefineSymbols = ControlDictionary["symbolsTextBox"].Text;
 				compilerParameters.MainClass     = ControlDictionary["mainClassTextBox"].Text;

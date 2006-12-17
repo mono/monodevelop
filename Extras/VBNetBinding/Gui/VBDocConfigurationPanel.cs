@@ -21,7 +21,6 @@ namespace VBBinding
 		VBCompilerParameters compilerParameters = null;
 		VBProject project = null;
 		ResourceService resourceService = (ResourceService)ServiceManager.Services.GetService(typeof(IResourceService));
-		static FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.Services.GetService(typeof(FileUtilityService));
 		static PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
 		
 		///<summary>

@@ -1,3 +1,12 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/VBCompilerPanel.cs, ProjectNodeBuilder.cs,
+	  VBBindingCompilerServices.cs: Track changes in the FileService
+	  class.
+	* Gui/VBDocConfigurationPanel.cs: Use the FileService for deleting
+	  files.
+	* Gui/CodeGenerationPanel.cs: Removed unused var.
+
 2006-12-15  Ankit Jain  <jankit@novell.com>
 
 	* VBBindingCompilerServices.cs (Compile): Filename arg to resgen should

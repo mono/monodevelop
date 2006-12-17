@@ -31,9 +31,8 @@ namespace VBBinding
 			DotNetProjectConfiguration cfg = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
 			config = (VBCompilerParameters) cfg.CompilationParameters;
 			
-			FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.Services.GetService(typeof(FileUtilityService));
 			((ComboBox)ControlDictionary["compilerVersionComboBox"]).Items.Add("Standard");
-			foreach (string runtime in fileUtilityService.GetAvaiableRuntimeVersions()) {
+			foreach (string runtime in Runtime.FileService.GetAvaiableRuntimeVersions()) {
 				((ComboBox)ControlDictionary["compilerVersionComboBox"]).Items.Add(runtime);
 			}
 			
