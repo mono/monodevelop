@@ -654,18 +654,32 @@ namespace MonoDevelop.Prj2Make
 					Console.WriteLine ("{0} ({1}) : Warning: Invalid format. Ignoring", sln.FileName, lineNum + 1);
 					continue;
 				}
+
+				string action;
 				string projConfig = parts [1].Trim ();
 
-				string [] left = parts [0].Split (new char [] {'.'}, 3);
-				if (left.Length != 3) {
+				string left = parts [0].Trim ();
+				if (left.EndsWith (".ActiveCfg")) {
+					action = "ActiveCfg";
+					left = left.Substring (0, left.Length - 10);
+				} else if (left.EndsWith (".Build.0")) {
+					action = "Build.0";
+					left = left.Substring (0, left.Length - 8);
+				} else { 
+					Console.WriteLine ("{0} ({1}) : Warning: Unknown action. Only ActiveCfg & Build.0 supported.",
+						sln.FileName, lineNum + 1);
+					continue;
+				}
+
+				string [] t = left.Split (new char [] {'.'}, 2);
+				if (t.Length < 2) {
 					Console.WriteLine ("{0} ({1}) : Warning: Invalid format of the left side. Ignoring",
 						sln.FileName, lineNum + 1);
 					continue;
 				}
 
-				string projGuid = left [0].Trim (new char [] {'{', '}'});
-				string slnConfig = left [1].Trim ();
-				string action = left [2].Trim (); // ActiveCfg or Build.0
+				string projGuid = t [0].Trim (new char [] {'{', '}'});
+				string slnConfig = t [1];
 
 				if (!sln.ProjectsByGuid.ContainsKey (projGuid)) {
 					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found. Ignoring", 
