@@ -99,7 +99,6 @@ namespace NemerleBinding
 			} 
 		}
 	
-		FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
 		static string ncc = "ncc";
 
 		private string GetOptionsString (DotNetProjectConfiguration configuration, NemerleParameters cp)
