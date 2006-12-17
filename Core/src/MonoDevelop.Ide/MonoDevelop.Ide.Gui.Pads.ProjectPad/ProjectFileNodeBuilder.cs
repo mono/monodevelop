@@ -95,13 +95,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
-			string oldname = file.Name;
-
-			string newname = Path.Combine (Path.GetDirectoryName (oldname), newName);
-			if (oldname != newname) {
+			string oldPath = file.Name;
+			string newPath = Path.Combine (Path.GetDirectoryName (oldPath), newName);
+			
+			if (oldPath != newPath) {
 				try {
-					if (Runtime.FileUtilityService.IsValidFileName (newname)) {
-						Services.FileService.RenameFile (oldname, newname);
+					if (Runtime.FileService.IsValidFileName (newPath)) {
+						Runtime.FileService.RenameFile (oldPath, newName);
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file

@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			string tmpPath = t.FileName;
 			if (t.Project != null)
-				tmpPath = Runtime.FileUtilityService.AbsoluteToRelativePath (t.Project.BaseDirectory, t.FileName);
+				tmpPath = Runtime.FileService.AbsoluteToRelativePath (t.Project.BaseDirectory, t.FileName);
 			
 			string fileName = tmpPath;
 			string path     = tmpPath;

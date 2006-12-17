@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		[Glade.Widget] HBox hbox_for_browser;
 		[Glade.Widget] Gtk.HSeparator hseparator;
 		
-		FileUtilityService  fileUtilityService = Runtime.FileUtilityService;
 		bool openCombine;
 		string basePath;
 		bool newCombine;
@@ -278,7 +277,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			sr.Close();
 			
 			if (showFile) {
-				string longfilename = fileUtilityService.GetDirectoryNameWithSeparator (ProjectLocation) + Runtime.StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
+				string longfilename = Runtime.FileService.GetDirectoryNameWithSeparator (ProjectLocation) + Runtime.StringParserService.Parse(filename, new string[,] { {"PROJECT", txt_name.Text}});
 				IdeApp.Workbench.OpenDocument (longfilename);
 			}
 		}
@@ -309,9 +308,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 
 			if ((solution != null && solution.Trim () != "" 
-				&& (!fileUtilityService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
-			    !fileUtilityService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
-			    !fileUtilityService.IsValidFileName(location)) {
+				&& (!Runtime.FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
+			    !Runtime.FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
+			    !Runtime.FileService.IsValidFileName(location)) {
 				Services.MessageService.ShowError(GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}
@@ -439,7 +438,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			
 			if (basePath == null)
-				basePath = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", fileUtilityService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
+				basePath = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Runtime.FileService.GetDirectoryNameWithSeparator (Environment.GetEnvironmentVariable ("HOME")) + "Projects").ToString ();
 				
 			entry_location.Path = basePath;
 			

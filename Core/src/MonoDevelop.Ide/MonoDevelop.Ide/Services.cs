@@ -25,16 +25,7 @@ namespace MonoDevelop.Ide
 		static IParserService parserService;
 		static DispatchService dispatchService;
 		static IProjectService projectService;
-		static IFileService fileService;
 	
-		public static IFileService FileService {
-			get {
-				if (fileService == null)
-					fileService = (IFileService) ServiceManager.GetService (typeof(IFileService));
-				return fileService;
-			}
-		}
-
 		public static IStatusBarService StatusBar {
 			get {
 				if (statusBarService == null)

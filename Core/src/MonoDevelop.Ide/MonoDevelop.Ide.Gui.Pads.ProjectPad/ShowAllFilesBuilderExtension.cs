@@ -70,18 +70,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.FileAddedToProject += fileAddedHandler;
 			IdeApp.ProjectOperations.FileRemovedFromProject += fileRemovedHandler;
 			
-			Services.FileService.FileRenamed += renamedHandler;
-			Services.FileService.FileRemoved += deletedHandler;
-			Services.FileService.FileCreated += createdHandler;
+			Runtime.FileService.FileRenamed += renamedHandler;
+			Runtime.FileService.FileRemoved += deletedHandler;
+			Runtime.FileService.FileCreated += createdHandler;
 		}
 		
 		public override void Dispose ()
 		{
 			IdeApp.ProjectOperations.FileAddedToProject -= fileAddedHandler;
 			IdeApp.ProjectOperations.FileRemovedFromProject -= fileRemovedHandler;
-			Services.FileService.FileRenamed -= renamedHandler;
-			Services.FileService.FileRemoved -= deletedHandler;
-			Services.FileService.FileCreated -= createdHandler;
+			Runtime.FileService.FileRenamed -= renamedHandler;
+			Runtime.FileService.FileRemoved -= deletedHandler;
+			Runtime.FileService.FileCreated -= createdHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)

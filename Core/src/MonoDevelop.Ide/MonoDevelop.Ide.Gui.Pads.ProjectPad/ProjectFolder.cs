@@ -31,6 +31,7 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
@@ -59,9 +60,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (trackChanges != value) {
 					trackChanges = value;
 					if (trackChanges)
-						Services.FileService.FileRenamed += new FileEventHandler (OnFileRenamed);
+						Runtime.FileService.FileRenamed += new FileEventHandler (OnFileRenamed);
 					else
-						Services.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+						Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
 				}
 			}
 		}
@@ -109,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public void Dispose ()
 		{
-			Services.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
+			Runtime.FileService.FileRenamed -= new FileEventHandler (OnFileRenamed);
 		}
 		
 		public void Remove ()

@@ -154,12 +154,19 @@ namespace MonoDevelop.Ide.Templates
 				fileTemplate = new FileTemplate ();
 			}
 			
-			fileTemplate.originator   = doc.DocumentElement.Attributes["Originator"].InnerText;
-			fileTemplate.created      = doc.DocumentElement.Attributes["Created"].InnerText;
-			fileTemplate.lastmodified = doc.DocumentElement.Attributes["LastModified"].InnerText;
+			fileTemplate.originator   = doc.DocumentElement.GetAttribute ("Originator");
+			fileTemplate.created      = doc.DocumentElement.GetAttribute ("Created");
+			fileTemplate.lastmodified = doc.DocumentElement.GetAttribute ("LastModified");
 			
-			fileTemplate.name         = GettextCatalog.GetString (config["_Name"].InnerText);
-			fileTemplate.category     = config["Category"].InnerText;
+			if (config["_Name"] != null)
+				fileTemplate.name = GettextCatalog.GetString (config["_Name"].InnerText);
+			else
+				throw new InvalidOperationException ("Missing element '_Name' in file template: " + filename);
+			
+			if (config["Category"] != null)
+				fileTemplate.category = config["Category"].InnerText;
+			else
+				throw new InvalidOperationException ("Missing element 'Category' in file template: " + filename);
 			
 			if (config["LanguageName"] != null)
 				fileTemplate.languagename = config["LanguageName"].InnerText;
@@ -271,9 +278,9 @@ namespace MonoDevelop.Ide.Templates
 					int n=0;
 					while (File.Exists (fn + n + ext))
 						n++;
-					File.Move (fn, fn + n + ext);
+					Runtime.FileService.MoveFile (fn, fn + n + ext);
 					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
-					File.Delete (fn + n + ext);
+					Runtime.FileService.DeleteFile (fn + n + ext);
 					if (mimeType == null || mimeType == "")
 						mimeType = "text";
 					

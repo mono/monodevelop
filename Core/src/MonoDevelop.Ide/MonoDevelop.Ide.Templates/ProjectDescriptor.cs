@@ -69,7 +69,6 @@ namespace MonoDevelop.Ide.Templates
 		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			StringParserService stringParserService = Runtime.StringParserService;
-			FileUtilityService fileUtilityService = Runtime.FileUtilityService;
 			
 			if (projectOptions.GetAttribute ("language") == "") {
 				if (defaultLanguage == null || defaultLanguage == "")
@@ -88,7 +87,7 @@ namespace MonoDevelop.Ide.Templates
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
-			project.FileName = fileUtilityService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
+			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
 			project.Name = newProjectName;
 			
 			// Add References

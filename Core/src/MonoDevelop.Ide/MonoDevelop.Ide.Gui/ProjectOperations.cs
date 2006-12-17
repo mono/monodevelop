@@ -92,8 +92,8 @@ namespace MonoDevelop.Ide.Gui
 			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
 			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
 		
-			Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
-			Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
+			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
+			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
 			
 			parserDatabase = Services.ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Gui
 		void SearchNewFiles (Project project)
 		{
 			StringCollection newFiles   = new StringCollection();
-			StringCollection collection = Runtime.FileUtilityService.SearchDirectory (project.BaseDirectory, "*");
+			StringCollection collection = Runtime.FileService.SearchDirectory (project.BaseDirectory, "*");
 
 			foreach (string sfile in collection) {
 				string extension = Path.GetExtension(sfile).ToUpper();
@@ -598,7 +598,7 @@ namespace MonoDevelop.Ide.Gui
 			XmlElement root = doc.DocumentElement;
 			if (root["Files"] != null) {
 				foreach (XmlElement el in root["Files"].ChildNodes) {
-					string fileName = Runtime.FileUtilityService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
+					string fileName = Runtime.FileService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
 					if (File.Exists(fileName)) {
 						IdeApp.Workbench.OpenDocument (fileName, false);
 					}
@@ -653,7 +653,7 @@ namespace MonoDevelop.Ide.Gui
 					XmlElement el = doc.CreateElement("File");
 					
 					XmlAttribute attr = doc.CreateAttribute("filename");
-					attr.InnerText = Runtime.FileUtilityService.AbsoluteToRelativePath (combinepath, document.FileName);
+					attr.InnerText = Runtime.FileService.AbsoluteToRelativePath (combinepath, document.FileName);
 					el.Attributes.Append(attr);
 					
 					filesnode.AppendChild (el);
@@ -960,6 +960,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, string sourcePath, Project targetProject, string targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
+			// When transfering directories, targetPath is the directory where the source
+			// directory will be transfered, not including the destination directory name.
+			// For example, if sourcePath is /a1/a2/a3 and targetPath is /b1/b2, the
+			// new folder will be /b1/b2/a3
+			
 			if (targetProject == null)
 				throw new ArgumentNullException ("targetProject");
 
@@ -971,6 +976,10 @@ namespace MonoDevelop.Ide.Gui
 				
 			if (copyOnlyProjectFiles && sourceProject == null)
 				throw new ArgumentException ("A source project must be specified if copyOnlyProjectFiles is True");
+
+			bool movingFolder = (removeFromSource && Directory.Exists (sourcePath) && (
+					!copyOnlyProjectFiles ||
+					IsDirectoryHierarchyEmpty (sourcePath)));
 
 			// Get the list of files to copy
 
@@ -991,17 +1000,26 @@ namespace MonoDevelop.Ide.Gui
 			// Ensure that the destination folder is created, even if no files
 			// are copied
 			
+			string newFolder = Path.Combine (targetPath, Path.GetFileName (sourcePath));
 			try {
-				string newFolder = Path.Combine (targetPath, Path.GetFileName (sourcePath));
-				if (Directory.Exists (sourcePath) && !Directory.Exists (newFolder))
-					Services.FileService.CreateDirectory (newFolder);
+				if (Directory.Exists (sourcePath) && !Directory.Exists (newFolder) && !movingFolder)
+					Runtime.FileService.CreateDirectory (newFolder);
 			} catch (Exception ex) {
 				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not create directory '{0}'."), targetPath), ex);
 				return;
 			}
 
 			// Transfer files
+			// If moving a folder, do it all at once
 			
+			if (movingFolder) {
+				try {
+					Runtime.FileService.MoveDirectory (sourcePath, newFolder);
+				} catch (Exception ex) {
+					monitor.ReportError (string.Format (GettextCatalog.GetString ("Directory '{0}' could not be deleted."), sourcePath), ex);
+				}
+			}
+
 			string basePath = Path.GetDirectoryName (sourcePath);
 			monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
 			
@@ -1009,15 +1027,20 @@ namespace MonoDevelop.Ide.Gui
 				string sourceFile = file.Name;
 				string newFile = targetPath + sourceFile.Substring (basePath.Length);
 				
-				try {
-					string fileDir = Path.GetDirectoryName (newFile);
-					if (!Directory.Exists (fileDir))
-						Services.FileService.CreateDirectory (fileDir);
-					Services.FileService.CopyFile (sourceFile, newFile);
-				} catch (Exception ex) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("File '{0}' could not be created."), newFile), ex);
-					monitor.Step (1);
-					continue;
+				if (!movingFolder) {
+					try {
+						string fileDir = Path.GetDirectoryName (newFile);
+						if (!Directory.Exists (fileDir))
+							Runtime.FileService.CreateDirectory (fileDir);
+						if (removeFromSource)
+							Runtime.FileService.MoveFile (sourceFile, newFile);
+						else
+							Runtime.FileService.CopyFile (sourceFile, newFile);
+					} catch (Exception ex) {
+						monitor.ReportError (string.Format (GettextCatalog.GetString ("File '{0}' could not be created."), newFile), ex);
+						monitor.Step (1);
+						continue;
+					}
 				}
 				
 				if (sourceProject != null) {
@@ -1033,27 +1056,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if (removeFromSource) {
-					try {
-						Services.FileService.RemoveFile (sourceFile);
-					} catch (Exception ex) {
-						monitor.ReportError (string.Format (GettextCatalog.GetString ("File '{0}' could not be deleted."), sourceFile), ex);
-					}
-				}
 				monitor.Step (1);
-			}
-			
-			// If moving a folder, remove to source folder
-			
-			if (removeFromSource && Directory.Exists (sourcePath) && (
-					!copyOnlyProjectFiles ||
-					IsDirectoryHierarchyEmpty (sourcePath)))
-			{
-				try {
-					Services.FileService.RemoveFile (sourcePath);
-				} catch (Exception ex) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("Directory '{0}' could not be deleted."), sourcePath), ex);
-				}
 			}
 			
 			monitor.EndTask ();

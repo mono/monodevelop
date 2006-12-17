@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static TextTemplate()
 		{
-			StringCollection files = Runtime.FileUtilityService.SearchDirectory (Runtime.Properties.DataDirectory + 
+			StringCollection files = Runtime.FileService.SearchDirectory (Runtime.Properties.DataDirectory + 
 			                            Path.DirectorySeparatorChar + "options" + 
 			                            Path.DirectorySeparatorChar + "textlib", "*.xml");
 			foreach (string file in files) {

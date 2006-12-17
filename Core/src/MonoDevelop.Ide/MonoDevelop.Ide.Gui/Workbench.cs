@@ -79,8 +79,8 @@ namespace MonoDevelop.Ide.Gui
 					Services.DebuggingService.PausedEvent += (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnDebuggerPaused));
 				}
 				
-				Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
-				Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
+				Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRemoved));
+				Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (IdeApp.Workbench.RecentOpen.FileRenamed));
 				
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
@@ -482,8 +482,8 @@ namespace MonoDevelop.Ide.Gui
 				if (!fileName.StartsWith ("http://"))
 					fileName = System.IO.Path.GetFullPath (fileName);
 				
-				//Debug.Assert(Runtime.FileUtilityService.IsValidFileName(fileName));
-				if (Runtime.FileUtilityService.IsDirectory (fileName)) {
+				//Debug.Assert(Runtime.FileService.IsValidFileName(fileName));
+				if (Runtime.FileService.IsDirectory (fileName)) {
 					monitor.ReportError (string.Format (GettextCatalog.GetString ("{0} is a directory"), fileName), null);
 					return;
 				}

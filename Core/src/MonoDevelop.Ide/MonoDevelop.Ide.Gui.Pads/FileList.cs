@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			{
 				try
 				{
-					File.Delete (selectedItem.FullName);
+					Runtime.FileService.DeleteFile (selectedItem.FullName);
 					ItemRemoved (selectedItem);
 				}
 				catch (Exception ex)

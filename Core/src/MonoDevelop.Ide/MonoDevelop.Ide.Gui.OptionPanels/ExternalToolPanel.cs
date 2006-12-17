@@ -336,13 +336,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						 
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
 					
-					if (!Runtime.FileUtilityService.IsValidFileName (tool.Command)) {
+					if (!Runtime.FileService.IsValidFileName (tool.Command)) {
 						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), 
 										 tool.MenuCommand));
 						return false;
 					}
 					
-					if ((tool.InitialDirectory != "") && (!Runtime.FileUtilityService.IsValidFileName(tool.InitialDirectory))) {
+					if ((tool.InitialDirectory != "") && (!Runtime.FileService.IsValidFileName(tool.InitialDirectory))) {
 						Services.MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,
 											 tool.MenuCommand));
 						return false;

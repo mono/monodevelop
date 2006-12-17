@@ -311,8 +311,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		bool SetupSearchReplaceInFilesManager()
 		{
-			FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.GetService(typeof(FileUtilityService));
-			
 			string directoryName = directoryTextBox.Text;
 			string fileMask      = fileMaskTextBox.Text;
 			string searchPattern = searchPatternEntry.Text;
@@ -333,7 +331,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 
-				if (!fileUtilityService.IsValidFileName(directoryName)) {
+				if (!Runtime.FileService.IsValidFileName(directoryName)) {
 					messageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid directory name: {0}"), directoryName);
 					return false;
 				}
@@ -343,7 +341,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 				}
 				
-				if (!fileUtilityService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
+				if (!Runtime.FileService.IsValidFileName(fileMask) || fileMask.IndexOf('\\') >= 0) {
 					messageService.ShowErrorFormatted(GettextCatalog.GetString ("Invalid file mask: {0}"), fileMask);
 					return false;
 				}

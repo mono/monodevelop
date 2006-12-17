@@ -149,8 +149,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (oldFoldername != newFoldername) {
 				try {
 					
-					if (Runtime.FileUtilityService.IsValidFileName (newFoldername)) {
-						Services.FileService.RenameFile (oldFoldername, newFoldername);
+					if (Runtime.FileService.IsValidFileName (newFoldername)) {
+						Runtime.FileService.RenameDirectory (oldFoldername, newName);
 						IdeApp.ProjectOperations.SaveCombine();
 					}
 				} catch (System.IO.IOException) {   // assume duplicate file

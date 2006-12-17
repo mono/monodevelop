@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		// regular members
 		StringCollection newFiles;
 		Project         project;
-		FileUtilityService fileUtilityService = Runtime.FileUtilityService;
 		
 		public IncludeFilesDialog(Project project, StringCollection newFiles)
 		{
@@ -85,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			// add the found files to the check list box						
 			foreach (string file in newFiles) {
-				string name = fileUtilityService.AbsoluteToRelativePath(project.BaseDirectory, file);
+				string name = Runtime.FileService.AbsoluteToRelativePath(project.BaseDirectory, file);
 				store.AppendValues (false, name);
 			}
 		}
@@ -114,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string fileName = (string) store.GetValue(current, 1);
 			
 				// process raw values into actual project details
-				string file = fileUtilityService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
+				string file = Runtime.FileService.RelativeToAbsolutePath(project.BaseDirectory,fileName);
 				ProjectFile finfo = new ProjectFile(file);
 				if (isSelected) {
 					finfo.BuildAction = project.IsCompileable(file) ? BuildAction.Compile : BuildAction.Nothing;

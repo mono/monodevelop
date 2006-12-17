@@ -525,14 +525,14 @@ namespace MonoDevelop.Ide.Commands
 						sw.WriteLine("    				</project>");
 						sw.Close();
 					}
-					string command = Runtime.FileUtilityService.SharpDevelopRootPath +
+					string command = Runtime.FileService.SharpDevelopRootPath +
 					Path.DirectorySeparatorChar + "bin" +
 					Path.DirectorySeparatorChar + "ndoc" +
 					Path.DirectorySeparatorChar + "NDocGui.exe";
 					string args    = '"' + projectFile + '"';
 					
 					ProcessStartInfo psi = new ProcessStartInfo(command, args);
-					psi.WorkingDirectory = Runtime.FileUtilityService.SharpDevelopRootPath +
+					psi.WorkingDirectory = Runtime.FileService.SharpDevelopRootPath +
 					Path.DirectorySeparatorChar + "bin" +
 					Path.DirectorySeparatorChar + "ndoc";
 					psi.UseShellExecute = false;

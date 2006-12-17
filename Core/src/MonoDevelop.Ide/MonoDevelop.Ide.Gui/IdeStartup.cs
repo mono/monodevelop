@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// unloading services
 			if (null != socket_filename)
-				File.Delete (socket_filename);
+				Runtime.FileService.DeleteFile (socket_filename);
 
 			ServiceManager.UnloadAllServices ();
 			System.Environment.Exit (0);

@@ -1,3 +1,38 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Track changes in
+	  FileService API. Make some attributes optional. Added better error
+	  checks for mandatory attributes.
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Templates/TextTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs,
+	  MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs,
+	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide/Services.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Pads/FileList.cs,
+	  MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs,
+	  MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/AbstractViewContent.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/IdeStartup.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/Ide.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs,
+	  MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Track
+	  changes in FileService API.
+
 2006-12-14 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:

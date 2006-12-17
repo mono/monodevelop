@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				// check for correct settings
 				string projectPath = projectLocationTextBox.GtkEntry.Text;
 				if (projectPath.Length > 0) {
-					if (!Runtime.FileUtilityService.IsValidFileName(projectPath)) {
+					if (!Runtime.FileService.IsValidFileName(projectPath)) {
 						Services.MessageService.ShowError("Invalid project path specified");
 						return false;
 					}

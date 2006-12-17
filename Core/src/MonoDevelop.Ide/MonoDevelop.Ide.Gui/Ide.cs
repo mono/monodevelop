@@ -94,6 +94,8 @@ namespace MonoDevelop.Ide.Gui
 			helpOperations = new HelpOperations ();
 			commandService = new CommandService ();
 			ideServices = new IdeServices ();
+			
+			Runtime.FileService.ErrorHandler = FileServiceErrorHandler;
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			
@@ -145,6 +147,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/IDE/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
+		}
+		
+		static bool FileServiceErrorHandler (string message, Exception ex)
+		{
+			Services.MessageService.ShowError (ex, message);
+			return true;
 		}
 		
 		static void OnExtensionChanged (ExtensionAction action, object item)
@@ -200,15 +208,6 @@ namespace MonoDevelop.Ide.Gui
 		IParserService parserService;
 		DispatchService dispatchService;
 		IProjectService projectService;
-		IFileService fileService;
-	
-		public IFileService FileService {
-			get {
-				if (fileService == null)
-					fileService = (IFileService) ServiceManager.GetService (typeof(IFileService));
-				return fileService;
-			}
-		}
 
 		public IStatusBarService StatusBar {
 			get {

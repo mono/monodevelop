@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		static void MoveCopyFile (Project project, ITreeNavigator nav, string filename, bool move, bool alreadyInPlace)
 		{
-			if (Runtime.FileUtilityService.IsDirectory (filename))
+			if (Runtime.FileService.IsDirectory (filename))
 			    return;
 
 			ProjectFolder folder = nav.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
@@ -331,9 +331,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?"), newfilename), "MonoDevelop"))
 						return;
 				}
-				File.Copy (filename, newfilename, true);
+				Runtime.FileService.CopyFile (filename, newfilename);
 				if (move)
-					Services.FileService.RemoveFile (filename);
+					Runtime.FileService.DeleteFile (filename);
 			}
 			
 			if (project.IsCompileable (newfilename)) {

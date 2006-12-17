@@ -10,6 +10,7 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Collections;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
@@ -172,22 +173,22 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (reader.Modified)
 			{
 				string fileBackup = Path.GetTempFileName ();
-				File.Copy (fileName, fileBackup, true);
+				Runtime.FileService.CopyFile (fileName, fileBackup);
 				
 				try {
-					File.Delete (fileName);
+					Runtime.FileService.DeleteFile (fileName);
 					reader.SaveToFile (fileName);
 					reader.Close ();
 				}
 				catch
 				{
 					reader.Close ();
-					if (File.Exists (fileName)) File.Delete (fileName);
-					File.Move (fileBackup, fileName);
+					if (File.Exists (fileName)) Runtime.FileService.DeleteFile (fileName);
+					Runtime.FileService.MoveFile (fileBackup, fileName);
 					throw;
 				}
 				
-				File.Delete (fileBackup);
+				Runtime.FileService.DeleteFile (fileBackup);
 			}
 			else
 				reader.Close ();

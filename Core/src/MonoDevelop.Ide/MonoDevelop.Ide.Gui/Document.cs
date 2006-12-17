@@ -118,10 +118,10 @@ namespace MonoDevelop.Ide.Gui
 					// save backup first						
 					if((bool) Runtime.Properties.GetProperty ("SharpDevelop.CreateBackupCopy", false)) {
 						Window.ViewContent.Save (fileName + "~");
-						IdeApp.Services.FileService.NotifyFileChange (fileName);
+						Runtime.FileService.NotifyFileChanged (fileName);
 					}
 					Window.ViewContent.Save (fileName);
-					IdeApp.Services.FileService.NotifyFileChange (fileName);
+					Runtime.FileService.NotifyFileChanged (fileName);
 					OnSaved (EventArgs.Empty);
 				}
 			}
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.Gui
 					return;
 			}
 		
-			if (!Runtime.FileUtilityService.IsValidFileName (filename)) {
+			if (!Runtime.FileService.IsValidFileName (filename)) {
 				Services.MessageService.ShowMessage(String.Format (GettextCatalog.GetString ("File name {0} is invalid"), filename));
 				return;
 			}
@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui
 			else
 				Window.ViewContent.Save (filename);
 
-			IdeApp.Services.FileService.NotifyFileChange (filename);
+			Runtime.FileService.NotifyFileChanged (filename);
 			IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
 			
 			OnSaved (EventArgs.Empty);

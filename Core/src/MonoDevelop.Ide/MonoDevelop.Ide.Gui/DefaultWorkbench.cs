@@ -171,8 +171,8 @@ namespace MonoDevelop.Ide.Gui
 			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) Services.DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
 
-			Services.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
-			Services.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
+			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRemovedFile));
+			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler(CheckRenamedFile));
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Gui
 				string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 				string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
 				// check the file name length because it could be more than the maximum length of a file name
-				if (Runtime.FileUtilityService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
+				if (Runtime.FileService.IsValidFileName(fullFileName) && File.Exists(fullFileName)) {
 					IXmlConvertable prototype = ((IMementoCapable)content).CreateMemento();
 					XmlDocument doc = new XmlDocument();
 					doc.Load (File.OpenRead (fullFileName));
@@ -330,7 +330,7 @@ namespace MonoDevelop.Ide.Gui
 			string fileName = content.ContentName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(System.IO.Path.DirectorySeparatorChar, '.');
 			// check the file name length because it could be more than the maximum length of a file name
 			string fullFileName = directory + System.IO.Path.DirectorySeparatorChar + fileName;
-			if (Runtime.FileUtilityService.IsValidFileName(fullFileName)) {
+			if (Runtime.FileService.IsValidFileName(fullFileName)) {
 				doc.Save (fullFileName);
 			}
 		}
