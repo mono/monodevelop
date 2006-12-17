@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Path.GetFileName(sourcefile) + ".svn-base"); 
 		}
 	
-		string GetDirectoryDotSvn(string sourcepath) {
+		internal static string GetDirectoryDotSvn (string sourcepath) {
 			return Path.Combine(sourcepath, ".svn");
 		}
 		
@@ -248,8 +248,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Client.List(path, recurse, SvnClient.Rev.Head);
 		}
 		
-		public void Move(string srcPath, string destPath, Revision revision, bool force, IProgressMonitor monitor) {
-			
+		public void Move(string srcPath, string destPath, bool force, IProgressMonitor monitor) {
+			Client.Move (srcPath, destPath, SvnClient.Rev.Head, force, monitor);
 		}
 		
 		public string PathDiff (string path, bool recursive)

@@ -23,7 +23,7 @@ namespace MonoDevelop.VersionControl
 		internal static Gdk.Pixbuf overlay_controled;
 		static Gdk.Pixbuf overlay_unversioned;
 		static Gdk.Pixbuf overlay_protected;
-		static Gdk.Pixbuf overlay_normal;
+//		static Gdk.Pixbuf overlay_normal;
 
 		static Gdk.Pixbuf icon_modified;
 		static Gdk.Pixbuf icon_removed;
@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 			overlay_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			overlay_unversioned = Gdk.Pixbuf.LoadFromResource("overlay_unversioned.png");
 			overlay_protected = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
-			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
+//			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
 			icon_modified = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
 			icon_removed = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
@@ -50,11 +50,11 @@ namespace MonoDevelop.VersionControl
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
-			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
+/*			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
 			IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
 			IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
-		}
+*/		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
 		{
@@ -211,7 +211,7 @@ namespace MonoDevelop.VersionControl
 				string file = Path.Combine (Runtime.Properties.ConfigDirectory, "version-control-commit-msg");
 				if (comments.Count == 0) {
 					if (File.Exists (file))
-						File.Delete (file);
+						Runtime.FileService.DeleteFile (file);
 					return;
 				}
 			
@@ -304,7 +304,7 @@ namespace MonoDevelop.VersionControl
 			Repository repo = GetRepository (args.Project, path);
 			if (repo != null && repo.IsVersioned (path) && repo.CanRemove (path)) {
 				using (IProgressMonitor monitor = GetStatusMonitor ()) {
-					repo.Delete (path, true, monitor);
+					repo.DeleteFile (path, true, monitor);
 				}
 				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
 			}

@@ -107,11 +107,11 @@ namespace MonoDevelop.VersionControl
 	
 	public class RemoveCommand
 	{
-		public static bool Remove (Repository vc, string path, bool test)
+		public static bool Remove (Repository vc, string path, bool isDir, bool test)
 		{
 			if (vc.CanRemove(path)) {
 				if (test) return true;
-				new RemoveWorker(vc, path).Start();
+				new RemoveWorker(vc, path, isDir).Start();
 				return true;
 			}
 			return false;
@@ -127,10 +127,12 @@ namespace MonoDevelop.VersionControl
 		private class RemoveWorker : Task {
 			Repository vc;
 			string path;
+			bool isDir;
 						
-			public RemoveWorker(Repository vc, string path) {
+			public RemoveWorker(Repository vc, string path, bool isDir) {
 				this.vc = vc;
 				this.path = path;
+				this.isDir = isDir;
 			}
 			
 			protected override string GetDescription() {
@@ -139,7 +141,10 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run() {
 				bool isDir = Directory.Exists (path);
-				vc.Delete(path, true, GetProgressMonitor ());
+				if (isDir)
+					vc.DeleteDirectory (path, true, GetProgressMonitor ());
+				else
+					vc.DeleteFile (path, true, GetProgressMonitor ());
 				Gtk.Application.Invoke (delegate {
 					VersionControlProjectService.NotifyFileStatusChanged (vc, path, isDir);
 				});

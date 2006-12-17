@@ -201,11 +201,62 @@ namespace MonoDevelop.VersionControl
 		// Adds a file or directory to the repository
 		public abstract void Add (string localPath, bool recurse, IProgressMonitor monitor);
 		
-		// Moves a file or directory
-		public abstract void Move (string localSrcPath, string localDestPath, Revision revision, bool force, IProgressMonitor monitor);
+
+		// Moves a file. This method may be called for versioned and unversioned
+		// files. The default implementetions performs a system file move.
+		// It's up to the implementation to decide how smart the MoveFile method is.
+		// For example, when moving a file to an unversioned directory, the implementation
+		// might just throw an exception, or it could version the directory, or it could
+		// ask the user what to do.
+		public virtual void MoveFile (string localSrcPath, string localDestPath, bool force, IProgressMonitor monitor)
+		{
+			File.Move (localSrcPath, localDestPath);
+		}
 		
-		// Deletes a file or directory
-		public abstract void Delete (string localPath, bool force, IProgressMonitor monitor);
+		// Moves a directory. This method may be called for versioned and unversioned
+		// files. The default implementetions performs a system file move.
+		public virtual void MoveDirectory (string localSrcPath, string localDestPath, bool force, IProgressMonitor monitor)
+		{
+			Directory.Move (localSrcPath, localDestPath);
+		}
+		
+		// Deletes a file or directory. This method may be called for versioned and unversioned
+		// files. The default implementetions performs a system file delete.
+		public virtual void DeleteFile (string localPath, bool force, IProgressMonitor monitor)
+		{
+			if (Directory.Exists (localPath))
+				Directory.Delete (localPath, true);
+			else
+				File.Delete (localPath);
+		}
+		
+		public virtual void DeleteDirectory (string localPath, bool force, IProgressMonitor monitor)
+		{
+			if (Directory.Exists (localPath))
+				Directory.Delete (localPath, true);
+			else
+				File.Delete (localPath);
+		}
+		
+		// Creates a local directory.
+		public virtual void CreateLocalDirectory (string path)
+		{
+			Directory.CreateDirectory (path);
+		}
+		
+		// Called to request write permission for a file. The file may not yet exist.
+		// After the file is modified or created, NotifyFileChanged is called.
+		// This method is allways called for versioned and unversioned files.
+		public virtual bool RequestFileWritePermission (string path)
+		{
+			return true;
+		}
+		
+		// Called after a file has been modified.
+		// This method is allways called for versioned and unversioned files.
+		public virtual void NotifyFileChanged (string path)
+		{
+		}
 		
 		// Locks a file in the repository so no other users can change it
 		public virtual void Lock (string localPath)

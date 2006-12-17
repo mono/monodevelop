@@ -68,11 +68,19 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
-		public override void Move (string srcPath, string destPath, Revision revision, bool force, IProgressMonitor monitor)
+		public override void MoveFile (string srcPath, string destPath, bool force, IProgressMonitor monitor)
 		{
 		}
 		
-		public override void Delete (string path, bool force, IProgressMonitor monitor)
+		public override void MoveDirectory (string srcPath, string destPath, bool force, IProgressMonitor monitor)
+		{
+		}
+		
+		public override void DeleteFile (string path, bool force, IProgressMonitor monitor)
+		{
+		}
+		
+		public override void DeleteDirectory (string path, bool force, IProgressMonitor monitor)
 		{
 		}
 	}

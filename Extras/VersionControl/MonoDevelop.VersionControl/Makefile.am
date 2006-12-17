@@ -23,6 +23,7 @@ build_sources = MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 				MonoDevelop.VersionControl/CommitDialogExtension.cs \
 				MonoDevelop.VersionControl/VersionControlNodeExtension.cs \
 				MonoDevelop.VersionControl/VersionControlProjectService.cs \
+				MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs \
 				MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
 				MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
 				MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs \

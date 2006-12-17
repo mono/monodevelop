@@ -1,3 +1,28 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Improved implementation of Move.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Removed debug code.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Minor fixes.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/Makefile.am: Added new file.
+	* MonoDevelop.VersionControl/VersionControl.addin.xml: Registered new
+	  file system extension.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Repository.cs:
+	  Split Move method into MoveFile and MoveDirectory. The same for
+	  Delete. Added some other useful overridable methods.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs:
+	  New file system extension which supports version control systems.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnknownRepository.cs:
+	  Track api changes.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs:
+	  Removed unused field.
+
 2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs,

@@ -155,7 +155,6 @@ namespace MonoDevelop.VersionControl
 	public class ChangeSetItem
 	{
 		VersionInfo versionInfo;
-		string comment = string.Empty;
 		
 		internal ChangeSetItem (VersionInfo versionInfo)
 		{

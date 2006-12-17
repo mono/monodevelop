@@ -26,6 +26,10 @@
 
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
 	</Extension>
+	
+	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
+		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
+	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />

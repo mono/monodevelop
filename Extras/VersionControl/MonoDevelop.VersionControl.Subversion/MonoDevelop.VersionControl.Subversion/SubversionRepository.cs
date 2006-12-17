@@ -164,14 +164,172 @@ namespace MonoDevelop.VersionControl.Subversion
 			Svn.Add (path, recurse, monitor);
 		}
 		
-		public override void Move (string srcPath, string destPath, Revision revision, bool force, IProgressMonitor monitor)
+		public override void MoveFile (string srcPath, string destPath, bool force, IProgressMonitor monitor)
 		{
-			Svn.Move (srcPath, destPath, revision, force, monitor);
+			bool destIsVersioned = false;
+			
+			if (File.Exists (destPath))
+				throw new InvalidOperationException ("Cannot move file. Destination file already exist.");
+
+			if (IsVersioned (destPath)) {
+				// Revert to the original status
+				Revert (destPath, false, monitor);
+				if (File.Exists (destPath))
+					File.Delete (destPath);
+				destIsVersioned = true;
+			}
+			
+			VersionInfo srcInfo = GetVersionInfo (srcPath, false);
+			if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+				// If the file is scheduled to add, cancel it, move the file, and schedule to add again
+				Revert (srcPath, false, monitor);
+				if (!destIsVersioned)
+					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
+				base.MoveFile (srcPath, destPath, force, monitor);
+				if (!destIsVersioned)
+					Add (destPath, false, monitor);
+			} else {
+				if (!destIsVersioned && IsVersioned (srcPath)) {
+					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
+					Svn.Move (srcPath, destPath, force, monitor);
+				} else
+					base.MoveFile (srcPath, destPath, force, monitor);
+			}
 		}
 		
-		public override void Delete (string path, bool force, IProgressMonitor monitor)
+		public override void MoveDirectory (string srcPath, string destPath, bool force, IProgressMonitor monitor)
 		{
-			Svn.Delete (path, force, monitor);
+			if (IsVersioned (destPath))
+			{
+				VersionInfo vinfo = GetVersionInfo (destPath, false);
+				if (vinfo.Status != VersionStatus.ScheduledDelete && Directory.Exists (destPath))
+					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
+					
+				srcPath = Path.GetFullPath (srcPath);
+				
+				// The target directory does not exist, but it is versioned. It may be because
+				// it is scheduled to delete, or maybe it has been physicaly deleted. In any
+				// case we are going to replace the old directory by the new directory.
+				
+				// Revert the old directory, so we can see which files were there so
+				// we can delete or replace them
+				Revert (destPath, true, monitor);
+				
+				// Get the list of files in the directory to be replaced
+				ArrayList oldFiles = new ArrayList ();
+				GetDirectoryFiles (destPath, oldFiles);
+				
+				// Get the list of files to move
+				ArrayList newFiles = new ArrayList ();
+				GetDirectoryFiles (srcPath, newFiles);
+				
+				// Move all new files to the new destination
+				Hashtable copiedFiles = new Hashtable ();
+				Hashtable copiedFolders = new Hashtable ();
+				foreach (string file in newFiles) {
+					string src = Path.GetFullPath (file);
+					string dst = Path.Combine (destPath, src.Substring (srcPath.Length + 1));
+					if (File.Exists (dst))
+						File.Delete (dst);
+					
+					// Make sure the target directory exists
+					string destDir = Path.GetDirectoryName (dst);
+					if (!Directory.Exists (destDir))
+						Directory.CreateDirectory (destDir);
+						
+					// If the source file is versioned, make sure the target directory
+					// is also versioned.
+					if (IsVersioned (src))
+						MakeDirVersioned (destDir, monitor);
+
+					MoveFile (src, dst, true, monitor);
+					copiedFiles [dst] = dst;
+					string df = Path.GetDirectoryName (dst);
+					copiedFolders [df] = df;
+				}
+				
+				// Delete all old files which have not been replaced
+				ArrayList foldersToDelete = new ArrayList ();
+				foreach (string oldFile in oldFiles) {
+					if (!copiedFiles.Contains (oldFile)) {
+						DeleteFile (oldFile, true, monitor);
+						string fd = Path.GetDirectoryName (oldFile);
+						if (!copiedFolders.Contains (fd) && !foldersToDelete.Contains (fd))
+							foldersToDelete.Add (fd);
+					}
+				}
+				
+				// Delete old folders
+				foreach (string folder in foldersToDelete) {
+					Svn.Delete (folder, true, monitor);
+				}
+				
+				// Delete the source directory
+				DeleteDirectory (srcPath, true, monitor);
+			}
+			else {
+				if (Directory.Exists (destPath))
+					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
+				
+				VersionInfo srcInfo = GetVersionInfo (srcPath, false);
+				if (srcInfo != null && srcInfo.Status == VersionStatus.ScheduledAdd) {
+					// If the directory is scheduled to add, cancel it, move the directory, and schedule to add it again
+					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
+					Revert (srcPath, true, monitor);
+					base.MoveDirectory (srcPath, destPath, force, monitor);
+					Add (destPath, true, monitor);
+				} else {
+					if (IsVersioned (srcPath)) {
+						MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
+						Svn.Move (srcPath, destPath, force, monitor);
+					} else
+						base.MoveDirectory (srcPath, destPath, force, monitor);
+				}
+			}
+		}
+		
+		void MakeDirVersioned (string dir, IProgressMonitor monitor)
+		{
+			if (Directory.Exists (Path.Combine (dir, ".svn")))
+				return;
+			
+			// Make the parent versioned
+			string parentDir = Path.GetDirectoryName (dir);
+			if (parentDir == dir || parentDir == "")
+				throw new InvalidOperationException ("Could not create versioned directory.");
+			MakeDirVersioned (parentDir, monitor);
+			
+			Add (dir, false, monitor);
+		}
+
+		void GetDirectoryFiles (string directory, ArrayList collection)
+		{
+			string[] dir = Directory.GetDirectories(directory);
+			foreach (string d in dir) {
+				// Get all files ignoring the .svn directory
+				if (Path.GetFileName (d) != ".svn")
+					GetDirectoryFiles (d, collection);
+			}
+			string[] file = Directory.GetFiles (directory);
+			foreach (string f in file)
+				collection.Add(f);
+		}
+
+		
+		public override void DeleteFile (string path, bool force, IProgressMonitor monitor)
+		{
+			if (IsVersioned (path))
+				Svn.Delete (path, force, monitor);
+			else
+				base.DeleteFile (path, force, monitor);
+		}
+		
+		public override void DeleteDirectory (string path, bool force, IProgressMonitor monitor)
+		{
+			if (IsVersioned (path))
+				Svn.Delete (path, force, monitor);
+			else
+				base.DeleteDirectory (path, force, monitor);
 		}
 		
 		public override DiffInfo[] PathDiff (string baseLocalPath, string[] localPaths)
@@ -185,7 +343,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					try {
 						list.AddRange (GenerateUnifiedDiffInfo (diff, path, new string [] { path }));
 					} finally {
-						File.Delete (diff);
+						Runtime.FileService.DeleteFile (diff);
 					}
 				}
 				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
@@ -194,7 +352,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				try {
 					return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
 				} finally {
-					File.Delete (diff);
+					Runtime.FileService.DeleteFile (diff);
 				}
 			}
 		}

@@ -328,7 +328,7 @@ namespace MonoDevelop.VersionControl
 				case Commands.Add:
 					return AddCommand.Add (repo, path, test);
 				case Commands.Remove:
-					return RemoveCommand.Remove (repo, path, test);
+					return RemoveCommand.Remove (repo, path, isDir, test);
 				case Commands.Revert:
 					return RevertCommand.Revert (repo, path, test);
 				case Commands.Publish:

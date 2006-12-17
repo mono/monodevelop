@@ -71,6 +71,7 @@
     <File name="./MonoDevelop.VersionControl/VersionInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.VersionControl/VersionStatus.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.VersionControl/FileUpdateEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="Diff" />

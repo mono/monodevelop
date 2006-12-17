@@ -457,7 +457,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					if (outfile != IntPtr.Zero)
 						apr.file_close (outfile);
 					if (fout != null)
-						File.Delete (fout);
+						Runtime.FileService.DeleteFile (fout);
 					outfile = IntPtr.Zero;
 					fout = null;
 				} catch {}
@@ -471,7 +471,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					if (errfile != IntPtr.Zero)
 						apr.file_close (errfile);
 					if (ferr != null)
-						File.Delete (ferr);
+						Runtime.FileService.DeleteFile (ferr);
 				} catch {}
 			}
 		}
@@ -574,7 +574,6 @@ namespace MonoDevelop.VersionControl.Subversion
 			Stream buf;
 			public StreamCollector(Stream buf) { this.buf = buf; }
 			public IntPtr Func(IntPtr baton, IntPtr data, ref int len) {
-				Console.WriteLine(len);
 				for (int i = 0; i < len; i++)
 					buf.WriteByte(Marshal.ReadByte((IntPtr)((int)data+i)));
 				return IntPtr.Zero;
