@@ -20,8 +20,6 @@
 	<Extension path = "/Workspace/Services">
 		<Class id    = "DispatchService"
 		       class = "MonoDevelop.Core.Gui.DispatchService"/>
-		<Class id    = "FileService"
-		       class = "MonoDevelop.Core.Gui.DefaultFileService"/>
 		<Class id    = "ResourceService"
 		       class = "MonoDevelop.Core.Gui.ResourceService"/>
 		<Class id    = "MessageService"

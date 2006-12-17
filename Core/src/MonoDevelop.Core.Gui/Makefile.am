@@ -32,9 +32,6 @@ MonoDevelop.Core.Gui/GuiSyncObject.cs \
 MonoDevelop.Core.Gui/SyncContext.cs \
 MonoDevelop.Core.Gui/SyncContextAttribute.cs \
 MonoDevelop.Core.Gui/SyncObject.cs \
-MonoDevelop.Core.Gui/DefaultFileService.cs \
-MonoDevelop.Core.Gui/FileEventArgs.cs \
-MonoDevelop.Core.Gui/IFileService.cs \
 Freedesktop.RecentFiles/RecentFiles.cs \
 MonoDevelop.Core.Gui/RecentOpen.cs \
 MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs \

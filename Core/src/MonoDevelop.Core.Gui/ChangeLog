@@ -1,3 +1,11 @@
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui/FileEventArgs.cs,
+	  MonoDevelop.Core.Gui/DefaultFileService.cs,
+	  MonoDevelop.Core.Gui/IFileService.cs, Makefile.am,
+	  MonoDevelop.Core.Gui.addin.xml: FileService has been moved to
+	  MonoDevelop.Core.
+
 2006-12-06 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs:

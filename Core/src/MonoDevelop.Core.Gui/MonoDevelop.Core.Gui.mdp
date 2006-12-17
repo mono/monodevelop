@@ -147,9 +147,6 @@
     <File name="./MonoDevelop.Core.Gui/SyncContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/SyncContextAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/SyncObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui/DefaultFileService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.Gui/IFileService.cs" subtype="Code" buildaction="Compile" />
     <File name="./Freedesktop.RecentFiles/RecentFiles.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/RecentOpen.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs" subtype="Code" buildaction="Compile" />
