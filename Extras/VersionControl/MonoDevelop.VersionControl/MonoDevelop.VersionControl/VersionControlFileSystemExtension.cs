@@ -12,7 +12,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public override bool CanHandlePath (string path, bool isDirectory)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
+			// FIXME: don't load this extension if the ide is not loaded.
+			if (IdeApp.ProjectOperations == null || IdeApp.ProjectOperations.CurrentOpenCombine == null)
 				return false;
 			else
 				return GetRepository (path) != null;
