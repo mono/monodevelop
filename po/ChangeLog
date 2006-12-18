@@ -1,3 +1,9 @@
+2006-12-18  Wade Berrier  <wberrier@novell.com>
+
+	* POTFILES.in: Update to reflect removed file:
+	Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs,
+	which fixes make dist
+
 2006-12-14  Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* it.po: Updated. Thanks to Milo Casagrande.

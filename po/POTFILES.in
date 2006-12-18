@@ -9,7 +9,6 @@ Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Codons/CommandCodon.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs
-Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/DefaultFileService.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs
