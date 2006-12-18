@@ -131,15 +131,16 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override bool NeedsBuilding {
-			get {
-				foreach (CombineEntry entry in Entries)
-					if (entry.NeedsBuilding) return true;
-				return false;
-			}
-			set {
-				// Ignore
-			}
+		protected internal override bool OnGetNeedsBuilding ()
+		{
+			foreach (CombineEntry entry in Entries)
+				if (entry.NeedsBuilding) return true;
+			return false;
+		}
+		
+		protected internal override void OnSetNeedsBuilding (bool value)
+		{
+			// Ignore
 		}
 		
 		public Combine()
@@ -288,9 +289,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public override void Save (IProgressMonitor monitor)
+		protected internal override void OnSave (IProgressMonitor monitor)
 		{
-			base.Save (monitor);
+			base.OnSave (monitor);
 			foreach (CombineEntry entry in Entries)
 			{
 				if (entry is Combine || entry is Project)
@@ -396,7 +397,7 @@ namespace MonoDevelop.Projects
 			Entries.Remove (entry);
 		}
 		
-		public override void Execute (IProgressMonitor monitor, ExecutionContext context)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 			if (singleStartup) {
 				if (StartupEntry != null)
@@ -601,7 +602,7 @@ namespace MonoDevelop.Projects
 			inserted[index] = true;
 		}
 		
-		public override void Clean ()
+		protected internal override void OnClean ()
 		{
 			if (ActiveConfiguration == null)
 				return;
@@ -609,7 +610,7 @@ namespace MonoDevelop.Projects
 				cce.Entry.Clean ();
 		}
 		
-		public override ICompilerResult Build (IProgressMonitor monitor)
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			if (ActiveConfiguration == null) {
 				monitor.ReportError (GettextCatalog.GetString ("The solution does not have an active configuration."), null);

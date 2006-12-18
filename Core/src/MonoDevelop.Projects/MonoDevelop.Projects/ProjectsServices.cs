@@ -9,7 +9,7 @@ namespace MonoDevelop.Projects
 	public class Services
 	{
 		static AmbienceService ambienceService;
-		static IProjectService projectService;
+		static ProjectService projectService;
 		static LanguageBindingService languageBindingService;
 		static IParserService parserService;
 		static IDocumentationService documentationService;
@@ -39,10 +39,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 	
-		public static IProjectService ProjectService {
+		public static ProjectService ProjectService {
 			get {
 				if (projectService == null)
-					projectService = (IProjectService) ServiceManager.GetService (typeof(IProjectService));
+					projectService = (ProjectService) ServiceManager.GetService (typeof(ProjectService));
 				return projectService;
 			}
 		}

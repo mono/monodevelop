@@ -232,6 +232,7 @@
     <File name="./MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/BuildEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/CompoundClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />

@@ -34,6 +34,8 @@ namespace MonoDevelop.Projects
 	{
 		DataContext dataContext = new DataContext ();
 		ArrayList projectBindings = new ArrayList ();
+		ProjectServiceExtension defaultExtension = new DefaultProjectServiceExtension ();
+		ProjectServiceExtension extensionChain;
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		IFileFormat defaultProjectFormat = new MdpFileFormat ();
@@ -45,6 +47,10 @@ namespace MonoDevelop.Projects
 		
 		public FileFormatManager FileFormats {
 			get { return formatManager; }
+		}
+		
+		internal ProjectServiceExtension ExtensionChain {
+			get { return extensionChain; }
 		}
 		
 		public CombineEntry ReadFile (string file, IProgressMonitor monitor)
@@ -130,6 +136,8 @@ namespace MonoDevelop.Projects
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
+			UpdateExtensions ();
+			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		void OnFormatExtensionChanged (ExtensionAction action, object item)
@@ -165,5 +173,62 @@ namespace MonoDevelop.Projects
 			if (action == ExtensionAction.Add)
 				projectBindings.Add (item);
 		}
+		
+		void OnExtensionChanged (string path)
+		{
+			if (path == "/SharpDevelop/Workbench/ProjectServiceExtensions")
+				UpdateExtensions ();
+		}
+		
+		void UpdateExtensions ()
+		{
+			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+			for (int n=0; n<extensions.Length - 1; n++)
+				extensions [n].Next = extensions [n + 1];
+
+			if (extensions.Length > 0) {
+				extensions [extensions.Length - 1].Next = defaultExtension;
+				extensionChain = extensions [0];
+			} else
+				extensionChain = defaultExtension;
+		}
 	}
+	
+	public class DefaultProjectServiceExtension: ProjectServiceExtension
+	{
+		public override void Save (IProgressMonitor monitor, CombineEntry entry)
+		{
+			entry.OnSave (monitor);
+		}
+		
+		public override CombineEntry Load (IProgressMonitor monitor, string fileName)
+		{
+			return Services.ProjectService.ReadFile (fileName, monitor);
+		}
+		
+		public override void Clean (CombineEntry entry)
+		{
+			entry.OnClean ();
+		}
+		
+		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
+		{
+			return entry.OnBuild (monitor);
+		}
+		
+		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		{
+			entry.OnExecute (monitor, context);
+		}
+		
+		public override bool GetNeedsBuilding (CombineEntry entry)
+		{
+			return entry.OnGetNeedsBuilding ();
+		}
+		
+		public override void SetNeedsBuilding (CombineEntry entry, bool value)
+		{
+			entry.OnSetNeedsBuilding (value);
+		}
+	}	
 }

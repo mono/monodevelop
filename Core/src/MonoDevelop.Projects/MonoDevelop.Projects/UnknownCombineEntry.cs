@@ -42,22 +42,26 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public override void Clean ()
+		protected internal override void OnClean ()
 		{
 		}
 		
-		public override ICompilerResult Build (IProgressMonitor monitor)
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			return null;
 		}
 		
-		public override void Execute (IProgressMonitor monitor, ExecutionContext context)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 		}
 		
-		public override bool NeedsBuilding { 
-			get { return false; } 
-			set {}
+		protected internal override bool OnGetNeedsBuilding ()
+		{
+			return false;
+		}
+		
+		protected internal override void OnSetNeedsBuilding (bool value)
+		{
 		}
 	}
 }

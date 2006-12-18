@@ -1,3 +1,21 @@
+2006-12-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/ProjectsServices.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/Combine.cs,
+	  MonoDevelop.Projects/UnknownCombineEntry.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects/ProjectServiceExtension.cs: Load, Save, Build,
+	  Clean and Execute project operations are now executed through the
+	  ProjectService, which supports a new kind of extension:
+	  ProjectServiceExtension. This kind of extension can override the
+	  default behavior of those operations.
+	* MonoDevelop.Projects.addin.xml: Created new extension point for
+	  project service extensions.
+	* Makefile.am, MonoDevelop.Projects.mdp: Added
+	  ProjectServiceExtension.cs.
+
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectReference.cs,

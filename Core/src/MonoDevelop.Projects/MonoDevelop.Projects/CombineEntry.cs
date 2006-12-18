@@ -148,13 +148,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual void Save (string fileName, IProgressMonitor monitor)
+		public void Save (string fileName, IProgressMonitor monitor)
 		{
 			FileName = fileName;
 			Save (monitor);
 		}
 		
-		public virtual void Save (IProgressMonitor monitor)
+		public void Save (IProgressMonitor monitor)
+		{
+			Services.ProjectService.ExtensionChain.Save (monitor, this);
+		}
+		
+		protected internal virtual void OnSave (IProgressMonitor monitor)
 		{
 			Services.ProjectService.WriteFile (FileName, this, monitor);
 			OnSaved (thisCombineArgs);
@@ -350,10 +355,31 @@ namespace MonoDevelop.Projects
 				ConfigurationRemoved (this, args);
 		}
 		
-		public abstract void Clean ();
-		public abstract ICompilerResult Build (IProgressMonitor monitor);
-		public abstract void Execute (IProgressMonitor monitor, ExecutionContext context);
-		public abstract bool NeedsBuilding { get; set; }
+		public void Clean ()
+		{
+			Services.ProjectService.ExtensionChain.Clean (this);
+		}
+		
+		public ICompilerResult Build (IProgressMonitor monitor)
+		{
+			return Services.ProjectService.ExtensionChain.Build (monitor, this);
+		}
+		
+		public void Execute (IProgressMonitor monitor, ExecutionContext context)
+		{
+			Services.ProjectService.ExtensionChain.Execute (monitor, this, context);
+		}
+		
+		public bool NeedsBuilding {
+			get { return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this); }
+			set { Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value); }
+		}
+		
+		internal protected abstract void OnClean ();
+		internal protected abstract ICompilerResult OnBuild (IProgressMonitor monitor);
+		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context);
+		internal protected abstract bool OnGetNeedsBuilding ();
+		internal protected abstract void OnSetNeedsBuilding (bool val);
 		
 		public event CombineEntryRenamedEventHandler NameChanged;
 		public event ConfigurationEventHandler ActiveConfigurationChanged;

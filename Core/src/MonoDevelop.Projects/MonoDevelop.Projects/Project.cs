@@ -296,7 +296,7 @@ namespace MonoDevelop.Projects
 			ProjectFiles.Add (projectFile);
 		}
 
-		public override void Clean ()
+		protected internal override void OnClean ()
 		{
 			isDirty = true;
 			
@@ -315,12 +315,12 @@ namespace MonoDevelop.Projects
 				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
 		
-		public override ICompilerResult Build (IProgressMonitor monitor)
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			return Build (monitor, true);
 		}
 		
-		public virtual ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
+		internal ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
 		{
 			if (buildReferences)
 			{
@@ -473,7 +473,7 @@ namespace MonoDevelop.Projects
 			return ps;
 		}
 		
-		public override void Execute (IProgressMonitor monitor, ExecutionContext context)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 			AbstractProjectConfiguration configuration = (AbstractProjectConfiguration) ActiveConfiguration;
 				
@@ -502,14 +502,15 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public override bool NeedsBuilding {
-			get {
-				if (!isDirty) CheckNeedsBuild ();
-				return isDirty;
-			}
-			set {
-				isDirty = value;
-			}
+		protected internal override bool OnGetNeedsBuilding ()
+		{
+			if (!isDirty) CheckNeedsBuild ();
+			return isDirty;
+		}
+		
+		protected internal override void OnSetNeedsBuilding (bool value)
+		{
+			isDirty = value;
 		}
 		
 		public override string FileName {
