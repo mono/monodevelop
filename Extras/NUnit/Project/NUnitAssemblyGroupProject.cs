@@ -66,22 +66,26 @@ namespace MonoDevelop.NUnit
 			return conf;
 		}
 		
-		public override void Clean ()
+		protected override void OnClean ()
 		{
 		}
 		
-		public override ICompilerResult Build (IProgressMonitor monitor)
+		protected override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
 			return null;
 		}
 		
-		public override void Execute (IProgressMonitor monitor, ExecutionContext context)
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 		}
 		
-		public override bool NeedsBuilding {
-			get { return false; }
-			set {}
+		protected override bool OnGetNeedsBuilding ()
+		{
+			return false;
+		}
+		
+		protected override void OnSetNeedsBuilding (bool value)
+		{
 		}
 	}
 	
