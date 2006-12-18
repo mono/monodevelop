@@ -1,5 +1,12 @@
 2006-12-18  Ankit Jain  <jankit@novell.com>
 
+	* SlnFileFormat.cs (LoadSolution): Don't overwrite the project name.
+	* MSBuildFileFormat.cs (SetupHandlers): Re-enable NameChanged event
+	handler.
+	(HandleRename): Ignore if the project is not part of a combine.
+
+2006-12-18  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (LoadProjectConfigurationMappings): Config name can
 	have a '.' in it, handle that.
 

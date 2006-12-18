@@ -551,7 +551,6 @@ namespace MonoDevelop.Prj2Make
 					projectPath = Path.GetFullPath (MapPath (Path.GetDirectoryName (fileName), projectPath));
 					try {
 						MSBuildProject project = Services.ProjectService.ReadFile (projectPath, monitor) as MSBuildProject;
-						project.Name = projectName;
 						entries [projectGuid] = project;
 						combine.ProjectsByGuid [project.Data.Guid] = project;
 

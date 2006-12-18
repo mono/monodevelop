@@ -468,11 +468,15 @@ namespace MonoDevelop.Prj2Make
 			//Configurations
 			project.ConfigurationRemoved += new ConfigurationEventHandler (HandleConfigurationRemoved);
 
-			//FIXME: project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
+			project.NameChanged += new CombineEntryRenamedEventHandler (HandleRename);
 		}
 
 		static void HandleRename (object sender, CombineEntryRenamedEventArgs e)
 		{
+			if (e.CombineEntry.ParentCombine == null)
+				//Ignore if the project is not yet a part of a Combine
+				return;
+
 			string oldfname = e.CombineEntry.FileName;
 			string extn = Path.GetExtension (oldfname);
 			string dir = Path.GetDirectoryName (oldfname);
