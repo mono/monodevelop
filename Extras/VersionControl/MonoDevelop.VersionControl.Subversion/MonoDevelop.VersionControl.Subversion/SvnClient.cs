@@ -122,13 +122,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (path == null) throw new ArgumentException();
 		
 			ArrayList ret = new ArrayList();
-			int result_rev = 0;
 
 			StatusCollector collector = new StatusCollector(ret);
 
 			IntPtr localpool = newpool(pool);
 			try {
-				CheckError(svn_client_status (ref result_rev, path, ref revision,
+				CheckError(svn_client_status (IntPtr.Zero, path, ref revision,
 					new svn_wc_status_func_t(collector.Func),
 					IntPtr.Zero,
 					descendDirs ? 1 : 0, 
@@ -225,11 +224,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			updatemonitor = monitor;
 			
-			int result_rev;
 			Rev rev = Rev.Head;
 			IntPtr localpool = newpool(pool);
 			try {
-				CheckError (svn_client_update(out result_rev, path, ref rev, recurse ? 1 : 0, ctx, localpool));
+				CheckError (svn_client_update (IntPtr.Zero, path, ref rev, recurse ? 1 : 0, ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
 				updatemonitor = null;
@@ -396,10 +394,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					IntPtr item = apr.array_push(array);
 					Marshal.WriteIntPtr(item, apr.pstrdup(localpool, path));
 				//}
-
-				int result_rev;
-						
-				CheckError(svn_client_delete(out result_rev, array, (force ? 1 : 0), ctx, localpool));
+				IntPtr commit_info = IntPtr.Zero;
+				CheckError (svn_client_delete (ref commit_info, array, (force ? 1 : 0), ctx, localpool));
 			} finally {
 				commitmessage = null;
 				updatemonitor = null;
@@ -418,10 +414,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			updatemonitor = monitor;
-			int result_rev;
+			IntPtr commit_info = IntPtr.Zero;
 			IntPtr localpool = newpool(pool);
 			try {
-				CheckError(svn_client_move(out result_rev, srcPath, ref revision,
+				CheckError (svn_client_move (ref commit_info, srcPath, ref revision,
 											   destPath, (force ? 1 : 0), ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
@@ -911,7 +907,7 @@ namespace MonoDevelop.VersionControl.Subversion
                int recurse, IntPtr ctx, IntPtr pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_status (
-			ref int result_rev, string path, ref Rev revision,
+			IntPtr result_rev, string path, ref Rev revision,
 			svn_wc_status_func_t status_func, IntPtr status_baton,
 			int descend, int get_all, int update, int no_ignore,
 			IntPtr ctx, IntPtr pool);
@@ -946,12 +942,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			IntPtr stream, svn_readwrite_fn_t writer);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_update (
-			out int result_rev,
+			IntPtr result_rev,
 			string path, ref Rev revision,
 			int recurse, IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_delete (
-			out int result_rev, IntPtr apr_array_header_t_targets, 
+			ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
 			int force, IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_add (
@@ -967,7 +963,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move(
-			out int result_rev, string srcPath, ref Rev rev,
+			ref IntPtr commit_info_p, string srcPath, ref Rev rev,
 			string destPath, int force, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout(

@@ -1,5 +1,11 @@
 2006-12-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Fixed some marshalling isues when calling svn methods. Should fix
+	  bug #80312.
+
+2006-12-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs:
 	  Added null check. Should fix bug #80311.
 
