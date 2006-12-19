@@ -210,7 +210,7 @@ namespace MonoDevelop.Prj2Make
 			if (ac == null) {
 				ac = doc.CreateElement ("Platform", ns);
 				globalConfigElement.AppendChild (ac);
-				ac.InnerText = activeConfigPlatform [0];
+				ac.InnerText = activeConfigPlatform [1];
 
 				((XmlElement) ac).SetAttribute ("Condition", " '$(Platform)' == '' ");
 			}
