@@ -40,12 +40,22 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, TextWriter outWriter, TextWriter errorWriter, EventHandler exited) 
 		{
+			return StartProcess (command, arguments, workingDirectory, outWriter, errorWriter, exited, false);
+		}
+
+		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, TextWriter outWriter, TextWriter errorWriter, EventHandler exited, bool redirectStandardInput) 
+		{
 			ProcessEventHandler wout = OutWriter.GetWriteHandler (outWriter);
 			ProcessEventHandler werr = OutWriter.GetWriteHandler (errorWriter);
-			return StartProcess (command, arguments, workingDirectory, wout, werr, exited);	
+			return StartProcess (command, arguments, workingDirectory, wout, werr, exited, redirectStandardInput);	
 		}
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, ProcessEventHandler outputStreamChanged, ProcessEventHandler errorStreamChanged, EventHandler exited)
+		{
+			return StartProcess (command, arguments, workingDirectory, outputStreamChanged, errorStreamChanged, exited, false);
+		}
+
+		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, ProcessEventHandler outputStreamChanged, ProcessEventHandler errorStreamChanged, EventHandler exited, bool redirectStandardInput)
 		{
 			if (command == null)
 				throw new ArgumentNullException("command");
@@ -76,6 +86,7 @@ namespace MonoDevelop.Core.Execution
 
 			p.StartInfo.RedirectStandardOutput = true;
 			p.StartInfo.RedirectStandardError = true;
+			p.StartInfo.RedirectStandardInput = redirectStandardInput;
 			p.StartInfo.UseShellExecute = false;
 			p.EnableRaisingEvents = true;
 			

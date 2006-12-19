@@ -1,3 +1,12 @@
+2006-12-20  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui/HelpOperations.cs (CheckExternalMonodoc): New. Check
+	whether the available monodoc is recent version (supports --remote-mode).
+	This check is done on the first call to ShowHelp. If its unsuccesful,
+	then it falls back to use the integrated HelpViewer.
+	(ShowHelpExternal): New. Show help using the external monodoc. Fall back
+	on HelpViewer in case of any errors.
+
 2006-12-17 Jacob Ilsø Christensen <jacobilsoe@gmail.com>
 
 	* options/MonoDevelop-templates.xml: Use standard keywords
