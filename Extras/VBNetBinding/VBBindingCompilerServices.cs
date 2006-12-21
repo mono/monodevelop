@@ -195,7 +195,11 @@ namespace VBBinding {
 			string outstr = String.Concat(compilerName, " @", responseFileName);
 			
 			
-			DoCompilation(outstr,tf,ref output,ref error);
+			string workingDir = ".";
+			if (projectFiles != null && projectFiles.Count > 0)
+				workingDir = projectFiles [0].Project.BaseDirectory;
+
+			DoCompilation (outstr, tf, workingDir, ref output, ref error);
 			
 			ICompilerResult result = ParseOutput(tf, output);
 			ParseOutput(tf,error);
@@ -294,7 +298,7 @@ namespace VBBinding {
 			return error;
 		}
 		
-		private void DoCompilation(string outstr, TempFileCollection tf, ref string output, ref string error) {
+		private void DoCompilation(string outstr, TempFileCollection tf, string working_dir, ref string output, ref string error) {
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
@@ -305,7 +309,7 @@ namespace VBBinding {
 			outstr = outstr.Substring(tokens[0].Length+1);
 
 			ProcessService ps = (ProcessService) ServiceManager.GetService (typeof(ProcessService));
-			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", ".", outwr, errwr, delegate{});
+			ProcessWrapper pw = ps.StartProcess(tokens[0], "\"" + outstr + "\"", working_dir, outwr, errwr, delegate{});
 			pw.WaitForExit();
 			outwr.Close();
 			errwr.Close();
