@@ -172,48 +172,13 @@ namespace MonoDevelop.Prj2Make
 			EnsureChildValue (globalConfigElement, "ProjectGuid", ns, 
 				String.Concat ("{", data.Guid, "}"));
 
-			string [] activeConfigPlatform = GetConfigPlatform (project.ActiveConfiguration.Name);
-
-			//Set active config
-			//FIXME: >1 <Configuration elements?
-			XmlNode ac = MoveToChild (globalConfigElement, "Configuration");
-			if (ac != null) {
-				if (ac.Attributes ["Condition"] != null) {
-					Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
-					StringDictionary dic = ParseCondition (
-							regex,
-							ac.Attributes ["Condition"].Value);
-					if (dic.ContainsKey ("CONFIGURATION") && String.IsNullOrEmpty (dic ["CONFIGURATION"]))
-						// '$(Configuration)' == ''
-						ac.InnerText = activeConfigPlatform [0];
-					else
-						//New Element needs to be added for active config
-						ac = null;
-				} else {
-					//New Element needs to be added for active config
-					ac = null;
-				}
-			}
-
-			if (ac == null) {
-				//Add new xml element for active config
-				ac = doc.CreateElement ("Configuration", ns);
-				globalConfigElement.AppendChild (ac);
-				ac.InnerText = activeConfigPlatform [0];
-
-				((XmlElement) ac).SetAttribute ("Condition", " '$(Configuration)' == '' ");
-			}
-
-			//Platform
-			//FIXME: Do same as done for Configuration above.. (check/set condition etc)
-			ac = MoveToChild (globalConfigElement, "Platform");
-			if (ac == null) {
-				ac = doc.CreateElement ("Platform", ns);
-				globalConfigElement.AppendChild (ac);
-				ac.InnerText = activeConfigPlatform [1];
-
-				((XmlElement) ac).SetAttribute ("Condition", " '$(Platform)' == '' ");
-			}
+			//Default Config and platform
+			//Note: Ignoring this, not relevant for MD, but might be useful for prj2make
+			//For new projects, adding these elements in SaveProject
+			//
+			//string [] defaultActivePlatform = GetConfigPlatform (project.ActiveConfiguration.Name);
+			//SetForNullCondition (doc, globalConfigElement, "Configuration", defaultActivePlatform [0]);
+			//SetForNullCondition (doc, globalConfigElement, "Platform", defaultActivePlatform [1]);
 
 			foreach (DotNetProjectConfiguration config in project.Configurations) {
 				XmlElement configElement = null;
@@ -299,6 +264,49 @@ namespace MonoDevelop.Prj2Make
 			return;
 		}
 
+		/* Finds an element named @elementName, with a attribute Condition, which has "$(@elementName) = ''"
+		 * and sets @value for that. Creates the element if its not found. */
+		void SetForNullCondition (XmlDocument doc, XmlElement configElement, string elementName, string value)
+		{
+			XmlNodeList list = doc.SelectNodes (String.Format (
+					"/tns:Project/tns:PropertyGroup/tns:{0}[@Condition]", elementName),
+					NamespaceManager);
+			foreach (XmlNode node in list) {
+				if (CheckNullCondition (node as XmlElement, elementName)) {
+					node.InnerText = value;
+					return;
+				}
+			}
+
+			//Add new xml element for active config
+			XmlElement elem = doc.CreateElement (elementName, ns);
+			configElement.AppendChild (elem);
+			elem.InnerText = value;
+
+			elem.SetAttribute ("Condition", " '$(" + elementName + ")' == '' ");
+		}
+
+		bool CheckNullCondition (XmlElement elem, string varName)
+		{
+			if (elem == null)
+				return false;
+
+			//FIXME: This will get instantiated repeatedly, save this
+			Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
+			StringDictionary dic = ParseCondition (
+					regex,
+					elem.Attributes ["Condition"].Value);
+
+			string varUpper = varName.ToUpper ();
+			if (dic.Keys.Count == 1 && 
+				dic.ContainsKey (varUpper) && String.IsNullOrEmpty (dic [varUpper])) {
+				// Eg. '$(Configuration)' == ''
+				return true;
+			}
+
+			return false;
+		}
+
 		void CleanUpEmptyItemGroups (XmlDocument doc)
 		{
 			XmlNodeList list = doc.SelectNodes ("/tns:Project/tns:ItemGroup[count(child)=0]", NamespaceManager);
@@ -325,6 +333,16 @@ namespace MonoDevelop.Prj2Make
 
 			foreach (ProjectReference pref in project.ProjectReferences)
 				d.ProjectReferenceElements [pref] = ReferenceToXmlElement (d, project, pref);
+
+			XmlElement elem = d.Document.CreateElement ("Configuration", ns);
+			d.GlobalConfigElement.AppendChild (elem);
+			elem.InnerText = "Debug";
+			elem.SetAttribute ("Condition", " '$(Configuration)' == '' ");
+
+			elem = d.Document.CreateElement ("Platform", ns);
+			d.GlobalConfigElement.AppendChild (elem);
+			elem.InnerText = "AnyCPU";
+			elem.SetAttribute ("Condition", " '$(Platform)' == '' ");
 
 			SetupHandlers (project);
 			d.Document.Save (project.FileName);
@@ -389,7 +407,8 @@ namespace MonoDevelop.Prj2Make
 			globalConfig.ClrVersion = ClrVersion.Net_2_0;
 
 			string str_tmp = String.Empty;
-			string active_config = String.Empty;
+			string default_config = String.Empty;
+			string default_platform = "AnyCPU";
 			string guid = null;
 			string rootNamespace = String.Empty;
 			while (iter.MoveNext ()) {
@@ -397,7 +416,7 @@ namespace MonoDevelop.Prj2Make
 					ReadAsString (iter.Current, "ProjectGuid", ref str_tmp, false))
 					guid = str_tmp;
 
-				ReadConfig (iter.Current, globalConfig, project.LanguageName, basePath, ref active_config);
+				ReadConfig (iter.Current, globalConfig, project.LanguageName, basePath, ref default_config, ref default_platform);
 				//FIXME: Handle case when >1 global PropertyGroups exist,
 				data.GlobalConfigElement = (XmlElement) iter.Current.UnderlyingObject;
 
@@ -420,7 +439,8 @@ namespace MonoDevelop.Prj2Make
 			iter = nav.Select ("/tns:Project/tns:PropertyGroup[@Condition]", NamespaceManager);
 			Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
 			while (iter.MoveNext ()) {
-				string tmp = null;
+				string tmp = String.Empty;
+				string tmp2 = String.Empty;
 				StringDictionary dic = ParseCondition (
 						regex, 
 						iter.Current.GetAttribute ("Condition", NamespaceManager.DefaultNamespace));
@@ -439,13 +459,15 @@ namespace MonoDevelop.Prj2Make
 					project.Configurations.Add (config);
 				}
 
-				ReadConfig (iter.Current, config, project.LanguageName, basePath, ref tmp);
+				ReadConfig (iter.Current, config, project.LanguageName, basePath, ref tmp, ref tmp2);
 
 				data.ConfigElements [config] = (XmlElement) iter.Current.UnderlyingObject;
 			}
 
-			if (project.Configurations [active_config] != null)
-				project.ActiveConfiguration = project.Configurations [active_config];
+			/* Note: Ignoring this, not required for MD, but might be useful in prj2make
+			string confname = default_config + "|" + default_platform;
+			if (project.Configurations [confname] != null)
+				project.ActiveConfiguration = project.Configurations [confname]; */
 
 			SetupHandlers (project);
 
@@ -866,7 +888,7 @@ namespace MonoDevelop.Prj2Make
 
 		//FIXME: Too many params ?
 		void ReadConfig (XPathNavigator nav, DotNetProjectConfiguration config,
-				string lang, string basePath, ref string active_config)
+				string lang, string basePath, ref string default_config, ref string default_platform)
 		{
 			if (nav.MoveToChild ("OutputType", ns)) {
 				try {
@@ -878,14 +900,15 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			if (nav.MoveToChild ("Configuration", ns)) {
-				Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
-				StringDictionary dic = ParseCondition (
-						regex, 
-						nav.GetAttribute ("Condition", NamespaceManager.DefaultNamespace));
+				if (CheckNullCondition (nav.UnderlyingObject as XmlElement, "Configuration"))
+					default_config = nav.Value;
 
-				if (dic.ContainsKey ("CONFIGURATION") && String.IsNullOrEmpty (dic ["CONFIGURATION"]))
-					// '$(Configuration)' == ''
-					active_config = nav.Value;
+				nav.MoveToParent ();
+			}
+			
+			if (nav.MoveToChild ("Platform", ns)) {
+				if (CheckNullCondition (nav.UnderlyingObject as XmlElement, "Platform"))
+					default_platform = nav.Value;
 
 				nav.MoveToParent ();
 			}
@@ -985,15 +1008,17 @@ namespace MonoDevelop.Prj2Make
 			string [] left_parts = left.Split ('|');
 			string [] right_parts = right.Split ('|');
 
-			//FIXME: if (left_parts.Count != right_parts.Count)
-
 			for (int i = 0; i < left_parts.Length; i ++) {
 				if (left_parts [i].StartsWith ("$(") &&
 					left_parts [i].EndsWith (")")) {
 					//FIXME: Yuck!
 					string key = left_parts [i].Substring (2, left_parts [i].Length - 3);
-					dic [key.ToUpper ()] = right_parts [i].Trim ();
+					if (i < right_parts.Length)
+						dic [key.ToUpper ()] = right_parts [i].Trim ();
+					else
+						dic [key.ToUpper ()] = String.Empty;
 				}
+
 			}
 
 			return dic;

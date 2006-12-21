@@ -1,3 +1,14 @@
+2006-12-21  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (SetForNullCondition): New.
+	(CheckNullCondition): New.
+	New methods to get default values for config and platform.
+	(ReadConfig): Add 'default_platform' param.
+	(ParseCondition): Left side of the condition decides the number of
+	elements returned.
+	(SaveProject): Emit elements for default Configuration and Platform, 
+	set to "Debug" and "AnyCPU".
+
 2006-12-19  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (WriteFileInternal): Fix typo in writing default
