@@ -548,9 +548,10 @@ namespace MonoDevelop.Prj2Make
 				if (!projectPath.StartsWith("http://") &&
 					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
 				{
+					MSBuildProject project = null;
 					projectPath = Path.GetFullPath (MapPath (Path.GetDirectoryName (fileName), projectPath));
 					try {
-						MSBuildProject project = Services.ProjectService.ReadFile (projectPath, monitor) as MSBuildProject;
+						project = Services.ProjectService.ReadFile (projectPath, monitor) as MSBuildProject;
 						entries [projectGuid] = project;
 						combine.ProjectsByGuid [project.Data.Guid] = project;
 
@@ -560,6 +561,9 @@ namespace MonoDevelop.Prj2Make
 						Console.WriteLine (e);
 						monitor.ReportWarning (String.Format (
 								"Error while trying to load the project {0}. Exception : ", projectPath, e.Message));
+
+						if (project == null)
+							data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));
 					}
 					continue;
 				}
