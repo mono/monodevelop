@@ -312,13 +312,13 @@ namespace MonoDevelop.Prj2Make
 			Combine combine = null;
 			if (fileName == null || monitor == null)
 				return null;
-			
+
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				combine = LoadSolution (fileName, monitor);
 				SetHandlers (combine, true);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution: {0}"), fileName), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -559,8 +559,8 @@ namespace MonoDevelop.Prj2Make
 					} catch (Exception e) {
 						Console.WriteLine ("Error while trying to load the project {0}", projectPath);
 						Console.WriteLine (e);
-						monitor.ReportWarning (String.Format (
-								"Error while trying to load the project {0}. Exception : ", projectPath, e.Message));
+						monitor.ReportWarning (GettextCatalog.GetString (
+							"Error while trying to load the project {0}. Exception : {1}", projectPath, e.Message));
 
 						if (project == null)
 							data.UnknownProjects.AddRange (lines.GetRange (sec.Start, sec.Count));

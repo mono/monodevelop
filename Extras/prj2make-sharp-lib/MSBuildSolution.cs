@@ -79,9 +79,9 @@ namespace MonoDevelop.Prj2Make
 
 			//FIXME: Use IFileFormat.CanReadFile 
 			if (String.Compare (extn, ".mdp", true) == 0 || String.Compare (extn, ".mds", true) == 0) {
-				if (!IdeApp.Services.MessageService.AskQuestionFormatted ( 
+				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString (
 					"Conversion required", "The project file {0} must be converted to " + 
-					"msbuild format to be added to a msbuild solution. Convert?", args.FileName)) {
+					"msbuild format to be added to a msbuild solution. Convert?", args.FileName))) {
 					args.Cancel = true;
 					return;
 				}

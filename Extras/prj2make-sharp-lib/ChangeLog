@@ -1,5 +1,13 @@
 2006-12-22  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildSolution.cs:
+	* SlnFileFormat.cs:
+	* MSBuildFileFormat.cs:
+	Use GettextCatalog.GetString for all user visibile strings, except debug
+	output.
+
+2006-12-22  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (LoadSolution): Preserve the project's sln lines
 	if the project loading fails.
 

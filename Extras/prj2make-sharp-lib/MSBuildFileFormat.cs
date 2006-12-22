@@ -844,7 +844,7 @@ namespace MonoDevelop.Prj2Make
 					case "EmbeddedResource":
 						string fname = MapAndResolvePath (basePath, include);
 						if (!fname.StartsWith (project.BaseDirectory)) {
-							monitor.ReportWarning (String.Format (
+							monitor.ReportWarning (GettextCatalog.GetString (
 								"The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include));
 							Console.WriteLine ("The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include);
 							continue;
