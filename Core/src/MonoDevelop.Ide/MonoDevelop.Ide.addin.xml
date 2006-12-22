@@ -747,10 +747,10 @@
 
 	<Extension path = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id = "Combine"
-		            _label = "Solution Files"
+		            _label = "MonoDevelop Solution Files"
 		            extensions = "*.mds"/>
 		<FileFilter id = "Project"
-		            _label = "Project Files"
+		            _label = "MonoDevelop Project Files"
 		            extensions = "*.mdp"/>
 		<!--<FileFilter id = "AllFiles"
 		            _label = "All Files"
