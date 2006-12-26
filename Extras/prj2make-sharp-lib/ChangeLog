@@ -1,3 +1,11 @@
+2006-12-26  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (LoadProjectConfigurationMappings): Update to
+	changes.
+	(FindCombineConfigurationEntry): Replace with ...
+	(GetConfigEntryForProject): ... this. Create the entries if not found.
+	(GetConfigEntry): New.
+
 2006-12-22  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildSolution.cs:

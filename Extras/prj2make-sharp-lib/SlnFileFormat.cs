@@ -697,15 +697,7 @@ namespace MonoDevelop.Prj2Make
 				if (cache.ContainsKey (key)) {
 					combineConfigEntry = cache [key];
 				} else {
-					combineConfigEntry = FindCombineConfigurationEntry (sln, slnConfig, project.Name);
-					if (combineConfigEntry == null) {
-						Console.WriteLine (
-							"{0} ({1}) : Warning: No config entry found corresponding to solution config named '{2}'" +
-							"and project named '{3}'.",
-							sln.FileName, lineNum + 1, slnConfig, project.Name);
-						continue;
-					}
-
+					combineConfigEntry = GetConfigEntryForProject (sln, slnConfig, project);
 					cache [key] = combineConfigEntry;
 				}
 
@@ -735,28 +727,44 @@ namespace MonoDevelop.Prj2Make
 
 		/* Finds a CombineConfigurationEntry corresponding to the @configName for a project (@projectName) 
 		 * in @combine */
-		CombineConfigurationEntry FindCombineConfigurationEntry (Combine combine, string configName, string projectName)
+		CombineConfigurationEntry GetConfigEntryForProject (Combine combine, string configName, Project project)
 		{
-			CombineConfiguration cc = combine.GetConfiguration (configName) as CombineConfiguration;
-			if (cc == null)
-				return null;
+			if (project.ParentCombine == null)
+				throw new Exception (String.Format (
+					"INTERNAL ERROR: project {0} is not part of any combine", project.Name));
 
-			foreach (CombineConfigurationEntry cce in cc.Entries) {
-				Combine c = cce.Entry as Combine;
-				if (c != null) {
-					CombineConfigurationEntry r = FindCombineConfigurationEntry (c, configName, projectName);
-					if (r != null)
-						return r;
+			CombineConfigurationEntry ret = GetConfigEntry (project, configName);
 
-					continue;
-				}
+			//Ensure the corresponding entries exist all the way
+			//upto the RootCombine
+			Combine parent = project.ParentCombine;
+			while (parent.ParentCombine != null) {
+				CombineConfigurationEntry p = GetConfigEntry (parent, configName);
+				if (p.ConfigurationName != configName)
+					p.ConfigurationName = configName;
+				parent = parent.ParentCombine;
+			}
 
-				//Project
-				if (cce.Entry.Name == projectName)
+			return ret;
+		}
+
+		/* Gets the CombineConfigurationEntry corresponding to the @entry in its parentCombine's 
+		 * CombineConfiguration. Creates the required bits if not present */
+		CombineConfigurationEntry GetConfigEntry (CombineEntry entry, string configName)
+		{
+			Combine parent = entry.ParentCombine;
+			CombineConfiguration combineConfig = parent.GetConfiguration (configName) as CombineConfiguration;
+			if (combineConfig == null) {
+				combineConfig = (CombineConfiguration) parent.CreateConfiguration (configName);
+				parent.Configurations.Add (combineConfig);
+			}
+
+			foreach (CombineConfigurationEntry cce in combineConfig.Entries) {
+				if (cce.Entry == entry)
 					return cce;
 			}
 
-			return null;
+			return combineConfig.AddEntry (entry);
 		}
 
 		void LoadSolutionConfigurations (Section sec, List<string> lines, Combine combine, IProgressMonitor monitor)
