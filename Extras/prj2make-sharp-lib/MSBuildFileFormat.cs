@@ -391,6 +391,7 @@ namespace MonoDevelop.Prj2Make
 			//Create the project
 			MSBuildProject project = new MSBuildProject (lang);
 			project.FileName = fname;
+			project.Version = "0.1"; //FIXME:
 			//Default project name
 			project.Name = Path.GetFileNameWithoutExtension (fname);
 			project.FileFormat = new MSBuildFileFormat (lang);

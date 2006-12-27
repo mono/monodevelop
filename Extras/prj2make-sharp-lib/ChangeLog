@@ -1,3 +1,8 @@
+2006-12-28  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (LoadSolution): Set Version to "0.1". Temporary hack.
+	* MSBuildFileFormat.cs (LoadProject): Likewise.
+
 2006-12-27  Ankit Jain  <jankit@novell.com>
 
 	* SlnData.cs (SectionExtras): New.

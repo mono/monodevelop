@@ -467,6 +467,7 @@ namespace MonoDevelop.Prj2Make
 				combine = new MSBuildSolution ();
 				combine.Name = Path.GetFileNameWithoutExtension (fileName);
 				combine.FileName = fileName;
+				combine.Version = "0.1"; //FIXME:
 				combine.FileFormat = new SlnFileFormat ();
 				data = new SlnData ();
 				combine.ExtendedProperties [typeof (SlnFileFormat)] = data;
@@ -531,6 +532,7 @@ namespace MonoDevelop.Prj2Make
 					MSBuildSolution folder = new MSBuildSolution ();
 					folder.Name = projectName;
 					folder.FileName = projectPath;
+					folder.Version = "0.1"; //FIXME:
 					folder.FileFormat = new SlnFileFormat ();
 
 					SlnData slnData = new SlnData ();
