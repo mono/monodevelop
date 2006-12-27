@@ -150,6 +150,12 @@ namespace MonoDevelop.Prj2Make
 				foreach (string s in list)
 					sw.WriteLine (s);
 
+				//Write lines for projects we couldn't load
+				if (slnData.SectionExtras.ContainsKey ("ProjectConfigurationPlatforms")) {
+					foreach (string s in slnData.SectionExtras ["ProjectConfigurationPlatforms"])
+						sw.WriteLine ("\t\t{0}", s);
+				}
+
 				sw.WriteLine ("\tEndGlobalSection");
 
 				//Write Nested Projects
@@ -158,9 +164,8 @@ namespace MonoDevelop.Prj2Make
 				sw.WriteLine ("\tEndGlobalSection");
 
 				//Write 'others'
-				SlnData data = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
-				if (data.GlobalExtra != null) {
-					foreach (string s in data.GlobalExtra)
+				if (slnData.GlobalExtra != null) {
+					foreach (string s in slnData.GlobalExtra)
 						sw.WriteLine (s);
 				}
 				
@@ -643,10 +648,12 @@ namespace MonoDevelop.Prj2Make
 
 			List<CombineConfigurationEntry> noBuildList = new List<CombineConfigurationEntry> ();
 			Dictionary<string, CombineConfigurationEntry> cache = new Dictionary<string, CombineConfigurationEntry> ();
+			List<string> extras = new List<string> ();
 
 			for (int i = 0; i < sec.Count - 2; i ++) {
 				int lineNum = i + sec.Start + 1;
 				string s = lines [lineNum].Trim ();
+				extras.Add (s);
 				
 				//Format:
 				// {projectGuid}.SolutionConfigName|SolutionPlatform.ActiveCfg = ProjConfigName|ProjPlatform
@@ -716,7 +723,11 @@ namespace MonoDevelop.Prj2Make
 				} else if (String.Compare (action, "Build.0", false) == 0) {
 					noBuildList.Remove (combineConfigEntry);
 				}
+
+				extras.RemoveAt (extras.Count - 1);
 			}
+
+			sln.Data.SectionExtras ["ProjectConfigurationPlatforms"] = extras;
 
 			foreach (CombineConfigurationEntry e in noBuildList) {
 				//Mark (build=false) of all projects for which 

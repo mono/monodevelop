@@ -37,6 +37,7 @@ namespace MonoDevelop.Prj2Make
 		string guid;
 		Dictionary<CombineConfiguration, string> configStrings;
 		List<string> globalExtra; // unused GlobalSections
+		Dictionary<string, List<string>> sectionExtras;
 		List<string> extra; //used by solution folders..
 		List<string> unknownProjects;
 
@@ -68,6 +69,17 @@ namespace MonoDevelop.Prj2Make
 				if (unknownProjects == null)
 					unknownProjects = new List<string> ();
 				return unknownProjects;
+			}
+		}
+
+		//Extra lines per section which need to be preserved
+		//eg. lines in ProjectConfigurationPlatforms for projects
+		//that we couldn't load
+		public Dictionary<string, List<string>> SectionExtras {
+			get {
+				if (sectionExtras == null)
+					sectionExtras = new Dictionary<string, List<string>> ();
+				return sectionExtras;
 			}
 		}
 

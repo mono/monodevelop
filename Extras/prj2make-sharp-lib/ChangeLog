@@ -1,3 +1,10 @@
+2006-12-27  Ankit Jain  <jankit@novell.com>
+
+	* SlnData.cs (SectionExtras): New.
+	* SlnFileFormat.cs (LoadProjectConfigurationMappings): Preserve lines
+	that we cannot parse or correspond to projects that could not load.
+	(WriteFileInternal): Write lines that we could not parse when reading.
+
 2006-12-26  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildSolution.cs (HandleAddEntry): Fix order of arguments to AskQuestion.
