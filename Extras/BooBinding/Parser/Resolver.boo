@@ -366,16 +366,16 @@ class Resolver:
 		if (possibleBaseClass.FullyQualifiedName == c.FullyQualifiedName):
 			return true
 
-		for baseClass as string in c.BaseTypes:
-			bc = _parserContext.GetClass (baseClass, true, true)
+		for baseType as IReturnType in c.BaseTypes:
+			bc = _parserContext.GetClass (baseType.FullyQualifiedName, true, true)
 			if (IsClassInInheritanceTree(possibleBaseClass, bc)):
 				return true
 
 		return false
 
 	def BaseClass(curClass as IClass) as IClass:
-		for s as string in curClass.BaseTypes:
-			baseClass = _parserContext.GetClass (s, true, true)
+		for baseType as IReturnType in curClass.BaseTypes:
+			baseClass = _parserContext.GetClass (baseType.FullyQualifiedName, true, true)
 			if ((baseClass != null) and (baseClass.ClassType != ClassType.Interface)):
 				return baseClass
 		return null
@@ -427,8 +427,8 @@ class Resolver:
 
 		Log ("ClassType = " + curType.ClassType)
 		if (curType.ClassType == ClassType.Interface and not _showStatic):
-			for s as string in curType.BaseTypes:
-				baseClass = _parserContext.GetClass (s, true, true)
+			for baseType as IReturnType in curType.BaseTypes:
+				baseClass = _parserContext.GetClass (baseType.FullyQualifiedName, true, true)
 				if (baseClass != null and baseClass.ClassType == ClassType.Interface):
 					ListMembers(members, baseClass)
 		else:

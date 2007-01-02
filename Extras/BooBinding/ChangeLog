@@ -1,3 +1,7 @@
+2007-01-02  Mart Roosmaa <roosmaa@gmail.com>
+
+	* Parser/Resolver.boo: Adopt to changes made in rev 62253.
+
 2006-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.boo, Parser/ReturnType.boo, Parser/BooParser.boo,
