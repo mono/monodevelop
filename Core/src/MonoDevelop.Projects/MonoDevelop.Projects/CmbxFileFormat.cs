@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Loading solution: {0}"), baseFile), files.Count);
 				try {
 					foreach (string nodefile in files) {
-						entries.Add ((CombineEntry) Services.ProjectService.ReadFile (nodefile, monitor));
+						entries.Add ((CombineEntry) Services.ProjectService.ReadCombineEntry (nodefile, monitor));
 						monitor.Step (1);
 					}
 				} finally {
@@ -267,7 +267,7 @@ namespace MonoDevelop.Projects
 				writer.WriteStartElement ("Entry");
 				writer.WriteAttributeString ("filename", entry.RelativeFileName);
 				writer.WriteEndElement ();
-				Services.ProjectService.WriteFile (entry.FileName, entry, monitor);
+				entry.Save (monitor);
 			}
 			writer.WriteEndElement ();
 		}

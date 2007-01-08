@@ -31,10 +31,8 @@ namespace MonoDevelop.Projects
 			get;
 		}
 		
-		CombineEntry ReadFile (string file, IProgressMonitor monitor);
+		CombineEntry ReadCombineEntry (string file, IProgressMonitor monitor);
 
-		void WriteFile (string file, CombineEntry entry, IProgressMonitor monitor);
-		
 		bool CanCreateSingleFileProject (string file);
 		Project CreateSingleFileProject (string file);
 		

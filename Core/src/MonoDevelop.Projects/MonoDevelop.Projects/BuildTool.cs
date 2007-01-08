@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			
-			CombineEntry centry = Services.ProjectService.ReadFile (file, monitor);
+			CombineEntry centry = Services.ProjectService.ReadCombineEntry (file, monitor);
 			
 			if (project != null) {
 				Combine combine = centry as Combine;

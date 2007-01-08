@@ -53,7 +53,12 @@ namespace MonoDevelop.Projects
 			get { return extensionChain; }
 		}
 		
-		public CombineEntry ReadFile (string file, IProgressMonitor monitor)
+		public CombineEntry ReadCombineEntry (string file, IProgressMonitor monitor)
+		{
+			return ExtensionChain.Load (monitor, file);
+		}
+		
+		internal CombineEntry ReadFile (string file, IProgressMonitor monitor)
 		{
 			IFileFormat format = formatManager.GetFileFormat (file);
 
@@ -70,7 +75,7 @@ namespace MonoDevelop.Projects
 			return obj;
 		}
 		
-		public void WriteFile (string file, CombineEntry entry, IProgressMonitor monitor)
+		internal void WriteFile (string file, CombineEntry entry, IProgressMonitor monitor)
 		{
 			IFileFormat format = entry.FileFormat;
 			if (format == null) {

@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects
 				
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
-			Project prj = Services.ProjectService.ReadFile (filename, monitor) as Project;
+			Project prj = Services.ProjectService.ReadCombineEntry (filename, monitor) as Project;
 			if (prj == null)
 				throw new InvalidOperationException ("Invalid project file: " + filename);
 			

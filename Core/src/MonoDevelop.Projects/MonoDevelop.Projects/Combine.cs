@@ -302,7 +302,7 @@ namespace MonoDevelop.Projects
 		public CombineEntry AddEntry (string filename, IProgressMonitor monitor)
 		{
 			if (monitor == null) monitor = new NullProgressMonitor ();
-			CombineEntry entry = Services.ProjectService.ReadFile (filename, monitor);
+			CombineEntry entry = Services.ProjectService.ReadCombineEntry (filename, monitor);
 			Entries.Add (entry);
 			return entry;
 		}

@@ -1,3 +1,18 @@
+2007-01-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/IProjectService.cs: Removed the ReadFile and
+	  WriteFile methods. CombineEntry objects can now be loaded using the
+	  ReadCombineEntry method and saved by calling the CombineEntry.Save
+	  instance method.
+	* MonoDevelop.Projects/CombineEntry.cs: Don't call OnSaved from inside
+	  OnSave, since that method may never be called when overriden by an
+	  extension.
+	* MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/BuildTool.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs,
+	  MonoDevelop.Projects/Project.cs: Use the new ReadCombineEntry
+	  method.
+
 2006-12-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,

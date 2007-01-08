@@ -157,12 +157,12 @@ namespace MonoDevelop.Projects
 		public void Save (IProgressMonitor monitor)
 		{
 			Services.ProjectService.ExtensionChain.Save (monitor, this);
+			OnSaved (thisCombineArgs);
 		}
 		
 		protected internal virtual void OnSave (IProgressMonitor monitor)
 		{
 			Services.ProjectService.WriteFile (FileName, this, monitor);
-			OnSaved (thisCombineArgs);
 		}
 		
 		internal void SetParentCombine (Combine combine)
