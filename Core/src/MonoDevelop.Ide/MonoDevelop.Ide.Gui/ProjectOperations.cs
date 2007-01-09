@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.Gui
 						filename = validcombine;
 				}
 			
-				CombineEntry entry = projectService.ReadFile (filename, monitor);
+				CombineEntry entry = projectService.ReadCombineEntry (filename, monitor);
 				if (!(entry is Combine)) {
 					Combine loadingCombine = new Combine();
 					loadingCombine.Entries.Add (entry);

@@ -1,3 +1,9 @@
+2007-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp: Updated.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Use the new
+	  ReadCombineEntry method.
+
 2006-12-22  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Add "MonoDevelop" to file filter names

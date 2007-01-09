@@ -250,7 +250,6 @@
     <File name="./MonoDevelop.Ide.addin.xml" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Ide.Tasks/TaskPriority.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="Exclude" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/ExitEventHandler.cs" subtype="Code" buildaction="Compile" />
@@ -265,6 +264,7 @@
     <File name="./icons/parsing.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Ide.Gui/LayoutComboBox.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/AddEntryEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
