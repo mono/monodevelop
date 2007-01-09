@@ -1,5 +1,9 @@
 2007-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Base.glade: Fixed some layout problems in the new project dialog.
+
+2007-01-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp: Updated.
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Use the new
 	  ReadCombineEntry method.
