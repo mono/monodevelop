@@ -88,7 +88,7 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			IProgressMonitor monitor = new NullProgressMonitor ();
-			CombineEntry ce = Services.ProjectService.ReadFile (args.FileName, monitor);
+			CombineEntry ce = Services.ProjectService.ReadCombineEntry (args.FileName, monitor);
 			ce = SlnFileFormat.ConvertToMSBuild (ce, false);
 			args.FileName = ce.FileName;
 
