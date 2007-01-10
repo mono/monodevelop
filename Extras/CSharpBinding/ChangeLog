@@ -1,5 +1,10 @@
 2007-01-11  Ankit Jain  <jankit@novell.com>
 
+	* CSharpBindingCompilerManager.cs (Compile): Echo resgen command line
+	for debugging purpose.
+
+2007-01-11  Ankit Jain  <jankit@novell.com>
+
 	* CSharpBindingCompilerManager.cs (Compile): .resx file has paths
 	relative to the .resx file itself.
 

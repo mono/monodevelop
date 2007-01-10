@@ -164,6 +164,7 @@ namespace VBBinding {
 
 							if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 								using (StringWriter sw = new StringWriter ()) {
+									Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
 									ProcessWrapper pw = Runtime.ProcessService.StartProcess (
 										resgen, String.Format ("/compile \"{0}\" ", fname),
 										Path.GetDirectoryName (fname),
