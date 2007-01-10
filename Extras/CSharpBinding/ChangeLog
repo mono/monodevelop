@@ -1,3 +1,8 @@
+2007-01-11  Ankit Jain  <jankit@novell.com>
+
+	* CSharpBindingCompilerManager.cs (Compile): .resx file has paths
+	relative to the .resx file itself.
+
 2006-12-21  Ankit Jain  <jankit@novell.com>
 
 	* CSharpBindingCompilerManager.cs (Compile): Use project's base
