@@ -1,3 +1,7 @@
+2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	Put under version control new files added to a project.
+
 2006-12-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

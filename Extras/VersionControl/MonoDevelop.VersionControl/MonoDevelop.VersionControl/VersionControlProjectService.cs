@@ -50,8 +50,9 @@ namespace MonoDevelop.VersionControl
 			icon_added = MonoDevelop.Core.Gui.Services.Resources.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
-/*			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+			
+/*			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
 			IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
 			IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 */		}
