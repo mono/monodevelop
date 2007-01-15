@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		bool IsValidForProject (Project project)
+		protected virtual bool IsValidForProject (Project project)
 		{
 			// When there is no project, only single template files can be created.
 			

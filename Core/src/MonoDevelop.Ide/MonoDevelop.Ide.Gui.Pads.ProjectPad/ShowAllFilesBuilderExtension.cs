@@ -177,7 +177,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnRemoveFile (object sender, ProjectFileEventArgs e)
 		{
-			if (e.ProjectFile.BuildAction != BuildAction.EmbedAsResource && e.ProjectFile.Subtype != Subtype.Directory && !e.ProjectFile.IsExternalToProject) {
+			if (e.ProjectFile.BuildAction != BuildAction.EmbedAsResource && 
+				e.ProjectFile.Subtype != Subtype.Directory && 
+				!e.ProjectFile.IsExternalToProject &&
+				File.Exists (e.ProjectFile.Name)
+			) {
 				AddFile (e.ProjectFile.Name, e.Project);
 			}
 		}

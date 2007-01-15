@@ -1,3 +1,11 @@
+2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Made IsValidForProject
+	  protected, so it can be overriden by FileTemplate subclasses.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Fixed minor bug that avoids showing files that don't exist in the
+	  project pad.
+
 2007-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Base.glade: Fixed some layout problems in the new project dialog.
