@@ -218,10 +218,7 @@ namespace MonoDevelop.Projects
 		
 		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
 		{
-			if (entry is Project)
-				return ((Project)entry).InternalBuild (monitor, base.BuildReferences);
-			else
-				return entry.OnBuild (monitor);
+			return entry.OnBuild (monitor);
 		}
 		
 		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)

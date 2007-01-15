@@ -362,7 +362,7 @@ namespace MonoDevelop.Projects
 		
 		public ICompilerResult Build (IProgressMonitor monitor)
 		{
-			return Services.ProjectService.ExtensionChain.InternalBuild (monitor, this, true);
+			return InternalBuild (monitor);
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context)
@@ -373,6 +373,11 @@ namespace MonoDevelop.Projects
 		public bool NeedsBuilding {
 			get { return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this); }
 			set { Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value); }
+		}
+		
+		internal virtual ICompilerResult InternalBuild (IProgressMonitor monitor)
+		{
+			return Services.ProjectService.ExtensionChain.Build (monitor, this);
 		}
 		
 		internal protected abstract void OnClean ();

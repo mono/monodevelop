@@ -300,80 +300,50 @@ namespace MonoDevelop.Projects
 		
 		public ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
 		{
-			return Services.ProjectService.ExtensionChain.InternalBuild (monitor, this, buildReferences);
+			return InternalBuild (monitor, buildReferences);
 		}
-
-		protected internal override void OnClean ()
+		
+		internal override ICompilerResult InternalBuild (IProgressMonitor monitor)
 		{
-			isDirty = true;
+			return InternalBuild (monitor, true);
+		}
+		
+		ICompilerResult InternalBuild (IProgressMonitor monitor, bool buildReferences)
+		{
+			if (!buildReferences)
+				return Services.ProjectService.ExtensionChain.Build (monitor, this);
+				
+			// Get a list of all projects that need to be built (including this),
+			// and build them in the correct order
 			
-			// Delete the generated assembly
-			string file = GetOutputFileName ();
-			if (file != null) {
-				if (File.Exists (file))
-					Runtime.FileService.DeleteFile (file);
-				if (File.Exists (file + ".mdb"))
-					Runtime.FileService.DeleteFile (file + ".mdb");
+			CombineEntryCollection referenced = new CombineEntryCollection ();
+			GetReferencedProjects (referenced, this);
+			
+			referenced = Combine.TopologicalSort (referenced);
+			
+			CompilerResults cres = new CompilerResults (null);
+			
+			int builds = 0;
+			int failedBuilds = 0;
+				
+			monitor.BeginTask (null, referenced.Count);
+			foreach (Project p in referenced) {
+				ICompilerResult res = p.Build (monitor, false);
+				cres.Errors.AddRange (res.CompilerResults.Errors);
+				monitor.Step (1);
+				builds++;
+				if (res.ErrorCount > 0) {
+					failedBuilds = 1;
+					break;
+				}
+				if (monitor.IsCancelRequested)
+					break;
 			}
-
-			// Delete referenced assemblies
-			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
-			if (config != null)
-				CleanReferencesInOutputPath (config.OutputDirectory);
-		}
-		
-		bool tempBuildReferences;
-		
-		protected internal ICompilerResult InternalBuild (IProgressMonitor monitor, bool buildReferences)
-		{
-			tempBuildReferences = buildReferences;
-			return OnBuild (monitor);
+			monitor.EndTask ();
+			return new DefaultCompilerResult (cres, "", builds, failedBuilds);
 		}
 		
 		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
-		{
-			return OnBuild (monitor, tempBuildReferences);
-		}
-		
-		protected internal virtual ICompilerResult OnBuild (IProgressMonitor monitor, bool buildReferences)
-		{
-			if (buildReferences)
-			{
-				CombineEntryCollection referenced = new CombineEntryCollection ();
-				GetReferencedProjects (referenced, this);
-				
-				referenced = Combine.TopologicalSort (referenced);
-				
-				CompilerResults cres = new CompilerResults (null);
-				
-				int builds = 0;
-				int failedBuilds = 0;
-					
-				monitor.BeginTask (null, referenced.Count);
-				foreach (Project p in referenced) {
-					ICompilerResult res;
-					if (p == this) {
-						// Avoid going through all build extension chain again
-						res = BuildThis (monitor);
-					} else
-						res = p.Build (monitor, false);
-					cres.Errors.AddRange (res.CompilerResults.Errors);
-					monitor.Step (1);
-					builds++;
-					if (res.ErrorCount > 0) {
-						failedBuilds = 1;
-						break;
-					}
-					if (monitor.IsCancelRequested)
-						break;
-				}
-				monitor.EndTask ();
-				return new DefaultCompilerResult (cres, "", builds, failedBuilds);
-			}
-			return BuildThis (monitor);
-		}
-			
-		ICompilerResult BuildThis (IProgressMonitor monitor)
 		{
 			if (!NeedsBuilding)
 				return new DefaultCompilerResult (new CompilerResults (null), "");
@@ -421,6 +391,25 @@ namespace MonoDevelop.Projects
 			get {
 				return (IBuildStep[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/BuildPipeline", typeof(IBuildStep));
 			}
+		}
+
+		protected internal override void OnClean ()
+		{
+			isDirty = true;
+			
+			// Delete the generated assembly
+			string file = GetOutputFileName ();
+			if (file != null) {
+				if (File.Exists (file))
+					Runtime.FileService.DeleteFile (file);
+				if (File.Exists (file + ".mdb"))
+					Runtime.FileService.DeleteFile (file + ".mdb");
+			}
+
+			// Delete referenced assemblies
+			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
+			if (config != null)
+				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
 		
 		

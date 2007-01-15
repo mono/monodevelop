@@ -3,6 +3,17 @@
 	* MonoDevelop.Projects/ProjectServiceExtension.cs,
 	  MonoDevelop.Projects/ProjectService.cs,
 	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/Project.cs: Simplified the handling of the
+	  buildReferences parameter for the Build method of projects. Now
+	  this parameter is handled by the Project class. Project service
+	  extenders only have to override the Build (ClassEntry) method,
+	  which will be called once for every project to be built.
+
+2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectServiceExtension.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
 	  MonoDevelop.Projects/Project.cs: Fixed some issues with project
 	  extensions when building projects. When building a project with
 	  buildReferences=true, the references were not built through the
