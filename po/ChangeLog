@@ -1,3 +1,17 @@
+2006-01-15  Wade Berrier  <wberrier@novell.com>
+
+	* POTFILES.in: Update to reflect removed files from r71023:
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyClass.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyField.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs
+	Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs
+
+	which fixes make dist
+
 2006-12-23  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* ja_JP.po : updates

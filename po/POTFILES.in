@@ -137,14 +137,6 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/PersistentClass.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyClass.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyField.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs
