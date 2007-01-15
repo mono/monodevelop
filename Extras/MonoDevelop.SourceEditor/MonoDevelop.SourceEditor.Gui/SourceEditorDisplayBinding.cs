@@ -514,7 +514,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		public int GetPositionFromLineColumn (int line, int column)
 		{
 			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
-			itr.LineOffset = column - 1 > itr.CharsInLine ? itr.CharsInLine - 1 : column - 1;
+			if (column - 1 > itr.CharsInLine)
+				itr.LineOffset = itr.CharsInLine > 0 ? itr.CharsInLine - 1 : 0;
+			else
+				itr.LineOffset = column - 1;
 			return itr.Offset;
 		}
 		
