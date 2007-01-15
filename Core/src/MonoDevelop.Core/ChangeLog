@@ -1,3 +1,7 @@
+2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: Removed debug code.
+
 2006-12-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs (StartProcess): Add a new

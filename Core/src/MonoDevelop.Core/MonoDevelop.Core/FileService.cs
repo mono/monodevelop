@@ -114,9 +114,6 @@ namespace MonoDevelop.Core
 			FileSystemExtension srcExt = GetFileSystemForPath (sourcePath, false);
 			FileSystemExtension dstExt = GetFileSystemForPath (destPath, false);
 			
-			Console.WriteLine ("SRC:" + srcExt + " " + srcExt.GetHashCode ());
-			Console.WriteLine ("DST:" + dstExt + " " + dstExt.GetHashCode ());
-			
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
 				srcExt.MoveFile (sourcePath, destPath);
