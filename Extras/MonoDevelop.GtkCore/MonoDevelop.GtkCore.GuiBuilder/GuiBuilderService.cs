@@ -58,7 +58,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static Stetic.Application steticApp;
 		
 		static bool generating;
-		static CodeCompileUnit generatedUnit = null;
+		static Stetic.CodeGenerationResult generationResult = null;
 		static Exception generatedException = null;
 		
 		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.None;
@@ -183,20 +183,37 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void OnBeforeCompile (object s, BuildEventArgs args)
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
-			{
 				return;
-			}
 
 			// Generate stetic files for all modified projects
-			foreach (Project p in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects (true)) {
-				GenerateSteticCode (args.ProgressMonitor, p);
-			}
+			GtkProjectServiceExtension.GenerateSteticCode = true;
 		}
 
 		static void OnProjectCompiled (object s, BuildEventArgs args)
 		{
-			if (args.Success)
+			if (args.Success) {
+				// Unload stetic projects which are not currently
+				// being used by the IDE. This will avoid unnecessary updates.
+				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+					foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
+						GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
+						if (info != null && !HasOpenDesigners (prj)) {
+							info.ReloadGuiBuilderProject ();
+						}
+					}
+				}
+				
 				SteticApp.UpdateWidgetLibraries (false);
+			}
+		}
+		
+		static bool HasOpenDesigners (Project project)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if ((doc.Content is GuiBuilderView || doc.Content is ActionGroupView) && doc.Project == project)
+					return true;
+			}
+			return false;
 		}
 		
 		static Stetic.WidgetLibrary OnResolveWidgetLibrary (string name)
@@ -204,16 +221,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (name.StartsWith ("libstetic,"))
 				return null;
 
-			return GetAssemblyLibrary (name);
+			return GetAssemblyLibrary (name, true);
 		}
 		
-		public static AssemblyReferenceWidgetLibrary GetAssemblyLibrary (string assemblyReference)
+		public static AssemblyReferenceWidgetLibrary GetAssemblyLibrary (string assemblyReference, bool alwaysRegister)
 		{
 			object lib = assemblyLibs [assemblyReference];
 			if (lib == null) {
 				string aname = IdeApp.ProjectOperations.ParserDatabase.LoadAssembly (assemblyReference);
 				AssemblyReferenceWidgetLibrary wlib = new AssemblyReferenceWidgetLibrary (assemblyReference, aname);
-				if (!wlib.ExportsWidgets)
+				if (!wlib.ExportsWidgets && !alwaysRegister)
 					lib = new object ();
 				else
 					lib = wlib;
@@ -227,7 +244,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static bool IsWidgetLibrary (string assemblyReference)
 		{
-			return GetAssemblyLibrary (assemblyReference) != null;
+			return GetAssemblyLibrary (assemblyReference, false) != null;
 		}
 		
 		static void CleanUnusedAssemblyLibs ()
@@ -260,19 +277,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			//SteticApp.UpdateWidgetLibraries (false);
 		}
 
-		public static Project GetProjectFromDesign (Stetic.Project project)
-		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
-				return null;
-				
-			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
-				if (info != null && info.GuiBuilderProject != null && info.GuiBuilderProject.SteticProject == project)
-					return prj;
-			}
-			return null;
-		}
-		
 		internal static void AddCurrentWidgetToClass ()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
@@ -298,28 +302,110 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			info.GuiBuilderProject.ImportGladeFile ();
 		}
 		
-		static void GenerateSteticCode (IProgressMonitor monitor, Project prj)
+		public static string GetBuildCodeFileName (Project project, Stetic.Component component)
+		{
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			return Path.Combine (info.GtkGuiFolder, component.Name + Path.GetExtension (info.SteticGeneratedFile));
+		}
+		
+		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, bool saveToFile, bool overwrite)
+		{
+			// Generate a class which contains fields for all bound widgets of the component
+			
+			string name = component.Name;
+			string ns = "";
+			int i = name.LastIndexOf ('.');
+			if (i != -1) {
+				ns = name.Substring (0, i);
+				name = name.Substring (i+1);
+			}
+			
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			string fileName = GetBuildCodeFileName (project, component);
+			
+			if (saveToFile && !overwrite && File.Exists (fileName))
+				return fileName;
+			
+			CodeCompileUnit cu = new CodeCompileUnit ();
+			
+			if (info.GeneratePartialClasses) {
+				CodeNamespace cns = new CodeNamespace (ns);
+				cu.Namespaces.Add (cns);
+				
+				CodeTypeDeclaration type = new CodeTypeDeclaration (name);
+				type.IsPartial = true;
+				type.Attributes = MemberAttributes.Public;
+				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
+				cns.Types.Add (type);
+				
+				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
+					type.Members.Add (
+						new CodeMemberField (
+							binfo.TypeName,
+							binfo.Name
+						)
+					);
+				}
+			}
+			else {
+				if (!saveToFile)
+					return fileName;
+				CodeNamespace cns = new CodeNamespace ();
+				cns.Comments.Add (new CodeCommentStatement ("Generated code for component " + component.Name));
+				cu.Namespaces.Add (cns);
+			}
+			
+			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			if (provider == null)
+				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
+			
+			ICodeGenerator gen = provider.CreateGenerator ();
+			TextWriter fileStream;
+			if (saveToFile)
+				fileStream = new StreamWriter (fileName);
+			else
+				fileStream = new StringWriter ();
+			
+			try {
+				gen.GenerateCodeFromCompileUnit (cu, fileStream, new CodeGeneratorOptions ());
+			} finally {
+				fileStream.Close ();
+			}
+
+			if (IdeApp.ProjectOperations.ParserDatabase.IsLoaded (project)) {
+				// Only update the parser database if the project is actually loaded in the IDE.
+				if (saveToFile)
+					IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project).UpdateDatabase ();
+				else
+					IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, ((StringWriter)fileStream).ToString ());
+			}
+
+			return fileName;
+		}
+		
+		
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, Project prj)
 		{
 			if (generating)
-				return;
+				return null;
 
 			DotNetProject project = prj as DotNetProject;
 			if (project == null)
-				return;
+				return null;
 				
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info == null)
-				return;
+				return null;
 			
-			if (info.GuiBuilderProject.IsEmpty) 
-				return;
-				
 			// Check if the stetic file has been modified since last generation
 			if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
 				if (File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
-					return;
+					return null;
 			}
 			
+			if (info.GuiBuilderProject.IsEmpty) 
+				return null;
+
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Generating GUI code for project '{0}'...", project.Name));
 			
 			// Make sure the referenced assemblies are up to date. It is necessary to do
@@ -351,7 +437,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				libs.Add (lib);
 			
 			generating = true;
-			generatedUnit = null;
+			generationResult = null;
 			generatedException = null;
 			
 			// Run the generation in another thread to avoid freezing the GUI
@@ -361,13 +447,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// Generate the code in another process if stetic is not isolated
 						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 						using (cob) {
-							generatedUnit = cob.GenerateCode (projects, libs, useGettext);
+							generationResult = cob.GenerateCode (projects, libs, useGettext, info.GeneratePartialClasses);
 						}
 					} else {
 						// No need to create another process, since stetic has its own backend process
 						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 						options.UseGettext = useGettext;
-						generatedUnit = SteticApp.GenerateProjectCode ("Stetic", options, info.GuiBuilderProject.SteticProject);
+						options.UsePartialClasses = info.GeneratePartialClasses;
+						options.GenerateSingleFile = false;
+						generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
 					}
 				} catch (Exception ex) {
 					generatedException = ex;
@@ -381,33 +469,45 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				System.Threading.Thread.Sleep (100);
 			}
 			
-			if (generatedException != null) {
-				monitor.ReportError ("GUI code generation failed", generatedException);
-				monitor.AsyncOperation.Cancel ();
-				return;
-			}
+			if (generatedException != null)
+				throw new UserException ("GUI code generation failed: " + generatedException.Message);
 			
-			if (generatedUnit == null)
-				return;
+			if (generationResult == null)
+				return null;
 				
 			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new UserException ("Code generation not supported in language: " + project.LanguageName);
 			
 			ICodeGenerator gen = provider.CreateGenerator ();
-			StreamWriter fileStream = new StreamWriter (info.SteticGeneratedFile);
-			try {
-				gen.GenerateCodeFromCompileUnit (generatedUnit, fileStream, new CodeGeneratorOptions ());
-			} finally {
-				fileStream.Close ();
+			string basePath = Path.GetDirectoryName (info.SteticGeneratedFile);
+			string ext = Path.GetExtension (info.SteticGeneratedFile);
+			
+			foreach (Stetic.SteticCompilationUnit unit in generationResult.Units) {
+				string fname;
+				if (unit.Name.Length == 0)
+					fname = info.SteticGeneratedFile;
+				else
+					fname = Path.Combine (basePath, unit.Name) + ext;
+				StreamWriter fileStream = new StreamWriter (fname);
+				try {
+					gen.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+				} finally {
+					fileStream.Close ();
+				}
 			}
+			
+			// Make sure the generated files are added to the project
+			info.UpdateGtkFolder ();
+			
+			return generationResult;
 		}
 	}
 
 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public CodeCompileUnit GenerateCode (ArrayList projectFiles, ArrayList libraries, bool useGettext)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, ArrayList libraries, bool useGettext, bool usePartialClasses)
 		{
 			Gtk.Application.Init ();
 			
@@ -424,8 +524,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 			options.UseGettext = useGettext;
+			options.UsePartialClasses = usePartialClasses;
+			options.GenerateSingleFile = false;
 			
-			return app.GenerateProjectCode ("Stetic", options, projects);
+			return app.GenerateProjectCode (options, projects);
 		}
 	}
 }

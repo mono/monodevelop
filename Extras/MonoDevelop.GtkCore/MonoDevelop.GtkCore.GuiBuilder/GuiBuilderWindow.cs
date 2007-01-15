@@ -143,10 +143,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
 			CodeRefactorer gen = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (fproject.Project);
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
 			type.IsClass = true;
+			type.IsPartial = info.GeneratePartialClasses;
 			type.BaseTypes.Add (new CodeTypeReference (rootWidget.Type.ClassName));
 			
 			// Generate the constructor. It contains the call that builds the widget.
@@ -157,30 +159,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (object val in rootWidget.Type.InitializationValues)
 				ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
 			
-			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
-				new CodeMethodReferenceExpression (
-					new CodeTypeReferenceExpression ("Stetic.Gui"),
-					"Build"
-				),
-				new CodeThisReferenceExpression (),
-				new CodeTypeOfExpression (fullName)
-			);
-			ctor.Statements.Add (call);
+			if (info.GeneratePartialClasses) {
+				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
+					new CodeMethodReferenceExpression (
+						new CodeThisReferenceExpression (),
+						"Build"
+					)
+				);
+				ctor.Statements.Add (call);
+			} else {
+				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
+					new CodeMethodReferenceExpression (
+						new CodeTypeReferenceExpression ("Stetic.Gui"),
+						"Build"
+					),
+					new CodeThisReferenceExpression (),
+					new CodeTypeOfExpression (fullName)
+				);
+				ctor.Statements.Add (call);
+			}
 			type.Members.Add (ctor);
 			
 			// Add signal handlers
 			
-			foreach (Stetic.Signal signal in rootWidget.GetSignals ()) {
-				CodeMemberMethod met = new CodeMemberMethod ();
-				met.Name = signal.Handler;
-				met.Attributes = MemberAttributes.Family;
-				met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
-				
-				foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-					met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
-					
-				type.Members.Add (met);
-			}
+			AddSignalsRec (type, rootWidget);
+			foreach (Stetic.Component ag in rootWidget.GetActionGroups ())
+				AddSignalsRec (type, ag);
 			
 			// Create the class
 			
@@ -195,6 +199,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
 		}
 		
+		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)
+		{
+			foreach (Stetic.Signal signal in comp.GetSignals ()) {
+				CodeMemberMethod met = new CodeMemberMethod ();
+				met.Name = signal.Handler;
+				met.Attributes = MemberAttributes.Family;
+				met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);
+				
+				foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
+					met.Parameters.Add (new CodeParameterDeclarationExpression (pinfo.TypeName, pinfo.Name));
+					
+				type.Members.Add (met);
+			}
+			foreach (Stetic.Component cc in comp.GetChildren ()) {
+				AddSignalsRec (type, cc);
+			}
+		}
+		
 		internal bool IsValidClass (IParserContext ctx, IClass cls)
 		{
 			if (cls.BaseTypes != null) {
@@ -203,7 +225,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						return true;
 					
 					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);
-					if (IsValidClass (ctx, baseCls))
+					if (baseCls != null && IsValidClass (ctx, baseCls))
 						return true;
 				}
 			}

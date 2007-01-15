@@ -31,6 +31,7 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
@@ -72,6 +73,19 @@ namespace MonoDevelop.GtkCore
 			info = new GtkDesignInfo ((DotNetProject) project);
 			info.UpdateGtkFolder ();
 			return info;
+		}
+		
+		internal static bool SupportsPartialTypes (DotNetProject project)
+		{
+			GtkDesignInfo info = GetGtkInfo (project);
+			if (info != null)
+				return info.GeneratePartialClasses;
+
+			if (project.LanguageBinding == null)
+				return false;
+
+			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
+			return provider.Supports (GeneratorSupport.PartialTypes);
 		}
 		
 		static void OnFileChanged (object s, FileEventArgs args)

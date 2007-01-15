@@ -33,6 +33,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -48,17 +50,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.project = project;
 			this.group = group;
 			
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
+
 			designer = project.SteticProject.CreateActionGroupDesigner (group, false);
-			designer.AllowActionBinding = true;
+			designer.AllowActionBinding = (info != null && !info.GeneratePartialClasses);
 			designer.BindField += new EventHandler (OnBindField);
 			
-			designer.ShowAll ();
-			AddButton (GettextCatalog.GetString ("Actions"), designer);
-			designer.ModifiedChanged += new EventHandler (OnGroupModified);
+			ActionGroupPage actionsPage = new ActionGroupPage (designer);
+			actionsPage.PackStart (designer, true, true, 0);
+			actionsPage.ShowAll ();
+			
+			AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
+			
+			designer.ModifiedChanged += OnGroupModified;
 			designer.SignalAdded += OnSignalAdded;
 			designer.SignalChanged += OnSignalChanged;
+			designer.RootComponentChanged += OnRootComponentChanged;
 
-			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), group);
+			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 		}
 		
 		public Stetic.ActionGroupComponent ActionGroup {
@@ -66,18 +75,48 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set { Load (value.Name); }
 		}
 		
+		public override void ShowPage (int npage)
+		{
+			if (group != null) {
+				// At every page switch update the generated code, to make sure code completion works
+				// for the generated fields. The call to GenerateSteticCodeStructure will generate
+				// the code for the window (only the fields in fact) and update the parser database, it
+				// will not save the code to disk.
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
+				if (info != null && info.GeneratePartialClasses)
+					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, false, false);
+			}
+			base.ShowPage (npage);
+		}
+		
+		void OnRootComponentChanged (object s, EventArgs args)
+		{
+			codeBinder.TargetObject = designer.RootComponent;
+		}
+		
 		public override void Save (string fileName)
 		{
+			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, group);
+			
 			base.Save (fileName);
 			codeBinder.UpdateBindings (fileName);
 			
 			designer.Save ();
+			
+			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, group);
+			if (oldBuildFile != newBuildFile)
+				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
+
 			project.Save ();
 		}
 		
 		public override void Dispose ()
 		{
-			designer.BindField -= new EventHandler (OnBindField);
+			designer.BindField -= OnBindField;
+			designer.RootComponentChanged -= OnRootComponentChanged;
+			designer.ModifiedChanged -= OnGroupModified;
+			designer.SignalAdded -= OnSignalAdded;
+			designer.SignalChanged -= OnSignalChanged;
 			designer.Dispose ();
 			designer = null;
 			base.Dispose ();
@@ -133,6 +172,88 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (designer.SelectedAction != null) {
 				codeBinder.BindToField (designer.SelectedAction);
 			}
+		}
+	}
+	
+	class ActionGroupPage: Gtk.VBox
+	{
+		Stetic.ActionGroupDesigner actionsBox;
+		
+		public ActionGroupPage (Stetic.ActionGroupDesigner actionsBox)
+		{
+			this.actionsBox = actionsBox;
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		protected void OnDelete ()
+		{
+			actionsBox.DeleteSelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		protected void OnUpdateDelete (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			actionsBox.CopySelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Cut)]
+		protected void OnCut ()
+		{
+			actionsBox.CutSelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Cut)]
+		protected void OnUpdateCut (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.SelectedAction != null;
+		}
+		
+		[CommandHandler (EditCommands.Paste)]
+		protected void OnPaste ()
+		{
+			actionsBox.PasteToSelection ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Paste)]
+		protected void OnUpdatePaste (CommandInfo cinfo)
+		{
+			cinfo.Enabled = false;
+		}
+		
+		[CommandHandler (EditCommands.Undo)]
+		protected void OnUndo ()
+		{
+			actionsBox.UndoQueue.Undo ();
+		}
+		
+		[CommandHandler (EditCommands.Redo)]
+		protected void OnRedo ()
+		{
+			actionsBox.UndoQueue.Redo ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Undo)]
+		protected void OnUpdateUndo (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.UndoQueue.CanUndo;
+		}
+		
+		[CommandUpdateHandler (EditCommands.Redo)]
+		protected void OnUpdateRedo (CommandInfo cinfo)
+		{
+			cinfo.Enabled = actionsBox.UndoQueue.CanRedo;
 		}
 	}
 }

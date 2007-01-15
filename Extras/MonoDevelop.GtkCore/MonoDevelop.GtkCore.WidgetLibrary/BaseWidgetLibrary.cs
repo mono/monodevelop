@@ -47,10 +47,19 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		public override void Load ()
 		{
-			GetParserContext ().UpdateDatabase ();
+			IParserContext ctx = GetParserContext ();
+			if (ctx != null)
+				ctx.UpdateDatabase ();
+
 			XmlDocument doc = GetObjectsDocument ();
 			if (doc != null)
 				Load (doc);
+			else {
+				// For some reason there is no widget descriptor file.
+				// Load() needs to be called anyway, in order to remove
+				// the old widgets when reloading.
+				Load (new XmlDocument ());
+			}
 		}
 		
 		protected override Stetic.ClassDescriptor LoadClassDescriptor (XmlElement element)
@@ -102,5 +111,4 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			get;
 		}
 	}
-	
 }

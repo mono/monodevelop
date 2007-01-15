@@ -2,19 +2,24 @@
 <Template Originator="Lluis Sanchez" Created="3/09/2001" LastModified="3/09/2001">
 	
 	<TemplateConfiguration>
-		<_Name>ActionGroup</_Name>
+		<_Name>Window</_Name>
 		<Icon>md-empty-file-icon</Icon>
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates a global Action Group.</_Description>
-		<Type>MonoDevelop.GtkCore.WidgetFileTemplateFullClass</Type>
+		<_Description>Creates a Gtk Window</_Description>
+		<Type>MonoDevelop.GtkCore.WidgetFileTemplatePartialClass</Type>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
 		<Widget DefaultName="${Name}">
 			<SteticTemplate>
-			  <action-group name="${FullName}">
-			  </action-group>			
+			  <widget class="Gtk.Window" id="${FullName}" design-size="400 300">
+			    <property name="Title" translatable="yes">${Name}</property>
+			    <property name="WindowPosition">CenterOnParent</property>
+		        <child>
+		          <placeholder />
+		        </child>
+			  </widget>			
 			</SteticTemplate>
 			<CodeDomFile>
 				<CompileUnit>
@@ -26,28 +31,24 @@
 						</Namespace>
 						<Namespace Name="${Namespace}">
 							<Types>
-								<TypeDeclaration Name="${Name}" IsClass="true">
+								<TypeDeclaration Name="${Name}" IsClass="true" IsPartial="true">
 									<BaseTypes>
-										<TypeReference BaseType="Gtk.ActionGroup" />
+										<TypeReference BaseType="Gtk.Window" />
 									</BaseTypes>
 									<Members>
 										<Constructor Attributes="Public, Final">
 											<BaseConstructorArgs>
-												<PrimitiveExpression Value="${FullName}"/>
+												<PrimitiveExpression Value="" />
 											</BaseConstructorArgs>
 											<Statements>
 												<MethodInvokeExpression>
 													<Method>
 														<MethodReferenceExpression MethodName="Build">
 															<TargetObject>
-																<TypeReferenceExpression Type="Stetic.Gui" />
+																<ThisReferenceExpression/>
 															</TargetObject>
 														</MethodReferenceExpression>
 													</Method>
-													<Parameters>
-														<ThisReferenceExpression/>
-														<TypeOfExpression Type="${FullName}" />
-													</Parameters>
 												</MethodInvokeExpression>
 											</Statements>
 										</Constructor>

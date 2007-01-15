@@ -53,12 +53,16 @@ namespace MonoDevelop.GtkCore
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
 		
+		[ItemProperty (DefaultValue=false)]
+		bool partialTypes;
+		
 		public GtkDesignInfo ()
 		{
 		}
 		
 		public GtkDesignInfo (DotNetProject project)
 		{
+			partialTypes = GtkCoreService.SupportsPartialTypes (project);
 			IExtendedDataItem item = (IExtendedDataItem) project;
 			item.ExtendedProperties ["GtkDesignInfo"] = this;
 			Bind (project);
@@ -81,11 +85,16 @@ namespace MonoDevelop.GtkCore
 		public GuiBuilderProject GuiBuilderProject {
 			get {
 				if (builderProject == null) {
-					UpdateGtkFolder ();
 					builderProject = new GuiBuilderProject (project, SteticFile);
 				}
 				return builderProject;
 			}
+		}
+		
+		public void ReloadGuiBuilderProject ()
+		{
+			if (builderProject != null)
+				builderProject.Reload ();
 		}
 		
 		public ProjectResourceProvider ResourceProvider {
@@ -116,6 +125,10 @@ namespace MonoDevelop.GtkCore
 		
 		public bool IsWidgetLibrary {
 			get { return exportedWidgets.Count > 0; }
+		}
+		
+		public bool GeneratePartialClasses {
+			get { return partialTypes; }
 		}
 		
 		public bool IsExported (string name)
@@ -183,13 +196,38 @@ namespace MonoDevelop.GtkCore
 			if (!File.Exists (SteticGeneratedFile)) {
 				// Generate an empty build class
 				CodeDomProvider provider = GetCodeDomProvider ();
-				MonoDevelop.GtkCore.GuiBuilder.GuiBuilderService.SteticApp.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider, null);
+				GuiBuilderService.SteticApp.GenerateProjectCode (SteticGeneratedFile, "Stetic", provider, null);
 			}
 
 			// Add the generated file to the project, if not already there
 			if (!project.IsFileInProject (SteticGeneratedFile))
 				project.AddFile (SteticGeneratedFile, BuildAction.Compile);
 
+			// Create files for all widgets
+			ArrayList partialFiles = new ArrayList ();
+			
+			foreach (GuiBuilderWindow win in GuiBuilderProject.Windows) {
+				string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
+				partialFiles.Add (fn);
+				if (!project.IsFileInProject (fn))
+					project.AddFile (fn, BuildAction.Compile);
+			}
+			
+			foreach (Stetic.ActionGroupComponent ag in GuiBuilderProject.SteticProject.GetActionGroups ()) {
+				string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
+				partialFiles.Add (fn);
+				if (!project.IsFileInProject (fn))
+					project.AddFile (fn, BuildAction.Compile);
+			}
+			
+			// Remove all project files which are not in the generated list
+			foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
+				if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
+					project.ProjectFiles.Remove (pf);
+					Runtime.FileService.DeleteFile (pf.FilePath);
+				}
+			}
+			
 			// If the project is exporting widgets, make sure the objects.xml file exists
 			if (exportedWidgets.Count > 0) {
 				if (!File.Exists (ObjectsFile)) {

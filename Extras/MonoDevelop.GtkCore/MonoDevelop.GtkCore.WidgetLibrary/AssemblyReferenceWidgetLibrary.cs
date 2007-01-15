@@ -44,7 +44,6 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 	public class AssemblyReferenceWidgetLibrary: BaseWidgetLibrary
 	{
 		string assemblyReference;
-		string assemblyName;
 		string fileName;
 		XmlDocument objects;
 		XmlDocument steticGui;
@@ -54,21 +53,15 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		{
 			this.assemblyReference = assemblyReference;
 			
-			if (!File.Exists (assemblyReference)) {
+			if (!assemblyReference.EndsWith (".dll") && !assemblyReference.EndsWith (".exe")) {
 				try {
 					fileName = Runtime.SystemAssemblyService.GetAssemblyLocation (assemblyReference);
-					this.assemblyName = assemblyReference;
 				} catch (Exception ex) {
 					Runtime.LoggingService.Error (ex);
 				}
 			} else {
 				fileName = assemblyReference;
-				if (assemblyName != null)
-					this.assemblyName = assemblyName;
-				else
-					this.assemblyName = System.Reflection.AssemblyName.GetAssemblyName (fileName).FullName;
 			}
-			
 			LoadInfo ();
 		}
 		
@@ -91,11 +84,7 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		public bool ExportsWidgets {
 			get { return objects != null; }
 		}
-		
-		public string AssemblyName {
-			get { return assemblyName; }
-		}
-		
+				
 		public string AssemblyReference {
 			get { return assemblyReference; }
 		}
@@ -116,7 +105,7 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 			objects = null;
 			steticGui = null;
 			
-			if (fileName == null)
+			if (fileName == null || !File.Exists (fileName))
 				return;
 			
 			timestamp = File.GetLastWriteTime (fileName);
@@ -160,7 +149,10 @@ namespace MonoDevelop.GtkCore.WidgetLibrary
 		
 		protected override IParserContext GetParserContext ()
 		{
-			return IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (fileName);
+			if (!File.Exists (fileName))
+				return null;
+			else
+				return IdeApp.ProjectOperations.ParserDatabase.GetAssemblyParserContext (fileName);
 		}
 		
 		public override string AssemblyPath {

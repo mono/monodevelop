@@ -48,6 +48,10 @@
 		<FileTemplate id = "WindowFileTemplate" resource = "Window.xft.xml"/>
 		<FileTemplate id = "WidgetFileTemplate" resource = "Widget.xft.xml"/>
 		<FileTemplate id = "ActionGroupFileTemplate" resource = "ActionGroup.xft.xml"/>
+		<FileTemplate id = "PartialDialogFileTemplate" resource = "DialogPartial.xft.xml"/>
+		<FileTemplate id = "PartialWindowFileTemplate" resource = "WindowPartial.xft.xml"/>
+		<FileTemplate id = "PartialWidgetFileTemplate" resource = "WidgetPartial.xft.xml"/>
+		<FileTemplate id = "PartialActionGroupFileTemplate" resource = "ActionGroupPartial.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/GladeFileNodeBuilder/ContextMenu">
@@ -147,6 +151,10 @@
 		<StockIcon stockid = "md-gtkcore-dialog" resource = "dialog.png" />
 		<StockIcon stockid = "md-gtkcore-widget" resource = "widget.png" />
 		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension" />
 	</Extension>
 </AddIn>
 

@@ -145,7 +145,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 					}
 					w.Project.Remove (w);
 					w.Project.Save ();
-					w.Project.Project.Save (IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ());
+					IdeApp.ProjectOperations.SaveProject (w.Project.Project);
 				}
 			}
 		}

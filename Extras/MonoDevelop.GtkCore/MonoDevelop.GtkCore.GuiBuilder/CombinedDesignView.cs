@@ -123,7 +123,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				ShowPage (i);
 		}
 		
-		public void ShowPage (int npage)
+		public virtual void ShowPage (int npage)
 		{
 			if (notebook.CurrentPage == npage)
 				return;

@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProject
 	{
-		ArrayList formInfos = new ArrayList ();
+		ArrayList formInfos;
 		Stetic.Project gproject;
 		Project project;
 		string fileName;
@@ -56,13 +56,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
+		public event EventHandler Reloaded;
 	
 		public GuiBuilderProject (Project project, string fileName)
 		{
 			this.fileName = fileName;
 			this.project = project;
+		}
+		
+		void Load ()
+		{
+			if (gproject != null)
+				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
+			formInfos = new ArrayList ();
 
 			foreach (ProjectReference pref in project.ProjectReferences) {
 				string wref = GetReferenceLibraryPath (pref);
@@ -81,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (project).ResourceProvider;
 			gproject.ComponentAdded += new Stetic.ComponentEventHandler (OnAddWidget);
-			gproject.ComponentRemoved += new Stetic.ComponentEventHandler (OnRemoveWidget);
+			gproject.ComponentRemoved += new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.ReferenceAddedToProject += OnReferenceAdded;
 			project.ReferenceRemovedFromProject += OnReferenceRemoved;
@@ -90,14 +98,47 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				RegisterWindow (ob);
 		}
 		
+		void Unload ()
+		{
+			if (gproject == null)
+				return;
+
+			foreach (GuiBuilderWindow win in formInfos)
+				win.Dispose ();
+
+			gproject.ComponentAdded -= new Stetic.ComponentEventHandler (OnAddWidget);
+			gproject.ComponentRemoved -= new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
+			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
+			project.ReferenceAddedToProject -= OnReferenceAdded;
+			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
+			gproject.Dispose ();
+			gproject = null;
+			formInfos = null;
+			needsUpdate = true;
+			ownLibrary = null;
+			hasError = false;
+		}
+		
+		public void Reload ()
+		{
+			Unload ();
+			if (Reloaded != null)
+				Reloaded (this, EventArgs.Empty);
+		}
+		
 		public bool IsEmpty {
-			get { return formInfos.Count == 0; }
+			get {
+				// If the project is not loaded, assume not empty
+				return gproject == null || Windows.Count == 0; 
+			}
 		}
 		
 		public void Save ()
 		{
-			if (!hasError)
+			if (gproject != null && !hasError)
 				gproject.Save (fileName);
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			info.UpdateGtkFolder ();
 		}
 		
 		public string File {
@@ -105,11 +146,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		public Stetic.Project SteticProject {
-			get { return gproject; }
+			get {
+				Load ();
+				return gproject;
+			}
 		}
 		
 		public ICollection Windows {
-			get { return formInfos; }
+			get {
+				Load ();
+				return formInfos; 
+			}
 		}
 		
 		public Project Project {
@@ -118,29 +165,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
-			foreach (GuiBuilderWindow win in formInfos)
-				win.Dispose ();
-
-			gproject.ComponentAdded -= new Stetic.ComponentEventHandler (OnAddWidget);
-			gproject.ComponentRemoved -= new Stetic.ComponentEventHandler (OnRemoveWidget);
-			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
+			Unload ();
 		}
 		
 		public bool IsActive ()
 		{
-			return GuiBuilderService.SteticApp.ActiveProject == gproject;
+			return GuiBuilderService.SteticApp.ActiveProject == SteticProject;
 		}
 		
 		public Stetic.WidgetComponent AddNewComponent (Stetic.ComponentType type, string name)
 		{
-			Stetic.WidgetComponent c = gproject.AddNewComponent (type, name);
+			Stetic.WidgetComponent c = SteticProject.AddNewComponent (type, name);
 			RegisterWindow (c);
 			return c;
 		}
 		
 		public Stetic.WidgetComponent AddNewComponent (XmlElement element)
 		{
-			Stetic.WidgetComponent c = gproject.AddNewComponent (element);
+			Stetic.WidgetComponent c = SteticProject.AddNewComponent (element);
 			// Register the window now, don't wait for the WidgetAdded event since
 			// it may take some time, and the GuiBuilderWindow object is needed
 			// just after this call
@@ -163,6 +205,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 		void UnregisterWindow (GuiBuilderWindow win)
 		{
+			if (!formInfos.Contains (win))
+				return;
+
 			formInfos.Remove (win);
 
 			if (WindowRemoved != null)
@@ -174,6 +219,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void Remove (GuiBuilderWindow win)
 		{
 			gproject.RemoveComponent (win.RootWidget);
+			UnregisterWindow (win);
 		}
 	
 		public void RemoveActionGroup (Stetic.ActionGroupComponent group)
@@ -188,13 +234,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			RegisterWindow ((Stetic.WidgetComponent)args.Component);
 		}
 		
-		void OnRemoveWidget (object s, Stetic.ComponentEventArgs args)
+		void OnRemoveWidget (object s, Stetic.ComponentRemovedEventArgs args)
 		{
 			if (UpdatingWindow)
 				return;
-			GuiBuilderWindow win = GetWindowForWidget (args.Component);
-			if (win != null)
-				UnregisterWindow (win);
+			
+			foreach (GuiBuilderWindow form in Windows) {
+				if (form.RootWidget.Name == args.ComponentName) {
+					UnregisterWindow (form);
+					break;
+				}
+			}
 		}
 		
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
@@ -252,7 +302,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
 			int response = dialog.Run ();
 			if (response == (int)Gtk.ResponseType.Ok) {
-				gproject.ImportGlade (dialog.Filename);
+				SteticProject.ImportGlade (dialog.Filename);
 				Save ();
 			}
 			dialog.Destroy ();
@@ -260,7 +310,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindowForWidget (Stetic.Component w)
 		{
-			foreach (GuiBuilderWindow form in formInfos) {
+			foreach (GuiBuilderWindow form in Windows) {
 				if (form.RootWidget.Name == w.Name)
 					return form;
 			}
@@ -269,7 +319,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public GuiBuilderWindow GetWindowForClass (string className)
 		{
-			foreach (GuiBuilderWindow form in formInfos) {
+			foreach (GuiBuilderWindow form in Windows) {
 				if (CodeBinder.GetObjectName (form.RootWidget) == className)
 					return form;
 			}
@@ -297,8 +347,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public string GetSourceCodeFile (Stetic.Component obj)
 		{
 			IClass cls = GetClass (obj);
-			if (cls != null) return cls.Region.FileName;
-			else return null;
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+			
+			if (cls != null) {
+				// Ignore partial classes located at the gtk-gui folder
+				foreach (IClass pc in cls.Parts) {
+					if (!pc.Region.FileName.StartsWith (info.GtkGuiFolder)) {
+						return pc.Region.FileName;
+					}
+				}
+			}
+			return null;
 		}
 		
 		IClass GetClass (Stetic.Component obj)
@@ -309,11 +368,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IClass FindClass (string className)
 		{
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			IParserContext ctx = GetParserContext ();
 			IClass[] classes = ctx.GetProjectContents ();
 			foreach (IClass cls in classes) {
-				if (cls.FullyQualifiedName == className)
-					return cls;
+				if (cls.FullyQualifiedName == className) {
+					// Return this class only if it is declared outside the gtk-gui
+					// folder. Generated partial classes will be ignored.
+					foreach (IClass part in cls.Parts) {
+						if (!part.Region.FileName.StartsWith (info.GtkGuiFolder))
+							return cls;
+					}
+				}
 			}
 			return null;
 		}

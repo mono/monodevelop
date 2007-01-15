@@ -7,7 +7,7 @@
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Gtk dialog.</_Description>
-		<Type>MonoDevelop.GtkCore.WidgetFileTemplateFullClass</Type>
+		<Type>MonoDevelop.GtkCore.WidgetFileTemplatePartialClass</Type>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
@@ -68,7 +68,7 @@
 						</Namespace>
 						<Namespace Name="${Namespace}">
 							<Types>
-								<TypeDeclaration Name="${Name}" IsClass="true">
+								<TypeDeclaration Name="${Name}" IsClass="true" IsPartial="true">
 									<BaseTypes>
 										<TypeReference BaseType="Gtk.Dialog" />
 									</BaseTypes>
@@ -79,14 +79,10 @@
 													<Method>
 														<MethodReferenceExpression MethodName="Build">
 															<TargetObject>
-																<TypeReferenceExpression Type="Stetic.Gui" />
+																<ThisReferenceExpression />
 															</TargetObject>
 														</MethodReferenceExpression>
 													</Method>
-													<Parameters>
-														<ThisReferenceExpression/>
-														<TypeOfExpression Type="${FullName}" />
-													</Parameters>
 												</MethodInvokeExpression>
 											</Statements>
 										</Constructor>

@@ -43,9 +43,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			this.project = project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			
+			info.GuiBuilderProject.Reloaded += OnUpdateFiles;
 			info.GuiBuilderProject.WindowAdded += OnUpdateFiles;
 			info.GuiBuilderProject.WindowRemoved += OnUpdateFiles;
-			info.GuiBuilderProject.SteticProject.ActionGroupsChanged += OnUpdateFiles;
 			info.GuiBuilderProject.SteticProject.ActionGroupsChanged += OnUpdateFiles;
 		}
 		
@@ -53,14 +53,10 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 
+			info.GuiBuilderProject.Reloaded -= OnUpdateFiles;
 			info.GuiBuilderProject.WindowAdded -= OnUpdateFiles;
 			info.GuiBuilderProject.WindowRemoved -= OnUpdateFiles;
 			info.GuiBuilderProject.SteticProject.ActionGroupsChanged -= OnUpdateFiles;
-		}
-		
-		void OnUpdateFiles (object s, WindowEventArgs args)
-		{
-			if (Changed != null) Changed (this, EventArgs.Empty);
 		}
 		
 		void OnUpdateFiles (object s, EventArgs args)

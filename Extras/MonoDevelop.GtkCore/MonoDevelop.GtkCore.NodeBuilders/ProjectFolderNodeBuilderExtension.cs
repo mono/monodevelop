@@ -109,8 +109,14 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public void AddNewWindow (string id)
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			if (project == null)
+				return;
+			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
+			
+			if (GtkCoreService.SupportsPartialTypes (project))
+				id = "Partial" + id;
 			
 			string path;
 			if (folder != null)

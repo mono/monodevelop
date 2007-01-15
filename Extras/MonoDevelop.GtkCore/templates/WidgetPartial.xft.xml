@@ -2,19 +2,22 @@
 <Template Originator="Lluis Sanchez" Created="3/09/2001" LastModified="3/09/2001">
 	
 	<TemplateConfiguration>
-		<_Name>ActionGroup</_Name>
+		<_Name>Widget</_Name>
 		<Icon>md-empty-file-icon</Icon>
 		<Category>Gtk</Category>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates a global Action Group.</_Description>
-		<Type>MonoDevelop.GtkCore.WidgetFileTemplateFullClass</Type>
+		<_Description>Creates a custom Gtk Widget.</_Description>
+		<Type>MonoDevelop.GtkCore.WidgetFileTemplatePartialClass</Type>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
 		<Widget DefaultName="${Name}">
 			<SteticTemplate>
-			  <action-group name="${FullName}">
-			  </action-group>			
+			  <widget class="Gtk.Bin" id="${FullName}" design-size="300 300">
+		        <child>
+		          <placeholder />
+		        </child>
+			  </widget>			
 			</SteticTemplate>
 			<CodeDomFile>
 				<CompileUnit>
@@ -26,28 +29,21 @@
 						</Namespace>
 						<Namespace Name="${Namespace}">
 							<Types>
-								<TypeDeclaration Name="${Name}" IsClass="true">
+								<TypeDeclaration Name="${Name}" IsClass="true" IsPartial="true">
 									<BaseTypes>
-										<TypeReference BaseType="Gtk.ActionGroup" />
+										<TypeReference BaseType="Gtk.Bin" />
 									</BaseTypes>
 									<Members>
 										<Constructor Attributes="Public, Final">
-											<BaseConstructorArgs>
-												<PrimitiveExpression Value="${FullName}"/>
-											</BaseConstructorArgs>
 											<Statements>
 												<MethodInvokeExpression>
 													<Method>
 														<MethodReferenceExpression MethodName="Build">
 															<TargetObject>
-																<TypeReferenceExpression Type="Stetic.Gui" />
+																<ThisReferenceExpression/>
 															</TargetObject>
 														</MethodReferenceExpression>
 													</Method>
-													<Parameters>
-														<ThisReferenceExpression/>
-														<TypeOfExpression Type="${FullName}" />
-													</Parameters>
 												</MethodInvokeExpression>
 											</Statements>
 										</Constructor>

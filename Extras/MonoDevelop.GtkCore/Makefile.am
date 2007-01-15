@@ -23,6 +23,8 @@ MonoDevelop.GtkCore/GtkCoreService.cs \
 MonoDevelop.GtkCore/GtkDesignInfo.cs \
 MonoDevelop.GtkCore/ProjectResourceProvider.cs \
 MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
+MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs \
+MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs \
 MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs \
 MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs \
 MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs \
@@ -43,6 +45,7 @@ MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
 MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs \
 MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs \
 MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
+MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
 MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs \
@@ -62,7 +65,11 @@ icons/actiongroup.png \
 templates/ActionGroup.xft.xml \
 templates/Window.xft.xml \
 templates/Widget.xft.xml \
-templates/Dialog.xft.xml
+templates/Dialog.xft.xml \
+templates/ActionGroupPartial.xft.xml \
+templates/WindowPartial.xft.xml \
+templates/WidgetPartial.xft.xml \
+templates/DialogPartial.xft.xml
 
 STETIC_FILES = \
 libstetic.dll \
