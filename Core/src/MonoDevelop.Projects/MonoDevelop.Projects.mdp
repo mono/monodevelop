@@ -28,8 +28,6 @@
     <File name="./MonoDevelop.Projects.Parser/AssemblyInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ClassEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassProxy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/ClassProxyCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/DefaultParserService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs" subtype="Code" buildaction="Compile" />

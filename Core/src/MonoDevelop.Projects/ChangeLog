@@ -1,3 +1,43 @@
+2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectServiceExtension.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/Project.cs: Fixed some issues with project
+	  extensions when building projects. When building a project with
+	  buildReferences=true, the references were not built through the
+	  build extension chain.
+	* MonoDevelop.Projects/DefaultCompilerResult.cs,
+	  MonoDevelop.Projects/ICompilerResult.cs: Implemented methods for
+	  adding warnings and errors to a compiler result object.
+	* MonoDevelop.Projects/BuildTool.cs: Implemented clean command.
+	* MonoDevelop.Projects.mdp, Makefile.am,
+	  MonoDevelop.Projects.Parser/SharpAssemblyParameter.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyMethod.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyEvent.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyField.cs,
+	  MonoDevelop.Projects.Parser/ClassProxyCollection.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyReturnType.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyProperty.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyClass.cs,
+	  MonoDevelop.Projects.Parser/ClassProxy.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyIndexer.cs,
+	  MonoDevelop.Projects.Parser/SharpAssemblyAttribute.cs: Removed
+	  unused classes.
+	* MonoDevelop.Projects.Parser/IClass.cs,
+	  MonoDevelop.Projects.Parser/AbstractClass.cs,
+	  MonoDevelop.Projects.Parser/CompoundClass.cs: Added property for
+	  getting all parts of a class.
+	* MonoDevelop.Projects.Parser/PersistentClass.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/IParserService.cs: Added method for
+	  checking if a project is loaded in a parser database.
+	* MonoDevelop.Projects.Parser/AssemblyInformation.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Don't
+	  include nested types in the class list when parsing an assembly.
+	  Nested types will be included as children of the declaring class.
+	  Updated pidb file version.
+
 2007-01-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,

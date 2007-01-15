@@ -39,6 +39,9 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 		
+		// For classes composed by several files, returns all parts of the class
+		IClass[] Parts { get; }
+		
 		/* Reasoning behind the 'null' isGeneric indication: since most classes
 		   are not generic, it is best not to create string collections to hold
 		   type parameters and use the 'null' value to indicate that a type is

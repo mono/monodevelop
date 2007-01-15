@@ -33,8 +33,6 @@ MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/AssemblyInformation.cs \
 MonoDevelop.Projects.Parser/ClassEntry.cs \
 MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs \
-MonoDevelop.Projects.Parser/ClassProxy.cs \
-MonoDevelop.Projects.Parser/ClassProxyCollection.cs \
 MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/CompoundClass.cs \
 MonoDevelop.Projects.Parser/DefaultParserService.cs \

@@ -230,7 +230,8 @@ namespace MonoDevelop.Projects
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
 					Project p = RootCombine.FindProject (projectReference.Reference);
-					p.CopyReferencesToOutputPath (destPath, force);
+					if (p != null)
+						p.CopyReferencesToOutputPath (destPath, force);
 				}
 			}
 		}
@@ -243,7 +244,8 @@ namespace MonoDevelop.Projects
 						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
 						try {
 							if (destinationFileName != referenceFileName) {
-								Runtime.FileService.DeleteFile (destinationFileName);
+								if (File.Exists (destinationFileName))
+									Runtime.FileService.DeleteFile (destinationFileName);
 								if (File.Exists (destinationFileName + ".mdb"))
 									Runtime.FileService.DeleteFile (destinationFileName + ".mdb");
 							}
@@ -295,6 +297,11 @@ namespace MonoDevelop.Projects
 		public void AddFile (ProjectFile projectFile) {
 			ProjectFiles.Add (projectFile);
 		}
+		
+		public ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
+		{
+			return Services.ProjectService.ExtensionChain.InternalBuild (monitor, this, buildReferences);
+		}
 
 		protected internal override void OnClean ()
 		{
@@ -315,12 +322,20 @@ namespace MonoDevelop.Projects
 				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
 		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
+		bool tempBuildReferences;
+		
+		protected internal ICompilerResult InternalBuild (IProgressMonitor monitor, bool buildReferences)
 		{
-			return Build (monitor, true);
+			tempBuildReferences = buildReferences;
+			return OnBuild (monitor);
 		}
 		
-		internal ICompilerResult Build (IProgressMonitor monitor, bool buildReferences)
+		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
+		{
+			return OnBuild (monitor, tempBuildReferences);
+		}
+		
+		protected internal virtual ICompilerResult OnBuild (IProgressMonitor monitor, bool buildReferences)
 		{
 			if (buildReferences)
 			{
@@ -336,7 +351,12 @@ namespace MonoDevelop.Projects
 					
 				monitor.BeginTask (null, referenced.Count);
 				foreach (Project p in referenced) {
-					ICompilerResult res = p.Build (monitor, false);
+					ICompilerResult res;
+					if (p == this) {
+						// Avoid going through all build extension chain again
+						res = BuildThis (monitor);
+					} else
+						res = p.Build (monitor, false);
 					cres.Errors.AddRange (res.CompilerResults.Errors);
 					monitor.Step (1);
 					builds++;
@@ -350,7 +370,11 @@ namespace MonoDevelop.Projects
 				monitor.EndTask ();
 				return new DefaultCompilerResult (cres, "", builds, failedBuilds);
 			}
+			return BuildThis (monitor);
+		}
 			
+		ICompilerResult BuildThis (IProgressMonitor monitor)
+		{
 			if (!NeedsBuilding)
 				return new DefaultCompilerResult (new CompilerResults (null), "");
 			
@@ -404,7 +428,7 @@ namespace MonoDevelop.Projects
 		{
 			if (referenced.Contains (project)) return;
 			
-			if (NeedsBuilding)
+			if (project.NeedsBuilding)
 				referenced.Add (project);
 
 			foreach (ProjectReference pref in project.ProjectReferences) {

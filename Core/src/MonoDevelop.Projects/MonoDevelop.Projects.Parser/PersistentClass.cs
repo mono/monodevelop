@@ -172,8 +172,9 @@ namespace MonoDevelop.Projects.Parser
 			if (cls is CompoundClass) {
 				// If it is a compound class, write each child class
 				CompoundClass comp = (CompoundClass) cls;
-				writer.Write ((uint) comp.Parts.Count);
-				foreach (IClass cc in comp.Parts)
+				IClass[] parts = comp.Parts;
+				writer.Write ((uint) parts.Length);
+				foreach (IClass cc in parts)
 					WriteTo (cc, writer, nameTable);
 				return;
 			}

@@ -110,7 +110,17 @@ namespace MonoDevelop.Projects.Parser {
 			
 			foreach (TypeDefinition type in asm.MainModule.Types) {
 				TypeAttributes vis = type.Attributes & TypeAttributes.VisibilityMask;
-				if (!type.FullName.StartsWith("<") && !type.IsSpecialName && (vis == TypeAttributes.Public || vis == TypeAttributes.NestedPublic)) {
+				
+				// Don't include: 
+				// * private types
+				// * the <Module> type
+				// * special types defined by the runtime
+				// * nested types (the declaring type will already include them)
+				if (!type.FullName.StartsWith("<") && 
+					!type.IsSpecialName && 
+					(vis == TypeAttributes.Public || vis == TypeAttributes.NestedPublic) &&
+					type.DeclaringType == null)
+				{
 					classes.Add(new ReflectionClass(type));
 				}
 			}

@@ -81,6 +81,10 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public virtual IClass[] Parts {
+			get { return new IClass[] { this }; }
+		}
+		
 		/// <summary>
 		/// Contains a list of formal parameters to a generic type. 
 		/// <p>If this property returns null or an empty collection, the type is

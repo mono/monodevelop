@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects
 		bool help;
 		string file;
 		string project;
+		string command = "build";
 		
 		public int Run (string[] arguments)
 		{
@@ -83,9 +84,18 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
-			ICompilerResult res = centry.Build (monitor);
-			
-			return (res.ErrorCount == 0) ? 0 : 1;
+			if (command == "build") {
+				ICompilerResult res = centry.Build (monitor);
+				return (res.ErrorCount == 0) ? 0 : 1;
+			}
+			else if (command == "clean") {
+				centry.Clean ();
+				return 0;
+			} else {
+				Console.WriteLine ("Unknown command '{0}'", command);
+				return 1;
+			}
+			return 1;
 		}
 		
 		void ReadArgument (string argument)
@@ -99,6 +109,7 @@ namespace MonoDevelop.Projects
 				optionValuePair = argument.Substring(1);
 			}
 			else {
+				command = argument;
 				return;
 			}
 			

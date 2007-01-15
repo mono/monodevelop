@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		static readonly int MAX_ACTIVE_COUNT = 100;
 		static readonly int MIN_ACTIVE_COUNT = 50;
-		static protected readonly int FORMAT_VERSION = 16;
+		static protected readonly int FORMAT_VERSION = 17;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;

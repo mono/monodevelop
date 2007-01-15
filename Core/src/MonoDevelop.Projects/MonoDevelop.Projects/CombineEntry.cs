@@ -362,7 +362,7 @@ namespace MonoDevelop.Projects
 		
 		public ICompilerResult Build (IProgressMonitor monitor)
 		{
-			return Services.ProjectService.ExtensionChain.Build (monitor, this);
+			return Services.ProjectService.ExtensionChain.InternalBuild (monitor, this, true);
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context)

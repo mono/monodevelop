@@ -726,6 +726,11 @@ namespace MonoDevelop.Projects.Parser
 				UnloadCombineDatabases ((Combine)entry);
 		}
 		
+		public bool IsLoaded (Project project)
+		{
+			return (GetProjectDatabase (project) != null);
+		}
+		
 		void LoadProjectDatabase (Project project)
 		{
 			lock (databases)

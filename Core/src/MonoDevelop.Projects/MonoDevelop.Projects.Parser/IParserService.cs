@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		void Load (CombineEntry entry);
 		void Unload (CombineEntry entry);
+		bool IsLoaded (Project entry);
 		
 		// Returns the normalized assembly name to use to later reference this assembly
 		string LoadAssembly (string assemblyName);

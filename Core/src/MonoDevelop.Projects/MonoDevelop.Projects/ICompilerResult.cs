@@ -41,5 +41,10 @@ namespace MonoDevelop.Projects
 		string CompilerOutput {
 			get;
 		}
+		
+		void AddError (string file, int line, int col, string errorNum, string text);
+		void AddError (string text);
+		void AddWarning (string file, int line, int col, string errorNum, string text);
+		void AddWarning (string text);
 	}
 }

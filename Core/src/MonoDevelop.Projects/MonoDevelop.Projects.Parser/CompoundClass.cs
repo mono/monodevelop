@@ -20,9 +20,9 @@ namespace MonoDevelop.Projects.Parser
 		/// <summary>
 		/// Gets the parts this class is based on.
 		/// </summary>
-		public List<IClass> Parts {
+		public override IClass[] Parts {
 			get {
-				return parts;
+				return parts.ToArray ();
 			}
 		}
 		

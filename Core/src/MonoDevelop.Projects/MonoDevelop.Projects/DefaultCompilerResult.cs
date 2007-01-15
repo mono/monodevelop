@@ -81,11 +81,29 @@ namespace MonoDevelop.Projects
 		public void AddError (string file, int line, int col, string errorNum, string text)
 		{
 			compilerResults.Errors.Add (new CompilerError (file, line, col, errorNum, text));
+			errorCount++;
 		}
 		
 		public void AddError (string text)
 		{
 			compilerResults.Errors.Add (new CompilerError (null, 0, 0, null, text));
+			errorCount++;
+		}
+		
+		public void AddWarning (string file, int line, int col, string errorNum, string text)
+		{
+			CompilerError ce = new CompilerError (file, line, col, errorNum, text);
+			ce.IsWarning = true;
+			compilerResults.Errors.Add (ce);
+			errorCount++;
+		}
+		
+		public void AddWarning (string text)
+		{
+			CompilerError ce = new CompilerError (null, 0, 0, null, text);
+			ce.IsWarning = true;
+			compilerResults.Errors.Add (ce);
+			errorCount++;
 		}
 	}
 }
