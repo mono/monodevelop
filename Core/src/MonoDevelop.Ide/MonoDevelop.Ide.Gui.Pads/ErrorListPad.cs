@@ -429,10 +429,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			else if (task2 == null) return 1;
 
 			int compare = ((int)task1.TaskType).CompareTo ((int)task2.TaskType);
-			if (compare == 0)
+			if (compare != 0)
+				return compare;
+				
+			if (task1.FileName != null || task2.FileName != null) {
+				if (task1.FileName == null) return -1;
+				if (task2.FileName == null) return 1;
 				compare = task1.FileName.CompareTo (task2.FileName);
-			if (compare == 0)
-				compare = task1.Line.CompareTo (task2.Line);
+				if (compare == 0)
+					compare = task1.Line.CompareTo (task2.Line);
+			}
 			return compare;
 		}
 	}
