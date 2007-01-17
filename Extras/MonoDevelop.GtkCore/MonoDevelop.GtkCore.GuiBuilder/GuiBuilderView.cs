@@ -63,6 +63,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
 			designer = window.Project.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
+			if (designer.RootComponent == null) {
+				// Something went wrong while creating the designer. Show it, but don't do aything else.
+				AddButton (GettextCatalog.GetString ("Designer"), designer);
+				designer.ShowAll ();
+				return;
+			}
+
 			designer.AllowWidgetBinding = (info != null && !info.GeneratePartialClasses);
 			
 			codeBinder = new CodeBinder (window.Project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
@@ -137,7 +144,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void ShowPage (int npage)
 		{
-			if (window != null) {
+			if (window != null && designer.RootComponent != null) {
 				// At every page switch update the generated code, to make sure code completion works
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
