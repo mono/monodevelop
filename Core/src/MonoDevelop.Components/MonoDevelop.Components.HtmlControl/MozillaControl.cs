@@ -18,6 +18,7 @@ namespace MonoDevelop.Components.HtmlControl
 		private string html;
 		private string css;
 		private bool reShown = false;
+		string delayedBaseUri;
 		
 		static MozillaControl ()
 		{
@@ -37,6 +38,12 @@ namespace MonoDevelop.Components.HtmlControl
 					//Normally we would expect this event to fire with every redraw event, so put in a limiter in case this is fixed in future.
 					reShown = true;
 					GLib.Timeout.Add (1000, delegate { reShown = false; return false; } );
+				}
+			};
+			this.Realized += delegate {
+				if (delayedBaseUri != null) {
+					InitializeWithBase (delayedBaseUri);
+					delayedBaseUri = null;
 				}
 			};
 		}
@@ -76,7 +83,11 @@ namespace MonoDevelop.Components.HtmlControl
 
 		public void InitializeWithBase (string base_uri)
 		{
-			//Runtime.LoggingService.Info (base_uri);
+			if ((this.WidgetFlags & Gtk.WidgetFlags.Realized) == 0) {
+				delayedBaseUri = base_uri;
+				return;
+			}
+			
 			if (html.Length > 0)
 			{
 				GLib.Idle.Add (delegate {
