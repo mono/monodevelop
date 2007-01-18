@@ -36,7 +36,10 @@ using System.Web.UI;
 using System.Web.UI.Design;
 using System.ComponentModel.Design;
 using System.Globalization;
+
 using AspNetEdit.Editor.ComponentModel;
+using AspNetAddIn.Parser.Internal;
+using AspNetAddIn.Parser.Tree;
 
 namespace AspNetEdit.Editor.Persistence
 {

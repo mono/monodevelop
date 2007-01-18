@@ -47,20 +47,11 @@ FILES =	\
 	AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs \
 	AspNetEdit.Editor.ComponentModel/EventBindingService.cs \
 	\
-	AspNetEdit.Editor.Persistence/AspParser.cs \
 	AspNetEdit.Editor.Persistence/HtmlParsingObject.cs \
 	AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs \
-	AspNetEdit.Editor.Persistence/AspTokenizer.cs \
-	AspNetEdit.Editor.Persistence/ILocation.cs \
-	AspNetEdit.Editor.Persistence/StrUtils.cs \
-	AspNetEdit.Editor.Persistence/Location.cs \
-	AspNetEdit.Editor.Persistence/TagAttributes.cs \
 	AspNetEdit.Editor.Persistence/ControlPersister.cs \
-	AspNetEdit.Editor.Persistence/ParseException.cs \
-	AspNetEdit.Editor.Persistence/TagType.cs \
 	AspNetEdit.Editor.Persistence/DesignTimeParser.cs \
 	AspNetEdit.Editor.Persistence/ParsingObject.cs \
-	AspNetEdit.Editor.Persistence/Directive.cs \
 	AspNetEdit.Editor.Persistence/RootParsingObject.cs \
 	\
 	AspNetEdit.Editor.UI/PropertyGrid.cs \

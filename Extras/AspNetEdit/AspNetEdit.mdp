@@ -20,21 +20,12 @@
     <File name="./AspNetEdit.Integration" subtype="Directory" buildaction="Compile" />
     <File name="./AspNetEdit.Integration/AspNetEditDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.addin.xml" subtype="Code" buildaction="Nothing" />
-    <File name="./AspNetEdit.Editor.Persistence/AspParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ControlPersister.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/DesignTimeParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/Directive.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/HtmlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ILocation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/Location.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ParseException.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ParsingObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/RootParsingObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/StrUtils.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/TagAttributes.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/TagType.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignContainer.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignerHost.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/Document.cs" subtype="Code" buildaction="Compile" />

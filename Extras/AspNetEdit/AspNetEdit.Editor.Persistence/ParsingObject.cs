@@ -34,6 +34,9 @@ using System.Web.UI.Design;
 using System.Collections;
 using System.ComponentModel.Design;
 
+using AspNetAddIn.Parser.Internal;
+using AspNetAddIn.Parser.Tree;
+
 namespace AspNetEdit.Editor.Persistence
 {
 	internal abstract class ParsingObject

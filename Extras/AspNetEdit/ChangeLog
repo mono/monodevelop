@@ -1,3 +1,13 @@
+2007-01-18  Michael Hutchinson <m.j.hutchinson@gmail.com>
+	
+	* AspNetEdit.mdp
+	* Makefile.am:
+	* AspNetEdit.Editor.Persistence/*: Remove duplicated files by 
+	referencing tokeniser in AspNetAddIn.Parser.Internal. Eventually I'll 
+	fully unify the two parsers.
+	
+	* AspNetEditDisplayBinding.cs: Handle unsaved filenames.
+
 2006-11-26  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.Integration/EditorProcess.cs:

@@ -38,6 +38,9 @@ using System.Web.UI;
 using System.ComponentModel;
 using AspNetEdit.Editor.ComponentModel;
 
+using AspNetAddIn.Parser.Internal;
+using AspNetAddIn.Parser.Tree;
+
 namespace AspNetEdit.Editor.Persistence
 {
 	public class DesignTimeParser

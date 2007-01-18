@@ -48,8 +48,9 @@ namespace AspNetEdit.Integration
 			if ( !(content is MonoDevelop.Ide.Gui.Content.IEditableTextBuffer))
 				return false;
 			
-			WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (content.ContentName));
-
+			string s = Path.GetExtension (content.IsUntitled? content.UntitledName : content.ContentName);
+			WebSubtype type = AspNetAppProject.DetermineWebSubtype (s);
+			
 			switch (type) {
 				case WebSubtype.WebForm:
 					return true;
