@@ -1,3 +1,9 @@
+2007-01-18  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs (StartProcess): Add new
+	overload that takes a ProcessStartInfo.
+	(CreateProcessStartInfo): New.
+
 2007-01-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/FileService.cs: Fire events in the correct order

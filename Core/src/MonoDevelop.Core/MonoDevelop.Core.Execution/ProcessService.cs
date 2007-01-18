@@ -57,11 +57,14 @@ namespace MonoDevelop.Core.Execution
 
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, ProcessEventHandler outputStreamChanged, ProcessEventHandler errorStreamChanged, EventHandler exited, bool redirectStandardInput)
 		{
-			if (command == null)
-				throw new ArgumentNullException("command");
-			
-			if (command.Length == 0)
-				throw new ArgumentException("command");
+			return StartProcess (CreateProcessStartInfo (command, arguments, workingDirectory, redirectStandardInput), 
+				outputStreamChanged, errorStreamChanged, exited);
+		}
+
+		public ProcessWrapper StartProcess (ProcessStartInfo startInfo, ProcessEventHandler outputStreamChanged, ProcessEventHandler errorStreamChanged, EventHandler exited)
+		{
+			if (startInfo == null)
+				throw new ArgumentException ("startInfo");
 		
 			ProcessWrapper p = new ProcessWrapper();
 
@@ -75,23 +78,36 @@ namespace MonoDevelop.Core.Execution
 			if (exited != null)
 				p.Exited += exited;
 				
-			if(String.IsNullOrEmpty (arguments))
-				p.StartInfo = new ProcessStartInfo (command);
-			else
-				p.StartInfo = new ProcessStartInfo (command, arguments);
-			
-			if(workingDirectory != null && workingDirectory.Length > 0)
-				p.StartInfo.WorkingDirectory = workingDirectory;
-
-
-			p.StartInfo.RedirectStandardOutput = true;
-			p.StartInfo.RedirectStandardError = true;
-			p.StartInfo.RedirectStandardInput = redirectStandardInput;
-			p.StartInfo.UseShellExecute = false;
+			p.StartInfo = startInfo;
 			p.EnableRaisingEvents = true;
 			
 			p.Start ();
 			return p;
+		}
+
+		public ProcessStartInfo CreateProcessStartInfo (string command, string arguments, string workingDirectory, bool redirectStandardInput)
+		{
+			if (command == null)
+				throw new ArgumentNullException("command");
+			
+			if (command.Length == 0)
+				throw new ArgumentException("command");
+		
+			ProcessStartInfo startInfo = null;
+			if(String.IsNullOrEmpty (arguments))
+				startInfo = new ProcessStartInfo (command);
+			else
+				startInfo = new ProcessStartInfo (command, arguments);
+			
+			if(workingDirectory != null && workingDirectory.Length > 0)
+				startInfo.WorkingDirectory = workingDirectory;
+
+			startInfo.RedirectStandardOutput = true;
+			startInfo.RedirectStandardError = true;
+			startInfo.RedirectStandardInput = redirectStandardInput;
+			startInfo.UseShellExecute = false;
+
+			return startInfo;
 		}
 		
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console, EventHandler exited)
