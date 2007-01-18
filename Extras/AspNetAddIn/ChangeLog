@@ -1,5 +1,10 @@
 2007-01-18  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
+	* Templates/CodeBehindWebControl.xft.xml: Use the proper filename 
+	rather than "Default".
+
+2007-01-18  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
 	* AspNetAddIn/Parser/Internal/TagType.cs:
 	* AspNetAddIn/Parser/Internal/AspParser.cs:
 	* AspNetAddIn/Parser/Internal/ParseException.cs:
