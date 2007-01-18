@@ -1,3 +1,12 @@
+2007-01-18  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetAddIn/Parser/Internal/TagType.cs:
+	* AspNetAddIn/Parser/Internal/AspParser.cs:
+	* AspNetAddIn/Parser/Internal/ParseException.cs:
+	Make classes and members public so that AspNetAddIn's parser can 
+	consume them. Can revert this when AspNetEdit uses the whole parser
+	rather that just the tokeniser as it does ATM.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* AspNetAddIn.mdp: Updated.

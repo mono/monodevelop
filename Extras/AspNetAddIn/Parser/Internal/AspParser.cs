@@ -37,11 +37,11 @@ using AspNetAddIn.Parser.Tree;
 
 namespace AspNetAddIn.Parser.Internal
 {
-	delegate void ParseErrorHandler (ILocation location, string message);
-	delegate void TextParsedHandler (ILocation location, string text);
-	delegate void TagParsedHandler (ILocation location, TagType tagtype, string id, TagAttributes attributes);
+	public delegate void ParseErrorHandler (ILocation location, string message);
+	public delegate void TextParsedHandler (ILocation location, string text);
+	public delegate void TagParsedHandler (ILocation location, TagType tagtype, string id, TagAttributes attributes);
 
-	class AspParser : ILocation
+	public class AspParser : ILocation
 	{
 		AspTokenizer tokenizer;
 		int beginLine, endLine;

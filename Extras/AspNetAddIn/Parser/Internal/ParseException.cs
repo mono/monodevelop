@@ -34,7 +34,7 @@ using AspNetAddIn.Parser.Tree;
 
 namespace AspNetAddIn.Parser.Internal
 {
-	internal class ParseException : HtmlizedException
+	public class ParseException : HtmlizedException
 	{
 		ILocation location;
 		string fileText;
@@ -109,7 +109,7 @@ namespace AspNetAddIn.Parser.Internal
 		}
 	}
 
-	internal abstract class HtmlizedException : Exception
+	public abstract class HtmlizedException : Exception
 	{
 		protected HtmlizedException ()
 		{

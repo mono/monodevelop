@@ -29,7 +29,7 @@
 //
 namespace AspNetAddIn.Parser.Internal
 {
-	enum TagType
+	public enum TagType
 	{
 		Text,
 		Tag,
