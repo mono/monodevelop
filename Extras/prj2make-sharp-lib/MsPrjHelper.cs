@@ -346,7 +346,7 @@ namespace MonoDevelop.Prj2Make
 								refs += "-r:$(" + pi2.makename_ext + ")";
 								deps += "$(" + pi2.makename_ext + ")";
 							}
-							catch(System.NullReferenceException exc)
+							catch(System.NullReferenceException)
 							{
 								refs += String.Format("-r:{0}.dll", rf.Name);
 								deps += String.Format("# Missing dependency project {1} ID:{0}?", rf.Project, 

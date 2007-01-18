@@ -1,3 +1,7 @@
+2007-01-18  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* MsPrjHelper.cs: Remove warning.
+
 2007-01-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MSBuildSolution.cs, SlnFileFormat.cs: Track api changes.
