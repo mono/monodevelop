@@ -89,8 +89,10 @@ namespace MonoDevelop.Core
 		{
 			if (Path.GetFileName (filePath) != newName) {
 				string newPath = Path.Combine (Path.GetDirectoryName (filePath), newName);
-				MoveFile (filePath, newPath);
+				InternalMoveFile (filePath, newPath);
 				OnFileRenamed (new FileEventArgs (filePath, newPath, false));
+				OnFileCreated (new FileEventArgs (newPath, false));
+				OnFileRemoved (new FileEventArgs (filePath, false));
 			}
 		}
 		
@@ -98,8 +100,10 @@ namespace MonoDevelop.Core
 		{
 			if (Path.GetFileName (path) != newName) {
 				string newPath = Path.Combine (Path.GetDirectoryName (path), newName);
-				MoveDirectory (path, newPath);
+				InternalMoveDirectory (path, newPath);
 				OnFileRenamed (new FileEventArgs (path, newPath, true));
+				OnFileCreated (new FileEventArgs (newPath, false));
+				OnFileRemoved (new FileEventArgs (path, false));
 			}
 		}
 		
@@ -111,22 +115,25 @@ namespace MonoDevelop.Core
 
 		public void MoveFile (string sourcePath, string destPath)
 		{
+			InternalMoveFile (sourcePath, destPath);
+			OnFileCreated (new FileEventArgs (destPath, false));
+			OnFileRemoved (new FileEventArgs (sourcePath, false));
+		}
+		
+		void InternalMoveFile (string sourcePath, string destPath)
+		{
 			FileSystemExtension srcExt = GetFileSystemForPath (sourcePath, false);
 			FileSystemExtension dstExt = GetFileSystemForPath (destPath, false);
 			
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
 				srcExt.MoveFile (sourcePath, destPath);
-				OnFileCreated (new FileEventArgs (destPath, false));
-				OnFileRemoved (new FileEventArgs (destPath, false));
 			} else {
 				// If the file system of the source and dest files are
 				// different, decompose the Move operation into a Copy
 				// and Delete, so every file system can handle its part
 				dstExt.CopyFile (sourcePath, destPath, true);
-				OnFileCreated (new FileEventArgs (destPath, false));
 				srcExt.DeleteFile (sourcePath);
-				OnFileRemoved (new FileEventArgs (destPath, false));
 			}
 		}
 		
@@ -143,21 +150,25 @@ namespace MonoDevelop.Core
 		
 		public void MoveDirectory (string sourcePath, string destPath)
 		{
+			InternalMoveDirectory (sourcePath, destPath);
+			OnFileCreated (new FileEventArgs (destPath, true));
+			OnFileRemoved (new FileEventArgs (sourcePath, true));
+		}
+		
+		void InternalMoveDirectory (string sourcePath, string destPath)
+		{
 			FileSystemExtension srcExt = GetFileSystemForPath (sourcePath, true);
 			FileSystemExtension dstExt = GetFileSystemForPath (destPath, true);
 			
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
 				srcExt.MoveDirectory (sourcePath, destPath);
-				OnFileCreated (new FileEventArgs (destPath, true));
-				OnFileRemoved (new FileEventArgs (sourcePath, true));
 			} else {
 				// If the file system of the source and dest files are
 				// different, decompose the Move operation into a Copy
 				// and Delete, so every file system can handle its part
 				dstExt.CopyDirectory (sourcePath, destPath);
 				srcExt.DeleteDirectory (sourcePath);
-				OnFileRemoved (new FileEventArgs (destPath, true));
 			}
 		}
 		

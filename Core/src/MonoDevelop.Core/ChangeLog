@@ -1,3 +1,8 @@
+2007-01-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: Fire events in the correct order
+	  when renaming files and directories. Fixes bug #80470.
+
 2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core/FileService.cs: Removed debug code.
