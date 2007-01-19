@@ -149,7 +149,8 @@ namespace MonoDevelop.Projects
 		{
 			if (action == ExtensionAction.Add) {
 				FileFormatCodon codon = (FileFormatCodon) item;
-				formatManager.RegisterFileFormat (codon.FileFormat);
+				if (codon.FileFormat != null)
+					formatManager.RegisterFileFormat (codon.FileFormat);
 			}
 		}
 		

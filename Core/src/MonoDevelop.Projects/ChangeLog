@@ -1,3 +1,7 @@
+2007-01-20  Ankit Jain  <jankit@novell.com>
+
+	* ProjectService.cs (OnFormatExtensionChanged): Add null check.
+
 2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Projects/MdpFileFormat.cs,
