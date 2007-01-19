@@ -107,7 +107,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 							if (dlg.Name.Length == 0) {
 								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 							} else if (configData.Configurations [dlg.Name] != null) {
-								Services.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
+								Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.Name));
 							} else {
 								CombineConfiguration cc = (CombineConfiguration) configData.AddConfiguration (dlg.Name, copyFrom, dlg.CreateChildren);
 								store.AppendValues (cc, cc.Name);
@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 							if (dlg.Name.Length == 0) {
 								Services.MessageService.ShowWarning (GettextCatalog.GetString ("Please enter a valid configuration name."));
 							} else if (configData.Configurations [dlg.Name] != null) {
-								Services.MessageService.ShowWarning (string.Format (GettextCatalog.GetString ("A configuration with the name '{0}' already exists."), dlg.Name));
+								Services.MessageService.ShowWarning (GettextCatalog.GetString ("A configuration with the name '{0}' already exists.", dlg.Name));
 							} else {
 								configData.RenameConfiguration (cc.Name, dlg.Name, dlg.RenameChildren);
 								store.SetValue (iter, 1, cc.Name);

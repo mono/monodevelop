@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					if (j < project.ProjectFiles.Count) {
 						project.ProjectFiles[j].BuildAction = (bool) store.GetValue(current, 0) ? BuildAction.Compile : BuildAction.Nothing;
 					} else {
-						Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("File {0} not found in {1}."), name, project.Name));
+						Services.MessageService.ShowError (GettextCatalog.GetString ("File {0} not found in {1}.", name, project.Name));
 						success = false;
 					}
 				}

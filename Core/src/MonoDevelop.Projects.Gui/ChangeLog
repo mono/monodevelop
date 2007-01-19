@@ -1,3 +1,9 @@
+2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationPanel.cs:
+	  Removed redundant String.Format ().
+
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
