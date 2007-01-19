@@ -321,7 +321,7 @@ namespace MonoDevelop.Prj2Make
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				combine = LoadSolution (fileName, monitor);
-				SetHandlers (combine, true);
+				MSBuildSolution.SetHandlers (combine, true);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
@@ -330,119 +330,6 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			return combine;
-		}
-
-		static void SetHandlers (Combine combine, bool setEntries)
-		{
-			if (setEntries) {
-				foreach (CombineEntry ce in combine.Entries) {
-					Combine c = ce as Combine;
-					if (c == null)
-						continue;
-	 
-					SetHandlers (c, setEntries);
-				}
-			}
-
-			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
-		}
-
-		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
-		{
-			try {
-				ConvertToMSBuild (e.CombineEntry, true);
-
-				MSBuildSolution rootSln = (MSBuildSolution) e.CombineEntry.RootCombine;
-				MSBuildSolution sln = e.CombineEntry as MSBuildSolution;
-				if (sln != null) {
-					foreach (KeyValuePair<string, DotNetProject> pair in sln.ProjectsByGuid)
-						rootSln.ProjectsByGuid [pair.Key] = pair.Value;
-				} else {
-					//Add guid for the new project
-					MSBuildProject project = e.CombineEntry as MSBuildProject;
-					if (project != null)
-						rootSln.ProjectsByGuid [project.Data.Guid] = project;
-				}
-
-				//Setting this so that the .sln file get rewritten with the 
-				//updated project details.. 
-				rootSln.FileName = rootSln.FileName;
-			} catch (Exception ex) {
-				Runtime.LoggingService.DebugFormat ("{0}", ex.Message);
-				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
-			}
-		}
-
-		internal static CombineEntry ConvertToMSBuild (CombineEntry ce, bool prompt)
-		{
-			Combine newCombine = ce as Combine;
-			CombineEntry ret = ce;
-
-			if (newCombine == null) {
-				//FIXME: Use MSBuildFileFormat.CanReadFile instead
-				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
-					DotNetProject project = (DotNetProject) ce;
-					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
-					project.FileFormat = fileFormat;
-
-					string newname = fileFormat.GetValidFormatName (project.FileName);
-					project.FileName = newname;
-					fileFormat.SaveProject (project, new NullProgressMonitor ());
-				}
-			} else {
-				SlnData slnData = (SlnData) newCombine.ExtendedProperties [typeof (SlnFileFormat)];
-				if (slnData == null) {
-					slnData = new SlnData ();
-					newCombine.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
-				}
-
-			 	slnData.Guid = Guid.NewGuid ().ToString ().ToUpper ();
-
-				if (String.Compare (Path.GetExtension (newCombine.FileName), ".mds", true) == 0) {
-					foreach (CombineEntry e in newCombine.Entries)
-						ConvertToMSBuild (e, false);
-
-					newCombine.FileFormat = new SlnFileFormat ();
-					newCombine.FileName = newCombine.FileFormat.GetValidFormatName (newCombine.FileName);
-					SetHandlers (newCombine, false);
-				}
-
-				//This is set to ensure that the solution folder's BaseDirectory
-				//(which is derived from .FileName) matches that of the root
-				//combine
-				//newCombine.FileName = newCombine.RootCombine.FileName;
-			}
-
-			return ret;
-		}
-
-		internal static void UpdateProjectReferences (Combine c, bool saveProjects)
-		{
-			CombineEntryCollection allProjects = c.GetAllProjects ();
-
-			foreach (Project proj in allProjects) {
-				foreach (ProjectReference pref in proj.ProjectReferences) {
-					if (pref.ReferenceType != ReferenceType.Project)
-						continue;
-
-					Project p = (Project) allProjects [pref.Reference];
-
-					//FIXME: Move this to MSBuildFileFormat ?
-					MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
-					XmlElement elem = data.ProjectReferenceElements [pref];
-					elem.SetAttribute ("Include", 
-						Runtime.FileService.AbsoluteToRelativePath (
-							proj.BaseDirectory, p.FileName));
-
-					//Set guid of the ProjectReference
-					MSBuildData prefData = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
-					MSBuildFileFormat.EnsureChildValue (elem, "Project", MSBuildFileFormat.ns,
-						String.Concat ("{", prefData.Guid, "}"));
-
-				}
-				if (saveProjects)
-					proj.FileFormat.WriteFile (proj.FileName, proj, new NullProgressMonitor ());
-			}
 		}
 
 		//ExtendedProperties

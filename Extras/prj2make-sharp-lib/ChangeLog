@@ -1,3 +1,12 @@
+2007-01-20  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (HandleCombineEntryAdded):
+	(SetHandlers):
+	(ConvertToMSBuild):
+	(UpdateProjectReferences): Move to ..
+	* MSBuildSolution.cs: .. here.
+	* MSBuildFileFormat.cs (ReadConfig): Fix a warning.
+
 2007-01-19  Ankit Jain  <jankit@novell.com>
 
 	* prj2make-sharp-lib.addin.xml: Add dependency on VBBinding.

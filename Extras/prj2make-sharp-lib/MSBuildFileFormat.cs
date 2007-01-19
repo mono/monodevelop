@@ -894,7 +894,7 @@ namespace MonoDevelop.Prj2Make
 			if (nav.MoveToChild ("OutputType", ns)) {
 				try {
 					config.CompileTarget = (CompileTarget) Enum.Parse (typeof (CompileTarget), nav.Value, true);
-				} catch (Exception e) {
+				} catch (Exception) {
 					//Ignore
 				}
 				nav.MoveToParent ();
