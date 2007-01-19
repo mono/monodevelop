@@ -617,7 +617,7 @@ namespace MonoDevelop.Projects
 				return new DefaultCompilerResult (new CompilerResults (null), "", 0, 1);
 			}
 			CombineEntryCollection allProjects = GetAllBuildableEntries (ActiveConfiguration.Name);
-			monitor.BeginTask (string.Format (GettextCatalog.GetString ("Building Solution {0}"), Name), allProjects.Count);
+			monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
 			try {
 				CompilerResults cres = new CompilerResults (null);
 				

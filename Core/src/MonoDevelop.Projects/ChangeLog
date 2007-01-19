@@ -1,3 +1,19 @@
+2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* MonoDevelop.Projects/MdpFileFormat.cs,
+	  MonoDevelop.Projects/UnknownProjectVersionException.cs,
+	  MonoDevelop.Projects/Combine.cs,
+	  MonoDevelop.Projects/MdsFileFormat.cs,
+	  MonoDevelop.Projects/PrjxFileFormat.cs,
+	  MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs: Removed redundant
+	  String.Format ().
+	* MonoDevelop.Projects/BuildTool.cs: Removed unreachable " return 1".
+	* MonoDevelop.Projects.Parser/NamespaceEntry.cs: Changed obsolete
+	CaseInsensitiveHashCodeProvider to
+	StringComparer.CurrentCultureIgnoreCase. (maybe it should use
+	invariant culture?)
+
 2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectServiceExtension.cs,

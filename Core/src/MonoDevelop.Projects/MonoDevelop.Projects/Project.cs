@@ -352,7 +352,7 @@ namespace MonoDevelop.Projects
 			
 				IBuildStep[] steps = BuildPipeline;
 				
-				monitor.BeginTask (String.Format (GettextCatalog.GetString ("Building Project: {0} Configuration: {1}"), Name, ActiveConfiguration.Name), steps.Length);
+				monitor.BeginTask (GettextCatalog.GetString ("Building Project: {0} Configuration: {1}", Name, ActiveConfiguration.Name), steps.Length);
 				
 				Runtime.StringParserService.Properties["Project"] = Name;
 				
@@ -448,7 +448,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			if (conf != null && conf.ExecuteBeforeBuild != "" && File.Exists(conf.ExecuteBeforeBuild)) {
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Executing: {0}"), conf.ExecuteBeforeBuild));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", conf.ExecuteBeforeBuild));
 				ProcessStartInfo ps = GetBuildTaskStartInfo(conf.ExecuteBeforeBuild);
 				Process process = new Process();
 				process.StartInfo = ps;
@@ -469,7 +469,7 @@ namespace MonoDevelop.Projects
 
 			if (conf != null && conf.ExecuteAfterBuild != "" && File.Exists(conf.ExecuteAfterBuild)) {
 				monitor.Log.WriteLine ();
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Executing: {0}"), conf.ExecuteAfterBuild));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", conf.ExecuteAfterBuild));
 				ProcessStartInfo ps = GetBuildTaskStartInfo(conf.ExecuteAfterBuild);
 				Process process = new Process();
 				process.StartInfo = ps;
@@ -708,7 +708,7 @@ namespace MonoDevelop.Projects
 		{
 			public ICompilerResult Build (IProgressMonitor monitor, Project project)
 			{
-				monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("Performing main compilation...")));
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
 				return project.DoBuild (monitor);
 			}
 			

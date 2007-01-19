@@ -63,12 +63,12 @@ namespace MonoDevelop.Projects
 
 			StreamWriter sw = new StreamWriter (file);
 			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving project: {0}"), file), 1);
+				monitor.BeginTask (GettextCatalog.GetString("Saving project: {0}", file), 1);
 				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
 				ser.SerializationContext.BaseFile = file;
 				ser.Serialize (sw, project, typeof(Project));
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save project: {0}"), file), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
 			} finally {
 				monitor.EndTask ();
 				sw.Close ();
@@ -112,15 +112,15 @@ namespace MonoDevelop.Projects
 				}
 				
 				if (version != "2.0")
-					monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old project file format. It will be automatically converted to the current format."), fileName));
+					monitor.ReportWarning (GettextCatalog.GetString ("The file '{0}' is using an old project file format. It will be automatically converted to the current format.", fileName));
 				
-				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading project: {0}"), fileName), 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Loading project: {0}", fileName), 1);
 				if (projectReader != null)
 					return projectReader.ReadProject (reader);
 				else
 					throw new UnknownProjectVersionException (fileName, version);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load project: {0}"), fileName), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not load project: {0}", fileName), ex);
 				throw;
 			} finally {
 				monitor.EndTask ();

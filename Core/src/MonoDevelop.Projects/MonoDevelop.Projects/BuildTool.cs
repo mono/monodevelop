@@ -95,7 +95,6 @@ namespace MonoDevelop.Projects
 				Console.WriteLine ("Unknown command '{0}'", command);
 				return 1;
 			}
-			return 1;
 		}
 		
 		void ReadArgument (string argument)

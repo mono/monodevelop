@@ -122,7 +122,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		void BuildCaseInsensitiveTable ()
 		{
-			contents_ci = new Hashtable (CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
+			contents_ci = new Hashtable (StringComparer.CurrentCultureIgnoreCase);
 			foreach (DictionaryEntry en in contents)
 				contents_ci.Add (en.Key, en.Value);
 		}

@@ -13,7 +13,7 @@ namespace MonoDevelop.Projects
 	public class UnknownProjectVersionException : Exception
 	{
 		public UnknownProjectVersionException (string file, string version)
-		: base (string.Format (GettextCatalog.GetString ("The file '{0}' has an unknown format version (version '{1}')'."), file, version))
+		: base (GettextCatalog.GetString ("The file '{0}' has an unknown format version (version '{1}')'.", file, version))
 		{
 		}
 	}

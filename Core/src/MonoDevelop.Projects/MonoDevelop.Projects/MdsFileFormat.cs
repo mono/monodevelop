@@ -64,14 +64,14 @@ namespace MonoDevelop.Projects
 
 			StreamWriter sw = new StreamWriter (file);
 			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving solution: {0}"), file), 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
 				XmlTextWriter tw = new XmlTextWriter (sw);
 				tw.Formatting = Formatting.Indented;
 				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
 				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor);
 				combineWriter.WriteCombine (tw, combine);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save solution: {0}"), file), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 			} finally {
 				monitor.EndTask ();
 				sw.Close ();
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects
 			
 			if (version == "1.0" || version == "1") {
 				combineReader = new CombineReaderV1 (serializer, monitor);
-				monitor.ReportWarning (string.Format (GettextCatalog.GetString ("The file '{0}' is using an old solution file format. It will be automatically converted to the current format."), file));
+				monitor.ReportWarning (GettextCatalog.GetString ("The file '{0}' is using an old solution file format. It will be automatically converted to the current format.", file));
 			}
 			else if (version == "2.0")
 				combineReader = new CombineReaderV2 (serializer, monitor);
@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects
 				else
 					throw new UnknownProjectVersionException (file, version);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution: {0}"), file), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", file), ex);
 				throw;
 			} finally {
 				reader.Close ();
