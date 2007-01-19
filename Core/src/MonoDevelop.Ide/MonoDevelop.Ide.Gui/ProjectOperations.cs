@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			try {
 				if (!File.Exists (filename)) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("File not found: {0}"), filename), null);
+					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
 					return;
 				}
 				
@@ -486,7 +486,7 @@ namespace MonoDevelop.Ide.Gui
 					res = AddCombineEntry (parentCombine, npdlg.NewCombineEntryLocation);
 				}
 				catch {
-					Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), npdlg.NewCombineEntryLocation));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", npdlg.NewCombineEntryLocation));
 					res = null;
 				}
 			}
@@ -509,7 +509,7 @@ namespace MonoDevelop.Ide.Gui
 						res = AddCombineEntry (parentCombine, fdiag.Filename);
 					}
 					catch {
-						Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file '{0}' could not be loaded."), fdiag.Filename));
+						Services.MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
 					}
 				}
 
@@ -830,7 +830,7 @@ namespace MonoDevelop.Ide.Gui
 				aop.Completed += new OperationHandler (h.Run);
 				return aop;
 			} else {
-				Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file {0} can't be compiled."), file));
+				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} can't be compiled.", file));
 				return NullAsyncOperation.Failure;
 			}
 		}
@@ -931,7 +931,7 @@ namespace MonoDevelop.Ide.Gui
 				if (result != null) {
 					lastResult = result;
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (String.Format (GettextCatalog.GetString ("---------------------- Done ----------------------")));
+					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
 					foreach (CompilerError err in result.CompilerResults.Errors) {
 						Services.TaskService.Add (new Task (null, err));
@@ -993,7 +993,7 @@ namespace MonoDevelop.Ide.Gui
 					filesToMove = col;
 				}
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not get any file from '{0}'."), sourcePath), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not get any file from '{0}'.", sourcePath), ex);
 				return;
 			}
 			
@@ -1005,7 +1005,7 @@ namespace MonoDevelop.Ide.Gui
 				if (Directory.Exists (sourcePath) && !Directory.Exists (newFolder) && !movingFolder)
 					Runtime.FileService.CreateDirectory (newFolder);
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not create directory '{0}'."), targetPath), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not create directory '{0}'.", targetPath), ex);
 				return;
 			}
 
@@ -1016,7 +1016,7 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					Runtime.FileService.MoveDirectory (sourcePath, newFolder);
 				} catch (Exception ex) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("Directory '{0}' could not be deleted."), sourcePath), ex);
+					monitor.ReportError (GettextCatalog.GetString ("Directory '{0}' could not be deleted.", sourcePath), ex);
 				}
 			}
 
@@ -1037,7 +1037,7 @@ namespace MonoDevelop.Ide.Gui
 						else
 							Runtime.FileService.CopyFile (sourceFile, newFile);
 					} catch (Exception ex) {
-						monitor.ReportError (string.Format (GettextCatalog.GetString ("File '{0}' could not be created."), newFile), ex);
+						monitor.ReportError (GettextCatalog.GetString ("File '{0}' could not be created.", newFile), ex);
 						monitor.Step (1);
 						continue;
 					}

@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				}
 				searchMonitor.ReportResult (result.FileName, result.Line, result.Column, text);
 			} else {
-				string msg = string.Format (GettextCatalog.GetString ("Match at offset {0}"), result.DocumentOffset);
+				string msg = GettextCatalog.GetString ("Match at offset {0}", result.DocumentOffset);
 				searchMonitor.ReportResult (result.FileName, 0, 0, msg);
 			}
 		}
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		{
 			string msg;
 			if (searchError != null)
-				msg = string.Format (GettextCatalog.GetString ("The search could not be finished: {0}"), searchError);
+				msg = GettextCatalog.GetString ("The search could not be finished: {0}", searchError);
 			else if (cancelled)
 				msg = GettextCatalog.GetString ("Search cancelled.");
 			else
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				return;
 			}
 			
-			string msg = string.Format (GettextCatalog.GetString ("Replacing '{0}' in {1}."), searchOptions.SearchPattern, searchOptions.SearchDirectory);
+			string msg = GettextCatalog.GetString ("Replacing '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;
@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				return;
 			}
 			
-			string msg = string.Format (GettextCatalog.GetString ("Looking for '{0}' in {1}."), searchOptions.SearchPattern, searchOptions.SearchDirectory);
+			string msg = GettextCatalog.GetString ("Looking for '{0}' in {1}.", searchOptions.SearchPattern, searchOptions.SearchDirectory);
 			searchMonitor.ReportResult (null, 0, 0, msg);
 			
 			timer = DateTime.Now;

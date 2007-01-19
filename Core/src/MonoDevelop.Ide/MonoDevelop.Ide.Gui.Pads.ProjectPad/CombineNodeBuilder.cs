@@ -82,13 +82,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			switch (combine.Entries.Count) {
 				case 0:
-					label = String.Format (GettextCatalog.GetString ("Solution {0}"), combine.Name);
+					label = GettextCatalog.GetString ("Solution {0}", combine.Name);
 					break;
 				case 1:
-					label = String.Format (GettextCatalog.GetString ("Solution {0} (1 entry)"), combine.Name);
+					label = GettextCatalog.GetString ("Solution {0} (1 entry)", combine.Name);
 					break;
 				default:
-					label = String.Format (GettextCatalog.GetString ("Solution {0} ({1} entries)"), combine.Name, combine.Entries.Count);
+					label = GettextCatalog.GetString ("Solution {0} ({1} entries)", combine.Name, combine.Entries.Count);
 					break;
 			}
 
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
-				Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}"), "', (, ), \", {, }, |"));
+				Services.MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
 				return;
 			}
 			
@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Combine parent = CurrentNode.GetParentDataItem (typeof(Combine), false) as Combine;
 			if (parent == null) return;
 			
-			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?"), combine.Name, parent.Name));
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name));
 			if (yes) {
 				parent.Entries.Remove (combine);
 				IdeApp.ProjectOperations.SaveCombine();

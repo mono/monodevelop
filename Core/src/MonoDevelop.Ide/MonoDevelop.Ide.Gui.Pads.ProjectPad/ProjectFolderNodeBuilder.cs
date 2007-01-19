@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
 			
-			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Do you want to remove folder {0}?"), folder.Name));
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to remove folder {0}?", folder.Name));
 			if (!yes) return;
 			
 			Project project = folder.Project;

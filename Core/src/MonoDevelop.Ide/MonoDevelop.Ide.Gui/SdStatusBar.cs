@@ -96,18 +96,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ShowErrorMessage(string message)
 		{
-			SetMessage (String.Format (GettextCatalog.GetString ("Error : {0}"), message));
+			SetMessage (GettextCatalog.GetString ("Error : {0}", message));
 		}
 		
 		public void ShowErrorMessage(Image image, string message)
 		{
-			SetMessage (String.Format (GettextCatalog.GetString ("Error : {0}"), message));
+			SetMessage (GettextCatalog.GetString ("Error : {0}", message));
 		}
 		
 		public void SetCursorPosition (int ln, int col, int ch)
 		{
 			cursorStatusBarPanel.ShowAll ();
-			cursorLabel.Markup = String.Format (GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "), ln, col, ch);
+			cursorLabel.Markup = GettextCatalog.GetString (" ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> ", ln, col, ch);
 		}
 		
 		public void SetMessage (string message)

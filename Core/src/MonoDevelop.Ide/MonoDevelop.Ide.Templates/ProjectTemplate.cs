@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Templates
 						language = (string) templateLangs [i];
 						ProjectTemplates.Add (new ProjectTemplate (addin, id, doc, language, language+"/"+category));
 					} catch (Exception e) {
-						Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), fileName));
+						Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", fileName));
 					}
 				}
 			} else {
@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.ID, codon.Resource));
 				} catch (Exception e) {
-					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
+					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
 				}
 			}
 		}

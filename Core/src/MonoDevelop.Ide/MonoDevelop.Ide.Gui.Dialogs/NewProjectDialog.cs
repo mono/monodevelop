@@ -333,12 +333,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				}
 				catch (IOException)
 				{
-					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("Could not create directory {0}. File already exists."), ProjectLocation));
+					Services.MessageService.ShowError (dialog, GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
 					return;
 				}
 				catch (UnauthorizedAccessException)
 				{
-					Services.MessageService.ShowError (dialog, String.Format (GettextCatalog.GetString ("You do not have permission to create to {0}"), ProjectLocation));
+					Services.MessageService.ShowError (dialog, GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
 					return;
 				}
 				

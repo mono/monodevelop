@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			glade.Autoconnect (this);
 			
 			// set up dialog title
-			this.IncludeFilesDialogWidget.Title = String.Format (GettextCatalog.GetString ("Found new files in {0}"), project.Name);
+			this.IncludeFilesDialogWidget.Title = GettextCatalog.GetString ("Found new files in {0}", project.Name);
 			
 			newFilesOnlyRadioButton.Active = true;
 			this.newFiles = newFiles;

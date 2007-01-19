@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Combine combine = dataObject as Combine;
-			label = String.Format (GettextCatalog.GetString ("Solution {0}"), combine.Name);
+			label = GettextCatalog.GetString ("Solution {0}", combine.Name);
 			icon = Context.GetIcon (Stock.CombineIcon);
 		}
 

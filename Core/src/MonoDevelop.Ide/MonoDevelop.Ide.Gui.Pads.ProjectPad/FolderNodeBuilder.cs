@@ -197,14 +197,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				
 				if (operation == DragOperation.Move) {
 					if (filesToSave.Count == 1)
-						question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the move operation?"), sb.ToString ());
+						question = GettextCatalog.GetString ("Do you want to save the file '{0}' before the move operation?", sb.ToString ());
 					else
-						question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the move operation?\n\n{0}"), sb.ToString ());
+						question = GettextCatalog.GetString ("Do you want to save the following files before the move operation?\n\n{0}", sb.ToString ());
 				} else {
 					if (filesToSave.Count == 1)
-						question = string.Format (GettextCatalog.GetString ("Do you want to save the file '{0}' before the copy operation?"), sb.ToString ());
+						question = GettextCatalog.GetString ("Do you want to save the file '{0}' before the copy operation?", sb.ToString ());
 					else
-						question = string.Format (GettextCatalog.GetString ("Do you want to save the following files before the copy operation?\n\n{0}"), sb.ToString ());
+						question = GettextCatalog.GetString ("Do you want to save the following files before the copy operation?\n\n{0}", sb.ToString ());
 				}
 				
 				switch (Services.MessageService.AskQuestionWithCancel (question)) {
@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 								 IdeApp.Workbench.RootWindow,
 								 DialogFlags.Modal | DialogFlags.DestroyWithParent,
 								 MessageType.Question, ButtonsType.None,
-								 String.Format (GettextCatalog.GetString ("{0} is outside the project directory, what should I do?"), file)))
+								 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file)))
 							{
 								CheckButton remember = null;
 								if (fdiag.Filenames.Length > 1) {
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			if (filename != newfilename) {
 				if (File.Exists (newfilename)) {
-					if (!Services.MessageService.AskQuestion (string.Format (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?"), newfilename), "MonoDevelop"))
+					if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), "MonoDevelop"))
 						return;
 				}
 				Runtime.FileService.CopyFile (filename, newfilename);

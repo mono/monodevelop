@@ -64,7 +64,9 @@ namespace MonoDevelop.Ide.Commands
 			string args = stringParserService.Parse(tool.Arguments);
 			// prompt for args if needed
 			if (tool.PromptForArguments) {
-				args = Services.MessageService.GetTextResponse(String.Format (GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:"), tool.MenuCommand), String.Format (GettextCatalog.GetString ("Command Arguments for {0}"), tool.MenuCommand), args);
+				args = Services.MessageService.GetTextResponse (
+					GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:", tool.MenuCommand),
+					GettextCatalog.GetString ("Command Arguments for {0}", tool.MenuCommand), args);
 					
 				// if user selected cancel string will be null
 				if (args == null) {
@@ -100,7 +102,7 @@ namespace MonoDevelop.Ide.Commands
 				}
 				
 			} catch (Exception ex) {
-				monitor.ReportError (String.Format (GettextCatalog.GetString ("External program execution failed.\nError while starting:\n '{0} {1}'"), command, args), ex);
+				monitor.ReportError (GettextCatalog.GetString ("External program execution failed.\nError while starting:\n '{0} {1}'", command, args), ex);
 			} finally {
 				monitor.Dispose ();
 			}

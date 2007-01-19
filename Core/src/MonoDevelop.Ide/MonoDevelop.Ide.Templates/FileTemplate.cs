@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Templates
 					t.id = codon.ID;
 					fileTemplates.Add (t);
 				} catch (Exception e) {
-					Services.MessageService.ShowError (e, String.Format (GettextCatalog.GetString ("Error loading template from resource {0}"), codon.Resource));
+					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
 				}
 			}
 		}

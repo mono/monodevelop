@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Templates
 			if (typeName != null && typeName.Length > 0) {
 				Type type = Type.GetType (typeName);
 				if (type == null) {
-					Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("Can't create solution with type: {0}"), typeName));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create solution with type: {0}", typeName));
 					return String.Empty;
 				}
 				newCombine = (Combine) Activator.CreateInstance (type);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Templates
 				string combineLocation = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath) + newCombineName + ".mds";
 				if (File.Exists(combineLocation)) {
 					IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
-					if (messageService.AskQuestion(String.Format (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?"), combineLocation))) {
+					if (messageService.AskQuestion (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation))) {
 						newCombine.Save (combineLocation, monitor);
 					}
 				} else {

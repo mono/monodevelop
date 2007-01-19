@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Templates
 			Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
 			
 			if (project == null) {
-				Services.MessageService.ShowError(String.Format (GettextCatalog.GetString ("Can't create project with type : {0}"), projectType));
+				Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));
 				return String.Empty;
 			}
 			
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Templates
 					resource.BuildAction = BuildAction.EmbedAsResource;
 					project.ProjectFiles.Add(resource);
 				} catch (Exception ex) {
-					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), file.Name));
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
 			}
 	
@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					file.AddToProject (project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
-					Services.MessageService.ShowError(ex, String.Format (GettextCatalog.GetString ("File {0} could not be written."), file.Name));
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
 			}
 			
@@ -124,7 +124,9 @@ namespace MonoDevelop.Ide.Templates
 			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (project.FileName)) {
-					if (Services.MessageService.AskQuestion(String.Format (GettextCatalog.GetString ("Project file {0} already exists, do you want to overwrite\nthe existing file?"), project.FileName),  GettextCatalog.GetString ("File already exists"))) {
+					if (Services.MessageService.AskQuestion (GettextCatalog.GetString (
+						"Project file {0} already exists, do you want to overwrite\nthe existing file?", project.FileName),
+						 GettextCatalog.GetString ("File already exists"))) {
 						project.Save (project.FileName, monitor);
 					}
 				} else {

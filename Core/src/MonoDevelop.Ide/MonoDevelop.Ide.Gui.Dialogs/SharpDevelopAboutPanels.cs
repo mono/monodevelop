@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			hboxVersion.PackStart (versionLabel, false, false, 5);
 			
 			HBox hboxLicense = new HBox ();
-			licenseLabel.Markup = String.Format (GettextCatalog.GetString ("<b>License</b>\n    {0}"), GettextCatalog.GetString ("Released under the GNU General Public license."));
+			licenseLabel.Markup = GettextCatalog.GetString ("<b>License</b>\n    {0}", GettextCatalog.GetString ("Released under the GNU General Public license."));
 			hboxLicense.PackStart (licenseLabel, false, false, 5);
 
 			HBox hboxCopyright = new HBox ();

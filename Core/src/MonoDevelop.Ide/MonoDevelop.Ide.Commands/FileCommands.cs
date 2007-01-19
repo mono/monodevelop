@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.Commands
 					RecentItem ri = recentOpen.RecentProject[i];
 					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileNameWithoutExtension (ri.ToString ()) : ri.Private);
 					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-					cmd.Description = String.Format (GettextCatalog.GetString ("load solution {0}"), ri.ToString ());
+					cmd.Description = GettextCatalog.GetString ("load solution {0}", ri.ToString ());
 					info.Add (cmd, ri);
 				}
 			}

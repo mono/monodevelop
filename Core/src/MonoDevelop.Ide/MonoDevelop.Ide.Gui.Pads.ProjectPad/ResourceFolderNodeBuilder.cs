@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			foreach (string file in files) {
 				if (!System.IO.File.Exists (file)) {
-					Services.MessageService.ShowError (String.Format (GettextCatalog.GetString ("Resource file '{0}' does not exist"), file));
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Resource file '{0}' does not exist", file));
 					return false;
 				}
 			}

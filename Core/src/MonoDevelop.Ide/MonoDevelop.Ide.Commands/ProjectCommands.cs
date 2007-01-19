@@ -229,11 +229,11 @@ namespace MonoDevelop.Ide.Commands
 				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 				if (entry != null) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = string.Format (GettextCatalog.GetString ("Build {0}"), entry.Name);
+					info.Text = GettextCatalog.GetString ("Build {0}", entry.Name);
 					if (entry is Combine)
-						info.Description = string.Format (GettextCatalog.GetString ("Build Solution {0}"), entry.Name);
+						info.Description = GettextCatalog.GetString ("Build Solution {0}", entry.Name);
 					else if (entry is Project)
-						info.Description = string.Format (GettextCatalog.GetString ("Build Project {0}"), entry.Name);
+						info.Description = GettextCatalog.GetString ("Build Project {0}", entry.Name);
 					else
 						info.Description = info.Text;
 				} else {
@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Commands
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
-					info.Text = info.Description = string.Format (GettextCatalog.GetString ("Build {0}"), file);
+					info.Text = info.Description = GettextCatalog.GetString ("Build {0}", file);
 				} else {
 					info.Enabled = false;
 				}
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.Commands
 				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 				if (entry != null) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = info.Description = string.Format (GettextCatalog.GetString ("Rebuild {0}"), entry.Name);
+					info.Text = info.Description = GettextCatalog.GetString ("Rebuild {0}", entry.Name);
 				} else {
 					info.Enabled = false;
 				}
@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Commands
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget) {
 					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 					string file = Path.GetFileName (IdeApp.Workbench.ActiveDocument.FileName);
-					info.Text = info.Description = string.Format (GettextCatalog.GetString ("Rebuild {0}"), file);
+					info.Text = info.Description = GettextCatalog.GetString ("Rebuild {0}", file);
 				} else {
 					info.Enabled = false;
 				}
@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null) {
 				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
-				info.Text = info.Description = string.Format (GettextCatalog.GetString ("Clean {0}"), IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Name);
+				info.Text = info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Name);
 			} else {
 				info.Enabled = false;
 			}

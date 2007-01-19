@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				topCombineIter = tsFiles.AppendValues (String.Format (GettextCatalog.GetString ("Solution: {0}"), IdeApp.ProjectOperations.CurrentOpenCombine.Name), true, null, false);
+				topCombineIter = tsFiles.AppendValues (GettextCatalog.GetString ("Solution: {0}", IdeApp.ProjectOperations.CurrentOpenCombine.Name), true, null, false);
 			}
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (!doc.IsDirty)
@@ -40,9 +40,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						projIter = (TreeIter) projectIters[viewcontent.Project];
 					else {
 						if (topCombineIter.Equals (TreeIter.Zero))
-							projIter = tsFiles.AppendValues (String.Format (GettextCatalog.GetString ("Project: {0}"), viewcontent.Project.Name), true, null, false);
+							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
 						else
-							projIter = tsFiles.AppendValues (topCombineIter, String.Format (GettextCatalog.GetString ("Project: {0}"), viewcontent.Project.Name), true, null, false);
+							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
 						projectIters[viewcontent.Project] = projIter;
 					}
 					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);

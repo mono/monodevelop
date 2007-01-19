@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			
-			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?"), Path.GetFileName (file.Name), project.Name));
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name));
 			if (!yes) return;
 
 			if (!file.IsExternalToProject) {

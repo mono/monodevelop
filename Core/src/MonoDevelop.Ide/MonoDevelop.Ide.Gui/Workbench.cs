@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (string.Format (GettextCatalog.GetString ("Opening {0}"), fileName), Stock.OpenFileIcon, true);
+			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
 			FileInformation openFileInfo = new FileInformation();
 			openFileInfo.ProgressMonitor = pm;
 			openFileInfo.FileName = fileName;
@@ -484,7 +484,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				//Debug.Assert(Runtime.FileService.IsValidFileName(fileName));
 				if (Runtime.FileService.IsDirectory (fileName)) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("{0} is a directory"), fileName), null);
+					monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
 					return;
 				}
 				// test, if file fileName exists
@@ -500,7 +500,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 					if (!File.Exists (fileName)) {
-						monitor.ReportError (string.Format (GettextCatalog.GetString ("File not found: {0}"), fileName), null);
+						monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
 						return;
 					}
 				}

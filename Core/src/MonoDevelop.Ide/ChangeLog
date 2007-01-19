@@ -1,3 +1,33 @@
+2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
+	  MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs,
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectDescriptor.cs,
+	  MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Commands/ToolsCommands.cs,
+	  MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ClassPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdStatusBar.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:
+	  	Removed redundant String.Format ().
+
 2007-01-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	Added check for null file names.

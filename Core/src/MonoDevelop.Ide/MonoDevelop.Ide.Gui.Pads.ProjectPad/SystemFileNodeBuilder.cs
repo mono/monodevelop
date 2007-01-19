@@ -120,13 +120,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			SystemFile file = CurrentNode.DataItem as SystemFile;
 			
-			bool yes = Services.MessageService.AskQuestion (String.Format (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?"), file.Path));
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the file {0}?", file.Path));
 			if (!yes) return;
 
 			try {
 				Runtime.FileService.DeleteFile (file.Path);
 			} catch {
-				Services.MessageService.ShowError (string.Format (GettextCatalog.GetString ("The file {0} could not be deleted"), file.Path));
+				Services.MessageService.ShowError (GettextCatalog.GetString ("The file {0} could not be deleted", file.Path));
 			}
 		}
 		
