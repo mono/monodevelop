@@ -17,6 +17,7 @@
 	    <AddIn id="MonoDevelop.Projects" version="0.12.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
 		<AddIn id="CSharpBinding" version="0.7"/>
+		<AddIn id="VBBinding" version="0.4"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Commands">

@@ -1,3 +1,8 @@
+2007-01-19  Ankit Jain  <jankit@novell.com>
+
+	* prj2make-sharp-lib.addin.xml: Add dependency on VBBinding.
+	Fix bug #80555.
+
 2007-01-18  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MsPrjHelper.cs: Remove warning.
