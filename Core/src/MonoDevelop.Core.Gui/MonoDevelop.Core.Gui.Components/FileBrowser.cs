@@ -319,7 +319,7 @@ namespace MonoDevelop.Core.Gui.Components
 			} catch (Exception ex) {
 				error = ex;
 			}
-   			messageService.ShowError (error, String.Format (GettextCatalog.GetString ("Cannot enter '{0}' folder"), entry.Text));
+   			messageService.ShowError (error, GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text));
 		}
 
 		private void OnDirRename (object o, EventArgs args)
@@ -354,7 +354,7 @@ namespace MonoDevelop.Core.Gui.Components
     					}
     					catch (Exception ex)
     					{
-    						messageService.ShowError (ex, String.Format (GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'"), oldpath, args.NewText));
+    						messageService.ShowError (ex, GettextCatalog.GetString ("Could not rename folder '{0}' to '{1}'", oldpath, args.NewText));
     					}
     					finally
     					{
@@ -372,7 +372,7 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-    					messageService.ShowError (ex, String.Format (GettextCatalog.GetString ("Could not create new folder '{0}'"), args.NewText));
+    					messageService.ShowError (ex, GettextCatalog.GetString ("Could not create new folder '{0}'", args.NewText));
 					}
 					finally
 					{
@@ -404,7 +404,7 @@ namespace MonoDevelop.Core.Gui.Components
 					}
 					catch (Exception ex)
 					{
-						messageService.ShowError (ex, String.Format (GettextCatalog.GetString ("Could not delete folder '{0}'"), System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1))));
+						messageService.ShowError (ex, GettextCatalog.GetString ("Could not delete folder '{0}'", System.IO.Path.Combine (CurrentDir, (string) store.GetValue (iter, 1))));
 					}
 					finally
 					{

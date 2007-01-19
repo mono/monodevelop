@@ -17,7 +17,8 @@ namespace MonoDevelop.Core.Gui
 	/// </summary>
 	public class ResourceNotFoundException : Exception
 	{
-		public ResourceNotFoundException(string resource) : base(String.Format (GettextCatalog.GetString("Resource not found: {0}"), resource))
+		public ResourceNotFoundException (string resource)
+			: base (GettextCatalog.GetString ("Resource not found: {0}", resource))
 		{
 		}
 	}

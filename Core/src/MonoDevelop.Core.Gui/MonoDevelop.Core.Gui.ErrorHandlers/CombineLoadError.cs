@@ -24,10 +24,8 @@ namespace MonoDevelop.Core.Gui.ErrorHandlers
 			if (e is DirectoryNotFoundException || e is FileNotFoundException) {
 				bool isProject = filename.ToLower().EndsWith(".prjx");
 				
-				string errorMessage = string.Format
-					(String.Format (GettextCatalog.GetString ("Could not load the {0} '{1}'.\n\n{2}"),
-					 isProject ? "project" : "combine",
-					 filename, e.Message));
+				string errorMessage = GettextCatalog.GetString (
+					"Could not load the {0} '{1}'.\n\n{2}", isProject ? "project" : "combine", filename, e.Message);
 				
 				GenericError.DisplayError(errorMessage);
 			} else {
