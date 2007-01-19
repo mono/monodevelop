@@ -434,13 +434,13 @@ namespace MonoDevelop.Core.AddIns.Setup
 				// If MonoDevelop.Core can't be resolved, it means that a new MonoDevelop release is required.
 				foreach (PackageDependency dep in unresolved) {
 					if (dep.Name.StartsWith ("MonoDevelop.Core v")) {
-						monitor.ReportError (string.Format (GettextCatalog.GetString ("The selected packages require MonoDevelop {0}"), dep.Name.Substring (18)), null);
+						monitor.ReportError (GettextCatalog.GetString ("The selected packages require MonoDevelop {0}", dep.Name.Substring (18)), null);
 						return false;
 					}
 				}
 				
 				foreach (PackageDependency dep in unresolved)
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("The package '{0}' could not be found in any repository"), dep.Name), null);
+					monitor.ReportError (GettextCatalog.GetString ("The package '{0}' could not be found in any repository", dep.Name), null);
 					
 				return false;
 			}
@@ -1285,7 +1285,7 @@ namespace MonoDevelop.Core.AddIns.Setup
 		
 		internal static string GetUninstallErrorNoRoot (AddinInfo ainfo)
 		{
-			return string.Format (GettextCatalog.GetString ("The add-in '{0} v{1}' can't be uninstalled with the current user permissions."), ainfo.Id, ainfo.Version);
+			return GettextCatalog.GetString ("The add-in '{0} v{1}' can't be uninstalled with the current user permissions.", ainfo.Id, ainfo.Version);
 		}
 	}
 	

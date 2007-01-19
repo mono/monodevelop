@@ -78,7 +78,7 @@ namespace MonoDevelop.Core
 			try {
 				GetFileSystemForPath (path, true).DeleteDirectory (path);
 			} catch (Exception e) {
-				if (!HandleError (String.Format (GettextCatalog.GetString ("Can't remove directory {0}"), path), e))
+				if (!HandleError (GettextCatalog.GetString ("Can't remove directory {0}", path), e))
 					throw;
 				return;
 			}
