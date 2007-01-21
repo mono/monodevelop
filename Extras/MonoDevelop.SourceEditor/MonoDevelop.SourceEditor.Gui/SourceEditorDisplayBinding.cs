@@ -747,6 +747,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				se.View.TabsWidth = (uint) TextEditorProperties.TabIndent;
 			else
 				se.View.TabsWidth = (uint) 4;
+
+			se.View.WrapMode = TextEditorProperties.WrapMode;
 		}
 		
 		void PropertiesChanged (object sender, PropertyEventArgs e)
@@ -796,6 +798,9 @@ namespace MonoDevelop.SourceEditor.Gui
 					break;
 				case "EnableFolding":
 					// TODO
+					break;
+				case "WrapMode":
+					se.View.WrapMode = TextEditorProperties.WrapMode;
 					break;
 				default:
 					Console.WriteLine ("unhandled property change: {0}", e.Key);

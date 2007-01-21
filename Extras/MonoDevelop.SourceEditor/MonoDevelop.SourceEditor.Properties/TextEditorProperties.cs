@@ -298,6 +298,15 @@ namespace MonoDevelop.SourceEditor.Properties {
 			}
 		}
 		
+		public static Gtk.WrapMode WrapMode {
+			get {
+				return (Gtk.WrapMode) properties.GetProperty ("WrapMode", Gtk.WrapMode.None);
+			}
+			set {
+				properties.SetProperty ("WrapMode", value);
+			}
+		}
+		
 		public static FontDescription Font {
 			get {
 				string s = properties.GetProperty ("DefaultFont", "__default_monospace");

@@ -47,6 +47,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] CheckButton showErrorsCheckBox;
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] SpinButton  vRulerRowTextBox;
+			[Glade.Widget] ComboBox    wrapModeComboBox;
 
 			public MarkersTextEditorPanelWidget (IProperties CustomizationObject) :  
 				base ("EditorBindings.glade", "MarkersTextEditorPanel")
@@ -62,6 +63,9 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			
 				vRulerRowTextBox.Value = ((IProperties)CustomizationObject).GetProperty("VRulerRow", 80);
 
+				wrapModeComboBox.Active = (int) ((IProperties)CustomizationObject).GetProperty(
+					"WrapMode", WrapMode.None);
+
 				// disabled
 				showErrorsCheckBox.Sensitive = false;
 			}
@@ -74,6 +78,10 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				((IProperties)CustomizationObject).SetProperty("ShowVRuler",           showVRulerCheckBox.Active);
 				try {
 					((IProperties)CustomizationObject).SetProperty("VRulerRow", vRulerRowTextBox.Value);
+				} 
+				catch { }
+				try {
+					((IProperties)CustomizationObject).SetProperty("WrapMode", (WrapMode) wrapModeComboBox.Active);
 				} 
 				catch { }
 			}

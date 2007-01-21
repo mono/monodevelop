@@ -1,3 +1,11 @@
+2007-01-21  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* EditorBindings.glade,
+	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	  MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	  added WrapMode selector in markers and rules section.
+
 2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Avoid
