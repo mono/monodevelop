@@ -1,3 +1,30 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp: Updated.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Removed unused namespace.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Use the new base-type property
+	  to describe custom widgets. When looking for properties and events,
+	  look in the base classes as well as in the widget class.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	* Makefile.am,
+	  MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs,
+	  MonoDevelop.GtkCore.WidgetLibrary/ProjectSignalDescriptor.cs,
+	  MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs,
+	  MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs,
+	  MonoDevelop.GtkCore.WidgetLibrary/ProjectPropertyDescriptor.cs:
+	  Removed unused files. All widget library functionality has been
+	  moved to stetic.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Removed all
+	  widget library management, which has been moved to Stetic.
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Added some null checks.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Use the new way
+	  of managing dependencies in projects.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  templates/WindowPartial.xft.xml, templates/Window.xft.xml: The
+	  window constructor now takes the window type.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Some gui
+	  improvements and added some null checks.
+
 2007-01-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Don't crash if the

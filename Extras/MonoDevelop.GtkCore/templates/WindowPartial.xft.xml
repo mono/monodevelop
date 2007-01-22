@@ -38,7 +38,11 @@
 									<Members>
 										<Constructor Attributes="Public, Final">
 											<BaseConstructorArgs>
-												<PrimitiveExpression Value="" />
+												<FieldReferenceExpression FieldName="Toplevel">
+													<TargetObject>
+														<TypeReferenceExpression Type="Gtk.WindowType" />
+													</TargetObject>
+												</FieldReferenceExpression>
 											</BaseConstructorArgs>
 											<Statements>
 												<MethodInvokeExpression>

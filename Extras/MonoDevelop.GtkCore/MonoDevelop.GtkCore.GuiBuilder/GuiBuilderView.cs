@@ -127,12 +127,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ComponentNameChanged -= OnComponentNameChanged;
 			designer.RootComponentChanged -= OnRootComponentChanged;
 			
-			actionsPage.Dispose ();
-			actionsBox.Dispose ();
-			actionsBox.Destroy ();
-			designerPage.Dispose ();
-			actionsBox = null;
-			designerPage = null;
+			if (designerPage != null) {
+				designerPage.Dispose ();
+				designerPage = null;
+			}
+			if (actionsPage != null) {
+				actionsPage.Dispose ();
+				actionsBox.Dispose ();
+				actionsBox.Destroy ();
+				actionsBox = null;
+			}
 			base.Dispose ();
 		}
 		
@@ -144,7 +148,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void ShowPage (int npage)
 		{
-			if (window != null && designer.RootComponent != null) {
+			if (window != null && !ErrorMode) {
 				// At every page switch update the generated code, to make sure code completion works
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
@@ -168,7 +172,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActionshanged (object s, EventArgs args)
 		{
-			if (!actionsButtonVisible) {
+			if (!actionsButtonVisible && !ErrorMode) {
 				actionsButtonVisible = true;
 				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 			}
@@ -215,8 +219,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (window.Project.Project, window.RootWidget);
  
 			codeBinder.UpdateBindings (fileName);
-			designer.Save ();
-			actionsBox.Save ();
+			if (!ErrorMode) {
+				designer.Save ();
+				actionsBox.Save ();
+			}
 			
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (window.Project.Project, window.RootWidget);
 			
@@ -255,6 +261,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			IClass cls = codeBinder.GetClass ();
+			if (cls == null)
+				return;
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == signal.Handler) {
 					ShowPage (1);
@@ -272,7 +280,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ShowActionDesignerView (string name)
 		{
 			ShowPage (2);
-			actionsBox.ActiveGroup = name;
+			if (!ErrorMode)
+				actionsBox.ActiveGroup = name;
+		}
+		
+		bool ErrorMode {
+			get { return designer.RootComponent == null; }
 		}
 	}
 	

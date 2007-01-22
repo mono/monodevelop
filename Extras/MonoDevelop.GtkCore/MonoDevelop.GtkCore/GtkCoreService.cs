@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Specialized;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 
@@ -176,71 +177,78 @@ namespace MonoDevelop.GtkCore
 				// By default add a reference to Gtk.Widget properties and events
 				XmlElement itemGroups = objectElem.OwnerDocument.CreateElement ("itemgroups");
 				objectElem.AppendChild (itemGroups);
-				XmlElement widgetItemGroup = objectElem.OwnerDocument.CreateElement ("itemgroup");
-				widgetItemGroup.SetAttribute ("ref", "Gtk.Widget");
-				itemGroups.AppendChild (widgetItemGroup);
 				
 				itemGroups = objectElem.OwnerDocument.CreateElement ("signals");
 				objectElem.AppendChild (itemGroups);
-				widgetItemGroup = objectElem.OwnerDocument.CreateElement ("itemgroup");
-				widgetItemGroup.SetAttribute ("ref", "Gtk.Widget");
-				itemGroups.AppendChild (widgetItemGroup);
 				
+				objectElem.SetAttribute ("base-type", GetBaseType (widgetClass, project));
 				doc.DocumentElement.AppendChild (objectElem);
 			}
 			
-			MergeObject (ctx, objectElem, widgetClass, wrapperClass);
+			MergeObject (project, ctx, objectElem, widgetClass, wrapperClass);
 		}
 		
-		static void MergeObject (IParserContext ctx, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
+		static string GetBaseType (IClass widgetClass, Project project)
 		{
-			foreach (IProperty prop in widgetClass.Properties)
-				if (IsBrowsable (ctx, prop))
-					MergeProperty (objectElem, prop);
+			GtkDesignInfo info = GetGtkInfo (project);
+			Stetic.ComponentType[] types = info.GuiBuilderProject.SteticProject.GetComponentTypes ();
+			Hashtable typesHash = new Hashtable ();
+			foreach (Stetic.ComponentType t in types)
+				typesHash [t.Name] = t;
 				
-			foreach (IEvent ev in widgetClass.Events)
-				if (IsBrowsable (ctx, ev))
-					MergeEvent (objectElem, ev);
-				
-			if (wrapperClass != null) {
-				foreach (IProperty prop in wrapperClass.Properties)
-					if (IsBrowsable (ctx, prop))
-						MergeProperty (objectElem, prop);
-					
-				foreach (IEvent ev in wrapperClass.Events)
-					if (IsBrowsable (ctx, ev))
-						MergeEvent (objectElem, ev);
+			IParserContext pctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			string ret = GetBaseType (widgetClass, pctx, typesHash);
+			return ret ?? "Gtk.Widget";
+		}
+		
+		static string GetBaseType (IClass cls, IParserContext pctx, Hashtable typesHash)
+		{
+			foreach (IReturnType bt in cls.BaseTypes) {
+				if (typesHash.Contains (bt.FullyQualifiedName))
+					return bt.FullyQualifiedName;
 			}
+
+			foreach (IReturnType bt in cls.BaseTypes) {
+				IClass bcls = pctx.GetClass (bt.FullyQualifiedName, true, true);
+				if (bcls != null) {
+					string ret = GetBaseType (bcls, pctx, typesHash);
+					if (ret != null)
+						return ret;
+				}
+			}
+			return null;
+		}
+		
+		static void MergeObject (Project project, IParserContext ctx, XmlElement objectElem, IClass widgetClass, IClass wrapperClass)
+		{
+			string topType = GetBaseType (widgetClass, project);
+			
+			ListDictionary properties = new ListDictionary ();
+			ListDictionary events = new ListDictionary ();
+			
+			CollectMembers (ctx, widgetClass, true, topType, properties, events);
+			if (wrapperClass != null)
+				CollectMembers (ctx, wrapperClass, false, null, properties, events);
+			
+			foreach (IProperty prop in properties.Values)
+				MergeProperty (objectElem, prop);
+			
+			foreach (IEvent ev in events.Values)
+				MergeEvent (objectElem, ev);
 			
 			// Remove old properties
 			
 			ArrayList toDelete = new ArrayList ();
 			foreach (XmlElement xprop in objectElem.SelectNodes ("itemgroups/itemgroup/property")) {
-				string cat = ((XmlElement)xprop.ParentNode).GetAttribute ("name");
-				IProperty prop = widgetClass.Properties [xprop.GetAttribute ("name")];
-				if (prop != null && cat == GetCategory (prop) && IsBrowsable (ctx, prop))
-					continue;
-				if (wrapperClass != null) {
-					prop = wrapperClass.Properties [xprop.GetAttribute ("name")];
-					if (prop != null && cat == GetCategory (prop) && IsBrowsable (ctx, prop))
-						continue;
-				}
-				toDelete.Add (xprop);
+				if (!properties.Contains (xprop.GetAttribute ("name")))
+					toDelete.Add (xprop);
 			}
 			
 			// Remove old signals
 			
 			foreach (XmlElement xevent in objectElem.SelectNodes ("signals/itemgroup/signal")) {
-				string cat = ((XmlElement)xevent.ParentNode).GetAttribute ("name");
-				IEvent evnt = widgetClass.Events [xevent.GetAttribute ("name")];
-				if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (ctx, evnt))
-					continue;
-				if (wrapperClass != null) {
-					evnt = wrapperClass.Events [xevent.GetAttribute ("name")];
-					if (evnt != null && cat == GetCategory (evnt) && IsBrowsable (ctx, evnt))
-						continue;
-				}
-				toDelete.Add (xevent);
+				if (!events.Contains (xevent.GetAttribute ("name")))
+					toDelete.Add (xevent);
 			}
 			
 			foreach (XmlElement el in toDelete) {
@@ -248,6 +256,28 @@ namespace MonoDevelop.GtkCore
 				pe.RemoveChild (el);
 				if (pe.ChildNodes.Count == 0)
 					pe.ParentNode.RemoveChild (pe);
+			}
+		}
+		
+		static void CollectMembers (IParserContext ctx, IClass cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
+		{
+			if (cls.FullyQualifiedName == topType)
+				return;
+
+			foreach (IProperty prop in cls.Properties)
+				if (IsBrowsable (ctx, prop))
+					properties [prop.Name] = prop;
+
+			foreach (IEvent ev in cls.Events)
+				if (IsBrowsable (ctx, ev))
+					events [ev.Name] = ev;
+					
+			if (inherited) {
+				foreach (IReturnType bt in cls.BaseTypes) {
+					IClass bcls = ctx.GetClass (bt.FullyQualifiedName, true, true);
+					if (bcls != null && bcls.ClassType != ClassType.Interface)
+						CollectMembers (ctx, bcls, true, topType, properties, events);
+				}
 			}
 		}
 		
@@ -370,8 +400,10 @@ namespace MonoDevelop.GtkCore
 
 			foreach (IReturnType bt in cls.BaseTypes) {
 				IClass bcls = pctx.GetClass (bt.FullyQualifiedName, true, true);
-				if (bcls != null)
-					return IsWidget (bcls, pctx);
+				if (bcls != null) {
+					if (IsWidget (bcls, pctx))
+						return true;
+				}
 			}
 			return false;
 		}

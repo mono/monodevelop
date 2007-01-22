@@ -25,11 +25,6 @@ MonoDevelop.GtkCore/ProjectResourceProvider.cs \
 MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
 MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs \
 MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs \
-MonoDevelop.GtkCore.WidgetLibrary/AssemblyReferenceWidgetLibrary.cs \
-MonoDevelop.GtkCore.WidgetLibrary/BaseWidgetLibrary.cs \
-MonoDevelop.GtkCore.WidgetLibrary/ProjectClassDescriptor.cs \
-MonoDevelop.GtkCore.WidgetLibrary/ProjectPropertyDescriptor.cs \
-MonoDevelop.GtkCore.WidgetLibrary/ProjectSignalDescriptor.cs \
 MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
 MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \

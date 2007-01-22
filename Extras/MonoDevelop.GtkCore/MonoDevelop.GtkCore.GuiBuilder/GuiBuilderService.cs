@@ -44,8 +44,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Cecil;
 
-using MonoDevelop.GtkCore.WidgetLibrary;
-
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	class GuiBuilderService
@@ -54,7 +52,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static string GuiBuilderLayout = "GUI Builder";
 		static string defaultLayout;
 	
-		static Hashtable assemblyLibs = new Hashtable ();
 		static Stetic.Application steticApp;
 		
 		static bool generating;
@@ -66,9 +63,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static GuiBuilderService ()
 		{
-			IdeApp.ProjectOperations.ReferenceAddedToProject += OnReferencesChanged;
-			IdeApp.ProjectOperations.ReferenceRemovedFromProject += OnReferencesChanged;
-			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 			IdeApp.ProjectOperations.StartBuild += OnBeforeCompile;
 			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
@@ -89,8 +83,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get {
 				if (steticApp == null) {
 					steticApp = new Stetic.Application (IsolationMode);
-					if (IsolationMode == Stetic.IsolationMode.None)
-						steticApp.WidgetLibraryResolver = OnResolveWidgetLibrary;
+					steticApp.AllowInProcLibraries = false;
 				}
 				return steticApp;
 			}
@@ -175,11 +168,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		static void OnReferencesChanged (object sender, ProjectReferenceEventArgs e)
-		{
-			CleanUnusedAssemblyLibs ();
-		}
-		
 		static void OnBeforeCompile (object s, BuildEventArgs args)
 		{
 			if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
@@ -214,62 +202,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return true;
 			}
 			return false;
-		}
-		
-		static Stetic.WidgetLibrary OnResolveWidgetLibrary (string name)
-		{
-			if (name.StartsWith ("libstetic,"))
-				return null;
-
-			return GetAssemblyLibrary (name, true);
-		}
-		
-		public static AssemblyReferenceWidgetLibrary GetAssemblyLibrary (string assemblyReference, bool alwaysRegister)
-		{
-			object lib = assemblyLibs [assemblyReference];
-			if (lib == null) {
-				string aname = IdeApp.ProjectOperations.ParserDatabase.LoadAssembly (assemblyReference);
-				AssemblyReferenceWidgetLibrary wlib = new AssemblyReferenceWidgetLibrary (assemblyReference, aname);
-				if (!wlib.ExportsWidgets && !alwaysRegister)
-					lib = new object ();
-				else
-					lib = wlib;
-
-				assemblyLibs [assemblyReference] = lib;
-			}
-			
-			// We are registering here all assembly references. Not all of them are widget libraries.
-			return lib as AssemblyReferenceWidgetLibrary;
-		}
-		
-		public static bool IsWidgetLibrary (string assemblyReference)
-		{
-			return GetAssemblyLibrary (assemblyReference, false) != null;
-		}
-		
-		static void CleanUnusedAssemblyLibs ()
-		{
-			ArrayList toDelete = new ArrayList ();
-			CombineEntryCollection col = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ();
-			foreach (string assemblyReference in assemblyLibs.Keys) {
-				bool found = false;
-				foreach (Project p in col) {
-					foreach (ProjectReference pref in p.ProjectReferences) {
-						if (pref.Reference == assemblyReference) {
-							found = true;
-							break;
-						}
-					}
-					if (found) break;
-				}
-				if (!found)
-					toDelete.Add (assemblyReference);
-			}
-			
-			foreach (string name in toDelete) {
-				IdeApp.ProjectOperations.ParserDatabase.UnloadAssembly (name);
-				assemblyLibs.Remove (name);
-			}
 		}
 		
 		static void OnAssemblyInfoChanged (object s, AssemblyInformationEventArgs args)
@@ -412,8 +344,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// it now since they may contain widget libraries.
 			prj.CopyReferencesToOutputPath (false);
 			
-			ArrayList libs = new ArrayList ();
-			
 			info.GuiBuilderProject.UpdateLibraries ();
 			
 			if (info.IsWidgetLibrary) {
@@ -433,24 +363,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList projects = new ArrayList ();
 			projects.Add (info.GuiBuilderProject.File);
 			
-			foreach (string lib in info.GuiBuilderProject.SteticProject.GetWidgetLibraries())
-				libs.Add (lib);
-			
 			generating = true;
 			generationResult = null;
 			generatedException = null;
 			
+			bool canGenerateInProcess = IsolationMode != Stetic.IsolationMode.None || info.GuiBuilderProject.SteticProject.CanGenerateCode;
+			
 			// Run the generation in another thread to avoid freezing the GUI
 			System.Threading.ThreadPool.QueueUserWorkItem ( delegate {
 				try {
-					if (IsolationMode == Stetic.IsolationMode.None) {
+					if (!canGenerateInProcess) {
 						// Generate the code in another process if stetic is not isolated
 						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 						using (cob) {
-							generationResult = cob.GenerateCode (projects, libs, useGettext, info.GeneratePartialClasses);
+							generationResult = cob.GenerateCode (projects, useGettext, info.GeneratePartialClasses);
 						}
 					} else {
 						// No need to create another process, since stetic has its own backend process
+						// or the widget libraries have no custom wrappers
 						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 						options.UseGettext = useGettext;
 						options.UsePartialClasses = info.GeneratePartialClasses;
@@ -507,15 +437,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, ArrayList libraries, bool useGettext, bool usePartialClasses)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, bool usePartialClasses)
 		{
 			Gtk.Application.Init ();
 			
 			Stetic.Application app = new Stetic.Application (Stetic.IsolationMode.None);
 			
-			foreach (string lib in libraries)
-				app.AddWidgetLibrary (lib);
-
 			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
 			for (int n=0; n < projectFiles.Count; n++) {
 				projects [n] = app.CreateProject ();

@@ -156,8 +156,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CodeConstructor ctor = new CodeConstructor ();
 			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			
-			foreach (object val in rootWidget.Type.InitializationValues)
-				ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
+			foreach (object val in rootWidget.Type.InitializationValues) {
+				if (val is Enum) {
+					ctor.BaseConstructorArgs.Add (
+						new CodeFieldReferenceExpression (
+							new CodeTypeReferenceExpression (val.GetType ()),
+							val.ToString ()
+						)
+					);
+				}
+				else
+					ctor.BaseConstructorArgs.Add (new CodePrimitiveExpression (val));
+			}
 			
 			if (info.GeneratePartialClasses) {
 				CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (

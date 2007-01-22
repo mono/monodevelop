@@ -41,7 +41,6 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.GtkCore.GuiBuilder;
-using MonoDevelop.GtkCore.WidgetLibrary;
 
 namespace MonoDevelop.GtkCore
 {

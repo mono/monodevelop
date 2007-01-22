@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Collections;
 using System.CodeDom;
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
@@ -52,7 +53,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal bool UpdatingWindow;
 		bool hasError;
 		bool needsUpdate = true;
-		string ownLibrary;
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
@@ -72,14 +72,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
 			formInfos = new ArrayList ();
 
-			foreach (ProjectReference pref in project.ProjectReferences) {
-				string wref = GetReferenceLibraryPath (pref);
-				if (wref != null)
-					gproject.AddWidgetLibrary (wref);
-			}
-
-			UpdateLibraries ();
-
 			try {
 				gproject.Load (fileName);
 			} catch (Exception ex) {
@@ -87,6 +79,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				hasError = true;
 			}
 			
+			// Sync project libraries
+			UpdateLibraries ();
+
 			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (project).ResourceProvider;
 			gproject.ComponentAdded += new Stetic.ComponentEventHandler (OnAddWidget);
 			gproject.ComponentRemoved += new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
@@ -115,8 +110,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject = null;
 			formInfos = null;
 			needsUpdate = true;
-			ownLibrary = null;
 			hasError = false;
+			GuiBuilderService.SteticApp.UpdateWidgetLibraries (false);
 		}
 		
 		public void Reload ()
@@ -265,33 +260,42 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
 		{
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
-			if (pref != null)
+			if (pref != null) {
 				gproject.AddWidgetLibrary (pref);
+				Save ();
+			}
 		}
 		
 		void OnReferenceRemoved (object ob, ProjectReferenceEventArgs args)
 		{
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
-			if (pref != null)
+			if (pref != null) {
 				gproject.RemoveWidgetLibrary (pref);
+				Save ();
+			}
 		}
 
 		string GetReferenceLibraryPath (ProjectReference pref)
 		{
+			string path = null;
+			
 			if (pref.ReferenceType == ReferenceType.Project) {
 				DotNetProject p = project.RootCombine.FindProject (pref.Reference) as DotNetProject;
 				if (p != null) {
 					GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-					if (info != null && info.IsWidgetLibrary) {
-						return p.GetOutputFileName ();
-					}
+					if (info != null && info.IsWidgetLibrary)
+						path = p.GetOutputFileName ();
 				}
 			} else if (pref.ReferenceType == ReferenceType.Gac || 
 					pref.ReferenceType == ReferenceType.Assembly) {
-				if (GuiBuilderService.IsWidgetLibrary (pref.Reference))
-					return pref.Reference;
+				
+				// Assume everything is a widget library. Stetic will discard it if it is not.
+				path = pref.Reference;
 			}
-			return null;
+			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
+				return path;
+			else
+				return null;
 		}
 		
 		public void ImportGladeFile ()
@@ -396,17 +400,37 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void UpdateLibraries ()
 		{
+			string[] oldLibs = gproject.WidgetLibraries;
+			
+			ArrayList libs = new ArrayList ();
+			
+			foreach (ProjectReference pref in project.ProjectReferences) {
+				string wref = GetReferenceLibraryPath (pref);
+				if (wref != null)
+					libs.Add (wref);
+			}
+			
 			// If the project is a library, add itself as a widget source
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			if (info != null && info.IsWidgetLibrary) {
-				if (ownLibrary != project.GetOutputFileName ()) {
-					if (ownLibrary != null)
-						gproject.RemoveWidgetLibrary (ownLibrary);
-					ownLibrary = project.GetOutputFileName ();
-					gproject.AddWidgetLibrary (ownLibrary);
+			if (info != null && info.IsWidgetLibrary)
+				libs.Add (project.GetOutputFileName ());
+
+			string[] newLibs = (string[]) libs.ToArray (typeof(string));
+			
+			// See if something has changed
+			if (oldLibs.Length == newLibs.Length) {
+				bool found = false;
+				foreach (string s in newLibs) {
+					if (!((IList)oldLibs).Contains (s)) {
+						found = true;
+						break;
+					}
 				}
-			} else if (ownLibrary != null)
-				gproject.RemoveWidgetLibrary (ownLibrary);
+				if (!found)	// Arrays are the same
+					return;
+			}
+			gproject.WidgetLibraries = newLibs;
+			Save ();
 		}
 	}
 	

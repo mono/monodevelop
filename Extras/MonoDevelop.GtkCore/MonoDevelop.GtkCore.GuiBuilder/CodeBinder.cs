@@ -74,15 +74,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return targetObject; }
 			set {
 				this.targetObject = value;
-				IClass cls = gproject.FindClass (GetClassName (targetObject)); 
-				className = cls.FullyQualifiedName;
-				classFile = cls.Region.FileName;
+				if (targetObject != null) {
+					IClass cls = gproject.FindClass (GetClassName (targetObject)); 
+					className = cls.FullyQualifiedName;
+					classFile = cls.Region.FileName;
+				}
 			}
 		}
 		
 		/// Synchronizes the bindings between the object and the source code
 		public void UpdateBindings (string fileName)
 		{
+			if (targetObject == null)
+				return;
 			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (project, fileName, null);
 			classFile = fileName;
 			UpdateBindings (targetObject, GetClass ());
@@ -90,6 +94,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void UpdateBindings (Stetic.Component obj, IClass cls)
 		{
+			if (targetObject == null)
+				return;
+
 			// Remove signals for which there isn't a handler in the class
 			
 			Stetic.SignalCollection objectSignals = obj.GetSignals ();
@@ -122,6 +129,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void UpdateField (Stetic.Component obj, string oldName)
 		{
+			if (targetObject == null)
+				return;
+				
 			CodeRefactorer cr = GetCodeGenerator ();
 			
 			IClass cls;
@@ -147,6 +157,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		/// Adds a signal handler to the class
 		public void BindSignal (Stetic.Signal signal)
 		{
+			if (targetObject == null)
+				return;
+
 			IClass cls = GetClass ();
 			if (cls == null)
 				return;
@@ -168,6 +181,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
 		{
+			if (targetObject == null)
+				return;
+
 			if (oldSignal.Handler == newSignal.Handler)
 				return;
 
@@ -184,6 +200,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		/// Adds a field to the class
 		public void BindToField (Stetic.Component obj)
 		{
+			if (targetObject == null)
+				return;
+
 			string name = GetMemberName (obj);
 			IClass cls = GetClass ();
 			
@@ -224,6 +243,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IClass GetClass ()
 		{
+			if (targetObject == null)
+				return null;
+
 			IClass cls = gproject.FindClass (className);
 			if (cls != null)
 				return cls;
