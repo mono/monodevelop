@@ -1,3 +1,11 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AssemblyLoader.cs: Track changes in the Cecil
+	  api.
+	* MonoDevelop.Core/FileService.cs: Implemented GetFullPath method,
+	  which works like Path.GetFullPath, but which works even in the path
+	  doesn't exist.
+
 2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Core.AddIns.Setup/SetupService.cs,

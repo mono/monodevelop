@@ -94,11 +94,11 @@ namespace MonoDevelop.Core.AddIns
 		{
 			if (!checkAssemblyConflicts) return;
 			
-			IAssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
+			AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
 			CheckAssemblyVersion (asm.Name.FullName, asm, Path.GetDirectoryName (assemblyFile));
 		}
 		
-		void CheckAssemblyVersion (string aname, IAssemblyDefinition asm, string baseDirectory)
+		void CheckAssemblyVersion (string aname, AssemblyDefinition asm, string baseDirectory)
 		{
 			if (!checkAssemblyConflicts)
 				return;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Core.AddIns
 			}
 			
 			try {
-				foreach (IAssemblyNameReference ar in asm.MainModule.AssemblyReferences) {
+				foreach (AssemblyNameReference ar in asm.MainModule.AssemblyReferences) {
 					CheckAssemblyVersion (ar.FullName, null, baseDirectory);
 				}
 			} catch {
