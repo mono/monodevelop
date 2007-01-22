@@ -87,6 +87,8 @@ MonoDevelop.Components.HtmlControl/IWebBrowserEvents.cs \
 MonoDevelop.Components.HtmlControl/MozillaControl.cs
 
 RES = \
+gtk-gui/objects.xml \
+gtk-gui/gui.stetic \
 icons/MonoDevelop.Close.png
 
 GENERATED_FILES = \

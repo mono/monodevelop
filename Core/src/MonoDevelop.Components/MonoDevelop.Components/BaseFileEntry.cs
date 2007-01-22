@@ -31,6 +31,10 @@ namespace MonoDevelop.Components {
 		
 		protected abstract string ShowBrowseDialog (string name, string start_in);
 		
+		public string BrowserTitle {
+			get { return name; }
+			set { name = value; }
+		}
 		
 		string default_path;
 		public string DefaultPath {
@@ -44,7 +48,6 @@ namespace MonoDevelop.Components {
 				loading = true; 
 				text.Text = value;
 				loading = false;
-				OnTextChanged (null, null);
 			}
 		}
 		
@@ -60,7 +63,6 @@ namespace MonoDevelop.Components {
 			string path = ShowBrowseDialog (name, start_in + System.IO.Path.DirectorySeparatorChar);
 			if (path != null) {
 				text.Text = path;
-				OnTextChanged (null, null);
 			}
 		}
 		

@@ -73,8 +73,8 @@ namespace MonoDevelop.Components
 		
 		public override void Dispose ()
 		{
-			Destroy ();
 			base.Dispose ();
+			Destroy ();
 		}
 	}
 }

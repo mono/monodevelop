@@ -1,0 +1,30 @@
+<objects>
+  <object type="MonoDevelop.Components.FileEntry" palette-category="widget" allow-children="false" base-type="Gtk.Container">
+    <itemgroups>
+      <itemgroup label="BaseFileEntry Properties">
+        <property name="BrowserTitle" />
+        <property name="DefaultPath" />
+        <property name="Path" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="BaseFileEntry Signals">
+        <signal name="PathChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.FolderEntry" palette-category="widget" allow-children="false" base-type="Gtk.Container">
+    <itemgroups>
+      <itemgroup label="BaseFileEntry Properties">
+        <property name="DefaultPath" />
+        <property name="Path" />
+        <property name="BrowserTitle" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="BaseFileEntry Signals">
+        <signal name="PathChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+</objects>

@@ -4,8 +4,12 @@ using Gtk;
 using Gdk;
 
 namespace MonoDevelop.Components {
-	public class FolderEntry : BaseFileEntry {
-
+	public class FolderEntry : BaseFileEntry
+	{
+		public FolderEntry () : base ("")
+		{
+		}
+		
 		public FolderEntry (string name) : base (name)
 		{
 		}

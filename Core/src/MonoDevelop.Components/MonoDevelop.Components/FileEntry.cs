@@ -6,6 +6,10 @@ using Gdk;
 namespace MonoDevelop.Components {
 	public class FileEntry : BaseFileEntry {
 
+		public FileEntry () : base ("")
+		{
+		}
+		
 		public FileEntry (string name) : base (name)
 		{
 		}
