@@ -8,6 +8,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Projects.Deployment;
+using MonoDevelop.Projects.Deployment.Extensions;
 using MonoDevelop.Projects.Gui.Deployment;
 
 namespace MonoDevelop.Autotools

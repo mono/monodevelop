@@ -1,3 +1,7 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Handler.cs: Track api changes.
+
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs, SolutionDeployer.cs: Use the
