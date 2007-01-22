@@ -45,7 +45,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 	
 	public class TaskListPad : IPadContent
 	{
-		IPadWindow window;
 		Widget control;
 		ITaskListView activeView;
 		
@@ -54,14 +53,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ComboBox switcherCombo;
 		ListStore switcherComboList;
 		SeparatorToolItem separator;
-		Tooltips tips = new Tooltips ();
 		
 		//content view
 		ScrolledWindow sw;
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
-			this.window = window;
 			window.Title = GettextCatalog.GetString ("Task List");
 			window.Icon = MonoDevelop.Core.Gui.Stock.TaskListIcon;
 		}

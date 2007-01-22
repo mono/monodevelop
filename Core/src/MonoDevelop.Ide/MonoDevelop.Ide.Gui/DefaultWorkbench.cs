@@ -391,7 +391,9 @@ namespace MonoDevelop.Ide.Gui
 		void CheckRemovedFile(object sender, FileEventArgs e)
 		{
 			if (e.IsDirectory) {
-				foreach (IViewContent content in ViewContentCollection) {
+				IViewContent[] views = new IViewContent [ViewContentCollection.Count];
+				ViewContentCollection.CopyTo (views, 0);
+				foreach (IViewContent content in views) {
 					if (content.ContentName.StartsWith(e.FileName)) {
 						content.WorkbenchWindow.CloseWindow(true, true, 0);
 					}

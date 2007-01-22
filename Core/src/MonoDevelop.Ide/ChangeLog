@@ -1,3 +1,9 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs: Fixed warnings.
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix crash that happens when
+	  the view list changes while closing the views.
+
 2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Ide.Templates/CombineDescriptor.cs,
