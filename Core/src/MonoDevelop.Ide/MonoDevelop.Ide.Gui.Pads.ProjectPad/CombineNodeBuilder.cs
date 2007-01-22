@@ -210,6 +210,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove solution {0} from solution {1}?", combine.Name, parent.Name));
 			if (yes) {
 				parent.Entries.Remove (combine);
+				combine.Dispose ();
 				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}

@@ -337,6 +337,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			if (yes) {
 				cmb.RemoveEntry (prj);
+				prj.Dispose ();
 				IdeApp.ProjectOperations.SaveCombine();
 			}
 		}

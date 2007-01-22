@@ -1,5 +1,11 @@
 2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Dispose
+	  projects and combines after removing them.
+
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs: Fixed warnings.
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix crash that happens when
 	  the view list changes while closing the views.
