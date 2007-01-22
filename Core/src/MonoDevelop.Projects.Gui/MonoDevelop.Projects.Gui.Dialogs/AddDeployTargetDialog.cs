@@ -73,8 +73,10 @@ namespace MonoDevelop.Projects.Gui
 			
 			comboHandlers.Changed += OnSelectionChanged;
 			comboHandlers.Active = 0;
-			dialog.Resize (500, 300);
+			dialog.DefaultWidth = 500;
+			dialog.DefaultHeight = 400;
 			dialog.ShowAll ();
+			dialog.Resize (500, 400);
 		}
 		
 		public int Run ()

@@ -101,19 +101,23 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				};
 				
 				FillTargets ();
+				if (targets.Count > 0)
+					SelectTarget (targets[0]);
 				UpdateButtons ();
 			}
 			
 			void FillTargets ()
 			{
+				DeployTarget selTarget = GetSelection ();
+
 				store.Clear ();
 				foreach (DeployTarget target in targets) {
 					if (target is UnknownDeployTarget) {
-						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("md-package", Gtk.IconSize.Dialog);
+						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon ("md-package", Gtk.IconSize.LargeToolbar);
 						string desc = "<b>" + target.Name + "</b>\n<small>Unknown target</small>";
 						store.AppendValues (pix, desc, target);
 					} else {
-						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Dialog);
+						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.LargeToolbar);
 						string desc = "<b>" + target.Name + "</b>";
 						if (target == defaultTarget)
 							desc += " " + GettextCatalog.GetString ("(default target)");
@@ -121,6 +125,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						store.AppendValues (pix, desc, target);
 					}
 				}
+				SelectTarget (selTarget);
 			}
 			
 			void UpdateButtons ()
@@ -160,8 +165,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			{
 				DeployTarget t = GetSelection ();
 				if (t != null) {
-					DeployTarget tc = t.DeployHandler.CreateTarget (entry);
-					tc.CopyFrom (t);
+					DeployTarget tc = t.Clone ();
 					using (EditDeployTargetDialog dlg = new EditDeployTargetDialog (tc)) {
 						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 							targets [targets.IndexOf (t)] = tc;
@@ -177,6 +181,22 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				if (t != null) {
 					defaultTarget = t;
 					FillTargets ();
+				}
+			}
+			
+			void SelectTarget (DeployTarget target)
+			{
+				if (target == null)
+					return;
+				Gtk.TreeIter iter;
+				if (store.GetIterFirst (out iter)) {
+					do {
+						DeployTarget t = (DeployTarget) store.GetValue (iter, 2);
+						if (t == target) {
+							targetsTree.Selection.SelectIter (iter);
+							return;
+						}
+					} while (store.IterNext (ref iter));
 				}
 			}
 			

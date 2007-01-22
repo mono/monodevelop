@@ -64,6 +64,13 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IDeployTargetEditor.">
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.FileDeployTargetEditor" />
+		<Class class = "MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditor" />
+		<Class class = "MonoDevelop.Projects.Gui.Deployment.InstallDeployEditor" />
+		<Class class = "MonoDevelop.Projects.Gui.Deployment.CommandDeployEditor" />
+		<Class class = "MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditor" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/FileCopyConfigurationEditors" extension-nodes="Class" description="Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.">
+		<Class class = "MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditor" />
 	</Extension>
 </AddIn>

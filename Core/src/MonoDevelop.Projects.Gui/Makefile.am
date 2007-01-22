@@ -13,9 +13,21 @@ REFS =  -r:System \
 
 FILES= \
 MonoDevelop.Projects.Gui/IconService.cs \
+MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs \
+MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs \
 MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs \
+MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditorWidget.cs \
+MonoDevelop.Projects.Gui.Deployment/FileCopyConfigurationSelector.cs \
 MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs \
-MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/IFileCopyConfigurationEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/InstallDeployEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/InstallDeployEditorWidget.cs \
+MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditor.cs \
+MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditorWidget.cs \
 MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
@@ -41,9 +53,18 @@ MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs
 MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
 MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs \
 MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs \
-MonoDevelop.Projects.Gui/ProjectsGuiServices.cs
+MonoDevelop.Projects.Gui/ProjectsGuiServices.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs \
+gtk-gui/generated.cs
 
 RES= \
+gtk-gui/objects.xml \
+gtk-gui/gui.stetic \
 Base.glade
 
 GENERATED_FILES = \

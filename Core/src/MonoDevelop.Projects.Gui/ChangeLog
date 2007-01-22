@@ -1,3 +1,41 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/gui.stetic: Implemented editors for all new deployment
+	  targets.
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:
+	  IFileReplacePolicy implementation. Patch by Michael Hutchinson.
+	* MonoDevelop.Projects.Gui.Deployment/IFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/FileCopyConfigurationSelector.cs:
+	  Basic infrastructure for file copy configuration editors.
+	* MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs:
+	  Removed.
+	* MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Some minor gui improvements.
+	* Base.glade: Set new default sizes for the deploy dialogs.
+
 2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,

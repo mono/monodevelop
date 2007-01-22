@@ -52,10 +52,12 @@ namespace MonoDevelop.Projects.Gui
 			iconHandler.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Menu);
 			entryName.Text = target.Name;
 			
-			targetBox.PackStart (new DeployTargetEditor (target), false, false, 0);
+			targetBox.PackStart (new DeployTargetEditor (target), true, true, 0);
 			
-			dialog.Resize (500, 300);
+			dialog.DefaultWidth = 500;
+			dialog.DefaultHeight = 400;
 			dialog.ShowAll ();
+			dialog.Resize (500, 400);
 		}
 		
 		protected void OnNameChanged (object s, EventArgs args)

@@ -38,9 +38,14 @@ namespace MonoDevelop.Projects.Gui.Deployment
 	{
 		public DeployTargetEditor (DeployTarget target)
 		{
-			IDeployTargetEditor editor = GetEditor (target);
-			if (editor != null)
-				PackStart (editor.CreateEditor (target), true, true, 0);
+			try {
+				IDeployTargetEditor editor = GetEditor (target);
+				if (editor != null)
+					PackStart (editor.CreateEditor (target), true, true, 0);
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				PackStart (new Gtk.Label ("Could not create editor for deploy target of type " + target));
+			}
 			ShowAll ();
 		}
 		
