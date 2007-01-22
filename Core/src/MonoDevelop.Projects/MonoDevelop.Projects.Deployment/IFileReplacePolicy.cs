@@ -1,10 +1,11 @@
 //
-// FileDeployTarget.cs
+// IFileReplacePolicy.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,33 +28,39 @@
 //
 
 using System;
-using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class FileDeployTarget: DeployTarget
+	public enum FileReplaceMode
 	{
-		[ItemProperty ("Path")]
-		string path;
+		Abort,
+		Skip,
+		Replace,
+		ReplaceOlder
+	}
+	
+	public interface IFileReplacePolicy
+	{
+		FileReplaceMode GetReplaceAction (string source, DateTime sourceModified, string target, DateTime targetModified);
+	}
+	
+	public class SimpleFileReplacePolicy : IFileReplacePolicy
+	{
+		FileReplaceMode mode;
 		
-		public FileDeployTarget ()
+		public SimpleFileReplacePolicy (FileReplaceMode mode)
 		{
+			this.mode = mode;
 		}
 		
-		public FileDeployTarget (string defaultPath)
-		{
-			path = defaultPath;
+		public FileReplaceMode ReplaceAction {
+			get { return mode; }
 		}
 		
-		public override void CopyFrom (DeployTarget other)
+		public FileReplaceMode GetReplaceAction (string source, DateTime sourceModified, string target, DateTime targetModified)
 		{
-			base.CopyFrom (other);
-			path = ((FileDeployTarget)other).path;
-		}
-		
-		public string Path {
-			get { return path; }
-			set { path = value; }
+			return mode;
 		}
 	}
+	
 }

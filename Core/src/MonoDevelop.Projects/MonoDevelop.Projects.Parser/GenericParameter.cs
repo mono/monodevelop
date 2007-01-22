@@ -33,7 +33,6 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Parser;
-using Mono.Cecil;
 using System.Reflection;
 
 namespace MonoDevelop.Projects.Parser

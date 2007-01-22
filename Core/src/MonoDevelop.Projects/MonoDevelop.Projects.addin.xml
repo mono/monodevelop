@@ -57,8 +57,11 @@
 		<DataType class = "MonoDevelop.Projects.Combine" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
-		<DataType class = "MonoDevelop.Projects.Deployment.FileDeployTarget" />
+		<DataType class = "MonoDevelop.Projects.Deployment.InstallDeployTarget" />
 		<DataType class = "MonoDevelop.Projects.Deployment.DirectoryDeployTarget" />
+		<DataType class = "MonoDevelop.Projects.Deployment.LocalFileCopyConfiguration" />
+		<DataType class = "MonoDevelop.Projects.Deployment.CommandDeployTarget" />
+		<DataType class = "MonoDevelop.Projects.Deployment.CombinedDeployTarget" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties" extension-nodes="ItemProperty" description="Custom properties for projects and other types.">
@@ -72,6 +75,13 @@
 
 	<Extension path = "/SharpDevelop/Workbench/DeployHandlers" extension-nodes="Class" description="Deployment handlers. Specified classes must implement IDeployHandler.">
 		<Class class = "MonoDevelop.Projects.Deployment.DirectoryDeployHandler" />
+		<Class class = "MonoDevelop.Projects.Deployment.InstallDeployHandler" />
+		<Class class = "MonoDevelop.Projects.Deployment.CommandDeployHandler" />
+		<Class class = "MonoDevelop.Projects.Deployment.CombinedDeployHandler" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/DeployFileCopiers" extension-nodes="Class" description="File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.">
+		<Class class = "MonoDevelop.Projects.Deployment.LocalFileCopyHandler" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions" extension-nodes="Class" description="Project service extensions. Specified classes must be a subclass of ProjectServiceExtension.">

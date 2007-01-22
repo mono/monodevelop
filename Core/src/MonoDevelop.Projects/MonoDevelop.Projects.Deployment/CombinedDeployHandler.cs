@@ -1,10 +1,10 @@
 //
-// DirectoryDeployTarget.cs
+// CombinedDeployHandler.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,30 +26,55 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
-using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public class CombinedDeployHandler: IDeployHandler
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
-		
-		public override void CopyFrom (DeployTarget other)
-		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
+		public string Id {
+			get { return "MonoDevelop.CombinedDeploy"; }
 		}
 		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+		public string Description {
+			get { return "Combined Deploy"; }
+		}
+		
+		public string Icon {
+			get { return "gtk-execute"; }
+		}
+		
+		public bool CanDeploy (CombineEntry entry)
+		{
+			return true;
+		}
+		
+		public DeployTarget CreateTarget (CombineEntry entry)
+		{
+			return new CombinedDeployTarget ();
+		}
+		
+		public void Deploy (IProgressMonitor monitor, DeployTarget target)
+		{
+			CombinedDeployTarget t = (CombinedDeployTarget) target;
+			
+			monitor.BeginTask ("", t.DeployTargets.Count);
+			foreach (DeployTarget dt in t.DeployTargets) {
+				try {
+					dt.Deploy (monitor);
+					if (monitor.IsCancelRequested)
+						break;
+				}
+				catch (Exception ex) {
+					monitor.ReportError ("Deploy operation failed", ex);
+					break;
+				}
+				monitor.Step (1);
+			}
+			monitor.EndTask ();
 		}
 	}
 }

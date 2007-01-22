@@ -1,10 +1,10 @@
 //
-// IDeployHandler.cs
+// CommandDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,17 +28,51 @@
 
 
 using System;
-using MonoDevelop.Core;
+using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public interface IDeployHandler
+	public class CommandDeployTarget: DeployTarget
 	{
-		string Id { get; }
-		string Description { get; }
-		string Icon { get; }
-		bool CanDeploy (CombineEntry entry);
-		DeployTarget CreateTarget (CombineEntry entry);
-		void Deploy (IProgressMonitor monitor, DeployTarget target);
+		string command;
+		string args;
+		bool externalConsole;
+		bool closeConsoleWhenDone;
+		
+		[ItemProperty]
+		public string Command {
+			get { return command; }
+			set { command = value; }
+		}
+		
+		[ItemProperty]
+		public string Arguments {
+			get { return args; }
+			set { args = value; }
+		}
+		
+		[ItemProperty (DefaultValue=false)]
+		public bool ExternalConsole {
+			get { return externalConsole; }
+			set { externalConsole = value; }
+		}
+		
+		[ItemProperty (DefaultValue=false)]
+		public bool CloseConsoleWhenDone {
+			get { return closeConsoleWhenDone; }
+			set { closeConsoleWhenDone = value; }
+		}
+		
+		public override void CopyFrom (DeployTarget other)
+		{
+			base.CopyFrom (other);
+			CommandDeployTarget t = other as CommandDeployTarget;
+			if (t != null) {
+				command = t.command;
+				args = t.args;
+				externalConsole = t.externalConsole;
+				closeConsoleWhenDone = t.closeConsoleWhenDone;
+			}
+		}
 	}
 }

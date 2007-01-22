@@ -1,10 +1,10 @@
 //
-// DirectoryDeployTarget.cs
+// CombinedDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,30 +26,41 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public class CombinedDeployTarget: DeployTarget
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
+		List<DeployTarget> targets;
+		
+		public CombinedDeployTarget()
+		{
+			targets = new List<DeployTarget> ();
+		}
+		
+		[ItemProperty]
+		public List<DeployTarget> DeployTargets {
+			get {
+				foreach (DeployTarget t in targets)
+					t.SetCombineEntry (base.CombineEntry);
+				return targets;
+			}
+		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
 			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
-		}
-		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+			CombinedDeployTarget t = other as CombinedDeployTarget;
+			if (t != null) {
+				targets.Clear ();
+				foreach (DeployTarget dt in t.DeployTargets)
+					targets.Add (dt.Clone ());
+			}
 		}
 	}
 }

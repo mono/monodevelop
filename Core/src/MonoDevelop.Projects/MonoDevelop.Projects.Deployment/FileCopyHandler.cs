@@ -1,10 +1,11 @@
 //
-// DirectoryDeployTarget.cs
+// FileCopyHandler.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,29 +28,40 @@
 //
 
 using System;
-using MonoDevelop.Projects.Serialization;
+using System.IO;
+
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public class FileCopyHandler
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
+		IFileCopyHandler handler;
 		
-		public override void CopyFrom (DeployTarget other)
+		internal FileCopyHandler (IFileCopyHandler handler)
 		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
+			this.handler = handler;
 		}
 		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+		public string Name {
+			get { return handler.Name; }
+		}
+		
+		public string Id {
+			get { return handler.Id; }
+		}
+		
+		public FileCopyConfiguration CreateConfiguration ()
+		{
+			FileCopyConfiguration c = handler.CreateConfiguration ();
+			c.Bind (this);
+			return c;
+		}
+		
+		internal void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files)
+		{
+			handler.CopyFiles (monitor, replacePolicy, copyConfig, files);
 		}
 	}
 }

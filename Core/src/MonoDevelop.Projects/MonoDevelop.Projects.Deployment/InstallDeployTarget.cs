@@ -1,10 +1,10 @@
 //
-// DirectoryDeployTarget.cs
+// InstallDeployTarget.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,30 +26,37 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public class InstallDeployTarget: DeployTarget
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
+		string prefix = "";
+		string appName = "";
+		
+		[ItemProperty]
+		public string InstallPrefix {
+			get { return prefix; }
+			set { prefix = value; }
+		}
+		
+		[ItemProperty]
+		public string ApplicationName {
+			get { return appName; }
+			set { appName = value; }
+		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
 			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
-		}
-		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+			InstallDeployTarget t = other as InstallDeployTarget;
+			if (t != null) {
+				prefix = t.prefix;
+				appName = t.appName;
+			}
 		}
 	}
 }

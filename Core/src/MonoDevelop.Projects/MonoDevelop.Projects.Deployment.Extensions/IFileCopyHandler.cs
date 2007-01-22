@@ -1,10 +1,11 @@
 //
-// DirectoryDeployTarget.cs
+// IFileCopyHandler.cs
 //
 // Author:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,29 +28,17 @@
 //
 
 using System;
-using MonoDevelop.Projects.Serialization;
+using System.IO;
 
-namespace MonoDevelop.Projects.Deployment
+using MonoDevelop.Core;
+
+namespace MonoDevelop.Projects.Deployment.Extensions
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public interface IFileCopyHandler
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
-		
-		public override void CopyFrom (DeployTarget other)
-		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
-		}
-		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
-		}
+		string Id { get; }
+		string Name { get; }
+		FileCopyConfiguration CreateConfiguration ();
+		void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files);
 	}
 }

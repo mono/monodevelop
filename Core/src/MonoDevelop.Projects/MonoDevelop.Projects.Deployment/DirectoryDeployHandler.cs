@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -54,7 +56,7 @@ namespace MonoDevelop.Projects.Deployment
 		
 		public DeployTarget CreateTarget (CombineEntry entry)
 		{
-			return new DirectoryDeployTarget (entry.BaseDirectory);
+			return new DirectoryDeployTarget ();
 		}
 		
 		public void Deploy (IProgressMonitor monitor, DeployTarget target)
@@ -71,29 +73,9 @@ namespace MonoDevelop.Projects.Deployment
 		void DeployProject (IProgressMonitor monitor, DeployTarget target, Project p)
 		{
 			DirectoryDeployTarget dt = (DirectoryDeployTarget) target;
+			DeployFileCollection deployFiles = p.GetDeployFiles ();
 			
-			string file = p.GetOutputFileName ();
-			if (file != null) {
-				string destFile = Path.Combine (dt.Path, Path.GetFileName (file));
-				CopyFile (file, destFile);
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Deployed file {0}", destFile));
-			}
-			
-			foreach (ProjectFile pfile in p.ProjectFiles) {
-				if (pfile.BuildAction == BuildAction.FileCopy) {
-					string targetFile = Path.Combine (dt.Path, pfile.RelativePath);
-					CopyFile (pfile.Name, targetFile);
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Deployed file {0}", targetFile));
-				}
-			}
-		}
-		
-		void CopyFile (string src, string dest)
-		{
-			string targetDir = Path.GetDirectoryName (dest);
-			if (!Directory.Exists (targetDir))
-				Directory.CreateDirectory (targetDir);
-			Runtime.FileService.CopyFile (src, dest);
+			dt.CopierConfiguration.CopyFiles (monitor, new SimpleFileReplacePolicy (FileReplaceMode.Replace), deployFiles);
 		}
 	}
 }

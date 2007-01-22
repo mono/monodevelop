@@ -1,10 +1,10 @@
 //
-// DirectoryDeployTarget.cs
+// UnknownFileCopierConfiguration.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,29 +27,27 @@
 //
 
 using System;
+using System.Collections;
+
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	
+	public class UnknownFileCopierConfiguration: FileCopyConfiguration, IExtendedDataItem
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
+		Hashtable properties;
 		
-		public override void CopyFrom (DeployTarget other)
+		public UnknownFileCopierConfiguration ()
 		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
 		}
 		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+		public IDictionary ExtendedProperties {
+			get {
+				if (properties == null)
+					properties = new Hashtable ();
+				return properties;
+			}
 		}
 	}
 }

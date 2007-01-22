@@ -27,7 +27,7 @@ namespace MonoDevelop.Projects.Parser
 					}
 			}
 			
-			if ((parameterInfo.Attributes & ParamAttributes.Out) != 0) {
+			if ((parameterInfo.Attributes & ParameterAttributes.Out) != 0) {
 				modifier |= ParameterModifier.Out;
 			} else if (returnType.ByRef) {
 				// FIX: We should look at the return type of this parameter to

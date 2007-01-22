@@ -28,16 +28,18 @@
 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
 	public class DeployService: AbstractService
 	{
-		ArrayList handlers = new ArrayList ();
+		List<DeployHandler> handlers = new List<DeployHandler> ();
+		List<FileCopyHandler> copiers = new List<FileCopyHandler> ();
 		
 		public DeployService()
 		{
@@ -46,24 +48,32 @@ namespace MonoDevelop.Projects.Deployment
 		public override void InitializeService()
 		{
 			base.InitializeService ();
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployHandlers", OnExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployHandlers", OnHandlerExtensionChanged);
+			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployFileCopiers", OnCopierExtensionChanged);
 		}
 		
-		void OnExtensionChanged (ExtensionAction action, object item)
+		void OnHandlerExtensionChanged (ExtensionAction action, object item)
 		{
 			if (action == ExtensionAction.Add) {
 				handlers.Add (new DeployHandler ((IDeployHandler)item));
 			}
 		}
 		
+		void OnCopierExtensionChanged (ExtensionAction action, object item)
+		{
+			if (action == ExtensionAction.Add) {
+				copiers.Add (new FileCopyHandler ((IFileCopyHandler)item));
+			}
+		}
+		
 		public DeployHandler[] GetDeployHandlers (CombineEntry entry)
 		{
-			ArrayList list = new ArrayList ();
+			List<DeployHandler> list = new List<DeployHandler> ();
 			foreach (DeployHandler handler in handlers)
 				if (handler.CanDeploy (entry))
 					list.Add (handler);
 
-			return (DeployHandler[]) list.ToArray (typeof(DeployHandler));
+			return list.ToArray ();
 		}
 		
 		internal DeployHandler GetDeployHandler (string id)
@@ -75,5 +85,18 @@ namespace MonoDevelop.Projects.Deployment
 			return null;
 		}
 		
+		public FileCopyHandler[] GetFileCopyHandlers ()
+		{
+			return copiers.ToArray ();
+		}
+		
+		internal FileCopyHandler GetFileCopyHandler (string id)
+		{
+			foreach (FileCopyHandler handler in copiers)
+				if (handler.Id == id)
+					return handler;
+
+			return null;
+		}
 	}
 }

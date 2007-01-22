@@ -212,12 +212,10 @@
     <File name="./MonoDevelop.Projects.Extensions/DataTypeCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DeployService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Deployment/IDeployHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DeployHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/UnknownCombineEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Deployment/FileDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentGenericParamater.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/TextEncoding.cs" subtype="Code" buildaction="Compile" />
@@ -231,6 +229,21 @@
     <File name="./MonoDevelop.Projects/BuildEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/CompoundClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/DeployFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/FileCopyHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/InstallDeployHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/IFileReplacePolicy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/FileCopyConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/UnknownFileCopyConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/InstallDeployTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment.Extensions/IDeployHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment.Extensions/IFileCopyHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/LocalFileCopyConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/CommandDeployTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/CommandDeployHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />

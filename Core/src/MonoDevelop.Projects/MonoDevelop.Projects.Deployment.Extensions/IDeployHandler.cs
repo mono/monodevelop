@@ -1,5 +1,5 @@
 //
-// DirectoryDeployTarget.cs
+// IDeployHandler.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,30 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using MonoDevelop.Projects.Serialization;
 
-namespace MonoDevelop.Projects.Deployment
+using System;
+using MonoDevelop.Core;
+
+namespace MonoDevelop.Projects.Deployment.Extensions
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public interface IDeployHandler
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
-		
-		public override void CopyFrom (DeployTarget other)
-		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
-		}
-		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
-		}
+		string Id { get; }
+		string Description { get; }
+		string Icon { get; }
+		bool CanDeploy (CombineEntry entry);
+		DeployTarget CreateTarget (CombineEntry entry);
+		void Deploy (IProgressMonitor monitor, DeployTarget target);
 	}
 }

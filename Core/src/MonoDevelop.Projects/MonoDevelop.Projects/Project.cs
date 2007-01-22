@@ -21,6 +21,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Projects
 {
@@ -209,54 +210,58 @@ namespace MonoDevelop.Projects
 		
 		void CopyReferencesToOutputPath (string destPath, bool force)
 		{
+			DeployFileCollection deployFiles = GetReferenceDeployFiles (force);
+			
+			foreach (DeployFile df in deployFiles) {
+				string destinationFileName = Path.Combine (destPath, df.RelativeTargetPath);
+				try {
+					if (destinationFileName != df.SourcePath) {
+						// Make sure the target directory exists
+						if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
+							Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
+						// Copy the file
+						Runtime.FileService.CopyFile (df.SourcePath, destinationFileName);
+					}
+				} catch (Exception e) {
+					Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)df.SourcePath, (object)destinationFileName, (object)e);
+				}
+			}
+		}
+		
+		DeployFileCollection GetReferenceDeployFiles (bool force)
+		{
+			DeployFileCollection deployFiles = new DeployFileCollection ();
+
 			foreach (ProjectReference projectReference in ProjectReferences) {
 				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
 					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
-						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
-						try {
-							if (destinationFileName != referenceFileName) {
-								// Make sure the target directory exists
-								if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
-									Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
-								// Copy the file
-								Runtime.FileService.CopyFile(referenceFileName, destinationFileName);
-								if (File.Exists (referenceFileName + ".mdb"))
-									Runtime.FileService.CopyFile (referenceFileName + ".mdb", destinationFileName + ".mdb");
-							}
-						} catch (Exception e) {
-							Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)referenceFileName, (object)destinationFileName, (object)e);
-						}
+						deployFiles.Add (new DeployFile (referenceFileName, Path.GetFileName (referenceFileName), TargetDirectory.ProgramFiles));
+						if (File.Exists (referenceFileName + ".mdb"))
+							deployFiles.Add (new DeployFile (referenceFileName + ".mdb", Path.GetFileName (referenceFileName) + ".mdb", TargetDirectory.ProgramFiles));
 					}
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
 					Project p = RootCombine.FindProject (projectReference.Reference);
 					if (p != null)
-						p.CopyReferencesToOutputPath (destPath, force);
+						deployFiles.AddRange (p.GetReferenceDeployFiles (force));
 				}
 			}
+			return deployFiles;
 		}
 		
 		void CleanReferencesInOutputPath (string destPath)
 		{
-			foreach (ProjectReference projectReference in ProjectReferences) {
-				if (projectReference.ReferenceType != ReferenceType.Gac) {
-					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
-						string destinationFileName = Path.Combine (destPath, Path.GetFileName (referenceFileName));
-						try {
-							if (destinationFileName != referenceFileName) {
-								if (File.Exists (destinationFileName))
-									Runtime.FileService.DeleteFile (destinationFileName);
-								if (File.Exists (destinationFileName + ".mdb"))
-									Runtime.FileService.DeleteFile (destinationFileName + ".mdb");
-							}
-						} catch (Exception e) {
-							Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
-						}
+			DeployFileCollection deployFiles = GetReferenceDeployFiles (true);
+			
+			foreach (DeployFile df in deployFiles) {
+				string destinationFileName = Path.Combine (destPath, df.RelativeTargetPath);
+				try {
+					if (destinationFileName != df.SourcePath) {
+						if (File.Exists (destinationFileName))
+							Runtime.FileService.DeleteFile (destinationFileName);
 					}
-				}
-				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
-					Project p = RootCombine.FindProject (projectReference.Reference);
-					p.CleanReferencesInOutputPath (destPath);
+				} catch (Exception e) {
+					Runtime.LoggingService.ErrorFormat ("Can't delete reference file {0}: {2}", destinationFileName, e);
 				}
 			}
 		}
@@ -268,6 +273,26 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile file in ProjectFiles) {
 				file.Dispose ();
 			}
+		}
+		
+		public virtual DeployFileCollection GetDeployFiles ()
+		{
+			DeployFileCollection files = new DeployFileCollection ();
+			
+			//add files that are marked to 'deploy'
+			foreach (ProjectFile pf in ProjectFiles)
+				if (pf.BuildAction == BuildAction.FileCopy)
+					files.Add (new DeployFile (pf.FilePath, pf.RelativePath));
+			
+			//add referenced libraries
+			files.AddRange (GetReferenceDeployFiles (false));
+			
+			//add the compiled output file
+			string outputFile = this.GetOutputFileName ();
+			if ( !string.IsNullOrEmpty (outputFile))
+				files.Add (new DeployFile (outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
+			
+			return files;
 		}
 		
 		public ProjectReference AddReference (string filename)

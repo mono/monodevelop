@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.Parser
 			if (ccls != null)
 				return ccls.RemoveFile (fileName);
 			
-			if (cls.Region.FileName == fileName)
+			if (cls.Region == null || cls.Region.FileName == fileName)
 				return null;
 
 			// Class belongs to another file

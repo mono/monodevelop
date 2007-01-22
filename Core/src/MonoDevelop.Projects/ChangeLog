@@ -1,3 +1,58 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CombineEntry.cs: Dispose data in the extended
+	  properties dictionary.
+	* MonoDevelop.Projects/Project.cs: Added some new deployment
+	  infrastructure, which allows a project to specify which files need
+	  to be deployed and where (based on a patch by Michael Hutchinson).
+	* MonoDevelop.Projects.addin.xml: Registered new deployment targets.
+	* MonoDevelop.Projects.Deployment.Extensions/IFileCopyHandler.cs,
+	  MonoDevelop.Projects.Deployment/DeployService.cs,
+	  MonoDevelop.Projects.Deployment/LocalFileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/UnknownFileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs,
+	  MonoDevelop.Projects.Deployment/FileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/IFileReplacePolicy.cs,
+	  MonoDevelop.Projects.Deployment/FileCopyHandler.cs: New
+	  infrastructure which provides pluggable files copiers. The default
+	  implementation allows copying files to local filesystem. Based on a
+	  patch by Michael Hutchinson.
+	* MonoDevelop.Projects.Deployment.Extensions/IDeployHandler.cs: Moved
+	  from MonoDevelop.Projects.Deployment
+	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs: Use the
+	  new file copy infrastructure to copy files.
+	* MonoDevelop.Projects.Deployment/InstallDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/InstallDeployTarget.cs: New deploy
+	  target which install files on the provided installation prefix.
+	* MonoDevelop.Projects.Deployment/CommandDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/CommandDeployTarget.cs: New
+	  deployment target. Allows executing a command.
+	* MonoDevelop.Projects.Deployment/DeployHandler.cs: Track changes.
+	* MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs: New
+	  deployment target. Allows executing a sequence of other deployment
+	  targets.
+	* MonoDevelop.Projects.Deployment/DeployFile.cs: Added some new
+	  deployment infrastructure, which allows a project to specify which
+	  files need to be deployed and where. Based on a patch by Michael
+	  Hutchinson.
+	* MonoDevelop.Projects.Deployment/DeployTarget.cs: Some minors
+	  improvements.
+	* MonoDevelop.Projects.Deployment/IDeployHandler.cs: Moved to
+	  MonoDevelop.Projects.Deployment.Extensions
+	* MonoDevelop.Projects.Deployment/FileDeployTarget.cs: Removed.
+	  Replaced by DirectoryDeployTarget.
+	* MonoDevelop.Projects.Parser/GenericParameter.cs: Removed unused
+	  namespace.
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: When
+	  looking for assembly references, look for assemblies in the local
+	  directory, before trying to do a global search.
+	* MonoDevelop.Projects.Parser/CompoundClass.cs: Added null check.
+	* MonoDevelop.Projects.Parser/ReflectionParameter.cs: Track changes in
+	  the Cecil api.
+
 2007-01-20  Ankit Jain  <jankit@novell.com>
 
 	* ProjectService.cs (OnFormatExtensionChanged): Add null check.

@@ -274,6 +274,12 @@ namespace MonoDevelop.Projects
 		
 		public virtual void Dispose()
 		{
+			if (extendedProperties != null)
+				foreach (object ob in extendedProperties.Values) {
+					IDisposable disp = ob as IDisposable;
+					if (disp != null)
+						disp.Dispose ();
+				}
 		}
 		
 		protected virtual void OnNameChanged (CombineEntryRenamedEventArgs e)

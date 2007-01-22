@@ -64,10 +64,14 @@ namespace MonoDevelop.Projects.Deployment
 		
 		public void Deploy (IProgressMonitor monitor)
 		{
+			monitor.BeginTask ("Deploy operation: " + Name, 1);
 			try {
 				this.DeployHandler.Deploy (monitor, this);
 			} catch (Exception ex) {
 				monitor.ReportError ("Deploy operation failed", ex);
+				monitor.AsyncOperation.Cancel ();
+			} finally {
+				monitor.EndTask ();
 			}
 		}
 		
@@ -78,6 +82,13 @@ namespace MonoDevelop.Projects.Deployment
 		
 		public CombineEntry CombineEntry {
 			get { return entry; }
+		}
+		
+		public DeployTarget Clone ()
+		{
+			DeployTarget d = DeployHandler.CreateTarget (entry);
+			d.CopyFrom (this);
+			return d;
 		}
 		
 		public virtual void CopyFrom (DeployTarget other)

@@ -1,10 +1,11 @@
 //
-// DirectoryDeployTarget.cs
+// LocalFileCopyConfiguration.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,29 +28,29 @@
 //
 
 using System;
+using System.IO;
+
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public class DirectoryDeployTarget: DeployTarget
+	public class LocalFileCopyConfiguration: FileCopyConfiguration
 	{
-		[ItemProperty ("Copier")]
-		FileCopyConfiguration copierConfiguration;
+		string targetDirectory = "";
 		
-		public override void CopyFrom (DeployTarget other)
-		{
-			base.CopyFrom (other);
-			
-			FileCopyConfiguration otherConf = ((DirectoryDeployTarget)other).copierConfiguration;
-			if (otherConf != null)
-				copierConfiguration = otherConf.Clone ();
-			else
-				copierConfiguration = null;
+		[ItemProperty]
+		public string TargetDirectory {
+			get { return targetDirectory; }
+			set { targetDirectory = value; }
 		}
 		
-		public FileCopyConfiguration CopierConfiguration {
-			get { return copierConfiguration; }
-			set { copierConfiguration = value; }
+		public override void CopyFrom (FileCopyConfiguration other)
+		{
+			base.CopyFrom (other);
+			LocalFileCopyConfiguration conf = other as LocalFileCopyConfiguration;
+			if (conf != null)
+				targetDirectory = conf.targetDirectory;
 		}
 	}
 }
