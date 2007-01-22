@@ -200,8 +200,17 @@ namespace MonoDevelop.Core.Gui
 		
 		public int ShowCustomDialog(string caption, string dialogText, params string[] buttontexts)
 		{
-			// TODO
-			return 0;
+			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(dialogText))) {
+				
+				for (int i = 0; i < buttontexts.Length; i++)
+					md.AddActionWidget (new Button (buttontexts[i]), i);
+
+				md.ActionArea.ShowAll ();
+				int response = md.Run ();
+				md.Hide ();
+
+				return response;
+			}
 		}
 		
 		public void ShowMessage(string message)

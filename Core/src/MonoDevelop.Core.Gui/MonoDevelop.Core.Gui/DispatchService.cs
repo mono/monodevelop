@@ -169,6 +169,7 @@ namespace MonoDevelop.Core.Gui
 
 		private void backgroundDispatcher ()
 		{
+			// FIXME: use an event to avoid active wait
 			while (true) {
 				if (arrBackgroundQueue.Count == 0) {
 					Thread.Sleep (500);

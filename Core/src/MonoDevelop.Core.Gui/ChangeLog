@@ -1,3 +1,10 @@
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.Utils/DesktopApplication.cs: Fix warning.
+	* MonoDevelop.Core.Gui/DispatchService.cs: Added fixme.
+	* MonoDevelop.Core.Gui/MessageService.cs: Implemented ShowCustomDialog
+	  (patch by Michael Hutchinson).
+
 2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs,
