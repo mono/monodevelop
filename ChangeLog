@@ -1,3 +1,8 @@
+2007-01-23 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Make sure all files are built using utf8. Should
+	  fix bug #80010.
+
 2006-12-01 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* configure.in: Fixed $enable_subversion typo.
