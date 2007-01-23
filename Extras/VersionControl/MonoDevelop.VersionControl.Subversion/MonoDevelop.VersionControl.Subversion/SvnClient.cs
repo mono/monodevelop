@@ -11,6 +11,7 @@ namespace MonoDevelop.VersionControl.Subversion
 	{
 		IntPtr pool;
 		IntPtr ctx;
+		IntPtr auth_baton;
 		static LibApr apr;
 		
 		object sync = new object();
@@ -58,6 +59,20 @@ namespace MonoDevelop.VersionControl.Subversion
 			ctxstruct = new svn_client_ctx_t();
 			ctxstruct.NotifyFunc = new svn_wc_notify_func_t(svn_wc_notify_func_t_impl);
 			ctxstruct.LogMsgFunc = new svn_client_get_commit_log_t(svn_client_get_commit_log_impl);
+
+			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
+			IntPtr item = apr.array_push (providers);
+			svn_client_get_simple_provider (item, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_username_provider (item, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_ssl_server_trust_file_provider (item, pool);
+			
+			svn_auth_open (out auth_baton, providers, pool); 
+			ctxstruct.auth_baton = auth_baton;
+
 			Marshal.StructureToPtr(ctxstruct, ctx, false);
 		}
 		
@@ -482,8 +497,18 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		private void CheckError(IntPtr error) {
 			if (error == IntPtr.Zero) return;
-			svn_error_t error_t = (svn_error_t)Marshal.PtrToStructure(error, typeof(svn_error_t));				
-			throw new SubversionException(error_t.message);
+			string msg = null;
+			while (error != IntPtr.Zero) {
+				svn_error_t error_t = (svn_error_t)Marshal.PtrToStructure(error, typeof(svn_error_t));
+				if (msg != null)
+					msg += "\n" + error_t.message;
+				else
+					msg = error_t.message;
+				error = error_t.svn_error_t_child;
+			}
+			if (msg == null)
+				msg = "Unknown error";
+			throw new SubversionException (msg);
 		}
 		
 		void svn_wc_notify_func_t_impl(IntPtr baton, IntPtr path,
@@ -897,6 +922,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		delegate IntPtr svn_client_get_commit_log_t(ref IntPtr log_msg,
 			ref IntPtr tmp_file, IntPtr commit_items, IntPtr baton,
 			IntPtr pool);
+
+		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_version();
 		

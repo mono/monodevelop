@@ -3,17 +3,14 @@ using System.Collections;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
-	public class EditRepositoryDialog : Gtk.Dialog
+	public partial class EditRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
-		protected Gtk.EventBox repoEditorContainer;
-		protected Gtk.ComboBox versionControlType;
 		ArrayList systems = new ArrayList ();
-		protected Gtk.Entry entryName;
 		
 		public EditRepositoryDialog (Repository editedRepository)
 		{
-			Stetic.Gui.Build(this, typeof(EditRepositoryDialog));
+			Build ();
 			this.repo = editedRepository;
 			
 			if (repo != null) {

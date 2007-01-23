@@ -3,23 +3,15 @@ using System;
 
 namespace MonoDevelop.VersionControl
 {
-	public class UrlBasedRepositoryEditor : Gtk.Bin
+	public partial class UrlBasedRepositoryEditor : Gtk.Bin
 	{
-		protected Gtk.Entry repositoryUrlEntry;
-		protected Gtk.Entry repositoryServerEntry;
-		protected Gtk.SpinButton repositoryPortSpin;
-		protected Gtk.Entry repositoryPathEntry;
-		protected Gtk.Entry repositoryUserEntry;
-		protected Gtk.Entry repositoryPassEntry;
-		protected Gtk.ComboBox comboProtocol;
-		
 		UrlBasedRepository repo;
 		bool updating;
 		string[] protocols;
 		
 		public UrlBasedRepositoryEditor (UrlBasedRepository repo, string[] supportedProtocols)
 		{
-			Stetic.Gui.Build(this, typeof(UrlBasedRepositoryEditor));
+			Build ();
 			protocols = supportedProtocols;
 				
 			this.repo = repo;

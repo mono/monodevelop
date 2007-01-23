@@ -8,20 +8,18 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
-	class CommitDialog : Gtk.Dialog
+	partial class CommitDialog : Gtk.Dialog
 	{
-		protected Gtk.TreeView fileList;
 		ListStore store;
 		ArrayList selected = new ArrayList ();
 		ArrayList extensions = new ArrayList ();
 		ChangeSet changeSet;
 		string oldMessage;
-		protected Gtk.TextView textview;
-		protected Gtk.VBox vboxExtensions;
 
 		public CommitDialog (ChangeSet changeSet)
 		{
-			Stetic.Gui.Build(this, typeof(CommitDialog));
+			Build ();
+
 			store = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
 			this.changeSet = changeSet;

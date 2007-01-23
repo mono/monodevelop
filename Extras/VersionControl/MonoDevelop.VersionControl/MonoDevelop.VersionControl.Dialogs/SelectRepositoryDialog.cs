@@ -11,14 +11,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 		Publish
 	}
 	
-	public class SelectRepositoryDialog : Gtk.Dialog
+	public partial class SelectRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
-		protected Gtk.ComboBox repCombo;
-		protected Gtk.EventBox repoContainer;
-		protected Gtk.TreeView repoTree;
-		protected Gtk.Button buttonRemove;
-		protected Gtk.Button buttonEdit;
 		ArrayList systems = new ArrayList ();
 		Gtk.TreeStore store;
 		SelectRepositoryMode mode;
@@ -29,21 +24,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 		const int FilledCol = 3;
 		const int IconCol = 4;
 		
-		protected Gtk.Entry entryFolder;
-		protected Gtk.Notebook notebook;
-		protected Gtk.Label labelName;
-		protected Gtk.Entry entryName;
-		protected Gtk.HBox boxMessage;
-		protected Gtk.Label labelMessage;
-		protected Gtk.Label labelTargetDir;
-		protected Gtk.HBox boxFolder;
-		protected Gtk.Label labelRepository;
-		protected Gtk.Entry entryMessage;
-		protected Gtk.Button buttonOk;
-		
 		public SelectRepositoryDialog (SelectRepositoryMode mode)
 		{
-			Stetic.Gui.Build (this, typeof(SelectRepositoryDialog));
+			Build ();
 			
 			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
 				repCombo.AppendText (vcs.Name);

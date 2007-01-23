@@ -254,7 +254,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public string PathDiff (string path, bool recursive)
 		{
-			return Client.PathDiff (path, SvnClient.Rev.Working, path, SvnClient.Rev.Head, recursive);
+			return Client.PathDiff (path, SvnClient.Rev.Base, path, SvnClient.Rev.Working, recursive);
 		}
 		
 		private VersionInfo CreateNode (SvnClient.StatusEnt ent, Repository repo) 

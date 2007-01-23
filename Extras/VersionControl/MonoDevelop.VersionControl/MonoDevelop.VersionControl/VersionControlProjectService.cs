@@ -280,13 +280,13 @@ namespace MonoDevelop.VersionControl
 				FileStatusChanged (null, new FileUpdateEventArgs (repo, localPath, isDirectory));
 		}
 		
-		static void OnFileChanged (object s, ProjectFileEventArgs args)
+/*		static void OnFileChanged (object s, ProjectFileEventArgs args)
 		{
 			Repository repo = GetRepository (args.Project, args.ProjectFile.FilePath);
 			if (repo != null)
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		}
-		
+*/
 		static void OnFileAdded (object s, ProjectFileEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
@@ -299,7 +299,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		static void OnFileRemoved (object s, ProjectFileEventArgs args)
+/*		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
 			Repository repo = GetRepository (args.Project, path);
@@ -310,17 +310,17 @@ namespace MonoDevelop.VersionControl
 				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
 			}
 		}
-		
+
 		static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
 		{
-/*			string path = args.ProjectFile.FilePath;
+			string path = args.ProjectFile.FilePath;
 			Repository repo = GetRepository (args.Project, path);
 			if (repo.IsVersioned (path) && repo.CanRemove (path)) {
 				repo.Remove (path);
 				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
 			}
-*/		}
-
+		}
+*/
 		static IProgressMonitor GetStatusMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Updating version control repository"), "vc-remote-status", true);

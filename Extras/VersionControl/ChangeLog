@@ -1,3 +1,39 @@
+2007-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl/gtk-gui/generated.cs,
+	  MonoDevelop.VersionControl/gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Provide auth_baton for subversion authentication (patch by Duncan
+	  Mackay <duncan.mackay@provenco.com>). In CheckError, get error
+	  messages from all all nested error objects.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  PathDiff now returns differences between the base and the working
+	  versions.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/Makefile.am: Added new files.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:
+	  Use the new partial class model.
+	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	  New partial files for the dialogs.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
+	  When the view is refreshed, discard the diffs already loaded. Track
+	  changes in diff cell renderer.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/CellRendererDiff.cs:
+	  Cache Layout objects for diff content, since they may be very big
+	  and take too much time to construct. The cell renderer is now must
+	  faster for big files.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:
+	  Fix warning.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:
+	  Fix warnings.
+
 2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	Put under version control new files added to a project.

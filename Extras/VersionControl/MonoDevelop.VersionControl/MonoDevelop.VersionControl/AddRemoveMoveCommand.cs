@@ -127,12 +127,10 @@ namespace MonoDevelop.VersionControl
 		private class RemoveWorker : Task {
 			Repository vc;
 			string path;
-			bool isDir;
 						
 			public RemoveWorker(Repository vc, string path, bool isDir) {
 				this.vc = vc;
 				this.path = path;
-				this.isDir = isDir;
 			}
 			
 			protected override string GetDescription() {

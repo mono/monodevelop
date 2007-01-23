@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using Gtk;
 using Gdk;
 
@@ -10,21 +11,41 @@ namespace MonoDevelop.VersionControl.Views
 		Pango.Layout layout;
 		Pango.FontDescription font;
 		bool diffMode;
-			
+		Hashtable layoutCache = new Hashtable ();
+
 		public CellRendererDiff()
 		{
 			font = Pango.FontDescription.FromString ((string) new GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name"));
 		}
 		
-		public void InitCell (Widget container, bool diffMode, string text)
+		public void Reset ()
+		{
+			layoutCache.Clear ();
+		}
+		
+		public void InitCell (Widget container, bool diffMode, string text, string path)
 		{
 			this.diffMode = diffMode; 
-			
-			layout = new Pango.Layout (container.PangoContext);
+
+			if (diffMode) {
+				layout = (Pango.Layout) layoutCache [path];
+				if (layout == null) {
+					layout = CreateLayout (container, text);
+					layoutCache [path] = layout;
+				}
+			}
+			else
+				layout = CreateLayout (container, text);
+		}
+		
+		Pango.Layout CreateLayout (Widget container, string text)
+		{
+			Pango.Layout layout = new Pango.Layout (container.PangoContext);
 			layout.SingleParagraphMode = false;
 			if (diffMode)
 				layout.FontDescription = font;
 			layout.SetMarkup (text);
+			return layout;
 		}
 
 		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)

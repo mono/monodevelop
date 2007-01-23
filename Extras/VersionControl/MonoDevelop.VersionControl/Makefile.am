@@ -31,6 +31,10 @@ build_sources = MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 				MonoDevelop.VersionControl.Views/Diffs.cs \
 				MonoDevelop.VersionControl.Views/Logs.cs \
 				MonoDevelop.VersionControl.Views/Statuses.cs \
+				gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs \
+				gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \
+				gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
+				gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
 				gtk-gui/generated.cs
 
 REFS = /r:Mono.Posix.dll \

@@ -34,6 +34,7 @@ namespace MonoDevelop.VersionControl.Views
 		TreeViewColumn colCommit, colRemote;
 		TreeStore filestore;
 		ScrolledWindow scroller;
+		CellRendererDiff diffRenderer;
 		
 		Box commitBox;
 		TextView commitText;
@@ -159,12 +160,12 @@ namespace MonoDevelop.VersionControl.Views
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
 			crp = new CellRendererPixbuf();
-			CellRendererDiff cdif = new CellRendererDiff ();
+			diffRenderer = new CellRendererDiff ();
 			colFile.PackStart (crp, false);
-			colFile.PackStart (cdif, true);
+			colFile.PackStart (diffRenderer, true);
 			colFile.AddAttribute (crp, "stock-id", ColIconFile);
 			colFile.AddAttribute (crp, "visible", ColShowToggle);
-			colFile.SetCellDataFunc (cdif, new TreeCellDataFunc (SetDiffCellData));
+			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
 			colRemote = new TreeViewColumn("Remote Status", new CellRendererText(), "text", ColRemoteStatus);
 			
@@ -312,7 +313,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		private void Update ()
 		{
+			diffRequested = false;
+			difs = null;
 			filestore.Clear();
+			diffRenderer.Reset ();
 			
 			if (statuses.Count > 0) {
 				foreach (VersionInfo n in statuses) {
@@ -658,6 +662,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnFillDifs (object s, EventArgs a)
 		{
+			diffRenderer.Reset ();
+
 			diffRequested = true;
 			diffRunning = false;
 			
@@ -685,10 +691,11 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			CellRendererDiff rc = (CellRendererDiff) cell;
 			string text = (string) filestore.GetValue (iter, ColPath);
+			string path = (string) filestore.GetValue (iter, ColFullPath);
 			if (filestore.IterDepth (iter) == 0) {
-				rc.InitCell (filelist, false, text);
+				rc.InitCell (filelist, false, text, path);
 			} else {
-				rc.InitCell (filelist, true, text);
+				rc.InitCell (filelist, true, text, path);
 			}
 		}
 		
