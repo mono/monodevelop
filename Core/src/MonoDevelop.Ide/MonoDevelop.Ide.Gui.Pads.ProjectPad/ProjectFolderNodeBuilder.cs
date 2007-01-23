@@ -165,27 +165,38 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void RemoveItem ()
 		{
 			ProjectFolder folder = (ProjectFolder) CurrentNode.DataItem as ProjectFolder;
-			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to remove folder {0}?", folder.Name));
-			if (!yes) return;
-			
 			Project project = folder.Project;
 			ProjectFile[] files = folder.Project.ProjectFiles.GetFilesInPath (folder.Path);
-			ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));
 			
-			if (inParentFolder.Length == files.Length) {
-				// This is the last folder in the parent folder. Make sure we keep
-				// a reference to the folder, so it is not deleted from the tree.
-				ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (folder.Path));
-				folderFile.Subtype = Subtype.Directory;
-				project.ProjectFiles.Add (folderFile);
-			}
-			
-			foreach (ProjectFile file in files)
-				folder.Project.ProjectFiles.Remove (file);
+			if (files.Length == 0) {
+				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to permanently delete the folder {0}?", folder.Path));
+				if (!yes) return;
 
-//			folder.Remove ();
-			IdeApp.ProjectOperations.SaveCombine();
+				try {
+					Runtime.FileService.DeleteDirectory (folder.Path);
+				} catch {
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted", folder.Path));
+				}
+			}
+			else {
+				bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to remove folder {0}?", folder.Name));
+				if (!yes) return;
+				
+				ProjectFile[] inParentFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (folder.Path));
+				
+				if (inParentFolder.Length == files.Length) {
+					// This is the last folder in the parent folder. Make sure we keep
+					// a reference to the folder, so it is not deleted from the tree.
+					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (folder.Path));
+					folderFile.Subtype = Subtype.Directory;
+					project.ProjectFiles.Add (folderFile);
+				}
+				
+				foreach (ProjectFile file in files)
+					folder.Project.ProjectFiles.Remove (file);
+
+				IdeApp.ProjectOperations.SaveCombine();
+			}
 		}
 		
 		public override DragOperation CanDragNode ()

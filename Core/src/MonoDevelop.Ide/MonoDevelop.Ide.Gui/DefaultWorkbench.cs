@@ -469,6 +469,8 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 			}
 			
+			CloseAllViews ();
+			
 			IdeApp.ProjectOperations.CloseCombine (false);
 			Runtime.Properties.SetProperty("SharpDevelop.Workbench.WorkbenchMemento", CreateMemento());
 			IdeApp.OnExited ();
