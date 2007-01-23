@@ -1,5 +1,11 @@
 2007-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: Don't allow
+	  opening remote files.
+
+2007-01-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
 	  Allow deleting folders which don't belong to a project.
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Dispose all views before

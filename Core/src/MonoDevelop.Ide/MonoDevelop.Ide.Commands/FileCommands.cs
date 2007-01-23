@@ -104,6 +104,13 @@ namespace MonoDevelop.Ide.Commands
 				string name = fs.Filename;
 				fs.Hide ();
 				if (response == (int)Gtk.ResponseType.Ok) {
+					if (name == null) {
+						if (fs.Uri != null)
+							IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
+						else
+							IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
+						return;
+					}
 					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 					if (ps.IsCombineEntryFile (name))
 						IdeApp.ProjectOperations.OpenCombine (name);

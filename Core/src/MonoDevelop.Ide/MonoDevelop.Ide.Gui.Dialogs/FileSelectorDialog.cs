@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public FileSelectorDialog (string title, Gtk.FileChooserAction action): base (title, action)
 		{
+			LocalOnly = true;
+			
 			ArrayList filters = new ArrayList ();
 			filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/Combine/FileFilter").BuildChildItems (this));
 			try
