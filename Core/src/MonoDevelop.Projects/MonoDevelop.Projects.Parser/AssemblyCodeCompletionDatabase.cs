@@ -277,15 +277,8 @@ namespace MonoDevelop.Projects.Parser
 
 			string baseDir = Path.GetDirectoryName (assemblyFile);
 			
-			for (int n=0; n<names.Count; n++) {
-				string baseName = Path.Combine (baseDir, names[n].Name);
-				if (File.Exists (baseName + ".dll"))
-					references [n] = "Assembly:" + baseName + ".dll";
-				else if (File.Exists (baseName + ".exe"))
-					references [n] = "Assembly:" + baseName + ".exe";
-				else
-					references [n] = "Assembly:" + names [n].FullName;
-			}
+			for (int n=0; n<names.Count; n++)
+				references [n] = "Assembly:" + names [n].FullName;
 			
 			return true;
 		}
