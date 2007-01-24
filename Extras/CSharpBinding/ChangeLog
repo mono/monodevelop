@@ -1,5 +1,10 @@
 2007-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/LanguageItemVisitor.cs: Properly resolve method overloads.
+	  Fixes bug #77418.
+
+2007-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CSharpBinding.mdp: Removed old dependency.
 	* Parser/TypeVisitor.cs, Parser/SharpDevelopTree/ReturnType.cs: Take
 	  into account that the parser returns array dimensions starting at

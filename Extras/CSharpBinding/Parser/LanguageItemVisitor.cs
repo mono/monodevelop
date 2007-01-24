@@ -51,13 +51,14 @@ namespace CSharpBinding.Parser
 					return null;
 				}
 				// TODO: Find the right method
-				return methods[0];
+				return ResolveOverload (methods, invocationExpression, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				IReturnType type = new ReturnType(resolver.CallingClass.FullyQualifiedName);
+				resolver.ShowStatic = true;
 				ArrayList methods = resolver.SearchMethod(type, id);
 				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
@@ -65,7 +66,7 @@ namespace CSharpBinding.Parser
 					return resolver.SearchType (id, resolver.CompilationUnit);
 				}
 				// TODO: Find the right method
-				return methods[0];
+				return ResolveOverload (methods, invocationExpression, data);
 			}
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
@@ -78,9 +79,49 @@ namespace CSharpBinding.Parser
 				if (methods.Count <= 0) {
 					return null;
 				}
-				return methods[0];
+				return ResolveOverload (methods, invocationExpression, data);
 			}
 			return null;
+		}
+		
+		IMethod ResolveOverload (ArrayList methods, InvocationExpression invocationExpression, object data)
+		{
+			TypeVisitor tv = new TypeVisitor (resolver);
+			IReturnType[] argTypes = new IReturnType [invocationExpression.Arguments.Count];
+			for (int n=0; n<invocationExpression.Arguments.Count; n++) {
+				Expression arg = invocationExpression.Arguments [n];
+				argTypes [n] = arg.AcceptVisitor (tv, data) as IReturnType;
+			}
+			
+			foreach (IMethod met in methods) {
+				if (met.Parameters.Count != argTypes.Length)
+					continue;
+				bool allEqual = true;
+				for (int n=0; n<argTypes.Length; n++) {
+					if (!TypesAreEqual (met.Parameters[n].ReturnType, argTypes [n])) {
+						allEqual = false;
+						break;
+					}
+				}
+				if (allEqual)
+					return met;
+			}
+			return null;
+		}
+		
+		bool TypesAreEqual (IReturnType t1, IReturnType t2)
+		{
+			if (t1.FullyQualifiedName != t2.FullyQualifiedName ||
+			    t1.ByRef != t2.ByRef || 
+			    t1.PointerNestingLevel != t2.PointerNestingLevel || 
+			    t1.ArrayDimensions.Length != t2.ArrayDimensions.Length)
+				return false;
+				
+			for (int n=0; n<t1.ArrayDimensions.Length; n++) {
+				if (t1.ArrayDimensions [n] != t2.ArrayDimensions[n])
+					return false;
+			}
+			return true;
 		}
 		
 		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
