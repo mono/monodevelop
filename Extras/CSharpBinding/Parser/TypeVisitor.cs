@@ -233,10 +233,10 @@ namespace CSharpBinding.Parser
 		{
 			//Console.WriteLine("TypeVisiting IndexerExpression");
 			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
-			//Console.WriteLine("Type is " + type.FullyQualifiedName);
 			if (type == null) {
 				return null;
 			}
+				
 			if (type.ArrayDimensions == null || type.ArrayDimensions.Length == 0) {
 				//Console.WriteLine("No Array, checking indexer");
 				// check if ther is an indexer
@@ -255,13 +255,13 @@ namespace CSharpBinding.Parser
 			}
 			
 			// TODO: what is a[0] if a is pointer to array or array of pointer ? 
-			if (type.ArrayDimensions[type.ArrayDimensions.Length - 1] != indexerExpression.Indices.Count) {
+			if (type.ArrayDimensions[0] != indexerExpression.Indices.Count) {
 				//Console.WriteLine("Number of indices do not match the Array dimension");
 				return null;
 			}
 			int[] newArray = new int[type.ArrayDimensions.Length - 1];
-			Array.Copy(type.ArrayDimensions, 0, newArray, 0, type.ArrayDimensions.Length - 1);
-			return new ReturnType(type.Name, newArray, type.PointerNestingLevel, type.GenericArguments);
+			Array.Copy(type.ArrayDimensions, 1, newArray, 0, type.ArrayDimensions.Length - 1);
+			return new ReturnType(type.Name, newArray, type.PointerNestingLevel, type.GenericArguments, false);
 		}
 		
 		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
@@ -292,7 +292,7 @@ namespace CSharpBinding.Parser
 			IClass type = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CompilationUnit);
 			if (type == null) return null;
 			string name = type.FullyQualifiedName;
-			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel, null);
+			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel, null, true);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)

@@ -212,12 +212,7 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			
-			IClass cls = ob as IClass;
-			if (cls != null) {
-				return ReturnType.Convert (cls);
-			}
-			
-			return null;
+			return ob;
 		}
 		
 		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)

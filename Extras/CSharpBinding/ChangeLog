@@ -1,3 +1,14 @@
+2007-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp: Removed old dependency.
+	* Parser/TypeVisitor.cs, Parser/SharpDevelopTree/ReturnType.cs: Take
+	  into account that the parser returns array dimensions starting at
+	  0, not at 1.  Fixed some issues when resolving indexer types. Fixes
+	  bug #79382.
+	* Parser/LanguageItemVisitor.cs: When visiting an indexer, if there is
+	  no indexer (it can be an array access), return the target type.
+	* templates/GtkSharp2Project.xpt.xml: Fix template.
+
 2007-01-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* templates/GtkSharp2Project.xpt.xml: Use the new partial class model.

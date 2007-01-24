@@ -10,9 +10,11 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		{
 		}
 		
-		public ReturnType(string fullyQualifiedName, int[] arrayDimensions, int pointerNestingLevel, ReturnTypeList genericArguments)
+		public ReturnType(string fullyQualifiedName, int[] arrayDimensions, int pointerNestingLevel, ReturnTypeList genericArguments, bool fixDimensions)
 		: base (fullyQualifiedName, arrayDimensions, pointerNestingLevel, genericArguments)
 		{
+			if (fixDimensions)
+				SetArrayDimensions (arrayDimensions);
 		}
 		
 		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type): this (type, null)
@@ -22,8 +24,8 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type, IClass resolvedClass)
 		{
 			this.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : type.SystemType;
-			this.arrayDimensions     = type.RankSpecifier == null ? new int[] { } : type.RankSpecifier;
 			this.pointerNestingLevel = type.PointerNestingLevel;
+			SetArrayDimensions (type.RankSpecifier);
 			
 			// Now get generic arguments
 			if (type.GenericTypes != null && type.GenericTypes.Count > 0) {
@@ -38,32 +40,28 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 				}
 			}
 		}
-		public ReturnType Clone()
+		
+		void SetArrayDimensions (int[] dimensions)
 		{
-			return new ReturnType (FullyQualifiedName, arrayDimensions, pointerNestingLevel, genericArguments);
+			// The parser returns the number of dimensions - 1.
+			// So, for the array int[,] it would return 1. It has to be fixed.
+			
+			if (dimensions != null && dimensions.Length > 0) {
+				this.arrayDimensions = new int [dimensions.Length];
+				for (int n=0; n<dimensions.Length; n++)
+					arrayDimensions [n] = dimensions [n] + 1;
+			} else
+				this.arrayDimensions = null;
 		}
 		
-		/// <summary>
-		/// This method is used to convert classes to return types of indexers.
-		/// </summary>
-		internal static ReturnType Convert (IClass cls)
+		public ReturnType Clone()
 		{
-			ReturnTypeList rtl = null;
-			
-			if (cls.GenericParameters != null && cls.GenericParameters.Count > 0) {
-				rtl = new ReturnTypeList();
-				
-				foreach (MonoDevelop.Projects.Parser.GenericParameter gp in cls.GenericParameters) {
-					rtl.Add ( ReturnType.Convert (gp));
-				}
-			}
-			
-			return new ReturnType (cls.FullyQualifiedName, new int[] { 0 }, 0, rtl);
+			return new ReturnType (FullyQualifiedName, arrayDimensions, pointerNestingLevel, genericArguments, false);
 		}
 		
 		internal static ReturnType Convert (MonoDevelop.Projects.Parser.GenericParameter gp)
 		{
-			return new ReturnType (gp.Name, new int[0], 0, null);
+			return new ReturnType (gp.Name, null, 0, null, false);
 		}
 	}
 }
