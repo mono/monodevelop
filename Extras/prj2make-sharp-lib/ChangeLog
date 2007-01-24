@@ -1,3 +1,8 @@
+2007-01-24  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs: Remove use of StreamReader.EndOfStream to be
+	compilable with mono 1.1.13.8 
+
 2007-01-20  Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs (HandleCombineEntryAdded):

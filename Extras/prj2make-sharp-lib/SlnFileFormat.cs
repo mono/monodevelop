@@ -364,7 +364,7 @@ namespace MonoDevelop.Prj2Make
 				lines = new List<string> ();
 				globals = new ListDictionary ();
 				//Parse
-				while (!reader.EndOfStream) {
+				while (reader.Peek () >= 0) {
 					s = GetNextLine (reader, lines).Trim ();
 
 					if (String.Compare (s, "Global", true) == 0) {
@@ -508,7 +508,7 @@ namespace MonoDevelop.Prj2Make
 			Regex regex = new Regex (@"GlobalSection\s*\(([^)]*)\)\s*=\s*(\w*)");
 
 			//Process GlobalSection-s
-			while (!reader.EndOfStream) {
+			while (reader.Peek () >= 0) {
 				string s = GetNextLine (reader, lines).Trim ();
 				if (s.Length == 0)
 					//Skip blank lines
@@ -730,7 +730,7 @@ namespace MonoDevelop.Prj2Make
 
 		string GetNextLine (StreamReader reader, List<string> list)
 		{
-			if (reader.EndOfStream)
+			if (reader.Peek () < 0)
 				return null;
 
 			string ret = reader.ReadLine ();
@@ -741,7 +741,7 @@ namespace MonoDevelop.Prj2Make
 		int ReadUntil (string end, StreamReader reader, List<string> lines)
 		{
 			int ret = -1;
-			while (!reader.EndOfStream) {
+			while (reader.Peek () >= 0) {
 				string s = GetNextLine (reader, lines);
 
 				if (String.Compare (s.Trim (), end, true) == 0)
