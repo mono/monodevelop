@@ -1,3 +1,9 @@
+2007-01-27  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReferenceToXmlElement): Use System.Reflection to
+	get assembly name instead of cecil.
+	* Makefile.am: Remove reference to Mono.Cecil .
+
 2007-01-24  Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs: Remove use of StreamReader.EndOfStream to be

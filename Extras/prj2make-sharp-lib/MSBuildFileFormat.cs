@@ -36,6 +36,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -578,8 +579,7 @@ namespace MonoDevelop.Prj2Make
 			case ReferenceType.Gac:
 				break;
 			case ReferenceType.Assembly:
-				//FIXME: netmodule? no assembly manifest?
-				reference = Mono.Cecil.AssemblyFactory.GetAssembly (reference).Name.ToString ();
+				reference = AssemblyName.GetAssemblyName (reference).ToString ();
 
 				AppendChild (elem, "HintPath", ns, 
 					Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference));

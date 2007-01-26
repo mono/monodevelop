@@ -12,8 +12,7 @@ REFS =	-r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll
+	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll
 
 
 FILES = \
