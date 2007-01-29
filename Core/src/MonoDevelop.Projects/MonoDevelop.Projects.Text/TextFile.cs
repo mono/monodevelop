@@ -105,6 +105,13 @@ namespace MonoDevelop.Projects.Text
 			}
 		}
 		
+		public string GetFileEncoding (string fileName)
+		{
+			// Maybe this can be optimized later.
+			TextFile file = TextFile.ReadFile (fileName);
+			return file.SourceEncoding;
+		}
+		
 		static string Convert (byte[] content, string encoding)
 		{
 			int nr=0, nw=0;

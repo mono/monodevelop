@@ -1,5 +1,10 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Text/TextFile.cs: Added method for getting the
+	  encoding of a file.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Makefile.am: Forgot to add one file.
 
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
