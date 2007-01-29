@@ -100,6 +100,10 @@ namespace CSharpBinding
 					writer.WriteLine("\"/win32icon:" + compilerparameters.Win32Icon + "\"");
 			}
 			
+			if (compilerparameters.CodePage != 0) {
+				writer.WriteLine ("/codepage:" + compilerparameters.CodePage);
+			}
+			
 			if (compilerparameters.UnsafeCode) {
 				writer.WriteLine("/unsafe");
 			}

@@ -1,5 +1,15 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CodeGenerationPanel.cs, CSharpBindingCompilerManager.cs,
+	  Project/CSharpCompilerParameters.cs: Implemented support for
+	  CodePage and Win32Icon options.
+	* CSharpBinding.mdp, Makefile.am: Updated.
+	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,
+	  gtk-gui/generated.cs, gtk-gui/gui.stetic: Implement the options
+	  panel using stetic.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs, CSharpBinding.addin.xml: Created
 	  new text editor extension to properly support code completion.
 	* CSharpBinding.mdp, Makefile.am: Updated.

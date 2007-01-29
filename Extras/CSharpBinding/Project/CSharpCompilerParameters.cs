@@ -31,34 +31,37 @@ namespace CSharpBinding
 		CsharpCompiler csharpCompiler = CsharpCompiler.Mcs;
 		
 		[ItemProperty ("warninglevel")]
-		int  warninglevel       = 4;
+		int  warninglevel = 4;
 		
 		[ItemProperty ("nowarn", DefaultValue = "")]
-		string noWarnings      = String.Empty;
+		string noWarnings = String.Empty;
 		
 		[ItemProperty ("optimize")]
-		bool optimize           = true;
+		bool optimize = true;
 		
 		[ItemProperty ("unsafecodeallowed")]
-		bool unsafecode         = false;
+		bool unsafecode = false;
 		
 		[ItemProperty ("generateoverflowchecks")]
 		bool generateOverflowChecks = true;
 		
 		[ItemProperty ("mainclass")]
-		string         mainclass     = null;
+		string mainclass = null;
 		
 		[ItemProperty ("definesymbols", DefaultValue = "")]
-		string         definesymbols = String.Empty;
+		string definesymbols = String.Empty;
 		
 		[ItemProperty ("generatexmldocumentation")]
 		bool generateXmlDocumentation = false;
 		
 		[ProjectPathItemProperty ("win32Icon", DefaultValue = "")]
-		string         win32Icon     = String.Empty;
+		string win32Icon = String.Empty;
 
 		[ProjectPathItemProperty ("win32Resource", DefaultValue = "")]
-		string         win32Resource     = String.Empty;
+		string win32Resource = String.Empty;
+	
+		[ItemProperty ("codepage", DefaultValue = 0)]
+		int codePage;
 	
 		public object Clone ()
 		{
@@ -72,6 +75,15 @@ namespace CSharpBinding
 			}
 			set {
 				csharpCompiler = value;
+			}
+		}
+		
+		public int CodePage {
+			get {
+				return codePage;
+			}
+			set {
+				codePage = value;
 			}
 		}
 		

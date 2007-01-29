@@ -42,7 +42,9 @@ Project/CSharpCompilerParameters.cs \
 CSharpLanguageBinding.cs \
 FormattingStrategy/CSharpFormattingStrategy.cs \
 CSharpBindingCompilerManager.cs \
-CSharpEnhancedCodeProvider.cs
+CSharpEnhancedCodeProvider.cs \
+gtk-gui/generated.cs \
+gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
 
 RES = \
 CSharp.glade \
