@@ -109,14 +109,10 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.IsUntitled; }
 		}
 		
-/*		public void JumpTo (int line, int column)
-		{
-			IViewContent content = Window.ViewContent;
-			if (content is IPositionable) {
-				((IPositionable)content).JumpTo (line, column);
-			}
+		public bool IsViewOnly {
+			get { return Window.ViewContent.IsViewOnly; }
 		}
-*/
+		
 		public virtual void Save ()
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
@@ -153,15 +149,16 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.IsViewOnly)
 				return;
 
-			if (Window.ViewContent is ICustomizedCommands) {
-				if (((ICustomizedCommands)window.ViewContent).SaveAsCommand()) {
+			ICustomizedCommands cmds = GetContent <ICustomizedCommands> ();
+			if (cmds != null) {
+				if (cmds.SaveAsCommand()) {
 					return;
 				}
 			}
 			
 			string encoding = null;
 			
-			IEncodedTextContent tbuffer = Window.ViewContent as IEncodedTextContent;
+			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
 			if (tbuffer != null) {
 				encoding = tbuffer.SourceEncoding;
 				if (encoding == null)

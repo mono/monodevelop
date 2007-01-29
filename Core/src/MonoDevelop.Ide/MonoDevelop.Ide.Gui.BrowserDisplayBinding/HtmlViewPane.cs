@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.BrowserDisplayBinding
 		
 		public void BaseContentChanged ()
 		{
-			ITextBuffer buffer = (ITextBuffer) parent;
+			ITextBuffer buffer = (ITextBuffer) parent.GetContent (typeof(ITextBuffer));
 			
 			try {
 				htmlViewPane.MozillaControl.OpenStream ("file://", "text/html");

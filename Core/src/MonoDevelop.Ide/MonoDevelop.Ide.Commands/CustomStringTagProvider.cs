@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		string GetCurrentItemPath()
 		{
-			if (IdeApp.Workbench.ActiveDocument != null && !IdeApp.Workbench.ActiveDocument.Window.ViewContent.IsViewOnly && !IdeApp.Workbench.ActiveDocument.Window.ViewContent.IsUntitled) {
+			if (IdeApp.Workbench.ActiveDocument != null && !IdeApp.Workbench.ActiveDocument.IsViewOnly && !IdeApp.Workbench.ActiveDocument.IsUntitled) {
 				return IdeApp.Workbench.ActiveDocument.FileName;
 			}
 			return String.Empty;

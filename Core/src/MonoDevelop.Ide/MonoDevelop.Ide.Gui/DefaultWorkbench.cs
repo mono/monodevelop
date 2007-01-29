@@ -252,9 +252,9 @@ namespace MonoDevelop.Ide.Gui
 
 			RedrawAllComponents ();
 			
-			if (content is IEditableTextBuffer) {
-				((IEditableTextBuffer)content).TextChanged += new EventHandler (OnViewTextChanged);
-			}
+			IEditableTextBuffer editor = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			if (editor != null)
+				editor.TextChanged += new EventHandler (OnViewTextChanged);
 		}
 		
 		public virtual void ShowPad (IPadContent content)
@@ -511,14 +511,14 @@ namespace MonoDevelop.Ide.Gui
 			if (ActiveWorkbenchWindow == null || ActiveWorkbenchWindow.ActiveViewContent == null)
 				return false;
 
-			IEditableTextBuffer editable = ActiveWorkbenchWindow.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = (IEditableTextBuffer) ActiveWorkbenchWindow.ActiveViewContent.GetContent (typeof(IEditableTextBuffer));
 			if (editable == null)
 				return false;
 			
 			string fileName = null;
 			
 			IViewContent viewContent = ActiveWorkbenchWindow.ViewContent;
-			IParseableContent parseableContent = ActiveWorkbenchWindow.ActiveViewContent as IParseableContent;
+			IParseableContent parseableContent = (IParseableContent) ActiveWorkbenchWindow.ActiveViewContent.GetContent (typeof(IParseableContent));
 			
 			if (parseableContent != null) {
 				fileName = parseableContent.ParseableContentName;

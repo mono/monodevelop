@@ -306,8 +306,9 @@ namespace MonoDevelop.Ide.Gui
 						doc.Select ();
 						doc.Window.SwitchView (vcIndex);
 					}
-					if (line != -1 && vcFound is IPositionable) {
-						((IPositionable) vcFound).JumpTo (line, column != -1 ? column : 0);
+					IPositionable ipos = (IPositionable) vcFound.GetContent (typeof(IPositionable));
+					if (line != -1 && ipos != null) {
+						ipos.JumpTo (line, column != -1 ? column : 0);
 					}
 					
 					return doc;
@@ -512,8 +513,9 @@ namespace MonoDevelop.Ide.Gui
 					if (doc.FileName == fileName) {
 						if (oFileInfo.BringToFront) {
 							doc.Select ();
-							if (oFileInfo.Line != -1 && doc.Window.ViewContent is IPositionable) {
-								((IPositionable)doc.Window.ViewContent).JumpTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0);
+							IPositionable ipos = doc.GetContent <IPositionable> ();
+							if (oFileInfo.Line != -1 && ipos != null) {
+								ipos.JumpTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0);
 							}
 						}
 						oFileInfo.NewContent = doc.Window.ViewContent;
@@ -647,8 +649,9 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				}
 
-				if (fileInfo.Encoding != null && newContent is IEncodedTextContent)
-					((IEncodedTextContent)newContent).Load (fileName, fileInfo.Encoding);
+				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
+				if (fileInfo.Encoding != null && etc != null)
+					etc.Load (fileName, fileInfo.Encoding);
 				else
 					newContent.Load (fileName);
 			} catch (Exception ex) {
@@ -662,7 +665,8 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			Services.DisplayBindings.AttachSubWindows(newContent.WorkbenchWindow);
 			
-			if (fileInfo.Line != -1 && newContent is IPositionable) {
+			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
+			if (fileInfo.Line != -1 && ipos != null) {
 				GLib.Timeout.Add (10, new GLib.TimeoutHandler (JumpToLine));
 			}
 			fileInfo.NewContent = newContent;
@@ -670,7 +674,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool JumpToLine ()
 		{
-			((IPositionable)newContent).JumpTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
+			IPositionable ipos = (IPositionable) newContent.GetContent (typeof(IPositionable));
+			ipos.JumpTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
 			return false;
 		}
 	}

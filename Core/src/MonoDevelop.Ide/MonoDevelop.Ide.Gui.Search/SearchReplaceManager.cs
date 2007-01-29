@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui.Search
 					find.Reset();
 					return;
 				} else {
-					IBookmarkBuffer textArea = OpenView (result.FileName) as IBookmarkBuffer; 
+					IBookmarkBuffer textArea = OpenView (result.FileName, typeof(IBookmarkBuffer)) as IBookmarkBuffer; 
 					if (textArea != null) {
 						textArea.SetBookmarked (result.DocumentOffset, true);
 					}
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				if (find.DocumentIterator.CurrentFileName != lastResult.FileName)
 					find.Reset ();
 				else {
-					ITextBuffer textArea = OpenView (lastResult.FileName) as ITextBuffer;
+					ITextBuffer textArea = OpenView (lastResult.FileName, typeof(ITextBuffer)) as ITextBuffer;
 					if (textArea == null || (lastResult != null && textArea.CursorPosition != lastResult.DocumentOffset + lastResult.Length))
 						find.Reset();
 				}
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				Services.MessageService.ShowMessage(GettextCatalog.GetString ("Search string not found:") + "\n" + SearchOptions.SearchPattern, DialogPointer ); 
 				find.Reset();
 			} else {
-				ITextBuffer textArea = OpenView (result.FileName) as ITextBuffer;
+				ITextBuffer textArea = OpenView (result.FileName, typeof(ITextBuffer)) as ITextBuffer;
 				if (textArea != null) {
 					int startPos = Math.Min (textArea.Text.Length, Math.Max(0, result.DocumentOffset));
 					int endPos   = Math.Min (textArea.Text.Length, startPos + result.Length);
@@ -240,11 +240,11 @@ namespace MonoDevelop.Ide.Gui.Search
 			}
 		}
 		
-		static object OpenView (string fileName) 
+		static object OpenView (string fileName, Type contentType) 
 		{
 			Document doc = IdeApp.Workbench.OpenDocument (fileName);
 			if (doc != null)
-				return doc.Window.ViewContent;
+				return doc.GetContent (contentType);
 			else
 				return null;
 		}

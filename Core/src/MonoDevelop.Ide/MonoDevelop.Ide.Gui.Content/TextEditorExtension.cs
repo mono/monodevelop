@@ -18,7 +18,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		internal void Initialize (Document document)
 		{
 			this.document = document;
-			IExtensibleTextEditor editor = Editor as IExtensibleTextEditor;
+			IExtensibleTextEditor editor = document.GetContent <IExtensibleTextEditor> ();
 			completionWidget = editor.GetCompletionWidget ();
 			if (completionWidget != null)
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;

@@ -1,6 +1,18 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Commands/CustomStringTagProvider.cs,
+	  MonoDevelop.Ide.Gui/Document.cs, MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs,
+	  MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs: Use the new
+	  GetContent method instead of casting the view to the required
+	  interface.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
 	  MonoDevelop.Ide.Commands/RefactoryCommands.cs,
 	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
 	  MonoDevelop.Ide.Codons/WindowActiveCondition.cs,
