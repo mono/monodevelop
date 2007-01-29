@@ -1,3 +1,17 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs: Track api
+	  changes in Document class.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated form Stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Removed
+	  implementation of all text editor interfaces. Now the view
+	  overrides GetContent and calls editor.GetContent when a requested
+	  interface is not found.
+
 2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp: Updated.

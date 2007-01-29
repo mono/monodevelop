@@ -108,7 +108,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			Document doc = IdeApp.Workbench.OpenDocument (file, true);
 			if (doc != null) {
-				ActionGroupView view = doc.Content as ActionGroupView;
+				ActionGroupView view = doc.GetContent<ActionGroupView> ();
 				if (view != null) {
 					view.ShowDesignerView ();
 					return view;
@@ -127,12 +127,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			}
 
-			GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;
+			GuiBuilderView view = IdeApp.Workbench.ActiveDocument.GetContent<GuiBuilderView> ();
 			if (view != null) {
 				view.SetActive ();
 				SetDesignerLayout ();
 			}
-			else if (IdeApp.Workbench.ActiveDocument.Content is ActionGroupView) {
+			else if (IdeApp.Workbench.ActiveDocument.GetContent<ActionGroupView> () != null) {
 				if (SteticApp.ActiveProject != null) {
 					SteticApp.ActiveProject = null;
 					SetDesignerLayout ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static bool HasOpenDesigners (Project project)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if ((doc.Content is GuiBuilderView || doc.Content is ActionGroupView) && doc.Project == project)
+				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project)
 					return true;
 			}
 			return false;
@@ -212,7 +212,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal static void AddCurrentWidgetToClass ()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				GuiBuilderView view = IdeApp.Workbench.ActiveDocument.Content as GuiBuilderView;
+				GuiBuilderView view = IdeApp.Workbench.ActiveDocument.GetContent<GuiBuilderView> ();
 				if (view != null)
 					view.AddCurrentWidgetToClass ();
 			}
@@ -221,7 +221,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		internal static void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				CombinedDesignView view = IdeApp.Workbench.ActiveDocument.Content as CombinedDesignView;
+				CombinedDesignView view = IdeApp.Workbench.ActiveDocument.GetContent<CombinedDesignView> ();
 				if (view != null)
 					view.JumpToSignalHandler (signal);
 			}

@@ -43,8 +43,7 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : AbstractViewContent, IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation, IEncodedTextContent
+	public class CombinedDesignView : AbstractViewContent
 	{
 		IViewContent content;
 		Gtk.Notebook notebook;
@@ -206,7 +205,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
 		{
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Content == this)
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.GetContent<CombinedDesignView>() == this)
 				OnDocumentActivated ();
 		}
 		
@@ -214,193 +213,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		/* IEditableTextBuffer **********************/
-		
-		public IClipboardHandler ClipboardHandler {
-			get { return ((IEditableTextBuffer)content).ClipboardHandler; }
-		}
-		
-		public void Undo()
+		public override object GetContent (Type type)
 		{
-			((IEditableTextBuffer)content).Undo ();
-		}
-		
-		public void Redo()
-		{
-			((IEditableTextBuffer)content).Redo ();
-		}
-		
-		public string SelectedText {
-			get { return ((IEditableTextBuffer)content).SelectedText; } 
-			set { ((IEditableTextBuffer)content).SelectedText = value; }
-		}
-		
-		public event EventHandler TextChanged {
-			add { ((IEditableTextBuffer)content).TextChanged += value; }
-			remove { ((IEditableTextBuffer)content).TextChanged -= value; }
-		}
-		
-		public void InsertText (int position, string text)
-		{
-			((IEditableTextBuffer)content).InsertText (position, text);
-		}
-		
-		public void DeleteText (int position, int length)
-		{
-			((IEditableTextBuffer)content).DeleteText (position, length);
-		}
-		
-		/* IEncodedTextContent **************/
-		
-		public string SourceEncoding {
-			get { return ((IEncodedTextContent)content).SourceEncoding; }
-		}
-		
-		public void Save (string fileName, string encoding)
-		{
-			((IEncodedTextContent)content).Save (fileName, encoding);
-		}
-		
-		public void Load (string fileName, string encoding)
-		{
-			((IEncodedTextContent)content).Load (fileName, encoding);
-		}
-		
-		/* ITextBuffer **********************/
-		
-		public string Name {
-			get { return ((ITextFile)content).Name; } 
-		}
-		
-		public int Length {
-			get { return ((ITextFile)content).Length; } 
-		}
-		
-		public string Text {
-			get { return ((IEditableTextFile)content).Text; }
-			set { ((IEditableTextFile)content).Text = value; }
-		}
-		
-		public int CursorPosition {
-			get { return ((ITextBuffer)content).CursorPosition; } 
-			set { ((ITextBuffer)content).CursorPosition = value; }
+			object ob = base.GetContent (type);
+			if (ob == null)
+				return content.GetContent (type);
+			else
+				return ob;
 		}
 
-		public int SelectionStartPosition {
-			get { return ((ITextBuffer)content).SelectionStartPosition; } 
-		}
-		public int SelectionEndPosition {
-			get { return ((ITextBuffer)content).SelectionEndPosition; } 
-		}
-		
-		public string GetText (int startPosition, int endPosition)
+		public void JumpTo (int line, int column)
 		{
-			return ((ITextBuffer)content).GetText (startPosition, endPosition);
-		}
-		
-		public void Select (int startPosition, int endPosition)
-		{
-			((ITextBuffer)content).Select (startPosition, endPosition);
-		}
-		
-		public void ShowPosition (int position)
-		{
-			((ITextBuffer)content).ShowPosition (position);
-		}
-		
-		public int GetPositionFromLineColumn (int line, int column)
-		{
-			return ((ITextBuffer)content).GetPositionFromLineColumn (line, column);
-		}
-		
-		public void GetLineColumnFromPosition (int position, out int line, out int column)
-		{
-			((ITextBuffer)content).GetLineColumnFromPosition (position, out line, out column);
-		}
-		
-		/* IPositionable **********************/
-		
-		public void JumpTo(int line, int column)
-		{
-			ShowPage (0);
-			((IPositionable)content).JumpTo (line, column);
-		}
-		
-		/* IBookmarkBuffer **********************/
-		
-		public void SetBookmarked (int position, bool mark)
-		{
-			((IBookmarkBuffer)content).SetBookmarked (position, mark);
-		}
-		
-		public bool IsBookmarked (int position)
-		{
-			return ((IBookmarkBuffer)content).IsBookmarked (position);
-		}
-		
-		public void PrevBookmark ()
-		{
-			((IBookmarkBuffer)content).PrevBookmark ();
-		}
-		
-		public void NextBookmark ()
-		{
-			((IBookmarkBuffer)content).NextBookmark ();
-		}
-		
-		public void ClearBookmarks ()
-		{
-			((IBookmarkBuffer)content).ClearBookmarks ();
-		}
-		
-		/* IDebuggableEditor **********************/
-		
-		public void ExecutingAt (int lineNumber)
-		{
-			((IDebuggableEditor)content).ExecutingAt (lineNumber);
-		}
-		
-		public void ClearExecutingAt (int lineNumber)
-		{
-			((IDebuggableEditor)content).ExecutingAt (lineNumber);
-		}
-		
-		/* ICodeStyleOperations **********************/
-		
-		public void CommentCode ()
-		{
-			((ICodeStyleOperations)content).CommentCode ();
-		}
-		
-		public void UncommentCode ()
-		{
-			((ICodeStyleOperations)content).UncommentCode ();
-		}
-		
-		public void IndentSelection ()
-		{
-			((ICodeStyleOperations)content).IndentSelection ();
-		}
-		
-		public void UnIndentSelection ()
-		{
-			((ICodeStyleOperations)content).UnIndentSelection ();
-		}
-				
-		/* IDocumentInformation **********************/
-		
-		public string FileName {
-			get { return ((IDocumentInformation)content).FileName; }
-		}
-		
-		public ITextIterator GetTextIterator ()
-		{
-			return ((IDocumentInformation)content).GetTextIterator ();
-		}
-		
-		public string GetLineTextAtOffset (int offset)
-		{
-			return ((IDocumentInformation)content).GetLineTextAtOffset (offset);
+			IPositionable ip = (IPositionable) GetContent (typeof(IPositionable));
+			if (ip != null)
+				ip.JumpTo (line, column);
 		}
 	}
 }

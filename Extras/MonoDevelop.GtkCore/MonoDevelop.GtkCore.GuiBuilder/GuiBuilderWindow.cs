@@ -249,7 +249,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
-					IEditableTextFile ef = doc.Content as IEditableTextFile;
+					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
 					if (ef != null) return ef;
 				}
 			}

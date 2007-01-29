@@ -95,7 +95,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				
 				Document doc = IdeApp.Workbench.OpenDocument (w.SourceCodeFile, true);
 				if (doc != null) {
-					GuiBuilderView view = doc.Content as GuiBuilderView;
+					GuiBuilderView view = doc.GetContent<GuiBuilderView> ();
 					if (view != null)
 						view.ShowActionDesignerView (((Stetic.ActionGroupComponent) CurrentNode.DataItem).Name);
 				}

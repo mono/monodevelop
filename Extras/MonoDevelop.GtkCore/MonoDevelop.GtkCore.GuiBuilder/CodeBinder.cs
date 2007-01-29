@@ -211,7 +211,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
 			
-			IEditableTextFile editor = doc.Content as IEditableTextFile;
+			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
 				CodeRefactorer gen = GetCodeGenerator ();
 				gen.AddMember (cls, GetFieldCode (obj, name));
