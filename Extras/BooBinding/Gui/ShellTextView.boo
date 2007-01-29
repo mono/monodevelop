@@ -240,7 +240,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 		_reset.Show()
 	
 	override def OnKeyPressEvent (ev as Gdk.EventKey):
-		if CompletionListWindow.ProcessKeyEvent (ev):
+		if CompletionListWindow.ProcessKeyEvent (ev.Key, ev.State):
 			return true
 		
 		// Short circuit to avoid getting moved back to the input line
@@ -337,8 +337,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 
 		elif ev.Key == Gdk.Key.period:
 			ret = super.OnKeyPressEvent(ev)
-			prepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark))
-			CompletionListWindow.ShowWindow(char('.'), CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
+//			prepareCompletionDetails (Buffer.GetIterAtMark (Buffer.InsertMark))
+//			CompletionListWindow.ShowWindow(char('.'), CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
 			return ret
 
 		// Short circuit to avoid getting moved back to the input line
@@ -380,8 +380,8 @@ class ShellTextView (SourceView, ICompletionWidget):
 
 		triggerIter.ForwardChar ()
 		
-		prepareCompletionDetails (triggerIter)
-		CompletionListWindow.ShowWindow (triggerChar, CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
+//		prepareCompletionDetails (triggerIter)
+//		CompletionListWindow.ShowWindow (triggerChar, CodeCompletionDataProvider (_parserContext, _ambience, _fakeFileName, true), self)
 
 	// Mark to find the beginning of our next input line
 	private _endOfLastProcessing as TextMark
@@ -480,7 +480,12 @@ class ShellTextView (SourceView, ICompletionWidget):
 
 	#endregion
 
-	private def prepareCompletionDetails (triggerIter as TextIter):
+	#region ICompletionWidget
+	
+	public event CompletionContextChanged as EventHandler;
+
+	def ICompletionWidget.CreateCodeCompletionContext (triggerOffset as int) as ICodeCompletionContext:
+		triggerIter = Buffer.GetIterAtOffset (triggerOffset);
 		rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark))
 
 		wx as int
@@ -491,26 +496,16 @@ class ShellTextView (SourceView, ICompletionWidget):
 		ty as int
 		GdkWindow.GetOrigin (tx, ty)
 
-		self.completionX = tx + wx
-		self.completionY = ty + wy
-		self.textHeight = rect.Height
-		self.triggerMark = Buffer.CreateMark (null, triggerIter, true)
+		ctx = CodeCompletionContext ();
+		ctx.TriggerOffset = triggerIter.Offset;
+		ctx.TriggerLine = triggerIter.Line;
+		ctx.TriggerLineOffset = triggerIter.LineOffset;
+		ctx.TriggerXCoord = tx + wx;
+		ctx.TriggerYCoord = ty + wy;
+		ctx.TriggerTextHeight = rect.Height;
+		return ctx;
+		
 
-	#region ICompletionWidget
-
-	[Getter(ICompletionWidget.TriggerXCoord)]
-	private completionX
-
-	[Getter(ICompletionWidget.TriggerYCoord)]
-	private completionY
-	
-	[Getter(ICompletionWidget.TriggerTextHeight)]
-	private textHeight as int
-	
-	ICompletionWidget.Text:
-		get:
-			return Buffer.Text
-	
 	ICompletionWidget.TextLength:
 		get:
 			return Buffer.EndIter.Offset
@@ -521,12 +516,11 @@ class ShellTextView (SourceView, ICompletionWidget):
 	def ICompletionWidget.GetText (startOffset as int, endOffset as int) as string:
 		return Buffer.GetText(Buffer.GetIterAtOffset (startOffset), Buffer.GetIterAtOffset(endOffset), true)
 	
-	ICompletionWidget.CompletionText:
-		get:
-			return Buffer.GetText (Buffer.GetIterAtMark (triggerMark), Buffer.GetIterAtMark (Buffer.InsertMark), false)
+	def ICompletionWidget.GetCompletionText (ctx as ICodeCompletionContext) as string:
+		return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
 	
-	def ICompletionWidget.SetCompletionText (partial_word as string, complete_word as string):
-		offsetIter = Buffer.GetIterAtMark(triggerMark)
+	def ICompletionWidget.SetCompletionText (ctx as ICodeCompletionContext, partial_word as string, complete_word as string):
+		offsetIter = Buffer.GetIterAtOffset(ctx.TriggerOffset)
 		endIter = Buffer.GetIterAtOffset (offsetIter.Offset + partial_word.Length)
 		Buffer.MoveMark (Buffer.InsertMark, offsetIter)
 		Buffer.Delete (offsetIter, endIter)
@@ -534,19 +528,6 @@ class ShellTextView (SourceView, ICompletionWidget):
 	
 	def ICompletionWidget.InsertAtCursor (text as string):
 		Buffer.InsertAtCursor (text)
-	
-	private triggerMark as TextMark
-	ICompletionWidget.TriggerOffset:
-		get:
-			return Buffer.GetIterAtMark (triggerMark).Offset
-
-	ICompletionWidget.TriggerLine:
-		get:
-			return Buffer.GetIterAtMark (triggerMark).Line
-
-	ICompletionWidget.TriggerLineOffset:
-		get:
-			return Buffer.GetIterAtMark (triggerMark).LineOffset
 	
 	ICompletionWidget.GtkStyle:
 		get:

@@ -210,7 +210,7 @@ class Visitor(AbstractVisitorCompilerStep):
 			raise
 	
 	private def GetMethod(node as AST.Method):
-		method = Method(node.FullName, ReturnType.CreateReturnType(node), GetModifier(node), GetRegion(node), GetClientRegion(node))
+		method = Method(node.Name, ReturnType.CreateReturnType(node), GetModifier(node), GetRegion(node), GetClientRegion(node))
 		method.Parameters = GetParameters(node.Parameters)
 		method.Node = node
 		method.Documentation = node.Documentation
@@ -249,7 +249,7 @@ class Visitor(AbstractVisitorCompilerStep):
 				return
 
 			c as Class = _currentClass.Peek()
-			field = Field(ReturnType.CreateReturnType(node), node.FullName, GetModifier(node), GetRegion(node))
+			field = Field(ReturnType.CreateReturnType(node), node.Name, GetModifier(node), GetRegion(node))
 			field.Documentation = node.Documentation
 			c.Fields.Add(field)
 		except ex:
@@ -271,7 +271,7 @@ class Visitor(AbstractVisitorCompilerStep):
 				setRegion = GetRegion(node.Setter)
 				setRegion = GetRegion(node) if setRegion is null
 				
-			property = Property(node.FullName, ReturnType.CreateReturnType(node), getter, setter, getRegion, setRegion, GetModifier(node), GetRegion(node), GetClientRegion(node))
+			property = Property(node.Name, ReturnType.CreateReturnType(node), getter, setter, getRegion, setRegion, GetModifier(node), GetRegion(node), GetClientRegion(node))
 			property.Documentation = node.Documentation
 			property.Node = node
 			cast(Class, _currentClass.Peek()).Properties.Add(property)

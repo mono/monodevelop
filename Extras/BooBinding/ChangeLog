@@ -1,3 +1,9 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/ShellTextView.boo: Temporarily disabled code completion in the
+	  shell. Some changes are needed to use the new api.
+	* Parser/TypeMembers.boo, Parser/Visitor.boo: Track api changes.
+
 2007-01-02  Mart Roosmaa <roosmaa@gmail.com>
 
 	* Parser/Resolver.boo: Adopt to changes made in rev 62253.

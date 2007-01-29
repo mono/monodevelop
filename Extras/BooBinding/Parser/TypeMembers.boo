@@ -31,14 +31,14 @@ import Boo.Lang.Compiler.Ast as AST
 
 class Constructor(BooDefaultMethod):
 	def constructor(m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
-		FullyQualifiedName = 'ctor'
+		Name = 'ctor'
 		self.region = region
 		self.bodyRegion = bodyRegion
 		modifiers = m
 
 class Destructor(BooDefaultMethod):
 	def constructor(className as string, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
-		FullyQualifiedName = '~' + className
+		Name = '~' + className
 		self.region = region
 		self.bodyRegion = bodyRegion
 		modifiers = m
@@ -54,9 +54,9 @@ class Field(DefaultField):
 	def AddModifier(m as ModifierEnum):
 		modifiers = modifiers | m
 	
-	def constructor(rtype as IReturnType, fullyQualifiedName as string, m as ModifierEnum, region as IRegion):
+	def constructor(rtype as IReturnType, name as string, m as ModifierEnum, region as IRegion):
 		self.returnType = rtype
-		self.FullyQualifiedName = fullyQualifiedName
+		self.Name = name
 		self.region = region
 		modifiers = m
 	
@@ -76,7 +76,7 @@ class Indexer(DefaultIndexer):
 
 class Method(BooDefaultMethod):
 	def constructor(name as string, rtype as IReturnType, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
-		FullyQualifiedName = name
+		Name = name
 		self.returnType = rtype
 		self.region = region
 		self.bodyRegion = bodyRegion
@@ -89,8 +89,8 @@ class Property(DefaultProperty):
 	def AddModifier(m as ModifierEnum):
 		modifiers = modifiers | m
 	
-	def constructor(fullyQualifiedName as string, rtype as IReturnType, getter as IMethod, setter as IMethod, getRegion as IRegion, setRegion as IRegion, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
-		self.FullyQualifiedName = fullyQualifiedName
+	def constructor(name as string, rtype as IReturnType, getter as IMethod, setter as IMethod, getRegion as IRegion, setRegion as IRegion, m as ModifierEnum, region as IRegion, bodyRegion as IRegion):
+		self.Name = name
 		self.returnType = rtype
 		self.getterMethod = getter
 		self.setterMethod = setter
