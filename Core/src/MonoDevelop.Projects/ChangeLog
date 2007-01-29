@@ -1,5 +1,9 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Forgot to add one file.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/ProjectService.cs: In GetNeedsBuilding, use a
 	  cache to temporarily store results. It avoids recursively checking
 	  the same projects multiple times.

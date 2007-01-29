@@ -45,6 +45,7 @@ MonoDevelop.Projects.Parser/AssemblyInformationEventHandler.cs \
 MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/AssemblyInformation.cs \
 MonoDevelop.Projects.Parser/ClassEntry.cs \
+MonoDevelop.Projects.Parser/ClassWrapper.cs \
 MonoDevelop.Projects.Parser/ClassInformationEventHandler.cs \
 MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/CompoundClass.cs \
