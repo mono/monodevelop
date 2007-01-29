@@ -20,20 +20,12 @@
  * and I leave my additions in the public domain, so I leave
  * it up to you to figure out what you need to do if you want
  * to distribute this file in some form.
- *
- * Embedded at the end is an IntList class which is based on Mono's
- * ArrayList class.  When everybody has C# generics, it will disappear.
  */
-
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-
-//using IntList = System.Collections.Generic.List<int>;
-//using TrioList = System.Collections.Generic.List<Algorithm.Diff.Trio>;
-//using IntList = System.Collections.ArrayList;
-using TrioList = System.Collections.ArrayList;
 
 namespace Algorithm.Diff {
 	public interface IDiff : IEnumerable {
@@ -157,20 +149,20 @@ namespace Algorithm.Diff {
 				
 				if (Same) {
 					foreach (object item in Left) {
-						ret.Append(" ");
+						ret.Append(' ');
 						ret.Append(item.ToString());
-						ret.Append("\n");
+						ret.Append(Environment.NewLine);
 					}
 				} else {
 					foreach (object item in Left) {
-						ret.Append("<");
+						ret.Append('<');
 						ret.Append(item.ToString());
-						ret.Append("\n");
+						ret.Append(Environment.NewLine);
 					}
 					foreach (object item in Right) {
-						ret.Append(">");
+						ret.Append('>');
 						ret.Append(item.ToString());
-						ret.Append("\n");
+						ret.Append(Environment.NewLine);
 					}
 				}
 				
@@ -282,15 +274,15 @@ namespace Algorithm.Diff {
 			for (int index = start; index <= end; index++) {
 				object element = aCollection[index];
 				if (d.ContainsKey(element)) {
-					IntList list = (IntList)d[element];
+					List<int> list = (List<int>)d[element];
 					list.Add(index);
 				} else {
-					IntList list = new IntList();
+					List<int> list = new List<int>();
 					list.Add(index);
 					d[element] = list;
 				}
 			}
-			foreach (IntList list in d.Values)
+			foreach (List<int> list in d.Values)
 				list.Reverse();
 			return d;
 		}
@@ -305,7 +297,7 @@ namespace Algorithm.Diff {
 		# try to make it fast!
 		*/
 		// NOTE: Instead of returning undef, it returns -1.
-		int _replaceNextLargerWith(IntList array, int value, int high) {
+		int _replaceNextLargerWith(List<int> array, int value, int high) {
 			if (high <= 0)
 				high = array.Count-1;
 		
@@ -366,10 +358,10 @@ namespace Algorithm.Diff {
 			return false;
 		}
 		
-		IntList _longestCommonSubsequence(IList a, IList b) {
+		List<int> _longestCommonSubsequence(IList a, IList b) {
 			int aStart = 0;
 			int aFinish = a.Count-1;
-			IntList matchVector = new IntList();
+			List<int> matchVector = new List<int>();
 			Hashtable bMatches;
 			
 			// initialize matchVector to length of a
@@ -393,11 +385,11 @@ namespace Algorithm.Diff {
 				  _withPositionsOfInInterval(b, bStart, bFinish);
 			}
 			
-			IntList thresh = new IntList();
-			TrioList links = new TrioList();
+			List<int> thresh = new List<int>();
+			List<Trio> links = new List<Trio>();
 		
 			for (int i = aStart; i <= aFinish; i++) {
-				IntList aimatches = (IntList)bMatches[a[i]];
+				List<int> aimatches = (List<int>)bMatches[a[i]];
 				if (aimatches != null) {
 					int k = 0;
 					for (int ji = 0; ji < aimatches.Count; ji++) {
@@ -433,21 +425,21 @@ namespace Algorithm.Diff {
 			preparedlist = list;
 		}*/
 		
-		void LCSidx(IList a, IList b, out IntList am, out IntList bm) {
-			IntList match = _longestCommonSubsequence(a, b);
-			am = new IntList();
+		void LCSidx(IList a, IList b, out List<int> am, out List<int> bm) {
+			List<int> match = _longestCommonSubsequence(a, b);
+			am = new List<int>();
 			for (int i = 0; i < match.Count; i++)
 				if ((int)match[i] != -1)
 					am.Add(i);
-			bm = new IntList();
+			bm = new List<int>();
 			for (int vi = 0; vi < am.Count; vi++)
 				bm.Add(match[am[vi]]);
 		}
 		
-		IntList compact_diff(IList a, IList b) {
-			IntList am, bm, cdiff;
+		List<int> compact_diff(IList a, IList b) {
+			List<int> am, bm, cdiff;
 			LCSidx(a, b, out am, out bm);
-			cdiff = new IntList();
+			cdiff = new List<int>();
 			int ai = 0, bi = 0;
 			cdiff.Add(ai);
 			cdiff.Add(bi);
@@ -478,7 +470,7 @@ namespace Algorithm.Diff {
 		
 		int _End;
 		bool _Same;
-		IntList cdif = null;
+		List<int> cdif = null;
 		
 		void init() {
 			cdif = compact_diff(left, right);
@@ -545,86 +537,6 @@ namespace Algorithm.Diff {
 					return false;
 				return true;
 			}
-		}
-	}
-	
-	internal class IntList {
-		private const int DefaultInitialCapacity = 0x10;
-		private int _size;
-		private int[] _items;
-
-		public IntList() {
-			_items = new int[DefaultInitialCapacity];
-		}		
-
-		public int this[int index] { 
-			get { return _items[index]; }
-			set { _items[index] = value; } 
-		}
-
-		public int Count { get { return _size; } }
-
-		private void EnsureCapacity(int count) { 
-			if (count <= _items.Length) return; 
-			int newLength;
-			int[] newData;
-			newLength = _items.Length << 1;
-			if (newLength == 0)
-				newLength = DefaultInitialCapacity;
-			while (newLength < count) 
-				newLength <<= 1;
-			newData = new int[newLength];
-			Array.Copy(_items, 0, newData, 0, _items.Length);
-			_items = newData;
-		}
-		
-		private void Shift(int index, int count) { 
-			if (count > 0) { 
-				if (_size + count > _items.Length) { 
-					int newLength;
-					int[] newData;
-					newLength = (_items.Length > 0) ? _items.Length << 1 : 1;
-					while (newLength < _size + count) 
-						newLength <<= 1;
-					newData = new int[newLength];
-					Array.Copy(_items, 0, newData, 0, index);
-					Array.Copy(_items, index, newData, index + count, _size - index);
-					_items = newData;
-				} else {
-					Array.Copy(_items, index, _items, index + count, _size - index);
-				}
-			} else if (count < 0) {
-				int x = index - count ;
-				Array.Copy(_items, x, _items, index, _size - x);
-			}
-		}
-
-		public int Add(int value) { 
-			if (_items.Length <= _size /* same as _items.Length < _size + 1) */) 
-				EnsureCapacity(_size + 1);
-			_items[_size] = value;
-			return _size++;
-		}
-
-		public virtual void Clear() { 
-			Array.Clear(_items, 0, _size);
-			_size = 0;
-		}
-
-		public virtual void RemoveAt(int index) { 
-			if (index < 0 || index >= _size) 
-				throw new ArgumentOutOfRangeException("index", index,
-					"Less than 0 or more than list count.");
-			Shift(index, -1);
-			_size--;
-		}
-
-		public void Reverse() {
-			for (int i = 0; i <= Count / 2; i++) {
-				int t = this[i];
-				this[i] = this[Count-i-1];
-				this[Count-i-1] = t;
-			}				
 		}
 	}
 	

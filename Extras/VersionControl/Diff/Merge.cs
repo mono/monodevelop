@@ -196,15 +196,20 @@ namespace Algorithm.Diff {
 			
 			public override string ToString() {
 				StringBuilder b = new StringBuilder();
-				b.Append("<<<<<<<<<<\n");
+				b.Append("<<<<<<<<<<");
+				b.Append(Environment.NewLine);
 				for (int i = 0; i < ranges.Length; i++) {
-					if (i > 0) b.Append("----------\n");
+					if (i > 0) {
+						b.Append("----------");
+						b.Append(Environment.NewLine);
+					}
 					foreach (object item in ranges[i]) { 
 						b.Append(item);
-						b.Append("\n");
+						b.Append(Environment.NewLine);
 					}
 				}
-				b.Append(">>>>>>>>>>\n");
+				b.Append(">>>>>>>>>>");
+				b.Append(Environment.NewLine);
 				return b.ToString();
 			}
 		}
@@ -275,21 +280,25 @@ namespace Algorithm.Diff {
 				StringBuilder b = new StringBuilder();
 				if (Same) {
 					foreach (object item in Original()) {
-						b.Append(" ");
+						b.Append(' ');
 						b.Append(item);
-						b.Append("\n");
+						b.Append(Environment.NewLine);
 					}
 					return b.ToString();
 				}
 				
-				b.Append("==========\n");
+				b.Append("==========");
+				b.Append(Environment.NewLine);
 				for (int i = 0; i < hunks.Length; i++) {
-					if (i > 0)
-						b.Append("----------\n");
+					if (i > 0) {
+						b.Append("----------");
+						b.Append(Environment.NewLine);
+					}
 					foreach (Diff.Hunk h in hunks[i])
 						b.Append(h);
 				}
-				b.Append("==========\n");				
+				b.Append("==========");
+				b.Append(Environment.NewLine);
 				return b.ToString();
 			}
 
