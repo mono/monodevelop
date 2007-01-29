@@ -12,6 +12,7 @@ REFS = -r:System \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/bin/NRefactory.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
@@ -21,6 +22,7 @@ REFS = -r:System \
 FILES = \
 Gui/ChooseRuntimePanel.cs \
 Gui/CodeGenerationPanel.cs \
+Gui/CSharpTextEditorExtension.cs \
 Parser/SharpDevelopTree/Destructor.cs \
 Parser/SharpDevelopTree/Constructor.cs \
 Parser/SharpDevelopTree/Method.cs \

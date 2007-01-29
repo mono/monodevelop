@@ -152,16 +152,14 @@ namespace CSharpBinding.Parser
 			
 			FillAttributes (c, typeDeclaration.Attributes);
 			
+			c.Name = typeDeclaration.Name;
 			if (currentClass.Count > 0) {
 				Class cur = ((Class)currentClass.Peek());
 				cur.InnerClasses.Add(c);
-				c.FullyQualifiedName = String.Concat(cur.FullyQualifiedName, '.', typeDeclaration.Name);
+				c.DeclaredIn = cur;
 			} else {
-				if (currentNamespace.Count == 0) {
-					c.FullyQualifiedName = typeDeclaration.Name;
-				} else {
-					c.FullyQualifiedName = String.Concat(currentNamespace.Peek(), '.', typeDeclaration.Name);
-				}
+				if (currentNamespace.Count > 0)
+					c.Namespace = (string) currentNamespace.Peek();
 				cu.Classes.Add(c);
 			}
 			
@@ -175,7 +173,7 @@ namespace CSharpBinding.Parser
 			// Get generic parameters for this type
 			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
 				c.GenericParameters = new GenericParameterList();
-				c.FullyQualifiedName = String.Concat (c.FullyQualifiedName, "`", typeDeclaration.Templates.Count.ToString());
+				c.Name = String.Concat (c.Name, "`", typeDeclaration.Templates.Count.ToString());
 				foreach (AST.TemplateDefinition td in typeDeclaration.Templates) {
 					c.GenericParameters.Add (new CSGenericParameter(td));
 				}
@@ -196,16 +194,14 @@ namespace CSharpBinding.Parser
 			
 			FillAttributes (c, typeDeclaration.Attributes);
 			
+			c.Name = typeDeclaration.Name;
 			if (currentClass.Count > 0) {
 				Class cur = ((Class)currentClass.Peek());
 				cur.InnerClasses.Add(c);
-				c.FullyQualifiedName = String.Concat(cur.FullyQualifiedName, '.', typeDeclaration.Name);
+				c.DeclaredIn = cur;
 			} else {
-				if (currentNamespace.Count == 0) {
-					c.FullyQualifiedName = typeDeclaration.Name;
-				} else {
-					c.FullyQualifiedName = String.Concat(currentNamespace.Peek(), '.', typeDeclaration.Name);
-				}
+				if (currentNamespace.Count > 0)
+					c.Namespace = (string) currentNamespace.Peek();
 				cu.Classes.Add(c);
 			}
 			
@@ -215,7 +211,7 @@ namespace CSharpBinding.Parser
 			ReturnType type = new ReturnType (typeDeclaration.ReturnType);
 			
 			mf = ModifierFlags.None;
-			Method method = new Method (c, "Invoke", type, mf, null, null);
+			Method method = new Method ("Invoke", type, mf, null, null);
 			ParameterCollection parameters = new ParameterCollection();
 			if (typeDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in typeDeclaration.Parameters) {
@@ -245,7 +241,7 @@ namespace CSharpBinding.Parser
 			Class c       = (Class)currentClass.Peek();
 			
 			ModifierFlags mf = methodDeclaration.Modifier;
-			Method method = new Method (c, String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
+			Method method = new Method (String.Concat(methodDeclaration.Name), type, mf, region, bodyRegion);
 			ParameterCollection parameters = method.Parameters;
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
@@ -276,7 +272,7 @@ namespace CSharpBinding.Parser
 			Class c       = (Class)currentClass.Peek();
 			
 			ModifierFlags mf = constructorDeclaration.Modifier;
-			Constructor constructor = new Constructor (c, mf, region, bodyRegion);
+			Constructor constructor = new Constructor (mf, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
@@ -301,7 +297,7 @@ namespace CSharpBinding.Parser
 			Class c       = (Class)currentClass.Peek();
 			
 			ModifierFlags mf = destructorDeclaration.Modifier;
-			Destructor destructor = new Destructor (c, c.Name, mf, region, bodyRegion);
+			Destructor destructor = new Destructor (c.Name, mf, region, bodyRegion);
 			
 			FillAttributes (destructor, destructorDeclaration.Attributes);
 			
@@ -323,7 +319,7 @@ namespace CSharpBinding.Parser
 			if (currentClass.Count > 0) {
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
 					DefaultField f;
-					f = new DefaultField (c, type, field.Name, (ModifierEnum) fieldDeclaration.Modifier, region);	
+					f = new DefaultField (type, field.Name, (ModifierEnum) fieldDeclaration.Modifier, region);	
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
 				}
@@ -341,7 +337,7 @@ namespace CSharpBinding.Parser
 			Class c = (Class)currentClass.Peek();
 			
 			ModifierFlags mf = propertyDeclaration.Modifier;
-			DefaultProperty property = new DefaultProperty (c, propertyDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
+			DefaultProperty property = new DefaultProperty (propertyDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
 			
 			FillAttributes (property, propertyDeclaration.Attributes);
 			
@@ -372,7 +368,6 @@ namespace CSharpBinding.Parser
 			} else {
 */				ModifierFlags mf = eventDeclaration.Modifier;
 				e = new DefaultEvent (eventDeclaration.Name, type, (ModifierEnum)mf, region, bodyRegion);
-				e.DeclaringType = c;
 				FillAttributes (e, eventDeclaration.Attributes);
 				c.Events.Add(e);
 //			}
@@ -386,7 +381,7 @@ namespace CSharpBinding.Parser
 			ParameterCollection parameters = new ParameterCollection();
 			Class c = (Class)currentClass.Peek();
 			ModifierFlags mf = indexerDeclaration.Modifier;
-			DefaultIndexer i = new DefaultIndexer (c, new ReturnType(indexerDeclaration.TypeReference), parameters, (ModifierEnum)mf, region, bodyRegion);
+			DefaultIndexer i = new DefaultIndexer (new ReturnType(indexerDeclaration.TypeReference), parameters, (ModifierEnum)mf, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);

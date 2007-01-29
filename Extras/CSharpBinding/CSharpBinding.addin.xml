@@ -132,6 +132,10 @@
 		<DataType class = "CSharpBinding.CSharpCompilerParameters" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions">
+		<Class class = "CSharpBinding.CSharpTextEditorExtension" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="CSharpBinding.Autotools.dll"/>

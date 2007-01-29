@@ -1,3 +1,18 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs, CSharpBinding.addin.xml: Created
+	  new text editor extension to properly support code completion.
+	* CSharpBinding.mdp, Makefile.am: Updated.
+	* Parser/CSharpVisitor.cs, Parser/TypeVisitor.cs,
+	  Parser/LanguageItemVisitor.cs,
+	  Parser/SharpDevelopTree/Destructor.cs,
+	  Parser/SharpDevelopTree/Method.cs,
+	  Parser/SharpDevelopTree/ReturnType.cs,
+	  Parser/SharpDevelopTree/Constructor.cs: Track api changes.
+	* Parser/Resolver.cs: Track api changes. Properly resolve instantiated
+	  generic types.
+	* CSharpAmbience.cs: Properly show generic type names.
+
 2007-01-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/LanguageItemVisitor.cs: Properly resolve method overloads.

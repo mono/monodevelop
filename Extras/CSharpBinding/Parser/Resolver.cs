@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Drawing;
 
 using MonoDevelop.Core;
@@ -52,8 +53,6 @@ namespace CSharpBinding.Parser
 		}
 		
 		bool showStatic = false;
-		
-		bool inNew = false;
 		
 		public bool ShowStatic {
 			get {
@@ -175,9 +174,10 @@ namespace CSharpBinding.Parser
 			lookupTableVisitor = new LookupTableVisitor (StringComparer.InvariantCulture);
 			lookupTableVisitor.Visit (fileCompilationUnit, null);
 			TypeVisitor typeVisitor = new TypeVisitor (this);
+			
 			IReturnType type = expr.AcceptVisitor (typeVisitor, null) as IReturnType;
 			if (type != null)
-				return SearchType (type.FullyQualifiedName, currentUnit);
+				return SearchType (type, currentUnit);
 			else
 				return null;
 		}
@@ -231,12 +231,7 @@ namespace CSharpBinding.Parser
 				return null;
 			} catch (Exception) {
 			}
-			if (expression.StartsWith("new ")) {
-				inNew = true;
-				expression = expression.Substring(4);
-			} else {
-				inNew = false;
-			}
+			
 			if (expression.StartsWith("using ")) {
 				// expression[expression.Length - 1] != '.'
 				// the period that causes this Resove() is not part of the expression
@@ -267,7 +262,7 @@ namespace CSharpBinding.Parser
 			if (type == null)
 				return null;
 
-			IClass returnClass = SearchType (type.FullyQualifiedName, currentUnit);
+			IClass returnClass = SearchType (type, currentUnit);
 			if (returnClass == null) {
 				// Try if type is Namespace:
 				string n = SearchNamespace(type.FullyQualifiedName, currentUnit);
@@ -422,9 +417,9 @@ namespace CSharpBinding.Parser
 			}
 			IClass curType;
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-				curType = SearchType("System.Array", null);
+				curType = SearchType ("System.Array", null, null);
 			} else {
-				curType = SearchType(type.FullyQualifiedName, null);
+				curType = SearchType (type, null);
 				if (curType == null) {
 					return new ArrayList();
 				}
@@ -451,7 +446,7 @@ namespace CSharpBinding.Parser
 		
 		public ArrayList SearchIndexer(IReturnType type)
 		{
-			IClass curType = SearchType(type.FullyQualifiedName, null);
+			IClass curType = SearchType (type, null);
 			if (curType != null) {
 				return SearchIndexer(new ArrayList(), curType);
 			}
@@ -519,7 +514,7 @@ namespace CSharpBinding.Parser
 			if (type == null || memberName == null || memberName == "")
 				return false;
 			
-			curType = SearchType (type.FullyQualifiedName, currentUnit);
+			curType = SearchType (type, currentUnit);
 			if (curType == null)
 				return false;
 
@@ -527,7 +522,7 @@ namespace CSharpBinding.Parser
 				return false;
 
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
-				curType = SearchType("System.Array", null);
+				curType = SearchType ("System.Array", null, null);
 
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
@@ -617,7 +612,8 @@ namespace CSharpBinding.Parser
 			
 			foreach (LocalLookupVariable v in variables) {
 				if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-					IClass c = SearchType (v.TypeRef.SystemType, CompilationUnit);
+					// The call to GetFullTypeName will return a type name with generics decoration
+					IClass c = SearchType (ReturnType.GetFullTypeName (v.TypeRef), null, CompilationUnit);
 					DefaultRegion reg = new DefaultRegion (v.StartPos, v.EndPos);
 					reg.FileName = currentFile;
 					return new LocalVariable (name, new ReturnType (v.TypeRef, c), "", reg);
@@ -832,10 +828,15 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
+		public IClass SearchType (IReturnType type, ICompilationUnit unit)
+		{
+			return SearchType (type.FullyQualifiedName, type.GenericArguments, unit);
+		}
+		
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IClass SearchType(string name, ICompilationUnit unit)
+		public IClass SearchType (string name, ReturnTypeList genericArguments, ICompilationUnit unit)
 		{
 //			Console.WriteLine("Searching Type " + name);
 			if (name == null || name == String.Empty) {
@@ -843,7 +844,7 @@ namespace CSharpBinding.Parser
 				return null;
 			}
 			IClass c;
-			c = parserContext.GetClass (name);
+			c = parserContext.GetClass (name, genericArguments);
 			if (c != null) {
 //				Console.WriteLine("Found!");
 				return c;
@@ -852,7 +853,7 @@ namespace CSharpBinding.Parser
 				foreach (IUsing u in unit.Usings) {
 					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
 //						Console.WriteLine("In UsingRegion");
-						c = parserContext.SearchType (u, name);
+						c = parserContext.SearchType (u, name, genericArguments);
 						if (c != null) {
 //							Console.WriteLine("SearchType Successfull!!!");
 							return c;
@@ -870,7 +871,7 @@ namespace CSharpBinding.Parser
 			
 			do {
 				curnamespace += namespaces[i] + '.';
-				c = parserContext.GetClass (curnamespace + name);
+				c = parserContext.GetClass (curnamespace + name, genericArguments);
 				if (c != null) {
 					return c;
 				}
@@ -1023,15 +1024,39 @@ namespace CSharpBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				type = new ReturnType ("System.Array");
 
-			IClass returnClass = SearchType (type.FullyQualifiedName, currentUnit);
+			IClass returnClass = SearchType (type, currentUnit);
 //			IClass returnClass = parserContext.SearchType (type.FullyQualifiedName, null, currentUnit);
 			if (returnClass == null)
 				return null;
+				
+			// Get the list of namespaces where subclasses have to be searched.
+			// Include all namespaces for which there is an "using".
+			ArrayList ns = new ArrayList ();
+			if (currentUnit != null && currentUnit.Usings != null) {
+				foreach (IUsing us in currentUnit.Usings)
+					ns.AddRange (us.Usings);
+			}
+			// Include the calling class namesapce and all its parent namespaces
+			if (callingClass != null) {
+				string[] namespaceParts = callingClass.Namespace.Split ('.');
+				string cns = "";
+				foreach (string s in namespaceParts) {
+					if (cns.Length > 0)
+						cns += ".";
+					cns += s;
+					ns.Add (cns);
+				}
+			}
 
-			foreach (IClass iclass in parserContext.GetClassInheritanceTree (returnClass)) {
+			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, (string[]) ns.ToArray (typeof(string)))) {
 				if (!result.Contains (iclass))
 					result.Add (iclass);
 			}
+			
+			// Include all namespaces as well
+			foreach (string nss in parserContext.GetNamespaceList ("", true, true))
+				result.Add (new Namespace (nss));
+			
 			return result;
 		}
 		

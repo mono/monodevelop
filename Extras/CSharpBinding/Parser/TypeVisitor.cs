@@ -76,7 +76,7 @@ namespace CSharpBinding.Parser
 			if (t == null) {
 				return null;
 			}
-			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(t, resolver.CompilationUnit);
 			if (c.ClassType == ClassType.Delegate) {
 				ArrayList methods = resolver.SearchMethod(t, "invoke");
 				if (methods.Count <= 0) {
@@ -107,7 +107,7 @@ namespace CSharpBinding.Parser
 					if (n != null) {
 						return new ReturnType(n);
 					}
-					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), resolver.CompilationUnit);
+					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
 					if (c != null) {
 						resolver.ShowStatic = true;
 						return new ReturnType(c.FullyQualifiedName);
@@ -144,7 +144,7 @@ namespace CSharpBinding.Parser
 			if (name != null) {
 				return new ReturnType(name);
 			}
-			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
 				return new ReturnType(c.FullyQualifiedName);
@@ -231,7 +231,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			//Console.WriteLine("TypeVisiting IndexerExpression");
+			//Console.WriteLine("TypeVisiting IndexerExpression: " + indexerExpression);
 			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
 			if (type == null) {
 				return null;
@@ -289,10 +289,9 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			IClass type = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CompilationUnit);
+			IClass type = resolver.SearchType (ReturnType.GetFullTypeName (objectCreateExpression.CreateType), null, resolver.CompilationUnit);
 			if (type == null) return null;
-			string name = type.FullyQualifiedName;
-			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel, null, true);
+			return new ReturnType (objectCreateExpression.CreateType, type);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)

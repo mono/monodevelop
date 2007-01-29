@@ -32,13 +32,22 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 				this.genericArguments = new ReturnTypeList ();
 				
 				// Decorate the name
-				this.FullyQualifiedName = string.Concat (this.FullyQualifiedName, "`", type.GenericTypes.Count);
-				
+				if (resolvedClass == null)
+					this.FullyQualifiedName = string.Concat (this.FullyQualifiedName, "`", type.GenericTypes.Count);
+
 				// Now go get them!
 				foreach (ICSharpCode.NRefactory.Parser.AST.TypeReference tr in type.GenericTypes) {
 					this.genericArguments.Add (new ReturnType(tr));
 				}
 			}
+		}
+		
+		public static string GetFullTypeName (ICSharpCode.NRefactory.Parser.AST.TypeReference type)
+		{
+			if (type.GenericTypes != null && type.GenericTypes.Count > 0)
+				return string.Concat (type.SystemType, "`", type.GenericTypes.Count);
+			else
+				return type.SystemType;
 		}
 		
 		void SetArrayDimensions (int[] dimensions)

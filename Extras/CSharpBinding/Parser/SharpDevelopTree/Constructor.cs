@@ -8,12 +8,11 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class Constructor : DefaultMethod
 	{
-		public Constructor (IClass declaringType, ModifierFlags m, IRegion region, IRegion bodyRegion)
+		public Constructor (ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = "ctor";
+			Name = "ctor";
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
 		}
 	}

@@ -68,6 +68,7 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./CSharpBinding.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="./Gui/CSharpTextEditorExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -82,6 +83,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
   </References>
   <DeploymentInformation strategy="File">
     <excludeFiles />

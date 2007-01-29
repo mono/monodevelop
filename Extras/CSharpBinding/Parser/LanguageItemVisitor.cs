@@ -63,7 +63,7 @@ namespace CSharpBinding.Parser
 				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
 					// It may be a call to a constructor
-					return resolver.SearchType (id, resolver.CompilationUnit);
+					return resolver.SearchType (id, null, resolver.CompilationUnit);
 				}
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
@@ -73,9 +73,9 @@ namespace CSharpBinding.Parser
 			if (t == null) {
 				return null;
 			}
-			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CompilationUnit);
+			IClass c = resolver.SearchType (t, resolver.CompilationUnit);
 			if (c.ClassType == MonoDevelop.Projects.Parser.ClassType.Delegate) {
-				ArrayList methods = resolver.SearchMethod(t, "invoke");
+				ArrayList methods = resolver.SearchMethod (t, "invoke");
 				if (methods.Count <= 0) {
 					return null;
 				}
@@ -91,6 +91,10 @@ namespace CSharpBinding.Parser
 			for (int n=0; n<invocationExpression.Arguments.Count; n++) {
 				Expression arg = invocationExpression.Arguments [n];
 				argTypes [n] = arg.AcceptVisitor (tv, data) as IReturnType;
+				
+				// This may happen when trying to resolve a method declaration
+				if (argTypes [n] == null)
+					return (IMethod) methods [0];
 			}
 			
 			foreach (IMethod met in methods) {
@@ -106,7 +110,9 @@ namespace CSharpBinding.Parser
 				if (allEqual)
 					return met;
 			}
-			return null;
+			
+			// If no exact match can be found, just return one of them
+			return (IMethod) methods [0];
 		}
 		
 		bool TypesAreEqual (IReturnType t1, IReturnType t2)
@@ -133,7 +139,8 @@ namespace CSharpBinding.Parser
 			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
 					resolver.ShowStatic = true;
-					return resolver.SearchType (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference.SystemType, resolver.CompilationUnit);
+					ReturnType rt = new ReturnType (((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+					return resolver.SearchType (rt, resolver.CompilationUnit);
 				}
 			}
 			TypeVisitor tv = new TypeVisitor (resolver);
@@ -145,7 +152,7 @@ namespace CSharpBinding.Parser
 					if (n != null) {
 						return new Namespace (n, "");
 					}
-					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), resolver.CompilationUnit);
+					IClass c = resolver.SearchType(string.Concat(name, ".", fieldReferenceExpression.FieldName), null, resolver.CompilationUnit);
 					if (c != null) {
 						resolver.ShowStatic = true;
 						return c;
@@ -181,7 +188,7 @@ namespace CSharpBinding.Parser
 			if (name != null) {
 				return new Namespace (name, "");
 			}
-			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;
 				return c;
@@ -191,7 +198,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			return resolver.SearchType (typeReferenceExpression.TypeReference.Type, resolver.CompilationUnit);
+			return resolver.SearchType (new ReturnType (typeReferenceExpression.TypeReference), resolver.CompilationUnit);
 		}
 		
 		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -275,12 +282,12 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			return resolver.SearchType (objectCreateExpression.CreateType.SystemType, resolver.CompilationUnit);
+			return resolver.SearchType (new ReturnType (objectCreateExpression.CreateType), resolver.CompilationUnit);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			return resolver.SearchType (arrayCreateExpression.CreateType.SystemType, resolver.CompilationUnit);
+			return resolver.SearchType (new ReturnType (arrayCreateExpression.CreateType), resolver.CompilationUnit);
 		}
 		
 		public override object Visit(DirectionExpression directionExpression, object data)

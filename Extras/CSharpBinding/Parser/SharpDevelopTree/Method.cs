@@ -13,13 +13,12 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 			modifiers = modifiers | m;
 		}
 		
-		public Method (IClass declaringType, string name, ReturnType type, ModifierFlags m, IRegion region, IRegion bodyRegion)
+		public Method (string name, ReturnType type, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = name;
+			Name = name;
 			returnType = type;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType;
 			modifiers = (ModifierEnum)m;
 		}
 	}

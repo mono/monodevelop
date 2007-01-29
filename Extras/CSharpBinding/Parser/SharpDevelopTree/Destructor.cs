@@ -7,12 +7,11 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class Destructor : DefaultMethod
 	{
-		public Destructor (IClass declaringType, string className, ModifierFlags m, IRegion region, IRegion bodyRegion)
+		public Destructor (string className, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = "~" + className;
+			Name = "~" + className;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType; 
 			modifiers = (ModifierEnum)m;
 		}
 	}
