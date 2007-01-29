@@ -125,7 +125,7 @@ namespace VBBinding.Parser
 			Class c       = (Class)currentClass.Peek();
 			
 			
-			DefaultMethod method = new DefaultMethod (c, String.Concat(methodDeclaration.Name), type, (ModifierEnum)methodDeclaration.Modifier, region, bodyRegion);
+			DefaultMethod method = new DefaultMethod (String.Concat(methodDeclaration.Name), type, (ModifierEnum)methodDeclaration.Modifier, region, bodyRegion);
 			ParameterCollection parameters = new ParameterCollection();
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
@@ -171,7 +171,7 @@ namespace VBBinding.Parser
 					if (field.TypeReference != null) {
 						type = new ReturnType(field.TypeReference);
 					}
-					DefaultField f = new DefaultField (c, type, field.Name, (ModifierEnum)fieldDeclaration.Modifier, region);
+					DefaultField f = new DefaultField (type, field.Name, (ModifierEnum)fieldDeclaration.Modifier, region);
 					if (type == null) {
 						f.Modifiers = ModifierEnum.Const | ModifierEnum.SpecialName;
 					}
@@ -189,7 +189,7 @@ namespace VBBinding.Parser
 			ReturnType type = propertyDeclaration.TypeReference == null ? new ReturnType("System.Void") : new ReturnType(propertyDeclaration.TypeReference);
 			Class c = (Class)currentClass.Peek();
 			
-			DefaultProperty property = new DefaultProperty (c, propertyDeclaration.Name, type, (ModifierEnum)propertyDeclaration.Modifier, region, bodyRegion);
+			DefaultProperty property = new DefaultProperty (propertyDeclaration.Name, type, (ModifierEnum)propertyDeclaration.Modifier, region, bodyRegion);
 			c.Properties.Add(property);
 			return null;
 		}

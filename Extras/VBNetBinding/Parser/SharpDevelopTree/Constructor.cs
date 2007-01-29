@@ -9,7 +9,7 @@ namespace VBBinding.Parser.SharpDevelopTree
 	{
 		public Constructor(Modifier m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = "#ctor";
+			Name = "#ctor";
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
 			modifiers = (ModifierEnum)m;
