@@ -1,10 +1,10 @@
 <Project name="MonoDevelop.DesignerSupport" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Debug" assembly="MonoDevelop.DesignerSupport" />
-      <Build debugmode="True" target="Exe" />
+      <Output directory="../../build/AddIns/" assembly="MonoDevelop.DesignerSupport" />
+      <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Release" assembly="MonoDevelop.DesignerSupport" />
@@ -45,7 +45,6 @@
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.DesignerSupport.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.DesignerSupport" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport/PropertyPad.cs" subtype="Code" buildaction="Compile" />
@@ -71,6 +70,7 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs" subtype="Code" buildaction="Compile" />
+    <File name="./icons/group-by-category.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -79,12 +79,6 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -92,6 +86,10 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <DeploymentInformation strategy="File">
     <excludeFiles />

@@ -153,7 +153,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
 		{
-			if (IdeApp.Workbench.ActiveDocument.Content == this)
+			if (IdeApp.Workbench.ActiveDocument.GetContent<WrapperDesignView> () == this)
 				OnDocumentActivated ();
 		}
 		

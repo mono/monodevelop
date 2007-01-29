@@ -149,7 +149,7 @@ namespace MonoDevelop.DesignerSupport
 				foreach (Document doc in IdeApp.Workbench.Documents) {
 					//FIXME: look in other views
 					if (doc.FileName == filePath) {
-						IEditableTextFile ef = doc.Content as IEditableTextFile;
+						IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
 						if (ef != null) return ef;
 					}
 				}

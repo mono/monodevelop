@@ -1,3 +1,10 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp: Updated.
+	* MonoDevelop.DesignerSupport/BindingService.cs,
+	  MonoDevelop.DesignerSupport/WrapperDesignView.cs: Track api changes
+	  in Document class.
+
 2006-11-14  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Makefile.am:
