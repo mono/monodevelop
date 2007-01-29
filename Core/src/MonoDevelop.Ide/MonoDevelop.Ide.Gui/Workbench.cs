@@ -411,6 +411,9 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing += new WorkbenchWindowEventHandler (OnWindowClosing);
 			window.Closed += new EventHandler (OnWindowClosed);
 			Documents.Add (doc);
+			
+			doc.OnDocumentAttached ();
+			
 			return doc;
 		}
 		

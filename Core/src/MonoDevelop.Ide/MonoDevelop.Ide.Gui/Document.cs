@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui
 	public class Document
 	{
 		IWorkbenchWindow window;
+		TextEditorExtension editorExtension;
 		
 		internal IWorkbenchWindow Window {
 			get { return window; }
@@ -91,6 +92,15 @@ namespace MonoDevelop.Ide.Gui
 		
 		public object ActiveView {
 			get { return window.ActiveViewContent; }
+		}
+		
+		public string UntitledName {
+			get { return Window.ViewContent.UntitledName; }
+			set { Window.ViewContent.UntitledName = value; }
+		}
+		
+		public bool IsUntitled {
+			get { return Window.ViewContent.IsUntitled; }
 		}
 		
 /*		public void JumpTo (int line, int column)
@@ -247,6 +257,11 @@ namespace MonoDevelop.Ide.Gui
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			OnClosed (a);
+			
+			while (editorExtension != null) {
+				editorExtension.Dispose ();
+				editorExtension = editorExtension.Next as TextEditorExtension;
+			}
 		}
 		
 		void OnActiveViewContentChanged (object s, EventArgs args)
@@ -265,6 +280,34 @@ namespace MonoDevelop.Ide.Gui
 			if (ViewChanged != null)
 				ViewChanged (this, args);
 		}
+		
+		internal void OnDocumentAttached ()
+		{
+			IExtensibleTextEditor editor = Content as IExtensibleTextEditor;
+			if (editor == null)
+				return;
+		
+			// If the new document is a text editor, attach the extensions
+			
+			TextEditorExtension[] extensions = (TextEditorExtension[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/Workbench/TextEditorExtensions", typeof(TextEditorExtension));
+			
+			editorExtension = null;
+			TextEditorExtension last = null;
+			
+			foreach (TextEditorExtension ext in extensions) {
+				if (ext.ExtendsEditor (this, editor)) {
+					if (editorExtension == null)
+						editorExtension = ext;
+					if (last != null)
+						last.Next = ext;
+					last = ext;
+					ext.Initialize (this);
+				}
+			}
+			if (editorExtension != null)
+				last.Next = editor.AttachExtension (editorExtension);
+		}
+		
 		
 		public event EventHandler Closed;
 		public event EventHandler Saved;

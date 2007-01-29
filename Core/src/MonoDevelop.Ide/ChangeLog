@@ -1,3 +1,18 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs:
+	  Track api changes.
+	* MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs,
+	  MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.addin.xml, MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs: Implemented new extension point,
+	  which allows providing custom support for code completion to
+	  editors.
+	* MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs,
+	  gtk-gui/gui.stetic: Use the new partial class model.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+
 2007-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs,

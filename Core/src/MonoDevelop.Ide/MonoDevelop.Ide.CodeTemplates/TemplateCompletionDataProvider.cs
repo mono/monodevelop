@@ -34,6 +34,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
+		public string DefaultCompletionString {
+			get { return null; }
+		}
+		
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
 			CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename (fileName);
@@ -90,6 +94,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			{
 				this.template = template;
 			}
+		}
+		
+		public void Dispose ()
+		{
 		}
 	}
 }

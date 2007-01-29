@@ -110,6 +110,8 @@ MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
+MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
+MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
@@ -252,6 +254,7 @@ MonoDevelop.Ide/Services.cs \
 MonoDevelop.Ide.Gui.Search/ISearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Search/SearchProgressMonitor.cs \
 MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs \
+gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs \
 gtk-gui/generated.cs
 
 RES= \

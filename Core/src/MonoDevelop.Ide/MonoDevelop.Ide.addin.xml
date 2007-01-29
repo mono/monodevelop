@@ -971,6 +971,9 @@
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions" extension-nodes="Class" description="Extensions to the text editor. Classes must be a subclass of TextEditorExtension.">
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
 	</Extension>

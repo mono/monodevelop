@@ -29,14 +29,13 @@ using Gdk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {	
-	public class GotoTypeDialog : Gtk.Dialog
+	public partial class GotoTypeDialog : Gtk.Dialog
 	{
-		protected Gtk.TreeView treeview1;
 		private Dictionary<string, Pixbuf> icons;
 		
 		public GotoTypeDialog()
 		{
-			Stetic.Gui.Build(this, typeof(GotoTypeDialog));
+			Build ();
 			
 			icons = new Dictionary<string, Pixbuf>();
 			SetupTreeView();						       								
