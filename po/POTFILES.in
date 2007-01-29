@@ -28,6 +28,8 @@ Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.addin.xml
 Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs.in
 Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs
+Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
+Core/src/MonoDevelop.Core/MonoDevelop.Core/FileService.cs
 Core/src/MonoDevelop.Dock/DockItem.cs
 Core/src/MonoDevelop.Dock/DockItemGrip.cs
 Core/src/MonoDevelop.Documentation/MonoDevelop.Documentation.addin.xml
@@ -36,6 +38,7 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Codons/PadCodon.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Codons/PadOptionCodon.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Codons/TaskListViewCodon.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/DebugCommands.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs
@@ -65,6 +68,7 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DisplayBindingService.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/HelpViewer.cs
@@ -89,6 +93,7 @@ Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TaskListPad.cs
+Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProgressMonitors.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs
@@ -126,7 +131,9 @@ Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs
+Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs
 Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
+Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.addin.xml
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
@@ -140,6 +147,10 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/PersistentClass.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs
 Core/src/Tools/SharpCoco/src/Scanner.cs
 Extras/BooBinding/BooBinding.addin.xml
 Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml
@@ -191,6 +202,10 @@ Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs
+Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs
+Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs
+Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs
+Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs
 Extras/MonoDevelop.SourceEditor/EditorBindings.glade
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml
@@ -198,6 +213,7 @@ Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplat
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
 Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs
+Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs
 Extras/MonoDevelop.SourceEditor/texteditoraddin.glade
 Extras/MonoQuery/Mono.Data.Sql/Providers/MySqlDbProvider.cs
 Extras/MonoQuery/Mono.Data.Sql/Providers/NpgsqlDbProvider.cs
@@ -251,6 +267,10 @@ Extras/NUnit/templates/NUnitAssemblyGroup.xpt.xml
 Extras/prj2make-sharp-lib/MsPrjHelper.cs
 Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml
 Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs
+Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs
+Extras/prj2make-sharp-lib/SlnFileFormat.cs
+Extras/prj2make-sharp-lib/MSBuildFileFormat.cs
+Extras/prj2make-sharp-lib/MSBuildSolution.cs
 Extras/PythonBinding/Gui/CompilerParametersPanel.cs
 Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs
 Extras/VBNetBinding/Gui/CodeGenerationPanel.cs
@@ -265,4 +285,18 @@ Extras/WelcomePage/WelcomePage.addin.xml
 Extras/WelcomePage/WelcomePageOptionPanel.cs
 Extras/WelcomePage/WelcomePageView.cs
 Extras/WelcomePage/WelcomePageContent.xml
+Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs
+Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs
+Extras/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs
+Extras/MonoDevelop.Autotools/SolutionDeployer.cs
+Extras/MonoDevelop.Autotools/Commands.cs
+Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs
+Extras/MonoDevelop.Autotools/TarballTargetEditorWidget.cs
+Extras/MonoDevelop.WebReferences/MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs
 

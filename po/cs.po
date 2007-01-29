@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: monodevelop 0.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-21 20:41+0100\n"
-"PO-Revision-Date: 2006-11-26 23:34+0100\n"
+"PO-Revision-Date: 2006-12-10 16:19+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgid "_Browse..."
 msgstr "_Procházet..."
 
 #: ../Core/src/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:70
-#: ../Extras/WelcomePage/WelcomePageView.cs:172
+#: ../Extras/WelcomePage/WelcomePageView.cs:183
 #, csharp-format
 msgid "Could not open the url {0}"
 msgstr "Nepodařilo se otevřít URL {0}"
@@ -1159,19 +1159,19 @@ msgstr "Najít _předchozí výskyt selekce"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
 msgid "Find next"
-msgstr "Najít _následující"
+msgstr "Najít následující"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
 msgid "Full Screen"
 msgstr "Celá obrazovka"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
-msgid "GotDotNet"
-msgstr "GotDotNet"
+msgid "Go to Type..."
+msgstr "Jít na typ..."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
-msgid "Goto Class..."
-msgstr "Jít na třídu..."
+msgid "GotDotNet"
+msgstr "GotDotNet"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
 msgid "Group members by access"
@@ -1293,6 +1293,7 @@ msgid "Recent Files"
 msgstr "Nedávné soubory"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:16
 msgid "Recent Projects"
 msgstr "Nedávné projekty"
 
@@ -1791,7 +1792,7 @@ msgstr "Abstraktní obsah"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AbstractViewContent.cs:25
 msgid "Change me"
-msgstr ""
+msgstr "Change me"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:108
 msgid "New add-in updates are available:"
@@ -1958,6 +1959,7 @@ msgstr "Složka sestavy"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:15
 msgid "Project"
 msgstr "Projekt"
 
@@ -2281,7 +2283,7 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:319
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:157
 msgid "Control not found!"
-msgstr ""
+msgstr "Widget nenalezen!"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:340
 #, csharp-format
@@ -2418,7 +2420,7 @@ msgstr "Operace ukládání selhala."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:226
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:338
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1003
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:999
 msgid "Copying files..."
 msgstr "Kopíruji soubory..."
 
@@ -2484,7 +2486,7 @@ msgstr "Chcete odebrat složku {0}?"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:120
 #, csharp-format
 msgid "{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>"
-msgstr ""
+msgstr "{0} <span foreground='red' size='small'>(Neznámý jazyk '{1}')</span>"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:304
 #, csharp-format
@@ -2624,67 +2626,67 @@ msgstr "Ukládám..."
 msgid "File not found: {0}"
 msgstr "Soubor nenalezen: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:325
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:321
 msgid "Solution loaded."
 msgstr "Sestava načtena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:392
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:388
 msgid "Solution saved."
 msgstr "Sestava uložena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:394
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:407
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:390
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:403
 msgid "Save failed."
 msgstr "Ukládání selhalo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:405
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:401
 msgid "Project saved."
 msgstr "Projekt uložen."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:494
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:520
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:490
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:516
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "Soubor '{0}' nemohl být načten."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:510
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:506
 msgid "Add to Solution"
 msgstr "Přidat do sestavy"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:695
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:691
 msgid "Deploy Output"
 msgstr "Výstup umístění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:735
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:768
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:731
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:764
 msgid "Execution failed."
 msgstr "Spuštění selhalo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:785
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:844
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:781
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:840
 msgid "No runnable executable found."
 msgstr "Nebyla nalezena binárka ke spuštění."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:829
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:825
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "Soubor {0} nelze zkompilovat."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:880
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:946
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:876
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:942
 msgid "Build failed."
 msgstr "Sestavení se nezdařilo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:898
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:894
 msgid "Save changed files?"
 msgstr "Uložit změněné soubory?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:930
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:926
 #, csharp-format
 msgid "---------------------- Done ----------------------"
 msgstr "-------------------- Dokončeno --------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:936
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:932
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:376
 #, csharp-format
 msgid "{0} error"
@@ -2693,7 +2695,7 @@ msgstr[0] "{0} chyba"
 msgstr[1] "{0} chyby"
 msgstr[2] "{0} chyb"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:937
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:933
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:377
 #, csharp-format
 msgid "{0} warning"
@@ -2702,36 +2704,36 @@ msgstr[0] "{0} upozornění"
 msgstr[1] "{0} upozornění"
 msgstr[2] "{0} upozornění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:940
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:936
 msgid "Build successful."
 msgstr "Sestavení úspěšně ukončeno."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:942
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:944
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:938
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:940
 msgid "Build: "
 msgstr "Sestavení:"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:984
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:980
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "Nemohu získat žádný soubor z '{0}'."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:996
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:992
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "Nemohu vytvořit složku '{0}'"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1015
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1011
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "Soubor '{0}' nemohl být vytvořen."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1037
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1033
 #, csharp-format
 msgid "File '{0}' could not be deleted."
 msgstr "Soubor '{0}' nemohl být smazán."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1052
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1048
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "Složka '{0}' nemohla být smazána."
@@ -2755,7 +2757,8 @@ msgstr "Shoda na ofsetu {0}"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:93
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:118
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:143
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:199
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:198
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:210
 msgid "Search pattern is invalid"
 msgstr "Neplatný vzor hledání"
 
@@ -2820,7 +2823,7 @@ msgstr[0] "Nahradit vše dokončeno. Nahrazen {0} výskyt."
 msgstr[1] "Nahradit vše dokončeno. Nahrazeny {0} výskyty."
 msgstr[2] "Nahradit vše dokončeno. Nahrazeno {0} výskytů."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:212
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs:223
 msgid "Search string not found:"
 msgstr "Hledaný řetězec nebyl nenalezen:"
 
@@ -4060,7 +4063,7 @@ msgstr "Uživatelské rozhraní"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:1
 msgid "\n"
-msgstr ""
+msgstr "\n"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:4
 msgid "<b>Behavior</b>"
@@ -4219,7 +4222,7 @@ msgid "Code Templates"
 msgstr "Šablony kódu"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:7
-msgid "Goto Matching _Brace"
+msgid "Go to Matching _Brace"
 msgstr "Jít na párovou _závorku"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:8
@@ -4271,7 +4274,7 @@ msgid "Toggle bookmark"
 msgstr "Přepnout záložku"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:21
-msgid "_Goto Line..."
+msgid "_Go to Line..."
 msgstr "Jít na _řádek..."
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:22
@@ -4284,13 +4287,13 @@ msgstr "_Hledat"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:24
 msgid "bogus_label"
-msgstr ""
+msgstr "bogus_label"
 
 #. FIXME: make this a resource in the resource file
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs:56
 #, csharp-format
 msgid "{0} Code Group"
-msgstr ""
+msgstr "{0} skupina kódu"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:111
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:125
@@ -4487,7 +4490,7 @@ msgstr "Dotaz odeslán, čekám na odpověď."
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:283
 msgid "Query results received"
-msgstr ""
+msgstr "Obdrženy výsledky dotazu"
 
 #: ../Extras/MonoQuery/MonoQuery/Gui/SqlQueryView.cs:289
 msgid "Invalid select query"
@@ -4662,7 +4665,7 @@ msgstr "Výsledek"
 
 #: ../Extras/NUnit/Gui/TestPad.cs:506
 msgid "No regressions found."
-msgstr ""
+msgstr "Regrese nebyla nalezena."
 
 #: ../Extras/NUnit/Gui/TestPad.cs:515
 msgid "No failed tests found."
@@ -4971,7 +4974,7 @@ msgstr "Zobrazit log záznamy"
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:6
 msgid "Publish..."
-msgstr ""
+msgstr "Zveřejnit..."
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:8
 msgid "Revert"
@@ -5001,11 +5004,11 @@ msgstr "Úvodní stránka"
 msgid "Show welcome page on startup"
 msgstr "Zobrazit úvodní stránku po startu"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:73
+#: ../Extras/WelcomePage/WelcomePageView.cs:88
 msgid "Welcome"
 msgstr "Vítejte"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:222
+#: ../Extras/WelcomePage/WelcomePageView.cs:252
 #, csharp-format
 msgid "{0} day"
 msgid_plural "{0} days"
@@ -5013,7 +5016,7 @@ msgstr[0] "{0} den"
 msgstr[1] "{0} dny"
 msgstr[2] "{0} dnů"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:226
+#: ../Extras/WelcomePage/WelcomePageView.cs:256
 #, csharp-format
 msgid "{0} hour"
 msgid_plural "{0} hours"
@@ -5021,7 +5024,7 @@ msgstr[0] "{0} hodina"
 msgstr[1] "{0} hodiny"
 msgstr[2] "{0} hodin"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:230
+#: ../Extras/WelcomePage/WelcomePageView.cs:260
 #, csharp-format
 msgid "{0} minute"
 msgid_plural "{0} minutes"
@@ -5029,7 +5032,75 @@ msgstr[0] "{0} minuta"
 msgstr[1] "{0} minuty"
 msgstr[2] "{0} minut"
 
-#: ../Extras/WelcomePage/WelcomePageView.cs:234
+#: ../Extras/WelcomePage/WelcomePageView.cs:264
 msgid "Less than a minute"
 msgstr "Méně než minutu"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:1
+msgid "A popular site for .NET articles, code snippets, and discussions."
+msgstr "Populární web s články o .NET programování, příklady a diskusemi."
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:2
+msgid "Common Actions"
+msgstr "Obecné akce"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:3
+msgid "Development Links"
+msgstr "Odkazy - vývoj"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:4
+msgid "Documentation for Microsoft's implementation of the .NET framework."
+msgstr "Dokumentace .NET frameworku od Microsoftu."
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:5
+msgid "Free .Net Development Environment"
+msgstr "Svobodné .Net vývojové prostředí"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:6
+msgid "From MonoDevelop"
+msgstr "z MonoDevelopu"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:7
+msgid "Last Modified"
+msgstr "Naposledy změněn"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:8
+msgid "MSDN Class Library Reference"
+msgstr "MSDN Class Library Reference"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:9
+msgid "Mono Documentation Library"
+msgstr "Mono Dokumentace"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:10
+msgid "Mono Project Home Page"
+msgstr "Domovská stránka  projektu Mono"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:11
+msgid "MonoDevelop Home Page"
+msgstr "Domovská stránka MonoDevelopu"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:12
+msgid "Online documentation for Mono libraries."
+msgstr "Online dokumentace Mono knihoven."
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:13
+msgid "Open Project"
+msgstr "Otevřít projekt"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:14
+msgid "Open a Project / File"
+msgstr "Otevřít projekt / soubor"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:17
+msgid "Start a New Project"
+msgstr "Nový projekt"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:18
+msgid "Support Links"
+msgstr "Odkazy - podpora"
+
+#: ../Extras/WelcomePage/WelcomePageContent.xml.h:19
+msgid "The Code Project"
+msgstr "The Code Project"
 
