@@ -57,7 +57,7 @@ namespace MonoDevelop.WelcomePage
 		{
 			foreach (Document d in IdeApp.Workbench.Documents)
 			{
-				if (d.Content is WelcomePageView)
+				if (d.GetContent<WelcomePageView>() != null)
 				{
 					d.Select();
 					return;
