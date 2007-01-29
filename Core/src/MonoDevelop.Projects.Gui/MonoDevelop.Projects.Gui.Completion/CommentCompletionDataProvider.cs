@@ -22,9 +22,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CommentCompletionDataProvider : ICompletionDataProvider
+/*	public class CommentCompletionDataProvider : ICompletionDataProvider
 	{
-/*		int caretLineNumber;
+		int caretLineNumber;
 		int caretColumn;
 		
 		string[][] commentTags = new string[][] {
@@ -48,21 +48,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 			new string[] {"summary", "A summary of the object"},
 			new string[] {"value", "A description of a property"}
 		};
-*/
+
 		public ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped)
 		{
-			/*caretLineNumber = textArea.Caret.Line;
+			caretLineNumber = textArea.Caret.Line;
 			caretColumn     = textArea.Caret.Column;
 			LineSegment caretLine = textArea.Document.GetLineSegment(caretLineNumber);
 			string lineText = textArea.Document.GetText(caretLine.Offset, caretLine.Length);
 			if (!lineText.Trim().StartsWith("///")) {
 				return null;
 			}
-			*/
+			
 			ArrayList completionData = new ArrayList ();
-			/*foreach (string[] tag in commentTags) {
+			foreach (string[] tag in commentTags) {
 				completionData.Add(new CommentCompletionData(tag[0], tag[1]));
-			}*/
+			}
 			return (ICompletionData[])completionData.ToArray (typeof (ICompletionData));
 		}
 		
@@ -112,4 +112,5 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 	}
+	*/
 }

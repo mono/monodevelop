@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			get { 
 				if (list.Selection != -1)
-					return provider.GetText (list.Selection);
+					return provider.GetCompletionText (list.Selection);
 				else
 					return null;
 			}
@@ -119,7 +119,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get
 			{
 				int pos = list.Selection + 1;
-				if (provider.ItemCount > pos && provider.GetText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
+				if (provider.ItemCount > pos && provider.GetCompletionText (pos).ToLower ().StartsWith (PartialWord.ToLower ()) || !(provider.GetCompletionText (list.Selection).ToLower ().StartsWith (PartialWord.ToLower ())))
 					return false;
 				
 				return true;	
@@ -131,9 +131,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return list; }
 		}
 		
-		public KeyAction ProcessKey (EventKey e)
+		public KeyAction ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			switch (e.Key)
+			switch (key)
 			{
 				case Gdk.Key.Up:
 					list.Selection --;
@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return KeyAction.Process;
 			}
 			
-			char c = (char)e.KeyValue;
+			char c = (char)(uint)key;
 			
 			if (System.Char.IsLetterOrDigit (c) || c == '_') {
 				word.Insert (curPos++, c);
@@ -208,13 +208,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		void UpdateWordSelection ()
 		{
-			string s = word.ToString ();
+			SelectEntry (word.ToString ());
+		}
+		
+		public void SelectEntry (string s)
+		{
 			int max = (provider == null ? 0 : provider.ItemCount);
 			
 			int bestMatch = -1;
 			for (int n=0; n<max; n++) 
 			{
-				string txt = provider.GetText (n);
+				string txt = provider.GetCompletionText (n);
 				if (txt.StartsWith (s)) {
 					list.Selection = n;
 					return;
@@ -509,6 +513,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	{
 		int ItemCount { get; }
 		string GetText (int n);
+		string GetCompletionText (int n);
 		Gdk.Pixbuf GetIcon (int n);
 	}
 }

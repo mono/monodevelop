@@ -28,6 +28,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string pango_description;
 		string documentation;
 		string completionString;
+		
+		IClass cls;	// Used for lazily loading class documentation
+		Ambience_ ambience;
 
 		bool convertedDocumentation = false;
 		
@@ -74,17 +77,23 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 				
-		private string GetDescription(string desc)
+		private string GetDescription (string desc)
 		{
+			if (documentation == null && cls != null) {
+				documentation = cls.Documentation;
+				if (documentation == null)
+					documentation = string.Empty;
+			}
+			
 			// don't give a description string, if no documentation or description is provided
-			if (description.Length + documentation.Length == 0) {
+			if (desc.Length + documentation.Length == 0) {
 				return null;
 			}
 		
 			if (!convertedDocumentation) {
 				convertedDocumentation = true;
 				try {
-					documentation = GetDocumentation(documentation);
+					documentation = GetDocumentation (documentation);
 				} catch (Exception e) {
 					Console.WriteLine(e.ToString());
 				}
@@ -96,7 +105,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string Description
 		{
 			get {
-				return GetDescription(description);		
+				if (description == null && cls != null) {
+					description = ambience.Convert (cls);
+					if (description == null)
+						description = string.Empty;
+				}
+				return GetDescription (description);		
 			}
 			set {
 				description = value;
@@ -106,7 +120,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public string DescriptionPango
 		{
 			get {
-				return GetDescription(pango_description);				
+				if (pango_description == null && cls != null) {
+					pango_description = ambience.Convert (cls, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
+					if (pango_description == null)
+						pango_description = string.Empty;
+				}
+				return GetDescription (pango_description);				
 			}
 			set {
 				description = value;
@@ -138,12 +157,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public CodeCompletionData (IClass c, Ambience_ ambience)
 		{
+			cls = c;
+			this.ambience = ambience;
 			image = Services.Icons.GetIcon(c);
-			text = c.Name;
-			completionString = c.Name;
-			description = ambience.Convert(c);
-			pango_description = ambience.Convert(c, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
-			documentation = c.Documentation;
+			if (c.GenericParameters != null && c.GenericParameters.Count > 0) {
+				int i = c.Name.IndexOf ('`');
+				if (i == -1)
+					completionString  = c.Name;
+				else
+					completionString  = c.Name.Substring (0, i);
+				if (c.ClassType != ClassType.Delegate)
+					text = ambience.Convert (c, ConversionFlags.ShowGenericParameters);
+				else
+					text = completionString;
+			}
+			else {
+				text = c.Name;
+				completionString = c.Name;
+			}
 		}
 		
 		public CodeCompletionData (IMethod method, Ambience_ ambience)

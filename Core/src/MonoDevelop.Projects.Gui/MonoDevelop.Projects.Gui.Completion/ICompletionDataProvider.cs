@@ -11,9 +11,10 @@ using Gdk;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public interface ICompletionDataProvider
+	public interface ICompletionDataProvider: IDisposable
 	{
 		ICompletionData[] GenerateCompletionData (ICompletionWidget widget, char charTyped);
+		string DefaultCompletionString { get; }
 	}
 	
 	public interface IMutableCompletionDataProvider: ICompletionDataProvider

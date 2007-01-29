@@ -11,6 +11,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	public class CompletionListWindow : ListWindow, IListDataProvider
 	{
 		ICompletionWidget completionWidget;
+		ICodeCompletionContext completionContext;
 		ICompletionData[] completionData;
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
 		ICompletionData currentData;
@@ -18,10 +19,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 		IMutableCompletionDataProvider mutableProvider;
 		Widget parsingMessage;
 		char firstChar;
+		CompletionDelegate closedDelegate;
 		
 		const int declarationWindowMargin = 3;
-		
 		static DataComparer dataComparer = new DataComparer ();
+		
+		public static event EventHandler WindowClosed;
 		
 		class DataComparer: IComparer
 		{
@@ -40,21 +43,27 @@ namespace MonoDevelop.Projects.Gui.Completion
 			wnd = new CompletionListWindow ();
 		}
 		
-		public CompletionListWindow ()
+		internal CompletionListWindow ()
 		{
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 		}
 		
-		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget)
+		public static void ShowWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			try {
-				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget))
+				if (!wnd.ShowListWindow (firstChar, provider,  completionWidget, completionContext, closedDelegate)) {
+					provider.Dispose ();
 					return;
+				}
 				
 				// makes control-space in midle of words to work
-				string text = wnd.completionWidget.CompletionText;
-				if (text.Length == 0)
+				string text = wnd.completionWidget.GetCompletionText (completionContext);
+				if (text.Length == 0) {
+					text = provider.DefaultCompletionString;
+					if (text != null && text.Length > 0)
+						wnd.SelectEntry (text);
 					return;
+				}
 				
 				wnd.PartialWord = text; 
 				//if there is only one matching result we take it by default
@@ -69,7 +78,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget)
+		bool ShowListWindow (char firstChar, ICompletionDataProvider provider, ICompletionWidget completionWidget, ICodeCompletionContext completionContext, CompletionDelegate closedDelegate)
 		{
 			if (mutableProvider != null) {
 				mutableProvider.CompletionDataChanging -= OnCompletionDataChanging;
@@ -77,6 +86,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			
 			this.provider = provider;
+			this.completionContext = completionContext;
+			this.closedDelegate = closedDelegate;
 			mutableProvider = provider as IMutableCompletionDataProvider;
 			
 			if (mutableProvider != null) {
@@ -108,8 +119,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			DataProvider = this;
 
-			int x = completionWidget.TriggerXCoord;
-			int y = completionWidget.TriggerYCoord;
+			int x = completionContext.TriggerXCoord;
+			int y = completionContext.TriggerYCoord;
 			
 			int w, h;
 			GetSize (out w, out h);
@@ -119,7 +130,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			if ((y + h) > Screen.Height)
 			{
-				y = y - completionWidget.TriggerTextHeight - h;
+				y = y - completionContext.TriggerTextHeight - h;
 			}
 
 			Move (x, y);
@@ -133,11 +144,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			wnd.Hide ();
 		}
 		
-		public static bool ProcessKeyEvent (Gdk.EventKey e)
+		public static bool ProcessKeyEvent (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			if (!wnd.Visible) return false;
 			
-			ListWindow.KeyAction ka = wnd.ProcessKey (e);
+			ListWindow.KeyAction ka = wnd.ProcessKey (key, modifier);
 			
 			if ((ka & ListWindow.KeyAction.CloseWindow) != 0)
 				wnd.Hide ();
@@ -150,13 +161,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return true;
 
 			if ((ka & ListWindow.KeyAction.Process) != 0) {
-				if (e.Key == Gdk.Key.Left) {
+				if (key == Gdk.Key.Left) {
 					if (wnd.declarationviewwindow.Multiple) {
 						wnd.declarationviewwindow.OverloadLeft ();
 						wnd.UpdateDeclarationView ();
 					}
 					return true;
-				} else if (e.Key == Gdk.Key.Right) {
+				} else if (key == Gdk.Key.Right) {
 					if (wnd.declarationviewwindow.Multiple) {
 						wnd.declarationviewwindow.OverloadRight ();
 						wnd.UpdateDeclarationView ();
@@ -172,13 +183,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			string word = wnd.CompleteWord;
 			if (word != null)
-				completionWidget.SetCompletionText(wnd.PartialWord, word);
+				completionWidget.SetCompletionText(completionContext, wnd.PartialWord, word);
 		}
 		
 		public new void Hide ()
 		{
 			base.Hide ();
 			declarationviewwindow.HideAll ();
+			if (provider != null) {
+				provider.Dispose ();
+				provider = null;
+			}
+			if (closedDelegate != null) {
+				closedDelegate ();
+				closedDelegate = null;
+			}
 		}
 		
 		void ListSizeChanged (object obj, SizeAllocatedArgs args)
@@ -190,8 +209,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			bool ret = base.OnButtonPressEvent (evnt);
 			if (evnt.Button == 1 && evnt.Type == Gdk.EventType.TwoButtonPress) {
-				wnd.Hide ();
 				wnd.UpdateWord ();
+				wnd.Hide ();
 			}
 			return ret;
 		}
@@ -284,6 +303,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return completionData[n].Text[0];
 		}
 		
+		public string GetCompletionText (int n)
+		{
+			return completionData[n].CompletionString;
+		}
+		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
 			return RenderIcon (completionData[n].Image, Gtk.IconSize.Menu, "");
@@ -319,4 +343,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 	}
+	
+	public delegate void CompletionDelegate ();
 }

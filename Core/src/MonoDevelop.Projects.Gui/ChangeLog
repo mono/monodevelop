@@ -1,3 +1,27 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Track
+	  changes in the API. Now the cursor positions are taken from a
+	  CodeCompletionContext object.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Lazily get
+	  documentation from classes, to avoid loading too much data into
+	  memory.
+	* MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs:
+	  Removed since it's not being used right now.
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Allow specifying a
+	  completion text which is different from the text shown in the list.
+	  Added method for selecting an entry in the list.
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: Created
+	  class CodeCompletionContext, which holds the coordinates of a code
+	  completion operation.
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs: A
+	  completion provider can now specify the entry that has to be
+	  selected by default in the completion list.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Moved al C# specific code to the C# add-in. Now this class is just
+	  a collection of CodeCompletionData. Every language add-in should
+	  implement the code completion logic in a text editor extension.
+
 2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml,
