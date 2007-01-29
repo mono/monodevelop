@@ -40,7 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
-
+using MonoDevelop.Ide.Gui.Content;
 using AspNetEdit.Editor;
 
 namespace AspNetEdit.Integration
@@ -123,7 +123,7 @@ namespace AspNetEdit.Integration
 			}
 			proxy = new MonoDevelopProxy (codeBehind);
 			
-			MonoDevelop.Ide.Gui.Content.ITextBuffer textBuf = (MonoDevelop.Ide.Gui.Content.ITextBuffer) viewContent;			
+			ITextBuffer textBuf = (ITextBuffer) viewContent.GetContent (typeof(ITextBuffer));			
 			editorProcess.Initialise (proxy, textBuf.Text, viewContent.ContentName);
 			UsePropGrid ();
 		}
@@ -131,7 +131,7 @@ namespace AspNetEdit.Integration
 		public override void Deselected ()
 		{
 			if (!editorProcess.ExceptionOccurred) {
-				MonoDevelop.Ide.Gui.Content.IEditableTextBuffer textBuf = (MonoDevelop.Ide.Gui.Content.IEditableTextBuffer) viewContent;
+				IEditableTextBuffer textBuf = (IEditableTextBuffer) viewContent.GetContent (typeof(IEditableTextBuffer));
 				
 				string doc = null;
 				try {

@@ -45,7 +45,7 @@ namespace AspNetEdit.Integration
 	{
 		public bool CanAttachTo (IViewContent content)
 		{
-			if ( !(content is MonoDevelop.Ide.Gui.Content.IEditableTextBuffer))
+			if (content.GetContent (typeof(MonoDevelop.Ide.Gui.Content.IEditableTextBuffer)) == null)
 				return false;
 			
 			string s = Path.GetExtension (content.IsUntitled? content.UntitledName : content.ContentName);
