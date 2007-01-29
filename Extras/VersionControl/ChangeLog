@@ -1,3 +1,12 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/Revision.cs:
+	  Improved the log view. Use a toolbar instead of regular buttons.
+	  Provide more information about files comitted in a revision.
+
 2007-01-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,

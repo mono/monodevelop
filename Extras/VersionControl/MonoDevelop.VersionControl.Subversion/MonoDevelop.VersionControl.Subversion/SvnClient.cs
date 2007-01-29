@@ -718,7 +718,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public class LogEntChangedPath {
 			public readonly string Path;
-			public readonly ActionType Action;
+			public readonly RevisionAction Action;
+			public readonly string ActionDesc;
 			public readonly string CopyFromPath;
 			public readonly int CopyFromRevision;
 			
@@ -728,18 +729,11 @@ namespace MonoDevelop.VersionControl.Subversion
 				CopyFromRevision = info.copy_from_rev;
 				
 				switch (info.action) {
-				case 'A': Action = ActionType.Add; break;
-				case 'D': Action = ActionType.Delete; break;
-				case 'R': Action = ActionType.Replace; break;
-				default: Action = ActionType.Modify; break; // should be an 'M'
+				case 'A': Action = RevisionAction.Add; break;
+				case 'D': Action = RevisionAction.Delete; break;
+				case 'R': Action = RevisionAction.Replace; break;
+				default: Action = RevisionAction.Modify; break; // should be an 'M'
 				}
-			}
-			
-			public enum ActionType {
-				Add,
-				Delete,
-				Replace,
-				Modify
 			}
 		}
 		

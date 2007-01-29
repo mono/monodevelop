@@ -10,14 +10,14 @@ namespace MonoDevelop.VersionControl
 		DateTime time;
 		string author;
 		string message;
-		string[] changedFiles; // only set by GetHistory; informative, not necessarily a file path
+		RevisionPath[] changedFiles; // only set by GetHistory; informative, not necessarily a file path
 		
 		protected Revision (Repository repo)
 		{
 			this.repo = repo;
 		}
 		
-		protected Revision (Repository repo, DateTime time, string author, string message, string[] changedFiles)
+		protected Revision (Repository repo, DateTime time, string author, string message, RevisionPath[] changedFiles)
 		{
 			this.repo = repo;
 			this.time = time;
@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// only set by GetHistory; informative, not necessarily a file path
-		public string[] ChangedFiles {
+		public RevisionPath[] ChangedFiles {
 			get { return changedFiles; }
 			protected set { changedFiles = value; }
 		}
@@ -55,5 +55,44 @@ namespace MonoDevelop.VersionControl
 		protected Repository Repository {
 			get { return repo; }
 		}
+	}
+	
+	public class RevisionPath
+	{
+		string path;
+		RevisionAction action;
+		string actionDescription;
+		
+		public RevisionPath (string path, RevisionAction action, string actionDescription)
+		{
+			this.path = path;
+			this.action = action;
+			this.actionDescription = actionDescription;
+		}
+		
+		public string Path {
+			get { return path; }
+			set { path = value; }
+		}
+		
+		public RevisionAction Action {
+			get { return action; }
+			set { action = value; }
+		}
+		
+		// To use when Action == RevisionAction.Other
+		public string ActionDescription {
+			get { return actionDescription; }
+			set { actionDescription = value; }
+		}
+	}
+	
+	public enum RevisionAction
+	{
+		Add,
+		Delete,
+		Replace,
+		Modify,
+		Other
 	}
 }

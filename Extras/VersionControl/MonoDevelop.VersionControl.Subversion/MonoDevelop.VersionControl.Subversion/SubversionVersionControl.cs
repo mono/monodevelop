@@ -143,10 +143,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			foreach (SvnClient.LogEnt log in Client.Log(sourcefile, startrev, sincerev)) {
 				ArrayList changedPaths = new ArrayList();
 				foreach (SvnClient.LogEntChangedPath chg in log.ChangedPaths) {
-					changedPaths.Add(chg.Path + " (" + chg.Action + ")");
+					RevisionPath rp = new RevisionPath (chg.Path, chg.Action, chg.ActionDesc);
+					changedPaths.Add (rp);
 				}
 				
-				SvnRevision d = new SvnRevision (repo, log.Revision, log.Time, log.Author, log.Message, (string[])changedPaths.ToArray(typeof(string)));
+				SvnRevision d = new SvnRevision (repo, log.Revision, log.Time, log.Author, log.Message, (RevisionPath[])changedPaths.ToArray(typeof(RevisionPath)));
 				revs.Add(d);
 
 				// Be aware of the change in path resulting from a copy.
@@ -322,7 +323,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Rev = rev;
 			}
 			
-			public SvnRevision (Repository repo, int rev, DateTime time, string author, string message, string[] changedFiles)
+			public SvnRevision (Repository repo, int rev, DateTime time, string author, string message, RevisionPath[] changedFiles)
 			: base (repo, time, author, message, changedFiles)
 			{
 				Rev = rev;
