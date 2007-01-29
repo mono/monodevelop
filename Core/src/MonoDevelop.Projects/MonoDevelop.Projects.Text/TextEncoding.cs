@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections;
 using MonoDevelop.Core;
 
@@ -39,11 +40,20 @@ namespace MonoDevelop.Projects.Text
 		
 		string name;
 		string id;
+		int codePage;
 		
 		internal TextEncoding (string id, string name)
 		{
 			this.id = id;
 			this.name = name;
+			codePage = -1;
+			try {
+				Encoding e = Encoding.GetEncoding (id);
+				if (e != null)
+					codePage = e.CodePage;
+			} catch {
+				// Ignore
+			}
 		}
 		
 		public string Name {
@@ -52,6 +62,10 @@ namespace MonoDevelop.Projects.Text
 		
 		public string Id {
 			get { return id; }
+		}
+		
+		public int CodePage {
+			get { return codePage; }
 		}
 		
 		// Returns a list of encodings supported by MD

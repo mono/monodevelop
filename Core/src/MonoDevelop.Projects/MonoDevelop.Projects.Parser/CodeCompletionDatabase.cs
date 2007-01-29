@@ -26,12 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define CHECK_STRINGS
 
 using System;
 using System.Text;
 using System.Threading;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -49,7 +51,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		static readonly int MAX_ACTIVE_COUNT = 100;
 		static readonly int MIN_ACTIVE_COUNT = 50;
-		static protected readonly int FORMAT_VERSION = 17;
+		static protected readonly int FORMAT_VERSION = 22;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -66,12 +68,26 @@ namespace MonoDevelop.Projects.Parser
 		string basePath;
 		string dataFile;
 		
+		// This table is a cache of instantiated generic types. It is not stored
+		// in disk, it's created under demand when a specific type is requested.
+		Hashtable instantiatedGenericTypes = new Hashtable ();
+		
+		// This table stores type->subclasses relations for types which are not
+		// known in this database. For example, types declared in other databases.
+		// For known types, the type->subclasses relation is stored in the corresponding
+		// ClassEntry object, not here. Inner classes don't have a class entry, so their
+		// relations are also stored here.
+		// The key of the hashtable is the full name of a type. The value is an ArrayList
+		// which can contain ClassEntry objects, or other full type names (this second case
+		// is only used for inner classes).
+		Hashtable unresolvedSubclassTable = new Hashtable ();
+		
 		protected Object rwlock = new Object ();
 		
 		public CodeCompletionDatabase (ParserDatabase parserDatabase)
 		{
 			this.parserDatabase = parserDatabase;
-			rootNamespace = new NamespaceEntry ();
+			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
@@ -156,6 +172,7 @@ namespace MonoDevelop.Projects.Parser
 					references = (ArrayList) dataQueue.Dequeue ();
 					rootNamespace = (NamespaceEntry)  dataQueue.Dequeue ();
 					files = (Hashtable)  dataQueue.Dequeue ();
+					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue ();
 					DeserializeData (dataQueue);
 
 					ifile.Close ();
@@ -164,10 +181,11 @@ namespace MonoDevelop.Projects.Parser
 				{
 					if (ifile != null) ifile.Close ();
 					Runtime.LoggingService.Error ("PIDB file '" + dataFile + "' couldn not be loaded: '" + ex.Message + "'. The file will be recreated");
-					rootNamespace = new NamespaceEntry ();
+					rootNamespace = new NamespaceEntry (null, null);
 					files = new Hashtable ();
 					references = new ArrayList ();
 					headers = new Hashtable ();
+					unresolvedSubclassTable = new Hashtable ();
 				}
 			}
 			
@@ -269,6 +287,7 @@ namespace MonoDevelop.Projects.Parser
 					dataQueue.Enqueue (references);
 					dataQueue.Enqueue (rootNamespace);
 					dataQueue.Enqueue (files);
+					dataQueue.Enqueue (unresolvedSubclassTable);
 					SerializeData (dataQueue);
 					bf.Serialize (dfile, dataQueue.ToArray ());
 					
@@ -292,6 +311,10 @@ namespace MonoDevelop.Projects.Parser
 						Runtime.FileService.DeleteFile (tmpDataFile);
 				}
 			}
+			
+#if CHECK_STRINGS
+			StringNameTable.PrintTop100 ();
+#endif
 		}
 		
 		protected virtual void SerializeData (Queue dataQueue)
@@ -336,7 +359,7 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		IClass ReadClass (ClassEntry ce)
+		internal IClass ReadClass (ClassEntry ce)
 		{
 			if (datareader == null) {
 				datafile = new FileStream (dataFile, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -357,16 +380,33 @@ namespace MonoDevelop.Projects.Parser
 		
 		public void Clear ()
 		{
-			rootNamespace = new NamespaceEntry ();
+			rootNamespace = new NamespaceEntry (null, null);
 			files = new Hashtable ();
 			references = new ArrayList ();
 			headers = new Hashtable ();
 		}
 		
-		public IClass GetClass (string typeName, bool caseSensitive)
+		public IClass GetClass (string typeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
+				if (genericArguments != null && genericArguments.Count > 0) {
+					IClass templateClass = GetClass (typeName, null, caseSensitive);
+					if (templateClass == null)
+						return null;
+						
+					if (templateClass.GenericParameters == null || (templateClass.GenericParameters.Count != genericArguments.Count))
+						return null;
+			
+					string tname = DefaultClass.GetInstantiatedTypeName (templateClass.FullyQualifiedName, genericArguments);
+					IClass res = (IClass) instantiatedGenericTypes [tname];
+					if (res == null) {
+						res = DefaultClass.CreateInstantiatedGenericType (templateClass, genericArguments);
+						instantiatedGenericTypes [tname] = res;
+					}
+					return res;
+				}
+				
 //				Runtime.LoggingService.Debug ("GET CLASS " + typeName + " in " + dataFile);
 				string[] path = typeName.Split ('.');
 				int len = path.Length - 1;
@@ -405,15 +445,42 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
-		IClass GetClass (ClassEntry ce)
+		internal IClass GetClass (ClassEntry ce)
 		{
 			ce.LastGetTime = currentGetTime++;
-			if (ce.Class != null) return ce.Class;
+			if (ce.Class != null)
+				return ce.Class;
+			else
+				return new ClassWrapper (this, ce);
+		}
+		
+		public IEnumerable GetSubclasses (string fullName, string[] namespaces)
+		{
+			ArrayList nsubs = (ArrayList) unresolvedSubclassTable [fullName];
+			ArrayList csubs = null;
+			IList nsList = namespaces;
 			
-			// Read the class from the file
-			
-			ce.Class = ReadClass (ce);
-			return ce.Class;
+			ClassEntry ce = FindClassEntry (fullName);
+			if (ce != null)
+				csubs = ce.Subclasses;
+
+			foreach (ArrayList subs in new object[] { nsubs, csubs }) {
+				if (subs == null)
+					continue;
+				foreach (object ob in subs) {
+					if (ob is ClassEntry) {
+						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
+						if (namespaces == null || nsList.Contains (ns))
+							yield return GetClass ((ClassEntry)ob);
+					}
+					else {
+						// It's a full class name
+						IClass cls = this.GetClass ((string)ob, null, true);
+						if (cls != null && (namespaces == null || nsList.Contains (cls.Namespace)))
+							yield return cls;
+					}
+				}
+			}
 		}
 		
 		void OnPropertyUpdated (object sender, PropertyEventArgs e)
@@ -711,25 +778,30 @@ namespace MonoDevelop.Projects.Parser
 						}
 						
 						if (newClass != null) {
-							// Class found, update it
+							// Class already in the database, update it
 							if (ce.Class == null) ce.Class = ReadClass (ce);
+							RemoveSubclassReferences (ce);
 							ce.Class = CompoundClass.MergeClass (ce.Class, CopyClass (newClass));
+							AddSubclassReferences (ce);							
 							
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
 						}
 						else {
-							// Class not found, it has to be deleted
+							// Database class not found in the new class list, it has to be deleted
 							IClass c = ce.Class;
 							if (c == null) c = ReadClass (ce);
+							RemoveSubclassReferences (ce);
+							UnresolveSubclasses (ce);
 							IClass removed = CompoundClass.RemoveFile (c, fileName);
 							if (removed != null) {
 								// It's still a compound class
 								ce.Class = removed;
+								AddSubclassReferences (ce);							
 								res.Modified.Add (removed);
 							} else {
-								// It's not a compound class. Remove it.
+								// It's not a compoudnd class. Remove it.
 								res.Removed.Add (c);
 								ce.NamespaceRef.Remove (ce.Name);
 							}
@@ -751,6 +823,7 @@ namespace MonoDevelop.Projects.Parser
 						if (ce != null) {
 							// The entry exists, just update it
 							if (ce.Class == null) ce.Class = ReadClass (ce);
+							RemoveSubclassReferences (ce);
 							ce.Class = CompoundClass.MergeClass (ce.Class, c);
 							res.Modified.Add (ce.Class);
 						} else {
@@ -758,7 +831,9 @@ namespace MonoDevelop.Projects.Parser
 							ce = new ClassEntry (c, fe, newNss[n]);
 							newNss[n].Add (c.Name, ce);
 							res.Added.Add (c);
+							ResolveSubclasses (ce);
 						}
+						AddSubclassReferences (ce);							
 						newFileClasses.Add (ce);
 						ce.LastGetTime = currentGetTime++;
 					}
@@ -771,6 +846,109 @@ namespace MonoDevelop.Projects.Parser
 				
 				return res;
 			}
+		}
+		
+		void ResolveSubclasses (ClassEntry ce)
+		{
+			// If this type is registered in the unresolved subclass table, now those subclasses
+			// can properly be assigned.
+			ArrayList subs = (ArrayList) unresolvedSubclassTable [ce.Class.FullyQualifiedName];
+			if (subs != null) {
+				ce.Subclasses = subs;
+				unresolvedSubclassTable.Remove (ce.Class.FullyQualifiedName);
+			}
+		}
+		
+		void UnresolveSubclasses (ClassEntry ce)
+		{
+			// Called when a ClassEntry is removed. If there are registered subclass, add them
+			// to the unresolved subclass table
+			if (ce.Subclasses != null)
+				unresolvedSubclassTable [ce.Class.FullyQualifiedName] = ce.Subclasses;
+		}
+		
+		void AddSubclassReferences (ClassEntry ce)
+		{
+			foreach (IReturnType type in ce.Class.BaseTypes) {
+				string bt = type.FullyQualifiedName;
+				if (bt == "System.Object")
+					continue;
+				ClassEntry sup = FindClassEntry (bt);
+				if (sup != null)
+					sup.RegisterSubclass (ce);
+				else {
+					ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+					if (subs == null) {
+						subs = new ArrayList ();
+						unresolvedSubclassTable [bt] = subs;
+					}
+					subs.Add (ce);
+				}
+			}
+			foreach (IClass cls in ce.Class.InnerClasses)
+				AddInnerSubclassReferences (cls);
+		}
+		
+		void AddInnerSubclassReferences (IClass cls)
+		{
+			foreach (IReturnType type in cls.BaseTypes) {
+				string bt = type.FullyQualifiedName;
+				if (bt == "System.Object")
+					continue;
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [bt];
+				if (subs == null) {
+					subs = new ArrayList ();
+					unresolvedSubclassTable [bt] = subs;
+				}
+				subs.Add (cls.FullyQualifiedName);
+			}
+			foreach (IClass ic in cls.InnerClasses)
+				AddInnerSubclassReferences (ic);
+		}
+		
+		void RemoveSubclassReferences (ClassEntry ce)
+		{
+			foreach (IReturnType type in ce.Class.BaseTypes) {
+				ClassEntry sup = FindClassEntry (type.FullyQualifiedName);
+				if (sup != null)
+					sup.UnregisterSubclass (ce);
+					
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullyQualifiedName];
+				if (subs != null) {
+					subs.Remove (ce);
+					if (subs.Count == 0)
+						unresolvedSubclassTable.Remove (type.FullyQualifiedName);
+				}
+			}
+			foreach (IClass cls in ce.Class.InnerClasses)
+				RemoveInnerSubclassReferences (cls);
+		}
+		
+		void RemoveInnerSubclassReferences (IClass cls)
+		{
+			foreach (IReturnType type in cls.BaseTypes) {
+				ArrayList subs = (ArrayList) unresolvedSubclassTable [type.FullyQualifiedName];
+				if (subs != null)
+					subs.Remove (type.FullyQualifiedName);
+			}
+			foreach (IClass ic in cls.InnerClasses)
+				RemoveInnerSubclassReferences (ic);
+		}
+		
+		ClassEntry FindClassEntry (string fullName)
+		{
+			string[] path = fullName.Split ('.');
+			int len = path.Length - 1;
+			NamespaceEntry nst;
+			int nextPos;
+			
+			if (GetBestNamespaceEntry (path, len, false, true, out nst, out nextPos)) 
+			{
+				ClassEntry ce = nst.GetClass (path[len], true);
+				if (ce == null) return null;
+				return ce;
+			}
+			return null;
 		}
 		
 		public void GetNamespaceContents (LanguageItemCollection list, string subNameSpace, bool caseSensitive)
@@ -814,6 +992,32 @@ namespace MonoDevelop.Projects.Parser
 					list.Add (GetClass (ce));
 				}
 				return (IClass[]) list.ToArray (typeof(IClass));
+			}
+		}
+		
+		public IEnumerable<IClass> GetClassList (bool includeInner, string[] namespaces)
+		{
+			lock (rwlock)
+			{
+				IList nsList = namespaces;
+				ArrayList list = new ArrayList ();
+				foreach (ClassEntry ce in GetAllClasses ()) {
+					IClass cls = GetClass (ce);
+					if (nsList != null && !nsList.Contains (cls.Namespace))
+						continue;
+					list.Add (cls);
+					if (includeInner && ((ce.ContentFlags & ContentFlags.HasInnerClasses) != 0))
+						GetAllInnerClassesRec (list, cls);
+				}
+				return (IClass[]) list.ToArray (typeof(IClass));
+			}
+		}
+		
+		void GetAllInnerClassesRec (ArrayList list, IClass cls)
+		{
+			foreach (IClass ic in cls.InnerClasses) {
+				list.Add (ic);
+				GetAllInnerClassesRec (list, ic);
 			}
 		}
 		
@@ -888,7 +1092,7 @@ namespace MonoDevelop.Projects.Parser
 							return false;
 						}
 						
-						nh = new NamespaceEntry ();
+						nh = new NamespaceEntry (lastEntry, path[n]);
 						lastEntry.Add (path[n], nh);
 					}
 					lastEntry = nh;
@@ -941,9 +1145,42 @@ namespace MonoDevelop.Projects.Parser
 		
 		public int GetStringId (string text)
 		{
+#if CHECK_STRINGS
+			count++;
+			object ob = all [text];
+			if (ob != null)
+				all [text] = ((int)ob) + 1;
+			else
+				all [text] = 1;
+#endif
+
 			int i = Array.BinarySearch (table, text);
 			if (i >= 0) return i;
 			else return -1;
 		}
+
+#if CHECK_STRINGS
+		static Hashtable all = new Hashtable ();
+		static int count;
+		
+		public static void PrintTop100 ()
+		{
+			string[] ss = new string [all.Count];
+			int[] nn = new int [all.Count];
+			int n = 0;
+			foreach (DictionaryEntry e in all) {
+				ss [n] = (string) e.Key;
+				nn [n] = (int) e.Value;
+				n++;
+			}
+			Array.Sort (nn, ss);
+			n=0;
+			Console.WriteLine ("{0} total strings", count);
+			Console.WriteLine ("{0} unique strings", nn.Length);
+			for (int i = nn.Length - 1; i > nn.Length - 101 && i >= 0; i--) {
+				Console.WriteLine ("\"{1}\", // {2}", n, ss[i], nn[i]);
+			}
+		}
+#endif
 	}
 }

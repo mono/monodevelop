@@ -7,7 +7,8 @@
 
 namespace MonoDevelop.Projects.Parser
 {
-	public enum ClassType {
+	public enum ClassType: byte
+	{
 		Class,
 		Enum,
 		Interface,

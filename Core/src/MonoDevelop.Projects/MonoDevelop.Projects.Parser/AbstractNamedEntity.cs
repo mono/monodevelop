@@ -14,64 +14,31 @@ namespace MonoDevelop.Projects.Parser
 	public abstract class AbstractNamedEntity : AbstractDecoration
 	{
 		public static Hashtable fullyQualifiedNames = new Hashtable();
-		string fqname;
+		string name;
 		
-		public virtual string FullyQualifiedName {
-			get {
-				return fqname;
-			}
-			set {
-				if (value == null)
-					fqname = null;
-				else {
-					string sharedVal = fullyQualifiedNames[value] as string;
-					if (sharedVal != null)
-						fqname = sharedVal;
-					else {
-						fullyQualifiedNames[value] = value;
-						fqname = value;
-					}
-				}
-			}
-		}
-
 		public override string Name {
-			get {
-				if (FullyQualifiedName != null) {
-					int lastIndex;
-					
-					if (CanBeSubclass) {
-						lastIndex = FullyQualifiedName.LastIndexOfAny
-							(new char[] { '.', '+' });
-					} else {
-						lastIndex = FullyQualifiedName.LastIndexOf('.');
-					}
-					
-					if (lastIndex < 0) {
-						return FullyQualifiedName;
-					} else {
-						return FullyQualifiedName.Substring(lastIndex + 1);
-					}
-				}
+			get { return name; }
+			set { name = value; }
+//			set { name = GetSharedString (value); }
+		}
+		
+		static int req;
+		public static string GetSharedString (string value)
+		{
+			req++;
+			if (value == null)
 				return null;
+			else {
+				string sharedVal = fullyQualifiedNames[value] as string;
+				if (sharedVal != null)
+					return sharedVal;
+				else {
+					fullyQualifiedNames[value] = value;
+					return value;
+				}
 			}
 		}
 
-		public virtual string Namespace {
-			get {
-				if (FullyQualifiedName != null) {
-					int lastIndex = FullyQualifiedName.LastIndexOf('.');
-					
-					if (lastIndex < 0) {
-						return String.Empty;
-					} else {
-						return FullyQualifiedName.Substring(0, lastIndex);
-					}
-				}
-				return null;
-			}
-		}
-		
 		protected virtual bool CanBeSubclass {
 			get {
 				return false;

@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects.Parser
 			if (methodBase.IsConstructor) {
 				name = ".ctor";
 			}
-			FullyQualifiedName = String.Concat(methodBase.DeclaringType.FullName, ".", name);
+			Name = name;
 			
 			XmlNode node = null;
 

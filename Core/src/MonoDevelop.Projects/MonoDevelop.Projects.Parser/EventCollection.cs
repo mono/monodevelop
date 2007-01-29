@@ -18,38 +18,14 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	/// <seealso cref='.IEventCollection'/>
 	[Serializable()]
-	public class EventCollection : CollectionBase {
+	public class EventCollection : MemberCollectionBase {
 		
 		/// <summary>
 		///     <para>
 		///       Initializes a new instance of <see cref='.IEventCollection'/>.
 		///    </para>
 		/// </summary>
-		public EventCollection() {
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IEventCollection'/> based on another <see cref='.IEventCollection'/>.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A <see cref='.IEventCollection'/> from which the contents are copied
-		/// </param>
-		public EventCollection(EventCollection value) {
-			this.AddRange(value);
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IEventCollection'/> containing any array of <see cref='.IEvent'/> objects.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A array of <see cref='.IEvent'/> objects with which to intialize the collection
-		/// </param>
-		public EventCollection(IEvent[] value) {
-			this.AddRange(value);
+		public EventCollection(IClass owner): base (owner) {
 		}
 		
 		/// <summary>

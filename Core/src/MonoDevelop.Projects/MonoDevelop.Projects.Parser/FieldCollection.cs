@@ -16,38 +16,14 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	/// <seealso cref='.IFieldCollection'/>
 	[Serializable()]
-	public class FieldCollection : CollectionBase {
+	public class FieldCollection : MemberCollectionBase {
 		
 		/// <summary>
 		///     <para>
 		///       Initializes a new instance of <see cref='.IFieldCollection'/>.
 		///    </para>
 		/// </summary>
-		public FieldCollection() {
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IFieldCollection'/> based on another <see cref='.IFieldCollection'/>.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A <see cref='.IFieldCollection'/> from which the contents are copied
-		/// </param>
-		public FieldCollection(FieldCollection value) {
-			this.AddRange(value);
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IFieldCollection'/> containing any array of <see cref='.IField'/> objects.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A array of <see cref='.IField'/> objects with which to intialize the collection
-		/// </param>
-		public FieldCollection(IField[] value) {
-			this.AddRange(value);
+		public FieldCollection(IClass owner): base (owner) {
 		}
 		
 		/// <summary>

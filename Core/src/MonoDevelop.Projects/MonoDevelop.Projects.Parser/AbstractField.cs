@@ -16,12 +16,11 @@ namespace MonoDevelop.Projects.Parser {
 		{
 		}
 		
-		public DefaultField (IClass declaringType, IReturnType type, string fullyQualifiedName, ModifierEnum m, IRegion region)
+		public DefaultField (IReturnType type, string name, ModifierEnum m, IRegion region)
 		{
 			this.returnType = type;
-			this.FullyQualifiedName = fullyQualifiedName;
+			this.Name = name;
 			this.region = region;
-			this.declaringType = declaringType;
 			modifiers = m;
 		}
 		

@@ -13,24 +13,10 @@ namespace MonoDevelop.Projects.Parser
 	[Serializable]
 	internal sealed class PersistentReturnType
 	{
-		public static DefaultReturnType Resolve (IReturnType source, ITypeResolver typeResolver)
+		public static IReturnType Resolve (IReturnType source, ITypeResolver typeResolver)
 		{
 			if (source == null) return null;
-			
-			DefaultReturnType rt = new DefaultReturnType ();
-			rt.FullyQualifiedName = typeResolver.Resolve (source.FullyQualifiedName);
-			rt.ByRef = source.ByRef;
-			rt.PointerNestingLevel = source.PointerNestingLevel;
-			rt.ArrayDimensions = source.ArrayDimensions;
-			
-			if (source.GenericArguments != null && source.GenericArguments.Count > 0) {
-				rt.GenericArguments = new ReturnTypeList();
-				foreach (IReturnType ga in source.GenericArguments) {
-					rt.GenericArguments.Add(PersistentReturnType.Resolve(ga, typeResolver));
-				}
-			}
-			
-			return rt;
+			return typeResolver.Resolve (source);
 		}
 
 		public static DefaultReturnType Read (BinaryReader reader, INameDecoder nameTable)

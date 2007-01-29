@@ -24,13 +24,13 @@ namespace MonoDevelop.Projects.Parser {
 		
 		public DefaultEvent (string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = name;
+			Name = name;
 			returnType         = type;
 			this.region        = region;
 			this.bodyRegion    = bodyRegion;
 			modifiers          = m;
 		}
-		
+
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;

@@ -16,8 +16,8 @@ namespace MonoDevelop.Projects.Parser
 	{
 		public static DefaultIndexer Resolve (IIndexer source, ITypeResolver typeResolver)
 		{
-			DefaultIndexer ind = new DefaultIndexer();
-			ind.FullyQualifiedName = source.FullyQualifiedName;
+			DefaultIndexer ind = new DefaultIndexer ();
+			ind.Name = source.Name;
 			ind.Documentation = source.Documentation;
 			ind.Modifiers = source.Modifiers;
 			ind.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static DefaultIndexer Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			DefaultIndexer ind = new DefaultIndexer();
-			ind.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			DefaultIndexer ind = new DefaultIndexer ();
+			ind.Name = PersistentHelper.ReadString (reader, nameTable);
 			ind.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			ind.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			ind.ReturnType = PersistentReturnType.Read (reader, nameTable);
@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static void WriteTo (IIndexer ind, BinaryWriter writer, INameEncoder nameTable)
 		{
-			PersistentHelper.WriteString (ind.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (ind.Name, writer, nameTable);
 			PersistentHelper.WriteString (ind.Documentation, writer, nameTable);
 			
 			writer.Write((uint)ind.Modifiers);

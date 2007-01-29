@@ -16,38 +16,14 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	/// <seealso cref='.IPropertyCollection'/>
 	[Serializable()]
-	public class PropertyCollection : CollectionBase {
+	public class PropertyCollection : MemberCollectionBase {
 		
 		/// <summary>
 		///     <para>
 		///       Initializes a new instance of <see cref='.IPropertyCollection'/>.
 		///    </para>
 		/// </summary>
-		public PropertyCollection() {
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IPropertyCollection'/> based on another <see cref='.IPropertyCollection'/>.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A <see cref='.IPropertyCollection'/> from which the contents are copied
-		/// </param>
-		public PropertyCollection(PropertyCollection value) {
-			this.AddRange(value);
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IPropertyCollection'/> containing any array of <see cref='.IProperty'/> objects.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A array of <see cref='.IProperty'/> objects with which to intialize the collection
-		/// </param>
-		public PropertyCollection(IProperty[] value) {
-			this.AddRange(value);
+		public PropertyCollection (IClass owner): base (owner) {
 		}
 		
 		/// <summary>

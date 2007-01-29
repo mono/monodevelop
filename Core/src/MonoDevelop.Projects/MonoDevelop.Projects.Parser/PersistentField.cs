@@ -17,7 +17,7 @@ namespace MonoDevelop.Projects.Parser
 		public static DefaultField Resolve (IField source, ITypeResolver typeResolver)
 		{
 			DefaultField field = new DefaultField ();
-			field.FullyQualifiedName = source.FullyQualifiedName;
+			field.Name = source.Name;
 			field.Documentation = source.Documentation;
 			field.Modifiers = source.Modifiers;
 			field.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
@@ -29,7 +29,7 @@ namespace MonoDevelop.Projects.Parser
 		public static DefaultField Read (BinaryReader reader, INameDecoder nameTable)
 		{
 			DefaultField field = new DefaultField ();
-			field.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			field.Name = PersistentHelper.ReadString (reader, nameTable);
 			field.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			field.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			field.ReturnType = PersistentReturnType.Read (reader, nameTable);
@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static void WriteTo (IField field, BinaryWriter writer, INameEncoder nameTable)
 		{
-			PersistentHelper.WriteString (field.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (field.Name, writer, nameTable);
 			PersistentHelper.WriteString (field.Documentation, writer, nameTable);
 			writer.Write ((uint)field.Modifiers);
 			PersistentReturnType.WriteTo (field.ReturnType, writer, nameTable);

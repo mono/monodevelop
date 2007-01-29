@@ -1,3 +1,75 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: In GetNeedsBuilding, use a
+	  cache to temporarily store results. It avoids recursively checking
+	  the same projects multiple times.
+	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Text/TextEncoding.cs: Added code page field.
+	* MonoDevelop.Projects.Text/TextFileReader.cs: New TextFileReader which
+	  automatically detects the file encoding.
+	* MonoDevelop.Projects.Parser/AbstractDecoration.cs,
+	  MonoDevelop.Projects.Parser/ReflectionClass.cs,
+	  MonoDevelop.Projects.Parser/PersistentMethod.cs,
+	  MonoDevelop.Projects.Parser/PersistentProperty.cs,
+	  MonoDevelop.Projects.Parser/AbstractIndexer.cs,
+	  MonoDevelop.Projects.Parser/AbstractMember.cs,
+	  MonoDevelop.Projects.Parser/ReflectionEvent.cs,
+	  MonoDevelop.Projects.Parser/ReflectionField.cs,
+	  MonoDevelop.Projects.Parser/PersistentEvent.cs,
+	  MonoDevelop.Projects.Parser/PersistentField.cs,
+	  MonoDevelop.Projects.Parser/AbstractEvent.cs,
+	  MonoDevelop.Projects.Parser/AbstractNamedEntity.cs,
+	  MonoDevelop.Projects.Parser/AbstractField.cs,
+	  MonoDevelop.Projects.Parser/AbstractProperty.cs,
+	  MonoDevelop.Projects.Parser/ReflectionMethod.cs,
+	  MonoDevelop.Projects.Parser/ReflectionProperty.cs,
+	  MonoDevelop.Projects.Parser/ReflectionIndexer.cs,
+	  MonoDevelop.Projects.Parser/PersistentIndexer.cs,
+	  MonoDevelop.Projects.Parser/AbstractMethod.cs: Don't store the
+	  whole fully qualified name in class members, store only the name.
+	  The full name can be constructed from the declaring class full
+	  name.
+	* MonoDevelop.Projects.Parser/MemberCollectionBase.cs,
+	  MonoDevelop.Projects.Parser/MethodCollection.cs,
+	  MonoDevelop.Projects.Parser/EventCollection.cs,
+	  MonoDevelop.Projects.Parser/FieldCollection.cs,
+	  MonoDevelop.Projects.Parser/TypedCSharpCollection.cs,
+	  MonoDevelop.Projects.Parser/PropertyCollection.cs: Assign the
+	  declaring class to members when they are added to a member
+	  collection.
+	* MonoDevelop.Projects.Parser/PersistentClass.cs,
+	  MonoDevelop.Projects.Parser/AbstractClass.cs: Store the class name
+	  as namespace + name. It saves memory since the namespace string can
+	  be shared. Added support for instantiated generic types.
+	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Fix
+	  warning.
+	* MonoDevelop.Projects.Parser/AbstractReturnType.cs: Factorized some
+	  code. Implemented ToString.
+	* MonoDevelop.Projects.Parser/CompoundClass.cs: Added null check.
+	* MonoDevelop.Projects.Parser/NamespaceEntry.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Implemented
+	  support for instantiated generic types. Added information about
+	  subclasses of a type in the database, that's needed to improve the
+	  performance in some code completion cases.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/IParserService.cs: Allow providing type
+	  parameters when getting a generic type. It will return the
+	  instantiated type. Implemented support for getting the list of
+	  subclasses of a type. Updated the shared string table.
+	* MonoDevelop.Projects.Parser/PersistentReturnType.cs: The creation of
+	  the resolved type is now done by ITypeResolver, in this way it can
+	  be reused by the code that creates instantiated generic types.
+	* MonoDevelop.Projects.Parser/IMember.cs: Members don't need a
+	  namespace.
+	* MonoDevelop.Projects.Parser/ClassEntry.cs,
+	  MonoDevelop.Projects.Parser/ClassWrapper.cs: Replicated some
+	  information from IClass into ClassEntry. Will take a bit more
+	  memory, but code completion will perform much faster, since all
+	  information it needs can be taken from ClassEntry and no other
+	  database access will be needed. The new ClassWrapper class helps on
+	  this by making ClassEntry look like an IClass.
+	* MonoDevelop.Projects.Parser/ClassType.cs: A byte is enough for this.
+
 2007-01-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/AssemblyCodeCompletionDatabase.cs: Revert

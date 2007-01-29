@@ -275,8 +275,6 @@ namespace MonoDevelop.Projects.Parser
 			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
 			references = new string [names.Count];
 
-			string baseDir = Path.GetDirectoryName (assemblyFile);
-			
 			for (int n=0; n<names.Count; n++)
 				references [n] = "Assembly:" + names [n].FullName;
 			

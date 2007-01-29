@@ -15,10 +15,10 @@ namespace MonoDevelop.Projects.Parser
 	[Serializable]
 	internal class ReflectionField : DefaultField
 	{
-		public ReflectionField(FieldDefinition fieldInfo, XmlDocument docs)
+		public ReflectionField (FieldDefinition fieldInfo, XmlDocument docs)
 		{
 			System.Diagnostics.Debug.Assert(fieldInfo != null);
-			FullyQualifiedName = String.Concat(fieldInfo.DeclaringType.FullName, ".", fieldInfo.Name);
+			Name = fieldInfo.Name;
 
 			if (docs != null) {
 				XmlNode node = docs.SelectSingleNode ("/Type/Members/Member[@MemberName='" + fieldInfo.Name + "']/Docs/summary");

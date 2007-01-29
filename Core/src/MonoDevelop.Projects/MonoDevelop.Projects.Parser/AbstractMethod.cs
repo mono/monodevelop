@@ -22,13 +22,12 @@ namespace MonoDevelop.Projects.Parser
 		{
 		}
 		
-		public DefaultMethod (IClass declaringType, string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		public DefaultMethod (string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
 		{
-			FullyQualifiedName = name;
+			Name = name;
 			returnType = type;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType;
 			modifiers = m;
 		}
 		
@@ -62,7 +61,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public virtual bool IsConstructor {
 			get {
-				return returnType == null || Name == "ctor";
+				return returnType == null || Name == "ctor" || Name == ".ctor";
 			}
 		}
 

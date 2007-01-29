@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -101,23 +102,28 @@ namespace MonoDevelop.Projects.Parser
 		
 		// Default Parser Layer dependent functions
 		IClass    GetClass (string typeName);
+		IClass    GetClass (string typeName, ReturnTypeList genericArguments);
 		string[]  GetClassList (string subNameSpace, bool includeReferences);
 		string[]  GetNamespaceList (string subNameSpace);
 		LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences);
 		bool      NamespaceExists (string name);
 		string    SearchNamespace (IUsing iusing, string partitialNamespaceName);
 		IClass    SearchType (IUsing iusing, string partitialTypeName);
+		IClass    SearchType (IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments);
 		
 		IClass    GetClass (string typeName, bool deepSearchReferences, bool caseSensitive);
+		IClass    GetClass (string typeName, ReturnTypeList genericArguments, bool deepSearchReferences, bool caseSensitive);
 		string[]  GetClassList (string subNameSpace, bool includeReferences, bool caseSensitive);
 		string[]  GetNamespaceList (string subNameSpace, bool includeReferences, bool caseSensitive);
 		LanguageItemCollection GetNamespaceContents (string subNameSpace, bool includeReferences, bool caseSensitive);
 		bool      NamespaceExists (string name, bool caseSensitive);
 		string    SearchNamespace (IUsing iusing, string partitialNamespaceName, bool caseSensitive);
 		IClass    SearchType (IUsing iusing, string partitialTypeName, bool caseSensitive);
+		IClass    SearchType (IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments, bool caseSensitive);
 		IClass    SearchType (string name, IClass callingClass, ICompilationUnit unit);
 		
 		IEnumerable GetClassInheritanceTree (IClass cls);
+		IEnumerable GetSubclassesTree (IClass cls, string[] namespaces);
 		
 		IClass[] GetFileContents (string fileName);
 		IClass[] GetProjectContents ();

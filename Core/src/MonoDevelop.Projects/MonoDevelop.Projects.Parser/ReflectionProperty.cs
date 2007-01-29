@@ -16,7 +16,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		public ReflectionProperty (PropertyDefinition propertyInfo, XmlDocument docs)
 		{
-			FullyQualifiedName = String.Concat(propertyInfo.DeclaringType.FullName, ".", propertyInfo.Name);
+			Name = propertyInfo.Name;
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.GetMethod != null) {

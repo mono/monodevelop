@@ -25,13 +25,12 @@ namespace MonoDevelop.Projects.Parser {
 		{
 		}
 		
-		public DefaultProperty (IClass declaringType, string fullyQualifiedName, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		public DefaultProperty (string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion)
 		{
-			this.FullyQualifiedName = fullyQualifiedName;
+			this.Name = name;
 			returnType = type;
 			this.region = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType;
 			modifiers = m;
 		}
 		

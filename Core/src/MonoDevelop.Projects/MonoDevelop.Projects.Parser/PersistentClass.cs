@@ -23,7 +23,8 @@ namespace MonoDevelop.Projects.Parser
 		{
 			DefaultClass cls = new DefaultClass ();
 			
-			cls.FullyQualifiedName = sclass.FullyQualifiedName;
+			cls.Name = sclass.Name;
+			cls.Namespace = sclass.Namespace;
 			cls.Documentation = sclass.Documentation;
 			
 			cls.Modifiers          = sclass.Modifiers;
@@ -42,31 +43,26 @@ namespace MonoDevelop.Projects.Parser
 
 			foreach (IField f in sclass.Fields) {
 				DefaultField pf = PersistentField.Resolve (f, typeResolver);
-				pf.DeclaringType = cls;
 				cls.Fields.Add (pf);
 			}
 
 			foreach (IProperty p in sclass.Properties) {
 				DefaultProperty pp = PersistentProperty.Resolve (p, typeResolver);
-				pp.DeclaringType = cls;
 				cls.Properties.Add (pp);
 			}
 
 			foreach (IMethod m in sclass.Methods) {
 				DefaultMethod pm = PersistentMethod.Resolve (m, typeResolver);
-				pm.DeclaringType = cls;
 				cls.Methods.Add (pm);
 			}
 
 			foreach (IEvent e in sclass.Events) {
 				DefaultEvent pe = PersistentEvent.Resolve (e, typeResolver);
-				pe.DeclaringType = cls;
 				cls.Events.Add (pe);
 			}
 
 			foreach (IIndexer i in sclass.Indexer) {
 				DefaultIndexer pi = PersistentIndexer.Resolve (i, typeResolver);
-				pi.DeclaringType = cls;
 				cls.Indexer.Add (pi);
 			}
 			
@@ -97,7 +93,8 @@ namespace MonoDevelop.Projects.Parser
 			
 			DefaultClass cls = new DefaultClass ();
 			
-			cls.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			cls.Name = PersistentHelper.ReadString (reader, nameTable);
+			cls.Namespace = PersistentHelper.ReadString (reader, nameTable);
 			cls.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			
 			cls.Modifiers          = (ModifierEnum)reader.ReadUInt32();
@@ -118,35 +115,30 @@ namespace MonoDevelop.Projects.Parser
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
 				DefaultField f = PersistentField.Read (reader, nameTable);
-				f.DeclaringType = cls;
 				cls.Fields.Add (f);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
 				DefaultProperty p = PersistentProperty.Read (reader, nameTable);
-				p.DeclaringType = cls;
 				cls.Properties.Add (p);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
 				DefaultMethod m = PersistentMethod.Read (reader, nameTable);
-				m.DeclaringType = cls;
 				cls.Methods.Add(m);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
 				DefaultEvent e = PersistentEvent.Read (reader, nameTable);
-				e.DeclaringType = cls;
 				cls.Events.Add (e);
 			}
 
 			count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
 				DefaultIndexer ind = PersistentIndexer.Read (reader, nameTable);
-				ind.DeclaringType = cls;
 				cls.Indexer.Add (ind);
 			}
 			
@@ -182,7 +174,8 @@ namespace MonoDevelop.Projects.Parser
 			// Not a compound class
 			writer.Write ((uint)1);
 			
-			PersistentHelper.WriteString (cls.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (cls.Name, writer, nameTable);
+			PersistentHelper.WriteString (cls.Namespace, writer, nameTable);
 			PersistentHelper.WriteString (cls.Documentation, writer, nameTable);
 				
 			writer.Write((uint)cls.Modifiers);

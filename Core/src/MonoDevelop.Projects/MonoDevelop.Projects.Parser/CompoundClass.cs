@@ -137,8 +137,8 @@ namespace MonoDevelop.Projects.Parser
 			this.classType = parts[0].ClassType;
 			this.region = GetMainClass ().Region;
 
-			if (FullyQualifiedName == null)
-				FullyQualifiedName = parts[0].FullyQualifiedName;
+			Name = parts[0].Name;
+			Namespace = parts[0].Namespace;
 			
 			ModifierEnum modifier = ModifierEnum.None;
 			const ModifierEnum defaultClassVisibility = ModifierEnum.Internal;
@@ -186,7 +186,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override FieldCollection Fields {
 			get {
-				FieldCollection l = new FieldCollection();
+				FieldCollection l = new FieldCollection (this);
 				foreach (IClass part in parts) {
 					l.AddRange(part.Fields);
 				}
@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override PropertyCollection Properties {
 			get {
-				PropertyCollection l = new PropertyCollection();
+				PropertyCollection l = new PropertyCollection (this);
 				foreach (IClass part in parts) {
 					l.AddRange(part.Properties);
 				}
@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override MethodCollection Methods {
 			get {
-				MethodCollection l = new MethodCollection();
+				MethodCollection l = new MethodCollection (this);
 				foreach (IClass part in parts) {
 					l.AddRange(part.Methods);
 				}
@@ -216,7 +216,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public override EventCollection Events {
 			get {
-				EventCollection l = new EventCollection();
+				EventCollection l = new EventCollection (this);
 				foreach (IClass part in parts) {
 					l.AddRange(part.Events);
 				}

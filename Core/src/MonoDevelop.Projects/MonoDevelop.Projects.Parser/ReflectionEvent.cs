@@ -14,9 +14,9 @@ namespace MonoDevelop.Projects.Parser
 	[Serializable]
 	internal class ReflectionEvent : DefaultEvent
 	{
-		public ReflectionEvent(EventDefinition eventInfo, XmlDocument docs)
+		public ReflectionEvent (EventDefinition eventInfo, XmlDocument docs)
 		{
-			FullyQualifiedName = String.Concat(eventInfo.DeclaringType.FullName, ".", eventInfo.Name);
+			Name = eventInfo.Name;
 
 			if (docs != null) {
 				XmlNode node = docs.SelectSingleNode ("/Type/Members/Member[@MemberName='" + eventInfo.Name + "']/Docs/summary");

@@ -29,10 +29,10 @@ namespace MonoDevelop.Projects.Parser
 			return propertyName.ToString();
 		}
 */
-		public ReflectionIndexer(PropertyDefinition propertyInfo, XmlDocument docs)
+		public ReflectionIndexer (PropertyDefinition propertyInfo, XmlDocument docs)
 		{
 			// indexers does have the same name as the object that declare the indexers
-			FullyQualifiedName = propertyInfo.DeclaringType.FullName;
+			Name = propertyInfo.DeclaringType.Name;
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.GetMethod != null) {

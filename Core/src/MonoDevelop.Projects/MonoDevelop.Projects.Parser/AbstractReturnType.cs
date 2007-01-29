@@ -5,6 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.Text;
 using MonoDevelop.Projects.Utility;
 
 namespace MonoDevelop.Projects.Parser
@@ -44,13 +45,7 @@ namespace MonoDevelop.Projects.Parser
 				if (value == null)
 					fname = value;
 				else {
-					string sharedName = (string) AbstractNamedEntity.fullyQualifiedNames [value];
-					if (sharedName == null) {
-						AbstractNamedEntity.fullyQualifiedNames [value] = value;
-						fname = value;
-					}
-					else
-						fname = sharedName;
+					fname = AbstractNamedEntity.GetSharedString (value);
 				}
 			}
 		}
@@ -74,6 +69,47 @@ namespace MonoDevelop.Projects.Parser
 				return index < 0 ? String.Empty : FullyQualifiedName.Substring(0, index);
 			}
 		}
+
+
+/*
+		string name;
+		string ns;
+		public virtual string FullyQualifiedName {
+			get {
+				if (ns == null || ns.Length == 0)
+					return name;
+				else if (name != null)
+					return string.Concat (ns, ".", name);
+				else
+					return null;
+			}
+			set {
+				if (value == null) {
+					ns = null;
+					name = null;
+					return;
+				}
+				int i = value.LastIndexOf ('.');
+				if (i == -1) {
+					ns = null;
+					name = value;
+				} else {
+					ns = value.Substring (0, i);
+					name = value.Substring (i+1);
+				}
+			}
+		}
+
+		public virtual string Name {
+			get { return name; }
+			set { name = value; }
+		}
+
+		public virtual string Namespace {
+			get { return ns ?? string.Empty; }
+			set { ns = value; }
+		}
+*/
 
 		public virtual int PointerNestingLevel {
 			get { return pointerNestingLevel; }
@@ -174,6 +210,27 @@ namespace MonoDevelop.Projects.Parser
 			get {
 				return declaredin;
 			}
+		}
+		
+		public override string ToString ()
+		{
+			return ToString (this);
+		}
+		
+		public static string ToString (IReturnType type)
+		{
+			StringBuilder sb = new StringBuilder (DefaultClass.GetInstantiatedTypeName (type.FullyQualifiedName, type.GenericArguments));
+			
+			if (type.PointerNestingLevel > 0)
+				sb.Append (new string ('*', type.PointerNestingLevel));
+
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
+				foreach (int dim in type.ArrayDimensions) {
+					sb.Append ('[').Append (new string (',', dim - 1)).Append (']');
+				}
+			}
+			
+			return sb.ToString ();
 		}
 	}
 	

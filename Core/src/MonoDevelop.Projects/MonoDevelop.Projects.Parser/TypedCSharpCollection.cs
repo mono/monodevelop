@@ -16,38 +16,14 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	/// <seealso cref='.IIndexerCollection'/>
 	[Serializable()]
-	public class IndexerCollection : CollectionBase {
+	public class IndexerCollection : MemberCollectionBase {
 		
 		/// <summary>
 		///     <para>
 		///       Initializes a new instance of <see cref='.IIndexerCollection'/>.
 		///    </para>
 		/// </summary>
-		public IndexerCollection() {
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IIndexerCollection'/> based on another <see cref='.IIndexerCollection'/>.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A <see cref='.IIndexerCollection'/> from which the contents are copied
-		/// </param>
-		public IndexerCollection(IndexerCollection value) {
-			this.AddRange(value);
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IIndexerCollection'/> containing any array of <see cref='.IIndexer'/> objects.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A array of <see cref='.IIndexer'/> objects with which to intialize the collection
-		/// </param>
-		public IndexerCollection(IIndexer[] value) {
-			this.AddRange(value);
+		public IndexerCollection(IClass owner): base (owner) {
 		}
 		
 		/// <summary>

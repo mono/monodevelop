@@ -42,9 +42,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		public ReflectionClass (TypeDefinition type): base (null)
 		{
-			FullyQualifiedName = type.FullName.Replace ('/','+');
+			string fqname = type.FullName.Replace ('/','+');
+			Name = type.Name.Replace ('/','.');
+			Name = Name.Replace ('+', '.');
+			Namespace = type.Namespace;
 
-			XmlDocument docs = Services.DocumentationService != null ? Services.DocumentationService.GetHelpXml (FullyQualifiedName) : null;
+			XmlDocument docs = Services.DocumentationService != null ? Services.DocumentationService.GetHelpXml (fqname) : null;
 			if (docs != null) {
 				XmlNode node = docs.SelectSingleNode ("/Type/Docs/summary");
 				if (node != null) {
@@ -52,13 +55,11 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			FullyQualifiedName = FullyQualifiedName.Replace('+', '.');
-			
 			// set classtype
 			if (IsDelegate(type)) {
 				classType = ClassType.Delegate;
 				MethodDefinition invoke = type.Methods.GetMethod ("Invoke")[0];
-				ReflectionMethod newMethod = new ReflectionMethod(invoke, null);
+				ReflectionMethod newMethod = new ReflectionMethod (invoke, null);
 				methods.Add(newMethod);
 			} else if (type.IsInterface) {
 				classType = ClassType.Interface;
@@ -112,12 +113,14 @@ namespace MonoDevelop.Projects.Parser
 				}
 				
 				foreach (TypeDefinition nestedType in type.NestedTypes) {
-					innerClasses.Add (new ReflectionClass(nestedType));
+					TypeAttributes vis = nestedType.Attributes & TypeAttributes.VisibilityMask;
+					if (vis == TypeAttributes.Public || vis == TypeAttributes.NestedPublic)
+						innerClasses.Add (new ReflectionClass(nestedType));
 				}
 				
 				foreach (FieldDefinition field in type.Fields) {
 //					if (!field.IsSpecialName) {
-					IField newField = new ReflectionField(field, docs);
+					IField newField = new ReflectionField (field, docs);
 					if (!newField.IsInternal) {
 						fields.Add(newField);
 					}
@@ -129,12 +132,12 @@ namespace MonoDevelop.Projects.Parser
 					ParameterDefinitionCollection p = propertyInfo.Parameters;
 					
 					if (p == null || p.Count == 0) {
-						IProperty newProperty = new ReflectionProperty(propertyInfo, docs);
+						IProperty newProperty = new ReflectionProperty (propertyInfo, docs);
 						if (!newProperty.IsInternal) {
 							properties.Add(newProperty);
 						}
 					} else {
-						IIndexer newIndexer = new ReflectionIndexer(propertyInfo, docs);
+						IIndexer newIndexer = new ReflectionIndexer (propertyInfo, docs);
 						if (!newIndexer.IsInternal) {
 							indexer.Add(newIndexer);
 						}
@@ -144,7 +147,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				foreach (MethodDefinition methodInfo in type.Methods) {
 					if (!methodInfo.IsSpecialName) {
-						IMethod newMethod = new ReflectionMethod(methodInfo, docs);
+						IMethod newMethod = new ReflectionMethod (methodInfo, docs);
 						
 						if (!newMethod.IsInternal) {
 							methods.Add(newMethod);
@@ -153,7 +156,7 @@ namespace MonoDevelop.Projects.Parser
 				}
 				
 				foreach (MethodDefinition constructorInfo in type.Constructors) {
-					IMethod newMethod = new ReflectionMethod(constructorInfo, docs);
+					IMethod newMethod = new ReflectionMethod (constructorInfo, docs);
 					if (!newMethod.IsInternal) {
 						methods.Add(newMethod);
 					}
@@ -161,7 +164,7 @@ namespace MonoDevelop.Projects.Parser
 				
 				foreach (EventDefinition eventInfo in type.Events) {
 //					if (!eventInfo.IsSpecialName) {
-					IEvent newEvent = new ReflectionEvent(eventInfo, docs);
+					IEvent newEvent = new ReflectionEvent (eventInfo, docs);
 					
 					if (!newEvent.IsInternal) {
 						events.Add(newEvent);

@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -151,7 +152,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IClass GetClass (string typeName)
 		{
-			return pdb.GetClass (db, typeName);
+			return pdb.GetClass (db, typeName, null, false, true);
+		}
+		
+		public IClass GetClass (string typeName, ReturnTypeList genericArguments)
+		{
+			return pdb.GetClass (db, typeName, genericArguments, false, true);
 		}
 		
 		public string[] GetClassList (string subNameSpace, bool includeReferences)
@@ -181,13 +187,23 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IClass SearchType (IUsing iusing, string partitialTypeName)
 		{
-			return pdb.SearchType (db, iusing, partitialTypeName);
+			return pdb.SearchType (db, iusing, partitialTypeName, null, true);
+		}
+
+		public IClass SearchType (IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments)
+		{
+			return pdb.SearchType (db, iusing, partitialTypeName, genericArguments, true);
 		}
 		
 		
 		public IClass GetClass (string typeName, bool deepSearchReferences, bool caseSensitive)
 		{
-			return pdb.GetClass (db, typeName, deepSearchReferences, caseSensitive);
+			return pdb.GetClass (db, typeName, null, deepSearchReferences, caseSensitive);
+		}
+		
+		public IClass GetClass (string typeName, ReturnTypeList genericArguments, bool deepSearchReferences, bool caseSensitive)
+		{
+			return pdb.GetClass (db, typeName, genericArguments, deepSearchReferences, caseSensitive);
 		}
 		
 		public string[] GetClassList (string subNameSpace, bool includeReferences, bool caseSensitive)
@@ -217,7 +233,12 @@ namespace MonoDevelop.Projects.Parser
 		
 		public IClass SearchType (IUsing iusing, string partitialTypeName, bool caseSensitive)
 		{
-			return pdb.SearchType (db, iusing, partitialTypeName, caseSensitive);
+			return pdb.SearchType (db, iusing, partitialTypeName, null, caseSensitive);
+		}
+		
+		public IClass SearchType (IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments, bool caseSensitive)
+		{
+			return pdb.SearchType (db, iusing, partitialTypeName, genericArguments, caseSensitive);
 		}
 		
 		public IClass SearchType (string name, IClass callingClass, ICompilationUnit unit)
@@ -228,6 +249,11 @@ namespace MonoDevelop.Projects.Parser
 		public IEnumerable GetClassInheritanceTree (IClass cls)
 		{
 			return pdb.GetClassInheritanceTree (db, cls);
+		}
+		
+		public IEnumerable GetSubclassesTree (IClass cls, string[] namespaces)
+		{
+			return pdb.GetSubclassesTree (db, cls, namespaces);
 		}
 		
 		public IClass[] GetFileContents (string fileName)
@@ -390,15 +416,27 @@ namespace MonoDevelop.Projects.Parser
 				this.parserDatabase = parserDatabase;
 			}
 			
-			public string Resolve (string typeName)
+			public IReturnType Resolve (IReturnType type)
 			{
-				IClass c = parserDatabase.SearchType (db, typeName, CallingClass, unit);
-				if (c != null)
-					return c.FullyQualifiedName;
-				else {
+				IClass c = parserDatabase.SearchType (db, type.FullyQualifiedName, CallingClass, unit);
+				if (c == null) {
 					allResolved = false;
-					return typeName;
+					return type;
 				}
+				
+				DefaultReturnType rt = new DefaultReturnType ();
+				rt.FullyQualifiedName = c.FullyQualifiedName;
+				rt.ByRef = type.ByRef;
+				rt.PointerNestingLevel = type.PointerNestingLevel;
+				rt.ArrayDimensions = type.ArrayDimensions;
+				
+				if (type.GenericArguments != null && type.GenericArguments.Count > 0) {
+					rt.GenericArguments = new ReturnTypeList();
+					foreach (IReturnType ga in type.GenericArguments) {
+						rt.GenericArguments.Add (PersistentReturnType.Resolve (ga, this));
+					}
+				}
+				return rt;
 			}
 			
 			public bool AllResolved
@@ -452,13 +490,106 @@ namespace MonoDevelop.Projects.Parser
 		StringNameTable nameTable;
 		
 		string[] sharedNameTable = new string[] {
-			"System.String", "System.Boolean", "System.Int32", "System.Attribute",
-			"System.Delegate", "System.Enum", "System.Exception", "System.MarshalByRefObject",
-			"System.Object", "SerializableAttribtue", "System.Type", "System.ValueType",
-			"System.ICloneable", "System.IDisposable", "System.IConvertible", "System.Byte",
-			"System.Char", "System.DateTime", "System.Decimal", "System.Double", "System.Int16",
-			"System.Int64", "System.IntPtr", "System.SByte", "System.Single", "System.TimeSpan",
-			"System.UInt16", "System.UInt32", "System.UInt64", "System.Void"
+			"", // 505195
+			"System.Void", // 116020
+			"To be added", // 78598
+			"System.Int32", // 72669
+			"System.String", // 72097
+			"System.Object", // 48530
+			"System.Boolean", // 46200
+			".ctor", // 39938
+			"System.IntPtr", // 35184
+			"To be added.", // 19082
+			"value", // 11906
+			"System.Byte", // 8524
+			"To be added: an object of type 'string'", // 7928
+			"e", // 7858
+			"raw", // 7830
+			"System.IAsyncResult", // 7760
+			"System.Type", // 7518
+			"name", // 7188
+			"object", // 6982
+			"System.UInt32", // 6966
+			"index", // 6038
+			"To be added: an object of type 'int'", // 5196
+			"System.Int64", // 4166
+			"callback", // 4158
+			"System.EventArgs", // 4140
+			"method", // 4030
+			"System.Enum", // 3980
+			"value__", // 3954
+			"Invoke", // 3906
+			"result", // 3856
+			"System.AsyncCallback", // 3850
+			"System.MulticastDelegate", // 3698
+			"BeginInvoke", // 3650
+			"EndInvoke", // 3562
+			"node", // 3416
+			"sender", // 3398
+			"context", // 3310
+			"System.EventHandler", // 3218
+			"System.Double", // 3206
+			"type", // 3094
+			"x", // 3056
+			"System.Single", // 2940
+			"data", // 2930
+			"args", // 2926
+			"System.Char", // 2813
+			"Gdk.Key", // 2684
+			"ToString", // 2634
+			"'a", // 2594
+			"System.Drawing.Color", // 2550
+			"y", // 2458
+			"To be added: an object of type 'object'", // 2430
+			"System.DateTime", // 2420
+			"message", // 2352
+			"GLib.GType", // 2292
+			"o", // 2280
+			"a <see cref=\"T:System.Int32\" />", // 2176
+			"path", // 2062
+			"obj", // 2018
+			"Nemerle.Core.list`1", // 1950
+			"System.Windows.Forms", // 1942
+			"System.Collections.ArrayList", // 1918
+			"a <see cref=\"T:System.String\" />", // 1894
+			"key", // 1868
+			"Add", // 1864
+			"arg0", // 1796
+			"System.IO.Stream", // 1794
+			"s", // 1784
+			"arg1", // 1742
+			"provider", // 1704
+			"System.UInt64", // 1700
+			"System.Drawing.Rectangle", // 1684
+			"System.IFormatProvider", // 1684
+			"gch", // 1680
+			"System.Exception", // 1652
+			"Equals", // 1590
+			"System.Drawing.Pen", // 1584
+			"count", // 1548
+			"System.Collections.IEnumerator", // 1546
+			"info", // 1526
+			"Name", // 1512
+			"System.Attribute", // 1494
+			"gtype", // 1470
+			"To be added: an object of type 'Type'", // 1444
+			"System.Collections.Hashtable", // 1416
+			"array", // 1380
+			"System.Int16", // 1374
+			"Gtk", // 1350
+			"System.ComponentModel.ITypeDescriptorContext", // 1344
+			"System.Collections.ICollection", // 1330
+			"Dispose", // 1330
+			"Gtk.Widget", // 1326
+			"System.Runtime.Serialization.StreamingContext", // 1318
+			"Nemerle.Compiler.Parsetree.PExpr", // 1312
+			"System.Guid", // 1310
+			"i", // 1302
+			"Gtk.TreeIter", // 1300
+			"text", // 1290
+			"System.Runtime.Serialization.SerializationInfo", // 1272
+			"state", // 1264
+			"Remove" // 1256
 		};
 		
 		public ParserDatabase (DefaultParserService parserService)
@@ -1129,62 +1260,57 @@ namespace MonoDevelop.Projects.Parser
 		
 #region Default Parser Layer dependent functions
 
-		public IClass GetClass (CodeCompletionDatabase db, string typeName)
-		{
-			return GetClass (db, typeName, false, true);
-		}
-		
-		public IClass GetClass (CodeCompletionDatabase db, string typeName, bool deepSearchReferences, bool caseSensitive)
+		public IClass GetClass (CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
 			if (deepSearchReferences)
-				return DeepGetClass (db, typeName, caseSensitive);
+				return DeepGetClass (db, typeName, genericArguments, caseSensitive);
 			else
-				return GetClass (db, typeName, caseSensitive);
+				return GetClass (db, typeName, genericArguments, caseSensitive);
 		}
 		
-		public IClass GetClass (CodeCompletionDatabase db, string typeName, bool caseSensitive)
+		IClass GetClass (CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			if (db != null) {
-				IClass c = db.GetClass (typeName, caseSensitive);
+				IClass c = db.GetClass (typeName, genericArguments, caseSensitive);
 				if (c != null) return c;
 				foreach (ReferenceEntry re in db.References)
 				{
 					CodeCompletionDatabase cdb = GetDatabase (re.Uri);
 					if (cdb == null) continue;
-					c = cdb.GetClass (typeName, caseSensitive);
+					c = cdb.GetClass (typeName, genericArguments, caseSensitive);
 					if (c != null) return c;
 				}
 			}
 			
 			db = GetDatabase (CoreDB);
-			return db.GetClass (typeName, caseSensitive);
+			return db.GetClass (typeName, genericArguments, caseSensitive);
 		}
 		
-		public IClass DeepGetClass (CodeCompletionDatabase db, string typeName, bool caseSensitive)
+		public IClass DeepGetClass (CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			ArrayList visited = new ArrayList ();
-			IClass c = DeepGetClassRec (visited, db, typeName, caseSensitive);
+			IClass c = DeepGetClassRec (visited, db, typeName, genericArguments, caseSensitive);
 			if (c != null) return c;
 
 			db = GetDatabase (CoreDB);
-			return db.GetClass (typeName, caseSensitive);
+			return db.GetClass (typeName, genericArguments, caseSensitive);
 		}
 		
-		internal IClass DeepGetClassRec (ArrayList visitedDbs, CodeCompletionDatabase db, string typeName, bool caseSensitive)
+		internal IClass DeepGetClassRec (ArrayList visitedDbs, CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			if (db == null) return null;
 			if (visitedDbs.Contains (db)) return null;
 			
 			visitedDbs.Add (db);
 			
-			IClass c = db.GetClass (typeName, caseSensitive);
+			IClass c = db.GetClass (typeName, genericArguments, caseSensitive);
 			if (c != null) return c;
 			
 			foreach (ReferenceEntry re in db.References)
 			{
 				CodeCompletionDatabase cdb = GetDatabase (re.Uri);
 				if (cdb == null) continue;
-				c = DeepGetClassRec (visitedDbs, cdb, typeName, caseSensitive);
+				c = DeepGetClassRec (visitedDbs, cdb, typeName, genericArguments, caseSensitive);
 				if (c != null) return c;
 			}
 			return null;
@@ -1358,14 +1484,14 @@ namespace MonoDevelop.Projects.Parser
 				return null;
 				
 			IClass c;
-			c = GetClass (db, name);
+			c = GetClass (db, name, null, false, true);
 			if (c != null)
 				return c;
 
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u != null) {
-						c = SearchType (db, u, name);
+						c = SearchType (db, u, name, null, true);
 						if (c != null) {
 							return c;
 						}
@@ -1382,7 +1508,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			do {
 				curnamespace += namespaces[i] + '.';
-				c = GetClass (db, curnamespace + name);
+				c = GetClass (db, curnamespace + name, null, false, true);
 				if (c != null) {
 					return c;
 				}
@@ -1393,15 +1519,10 @@ namespace MonoDevelop.Projects.Parser
 			return null;
 		}
 		
-		public IClass SearchType (CodeCompletionDatabase db, IUsing iusing, string partitialTypeName)
-		{
-			return SearchType (db, iusing, partitialTypeName, true);
-		}
-		
-		public IClass SearchType (CodeCompletionDatabase db, IUsing iusing, string partitialTypeName, bool caseSensitive)
+		public IClass SearchType (CodeCompletionDatabase db, IUsing iusing, string partitialTypeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			Runtime.LoggingService.Debug ("Search type : >{0}<", partitialTypeName);
-			IClass c = GetClass (db, partitialTypeName, caseSensitive);
+			IClass c = GetClass (db, partitialTypeName, genericArguments, false, caseSensitive);
 			if (c != null) {
 				return c;
 			}
@@ -1409,7 +1530,7 @@ namespace MonoDevelop.Projects.Parser
 			foreach (string str in iusing.Usings) {
 				string possibleType = String.Concat(str, ".", partitialTypeName);
 				Runtime.LoggingService.Debug ("looking for {0}", possibleType);
-				c = GetClass (db, possibleType, caseSensitive);
+				c = GetClass (db, possibleType, genericArguments, false, caseSensitive);
 				if (c != null) {
 					Runtime.LoggingService.Debug ("Found!");
 					return c;
@@ -1422,7 +1543,7 @@ namespace MonoDevelop.Projects.Parser
 				while (declaringNamespace.Length > 0) {
 					string className = String.Concat(declaringNamespace, ".", partitialTypeName);
 					Runtime.LoggingService.DebugFormat ("looking for {0}", className);
-					c = GetClass (db, className, caseSensitive);
+					c = GetClass (db, className, genericArguments, false, caseSensitive);
 					if (c != null) {
 						Runtime.LoggingService.Debug ("Found!");
 						return c;
@@ -1443,7 +1564,7 @@ namespace MonoDevelop.Projects.Parser
 					if (aliasString.Length > 0) {
 						className = String.Concat(entry.Value.ToString(), partitialTypeName.Remove(0, aliasString.Length));
 						Runtime.LoggingService.DebugFormat ("looking for {0}", className);
-						c = GetClass (db, className, caseSensitive);
+						c = GetClass (db, className, genericArguments, false, caseSensitive);
 						if (c != null) {
 							Runtime.LoggingService.Debug ("Found!");
 							return c;
@@ -1474,6 +1595,59 @@ namespace MonoDevelop.Projects.Parser
 		public IEnumerable GetClassInheritanceTree (CodeCompletionDatabase db, IClass cls)
 		{
 			return new ClassInheritanceEnumerator (this, db, cls);
+		}
+		
+		public IEnumerable GetSubclassesTree (CodeCompletionDatabase db, IClass cls, string[] namespaces)
+		{
+			string fn = cls.FullyQualifiedName;
+			
+			if (fn == "System.Object") {
+				// Just return all classes
+				if (db != null) {
+					foreach (IClass dsub in db.GetClassList (true, namespaces))
+						yield return dsub;
+					foreach (ReferenceEntry re in db.References) {
+						CodeCompletionDatabase cdb = GetDatabase (re.Uri);
+						if (cdb == null) continue;
+						
+						foreach (IClass dsub in cdb.GetClassList (true, namespaces))
+							yield return dsub;
+					}
+				}
+				
+				db = GetDatabase (CoreDB);
+				foreach (IClass dsub in db.GetClassList (true, namespaces)) {
+					yield return dsub;
+				}
+				yield break;
+			}
+			
+			if (db != null) {
+				// Look for subclasses in all databases
+				foreach (IClass dsub in db.GetSubclasses (fn, namespaces)) {
+					yield return dsub;
+					foreach (IClass sub in GetSubclassesTree (db, dsub, namespaces))
+						yield return sub;
+				}
+				foreach (ReferenceEntry re in db.References)
+				{
+					CodeCompletionDatabase cdb = GetDatabase (re.Uri);
+					if (cdb == null) continue;
+					
+					foreach (IClass dsub in cdb.GetSubclasses (fn, namespaces)) {
+						yield return dsub;
+						foreach (IClass sub in GetSubclassesTree (db, dsub, namespaces))
+							yield return sub;
+					}
+				}
+			}
+			
+			db = GetDatabase (CoreDB);
+			foreach (IClass dsub in db.GetSubclasses (fn, namespaces)) {
+				yield return dsub;
+				foreach (IClass sub in GetSubclassesTree (db, dsub, namespaces))
+					yield return sub;
+			}
 		}
 		
 		public IClass[] GetFileContents (CodeCompletionDatabase db, string fileName)
@@ -1743,12 +1917,12 @@ namespace MonoDevelop.Projects.Parser
 			}
 			string baseTypeName = baseTypeQueue.Dequeue().ToString();
 
-			IClass baseType = parserDatabase.DeepGetClass (db, baseTypeName, true);
+			IClass baseType = parserDatabase.DeepGetClass (db, baseTypeName, null, true);
 			if (baseType == null) {
 				ICompilationUnit unit = currentClass == null ? null : currentClass.CompilationUnit;
 				if (unit != null) {
 					foreach (IUsing u in unit.Usings) {
-						baseType = parserDatabase.SearchType (db, u, baseTypeName);
+						baseType = parserDatabase.SearchType (db, u, baseTypeName, null, true);
 						if (baseType != null) {
 							break;
 						}
@@ -1814,7 +1988,7 @@ namespace MonoDevelop.Projects.Parser
 	
 	public interface ITypeResolver
 	{
-		string Resolve (string typeName);
+		IReturnType Resolve (IReturnType type);
 	}
 	
 	public delegate void JobCallback (object data, IProgressMonitor monitor);

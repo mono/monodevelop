@@ -21,14 +21,27 @@ namespace MonoDevelop.Projects.Parser
 		{
 		}
 		
-		public DefaultIndexer (IClass declaringType, IReturnType type, ParameterCollection parameters, ModifierEnum m, IRegion region, IRegion bodyRegion)
+		public DefaultIndexer (IReturnType type, ParameterCollection parameters, ModifierEnum m, IRegion region, IRegion bodyRegion)
 		{
 			returnType      = type;
 			this.parameters = parameters;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;
-			this.declaringType = declaringType;
 			modifiers = m;
+		}
+		
+		public override string FullyQualifiedName {
+			get {
+				if (declaringType != null)
+					return declaringType.FullyQualifiedName;
+				else
+					return null;
+			}
+		}
+		
+		public override string Name {
+			get { return declaringType.Name; }
+			set { }
 		}
 		
 		public virtual IRegion BodyRegion {

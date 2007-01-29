@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -202,6 +203,8 @@ namespace MonoDevelop.Projects
 	
 	public class DefaultProjectServiceExtension: ProjectServiceExtension
 	{
+		Dictionary <CombineEntry,bool> needsBuildingCache;
+		
 		public override void Save (IProgressMonitor monitor, CombineEntry entry)
 		{
 			entry.OnSave (monitor);
@@ -229,7 +232,23 @@ namespace MonoDevelop.Projects
 		
 		public override bool GetNeedsBuilding (CombineEntry entry)
 		{
-			return entry.OnGetNeedsBuilding ();
+			// This is a cache to avoid unneeded recursive calls to GetNeedsBuilding.
+			bool cleanCache = false;
+			if (needsBuildingCache == null) {
+				needsBuildingCache = new Dictionary <CombineEntry,bool> ();
+				cleanCache = true;
+			} else {
+				bool res;
+				if (needsBuildingCache.TryGetValue (entry, out res))
+					return res;
+			}
+			
+			bool nb = entry.OnGetNeedsBuilding ();
+			
+			needsBuildingCache [entry] = nb;
+			if (cleanCache)
+				needsBuildingCache = null;
+			return nb;
 		}
 		
 		public override void SetNeedsBuilding (CombineEntry entry, bool value)

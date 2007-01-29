@@ -18,10 +18,6 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 
-		string Namespace {
-			get;
-		}
-
 		IReturnType ReturnType {
 			get;
 		}

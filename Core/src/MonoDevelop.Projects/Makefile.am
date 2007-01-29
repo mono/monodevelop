@@ -53,6 +53,7 @@ MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs \
 MonoDevelop.Projects.Parser/FileEntry.cs \
 MonoDevelop.Projects.Parser/IParserService.cs \
 MonoDevelop.Projects.Parser/NamespaceEntry.cs \
+MonoDevelop.Projects.Parser/MemberCollectionBase.cs \
 MonoDevelop.Projects.Parser/ParseInformation.cs \
 MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs \
 MonoDevelop.Projects.Parser/ReferenceEntry.cs \
@@ -215,6 +216,7 @@ MonoDevelop.Projects.Text/ITextFile.cs \
 MonoDevelop.Projects.Text/ITextFileProvider.cs \
 MonoDevelop.Projects.Text/TextFile.cs \
 MonoDevelop.Projects.Text/TextEncoding.cs \
+MonoDevelop.Projects.Text/TextFileReader.cs \
 MonoDevelop.Projects/ProjectCreateInformation.cs \
 MonoDevelop.Projects/IProjectBinding.cs \
 MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \

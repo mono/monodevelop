@@ -39,6 +39,15 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public virtual string FullyQualifiedName {
+			get {
+				if (declaringType != null)
+					return string.Concat (declaringType.FullyQualifiedName, ".", Name);
+				else
+					return Name;
+			}
+		}
+		
 		public override int CompareTo (object ob) 
 		{
 			int cmp;

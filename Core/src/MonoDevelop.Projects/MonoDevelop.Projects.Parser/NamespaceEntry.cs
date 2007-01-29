@@ -39,10 +39,32 @@ namespace MonoDevelop.Projects.Parser
 	internal class NamespaceEntry
 	{
 		Hashtable contents = new Hashtable ();
+		NamespaceEntry parent;
+		string name;
 		
 		// This is the case insensitive version of the hashtable.
 		// It is constructed only when needed.
 		[NonSerialized] Hashtable contents_ci;
+		
+		public NamespaceEntry (NamespaceEntry parent, string name)
+		{
+			this.parent = parent;
+			this.name = name;
+		}
+		
+		public string FullName {
+			get {
+				if (parent != null) {
+					string bn = parent.FullName;
+					if (bn.Length > 0)
+						return string.Concat (bn, ".", name);
+					else
+						return name;
+				}
+				else
+					return string.Empty;
+			}
+		}
 		
 		public IEnumerable<ClassEntry> GetAllClasses ()
 		{

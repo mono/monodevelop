@@ -17,7 +17,7 @@ namespace MonoDevelop.Projects.Parser
 		public static DefaultMethod Resolve (IMethod source, ITypeResolver typeResolver)
 		{
 			DefaultMethod met = new DefaultMethod ();
-			met.FullyQualifiedName = source.FullyQualifiedName;
+			met.Name = source.Name;
 			met.Documentation = source.Documentation;
 			met.Modifiers = source.Modifiers;
 			met.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Parser
 		public static DefaultMethod Read (BinaryReader reader, INameDecoder nameTable)
 		{
 			DefaultMethod met = new DefaultMethod ();
-			met.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			met.Name = PersistentHelper.ReadString (reader, nameTable);
 			met.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			
 			met.Modifiers = (ModifierEnum)reader.ReadUInt32();
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static void WriteTo (IMethod met, BinaryWriter writer, INameEncoder nameTable)
 		{
-			PersistentHelper.WriteString (met.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (met.Name, writer, nameTable);
 			PersistentHelper.WriteString (met.Documentation, writer, nameTable);
 			
 			writer.Write ((uint)met.Modifiers);

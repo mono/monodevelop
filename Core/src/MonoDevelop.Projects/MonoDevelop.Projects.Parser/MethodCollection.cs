@@ -16,38 +16,14 @@ namespace MonoDevelop.Projects.Parser
 	/// </summary>
 	/// <seealso cref='.IMethodCollection'/>
 	[Serializable()]
-	public class MethodCollection : CollectionBase {
+	public class MethodCollection : MemberCollectionBase {
 		
 		/// <summary>
 		///     <para>
 		///       Initializes a new instance of <see cref='.IMethodCollection'/>.
 		///    </para>
 		/// </summary>
-		public MethodCollection() {
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IMethodCollection'/> based on another <see cref='.IMethodCollection'/>.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A <see cref='.IMethodCollection'/> from which the contents are copied
-		/// </param>
-		public MethodCollection(MethodCollection value) {
-			this.AddRange(value);
-		}
-		
-		/// <summary>
-		///     <para>
-		///       Initializes a new instance of <see cref='.IMethodCollection'/> containing any array of <see cref='.IMethod'/> objects.
-		///    </para>
-		/// </summary>
-		/// <param name='value'>
-		///       A array of <see cref='.IMethod'/> objects with which to intialize the collection
-		/// </param>
-		public MethodCollection(IMethod[] value) {
-			this.AddRange(value);
+		public MethodCollection(IClass owner): base (owner) {
 		}
 		
 		/// <summary>

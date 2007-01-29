@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Parser
 		public static PersistentProperty Resolve (IProperty source, ITypeResolver typeResolver)
 		{
 			PersistentProperty pro = new PersistentProperty ();
-			pro.FullyQualifiedName = source.FullyQualifiedName;
+			pro.Name = source.Name;
 			pro.Documentation = source.Documentation;
 			pro.modifiers = source.Modifiers;
 			pro.returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.Parser
 		public static PersistentProperty Read (BinaryReader reader, INameDecoder nameTable)
 		{
 			PersistentProperty pro = new PersistentProperty ();
-			pro.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			pro.Name = PersistentHelper.ReadString (reader, nameTable);
 			pro.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			uint m = reader.ReadUInt32();
 			pro.modifiers = (ModifierEnum)(m & (canGetFlag - 1));
@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static void WriteTo (IProperty p, BinaryWriter writer, INameEncoder nameTable)
 		{
-			PersistentHelper.WriteString (p.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (p.Name, writer, nameTable);
 			PersistentHelper.WriteString (p.Documentation, writer, nameTable);
 			writer.Write((uint)p.Modifiers + (p.CanGet ? canGetFlag : 0) + (p.CanSet ? canSetFlag : 0));
 			PersistentReturnType.WriteTo (p.ReturnType, writer, nameTable);

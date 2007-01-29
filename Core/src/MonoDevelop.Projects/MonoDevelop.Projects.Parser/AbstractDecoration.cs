@@ -21,6 +21,7 @@ namespace MonoDevelop.Projects.Parser
 		
 		public abstract string Name {
 			get;
+			set;
 		}
 		
 		public virtual ModifierEnum Modifiers {

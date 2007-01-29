@@ -16,8 +16,8 @@ namespace MonoDevelop.Projects.Parser
 	{
 		public static DefaultEvent Resolve (IEvent source, ITypeResolver typeResolver)
 		{
-			DefaultEvent ev = new DefaultEvent();
-			ev.FullyQualifiedName = source.FullyQualifiedName;
+			DefaultEvent ev = new DefaultEvent ();
+			ev.Name = source.Name;
 			ev.Documentation = source.Documentation;
 			ev.Modifiers = source.Modifiers;
 			ev.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
@@ -28,8 +28,8 @@ namespace MonoDevelop.Projects.Parser
 		
 		public static DefaultEvent Read (BinaryReader reader, INameDecoder nameTable)
 		{
-			DefaultEvent ev = new DefaultEvent();
-			ev.FullyQualifiedName = PersistentHelper.ReadString (reader, nameTable);
+			DefaultEvent ev = new DefaultEvent ();
+			ev.Name = PersistentHelper.ReadString (reader, nameTable);
 			ev.Documentation = PersistentHelper.ReadString (reader, nameTable);
 			ev.Modifiers = (ModifierEnum)reader.ReadUInt32();
 			ev.ReturnType = PersistentReturnType.Read (reader, nameTable);
@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Parser
 
 		public static void WriteTo (IEvent ev, BinaryWriter writer, INameEncoder nameTable)
 		{
-			PersistentHelper.WriteString (ev.FullyQualifiedName, writer, nameTable);
+			PersistentHelper.WriteString (ev.Name, writer, nameTable);
 			PersistentHelper.WriteString (ev.Documentation, writer, nameTable);
 			writer.Write ((uint)ev.Modifiers);
 			PersistentReturnType.WriteTo (ev.ReturnType, writer, nameTable);
