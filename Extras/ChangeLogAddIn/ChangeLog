@@ -1,5 +1,9 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* ChangeLogAddIn.cs: Track api changes in Document class.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* ChangeLogAddIn.mdp, gtk-gui/generated.cs,
 	  gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs,
 	  gtk-gui/gui.stetic, Makefile.am: Split Stetic generated code in

@@ -43,7 +43,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (document == null)
 				return;
 			
-			IEditableTextBuffer textBuffer = document.Content as IEditableTextBuffer;			
+			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer> ();			
 			
 			if (textBuffer == null)
 				return;
@@ -71,7 +71,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (document == null)
 				return;
 			
-			IEditableTextBuffer textBuffer = document.Content as IEditableTextBuffer;			
+			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer> ();			
 			
 			if (textBuffer == null)
 				return;
