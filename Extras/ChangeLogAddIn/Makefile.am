@@ -17,6 +17,7 @@ FILES = \
 	ChangeLogAddInOptionsPanel.cs \
 	AddLogEntryDialog.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
 	CommitDialogExtensionWidget.cs \
 	AssemblyInfo.cs
 

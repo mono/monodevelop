@@ -13,124 +13,22 @@ namespace Stetic {
     
     internal class Gui {
         
-        public static void Build(object obj, System.Type type) {
-            Stetic.Gui.Build(obj, type.FullName);
+        private static bool initialized;
+        
+        public static void Build(object cobj, System.Type type) {
+            Stetic.Gui.Build(cobj, type.FullName);
         }
         
-        public static void Build(object obj, string id) {
-            System.Collections.Hashtable bindings = new System.Collections.Hashtable();
+        public static void Build(object cobj, string id) {
+            Stetic.Gui.Initialize();
             if ((id == "MonoDevelop.ChangeLogAddIn.AddLogEntryDialog")) {
-                Gtk.Dialog cobj = ((Gtk.Dialog)(obj));
-                // Widget MonoDevelop.ChangeLogAddIn.AddLogEntryDialog
-                cobj.Title = "ChangeLog";
-                cobj.WindowPosition = ((Gtk.WindowPosition)(4));
-                cobj.HasSeparator = false;
-                cobj.Events = ((Gdk.EventMask)(256));
-                cobj.Name = "MonoDevelop.ChangeLogAddIn.AddLogEntryDialog";
-                // Internal child MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.VBox
-                Gtk.VBox w1 = cobj.VBox;
-                w1.BorderWidth = ((uint)(2));
-                w1.Events = ((Gdk.EventMask)(256));
-                w1.Name = "dialog_VBox";
-                // Container child dialog_VBox.Gtk.Box+BoxChild
-                Gtk.VBox w2 = new Gtk.VBox();
-                w2.Spacing = 6;
-                w2.BorderWidth = ((uint)(12));
-                w2.Events = ((Gdk.EventMask)(0));
-                w2.Name = "vbox1";
-                // Container child vbox1.Gtk.Box+BoxChild
-                Gtk.Label w3 = new Gtk.Label();
-                w3.LabelProp = "ChangeLog entry:";
-                w3.Xalign = 0F;
-                w3.Events = ((Gdk.EventMask)(0));
-                w3.Name = "label3";
-                bindings["label3"] = w3;
-                w2.Add(w3);
-                Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(w2[w3]));
-                w4.Position = 0;
-                w4.Expand = false;
-                w4.Fill = false;
-                // Container child vbox1.Gtk.Box+BoxChild
-                Gtk.ScrolledWindow w5 = new Gtk.ScrolledWindow();
-                w5.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-                w5.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-                w5.ShadowType = ((Gtk.ShadowType)(1));
-                w5.CanFocus = true;
-                w5.Events = ((Gdk.EventMask)(0));
-                w5.Name = "scrolledwindow1";
-                // Container child scrolledwindow1.Gtk.Container+ContainerChild
-                Gtk.TextView w6 = new Gtk.TextView();
-                w6.CanFocus = true;
-                w6.Events = ((Gdk.EventMask)(0));
-                w6.Name = "textview";
-                bindings["textview"] = w6;
-                w5.Add(w6);
-                bindings["scrolledwindow1"] = w5;
-                w2.Add(w5);
-                Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(w2[w5]));
-                w8.Position = 1;
-                bindings["vbox1"] = w2;
-                w1.Add(w2);
-                Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(w1[w2]));
-                w9.Position = 0;
-                bindings["dialog_VBox"] = w1;
-                // Internal child MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.ActionArea
-                Gtk.HButtonBox w10 = cobj.ActionArea;
-                w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
-                w10.Spacing = 10;
-                w10.BorderWidth = ((uint)(5));
-                w10.Events = ((Gdk.EventMask)(256));
-                w10.Name = "ChangeLogAddIn.AddLogEntryDialog_ActionArea";
-                // Container child ChangeLogAddIn.AddLogEntryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-                Gtk.Button w11 = new Gtk.Button();
-                w11.UseStock = true;
-                w11.UseUnderline = true;
-                w11.CanDefault = true;
-                w11.CanFocus = true;
-                w11.Events = ((Gdk.EventMask)(0));
-                w11.Name = "button7";
-                w11.Label = "gtk-cancel";
-                bindings["button7"] = w11;
-                cobj.AddActionWidget(w11, -6);
-                Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[w11]));
-                w12.Expand = false;
-                w12.Fill = false;
-                // Container child ChangeLogAddIn.AddLogEntryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-                Gtk.Button w13 = new Gtk.Button();
-                w13.UseStock = true;
-                w13.UseUnderline = true;
-                w13.CanDefault = true;
-                w13.CanFocus = true;
-                w13.Events = ((Gdk.EventMask)(0));
-                w13.Name = "button119";
-                w13.Label = "gtk-ok";
-                bindings["button119"] = w13;
-                cobj.AddActionWidget(w13, -5);
-                Gtk.ButtonBox.ButtonBoxChild w14 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[w13]));
-                w14.Position = 1;
-                w14.Expand = false;
-                w14.Fill = false;
-                bindings["ChangeLogAddIn.AddLogEntryDialog_ActionArea"] = w10;
-                cobj.DefaultWidth = 553;
-                cobj.DefaultHeight = 309;
-                bindings["MonoDevelop.ChangeLogAddIn.AddLogEntryDialog"] = cobj;
-                w3.Show();
-                w6.Show();
-                w5.Show();
-                w2.Show();
-                w1.Show();
-                w11.Show();
-                w13.Show();
-                w10.Show();
-                cobj.Show();
+                Stetic.SteticGenerated.MonoDevelopChangeLogAddInAddLogEntryDialog.Build(((Gtk.Dialog)(cobj)));
             }
-            System.Reflection.FieldInfo[] fields = obj.GetType().GetFields(((System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic) | System.Reflection.BindingFlags.Instance));
-            for (int n = 0; (n < fields.Length); n = (n + 1)) {
-                System.Reflection.FieldInfo field = fields[n];
-                object widget = bindings[field.Name];
-                if (((widget != null) && field.FieldType.IsInstanceOfType(widget))) {
-                    field.SetValue(obj, widget);
-                }
+        }
+        
+        internal static void Initialize() {
+            if ((Stetic.Gui.initialized == false)) {
+                Stetic.Gui.initialized = true;
             }
         }
     }

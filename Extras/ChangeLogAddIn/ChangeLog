@@ -1,3 +1,10 @@
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Split Stetic generated code in
+	  files.
+
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CommitDialogExtensionWidget.cs: Use the FileService for copying and
