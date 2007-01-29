@@ -2,34 +2,12 @@ using System;
 using MonoDevelop.SourceEditor.Gui;
 
 namespace MonoDevelop.SourceEditor.Actions
-{	
-	public class ControlSpace : AbstractEditAction
-	{
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.TriggerCodeComplete ();
-		}
-	}
-
+{
 	public class DeleteLine : AbstractEditAction
 	{
 		public override void Execute (SourceEditorView sourceView)
 		{
 			sourceView.DeleteLine ();
-		}
-	}
-
-	public class Dot : AbstractEditAction
-	{
-		public override void PreExecute (SourceEditorView sourceView)
-		{
-			PassToBase = true;
-		}
-		
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.ShowCodeCompletion ('.');
-			PassToBase = false;
 		}
 	}
 
@@ -100,20 +78,6 @@ namespace MonoDevelop.SourceEditor.Actions
 		}
 	}
 
-	public class Space : AbstractEditAction
-	{
-		public override void PreExecute (SourceEditorView sourceView)
-		{
-			PassToBase = true;
-		}
-		
-		public override void Execute (SourceEditorView sourceView)
-		{
-			sourceView.ShowCodeCompletion (' ');
-			PassToBase = false;
-		}
-	}
-		
 	public class Tab : AbstractEditAction
 	{
 		public override void Execute (SourceEditorView sourceView)

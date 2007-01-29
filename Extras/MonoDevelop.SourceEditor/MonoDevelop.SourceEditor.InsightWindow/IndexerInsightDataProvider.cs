@@ -28,7 +28,7 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 		
 		string              fileName = null;
 		SourceEditorView    textArea;
-		IndexerCollection   methods  = new IndexerCollection();
+		IndexerCollection   methods  = new IndexerCollection (null);
 		
 		public int InsightDataCount {
 			get {

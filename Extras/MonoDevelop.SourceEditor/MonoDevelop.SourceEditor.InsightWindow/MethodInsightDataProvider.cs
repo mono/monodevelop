@@ -28,7 +28,7 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 		
 		string              fileName = null;
 		SourceEditorView    textArea  = null;
-		MethodCollection    methods  = new MethodCollection();
+		MethodCollection    methods  = new MethodCollection(null);
 		
 		int caretLineNumber;
 		int caretColumn;

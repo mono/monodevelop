@@ -6,6 +6,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
@@ -81,7 +82,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	}
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
-		IEditableTextBuffer, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
+		IExtensibleTextEditor, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
 		IDocumentInformation, IEncodedTextContent
 	{
 		VBox mainBox;
@@ -441,6 +442,23 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.Buffer.LoadText (val, mime);
 		}
 		
+#region IExtensibleTextEditor
+		
+		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
+		{
+			return se.View.AttachExtension (extension);
+		}
+		
+		ICompletionWidget IExtensibleTextEditor.GetCompletionWidget ()
+		{
+			if (se.View.EnableCodeCompletion)
+				return se.View;
+			else
+				return null;
+		}
+		
+#endregion
+
 #region IEditableTextBuffer
 		public IClipboardHandler ClipboardHandler {
 			get { return se.Buffer; }
@@ -723,7 +741,6 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 #endregion
-
 
 		void SetInitialValues ()
 		{

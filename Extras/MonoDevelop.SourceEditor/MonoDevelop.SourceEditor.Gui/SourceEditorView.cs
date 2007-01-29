@@ -15,6 +15,7 @@ using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
@@ -27,17 +28,17 @@ using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.SourceEditor.Gui
 {
-	public class SourceEditorView : SourceView, IFormattableDocument, ICompletionWidget
+	public class SourceEditorView : SourceView, IFormattableDocument, ICompletionWidget, ITextEditorExtension
 	{	
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
 		public SourceEditorBuffer buf;
 		bool codeCompleteEnabled;
-		bool autoHideCompletionWindow = true;
 		bool autoInsertTemplates;
 		EditActionCollection editactions = new EditActionCollection ();
 		LanguageItemWindow languageItemWindow;
-		CodeCompletionDataProvider currentCompletionProvider;
+		ITextEditorExtension extension;
+		event EventHandler completionContextChanged;
 		
 		const int LanguageItemTipTimer = 800;
 		ILanguageItem tipItem;
@@ -78,14 +79,16 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public new void Dispose ()
 		{
-			if (currentCompletionProvider != null) {
-				currentCompletionProvider.Dispose ();
-				currentCompletionProvider = null;
-			}
 			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
 			buf.Changed -= new EventHandler (BufferChanged);
 			base.Dispose ();
+		}
+		
+		public ITextEditorExtension AttachExtension (ITextEditorExtension extension)
+		{
+			this.extension = extension;
+			return this;
 		}
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
@@ -177,8 +180,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		void BufferMarkSet (object s, MarkSetArgs a)
 		{
 			if (a.Mark.Name == "insert") {
-				if (autoHideCompletionWindow)
-					CompletionListWindow.HideWindow ();
+				NotifyCompletionContextChanged ();
 				buf.HideHighlightLine ();
 			}
 		}
@@ -197,19 +199,21 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override bool OnFocusOutEvent (EventFocus e)
 		{
-			CompletionListWindow.HideWindow ();
+			NotifyCompletionContextChanged ();
 			return base.OnFocusOutEvent (e);
 		}
 		
 		void BufferChanged (object s, EventArgs args)
 		{
-			if (autoHideCompletionWindow)
-				CompletionListWindow.HideWindow ();
+			NotifyCompletionContextChanged ();
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
-			CompletionListWindow.HideWindow ();
+			if (extension != null)
+				extension.CursorPositionChanged ();
+
+			NotifyCompletionContextChanged ();
 			HideLanguageItemWindow ();
 			
 			if (!ShowLineMarkers)
@@ -301,49 +305,6 @@ namespace MonoDevelop.SourceEditor.Gui
 				buf.Delete (ref start, ref end);
 		}
 
-		internal void ShowCodeCompletion (char key)
-		{
-			if (EnableCodeCompletion && PeekCharIsWhitespace ()) {
-				PrepareCompletionDetails (buf.GetIterAtMark (buf.InsertMark));
-				CompletionListWindow.ShowWindow (key, GetCodeCompletionDataProvider (false), this);
-			}
-		}
-
-		// FIXME: this method is broken
-		// and will trigger at various incorrect spots
-		internal void TriggerCodeComplete ()
-		{
-			
-			TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-			char triggerChar = '\0';
-			TextIter triggerIter = TextIter.Zero;
-			do {
-				if (iter.Char == null || iter.Char.Length == 0) {
-					break;
-				}
-				switch (iter.Char[0]) {
-				case ' ':
-				case '\t':
-				case '.':
-				case '(':
-				case '[':
-					triggerIter = iter;
-					triggerChar = iter.Char[0];
-					break;
-				}
-				if (!triggerIter.Equals (TextIter.Zero))
-					break;
-				iter.BackwardChar ();
-			} while (iter.LineOffset != 0);
-
-			if (triggerIter.Equals (TextIter.Zero))
-				return;
-			triggerIter.ForwardChar ();
-			
-			PrepareCompletionDetails(triggerIter);
-			CompletionListWindow.ShowWindow (triggerChar, GetCodeCompletionDataProvider (true), this);
-		}
-
 		IParserContext GetParserContext ()
 		{
 			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
@@ -367,16 +328,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 
-		CodeCompletionDataProvider GetCodeCompletionDataProvider (bool ctrl)
-		{
-			if (currentCompletionProvider != null)
-				currentCompletionProvider.Dispose ();
-			IParserContext ctx = GetParserContext ();
-			string file = ParentEditor.DisplayBinding.IsUntitled ? ParentEditor.DisplayBinding.UntitledName : ParentEditor.DisplayBinding.ContentName;
-			currentCompletionProvider = new CodeCompletionDataProvider (ctx, GetAmbience (), file, ctrl);
-			return currentCompletionProvider;
-		}
-			
 		internal bool MonodocResolver ()
 		{
 			TextIter insertIter = buf.GetIterAtMark (buf.InsertMark);
@@ -456,12 +407,20 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			evntCopy = evnt;
+			if (extension == null)
+				return ((ITextEditorExtension)this).KeyPress (evnt.Key, evnt.State);
+			else
+				return extension.KeyPress (evnt.Key, evnt.State);
+		}
+		
+		Gdk.EventKey evntCopy;
+
+		bool ITextEditorExtension.KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			Gdk.EventKey evnt = evntCopy;
 			HideLanguageItemWindow ();
 			
-			if (CompletionListWindow.ProcessKeyEvent (evnt))
-				return true;
-			
-			autoHideCompletionWindow = false;
 			bool res = false;
 			IEditAction action = editactions.GetAction (evnt.Key, evnt.State);
 			if (action != null) {
@@ -479,8 +438,18 @@ namespace MonoDevelop.SourceEditor.Gui
 			} else {
 				res = base.OnKeyPressEvent (evnt);
 			}
-			autoHideCompletionWindow = true;
 			return res;
+		}
+		
+		protected override void OnMoveCursor (MovementStep step, int count, bool extend_selection)
+		{
+			if (extension != null)
+				extension.CursorPositionChanged ();
+			base.OnMoveCursor (step, count, extend_selection);
+		}
+		
+		void ITextEditorExtension.CursorPositionChanged ()
+		{
 		}
 
 		internal bool GotoSelectionEnd ()
@@ -699,19 +668,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			Buffer.MoveMark ("selection_bound", end);
 		}
 
-		void PrepareCompletionDetails(TextIter iter)
-		{
-			Gdk.Rectangle rect = GetIterLocation (Buffer.GetIterAtMark (Buffer.InsertMark));
-			int wx, wy;
-			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
-			int tx, ty;
-			GdkWindow.GetOrigin (out tx, out ty);
-
-			this.completionX = tx + wx;
-			this.completionY = ty + wy;
-			this.textHeight = rect.Height;
-			this.triggerMark = buf.CreateMark (null, iter, true);
-		}
 #endregion
 
 #region IFormattableDocument
@@ -797,44 +753,44 @@ namespace MonoDevelop.SourceEditor.Gui
 
 #region ICompletionWidget
 
-		private int completionX;
-		int ICompletionWidget.TriggerXCoord
+		void NotifyCompletionContextChanged ()
 		{
-			get
-			{
-				return completionX;
-			}
+			if (completionContextChanged != null)
+				completionContextChanged (this, EventArgs.Empty);
 		}
 
-		private int completionY;
-		int ICompletionWidget.TriggerYCoord
-		{
-			get
-			{
-				return completionY;
-			}
+		event EventHandler ICompletionWidget.CompletionContextChanged {
+			add { completionContextChanged += value; }
+			remove { completionContextChanged -= value; }
 		}
 
-		private int textHeight;
-		int ICompletionWidget.TriggerTextHeight
+		ICodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
-			get
-			{
-				return textHeight;
-			}
+			TextIter iter = Buffer.GetIterAtOffset (triggerOffset);
+			Gdk.Rectangle rect = GetIterLocation (iter);
+			int wx, wy;
+			BufferToWindowCoords (Gtk.TextWindowType.Widget, rect.X, rect.Y + rect.Height, out wx, out wy);
+			int tx, ty;
+			GdkWindow.GetOrigin (out tx, out ty);
+
+			CodeCompletionContext ctx = new CodeCompletionContext ();
+			ctx.TriggerOffset = iter.Offset;
+			ctx.TriggerLine = iter.Line;
+			ctx.TriggerLineOffset = iter.LineOffset;
+			ctx.TriggerXCoord = tx + wx;
+			ctx.TriggerYCoord = ty + wy;
+			ctx.TriggerTextHeight = rect.Height;
+			return ctx;
+		}
+		
+		string ICompletionWidget.GetCompletionText (ICodeCompletionContext ctx)
+		{
+			return Buffer.GetText (Buffer.GetIterAtOffset (ctx.TriggerOffset), Buffer.GetIterAtMark (Buffer.InsertMark), false);
 		}
 
-		string ICompletionWidget.CompletionText
+		void ICompletionWidget.SetCompletionText (ICodeCompletionContext ctx, string partial_word, string complete_word)
 		{
-			get
-			{
-				return Buffer.GetText (Buffer.GetIterAtMark (triggerMark), Buffer.GetIterAtMark (Buffer.InsertMark), false);
-			}
-		}
-
-		void ICompletionWidget.SetCompletionText (string partial_word, string complete_word)
-		{
-			TextIter offsetIter = buf.GetIterAtMark(triggerMark);
+			TextIter offsetIter = buf.GetIterAtOffset (ctx.TriggerOffset);
 			TextIter endIter = buf.GetIterAtOffset (offsetIter.Offset + partial_word.Length);
 			buf.MoveMark (buf.InsertMark, offsetIter);
 			buf.Delete (ref offsetIter, ref endIter);
@@ -847,14 +803,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			buf.InsertAtCursor (text);
 		}
 		
-		string ICompletionWidget.Text
-		{
-			get
-			{
-				return buf.Text;
-			}
-		}
-
 		int ICompletionWidget.TextLength
 		{
 			get
@@ -873,56 +821,12 @@ namespace MonoDevelop.SourceEditor.Gui
 			return buf.GetText(buf.GetIterAtOffset (startOffset), buf.GetIterAtOffset(endOffset), true);
 		}
 
-		private TextMark triggerMark;
-		int ICompletionWidget.TriggerOffset
-		{
-			get
-			{
-				return buf.GetIterAtMark (triggerMark).Offset;
-			}
-		}
-
-		int ICompletionWidget.TriggerLine
-		{
-			get
-			{
-				return buf.GetIterAtMark (triggerMark).Line;
-			}
-		}
-
-		int ICompletionWidget.TriggerLineOffset
-		{
-			get
-			{
-				return buf.GetIterAtMark (triggerMark).LineOffset;
-			}
-		}
-
 		Gtk.Style ICompletionWidget.GtkStyle
 		{
 			get
 			{
 				return Style.Copy();
 			}
-		}
-
-		bool PeekCharIsWhitespace ()
-		{
-			TextIter start = buf.GetIterAtMark (buf.InsertMark);
-			TextIter end = buf.GetIterAtLine (start.Line);
-			end.Offset = start.Offset + 1;
-			string text = buf.GetText (start, end, true);
-			// if it is not whitespace or the start of a comment
-			// we disable completion except for by ctl+space
-			if (text.Length == 1)
-				return IsSeparator (text[0]);
-			return true;
-		}
-		
-		bool IsSeparator (char c)
-		{
-			// FIXME: this is language specific.
-			return !System.Char.IsLetterOrDigit (c) && c != '_';
 		}
 #endregion
 	}
