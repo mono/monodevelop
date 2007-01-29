@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		static void SetSearchPattern ()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ITextBuffer view = IdeApp.Workbench.ActiveDocument.Content as ITextBuffer; 
+				ITextBuffer view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> (); 
 				if (view != null) {
 					string selectedText = view.SelectedText;
 					if (selectedText != null && selectedText.Length > 0)

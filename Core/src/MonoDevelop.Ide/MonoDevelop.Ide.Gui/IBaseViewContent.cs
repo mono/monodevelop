@@ -46,5 +46,7 @@ namespace MonoDevelop.Ide.Gui
 		void RedrawContent();
 		
 		bool CanReuseView (string fileName);
+		
+		object GetContent (Type contentType);
 	}
 }

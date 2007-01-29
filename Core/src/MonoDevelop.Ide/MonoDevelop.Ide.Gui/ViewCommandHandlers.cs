@@ -58,6 +58,11 @@ namespace MonoDevelop.Ide.Gui
 			this.window = window;
 		}
 		
+		public T GetContent <T>()
+		{
+			return (T) window.ActiveViewContent.GetContent (typeof(T));
+		}
+		
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return nextTarget;
@@ -116,12 +121,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Are you sure that you want to reload the file?"))) {
 				IXmlConvertable memento = null;
-				if (window.ViewContent is IMementoCapable) {
-					memento = ((IMementoCapable)window.ViewContent).CreateMemento();
+				IMementoCapable mc = GetContent<IMementoCapable> ();
+				if (mc != null) {
+					memento = mc.CreateMemento();
 				}
-				window.ViewContent.Load(window.ViewContent.ContentName);
+				window.ViewContent.Load (window.ViewContent.ContentName);
 				if (memento != null) {
-					((IMementoCapable)window.ViewContent).SetMemento(memento);
+					mc.SetMemento(memento);
 				}
 			}
 		}
@@ -138,7 +144,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.Undo)]
 		protected void OnUndo ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.Undo();
 		}
@@ -146,13 +152,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
+			info.Enabled = GetContent <IEditableTextBuffer> () != null;
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
 		protected void OnRedo ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null) {
 				editable.Redo();
 			}
@@ -161,13 +167,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
+			info.Enabled = GetContent <IEditableTextBuffer> () != null;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
 		protected void OnCut ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.ClipboardHandler.Cut(null, null);
 		}
@@ -175,14 +181,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void OnUpdateCut (CommandInfo info)
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableCut;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.ClipboardHandler.Copy(null, null);
 		}
@@ -190,14 +196,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void OnUpdateCopy (CommandInfo info)
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableCopy;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
 		protected void OnPaste ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.ClipboardHandler.Paste(null, null);
 		}
@@ -205,14 +211,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo info)
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnablePaste;
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.ClipboardHandler.Delete(null, null);
 		}
@@ -220,14 +226,14 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Delete)]
 		protected void OnUpdateDelete (CommandInfo info)
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableDelete;
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAll ()
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			if (editable != null)
 				editable.ClipboardHandler.SelectAll(null, null);
 		}
@@ -235,7 +241,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void OnUpdateSelectAll (CommandInfo info)
 		{
-			IEditableTextBuffer editable = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableSelectAll;
 		}
 		
@@ -250,7 +256,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.CommentCode)]
 		public void OnCommentCode()
 		{
-			ICodeStyleOperations  styling = window.ActiveViewContent as ICodeStyleOperations;
+			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
 			if (styling != null)
 				styling.CommentCode ();
 		}
@@ -258,13 +264,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.CommentCode)]
 		protected void OnUpdateCommentCode (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = GetContent<ICodeStyleOperations> () != null;
 		}
 		
 		[CommandHandler (EditCommands.UncommentCode)]
 		public void OnUncommentCode()
 		{
-			ICodeStyleOperations  styling = window.ActiveViewContent as ICodeStyleOperations;
+			ICodeStyleOperations  styling = GetContent <ICodeStyleOperations> ();
 			if (styling != null)
 				styling.UncommentCode ();
 		}
@@ -272,13 +278,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.UncommentCode)]
 		protected void OnUpdateUncommentCode (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = GetContent<ICodeStyleOperations> () != null;
 		}
 		
 		[CommandHandler (EditCommands.IndentSelection)]
 		public void OnIndentSelection()
 		{
-			ICodeStyleOperations  styling = window.ActiveViewContent as ICodeStyleOperations;
+			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
 			if (styling != null)
 				styling.IndentSelection ();
 		}
@@ -286,13 +292,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.IndentSelection)]
 		protected void OnUpdateIndentSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = GetContent<ICodeStyleOperations> () != null;
 		}
 		
 		[CommandHandler (EditCommands.UnIndentSelection)]
 		public void OnUnIndentSelection()
 		{
-			ICodeStyleOperations  styling = window.ActiveViewContent as ICodeStyleOperations;
+			ICodeStyleOperations  styling = GetContent<ICodeStyleOperations> ();
 			if (styling != null)
 				styling.UnIndentSelection ();
 		}
@@ -300,13 +306,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
 		protected void OnUpdateUnIndentSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is ICodeStyleOperations;
+			info.Enabled = GetContent<ICodeStyleOperations> () != null;
 		}
 		
 		[CommandHandler (EditCommands.UppercaseSelection)]
 		public void OnUppercaseSelection ()
 		{
-			IEditableTextBuffer buffer = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
 			if (buffer != null)
 			{
 				if (buffer.SelectedText == String.Empty)
@@ -329,13 +335,13 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.UnIndentSelection)]
 		protected void OnUppercaseSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
+			info.Enabled = GetContent <IEditableTextBuffer> () != null;
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
 		{
-			IEditableTextBuffer buffer = window.ActiveViewContent as IEditableTextBuffer;
+			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
 			if (buffer != null)
 			{
 				if (buffer.SelectedText == String.Empty)
@@ -358,7 +364,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
-			info.Enabled = window.ActiveViewContent is IEditableTextBuffer;
+			info.Enabled = GetContent <IEditableTextBuffer> () != null;
 		}
 	}
 }

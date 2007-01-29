@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		public static void Replace()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				IEditableTextBuffer editable = IdeApp.Workbench.ActiveDocument.Content as IEditableTextBuffer;
+				IEditableTextBuffer editable = IdeApp.Workbench.ActiveDocument.GetContent<IEditableTextBuffer> ();
 				if (editable == null) return;
 					
 				if (lastResult != null && find.DocumentIterator.CurrentFileName == lastResult.FileName) {

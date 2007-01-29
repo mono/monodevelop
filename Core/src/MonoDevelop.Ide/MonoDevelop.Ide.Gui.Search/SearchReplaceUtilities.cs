@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.Gui.Search
 	{
 		public static bool IsTextAreaSelected {
 			get {
-				return IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Content is ITextBuffer;
+				return IdeApp.Workbench.ActiveDocument != null && (IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer>() != null);
 			}
 		}
 		

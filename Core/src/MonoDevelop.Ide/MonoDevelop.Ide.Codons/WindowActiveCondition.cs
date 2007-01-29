@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Codons
 			if (IdeApp.Workbench.ActiveDocument == null) {
 				return false;
 			}
-			Type currentType = IdeApp.Workbench.ActiveDocument.Content.GetType();
+			Type currentType = IdeApp.Workbench.ActiveDocument.GetContent<IBaseViewContent> ().GetType ();
 			if (currentType.ToString() == activewindow) {
 				return true;
 			}

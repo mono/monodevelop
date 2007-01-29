@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				return IdeApp.Workbench.ActiveDocument.Content as IDocumentInformation;
+				return IdeApp.Workbench.ActiveDocument.GetContent <IDocumentInformation> ();
 			}
 		}
 			

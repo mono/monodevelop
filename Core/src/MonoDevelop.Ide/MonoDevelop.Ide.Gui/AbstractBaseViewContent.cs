@@ -56,6 +56,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public virtual object GetContent (Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return null;
+		}
+		
 		public event EventHandler WorkbenchWindowChanged;
 	}
 }

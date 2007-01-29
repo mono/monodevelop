@@ -52,8 +52,14 @@ namespace MonoDevelop.Ide.Gui
 			get { return window; }
 		}
 		
-		public object Content {
-			get { return Window.ViewContent; }
+		public object GetContent (Type type)
+		{
+			return Window.ViewContent.GetContent (type);
+		}
+		
+		public T GetContent <T>()
+		{
+			return (T) Window.ViewContent.GetContent (typeof(T));
 		}
 		
 		internal Document (IWorkbenchWindow window)
@@ -283,7 +289,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnDocumentAttached ()
 		{
-			IExtensibleTextEditor editor = Content as IExtensibleTextEditor;
+			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
 		

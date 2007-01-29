@@ -1,5 +1,25 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.Commands/RefactoryCommands.cs,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs,
+	  MonoDevelop.Ide.Codons/WindowActiveCondition.cs,
+	  MonoDevelop.Ide.Gui.Search/CurrentDocumentIterator.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceManager.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceUtilities.cs,
+	  MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs: Track
+	  api changes in Document class.
+	* MonoDevelop.Ide.Gui/Document.cs,
+	  MonoDevelop.Ide.Gui/IBaseViewContent.cs,
+	  MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: Added a GetContent
+	  method for getting a specific interface implementation from a view.
+	  It's better than just casting the view to a specific interface
+	  because the view can in this way implement interfaces in classes
+	  other the main view. It simplifies the work in views which are
+	  composed by multiple views.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.CodeTemplates/TemplateCompletionDataProvider.cs:
 	  Track api changes.
 	* MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs,

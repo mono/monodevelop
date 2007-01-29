@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc != null) {
-				ITextBuffer editor = IdeApp.Workbench.ActiveDocument.Content as ITextBuffer;
+				ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
 				if (editor != null) {
 					int line, column;
 					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);

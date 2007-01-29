@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		protected IEditableTextBuffer Editor {
-			get { return document.Content as IEditableTextBuffer; }
+			get { return document.GetContent<IEditableTextBuffer> (); }
 		}
 		
 		protected string FileName {
