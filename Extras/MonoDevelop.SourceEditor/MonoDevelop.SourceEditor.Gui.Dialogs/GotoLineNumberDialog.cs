@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor.Gui.Dialogs
 		void on_btn_go_to_line_clicked (object sender, EventArgs e)
 		{
 			try {
-				IPositionable view = IdeApp.Workbench.ActiveDocument.Content as IPositionable;
+				IPositionable view = IdeApp.Workbench.ActiveDocument.GetContent<IPositionable> ();
 				if (view != null) {			
 					int l = Math.Max (1, Int32.Parse(line_number_entry.Text));
 					view.JumpTo (l, 1);

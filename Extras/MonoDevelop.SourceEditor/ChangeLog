@@ -1,5 +1,10 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs: Track
+	  api changes in Document class.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs,
 	  MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
 	  MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs: Implemented
