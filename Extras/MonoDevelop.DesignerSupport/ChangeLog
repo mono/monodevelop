@@ -1,5 +1,11 @@
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Use the new
+	  GetContent method instead of casting the view to the required
+	  interface.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.DesignerSupport.mdp: Updated.
 	* MonoDevelop.DesignerSupport/BindingService.cs,
 	  MonoDevelop.DesignerSupport/WrapperDesignView.cs: Track api changes
