@@ -1,5 +1,9 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: Fix overloaded operator filter.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/CSharpVisitor.cs, Parser/TypeVisitor.cs: Implemented support
 	  for overloaded operators.
 	* Parser/Resolver.cs: Exclude operators from the resolve list.

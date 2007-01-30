@@ -388,9 +388,9 @@ namespace CSharpBinding.Parser
 		bool MustBeShowen(IClass c, IDecoration member)
 		{
 //			Console.WriteLine("member:" + member.Modifiers);
-			if ((!showStatic &&  ((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
-			    ( showStatic && !((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
-			      member.IsSpecialName
+			if ((!showStatic && member.IsStatic) ||
+			    (showStatic && !member.IsStatic) ||
+			    (showStatic && member.IsStatic && member.IsSpecialName && member.Name.StartsWith ("op_"))
 			    ) {
 				//// enum type fields are not shown here - there is no info in member about enum field
 				return false;
