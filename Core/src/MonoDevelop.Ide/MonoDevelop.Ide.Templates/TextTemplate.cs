@@ -66,8 +66,11 @@ namespace MonoDevelop.Ide.Templates
 				name = doc.DocumentElement.Attributes["name"].InnerText;
 				
 				XmlNodeList nodes = doc.DocumentElement.ChildNodes;
-				foreach (XmlElement entrynode in nodes) {
-					entries.Add(new Entry(entrynode));
+				foreach (XmlNode entrynode in nodes) {
+					XmlElement entryelem = entrynode as XmlElement;
+					if (entryelem == null)
+						continue;
+					entries.Add(new Entry(entryelem));
 				}
 			} catch (Exception e) {
 				throw new System.IO.FileLoadException("Can't load standard sidebar template file", filename, e);

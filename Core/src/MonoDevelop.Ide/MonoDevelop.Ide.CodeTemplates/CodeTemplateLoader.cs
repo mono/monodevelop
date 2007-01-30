@@ -67,7 +67,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 					return false;
 				}
 				
-				foreach (XmlElement el in doc.DocumentElement.ChildNodes) {
+				foreach (XmlNode node in doc.DocumentElement.ChildNodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
 					templateGroups.Add(new CodeTemplateGroup(el));
 				}
 			} catch (Exception) {

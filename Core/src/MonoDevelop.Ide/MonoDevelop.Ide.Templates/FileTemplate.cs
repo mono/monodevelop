@@ -191,8 +191,11 @@ namespace MonoDevelop.Ide.Templates
 			// load the files
 			XmlElement files  = doc.DocumentElement["TemplateFiles"];
 			XmlNodeList nodes = files.ChildNodes;
-			foreach (XmlElement filenode in nodes) {
-				FileDescriptionTemplate template = FileDescriptionTemplate.CreateTemplate (filenode);
+			foreach (XmlNode filenode in nodes) {
+				XmlElement fileelem = filenode as XmlElement;
+				if (fileelem == null)
+					continue;
+				FileDescriptionTemplate template = FileDescriptionTemplate.CreateTemplate (fileelem);
 				fileTemplate.files.Add(template);
 			}
 			return fileTemplate;

@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Xml;
 using System.Diagnostics;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -60,7 +61,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			foreach (string ext in exts) {
 				extensions.Add(ext);
 			}
-			foreach (XmlElement childElement in el.ChildNodes) {
+			foreach (XmlNode childNode in el.ChildNodes) {
+				XmlElement childElement = childNode as XmlElement;
+				if (childElement == null)
+					continue;
 				templates.Add(new CodeTemplate(childElement));
 			}
 		}

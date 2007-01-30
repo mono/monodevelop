@@ -49,8 +49,12 @@ namespace MonoDevelop.Ide.ExternalTools
 				tool = new ArrayList();
 				
 				XmlNodeList nodes  = doc.DocumentElement.ChildNodes;
-				foreach (XmlElement el in nodes)
+				foreach (XmlNode node in nodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
 					tool.Add(new ExternalTool(el));
+				}
 			} catch (Exception) {
 				return false;
 			}

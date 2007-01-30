@@ -597,7 +597,10 @@ namespace MonoDevelop.Ide.Gui
 
 			XmlElement root = doc.DocumentElement;
 			if (root["Files"] != null) {
-				foreach (XmlElement el in root["Files"].ChildNodes) {
+				foreach (XmlNode node in root["Files"].ChildNodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
 					string fileName = Runtime.FileService.RelativeToAbsolutePath(combinepath, el.Attributes["filename"].InnerText);
 					if (File.Exists(fileName)) {
 						IdeApp.Workbench.OpenDocument (fileName, false);
@@ -606,7 +609,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (root["Views"] != null) {
-				foreach (XmlElement el in root["Views"].ChildNodes) {
+				foreach (XmlNode node in root["Views"].ChildNodes) {
+					XmlElement el = node as XmlElement;
+					if (el == null)
+						continue;
 					foreach (Pad pad in IdeApp.Workbench.Pads) {
 						if (el.GetAttribute ("Id") == pad.Id && pad.Content is IMementoCapable && el.ChildNodes.Count > 0) {
 							IMementoCapable m = (IMementoCapable) pad.Content; 
