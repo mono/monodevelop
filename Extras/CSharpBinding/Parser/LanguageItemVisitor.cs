@@ -58,8 +58,12 @@ namespace CSharpBinding.Parser
 					return null;
 				}
 				IReturnType type = new ReturnType(resolver.CallingClass.FullyQualifiedName);
-				resolver.ShowStatic = true;
+				resolver.ShowStatic = false;
 				ArrayList methods = resolver.SearchMethod(type, id);
+				if (methods.Count == 0) {
+					resolver.ShowStatic = true;
+					methods = resolver.SearchMethod(type, id);
+				}
 				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
 					// It may be a call to a constructor

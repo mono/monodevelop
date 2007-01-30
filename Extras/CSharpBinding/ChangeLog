@@ -1,5 +1,10 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/LanguageItemVisitor.cs: Properly resolve calls to local
+	  instance methods.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/CSharpVisitor.cs: When creating an enum, explicitely add the
 	  System.Enum base class. Make enum files "const".
 	* Parser/Resolver.cs: Removed some debug code. Show enum fields only
