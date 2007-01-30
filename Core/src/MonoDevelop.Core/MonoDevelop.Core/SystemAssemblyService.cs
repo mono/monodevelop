@@ -62,6 +62,16 @@ namespace MonoDevelop.Core
 
 			return (SystemPackage) assemblyPathToPackage[path];
 		}
+
+		public SystemPackage GetPackage (string name)
+		{
+			return (SystemPackage) packagesHash [name];
+		}
+
+		public SystemPackage GetPackageFromPath (string path)
+		{
+			return (SystemPackage) assemblyPathToPackage [path];
+		}
 		
 		string NormalizeAsmName (string name)
 		{
