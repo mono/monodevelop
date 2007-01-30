@@ -1557,14 +1557,32 @@ namespace MonoDevelop.Projects.Parser
 		
 		public bool ResolveTypes (Project project, ICompilationUnit unit, ClassCollection types, out ClassCollection result)
 		{
-			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (GetProjectDatabase (project), unit, this);
+			CodeCompletionDatabase db = GetProjectDatabase (project);
+			CompilationUnitTypeResolver tr = new CompilationUnitTypeResolver (db, unit, this);
+			IParserContext ctx = this.GetProjectParserContext (project);
 			
 			bool allResolved = true;
 			result = new ClassCollection ();
 			foreach (IClass c in types) {
 				tr.CallingClass = c;
 				tr.AllResolved = true;
-				result.Add (PersistentClass.Resolve (c, tr));
+				DefaultClass rc = PersistentClass.Resolve (c, tr);
+				
+				if (tr.AllResolved) {
+					// If the class has no base classes, make sure it subclasses System.Object
+					bool foundBase = false;
+					foreach (IReturnType bt in rc.BaseTypes) {
+						IClass bc = ctx.GetClass (bt.FullyQualifiedName, null, true, true);
+						if (bc == null || bc.ClassType != ClassType.Interface) {
+							foundBase =  true;
+							break;
+						}
+					}
+					if (!foundBase)
+						rc.BaseTypes.Add (new DefaultReturnType ("System.Object"));
+				}
+				
+				result.Add (rc);
 				allResolved = allResolved && tr.AllResolved;
 			}
 				

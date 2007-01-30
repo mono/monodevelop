@@ -1,5 +1,11 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: When resolving a
+	  class, make sure it includes System.Object as base class if it has
+	  no other base class. Fixes bug #80087.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Always
 	  check the version of mscorlib after loading the parser database.
 
