@@ -146,12 +146,14 @@ namespace MonoDevelop.Projects.Parser
 				}
 				
 				foreach (MethodDefinition methodInfo in type.Methods) {
-					if (!methodInfo.IsSpecialName) {
-						IMethod newMethod = new ReflectionMethod (methodInfo, docs);
-						
-						if (!newMethod.IsInternal) {
-							methods.Add(newMethod);
-						}
+					// Include overloaded operators
+					if (methodInfo.IsSpecialName && !methodInfo.Name.StartsWith ("op_"))
+						continue;
+					
+					IMethod newMethod = new ReflectionMethod (methodInfo, docs);
+					
+					if (!newMethod.IsInternal) {
+						methods.Add(newMethod);
 					}
 				}
 				

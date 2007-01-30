@@ -120,6 +120,8 @@ namespace MonoDevelop.Projects.Parser
 			
 			if ((attributes & MethodAttributes.Static) != 0)
 				modifiers |= ModifierEnum.Static;
+			if ((attributes & MethodAttributes.SpecialName) != 0)
+				modifiers |= ModifierEnum.SpecialName;
 			
 			MethodAttributes access = attributes & MethodAttributes.MemberAccessMask;
 			
