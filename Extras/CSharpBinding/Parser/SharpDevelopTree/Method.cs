@@ -8,11 +8,6 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class Method : DefaultMethod
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Method (string name, ReturnType type, ModifierFlags m, IRegion region, IRegion bodyRegion)
 		{
 			Name = name;

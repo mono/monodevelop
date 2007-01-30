@@ -23,9 +23,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
-//			Console.WriteLine("Visiting " + primitiveExpression);
 			if (primitiveExpression.Value != null) {
-//				Console.WriteLine("Visiting " + primitiveExpression.Value);
 				return new ReturnType(primitiveExpression.Value.GetType().FullName);
 			}
 			return null;
@@ -33,10 +31,145 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			// TODO : Operators 
-			return binaryOperatorExpression.Left.AcceptVisitor(this, data);
+			string name = null;
+			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.Add:
+					name = "op_Addition";
+					break;
+				case BinaryOperatorType.Subtract:
+					name = "op_Subtraction";
+					break;
+				case BinaryOperatorType.Multiply:
+					name = "op_Multiply";
+					break;
+				case BinaryOperatorType.Divide:
+					name = "op_Division";
+					break;
+				case BinaryOperatorType.Modulus:
+					name = "op_Modulus";
+					break;
+				
+				case BinaryOperatorType.BitwiseAnd:
+					name = "op_BitwiseAnd";
+					break;
+				case BinaryOperatorType.BitwiseOr:
+					name = "op_BitwiseOr";
+					break;
+				case BinaryOperatorType.ExclusiveOr:
+					name = "op_ExclusiveOr";
+					break;
+				
+				case BinaryOperatorType.ShiftLeft:
+					name = "op_LeftShift";
+					break;
+				case BinaryOperatorType.ShiftRight:
+					name = "op_RightShift";
+					break;
+				
+				case BinaryOperatorType.GreaterThan:
+					name = "op_GreaterThan";
+					break;
+				case BinaryOperatorType.GreaterThanOrEqual:
+					name = "op_GreaterThanOrEqual";
+					break;
+				case BinaryOperatorType.Equality:
+					name = "op_Equality";
+					break;
+				case BinaryOperatorType.InEquality:
+					name = "op_Inequality";
+					break;
+				case BinaryOperatorType.LessThan:
+					name = "op_LessThan";
+					break;
+				case BinaryOperatorType.LessThanOrEqual:
+					name = "op_LessThanOrEqual";
+					break;
+			}
+			IReturnType t1 = binaryOperatorExpression.Left.AcceptVisitor (this, data) as IReturnType;
+			IReturnType t2 = binaryOperatorExpression.Right.AcceptVisitor (this, data) as IReturnType;
+			
+			if (t1 == null || t2 == null)
+				return null;
+			
+			IClass c1 = resolver.SearchType (t1, resolver.CompilationUnit);
+			IClass c2 = resolver.SearchType (t2, resolver.CompilationUnit);
+			
+			if (c1 == null && c2 == null)
+				return t1;
+			
+			// Look for operator overloads in both classes
+			
+			IMethod met1, met2;
+			int level1, level2;
+			
+			FindOperator (name, c1, t2, 0, 1, out met1, out level1);
+			FindOperator (name, c2, t1, 1, 0, out met2, out level2);
+			
+			// No operator overloads found
+			if (met1 == null && met2 == null)
+				return t1;
+				
+			if (met1 != null && met2 == null)
+				return met1.ReturnType;
+			
+			if (met1 == null && met2 != null)
+				return met2.ReturnType;
+				
+			// There are two possible candidates. Get the one closer in the inheritance hierarchy
+			if (level1 < level2)
+				return met1.ReturnType;
+			else
+				return met2.ReturnType;
 		}
 		
+		// This methods look for an operator method. c1 is the class on which the operator is
+		// being searched. c2 is the type of the second operand. ownerParamPos is the position
+		// of the parameter for the class being searched. otherParamPos is the position of the
+		// c2 parameter. met is the method found (or null if not found). sublevel is the number
+		// of superclasses that had to be searched.
+		void FindOperator (string name, IClass c1, IReturnType c2, int ownerParamPos, int otherParamPos, out IMethod met, out int sublevel)
+		{
+			sublevel = 0;
+			do {
+				foreach (IMethod m in c1.Methods) {
+					if (m.IsSpecialName && m.Name == name) {
+						// Check parameter types
+						IParameter par1 = m.Parameters [ownerParamPos];
+						if (par1.ReturnType.ArrayCount != 0 || par1.ReturnType.PointerNestingLevel != 0 || par1.ReturnType.ByRef)
+							continue;
+						IClass pc = resolver.ParserContext.GetClass (par1.ReturnType.FullyQualifiedName, par1.ReturnType.GenericArguments, true, true);
+						if (pc == null || (pc.FullyQualifiedName != c1.FullyQualifiedName))
+							continue;
+
+						// Ok, the class that implements the operator is in the right parameter position
+						// Now let's check if the other parameter is compatible with the other operand
+						
+						IParameter par2 = m.Parameters [otherParamPos];
+						if (DefaultReturnType.IsTypeAssignable (resolver.ParserContext, par2.ReturnType, c2) == -1)
+							continue;
+						met = m;
+						return;
+					}
+				}
+				// Operator not found in this class, look in the base class
+				// Avoid implemented interfaces
+				IClass baseClass = null;
+				foreach (IReturnType bt in c1.BaseTypes) {
+					IClass bc = resolver.ParserContext.GetClass (bt.FullyQualifiedName, bt.GenericArguments, true, true);
+					if (bc.ClassType != ClassType.Interface) {
+						baseClass = bc;
+						break;
+					}
+				}
+				c1 = baseClass;
+				sublevel++;
+			} while (c1 != null);
+			
+			// Not found
+			met = null;
+		}
+		
+
 		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			if (parenthesizedExpression == null) {
@@ -92,7 +225,7 @@ namespace CSharpBinding.Parser
 			if (fieldReferenceExpression == null) {
 				return null;
 			}
-			// int. generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
+			// "int." generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
 			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
 					resolver.ShowStatic = true;
@@ -140,10 +273,17 @@ namespace CSharpBinding.Parser
 			if (identifierExpression == null) {
 				return null;
 			}
-			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
-			if (name != null) {
-				return new ReturnType(name);
+			string name = resolver.SearchNamespace (identifierExpression.Identifier, resolver.CompilationUnit);
+			if (name != null)
+				return new ReturnType (name);
+
+			if (resolver.CallingClass != null) {
+				// It may be a reference to a child namespace
+				name = resolver.SearchNamespace (resolver.CallingClass.Namespace + "." + identifierExpression.Identifier, resolver.CompilationUnit);
+				if (name != null)
+					return new ReturnType (name);
 			}
+			
 			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);
 			if (c != null) {
 				resolver.ShowStatic = true;

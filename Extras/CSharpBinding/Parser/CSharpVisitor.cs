@@ -234,6 +234,12 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
 		{
+			VisitMethod (methodDeclaration, data);
+			return null;
+		}
+		
+		Method VisitMethod (AST.MethodDeclaration methodDeclaration, object data)
+		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
 
@@ -262,7 +268,115 @@ namespace CSharpBinding.Parser
 			FillAttributes (method, methodDeclaration.Attributes);
 			
 			c.Methods.Add(method);
-			return null;
+			return method;
+		}
+		
+		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
+		{
+			string name = null;
+			bool binary = operatorDeclaration.Parameters.Count == 2;
+			
+			switch (operatorDeclaration.OverloadableOperator) {
+				case AST.OverloadableOperatorType.Add:
+					if (binary)
+						name = "op_Addition";
+					else
+						name = "op_UnaryPlus";
+					break;
+				case AST.OverloadableOperatorType.Subtract:
+					if (binary)
+						name = "op_Subtraction";
+					else
+						name = "op_UnaryNegation";
+					break;
+				case AST.OverloadableOperatorType.Multiply:
+					if (binary)
+						name = "op_Multiply";
+					break;
+				case AST.OverloadableOperatorType.Divide:
+					if (binary)
+						name = "op_Division";
+					break;
+				case AST.OverloadableOperatorType.Modulus:
+					if (binary)
+						name = "op_Modulus";
+					break;
+				
+				case AST.OverloadableOperatorType.Not:
+					name = "op_LogicalNot";
+					break;
+				case AST.OverloadableOperatorType.BitNot:
+					name = "op_OnesComplement";
+					break;
+				
+				case AST.OverloadableOperatorType.BitwiseAnd:
+					if (binary)
+						name = "op_BitwiseAnd";
+					break;
+				case AST.OverloadableOperatorType.BitwiseOr:
+					if (binary)
+						name = "op_BitwiseOr";
+					break;
+				case AST.OverloadableOperatorType.ExclusiveOr:
+					if (binary)
+						name = "op_ExclusiveOr";
+					break;
+				
+				case AST.OverloadableOperatorType.ShiftLeft:
+					if (binary)
+						name = "op_LeftShift";
+					break;
+				case AST.OverloadableOperatorType.ShiftRight:
+					if (binary)
+						name = "op_RightShift";
+					break;
+				
+				case AST.OverloadableOperatorType.GreaterThan:
+					if (binary)
+						name = "op_GreaterThan";
+					break;
+				case AST.OverloadableOperatorType.GreaterThanOrEqual:
+					if (binary)
+						name = "op_GreaterThanOrEqual";
+					break;
+				case AST.OverloadableOperatorType.Equality:
+					if (binary)
+						name = "op_Equality";
+					break;
+				case AST.OverloadableOperatorType.InEquality:
+					if (binary)
+						name = "op_Inequality";
+					break;
+				case AST.OverloadableOperatorType.LessThan:
+					if (binary)
+						name = "op_LessThan";
+					break;
+				case AST.OverloadableOperatorType.LessThanOrEqual:
+					if (binary)
+						name = "op_LessThanOrEqual";
+					break;
+				
+				case AST.OverloadableOperatorType.Increment:
+					name = "op_Increment";
+					break;
+				case AST.OverloadableOperatorType.Decrement:
+					name = "op_Decrement";
+					break;
+				
+				case AST.OverloadableOperatorType.True:
+					name = "op_True";
+					break;
+				case AST.OverloadableOperatorType.False:
+					name = "op_False";
+					break;
+			}
+			if (name != null) {
+				Method method = VisitMethod (operatorDeclaration, data);
+				method.Name = name;
+				method.Modifiers = method.Modifiers | ModifierEnum.SpecialName;
+				return null;
+			} else
+				return base.Visit (operatorDeclaration, data);
 		}
 		
 		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)

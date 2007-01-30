@@ -365,19 +365,6 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		bool InStatic()
-		{
-			IProperty property = GetProperty();
-			if (property != null) {
-				return property.IsStatic;
-			}
-			IMethod method = GetMethod();
-			if (method != null) {
-				return method.IsStatic;
-			}
-			return false;
-		}
-		
 		bool IsAccessible(IClass c, IDecoration member)
 		{
 //			Console.WriteLine("member.Modifiers = " + member.Modifiers);
@@ -402,7 +389,9 @@ namespace CSharpBinding.Parser
 		{
 //			Console.WriteLine("member:" + member.Modifiers);
 			if ((!showStatic &&  ((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
-			    ( showStatic && !((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static))) {
+			    ( showStatic && !((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
+			      member.IsSpecialName
+			    ) {
 				//// enum type fields are not shown here - there is no info in member about enum field
 				return false;
 			}

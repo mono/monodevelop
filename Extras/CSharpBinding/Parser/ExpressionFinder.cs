@@ -16,11 +16,11 @@ namespace CSharpBinding.Parser
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
-		string fileName;
+//		string fileName;
 		
 		public ExpressionFinder(string fileName)
 		{
-			this.fileName = fileName;
+//			this.fileName = fileName;
 		}
 		
 		#region Capture Context
@@ -588,13 +588,13 @@ namespace CSharpBinding.Parser
 			++offset;
 		}
 		
-		void UnGetToken()
+/*		void UnGetToken()
 		{
 			do {
 				UnGet();
 			} while (char.IsLetterOrDigit(Peek()));
 		}
-		
+*/		
 		// tokens for our lexer
 		static int Err     = 0;
 		static int Dot     = 1;
@@ -611,11 +611,6 @@ namespace CSharpBinding.Parser
 		readonly static string[] tokenStateName = new string[] {
 			"Err", "Dot", "StrLit", "Ident", "New", "Bracket", "Paren", "Curly", "Using", "Digit"
 		};
-		
-		string GetTokenName(int state)
-		{
-			return tokenStateName[state];
-		}
 		
 		/// <summary>
 		/// used to control whether an expression is in a ObjectCreation context (new *expr*),
@@ -853,11 +848,6 @@ namespace CSharpBinding.Parser
 			"ACCEPTNOMORE",
 			"ACCEPT2"
 		};
-		
-		string GetStateName(int state)
-		{
-			return stateName[state];
-		}
 		
 		int state = 0;
 		int lastAccept = 0;

@@ -97,37 +97,33 @@ namespace CSharpBinding.Parser
 					return (IMethod) methods [0];
 			}
 			
+			// Look for the method with the most closest parameter types.
+			IMethod bestMethod = null;
+			int bestLevel = int.MaxValue;
+			
 			foreach (IMethod met in methods) {
 				if (met.Parameters.Count != argTypes.Length)
 					continue;
-				bool allEqual = true;
+				int metLevel = 0;
 				for (int n=0; n<argTypes.Length; n++) {
-					if (!TypesAreEqual (met.Parameters[n].ReturnType, argTypes [n])) {
-						allEqual = false;
+					int tlevel = DefaultReturnType.IsTypeAssignable (resolver.ParserContext, met.Parameters[n].ReturnType, argTypes [n]);
+					if (tlevel == -1) {
+						// Type not assignable
+						metLevel = -1;
 						break;
 					}
+					metLevel += tlevel;
 				}
-				if (allEqual)
-					return met;
+				if (metLevel != -1 && metLevel < bestLevel) {
+					bestMethod = met;
+					bestLevel = metLevel;
+				}
 			}
+			if (bestMethod != null)
+				return bestMethod;
 			
 			// If no exact match can be found, just return one of them
 			return (IMethod) methods [0];
-		}
-		
-		bool TypesAreEqual (IReturnType t1, IReturnType t2)
-		{
-			if (t1.FullyQualifiedName != t2.FullyQualifiedName ||
-			    t1.ByRef != t2.ByRef || 
-			    t1.PointerNestingLevel != t2.PointerNestingLevel || 
-			    t1.ArrayDimensions.Length != t2.ArrayDimensions.Length)
-				return false;
-				
-			for (int n=0; n<t1.ArrayDimensions.Length; n++) {
-				if (t1.ArrayDimensions [n] != t2.ArrayDimensions[n])
-					return false;
-			}
-			return true;
 		}
 		
 		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)

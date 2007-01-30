@@ -1,3 +1,15 @@
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/CSharpVisitor.cs, Parser/TypeVisitor.cs: Implemented support
+	  for overloaded operators.
+	* Parser/Resolver.cs: Exclude operators from the resolve list.
+	* Parser/LanguageItemVisitor.cs: When resolving overloads, try to find
+	  the closes matching signature.
+	* Parser/ExpressionFinder.cs, Parser/SharpDevelopTree/Method.cs: Fix
+	  warnings.
+	* CSharpAmbience.cs: Properly format method names for overloaded
+	  operators.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs,

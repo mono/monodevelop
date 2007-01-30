@@ -453,6 +453,8 @@ namespace CSharpBinding
 		
 		public override string Convert(IMethod m, ConversionFlags conversionFlags)
 		{
+			bool includeMarkup = IncludeHTMLMarkup(conversionFlags) || IncludePangoMarkup(conversionFlags);
+			
 			StringBuilder builder = new StringBuilder();
 			builder.Append(Convert(m.Modifiers, conversionFlags));
 			if (ShowMemberModifiers(conversionFlags)) {
@@ -464,21 +466,31 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
+			string name = m.Name;
+			if (m.IsSpecialName) {
+				name = GetSpecialMethodName (name);
+				if (includeMarkup) {
+					name = name.Replace ("<", "&lt;");
+					name = name.Replace (">", "&gt;");
+				}
+			}
+			
 			if (m.IsConstructor) {
 				if (m.DeclaringType != null)
 					AppendPangoHtmlTag (builder, ConvertTypeName (m.DeclaringType.Name, conversionFlags), "b", conversionFlags);
 				else
-					AppendPangoHtmlTag (builder, m.Name, "b", conversionFlags);
+					AppendPangoHtmlTag (builder, name, "b", conversionFlags);
 			} else {
-				if (UseFullyQualifiedMemberNames(conversionFlags))
-					AppendPangoHtmlTag (builder, ConvertTypeName (m.FullyQualifiedName, conversionFlags), "b", conversionFlags);
+				if (UseFullyQualifiedMemberNames(conversionFlags)) {
+					string fq = m.DeclaringType.FullyQualifiedName + "." + name;
+					AppendPangoHtmlTag (builder, ConvertTypeName (fq, conversionFlags), "b", conversionFlags);
+				}
 				else
-					AppendPangoHtmlTag (builder, m.Name, "b", conversionFlags);
+					AppendPangoHtmlTag (builder, name, "b", conversionFlags);
 			}
 			
 			// Display generic parameters only if told so
 			if (ShowGenericParameters(conversionFlags) && m.GenericParameters != null && m.GenericParameters.Count > 0) {
-				bool includeMarkup = IncludeHTMLMarkup(conversionFlags) || IncludePangoMarkup(conversionFlags);
 				builder.Append ((includeMarkup) ? "&lt;" : "<");
 				// Since we know that there is at least one generic parameter in
 				// the list, we can add it outside the loop - so, we don't have
@@ -518,6 +530,36 @@ namespace CSharpBinding
 				}
 			}
 			return builder.ToString();
+		}
+		
+		string GetSpecialMethodName (string name)
+		{
+			switch (name) {
+				case "op_UnaryPlus":
+				case "op_Addition": return "operator +";
+				case "op_Subtraction":
+				case "op_UnaryNegation": return "operator -";
+				case "op_Multiply": return "operator *";
+				case "op_Division": return "operator /";
+				case "op_Modulus": return "operator %";
+				case "op_LogicalNot": return "operator !";
+				case "op_BitwiseAnd": return "operator &";
+				case "op_BitwiseOr": return "operator |";
+				case "op_ExclusiveOr": return "operator ^";
+				case "op_LeftShift": return "operator <<";
+				case "op_RightShift": return "operator >>";
+				case "op_GreaterThan": return "operator >";
+				case "op_GreaterThanOrEqual": return "operator >=";
+				case "op_Equality": return "operator ==";
+				case "op_Inequality": return "operator !=";
+				case "op_LessThan": return "operator <";
+				case "op_LessThanOrEqual": return "operator <=";
+				case "op_Increment": return "operator ++";
+				case "op_Decrement": return "operator --";
+				case "op_True": return "operator true";
+				case "op_False": return "operator false";
+			}
+			return name;
 		}
 		
 		public override string ConvertEnd(IMethod m, ConversionFlags conversionFlags)
