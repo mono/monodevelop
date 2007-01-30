@@ -1,5 +1,12 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: When searching
+	  class info, there is no need to explicitely look into the CoreDB,
+	  since databases already have references to the corresponding
+	  corlib. Fixes bug #79316.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Text/TextFileReader.cs: Added getter for the
 	  source encoding.
 	* MonoDevelop.Projects.Parser/AbstractReturnType.cs: Implemented method

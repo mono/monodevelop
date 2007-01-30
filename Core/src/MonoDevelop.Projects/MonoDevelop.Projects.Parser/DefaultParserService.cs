@@ -1281,19 +1281,14 @@ namespace MonoDevelop.Projects.Parser
 					if (c != null) return c;
 				}
 			}
-			
-			db = GetDatabase (CoreDB);
-			return db.GetClass (typeName, genericArguments, caseSensitive);
+			return null;
 		}
 		
 		public IClass DeepGetClass (CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool caseSensitive)
 		{
 			ArrayList visited = new ArrayList ();
 			IClass c = DeepGetClassRec (visited, db, typeName, genericArguments, caseSensitive);
-			if (c != null) return c;
-
-			db = GetDatabase (CoreDB);
-			return db.GetClass (typeName, genericArguments, caseSensitive);
+			return c;
 		}
 		
 		internal IClass DeepGetClassRec (ArrayList visitedDbs, CodeCompletionDatabase db, string typeName, ReturnTypeList genericArguments, bool caseSensitive)
@@ -1344,11 +1339,6 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			if (includeReferences) {
-				db = GetDatabase (CoreDB);
-				db.GetClassList (contents, subNameSpace, caseSensitive);
-			}
-			
 			return (string[]) contents.ToArray (typeof(string));
 		}
 
@@ -1370,11 +1360,6 @@ namespace MonoDevelop.Projects.Parser
 						cdb.GetNamespaceList (contents, subNameSpace, caseSensitive);
 					}
 				}
-			}
-			
-			if (includeReferences) {
-				db = GetDatabase (CoreDB);
-				db.GetNamespaceList (contents, subNameSpace, caseSensitive);
 			}
 			
 			return (string[]) contents.ToArray (typeof(string));
@@ -1401,11 +1386,6 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			if (includeReferences) {
-				db = GetDatabase (CoreDB);
-				db.GetNamespaceContents (contents, namspace, caseSensitive);
-			}
-			
 			return contents;
 		}
 		
@@ -1426,9 +1406,8 @@ namespace MonoDevelop.Projects.Parser
 				}
 			}
 			
-			db = GetDatabase (CoreDB);
-			return db.NamespaceExists (name, caseSensitive);
-			}
+			return false;
+		}
 
 		public string SearchNamespace (CodeCompletionDatabase db, IUsing usin, string partitialNamespaceName)
 		{
@@ -1614,11 +1593,6 @@ namespace MonoDevelop.Projects.Parser
 							yield return dsub;
 					}
 				}
-				
-				db = GetDatabase (CoreDB);
-				foreach (IClass dsub in db.GetClassList (true, namespaces)) {
-					yield return dsub;
-				}
 				yield break;
 			}
 			
@@ -1640,13 +1614,6 @@ namespace MonoDevelop.Projects.Parser
 							yield return sub;
 					}
 				}
-			}
-			
-			db = GetDatabase (CoreDB);
-			foreach (IClass dsub in db.GetSubclasses (fn, namespaces)) {
-				yield return dsub;
-				foreach (IClass sub in GetSubclassesTree (db, dsub, namespaces))
-					yield return sub;
 			}
 		}
 		
