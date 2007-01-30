@@ -1,3 +1,10 @@
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AddIn.cs,
+	  MonoDevelop.Core.Properties/DefaultProperties.cs: Allow comments in
+	  the loaded xml. Patch by atsushi@ximian.com (Atsushi Enomoto).
+	  Fixes bug #80474.
+
 2007-01-30  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs (GetPackage): New.

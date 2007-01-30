@@ -217,7 +217,10 @@ namespace MonoDevelop.Core.Properties
 		protected void SetValueFromXmlElement(XmlElement element)
 		{
 			XmlNodeList nodes = element.ChildNodes;
-			foreach (XmlElement el in nodes) {
+			foreach (XmlNode n in nodes) {
+				XmlElement el = n as XmlElement;
+				if (el == null)
+					continue;
 				if (el.Name == "Property") {
 					properties[el.Attributes["key"].InnerText] = el.Attributes["value"].InnerText;
 				} else if (el.Name == "XmlConvertableProperty") {

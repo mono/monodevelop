@@ -382,7 +382,10 @@ namespace MonoDevelop.Core.AddIns
 		{
 			ConditionCollection conditions = new ConditionCollection();
 			
-			foreach (XmlElement child in el.ChildNodes) {
+			foreach (XmlNode n in el.ChildNodes) {
+				XmlElement child = n as XmlElement;
+				if (child == null)
+					continue;
 				conditions.Add(GetCondition(child));
 			}
 			
