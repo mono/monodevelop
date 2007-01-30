@@ -298,41 +298,28 @@ namespace CSharpBinding.Parser
 				foreach (IClass c in curType.InnerClasses) {
 					if (IsAccessible(curType, c)) {
 						members.Add(c);
-//						Console.WriteLine("Member added");
 					}
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
 				if (MustBeShowen(curType, p)) {
 					members.Add(p);
-//					Console.WriteLine("Member added");
 				}
 			}
-//			Console.WriteLine("ADDING METHODS!!!");
 			foreach (IMethod m in curType.Methods) {
-//				Console.WriteLine("Method : " + m);
 				if (MustBeShowen(curType, m)) {
 					members.Add(m);
-//					Console.WriteLine("Member added");
 				}
 			}
 			
 			foreach (IEvent e in curType.Events) {
 				if (MustBeShowen(curType, e)) {
 					members.Add(e);
-//					Console.WriteLine("Member added");
 				}
 			}
 			foreach (IField f in curType.Fields) {
 				if (MustBeShowen(curType, f)) {
 					members.Add(f);
-//					Console.WriteLine("Member added");
-				} else {
-					//// enum fields must be shown here if present
-					if (curType.ClassType == ClassType.Enum) {
-						if (IsAccessible(curType,f)) members.Add(f);
-//						Console.WriteLine("Member {0} added", f.FullyQualifiedName);
-					}
 				}
 			}
 //			Console.WriteLine("ClassType = " + curType.ClassType);
@@ -385,9 +372,10 @@ namespace CSharpBinding.Parser
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		
-		bool MustBeShowen(IClass c, IDecoration member)
+		bool MustBeShowen (IClass c, IDecoration member)
 		{
-//			Console.WriteLine("member:" + member.Modifiers);
+			if (c.ClassType == ClassType.Enum && (member is IField))
+				return showStatic;
 			if ((!showStatic && member.IsStatic) ||
 			    (showStatic && !member.IsStatic) ||
 			    (showStatic && member.IsStatic && member.IsSpecialName && member.Name.StartsWith ("op_"))
@@ -395,7 +383,6 @@ namespace CSharpBinding.Parser
 				//// enum type fields are not shown here - there is no info in member about enum field
 				return false;
 			}
-//			Console.WriteLine("Testing Accessibility");
 			return IsAccessible(c, member);
 		}
 		

@@ -1,5 +1,12 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/CSharpVisitor.cs: When creating an enum, explicitely add the
+	  System.Enum base class. Make enum files "const".
+	* Parser/Resolver.cs: Removed some debug code. Show enum fields only
+	  when resolving the type only. Fixes bug #80088.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs: Fix overloaded operator filter.
 
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 

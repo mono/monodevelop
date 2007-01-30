@@ -169,6 +169,9 @@ namespace CSharpBinding.Parser
 					c.BaseTypes.Add(new ReturnType(type));
 				}
 			}
+			if (c.ClassType == ClassType.Enum) {
+				c.BaseTypes.Add (new ReturnType ("System.Enum"));
+			}
 			
 			// Get generic parameters for this type
 			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
@@ -434,6 +437,8 @@ namespace CSharpBinding.Parser
 				foreach (AST.VariableDeclaration field in fieldDeclaration.Fields) {
 					DefaultField f;
 					f = new DefaultField (type, field.Name, (ModifierEnum) fieldDeclaration.Modifier, region);	
+					if (c.ClassType == ClassType.Enum)
+						f.AddModifier (ModifierEnum.Const);
 					c.Fields.Add(f);
 					FillAttributes (f, fieldDeclaration.Attributes);
 				}
