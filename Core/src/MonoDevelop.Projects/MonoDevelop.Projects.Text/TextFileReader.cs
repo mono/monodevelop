@@ -45,5 +45,9 @@ namespace MonoDevelop.Projects.Text
 		{
 			return reader.ReadToEnd ();
 		}
+		
+		public string SourceEncoding {
+			get { return sourceEncoding; }
+		}
 	}
 }

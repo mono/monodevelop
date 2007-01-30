@@ -232,6 +232,53 @@ namespace MonoDevelop.Projects.Parser
 			
 			return sb.ToString ();
 		}
+		
+		// Checks if subType is assignable to baseType. Returns -1 if it is not, 0 for an exact match,
+		// or a number > 0 which is the distance in the inheritance hierarchy between both types.
+		public static int IsTypeAssignable (IParserContext ctx, IReturnType baseType, IReturnType subType)
+		{
+			if (baseType.FullyQualifiedName == "System.Object" && baseType.ArrayCount == 0)
+				return 100;
+			
+			if (DiffUtility.Compare (baseType.ArrayDimensions, subType.ArrayDimensions) != 0)
+				return -1;
+			
+			if (baseType.GenericArguments != subType.GenericArguments &&
+				DiffUtility.Compare (baseType.GenericArguments, subType.GenericArguments) != 0)
+				return -1;
+			
+			if (baseType.ByRef != subType.ByRef)
+				return -1;
+				
+			if (baseType.PointerNestingLevel != subType.PointerNestingLevel)
+				return -1;
+				
+			IClass baseClass = ctx.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
+			if (baseClass == null)
+				return -1;
+
+			return FindSuperClass (ctx, baseClass, subType, 0);
+		}
+		
+		static int FindSuperClass (IParserContext ctx, IClass baseClass, IReturnType type, int currentLevel)
+		{
+			IClass subClass = ctx.GetClass (type.FullyQualifiedName, type.GenericArguments, true, true);
+			if (subClass == null)
+				return -1;
+				
+			// Is this the class we are looking for?
+			if (subClass.FullyQualifiedName == baseClass.FullyQualifiedName)
+				return currentLevel;
+			
+			// Check super classes, and store the best level
+			int bestLevel = -1;
+			foreach (IReturnType bt in subClass.BaseTypes) {
+				int lev = FindSuperClass (ctx, baseClass, bt, currentLevel + 1);
+				if (lev != -1 && (bestLevel == -1 || lev < bestLevel))
+					bestLevel = lev;
+			}
+			return bestLevel;
+		}
 	}
 	
 }

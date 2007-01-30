@@ -1,5 +1,12 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Text/TextFileReader.cs: Added getter for the
+	  source encoding.
+	* MonoDevelop.Projects.Parser/AbstractReturnType.cs: Implemented method
+	  for comparing types.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/ReflectionClass.cs,
 	  MonoDevelop.Projects.Parser/ReflectionMethod.cs: Include overloaded
 	  operators in the reflected classes.
