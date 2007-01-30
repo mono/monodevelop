@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects.Parser
 	{
 		Project project;
 		bool initialFileCheck;
-		ClrVersion lastVersion;
+		ClrVersion lastVersion = ClrVersion.Default;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase parserDatabase)
 		: base (parserDatabase)
@@ -49,11 +49,6 @@ namespace MonoDevelop.Projects.Parser
 			SetLocation (project.BaseDirectory, project.Name);
 			
 			this.project = project;
-			
-			// Store the project target runtime
-			DotNetProject prj = project as DotNetProject;
-			if (prj != null)
-				lastVersion = prj.ClrVersion;
 			
 			Read ();
 			

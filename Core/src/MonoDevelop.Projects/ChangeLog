@@ -1,5 +1,10 @@
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs: Always
+	  check the version of mscorlib after loading the parser database.
+
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: When searching
 	  class info, there is no need to explicitely look into the CoreDB,
 	  since databases already have references to the corresponding
