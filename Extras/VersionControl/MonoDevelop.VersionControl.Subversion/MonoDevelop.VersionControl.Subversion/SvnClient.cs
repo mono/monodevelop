@@ -840,23 +840,34 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 		
 		public struct Rev {
-			public int kind;
-			public int number;
+			public IntPtr kind;
+			public svn_opt_revision_value_t value;
 			
-			public Rev(int kind, int number) {
-				this.kind = kind;
-				this.number = number;
+			Rev (int kind) {
+				this.kind = (IntPtr) kind;
+				value = new svn_opt_revision_value_t ();
 			}
 			
-			public static Rev Number(int rev) { return new Rev(1, rev); }
+			public static Rev Number (int rev)
+			{
+				Rev r = new Rev(1);
+				r.value.number = (IntPtr) rev;
+				return r;
+			}
 			
-			public readonly static Rev Blank = new Rev(0, 0);
-			public readonly static Rev First = new Rev(1, 1);
-			public readonly static Rev Committed = new Rev(3, 0);
-			public readonly static Rev Previous = new Rev(4, 0);
-			public readonly static Rev Base = new Rev(5, 0);
-			public readonly static Rev Working = new Rev(6, 0);
-			public readonly static Rev Head = new Rev(7, 0);
+			public readonly static Rev Blank = new Rev(0);
+			public readonly static Rev First = new Rev(1);
+			public readonly static Rev Committed = new Rev(3);
+			public readonly static Rev Previous = new Rev(4);
+			public readonly static Rev Base = new Rev(5);
+			public readonly static Rev Working = new Rev(6);
+			public readonly static Rev Head = new Rev(7);
+		}
+		
+		public struct svn_opt_revision_value_t {
+			public IntPtr number;
+			public IntPtr date1;
+			public IntPtr date2;
 		}
 		
 		internal struct svn_log_changed_path_t {

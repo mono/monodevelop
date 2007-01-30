@@ -1,3 +1,8 @@
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Fix 64 bit issues.
+
 2007-01-29  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* Diff/Diff.cs: chaned to use generics, platform independent newlines
