@@ -933,9 +933,11 @@ namespace MonoDevelop.Ide.Gui
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
-					foreach (CompilerError err in result.CompilerResults.Errors) {
-						Services.TaskService.Add (new Task (null, err));
-					}
+					Task[] tasks = new Task [result.CompilerResults.Errors.Count];
+					for (int n=0; n<tasks.Length; n++)
+						tasks [n] = new Task (null, result.CompilerResults.Errors [n]);
+
+					Services.TaskService.AddRange (tasks);
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);

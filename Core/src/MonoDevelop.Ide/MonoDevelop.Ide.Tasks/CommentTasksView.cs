@@ -132,8 +132,10 @@ namespace MonoDevelop.Ide.Tasks
 
 		void GeneratedTaskAdded (object sender, TaskEventArgs e)
 		{
-			if (e.Task.TaskType == TaskType.Comment)
-				AddGeneratedTask (e.Task);
+			foreach (Task t in e.Tasks) {
+				if (t.TaskType == TaskType.Comment)
+					AddGeneratedTask (t);
+			}
 		}
 		
 		void AddGeneratedTask (Task t)
@@ -162,8 +164,10 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void GeneratedTaskRemoved (object sender, TaskEventArgs e)
 		{
-			if (e.Task.TaskType == TaskType.Comment)
-				RemoveGeneratedTask (e.Task);
+			foreach (Task t in e.Tasks) {
+				if (t.TaskType == TaskType.Comment)
+					RemoveGeneratedTask (t);
+			}
 		}
 		
 		void RemoveGeneratedTask (Task t)

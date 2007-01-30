@@ -36,6 +36,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Hashtable tasks = new Hashtable ();
 		IPadWindow window;
 		
+		Gdk.Pixbuf iconWarning;
+		Gdk.Pixbuf iconError;
+		Gdk.Pixbuf iconInfo;
+		Gdk.Pixbuf iconQuestion;
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
@@ -142,6 +146,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (OnCombineClosed));
 			view.RowActivated            += new RowActivatedHandler (OnRowActivated);
 						
+			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
+			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
+			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
+			iconQuestion = sw.RenderIcon (Gtk.Stock.DialogQuestion, Gtk.IconSize.Menu, "");
+			
 			control.Add (sw);
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
 			toolbar.ShowArrow = false;
@@ -309,12 +318,34 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void TaskAdded (object sender, TaskEventArgs e)
 		{
-			if (e.Task.TaskType != TaskType.Comment) 
-				AddTask (e.Task);
+			AddTasks (e.Tasks);
+		}
+		
+		public void AddTasks (IEnumerable<Task> tasks)
+		{
+			int n = 1;
+			foreach (Task t in tasks) {
+				AddTaskInternal (t);
+				if ((n++ % 100) == 0) {
+					// Adding many tasks is a bit slow, so refresh the
+					// ui at every block of 100.
+					IdeApp.Services.DispatchService.RunPendingEvents ();
+				}
+			}
+			filter.Refilter ();
 		}
 		
 		public void AddTask (Task t)
 		{
+			AddTaskInternal (t);
+			filter.Refilter ();
+		}
+		
+		void AddTaskInternal (Task t)
+		{
+			if (t.TaskType == TaskType.Comment) 
+				return;
+				
 			if (tasks.Contains (t)) return;
 			
 			switch (t.TaskType) {
@@ -334,16 +365,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Gdk.Pixbuf stock;
 			switch (t.TaskType) {
 				case TaskType.Warning:
-					stock = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.SmallToolbar, "");
+					stock = iconWarning;
 					break;
 				case TaskType.Error:
-					stock = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.SmallToolbar, "");
+					stock = iconError;
 					break;
 				case TaskType.Comment:
-					stock = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.SmallToolbar, "");
+					stock = iconInfo;
 					break;
 				case TaskType.SearchResult:
-					stock = sw.RenderIcon (Gtk.Stock.DialogQuestion, Gtk.IconSize.SmallToolbar, "");
+					stock = iconQuestion;
 					break;
 				default:
 					stock = null;
@@ -372,8 +403,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 				fileName,
 				path,
 				t, false, false, (int) Pango.Weight.Bold);
-			
-			filter.Refilter ();
 		}
 		
 		void UpdateErrorsNum () 

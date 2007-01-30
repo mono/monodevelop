@@ -1,3 +1,12 @@
+2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.Gui/ProjectOperations.cs,
+	  MonoDevelop.Ide.Tasks/TaskService.cs,
+	  MonoDevelop.Ide.Tasks/CommentTasksView.cs: Improved the error pad
+	  performance when adding messages, by implementing an Add method
+	  which takes blocks of tasks.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,

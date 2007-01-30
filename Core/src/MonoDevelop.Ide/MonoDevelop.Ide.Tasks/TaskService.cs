@@ -281,19 +281,25 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public void Add (Task task)
 		{
-			tasks.Add (task);
-			if (!taskCount.ContainsKey (task.TaskType)) {
-				taskCount[task.TaskType] = 1;
-			} else {
-				taskCount[task.TaskType]++;
-			}
-			OnTaskAdded (new TaskEventArgs (task));
+			AddInternal (task);
+			OnTaskAdded (new TaskEventArgs (new Task[] {task}));
 		}
 		
 		public void AddRange (IEnumerable<Task> tasks)
 		{
 			foreach (Task task in tasks) {
-				Add (task);
+				AddInternal (task);
+			}
+			OnTaskAdded (new TaskEventArgs (tasks));
+		}
+		
+		void AddInternal (Task task)
+		{
+			tasks.Add (task);
+			if (!taskCount.ContainsKey (task.TaskType)) {
+				taskCount[task.TaskType] = 1;
+			} else {
+				taskCount[task.TaskType]++;
 			}
 		}
 		
@@ -309,7 +315,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (tasks.Contains (task)) {
 				tasks.Remove (task);
 				taskCount[task.TaskType]--;
-				OnTaskRemoved (new TaskEventArgs (task));
+				OnTaskRemoved (new TaskEventArgs (new Task[] {task}));
 			}
 		}
 		
@@ -431,16 +437,16 @@ namespace MonoDevelop.Ide.Tasks
 	
 	public class TaskEventArgs : EventArgs
 	{
-		Task task;
+		IEnumerable<Task> tasks;
 		
-		public TaskEventArgs (Task task)
+		public TaskEventArgs (IEnumerable<Task> tasks)
 		{
-			this.task = task;
+			this.tasks = tasks;
 		}
 		
-		public Task Task 
+		public IEnumerable<Task> Tasks
 		{
-			get { return task; }
+			get { return tasks; }
 		}
 	}
 }
