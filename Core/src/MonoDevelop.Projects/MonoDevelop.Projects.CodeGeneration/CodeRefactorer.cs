@@ -268,9 +268,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
-			MemberReferenceCollection refs = r.FindClassReferences (rctx, fileName, cls);
-			if (refs != null)
-				references.AddRange (refs);
+			try {
+				MemberReferenceCollection refs = r.FindClassReferences (rctx, fileName, cls);
+				if (refs != null)
+					references.AddRange (refs);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not look for references in file '{0}': {1}", fileName, ex.Message), ex);
+			}
 		}
 	}
 	
@@ -289,9 +293,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
-			MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
-			if (refs != null)
-				references.AddRange (refs);
+			try {
+				MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
+				if (refs != null)
+					references.AddRange (refs);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not look for references in file '{0}': {1}", fileName, ex.Message), ex);
+			}
 		}
 	}
 	

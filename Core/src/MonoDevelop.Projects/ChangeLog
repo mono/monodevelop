@@ -1,5 +1,10 @@
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Catch errors
+	  thrown by refactorer implementations. Fixes bug #80691.
+
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/Combine.cs: Added new events which are fired
 	  when an entry is added to a combine hierarchy.
 
