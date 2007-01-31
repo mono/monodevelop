@@ -78,6 +78,8 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				startupEntry = value;
+				if (value == null)
+					startEntryName = null;
 				NotifyModified ();
 				OnStartupPropertyChanged(null);
 			}
@@ -348,6 +350,13 @@ namespace MonoDevelop.Projects
 			foreach (CombineConfiguration dentry in Configurations)
 				dentry.RemoveEntry (entry);
 
+			if (StartupEntry == entry) {
+				if (Entries.Count > 0)
+					StartupEntry = Entries [0];
+				else
+					StartupEntry = null;
+			}
+			
 			NotifyModified ();
 			OnEntryRemoved (new CombineEntryEventArgs (entry));
 		}
@@ -777,6 +786,22 @@ namespace MonoDevelop.Projects
 			OnEntrySaved (e);
 		}
 		
+		internal void NotifyEntryAddedToCombine (object sender, CombineEntryEventArgs e)
+		{
+			if (EntryAddedToCombine != null)
+				EntryAddedToCombine (sender, e);
+			if (RootCombine != null && RootCombine != this)
+				RootCombine.NotifyEntryAddedToCombine (sender, e);
+		}
+		
+		internal void NotifyEntryRemovedFromCombine (object sender, CombineEntryEventArgs e)
+		{
+			if (EntryRemovedFromCombine != null)
+				EntryRemovedFromCombine (sender, e);
+			if (RootCombine != null && RootCombine != this)
+				RootCombine.NotifyEntryRemovedFromCombine (sender, e);
+		}
+		
 		protected virtual void OnStartupPropertyChanged(EventArgs e)
 		{
 			if (StartupPropertyChanged != null) {
@@ -789,6 +814,7 @@ namespace MonoDevelop.Projects
 			if (EntryAdded != null) {
 				EntryAdded (this, e);
 			}
+			NotifyEntryAddedToCombine (this, e);
 		}
 		
 		protected virtual void OnEntryRemoved(CombineEntryEventArgs e)
@@ -796,6 +822,7 @@ namespace MonoDevelop.Projects
 			if (EntryRemoved != null) {
 				EntryRemoved (this, e);
 			}
+			NotifyEntryRemovedFromCombine (this, e);
 		}
 		
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
@@ -862,6 +889,8 @@ namespace MonoDevelop.Projects
 		public event EventHandler StartupPropertyChanged;
 		public event CombineEntryEventHandler EntryAdded;
 		public event CombineEntryEventHandler EntryRemoved;
+		public event CombineEntryEventHandler EntryAddedToCombine;     // Fires for child combines
+		public event CombineEntryEventHandler EntryRemovedFromCombine; // Fires for child combines
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileChangedInProject;

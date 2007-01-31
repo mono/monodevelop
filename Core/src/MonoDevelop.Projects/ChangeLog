@@ -1,3 +1,8 @@
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/Combine.cs: Added new events which are fired
+	  when an entry is added to a combine hierarchy.
+
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: When resolving a
