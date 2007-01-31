@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Gui
 			this.window = window;
 			window.Closed += OnClosed;
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
+			IdeApp.ProjectOperations.EntryRemovedFromCombine += OnEntryRemoved;
 		}
 		
 		public string FileName {
@@ -259,6 +260,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			window.Closed -= OnClosed;
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
+			IdeApp.ProjectOperations.EntryRemovedFromCombine -= OnEntryRemoved;
 			OnClosed (a);
 			
 			while (editorExtension != null) {
@@ -311,6 +313,11 @@ namespace MonoDevelop.Ide.Gui
 				last.Next = editor.AttachExtension (editorExtension);
 		}
 		
+		void OnEntryRemoved (object sender, CombineEntryEventArgs args)
+		{
+			if (args.CombineEntry == window.ViewContent.Project)
+				window.ViewContent.Project = null;
+		}
 		
 		public event EventHandler Closed;
 		public event EventHandler Saved;

@@ -1,3 +1,12 @@
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Properly
+	  update the parent combine when the last entry is removed.
+	* MonoDevelop.Ide.Gui/Document.cs: When a project is removed, reset the
+	  project documents of all opened files which belong to that project.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added new events which are
+	  fired when an entry is added to the combine hierarchy.
+
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs,

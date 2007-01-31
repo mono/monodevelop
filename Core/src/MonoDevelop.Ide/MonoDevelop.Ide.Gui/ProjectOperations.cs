@@ -81,6 +81,8 @@ namespace MonoDevelop.Ide.Gui
 		ProjectFileEventHandler filePropertyChangedInProjectHandler;
 		ProjectReferenceEventHandler referenceAddedToProjectHandler;
 		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
+		CombineEntryEventHandler entryAddedToCombineHandler;
+		CombineEntryEventHandler entryRemovedFromCombineHandler;
 
 		internal ProjectOperations ()
 		{
@@ -92,6 +94,9 @@ namespace MonoDevelop.Ide.Gui
 			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
 			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
 		
+			entryAddedToCombineHandler = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (NotifyEntryAddedToCombine));
+			entryRemovedFromCombineHandler = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (NotifyEntryRemovedFromCombine));
+			
 			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
 			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));
 			
@@ -309,6 +314,8 @@ namespace MonoDevelop.Ide.Gui
 				openCombine.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
 				openCombine.ReferenceAddedToProject += referenceAddedToProjectHandler;
 				openCombine.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
+				openCombine.EntryAddedToCombine += entryAddedToCombineHandler;
+				openCombine.EntryRemovedFromCombine += entryRemovedFromCombineHandler;
 				
 				SearchForNewFiles ();
 
@@ -485,8 +492,8 @@ namespace MonoDevelop.Ide.Gui
 				try {
 					res = AddCombineEntry (parentCombine, npdlg.NewCombineEntryLocation);
 				}
-				catch {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", npdlg.NewCombineEntryLocation));
+				catch (Exception ex) {
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", npdlg.NewCombineEntryLocation));
 					res = null;
 				}
 			}
@@ -508,8 +515,8 @@ namespace MonoDevelop.Ide.Gui
 					try {
 						res = AddCombineEntry (parentCombine, fdiag.Filename);
 					}
-					catch {
-						Services.MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
+					catch (Exception ex) {
+						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
 					}
 				}
 
@@ -1092,7 +1099,6 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		
 		void NotifyFileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			OnFileRemovedFromProject (e);
@@ -1126,6 +1132,33 @@ namespace MonoDevelop.Ide.Gui
 		internal void NotifyReferenceRemovedFromProject (object sender, ProjectReferenceEventArgs e)
 		{
 			OnReferenceRemovedFromProject (e);
+		}
+		
+		void NotifyEntryAddedToCombine (object sender, CombineEntryEventArgs args)
+		{
+			if (EntryAddedToCombine != null)
+				EntryAddedToCombine (sender, args);
+		}
+		
+		void NotifyEntryRemovedFromCombine (object sender, CombineEntryEventArgs args)
+		{
+			NotifyEntryRemovedFromCombineRec (args.CombineEntry);
+		}
+		
+		void NotifyEntryRemovedFromCombineRec (CombineEntry e)
+		{
+			if (e == CurrentSelectedProject)
+				CurrentSelectedProject = null;
+				
+			if (e == CurrentSelectedCombine)
+				CurrentSelectedCombine = null;
+				
+			if (e is Combine) {
+				foreach (CombineEntry ce in ((Combine)e).Entries)
+					NotifyEntryRemovedFromCombineRec (ce);
+			}
+			if (EntryRemovedFromCombine != null)
+				EntryRemovedFromCombine (this, new CombineEntryEventArgs (e));
 		}
 		
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
@@ -1243,6 +1276,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
+		public event CombineEntryEventHandler EntryAddedToCombine;
+		public event CombineEntryEventHandler EntryRemovedFromCombine;
 
 		
 		// All methods inside this class are gui thread safe

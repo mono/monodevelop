@@ -159,9 +159,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.CombineEntry);
 			if (tb != null) {
-				tb.Remove ();
-				if (tb.MoveToParent (typeof(Combine)))
-					tb.Update ();	// Update the entry count
+				tb.Remove (true);
+				tb.Update ();	// Update the entry count
 			}
 		}
 		
