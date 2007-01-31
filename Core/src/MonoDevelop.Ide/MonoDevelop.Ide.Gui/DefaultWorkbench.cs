@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		readonly static string toolbarsPath = "/SharpDevelop/Workbench/ToolBar";
 		
-		PadContentCollection viewContentCollection       = new PadContentCollection();
+		PadContentCollection padContentCollection       = new PadContentCollection();
 		ViewContentCollection workbenchContentCollection = new ViewContentCollection();
 		
 		bool closeAll = false;
@@ -102,8 +102,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public PadContentCollection PadContentCollection {
 			get {
-				Debug.Assert(viewContentCollection != null);
-				return viewContentCollection;
+				Debug.Assert(padContentCollection != null);
+				return padContentCollection;
+			}
+		}
+		
+		public PadContentCollection ActivePadContentCollection {
+			get {
+				if (layout == null)
+					return new PadContentCollection ();
+				else
+					return layout.PadContentCollection;
 			}
 		}
 		
@@ -278,7 +287,7 @@ namespace MonoDevelop.Ide.Gui
 			foreach (IViewContent content in workbenchContentCollection) {
 				content.RedrawContent();
 			}
-			foreach (IPadContent content in viewContentCollection) {
+			foreach (IPadContent content in padContentCollection) {
 				content.RedrawContent();
 			}
 			layout.RedrawAllComponents();

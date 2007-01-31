@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (pads == null) {
 					pads = new PadCollection ();
-					foreach (IPadContent pc in workbench.PadContentCollection)
+					foreach (IPadContent pc in workbench.ActivePadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;

@@ -1,5 +1,13 @@
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Changed confusing field
+	  name. Added property for getting the list of pads valid for the
+	  active context. Use that when showing the pad list in the view
+	  menu.
+
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Properly
 	  update the parent combine when the last entry is removed.
 	* MonoDevelop.Ide.Gui/Document.cs: When a project is removed, reset the
