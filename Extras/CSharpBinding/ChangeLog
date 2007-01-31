@@ -1,3 +1,8 @@
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Properly resolve alias directives. Fixes bug
+	  #80248.
+
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/LanguageItemVisitor.cs: Properly resolve calls to local

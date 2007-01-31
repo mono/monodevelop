@@ -787,6 +787,18 @@ namespace CSharpBinding.Parser
 		/// </remarks>
 		public string SearchNamespace(string name, ICompilationUnit unit)
 		{
+			// If the name matches an alias, try using the alias first.
+			if (unit != null) {
+				string aliasResult = FindAlias (name, unit);
+				if (aliasResult != null) {
+					// Don't provide the compilation unit when trying to resolve the alias,
+					// since aliases are not affected by other 'using' directives.
+					string ns = SearchNamespace (aliasResult, null);
+					if (ns != null)
+						return ns;
+				}
+			}
+			
 			if (parserContext.NamespaceExists (name)) {
 				return name;
 			}
@@ -815,11 +827,23 @@ namespace CSharpBinding.Parser
 		public IClass SearchType (string name, ReturnTypeList genericArguments, ICompilationUnit unit)
 		{
 //			Console.WriteLine("Searching Type " + name);
-			if (name == null || name == String.Empty) {
-//				Console.WriteLine("No Name!");
+			if (name == null || name == String.Empty)
 				return null;
-			}
+			
 			IClass c;
+			
+			// If the name matches an alias, try using the alias first.
+			if (unit != null) {
+				string aliasResult = FindAlias (name, unit);
+				if (aliasResult != null) {
+					// Don't provide the compilation unit when trying to resolve the alias,
+					// since aliases are not affected by other 'using' directives.
+					c = SearchType (aliasResult, genericArguments, null);
+					if (c != null)
+						return c;
+				}
+			}
+			
 			c = parserContext.GetClass (name, genericArguments);
 			if (c != null) {
 //				Console.WriteLine("Found!");
@@ -855,6 +879,24 @@ namespace CSharpBinding.Parser
 			}
 			while (i < namespaces.Length);
 			
+			return null;
+		}
+		
+		string FindAlias (string name, ICompilationUnit unit)
+		{
+			// If the name matches an alias, try using the alias first.
+			if (unit == null)
+				return null;
+				
+			foreach (IUsing u in unit.Usings) {
+				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+					string aliasResult = null;
+					foreach (DictionaryEntry e in u.Aliases) {
+						if ((string)e.Value == name)
+							return (string)e.Key;
+					}
+				}
+			}
 			return null;
 		}
 		
