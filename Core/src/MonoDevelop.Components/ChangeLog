@@ -1,3 +1,11 @@
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components.Commands/CommandArrayInfo.cs,
+	  MonoDevelop.Components.Commands/CommandManager.cs,
+	  MonoDevelop.Components.Commands/CommandInfo.cs: Allow command
+	  handlers to bypass command processing by setting a new Bypass
+	  property.
+
 2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs, gtk-gui/objects.xml, gtk-gui/gui.stetic,

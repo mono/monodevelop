@@ -40,6 +40,7 @@ namespace MonoDevelop.Components.Commands
 		bool visible = true;
 		bool checkd;
 		bool useMarkup;
+		bool bypass;
 		internal object DataItem; 
 		internal CommandArrayInfo ArrayInfo;
 		internal bool IsArraySeparator;
@@ -106,6 +107,13 @@ namespace MonoDevelop.Components.Commands
 		public bool UseMarkup {
 			get { return useMarkup; }
 			set { useMarkup = value; }
+		}
+		
+		// When set in an update handler, the command manager will ignore this handler method
+		// and will keep looking in the command route.
+		public bool Bypass {
+			get { return bypass; }
+			set { bypass = value; }
 		}
 	}
 }

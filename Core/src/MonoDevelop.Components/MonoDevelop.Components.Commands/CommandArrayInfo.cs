@@ -35,6 +35,7 @@ namespace MonoDevelop.Components.Commands
 	{
 		ArrayList list = new ArrayList ();
 		CommandInfo defaultInfo;
+		bool bypass;
 		
 		internal CommandArrayInfo (CommandInfo defaultInfo)
 		{
@@ -70,6 +71,13 @@ namespace MonoDevelop.Components.Commands
 		public IEnumerator GetEnumerator ()
 		{
 			return list.GetEnumerator ();
+		}
+		
+		// When set in an update handler, the command manager will ignore this handler method
+		// and will keep looking in the command route.
+		public bool Bypass {
+			get { return bypass; }
+			set { bypass = value; }
 		}
 	}
 }

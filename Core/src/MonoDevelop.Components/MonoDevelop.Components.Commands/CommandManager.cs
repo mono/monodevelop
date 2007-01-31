@@ -238,36 +238,44 @@ namespace MonoDevelop.Components.Commands
 				{
 					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
 					
+					bool bypass = false;
+					
 					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							// Make sure that the option is still active
 							CommandArrayInfo ainfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, ainfo);
-							bool found = false;
-							foreach (CommandInfo ci in ainfo) {
-								if (Object.Equals (dataItem, ci.DataItem)) {
-									found = true;
-									break;
+							if (!ainfo.Bypass) {
+								bool found = false;
+								foreach (CommandInfo ci in ainfo) {
+									if (Object.Equals (dataItem, ci.DataItem)) {
+										found = true;
+										break;
+									}
 								}
-							}
-							if (!found) return false;
+								if (!found) return false;
+							} else
+								bypass = true;
 						} else {
+							info.Bypass = false;
 							cui.Run (cmdTarget, info);
-							if (!info.Enabled || !info.Visible) return false;
+							bypass = info.Bypass;
+							if (!bypass && (!info.Enabled || !info.Visible)) return false;
 						}
 					}
 					
-					CommandHandlerInfo chi = typeInfo.GetCommandHandler (commandId);
-					if (chi != null) {
-						if (cmd.CommandArray)
-							chi.Run (cmdTarget, dataItem);
-						else
-							chi.Run (cmdTarget);
-						UpdateToolbars ();
-						return true;
+					if (!bypass) {
+						CommandHandlerInfo chi = typeInfo.GetCommandHandler (commandId);
+						if (chi != null) {
+							if (cmd.CommandArray)
+								chi.Run (cmdTarget, dataItem);
+							else
+								chi.Run (cmdTarget);
+							UpdateToolbars ();
+							return true;
+						}
 					}
-					
 					cmdTarget = GetNextCommandTarget (cmdTarget, ref globalPos);
 				}
 	
@@ -295,19 +303,24 @@ namespace MonoDevelop.Components.Commands
 					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
 					CommandUpdaterInfo cui = typeInfo.GetCommandUpdater (commandId);
 					
+					bool bypass = false;
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
-							return info;
+							if (!info.ArrayInfo.Bypass)
+								return info;
 						}
 						else {
+							info.Bypass = false;
 							cui.Run (cmdTarget, info);
-							return info;
+							if (!info.Bypass)
+								return info;
 						}
+						bypass = true;
 					}
 					
-					if (typeInfo.GetCommandHandler (commandId) != null) {
+					if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
 						info.Enabled = true;
 						info.Visible = true;
 						return info;
