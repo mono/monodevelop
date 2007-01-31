@@ -1,5 +1,14 @@
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/EditCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs, MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Assigned the Delete
+	  accelerator to the delete command. Implemented default handlers for
+	  Delete, Copy, Cut and paste, which now will work for any editable
+	  widget in the workbench.
+
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/Workbench.cs,
 	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Changed confusing field
 	  name. Added property for getting the list of pads valid for the

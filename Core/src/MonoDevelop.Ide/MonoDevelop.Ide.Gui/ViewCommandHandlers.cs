@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Undo)]
 		protected void OnUpdateUndo (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			info.Bypass = GetContent <IEditableTextBuffer> () == null;
 		}
 		
 		[CommandHandler (EditCommands.Redo)]
@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.Redo)]
 		protected void OnUpdateRedo (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			info.Bypass = GetContent <IEditableTextBuffer> () == null;
 		}
 		
 		[CommandHandler (EditCommands.Cut)]
@@ -182,7 +182,10 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateCut (CommandInfo info)
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			info.Enabled = editable != null && editable.ClipboardHandler.EnableCut;
+			if (editable != null)
+				info.Enabled = editable.ClipboardHandler.EnableCut;
+			else
+				info.Bypass = true;
 		}
 		
 		[CommandHandler (EditCommands.Copy)]
@@ -197,7 +200,10 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateCopy (CommandInfo info)
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			info.Enabled = editable != null && editable.ClipboardHandler.EnableCopy;
+			if (editable != null)
+				info.Enabled = editable.ClipboardHandler.EnableCopy;
+			else
+				info.Bypass = true;
 		}
 		
 		[CommandHandler (EditCommands.Paste)]
@@ -212,10 +218,13 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdatePaste (CommandInfo info)
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
-			info.Enabled = editable != null && editable.ClipboardHandler.EnablePaste;
+			if (editable != null)
+				info.Enabled = editable.ClipboardHandler.EnablePaste;
+			else
+				info.Bypass = true;
 		}
 		
-		[CommandHandler (EditCommands.Delete)]
+/*		[CommandHandler (EditCommands.Delete)]
 		protected void OnDelete ()
 		{
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
@@ -229,7 +238,7 @@ namespace MonoDevelop.Ide.Gui
 			IEditableTextBuffer editable = GetContent <IEditableTextBuffer> ();
 			info.Enabled = editable != null && editable.ClipboardHandler.EnableDelete;
 		}
-		
+*/		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAll ()
 		{

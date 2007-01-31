@@ -519,12 +519,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		[CommandUpdateHandler (EditCommands.Copy)]
 		protected void UpdateCopyCurrentItem (CommandInfo info)
 		{
+			if (editingText) {
+				info.Bypass = true;
+				return;
+			}
 			info.Enabled = CanTransferCurrentItem (DragOperation.Copy);
 		}
 
 		[CommandUpdateHandler (EditCommands.Cut)]
 		protected void UpdateCutCurrentItem (CommandInfo info)
 		{
+			if (editingText) {
+				info.Bypass = true;
+				return;
+			}
 			info.Enabled = CanTransferCurrentItem (DragOperation.Move);
 		}
 		
@@ -590,6 +598,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void UpdatePasteToCurrentItem (CommandInfo info)
 		{
+			if (editingText) {
+				info.Bypass = true;
+				return;
+			}
+			
 			if (copyObject != null) {
 				TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 				if (node != null) {
@@ -690,6 +703,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void HandleOnEditCancelled (object s, EventArgs args)
 		{
 			editingText = false;
+			text_render.Editable = false;
 			
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node == null)
