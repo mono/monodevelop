@@ -1,3 +1,8 @@
+2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libstetic.dll.config, lib/libsteticui.dll, lib/libstetic.dll,
+	  lib/libsteticui.dll.config: Updated from Stetic module.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
