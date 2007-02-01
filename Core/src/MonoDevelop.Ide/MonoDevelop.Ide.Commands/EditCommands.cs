@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Commands
 						cme = cm;
 						cme.ForwardCursorPosition ();
 					}
-					tv.Buffer.Delete (cm, cme);
+					tv.Buffer.Delete (ref cm, ref cme);
 					tv.Buffer.EndUserAction ();
 					return;
 				}

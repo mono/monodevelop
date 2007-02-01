@@ -1,3 +1,7 @@
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Fix warning.
+
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs,
