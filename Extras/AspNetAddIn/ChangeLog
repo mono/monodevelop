@@ -1,3 +1,9 @@
+2007-02-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Project/AspNetAppProject.cs: More informative error messages.
+	
+	* Project/AspNetCodeBehindProvider.cs: Track API changes.
+
 2007-01-18  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Templates/CodeBehindWebControl.xft.xml: Use the proper filename 

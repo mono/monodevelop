@@ -136,7 +136,7 @@ namespace AspNetAddIn
 			try {
 				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
 				if (handler == null) {
-					monitor.ReportError ("Can not obtain platform handler to execute \"" + xsp + "\"", null);
+					monitor.ReportError ("Error launching web server: cannot obtain platform handler.", null);
 					return;
 				}
 				
@@ -148,9 +148,9 @@ namespace AspNetAddIn
 				t.Start (url);
 				
 				op.WaitForCompleted ();
-				monitor.Log.WriteLine ("The application exited with code: {0}", op.ExitCode);
+				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
-				monitor.ReportError ("Can not execute \"" + xsp + "\"", ex);
+				monitor.ReportError ("Error launching web server: cannot execute \"" + xsp + "\".", ex);
 			} finally {
 				operationMonitor.Dispose ();
 				console.Dispose ();
