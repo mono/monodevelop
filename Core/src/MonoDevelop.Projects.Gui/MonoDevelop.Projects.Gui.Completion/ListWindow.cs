@@ -99,6 +99,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public int Selection {
+			get { return list.Selection; }
+		}
+		
 		public string PartialWord
 		{
 			get { return word.ToString (); }

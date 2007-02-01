@@ -182,8 +182,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 		void UpdateWord ()
 		{
 			string word = wnd.CompleteWord;
-			if (word != null)
-				completionWidget.SetCompletionText(completionContext, wnd.PartialWord, word);
+			if (word != null) {
+				if (wnd.Selection != -1) {
+					IActionCompletionData ac = completionData [wnd.Selection] as IActionCompletionData;
+					if (ac != null) {
+						ac.InsertAction (completionWidget, completionContext);
+						return;
+					}
+				}
+				completionWidget.SetCompletionText (completionContext, wnd.PartialWord, word);
+			}
 		}
 		
 		public new void Hide ()

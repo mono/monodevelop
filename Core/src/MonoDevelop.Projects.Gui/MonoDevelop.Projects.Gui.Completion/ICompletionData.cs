@@ -27,8 +27,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			get;
 		}
-		
-		void InsertAction(ICompletionWidget widget);
 	}
 	
 	public interface ICompletionDataWithMarkup : ICompletionData
@@ -36,5 +34,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string DescriptionPango {
 			get;
 		}
+	}
+	
+	public interface IActionCompletionData : ICompletionData
+	{
+		void InsertAction (ICompletionWidget widget, ICodeCompletionContext context);
 	}
 }

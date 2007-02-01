@@ -20,7 +20,7 @@ using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	class CodeCompletionData : ICompletionDataWithMarkup
+	public class CodeCompletionData : ICompletionDataWithMarkup
 	{
 		string image;
 		string text;
@@ -34,12 +34,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		bool convertedDocumentation = false;
 		
-		public string CompletionString 
-		{
-			get 
-			{
-				return completionString;
-			}
+		public string CompletionString {
+			get { return completionString; }
+			set { completionString = value; }
 		}
 		
 		
@@ -75,15 +72,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get {
 				return description;
 			}
+			set {
+				description = value;
+			}
+		}
+		
+		protected string Documentation {
+			get { return documentation; }
+			set { documentation = value; }
 		}
 				
 		private string GetDescription (string desc)
 		{
 			if (documentation == null && cls != null) {
 				documentation = cls.Documentation;
-				if (documentation == null)
-					documentation = string.Empty;
 			}
+			if (documentation == null)
+				documentation = string.Empty;
+				
+			if (desc == null)
+				desc = string.Empty;
 			
 			// don't give a description string, if no documentation or description is provided
 			if (desc.Length + documentation.Length == 0) {
@@ -147,6 +155,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				overload_data[desc] = overload;
 		}
 		
+		public CodeCompletionData ()
+		{
+		}
+		
 		public CodeCompletionData (string s, string image)
 		{
 			description = pango_description = documentation = String.Empty;
@@ -156,6 +168,59 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 		
 		public CodeCompletionData (IClass c, Ambience_ ambience)
+		{
+			FillCodeCompletionData (c, ambience);
+		}
+		
+		public CodeCompletionData (IMethod method, Ambience_ ambience)
+		{
+			FillCodeCompletionData (method, ambience);
+		}
+		
+		public CodeCompletionData (IField field, Ambience_ ambience)
+		{
+			FillCodeCompletionData (field, ambience);
+		}
+		
+		public CodeCompletionData (IProperty property, Ambience_ ambience)
+		{
+			FillCodeCompletionData (property, ambience);
+		}
+		
+		public CodeCompletionData (IEvent e, Ambience_ ambience)
+		{
+			FillCodeCompletionData (e, ambience);
+		}
+		
+		public CodeCompletionData (IParameter o, Ambience_ ambience)
+		{
+			FillCodeCompletionData (o, ambience);
+		}
+		
+		public CodeCompletionData (ILanguageItem item, Ambience_ ambience)
+		{
+			FillCodeCompletionData (item, ambience);
+		}
+		
+		protected void FillCodeCompletionData (ILanguageItem item, Ambience_ ambience)
+		{
+			if (item is IClass)
+				FillCodeCompletionData ((IClass)item, ambience);
+			else if (item is IMethod)
+				FillCodeCompletionData ((IMethod)item, ambience);
+			else if (item is IField)
+				FillCodeCompletionData ((IField)item, ambience);
+			else if (item is IProperty)
+				FillCodeCompletionData ((IProperty)item, ambience);
+			else if (item is IEvent)
+				FillCodeCompletionData ((IEvent)item, ambience);
+			else if (item is IParameter)
+				FillCodeCompletionData ((IParameter)item, ambience);
+			else
+				throw new InvalidOperationException ("Unsupported language item type");
+		}
+		
+		protected void FillCodeCompletionData (IClass c, Ambience_ ambience)
 		{
 			cls = c;
 			this.ambience = ambience;
@@ -177,7 +242,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
-		public CodeCompletionData (IMethod method, Ambience_ ambience)
+		protected void FillCodeCompletionData (IMethod method, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(method);
 			text        = method.Name;
@@ -187,7 +252,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = method.Documentation;
 		}
 		
-		public CodeCompletionData (IField field, Ambience_ ambience)
+		protected void FillCodeCompletionData (IField field, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(field);
 			text        = field.Name;
@@ -197,7 +262,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = field.Documentation;
 		}
 		
-		public CodeCompletionData (IProperty property, Ambience_ ambience)
+		protected void FillCodeCompletionData (IProperty property, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(property);
 			text        = property.Name;
@@ -207,7 +272,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = property.Documentation;
 		}
 		
-		public CodeCompletionData (IEvent e, Ambience_ ambience)
+		protected void FillCodeCompletionData (IEvent e, Ambience_ ambience)
 		{
 			image  = Services.Icons.GetIcon(e);
 			text        = e.Name;
@@ -217,7 +282,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = e.Documentation;
 		}
 
-		public CodeCompletionData (IParameter o, Ambience_ ambience)
+		protected void FillCodeCompletionData (IParameter o, Ambience_ ambience)
 		{
 			image = MonoDevelop.Core.Gui.Stock.Field;
 			text  = o.Name;
@@ -227,11 +292,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 			documentation = "";
 		}
 		
-		public void InsertAction (ICompletionWidget widget)
-		{
-			widget.InsertAtCursor (completionString);
-		}
-
 		public static string GetDocumentation (string doc)
 		{
 			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + doc + "</docroot>");
