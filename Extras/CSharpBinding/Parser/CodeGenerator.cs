@@ -199,7 +199,7 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit (FieldReferenceExpression fieldExp, object data)
 		{
-			if (member is IField && fieldExp.FieldName == member.Name)
+			if ((member is IField || member is IProperty) && fieldExp.FieldName == member.Name)
 			{
 				IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 				if (cls != null && IsExpectedClass (cls)) {

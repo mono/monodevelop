@@ -1,3 +1,7 @@
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/CodeGenerator.cs: Properly look for property references.
+
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Properly resolve alias directives. Fixes bug
