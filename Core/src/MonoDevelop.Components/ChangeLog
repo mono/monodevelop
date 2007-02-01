@@ -1,5 +1,11 @@
 2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Components.Commands/CommandManager.cs: Destroy the
+	  context menu after it is hidden. Makes sure all menu items are
+	  disconnected from accelerators. Should fix bug #80645.
+
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Components.Commands/CommandMenu.cs: Avoid showing
 	  unnecessary item separators.
 
