@@ -782,6 +782,7 @@ namespace MonoDevelop.Prj2Make
 						continue;
 					}
 
+					string path = null;
 					string include = node.Attributes ["Include"].Value;
 					pf = null;
 					pr = null;
@@ -804,7 +805,19 @@ namespace MonoDevelop.Prj2Make
 							project.ProjectReferences.Add (pr);
 						} else {
 							//Not in the Gac, has HintPath
-							pr = project.AddReference (MapAndResolvePath (basePath, hintPath));
+							path = MapAndResolvePath (basePath, hintPath);
+							if (path == null) {
+								Console.WriteLine (GettextCatalog.GetString (
+									"HintPath ({0}) for Reference '{1}' is invalid. Ignoring.",
+									hintPath, include));
+								monitor.ReportWarning (GettextCatalog.GetString (
+									"HintPath ({0}) for Reference '{1}' is invalid. Ignoring.",
+									hintPath, include));
+
+								continue;
+							}
+	
+							pr = project.AddReference (path);
 						}
 						data.ProjectReferenceElements [pr] = (XmlElement) node;
 
@@ -831,27 +844,39 @@ namespace MonoDevelop.Prj2Make
 
 						break;
 					case "Compile":
-						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.Compile);
+						path = GetValidPath (monitor, basePath, include);
+						if (path == null)
+							continue;
+						pf = project.AddFile (path, BuildAction.Compile);
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "None":
-						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.Nothing);
+						path = GetValidPath (monitor, basePath, include);
+						if (path == null)
+							continue;
+						pf = project.AddFile (path, BuildAction.Nothing);
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "Content":
-						pf = project.AddFile (MapAndResolvePath (basePath, include), BuildAction.FileCopy);
+						path = GetValidPath (monitor, basePath, include);
+						if (path == null)
+							continue;
+						pf = project.AddFile (path, BuildAction.FileCopy);
 						data.ProjectFileElements [pf] = (XmlElement) node;
 						break;
 					case "EmbeddedResource":
-						string fname = MapAndResolvePath (basePath, include);
-						if (!fname.StartsWith (project.BaseDirectory)) {
+						path = GetValidPath (monitor, basePath, include);
+						if (path == null)
+							continue;
+
+						if (!path.StartsWith (project.BaseDirectory)) {
 							monitor.ReportWarning (GettextCatalog.GetString (
 								"The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include));
 							Console.WriteLine ("The specified path '{0}' for the EmbeddedResource is outside the project directory. Ignoring.", include);
 							continue;
 						}
 
-						pf = project.AddFile (fname, BuildAction.EmbedAsResource);
+						pf = project.AddFile (path, BuildAction.EmbedAsResource);
 						if (ReadAsString (node, "LogicalName", ref str_tmp, false))
 							pf.ResourceId = str_tmp;
 						data.ProjectFileElements [pf] = (XmlElement) node;
@@ -885,6 +910,17 @@ namespace MonoDevelop.Prj2Make
 					vbparams.Imports = importsBuilder.ToString ();
 				}
 			}
+		}
+
+		string GetValidPath (IProgressMonitor monitor, string basePath, string relPath)
+		{
+			string path = MapAndResolvePath (basePath, relPath);
+			if (path != null)
+				return path;
+
+			Console.WriteLine (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
+			monitor.ReportWarning (GettextCatalog.GetString ("File name '{0}' is invalid. Ignoring.", relPath));
+			return null;
 		}
 
 		//FIXME: Too many params ?
@@ -922,7 +958,6 @@ namespace MonoDevelop.Prj2Make
 				config.OutputAssembly = str_tmp;
 
 			if (ReadAsString (nav, "OutputPath", ref str_tmp, false))
-				//FIXME: default path ?
 				config.OutputDirectory = MapAndResolvePath (basePath, str_tmp);
 
 			if (ReadAsBool (nav, "DebugSymbols", ref bool_tmp))

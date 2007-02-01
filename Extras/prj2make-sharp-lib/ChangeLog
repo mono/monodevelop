@@ -1,3 +1,8 @@
+2007-02-01  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (ReadItemGroups): Check for invalid paths.
+	(GetValidPath): New.
+
 2007-01-27  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (ReferenceToXmlElement): Use System.Reflection to
