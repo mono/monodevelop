@@ -1,3 +1,33 @@
+//
+// TypeToolboxNode.cs: A toolbox node that refers to a .NET type.
+//
+// Authors:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2006 Michael Hutchinson
+//
+//
+// This source code is licenced under The MIT License:
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using MonoDevelop.Projects.Serialization;
@@ -8,13 +38,21 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[DataInclude (typeof(TypeReference))]
 	public class TypeToolboxNode : ItemToolboxNode
 	{
+		//the serialiseable type reference field
 		[ItemProperty ("type")]
 		TypeReference type;
 		
-		//for deserialisation
+		public TypeReference Type {
+			get { return type; }
+			set { type = value; }
+		}
+		
+		//blank constructor for deserialisation
 		public TypeToolboxNode ()
 		{
 		}
+		
+		#region convenience constructors
 		
 		public TypeToolboxNode (TypeReference typeRef)
 		{
@@ -36,10 +74,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.type = new TypeReference (type);
 		}
 		
-		public TypeReference Type {
-			get { return type; }
-			set { type = value; }
-		}
+		#endregion
+		
+		#region comparison overrides taking account of private field
 		
 		public override bool Equals (object o)
 		{
@@ -49,98 +86,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			    && base.Equals (node);
 		}
 		
-		
 		public bool Equals (TypeToolboxNode node)
 		{
 			return (node != null)
 			    && (this.type == null? node.type == null : this.type.Equals (node.type))
 			    && base.Equals (node);
-    	}
-		
-		
-	}
-	
-	[Serializable]
-	public class TypeReference
-	{
-		[ItemProperty ("location")]
-		string assemblyLocation = "";
-		[ItemProperty ("assembly")]
-		string assemblyName = "";
-		[ItemProperty ("name")]
-		string typeName = "";
-		
-		//for deserialisation
-		public TypeReference ()
-		{
 		}
 		
-		public override bool Equals (System.Object obj)
-		{
-			TypeReference other = obj as TypeReference;
-			return (other != null)
-			    && (this.typeName == other.typeName)
-			    && (this.assemblyName == other.assemblyName)
-			    && (this.assemblyLocation == other.assemblyLocation);
-		}
-		
-		public bool Equals (TypeReference other)
-		{
-			return (other != null)
-			    && (this.typeName == other.typeName)
-			    && (this.assemblyName == other.assemblyName)
-			    && (this.assemblyLocation == other.assemblyLocation);
-		}
-		
-		public TypeReference (string typeName, string assemblyName)
-		{
-			this.typeName = typeName;
-			this.assemblyName = assemblyName;
-		}
-		
-		public TypeReference (Type type)
-			: this (type.FullName, type.Assembly.FullName)
-		{
-			if (!type.Assembly.GlobalAssemblyCache)
-				assemblyLocation = type.Assembly.Location;
-		}
-		
-		public TypeReference (string typeName, string assemblyName, string assemblyLocation)
-			: this (typeName, assemblyName)
-		{
-			this.assemblyLocation = assemblyLocation;
-		}
-		
-		public string AssemblyName {
-			get { return assemblyName; }
-			set { assemblyName = value; }
-		}
-		
-		public string TypeName {
-			get { return typeName; }
-			set { typeName = value; }
-		}
-		
-		public string AssemblyLocation {
-			get { return assemblyLocation; }
-			set { assemblyLocation = value; }
-		}
-		
-		//FIXME: three likely exceptions in here: need to handle them
-		public Type Load ()
-		{
-			System.Reflection.Assembly assem = null;
-			
-			if (string.IsNullOrEmpty (assemblyLocation))
-				//GAC assembly
-				assem = System.Reflection.Assembly.Load (assemblyName);
-			else
-				//local assembly
-				assem = System.Reflection.Assembly.LoadFile (assemblyLocation);
-			
-			Type type = assem.GetType (typeName, true);
-			
-			return type;
-		}
+		#endregion
 	}
 }

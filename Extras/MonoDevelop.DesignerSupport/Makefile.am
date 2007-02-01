@@ -67,7 +67,8 @@ FILES = \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs \
+	MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs
 
 RES = \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \

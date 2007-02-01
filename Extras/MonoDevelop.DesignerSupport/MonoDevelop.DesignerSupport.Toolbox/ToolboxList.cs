@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
-		//static methods shouldn't reallly replace contructors, but becuase of the way the Deserialize
+		//static methods shouldn't really replace constructors, but because of the way the Deserialize
 		//method works, this saves us copying all the items from one ToolboxList to another
 		public static ToolboxList LoadFromFile (string fileName)
 		{

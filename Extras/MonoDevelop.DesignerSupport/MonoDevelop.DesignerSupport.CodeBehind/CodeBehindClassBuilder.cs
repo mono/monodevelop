@@ -55,8 +55,13 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		{
 			IClass cls = (IClass) dataObject;
 			icon = Context.GetIcon (MonoDevelop.Ide.Gui.IdeApp.Services.Icons.GetIcon (cls));
-			string fileName = (cls.Region.FileName == null)? "" : System.IO.Path.GetFileName (cls.Region.FileName);
-			label = String.Format ("Inherits {0} in {1}", cls.Name, fileName);
+			
+			if (cls.Region != null && cls.Region.FileName != null) {
+				string filename = System.IO.Path.GetFileName (cls.Region.FileName);
+				label = String.Format ("Inherits {0} in {1}", cls.Name, filename);
+			} else {
+				label = String.Format ("Inherits {0}, which cannot be found", cls.Name);
+			}
 		}
 	}
 	
@@ -65,7 +70,7 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 		public override void ActivateItem ()
 		{
 			IClass cls = (IClass) CurrentNode.DataItem;
-			if (cls.Region.FileName != null) {
+			if (cls.Region != null && cls.Region.FileName != null) {
 				int line = cls.Region.BeginLine;
 				string file = cls.Region.FileName;
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), 1, true);

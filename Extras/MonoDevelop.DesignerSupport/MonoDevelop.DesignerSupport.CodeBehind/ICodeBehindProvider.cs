@@ -37,12 +37,10 @@ using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.DesignerSupport.CodeBehind
 {
-	
 	public interface ICodeBehindProvider
 	{
 		//return null if there's an error, or the project or file is unsupported
-		IClass GetCodeBehind (ProjectFile file);
-		
-		IList<IClass> GetAllCodeBehindClasses (Project project);
+		//returns fully qualified class name
+		string GetCodeBehindClassName (ProjectFile file);
 	}
 }

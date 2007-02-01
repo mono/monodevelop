@@ -31,6 +31,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide;
@@ -44,40 +45,49 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 {
 	public class CodeBehindProjectFileExtension : NodeBuilderExtension
 	{
-		MonoDevelop.Projects.ProjectFileEventHandler projectFileEventHandler;
-		ClassInformationEventHandler classInformationEventHandler;
+		CodeBehindService.CodeBehindClassEventHandler classChangeHandler;
+		CodeBehindService.CodeBehindFileEventHandler fileChangeHandler;
 		
 		protected override void Initialize ()
 		{	
-			projectFileEventHandler = (ProjectFileEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (onFileChanged));
-			IdeApp.ProjectOperations.FileChangedInProject += projectFileEventHandler;
+			classChangeHandler = (CodeBehindService.CodeBehindClassEventHandler)
+				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindClassEventHandler (onClassChanged));
+			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated += classChangeHandler;
 			
-			classInformationEventHandler = (ClassInformationEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new ClassInformationEventHandler (onClassInformationChanged));
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += classInformationEventHandler;
+			fileChangeHandler = (CodeBehindService.CodeBehindFileEventHandler)
+				IdeApp.Services.DispatchService.GuiDispatch (new CodeBehindService.CodeBehindFileEventHandler (onFileChanged));
+			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated += fileChangeHandler;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.ProjectOperations.FileChangedInProject -= projectFileEventHandler;
-			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged  -= classInformationEventHandler;
+			DesignerSupport.Service.CodeBehindService.CodeBehindClassUpdated -= classChangeHandler;
+			DesignerSupport.Service.CodeBehindService.CodeBehindFileUpdated -= fileChangeHandler;
 		}
 		
-		void onFileChanged (object sender, MonoDevelop.Projects.ProjectFileEventArgs e)
+		void onFileChanged (ProjectFile file)
 		{
-			if (e.ProjectFile == null) return;
-			
-			ITreeBuilder builder = Context.GetTreeBuilder (e.ProjectFile);
+			ITreeBuilder builder = Context.GetTreeBuilder (file);
 			if (builder != null)
 				builder.UpdateAll ();
 		}
 		
-		void onClassInformationChanged (object sender, ClassInformationEventArgs e)
+		void onClassChanged (IClass cls)
 		{
-			if (e.Project == null) return;
-			ProjectFile file = e.Project.GetProjectFile (e.FileName);
-			if (file == null) return;
-		
-			ITreeBuilder builder = Context.GetTreeBuilder (file);
+			ITreeBuilder builder = Context.GetTreeBuilder (cls);
+			if (builder != null)
+				builder.UpdateAll ();
+			
+			//refresh the file containing the class to make it hidden/visible
+			//FIXME: can we locate the node in the tree more efficiently than looking up its parent project
+			//       and updating it and all its children? Direct lookup won't work with hidden nodes.
+			if (cls.Region == null) return;
+			string filename = cls.Region.FileName;
+			if (filename == null) return;
+			Project proj = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (filename);
+			if (proj == null) return;
+			
+			builder = Context.GetTreeBuilder (proj);
 			if (builder != null)
 				builder.UpdateAll ();
 		}
@@ -104,13 +114,10 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 			if (! (parentNode.Options ["ShowCodeBehindFiles"] || parentNode.Options ["ShowAllFiles"])) {
 				ProjectFile file = (ProjectFile) dataObject;
 				
-				if (file.Project != null) {
-					IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (file.Project);
-					System.Collections.Generic.IList<IClass> list = DesignerSupport.Service.CodeBehindService.GetAllCodeBehindClasses (file.Project);
-					
-					foreach (IClass cls in ctx.GetFileContents (file.FilePath))
-						if (list.Contains (cls))
-							attributes = NodeAttributes.Hidden;
+				if (file.Project != null){					
+					//only hide the file if all the classes it contains are codebehind classes
+					if (DesignerSupport.Service.CodeBehindService.ContainsOnlyCodeBehind(file))
+						attributes |= NodeAttributes.Hidden;
 				}
 			}
 		}

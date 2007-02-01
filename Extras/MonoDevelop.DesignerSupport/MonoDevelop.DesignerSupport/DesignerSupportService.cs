@@ -92,6 +92,7 @@ namespace MonoDevelop.DesignerSupport
 		public override void InitializeService()
 		{
 			base.InitializeService ();
+			codeBehindService.Initialise ();
 		}
 		
 		public override void UnloadService()

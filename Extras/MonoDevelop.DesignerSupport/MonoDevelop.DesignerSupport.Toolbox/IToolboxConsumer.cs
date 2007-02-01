@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	public interface IToolboxConsumer
 	{
-		/*todo: drag/drop stuff */
+		/*TODO: drag/drop stuff */
 		
 		//This is run when an item is activated from the toolbox service.
 		void ConsumeItem (ItemToolboxNode item);

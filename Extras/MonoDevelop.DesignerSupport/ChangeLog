@@ -1,3 +1,30 @@
+2006-02-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:
+	* Makefile.am:
+	  Split class into separate file. Improve comments.
+	  
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs:
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs:
+	  Added an Initialise method to CodeBehindService so that it can 
+	  subscribe to project events.
+	  
+	* MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs:
+	  Completely changed the way the Codebehind bindings are provided.
+	  
+	* MonoDevelop.DesignerSupport/CodeBehindService.cs:
+	  Keep a list of CodeBehind bindings and update it as file change and 
+	  class change events come in.
+	  Fire CodeBehind change events when anything is updated.
+	  
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs:
+	  If CodeBehind class cannot be found, display a notice to that effect.
+	  
+	* MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs:
+	  Only hide class files if they just contain a single codebehind file.
+	  Use events from CodeBehindService to rebuild nodes selectively.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Use the new
