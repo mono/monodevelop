@@ -160,6 +160,31 @@ namespace CSharpBinding.Parser
 			return type;
 		}
 		
+		public IClass GetCallingClass (int line, int col, string fileName, string fileContent, bool onlyClassDeclaration)
+		{
+			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+
+			CSharpVisitor cSharpVisitor = new CSharpVisitor();
+			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			
+			currentFile = fileName;
+			if (fileCompilationUnit == null)
+				return null;
+		
+			this.caretLine = line;
+			this.caretColumn = col;
+			
+			callingClass = GetInnermostClass();
+			if (callingClass == null)
+				return null;
+				
+			if (onlyClassDeclaration && GetMethod () != null)
+				return null;
+			
+			return callingClass;
+		}
+
 		public IClass ResolveExpressionType (ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit, Expression expr, int line, int col)
 		{
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();

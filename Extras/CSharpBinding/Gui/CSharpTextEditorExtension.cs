@@ -1,10 +1,14 @@
 
 using System;
+using System.Text;
+using System.Collections;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using CSharpBinding.Parser;
+using MonoDevelop.Projects.Ambience;
+using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
 namespace CSharpBinding
 {
@@ -20,8 +24,10 @@ namespace CSharpBinding
 
 			ExpressionFinder expressionFinder = new ExpressionFinder (null);
 			
+			// Code completion of "new"
+			
 			int i = ctx.TriggerOffset;
-			if (GetPreviousToken ("new", ref i)) {
+			if (charTyped == ' ' && GetPreviousToken ("new", ref i)) {
 				if (GetPreviousToken ("=", ref i)) {
 					IParserContext pctx = GetParserContext ();
 					string ex = expressionFinder.FindExpression (Editor.GetText (0, i), i - 2).Expression;
@@ -46,6 +52,43 @@ namespace CSharpBinding
 				}
 			}
 
+			// Check for 'overridable' completion
+			
+			i = ctx.TriggerOffset;
+			if (charTyped == ' ' && GetPreviousToken ("override", ref i)) {
+			
+				// Look for modifiers, in order to find the beginning of the declaration
+				int firstMod = i;
+				bool isSealed;
+				for (int n=0; n<3; n++) {
+					string mod = GetPreviousToken (ref i);
+					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal") {
+						firstMod = i;
+					}
+					else if (mod == "static") {
+						return null;
+					}
+					else if (mod == "sealed") {
+						firstMod = i;
+						isSealed = true;
+					}
+					else
+						break;
+				}
+				int line, column;
+				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
+				
+				IParserContext pctx = GetParserContext ();
+				Resolver res = new Resolver (pctx);
+				IClass cls = res.GetCallingClass (line, column, FileName, Editor.Text, true);
+				if (cls != null) {
+					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
+					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers);
+				}
+			}
+			
+			// Code completion of classes, members and namespaces
+			
 			string expression = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 2).Expression;
 			if (expression == null)
 				return null;
@@ -85,6 +128,267 @@ namespace CSharpBinding
 			
 			i -= token.Length;
 			return Editor.GetText (i, i + token.Length) == token;
+		}
+		
+		string GetPreviousToken (ref int i)
+		{
+			string s = Editor.GetText (i-1, i);
+			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t')) {
+				i--;
+				s = Editor.GetText (i-1, i);
+			}
+			if (s.Length == 0)
+				return null;
+				
+			int endp = i;
+			while (s.Length > 0 && (char.IsLetterOrDigit (s[0]) || s[0] == '_')) {
+				i--;
+				s = Editor.GetText (i-1, i);
+			}
+			
+			return Editor.GetText (i, endp);
+		}
+		
+		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers)
+		{
+			ArrayList classMembers = new ArrayList ();
+			ArrayList interfaceMembers = new ArrayList ();
+			
+			FindOverridables (pctx, cls, classMembers, interfaceMembers);
+			foreach (object mem in interfaceMembers)
+				if (!classMembers.Contains (mem))
+					classMembers.Add (mem);
+			
+			CSharpAmbience amb = new CSharpAmbience ();
+			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (pctx, GetAmbience ());
+			foreach (ILanguageItem mem in classMembers) {
+				completionProvider.AddCompletionData (new OverrideCompletionData (Editor, mem, insertPos, typedModifiers, amb));
+			}
+			return completionProvider;
+		}
+		
+		void FindOverridables (IParserContext pctx, IClass cls, ArrayList classMembers, ArrayList interfaceMembers)
+		{
+			foreach (IReturnType rt in cls.BaseTypes)
+			{
+				if (rt.FullyQualifiedName == "System.Object" && cls.ClassType == ClassType.Interface)
+					continue;
+
+				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
+				bool isInterface = baseCls.ClassType == ClassType.Interface;
+				if (isInterface && interfaceMembers == null)
+					continue;
+				ArrayList list = isInterface ? interfaceMembers : classMembers;
+				
+				foreach (IMethod m in baseCls.Methods) {
+					if (isInterface || m.IsVirtual || m.IsAbstract)
+						list.Add (m);
+				}
+				foreach (IProperty m in baseCls.Properties) {
+					if (isInterface || m.IsVirtual || m.IsAbstract)
+						list.Add (m);
+				}
+				foreach (IIndexer m in baseCls.Indexer) {
+					if (isInterface || m.IsVirtual || m.IsAbstract)
+						list.Add (m);
+				}
+				foreach (IEvent m in baseCls.Events) {
+					if (isInterface || m.IsVirtual || m.IsAbstract)
+						list.Add (m);
+				}
+				
+				FindOverridables (pctx, baseCls, classMembers, isInterface ? interfaceMembers : null);
+			}
+		}
+	}
+	
+	class OverrideCompletionData: CodeCompletionData, IActionCompletionData
+	{
+		ILanguageItem item;
+		IEditableTextBuffer editor;
+		CSharpAmbience ambience;
+		string typedModifiers;
+		int insertOffset;
+		string indent;
+		
+		public OverrideCompletionData (IEditableTextBuffer editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb)
+		{
+			this.typedModifiers = typedModifiers;
+			this.insertOffset = insertOffset;
+			this.ambience = amb;
+			this.editor = editor;
+			this.item = item;
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			
+			if (item is IIndexer) {
+				IIndexer ind = (IIndexer) item;
+				Image = IdeApp.Services.Icons.GetIcon (ind);
+				StringBuilder sb = new StringBuilder ("this [");
+				ambience.Convert (ind.Parameters, sb, flags);
+				sb.Append ("]");
+				Text = new string[] { sb.ToString () };
+				Description = ambience.Convert(item);
+				DescriptionPango = ambience.Convert (item, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
+				CompletionString = "this";
+				Documentation = item.Documentation;
+			}
+			else if (item is IMethod) {
+				IMethod met = (IMethod) item;
+				Image = IdeApp.Services.Icons.GetIcon (met);
+				StringBuilder sb = new StringBuilder (met.Name + " (");
+				ambience.Convert (met.Parameters, sb, flags);
+				sb.Append (")");
+				Text = new string[] { sb.ToString () };
+				Description = ambience.Convert (met);
+				DescriptionPango = ambience.Convert (met, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
+				CompletionString = met.Name;
+				Documentation = met.Documentation;
+			}
+			else
+				FillCodeCompletionData (item, ambience);
+		}
+		
+		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
+		{
+			indent = GetIndentString (insertOffset + 1);
+			
+			// Remove the partially completed word
+			editor.DeleteText (insertOffset, editor.CursorPosition - insertOffset);
+
+			// Get the modifiers of the new override
+			IMember mem = (IMember) item;
+			string modifiers = GetModifiers (mem, typedModifiers);
+			if (modifiers.Length > 0) modifiers += " ";
+			if (mem.IsVirtual || mem.IsAbstract)
+				modifiers += "override ";
+			
+			if (item is IMethod)
+				InsertMethod ((IMethod) item, modifiers);
+			if (item is IProperty)
+				InsertProperty ((IProperty) item, modifiers);
+			if (item is IEvent)
+				InsertEvent ((IEvent) item, modifiers);
+			if (item is IIndexer)
+				InsertIndexer ((IIndexer) item, modifiers);
+		}
+		
+		void InsertMethod (IMethod method, string modifiers)
+		{
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+				
+			string text = modifiers + ambience.Convert (method, flags);
+			text += "\n" + indent + "{\n" + indent + "\t";
+			int cpos = insertOffset + text.Length;
+			text += "\n" + indent + "}\n";
+			
+			editor.InsertText (insertOffset, text);
+			editor.CursorPosition = cpos;
+			editor.Select (cpos, cpos);
+		}
+		
+		void InsertProperty (IProperty prop, string modifiers)
+		{
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			int cpos = -1;
+			string text = modifiers + ambience.Convert (prop.ReturnType, flags) + " " + prop.Name + " {\n";
+			
+			if (prop.CanGet) {
+				text += indent + "\tget { ";
+				cpos = insertOffset + text.Length;
+				text += " }\n";
+			}
+			if (prop.CanSet) {
+				text += indent + "\tset { ";
+				if (!prop.CanGet)
+					cpos = insertOffset + text.Length;
+				text += " }\n";
+			}
+			
+			text += indent + "}\n";
+			
+			editor.InsertText (insertOffset, text);
+			editor.CursorPosition = cpos;
+			editor.Select (cpos, cpos);
+		}
+		
+		void InsertEvent (IEvent ev, string modifiers)
+		{
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			string text = modifiers + "event " + ambience.Convert (ev.ReturnType, flags) + " " + ev.Name + " {\n";
+			
+			int cpos;
+			text += indent + "\tadd { ";
+			cpos = insertOffset + text.Length;
+			text += " }\n";
+			text += indent + "\tremove { ";
+			text += " }\n";
+			
+			text += indent + "}\n";
+			
+			editor.InsertText (insertOffset, text);
+			editor.CursorPosition = cpos;
+			editor.Select (cpos, cpos);
+		}
+		
+		void InsertIndexer (IIndexer indexer, string modifiers)
+		{
+			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			
+			int cpos;
+			
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (modifiers).Append (ambience.Convert (indexer.ReturnType)).Append (" this [");
+			ambience.Convert (indexer.Parameters, sb, flags);
+			sb.Append ("] {\n");
+			sb.Append (indent).Append ("\tget { ");
+			cpos = insertOffset + sb.Length;
+			sb.Append (" }\n");
+			sb.Append (indent).Append ("\tset { ");
+			sb.Append (" }\n").Append (indent).Append ("}");
+			
+			editor.InsertText (insertOffset, sb.ToString ());
+			editor.CursorPosition = cpos;
+			editor.Select (cpos, cpos);
+		}
+		
+		string GetIndentString (int pos)
+		{
+			string c = editor.GetText (pos - 1, pos);
+			int nwpos = pos;
+			while (c.Length > 0 && c != "\n") {
+				if (c[0] != ' ' && c[0] != '\t')
+					nwpos = pos;
+				pos--;
+				c = editor.GetText (pos - 1, pos);
+			}
+			return editor.GetText (pos, nwpos - 1);
+		}
+		
+		string GetModifiers (IDecoration dec, string typedModifiers)
+		{
+			string res = "";
+			
+			if (dec.IsPublic) {
+				res = "public";
+			} else if (dec.IsPrivate) {
+				res = "";
+			} else if (dec.IsProtectedAndInternal) {
+				res = "protected internal";
+			} else if (dec.IsProtectedOrInternal) {
+				res = "internal protected";
+			} else if (dec.IsInternal) {
+				res = "internal";
+			} else if (dec.IsProtected) {
+				res = "protected";
+			}
+			if (typedModifiers.IndexOf ("sealed") != -1) {
+				if (res.Length > 0)
+					return res + " sealed";
+				else
+					return "sealed";
+			}
+			else
+				return res;
 		}
 	}
 }
