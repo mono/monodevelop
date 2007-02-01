@@ -83,6 +83,24 @@ namespace MonoDevelop.Components.Commands
 				else
 					item.Show ();
 			}
+			
+			// After updating the menu, hide the separators which don't actually
+			// separate items.
+			bool prevWasItem = false;
+			Gtk.Widget lastSeparator = null;
+			foreach (Gtk.Widget item in Children) {
+				if (item is Gtk.SeparatorMenuItem) {
+					if (!prevWasItem)
+						item.Hide ();
+					else {
+						prevWasItem = false;
+						lastSeparator = item;
+					}
+				} else if (item.Visible)
+					prevWasItem = true;
+			}
+			if (!prevWasItem && lastSeparator != null)
+				lastSeparator.Hide ();
 		}
 		
 		protected override void OnHidden ()
