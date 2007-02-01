@@ -1,3 +1,8 @@
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added missing
+	  null check.
+
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Catch errors

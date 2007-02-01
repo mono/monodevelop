@@ -791,7 +791,10 @@ namespace MonoDevelop.Projects.Parser
 						else {
 							// Database class not found in the new class list, it has to be deleted
 							IClass c = ce.Class;
-							if (c == null) c = ReadClass (ce);
+							if (c == null) {
+								ce.Class = ReadClass (ce);
+								c = ce.Class;
+							}
 							RemoveSubclassReferences (ce);
 							UnresolveSubclasses (ce);
 							IClass removed = CompoundClass.RemoveFile (c, fileName);
