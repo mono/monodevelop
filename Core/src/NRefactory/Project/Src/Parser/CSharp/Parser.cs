@@ -4751,6 +4751,7 @@ out expr);
 
 #line  2189 "cs.ATG" 
 			pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); 
+			pexpr.StartLocation = t.Location;
 		} else if (la.kind == 110) {
 			lexer.NextToken();
 
@@ -4767,6 +4768,7 @@ out expr);
 
 #line  2195 "cs.ATG" 
 				retExpr = new FieldReferenceExpression(retExpr, t.val); 
+				retExpr.StartLocation = t.Location;
 			} else if (la.kind == 18) {
 				lexer.NextToken();
 				Expr(
@@ -5015,6 +5017,7 @@ IsGenericFollowedBy(Tokens.OpenParenthesis)) {
 
 #line  2251 "cs.ATG" 
 				pexpr = new FieldReferenceExpression(pexpr, t.val);
+				pexpr.StartLocation = t.Location;
 			} else if (
 #line  2253 "cs.ATG" 
 IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr)) {
@@ -5026,6 +5029,7 @@ out typeList, false);
 
 #line  2256 "cs.ATG" 
 				pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);
+				pexpr.StartLocation = t.Location;
 			} else if (la.kind == 20) {
 				lexer.NextToken();
 
