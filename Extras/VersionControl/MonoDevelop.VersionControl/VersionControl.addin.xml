@@ -105,6 +105,7 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
 			<SeparatorItem id = "CommandSeparator" />
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
 		</ItemSet>
@@ -116,6 +117,7 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
 			<SeparatorItem id = "CommandSeparator" />
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
 		</ItemSet>

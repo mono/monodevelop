@@ -1,3 +1,11 @@
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/VersionControl.addin.xml: Allow updating
+	  individual files.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	  If there is no version control for a project or folder, instead of
+	  an empty version control menu, show a disabled command saying so.
+
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

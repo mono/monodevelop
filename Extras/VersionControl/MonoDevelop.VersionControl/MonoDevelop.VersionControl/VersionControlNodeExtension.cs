@@ -271,10 +271,17 @@ namespace MonoDevelop.VersionControl
 		}
 			
 		private void TestCommand(Commands cmd, CommandInfo item) {
-			item.Visible = RunCommand(cmd, true);
+			TestResult res = RunCommand(cmd, true);
+			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
+				// Use the update command to show the "not available" message
+				item.Icon = null;
+				item.Enabled = false;
+				item.Text = GettextCatalog.GetString ("This project or folder is not under version control");
+			} else
+				item.Visible = res == TestResult.Enable;
 		}
 		
-		private bool RunCommand(Commands cmd, bool test)
+		private TestResult RunCommand(Commands cmd, bool test)
 		{
 			string path;
 			bool isDir;
@@ -307,35 +314,54 @@ namespace MonoDevelop.VersionControl
 				pentry = c;
 			} else {
 				Console.Error.WriteLine(CurrentNode.DataItem);
-				return false;
+				return TestResult.NoVersionControl;
 			}
 			
 			Repository repo = VersionControlProjectService.GetRepository (pentry, path);
 			if (repo == null && cmd != Commands.Publish)
-				return false;
+				return TestResult.NoVersionControl;
+			
+			bool res = false;
 			
 			switch (cmd) {
 				case Commands.Update:
-					return UpdateCommand.Update (repo, path, test);
+					res = UpdateCommand.Update (repo, path, test);
+					break;
 				case Commands.Diff:
-					return DiffView.Show (repo, path, test);
+					res = DiffView.Show (repo, path, test);
+					break;
 				case Commands.Log:
-					return LogView.Show (repo, path, isDir, null, test);
+					res = LogView.Show (repo, path, isDir, null, test);
+					break;
 				case Commands.Status:
-					return StatusView.Show (repo, path, test);
+					res = StatusView.Show (repo, path, test);
+					break;
 				case Commands.Commit:
-					return CommitCommand.Commit (repo, path, test);
+					res = CommitCommand.Commit (repo, path, test);
+					break;
 				case Commands.Add:
-					return AddCommand.Add (repo, path, test);
+					res = AddCommand.Add (repo, path, test);
+					break;
 				case Commands.Remove:
-					return RemoveCommand.Remove (repo, path, isDir, test);
+					res = RemoveCommand.Remove (repo, path, isDir, test);
+					break;
 				case Commands.Revert:
-					return RevertCommand.Revert (repo, path, test);
+					res = RevertCommand.Revert (repo, path, test);
+					break;
 				case Commands.Publish:
-					if (!isDir) return false;
-					return PublishCommand.Publish (pentry, path, test);
+					if (isDir)
+						res = PublishCommand.Publish (pentry, path, test);
+					break;
 			}
-			return false;
+			
+			return res ? TestResult.Enable : TestResult.Disable;
 		}
+	}
+	
+	enum TestResult
+	{
+		Enable,
+		Disable,
+		NoVersionControl
 	}
 }
