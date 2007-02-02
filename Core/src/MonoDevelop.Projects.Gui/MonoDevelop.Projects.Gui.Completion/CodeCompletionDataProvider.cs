@@ -51,14 +51,18 @@ namespace MonoDevelop.Projects.Gui.Completion
 			onStartedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartedParsing));
 			onFinishedParsing = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnFinishedParsing));
 			
-			parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;
-			parserContext.ParserDatabase.ParseOperationFinished += onFinishedParsing;
+			if (parserContext != null) {
+				parserContext.ParserDatabase.ParseOperationStarted += onStartedParsing;
+				parserContext.ParserDatabase.ParseOperationFinished += onFinishedParsing;
+			}
 		}
 		
 		public virtual void Dispose ()
 		{
-			parserContext.ParserDatabase.ParseOperationStarted -= onStartedParsing;
-			parserContext.ParserDatabase.ParseOperationFinished -= onFinishedParsing;
+			if (parserContext != null) {
+				parserContext.ParserDatabase.ParseOperationStarted -= onStartedParsing;
+				parserContext.ParserDatabase.ParseOperationFinished -= onFinishedParsing;
+			}
 		}
 		
 		public void Clear ()
@@ -152,7 +156,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		}
 		
 		public bool IsChanging { 
-			get { return parserContext.ParserDatabase.IsParsing; } 
+			get { return parserContext != null && parserContext.ParserDatabase.IsParsing; } 
 		}
 		
 		void OnStartedParsing (object s, EventArgs args)
