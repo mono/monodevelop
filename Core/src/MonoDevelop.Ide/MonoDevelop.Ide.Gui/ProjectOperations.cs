@@ -1042,6 +1042,8 @@ namespace MonoDevelop.Ide.Gui
 				string sourceFile = file.Name;
 				string newFile = targetPath + sourceFile.Substring (basePath.Length);
 				
+				ProjectFile oldProjectFile = sourceProject != null ? sourceProject.ProjectFiles.GetFile (sourceFile) : null;
+				
 				if (!movingFolder) {
 					try {
 						string fileDir = Path.GetDirectoryName (newFile);
@@ -1058,16 +1060,13 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if (sourceProject != null) {
-					ProjectFile projectFile = sourceProject.ProjectFiles.GetFile (sourceFile);
-					if (projectFile != null) {
-						if (removeFromSource)
-							sourceProject.ProjectFiles.Remove (projectFile);
-						if (targetProject.ProjectFiles.GetFile (newFile) == null) {
-							projectFile = (ProjectFile) projectFile.Clone ();
-							projectFile.Name = newFile;
-							targetProject.ProjectFiles.Add (projectFile);
-						}
+				if (oldProjectFile != null) {
+					if (removeFromSource && sourceProject.ProjectFiles.Contains (oldProjectFile))
+						sourceProject.ProjectFiles.Remove (oldProjectFile);
+					if (targetProject.ProjectFiles.GetFile (newFile) == null) {
+						ProjectFile projectFile = (ProjectFile) oldProjectFile.Clone ();
+						projectFile.Name = newFile;
+						targetProject.ProjectFiles.Add (projectFile);
 					}
 				}
 				

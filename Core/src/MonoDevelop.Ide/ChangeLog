@@ -1,3 +1,9 @@
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: The Move call will delete
+	  the file from the project, so get the old ProjectFile object before
+	  doing the move.
+
 2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs: Fix warning.
