@@ -23,7 +23,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 
 $(ASSEMBLY): $(build_sources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(RES:%=/resource:%) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) --unsafe $(build_sources) $(REFS) $(RES:%=/resource:%) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)

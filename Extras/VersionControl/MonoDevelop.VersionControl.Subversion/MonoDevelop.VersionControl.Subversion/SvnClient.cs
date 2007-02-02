@@ -594,9 +594,15 @@ namespace MonoDevelop.VersionControl.Subversion
 		private class StreamCollector {
 			Stream buf;
 			public StreamCollector(Stream buf) { this.buf = buf; }
-			public IntPtr Func(IntPtr baton, IntPtr data, ref int len) {
-				for (int i = 0; i < len; i++)
-					buf.WriteByte(Marshal.ReadByte((IntPtr)((int)data+i)));
+			public IntPtr Func(IntPtr baton, IntPtr data, ref IntPtr len) {
+				unsafe {
+					byte* bp = (byte*) data;
+					int max = (int) len;
+					for (int i = 0; i < max; i++) {
+						buf.WriteByte (*bp);
+						bp++;
+					}
+				}
 				return IntPtr.Zero;
 			}
 		}
@@ -918,7 +924,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			IntPtr apr_hash_changed_paths, int revision, IntPtr author,
 			IntPtr date, IntPtr message, IntPtr pool);
 		
-		delegate IntPtr svn_readwrite_fn_t(IntPtr baton, IntPtr data, ref int len);
+		delegate IntPtr svn_readwrite_fn_t(IntPtr baton, IntPtr data, ref IntPtr len);
 		
 		delegate void svn_wc_notify_func_t(IntPtr baton, IntPtr path,
 			NotifyAction action, NodeKind kind, IntPtr mime_type,
