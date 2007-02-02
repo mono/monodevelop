@@ -1,3 +1,9 @@
+2007-02-02  Ankit Jain  <jankit@novell.com>
+
+	* VBBindingCompilerServices.cs (Compile): Move resource compiling code
+	to ..
+	(GetResourceId): .. here. Improve error messages.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/VBNetVisitor.cs, Parser/SharpDevelopTree/Constructor.cs: Track

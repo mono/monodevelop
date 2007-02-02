@@ -134,45 +134,25 @@ namespace CSharpBinding
 				resgen = "resgen2";
 
 			foreach (ProjectFile finfo in projectFiles) {
-				if (finfo.Subtype != Subtype.Directory) {
-					switch (finfo.BuildAction) {
-						case BuildAction.Compile:
-							if (CanCompile (finfo.Name))
-								writer.WriteLine('"' + finfo.Name + '"');
-							break;
-						case BuildAction.EmbedAsResource:
-							//FIXME: Rationalize the use of monitor!
-							string fname = finfo.Name;
-							string resourceId = finfo.ResourceId;
-							if (resourceId == null) {
-								Console.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
-								monitor.Log.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
-								continue;
-							}
+				if (finfo.Subtype == Subtype.Directory)
+					continue;
 
-							if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
-								using (StringWriter sw = new StringWriter ()) {
-									Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
-									ProcessWrapper pw = Runtime.ProcessService.StartProcess (
-										resgen, String.Format ("/compile \"{0}\"", fname),
-										Path.GetDirectoryName (fname),
-										sw, sw, null);
+				switch (finfo.BuildAction) {
+					case BuildAction.Compile:
+						if (CanCompile (finfo.Name))
+							writer.WriteLine('"' + finfo.Name + '"');
+						break;
+					case BuildAction.EmbedAsResource:
+						//FIXME: Rationalize the use of monitor!
+						string fname = finfo.Name;
+						string resourceId = GetResourceId (finfo, ref fname, resgen, monitor);
+						if (resourceId == null)
+							continue;
 
-									pw.WaitForOutput ();
-									if (pw.ExitCode == 0) {
-										fname = Path.ChangeExtension (fname, ".resources");
-									} else {
-										Console.WriteLine ("Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n", resgen, fname, sw.ToString ());
-										monitor.Log.WriteLine (
-											"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n", resgen, fname, sw.ToString ());
-										continue;
-									}
-								}
-							}
-
-							writer.WriteLine(@"""/res:{0},{1}""", fname, resourceId);
-							break;
-					}
+						writer.WriteLine(@"""/res:{0},{1}""", finfo.Name, resourceId);
+						break;
+					default:
+						continue;
 				}
 			}
 			if (compilerparameters.GenerateXmlDocumentation) {
@@ -205,7 +185,58 @@ namespace CSharpBinding
 			Runtime.FileService.DeleteFile (error);
 			return result;
 		}
-		
+
+		string GetResourceId (ProjectFile finfo, ref string fname, string resgen, IProgressMonitor monitor)
+		{
+			string resourceId = finfo.ResourceId;
+			if (resourceId == null) {
+				Console.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
+				monitor.Log.WriteLine ("Warning: Unable to build ResourceId for {0}. Ignoring.", fname);
+				return null;
+			}
+
+			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
+				return resourceId;
+
+			using (StringWriter sw = new StringWriter ()) {
+				Console.WriteLine ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
+				monitor.Log.WriteLine (GettextCatalog.GetString (
+					"Compiling resource {0} with {1}", fname, resgen));
+				ProcessWrapper pw = null;
+				try {
+					pw = Runtime.ProcessService.StartProcess (
+						resgen, String.Format ("/compile \"{0}\"", fname),
+						Path.GetDirectoryName (fname),
+						sw, sw, null);
+				} catch (System.ComponentModel.Win32Exception ex) {
+					Console.WriteLine (GettextCatalog.GetString (
+						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.ToString ()));
+					monitor.Log.WriteLine (GettextCatalog.GetString (
+						"Error while trying to invoke '{0}' to compile resource '{1}' :\n {2}", resgen, fname, ex.Message));
+
+					return null;
+				}
+
+				//FIXME: Handle exceptions
+				pw.WaitForOutput ();
+
+				if (pw.ExitCode == 0) {
+					fname = Path.ChangeExtension (fname, ".resources");
+				} else {
+					Console.WriteLine (GettextCatalog.GetString (
+						"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n",
+						resgen, fname, sw.ToString ()));
+					monitor.Log.WriteLine (GettextCatalog.GetString (
+						"Unable to compile ({0}) {1} to .resources. Ignoring. \nReason: \n{2}\n",
+						resgen, fname, sw.ToString ()));
+
+					return null;
+				}
+			}
+
+			return resourceId;
+		}
+
 		string GetCompilerName (ClrVersion version)
 		{
 			string runtimeDir = Runtime.FileService.GetDirectoryNameWithSeparator(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
