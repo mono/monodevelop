@@ -34,7 +34,7 @@
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDeveloper.Commands.Install"
 				defaultHandler = "MonoDeveloper.InstallHandler"
-				icon = "md-network"
+				icon = "gtk-network"
 				_label = "Install" />
 		<Command id = "MonoDeveloper.Commands.SvnUpdate"
 				  _label = "Update" />
