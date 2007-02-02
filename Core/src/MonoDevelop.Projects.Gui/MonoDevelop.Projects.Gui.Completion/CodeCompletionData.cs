@@ -225,20 +225,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 			cls = c;
 			this.ambience = ambience;
 			image = Services.Icons.GetIcon(c);
-			if (c.GenericParameters != null && c.GenericParameters.Count > 0) {
-				int i = c.Name.IndexOf ('`');
-				if (i == -1)
-					completionString  = c.Name;
-				else
-					completionString  = c.Name.Substring (0, i);
-				if (c.ClassType != ClassType.Delegate)
-					text = ambience.Convert (c, ConversionFlags.ShowGenericParameters);
-				else
-					text = completionString;
+			if (c.ClassType != ClassType.Delegate) {
+				text = ambience.Convert (c, ConversionFlags.ShowGenericParameters);
+				completionString = ambience.Convert (c, ConversionFlags.None);
 			}
 			else {
 				text = c.Name;
-				completionString = c.Name;
+				completionString = text;
 			}
 		}
 		
