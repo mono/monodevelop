@@ -1,3 +1,20 @@
+2006-02-02 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Core.Gui/StockIcons.cs: removed unused (SD) stock icons
+	* MonoDevelop.Core.Gui.addin.xml,
+	* Makefile.am: removed and added icons
+	* icons/Icons.16x16.NETWORK,
+	* icons/Icons.16x16.FullScreen,
+	* icons/Icons.16x16.MyComputer,
+	* icons/Icons.16x16.PersonalFiles,
+	* icons/Icons.16x16.DRIVE,
+	* icons/Icons.16x16.CopyLeftIcon,
+	* icons/Icons.16x16.Desktop : removed
+	* icons/view-fullscreen_22.png,
+	* icons/view-fullscreen.png,
+	* icons/edit-select-all.png,
+	* icons/edit-select-all_22.png: added tango icons
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.Utils/DesktopApplication.cs: Added missing id

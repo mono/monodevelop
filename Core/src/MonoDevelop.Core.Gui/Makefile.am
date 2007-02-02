@@ -91,10 +91,7 @@ icons/Icons.16x16.ClosedFolderBitmap \
 icons/Icons.16x16.ClosedReferenceFolder \
 icons/Icons.16x16.ClosedResourceFolder \
 icons/Icons.16x16.CombineIcon \
-icons/Icons.16x16.CopyLeftIcon \
-icons/Icons.16x16.DRIVE \
 icons/Icons.16x16.Delegate \
-icons/Icons.16x16.Desktop \
 icons/Icons.16x16.Empty \
 icons/Icons.16x16.Enum \
 icons/Icons.16x16.Event \
@@ -102,7 +99,8 @@ icons/Icons.16x16.Field \
 icons/Icons.16x16.FindIcon \
 icons/Icons.16x16.FindInFiles \
 icons/Icons.16x16.FindNextIcon \
-icons/Icons.16x16.FullScreen \
+icons/view-fullscreen.png \
+icons/view-fullscreen_22.png \
 icons/Icons.16x16.GotoNextbookmark \
 icons/Icons.16x16.GotoPrevbookmark \
 icons/Icons.16x16.Information \
@@ -120,8 +118,6 @@ icons/Icons.16x16.Library \
 icons/Icons.16x16.Literal \
 icons/Icons.16x16.Method \
 icons/Icons.16x16.MiscFiles \
-icons/Icons.16x16.MyComputer \
-icons/Icons.16x16.NETWORK \
 icons/Icons.16x16.NameSpace \
 icons/Icons.16x16.NewFolderIcon \
 icons/Icons.16x16.NewSolutionIcon.png \
@@ -133,7 +129,6 @@ icons/Icons.16x16.OpenProjectIcon \
 icons/Icons.16x16.OpenReferenceFolder \
 icons/Icons.16x16.OpenResourceFolder \
 icons/Icons.16x16.OutputIcon \
-icons/Icons.16x16.PersonalFiles \
 icons/Icons.16x16.PrivateClass \
 icons/Icons.16x16.PrivateDelegate \
 icons/Icons.16x16.PrivateEnum \
@@ -191,7 +186,9 @@ icons/gnome-fs-regular.png \
 icons/user-package.png \
 icons/comment.png \
 icons/uncomment.png \
-icons/visual-studio.png
+icons/visual-studio.png \
+icons/edit-select-all.png \
+icons/edit-select-all_22.png
 
 GENERATED_FILES = \
 AssemblyInfo.cs

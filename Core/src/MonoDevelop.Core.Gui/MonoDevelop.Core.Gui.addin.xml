@@ -45,10 +45,7 @@
 		<StockIcon stockid = "md-closed-resource-folder" resource = "Icons.16x16.ClosedResourceFolder" />
 		<StockIcon stockid = "md-combine-icon" resource = "Icons.16x16.CombineIcon" size = "Menu" />
 		<StockIcon stockid = "md-combine-icon" resource = "Icons.32x32.CombineIcon" size = "Dnd" />
-		<StockIcon stockid = "md-copy-left-icon" resource = "Icons.16x16.CopyLeftIcon" />
 		<StockIcon stockid = "md-delegate" resource = "Icons.16x16.Delegate" />
-		<StockIcon stockid = "md-desktop" resource = "Icons.16x16.Desktop" />
-		<StockIcon stockid = "md-drive" resource = "Icons.16x16.DRIVE" />
 		<StockIcon stockid = "md-empty" resource = "Icons.16x16.Empty" />
 		<StockIcon stockid = "md-empty-file-icon" resource = "Icons.32x32.EmptyFileIcon" />
 		<StockIcon stockid = "md-empty-project-icon" resource = "Icons.32x32.EmptyProjectIcon" />
@@ -59,7 +56,8 @@
 		<StockIcon stockid = "md-file-xml-icon" resource = "FileIcons.XmlIcon" />
 		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
 		<StockIcon stockid = "md-find-next-icon" resource = "Icons.16x16.FindNextIcon" />
-		<StockIcon stockid = "md-fullscreen" resource = "Icons.16x16.FullScreen" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
 		<StockIcon stockid = "md-goto-nextbookmark" resource = "Icons.16x16.GotoNextbookmark" />
 		<StockIcon stockid = "md-goto-prevbookmark" resource = "Icons.16x16.GotoPrevbookmark" />
 		<StockIcon stockid = "md-html-file-icon" resource = "Icons.32x32.HTMLFileIcon" />
@@ -77,9 +75,7 @@
 		<StockIcon stockid = "md-literal" resource = "Icons.16x16.Literal" />
 		<StockIcon stockid = "md-method" resource = "Icons.16x16.Method" />
 		<StockIcon stockid = "md-misc-files" resource = "Icons.16x16.MiscFiles" />
-		<StockIcon stockid = "md-my-computer" resource = "Icons.16x16.MyComputer" />
 		<StockIcon stockid = "md-name-space" resource = "Icons.16x16.NameSpace" />
-		<StockIcon stockid = "md-network" resource = "Icons.16x16.NETWORK" />
 		<StockIcon stockid = "md-new-folder-icon" resource = "Icons.16x16.NewFolderIcon" />
 		<StockIcon stockid = "md-new-project-icon" resource = "Icons.16x16.NewSolutionIcon.png" />
 		<StockIcon stockid = "md-new-solution-icon" resource = "Icons.16x16.NewCombineIcon.png" />
@@ -88,7 +84,6 @@
 		<StockIcon stockid = "md-open-reference-folder" resource = "Icons.16x16.OpenReferenceFolder" />
 		<StockIcon stockid = "md-open-resource-folder" resource = "Icons.16x16.OpenResourceFolder" />
 		<StockIcon stockid = "md-output-icon" resource = "Icons.16x16.OutputIcon" />
-		<StockIcon stockid = "md-personal-files" resource = "Icons.16x16.PersonalFiles" />
 		<StockIcon stockid = "md-private-class" resource = "Icons.16x16.PrivateClass" />
 		<StockIcon stockid = "md-private-delegate" resource = "Icons.16x16.PrivateDelegate" />
 		<StockIcon stockid = "md-private-enum" resource = "Icons.16x16.PrivateEnum" />
@@ -133,6 +128,8 @@
 		<StockIcon stockid = "md-xml-file-icon" resource = "Icons.32x32.XMLFileIcon" size = "Dnd" />
 		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" />
 		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all.png" size = "Menu" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
 		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />

@@ -19,12 +19,9 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string ClosedResourceFolder = "md-closed-resource-folder";
 		public static readonly string CombineIcon = "md-combine-icon";
 		public static readonly string CopyIcon = Gtk.Stock.Copy;
-		public static readonly string CopyLeftIcon = "md-copy-left-icon";
 		public static readonly string CutIcon = Gtk.Stock.Cut;
 		public static readonly string Delegate = "md-delegate";
 		public static readonly string DeleteIcon = Gtk.Stock.Delete;
-		public static readonly string Desktop = "md-desktop";
-		public static readonly string Drive = "md-drive";
 		public static readonly string Empty = "md-empty";
 		public static readonly string EmptyFileIcon = "md-empty-file-icon";
 		public static readonly string EmptyProjectIcon = "md-empty-project-icon";
@@ -55,9 +52,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string Literal = "md-literal";
 		public static readonly string Method = "md-method";
 		public static readonly string MiscFiles = "md-misc-files";
-		public static readonly string MyComputer = "md-my-computer";
 		public static readonly string NameSpace = "md-name-space";
-		public static readonly string Network = "md-network";
 		public static readonly string NewDocumentIcon = Gtk.Stock.New;
 		public static readonly string NewFolderIcon = "md-new-folder-icon";
 		public static readonly string NewProjectIcon = "md-new-project-icon";
@@ -70,7 +65,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string Options = Gtk.Stock.Preferences;
 		public static readonly string OutputIcon = "md-output-icon";
 		public static readonly string PasteIcon = Gtk.Stock.Paste;
-		public static readonly string PersonalFiles = "md-personal-files";
 		public static readonly string PreView = Gtk.Stock.PrintPreview;
 		public static readonly string PrevWindowIcon = Gtk.Stock.GoBack;
 		public static readonly string Print = Gtk.Stock.Print;
