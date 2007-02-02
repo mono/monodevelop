@@ -14,8 +14,32 @@ namespace CSharpBinding
 {
 	public class CSharpTextEditorExtension: TextEditorExtension
 	{
+		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			if (key == Gdk.Key.numbersign) {
+				// Remove all indenting
+				int i = Editor.CursorPosition;
+				string s = Editor.GetText (i-1, i);
+				while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t')) {
+					i--;
+					s = Editor.GetText (i-1, i);
+				}
+				if (s.Length == 0 || s[0] == '\n') {
+					Editor.DeleteText (i, Editor.CursorPosition - i);
+				}
+			}
+			return base.KeyPress (key, modifier);
+		}
+
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext ctx, char charTyped)
 		{
+			if (charTyped == '#') {
+				int lin, col;
+				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
+				if (col == 1)
+					return GetDirectiveCompletionData ();
+			}
+			
 			if (charTyped != '.' && charTyped != ' ')
 				return null;
 			
@@ -175,30 +199,50 @@ namespace CSharpBinding
 					continue;
 
 				IClass baseCls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments, true, true);
+				if (baseCls == null)
+					continue;
+
 				bool isInterface = baseCls.ClassType == ClassType.Interface;
 				if (isInterface && interfaceMembers == null)
 					continue;
 				ArrayList list = isInterface ? interfaceMembers : classMembers;
 				
 				foreach (IMethod m in baseCls.Methods) {
-					if (isInterface || m.IsVirtual || m.IsAbstract)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
 						list.Add (m);
 				}
 				foreach (IProperty m in baseCls.Properties) {
-					if (isInterface || m.IsVirtual || m.IsAbstract)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
 						list.Add (m);
 				}
 				foreach (IIndexer m in baseCls.Indexer) {
-					if (isInterface || m.IsVirtual || m.IsAbstract)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
 						list.Add (m);
 				}
 				foreach (IEvent m in baseCls.Events) {
-					if (isInterface || m.IsVirtual || m.IsAbstract)
+					if ((isInterface || m.IsVirtual || m.IsAbstract) && !m.IsSealed)
 						list.Add (m);
 				}
 				
 				FindOverridables (pctx, baseCls, classMembers, isInterface ? interfaceMembers : null);
 			}
+		}
+		
+		CodeCompletionDataProvider GetDirectiveCompletionData ()
+		{
+			CodeCompletionDataProvider cp = new CodeCompletionDataProvider (null, GetAmbience ());
+			cp.AddCompletionData (new CodeCompletionData ("if", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("else", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("elif", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("endif", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("define", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("undef", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("warning", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("error", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("region", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("endregion", "md-literal"));
+			return cp;
 		}
 	}
 	
@@ -259,7 +303,7 @@ namespace CSharpBinding
 			IMember mem = (IMember) item;
 			string modifiers = GetModifiers (mem, typedModifiers);
 			if (modifiers.Length > 0) modifiers += " ";
-			if (mem.IsVirtual || mem.IsAbstract)
+			if ((mem.IsVirtual || mem.IsAbstract) && mem.DeclaringType.ClassType != ClassType.Interface)
 				modifiers += "override ";
 			
 			if (item is IMethod)
