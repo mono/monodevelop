@@ -1,5 +1,10 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs: Cosmetic fixes in code completion
+	  of "new".
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: Implemented
 	  code completion for "throw new". Don't show interfaces and abstract
 	  classes when completing "new".

@@ -53,7 +53,6 @@ namespace CSharpBinding
 			int i = ctx.TriggerOffset;
 			if (charTyped == ' ' && GetPreviousToken ("new", ref i)) {
 				string token = GetPreviousToken (ref i);
-				Console.WriteLine ("tt: " + token);
 				if (token == "=" || token == "throw") {
 				
 					IParserContext pctx = GetParserContext ();
@@ -78,13 +77,14 @@ namespace CSharpBinding
 							return null;
 						}
 					}
-					cp.DefaultCompletionString = rt.Name;
 					cp.AddResolveResults (res.IsAsResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text, true));
 					
 					// Add the variable type itself to the results list (IsAsResolve only returns subclasses)
 					IClass cls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments);
-					if (cls != null && cls.ClassType != ClassType.Interface)
+					if (cls != null && cls.ClassType != ClassType.Interface) {
 						cp.AddResolveResult (cls);
+						cp.DefaultCompletionString = GetAmbience ().Convert (cls, ConversionFlags.None);
+					}
 					
 					return cp;
 				}
