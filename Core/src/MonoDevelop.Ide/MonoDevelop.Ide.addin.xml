@@ -91,7 +91,8 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
 				_label = "Select _All" 
 				description = "Select all text" 
-				shortcut = "Control|A" />
+				shortcut = "Control|A"
+				icon = "md-select-all" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.CommentCode"
 				shortcut = "Control|Alt|C"
 				description = "Comment selected lines of code" 
