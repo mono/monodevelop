@@ -300,6 +300,10 @@ namespace MonoDevelop.Projects.Parser
 			// Replace the type name placeholders
 			DefaultClass cls = PersistentClass.Resolve (template, res);
 			cls.Name = name;
+			
+			// Not generic anymore
+			cls.GenericParameters = null;
+			
 			return cls;
 		}
 		

@@ -1,5 +1,14 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/AbstractClass.cs: An instantiated generic
+	  type is not generic anymore.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/IParser.cs,
+	  MonoDevelop.Projects.Parser/IParserService.cs: Removed IsAsResolve,
+	  as it is c# specific and handled in the c# binding.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs,
 	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: When a file
 	  is removed from a project, remove subclass references of all

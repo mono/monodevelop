@@ -137,8 +137,6 @@ namespace MonoDevelop.Projects.Parser
 		                      string fileName,
 		                      string fileContent);
 
-		LanguageItemCollection IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent);
-		
 		LanguageItemCollection CtrlSpace(IParserContext parserContext, int caretLine, int caretColumn, string fileName);
 		
 		ILanguageItem ResolveIdentifier (IParserContext parserContext, string id, int line, int col, string fileName, string fileContent);

@@ -288,20 +288,6 @@ namespace MonoDevelop.Projects.Parser
 			return db.GetSpecialComments (fileName);
 		}
 			
-		public LanguageItemCollection IsAsResolve (string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			try {
-				IParser parser = parserService.GetParser (fileName);
-				if (parser != null) {
-					return parser.IsAsResolve (this, expression, caretLineNumber, caretColumn, fileName, fileContent);
-				}
-				return null;
-			} catch (Exception ex) {
-				Runtime.LoggingService.Error (ex);
-				return null;
-			}
-		}
-		
 		public LanguageItemCollection CtrlSpace (int caretLine, int caretColumn, string fileName)
 		{
 			IParser parser = parserService.GetParser (fileName);
