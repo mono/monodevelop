@@ -1,5 +1,12 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: When looking for
+	  the window class, avoid returning the generated partial class.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Show the editor
+	  page when jumping to a signal handler.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Warn the user if
 	  the gtk-sharp-2 package can't be found. Some distros don't include
 	  the .pc file in the gtk# package, only in the -devel package.

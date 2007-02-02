@@ -381,7 +381,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					// folder. Generated partial classes will be ignored.
 					foreach (IClass part in cls.Parts) {
 						if (!part.Region.FileName.StartsWith (info.GtkGuiFolder))
-							return cls;
+							return part;
 					}
 				}
 			}

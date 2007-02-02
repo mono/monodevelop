@@ -265,7 +265,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			foreach (IMethod met in cls.Methods) {
 				if (met.Name == signal.Handler) {
-					ShowPage (1);
+					ShowPage (0);
 					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
 					break;
 				}
