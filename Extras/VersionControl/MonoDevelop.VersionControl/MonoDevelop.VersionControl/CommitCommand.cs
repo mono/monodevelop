@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using MonoDevelop.VersionControl.Dialogs;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -23,23 +25,32 @@ namespace MonoDevelop.VersionControl
 		
 		public static bool Commit (Repository vc, ChangeSet changeSet, bool test)
 		{
-			if (vc.CanCommit (changeSet.BaseLocalPath)) {
-				if (test) return true;
+			try {
+				if (vc.CanCommit (changeSet.BaseLocalPath)) {
+					if (test) return true;
 
-				if (!VersionControlProjectService.NotifyPrepareCommit (vc, changeSet))
-					return false;
-				CommitDialog dlg = new CommitDialog (changeSet);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet)) {
-						new CommitWorker (vc, changeSet, dlg).Start();
-						return true;
+					if (!VersionControlProjectService.NotifyPrepareCommit (vc, changeSet))
+						return false;
+					CommitDialog dlg = new CommitDialog (changeSet);
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+						if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet)) {
+							new CommitWorker (vc, changeSet, dlg).Start();
+							return true;
+						}
 					}
+					dlg.EndCommit (false);
+					dlg.Dispose ();
+					VersionControlProjectService.NotifyAfterCommit (vc, changeSet, false);
 				}
-				dlg.EndCommit (false);
-				dlg.Dispose ();
-				VersionControlProjectService.NotifyAfterCommit (vc, changeSet, false);
+				return false;
 			}
-			return false;
+			catch (Exception ex) {
+				if (test)
+					Runtime.LoggingService.Error (ex);
+				else
+					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+				return false;
+			}
 		}
 
 		private class CommitWorker : Task

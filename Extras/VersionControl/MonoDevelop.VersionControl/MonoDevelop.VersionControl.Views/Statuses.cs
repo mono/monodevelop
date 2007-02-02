@@ -298,8 +298,13 @@ namespace MonoDevelop.VersionControl.Views
 				commitBox.Visible = true;
 				colRemote.Visible = remoteStatus;
 				
-				if (vc.CanCommit(filepath))
+				try {
+					if (vc.CanCommit(filepath))
+						buttonCommit.Sensitive = true;
+				} catch (Exception ex) {
+					Runtime.LoggingService.Error (ex);
 					buttonCommit.Sensitive = true;
+				}
 			}
 			UpdateSelectionStatus ();
 		}
@@ -549,8 +554,15 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				} while (filestore.IterNext (ref it));
 			}
-			
-			VersionInfo newInfo = vc.GetVersionInfo (args.FilePath, remoteStatus);
+
+			VersionInfo newInfo;
+			try {
+				newInfo = vc.GetVersionInfo (args.FilePath, remoteStatus);
+			}
+			catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+				return;
+			}
 			
 			if (found) {
 				int n;

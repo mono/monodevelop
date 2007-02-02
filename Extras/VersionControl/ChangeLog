@@ -1,5 +1,15 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:
+	  Improved protection against unknown exceptions.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
 	  MonoDevelop.VersionControl.Subversion/Makefile.am,
 	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

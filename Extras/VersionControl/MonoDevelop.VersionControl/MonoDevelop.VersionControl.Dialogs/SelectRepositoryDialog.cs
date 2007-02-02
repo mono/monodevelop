@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core;
 using Gtk;
 
 namespace MonoDevelop.VersionControl.Dialogs
@@ -130,8 +131,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			else
 				it = store.AppendValues (r, r.Name, r.VersionControlSystem.Name, false, "vcs-repository");
 
-			if (r.HasChildRepositories)
-				store.AppendValues (it, null, "", "", true, "vcs-repository");
+			try {
+				if (r.HasChildRepositories)
+					store.AppendValues (it, null, "", "", true, "vcs-repository");
+			}
+			catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+			}
 		}
 
 		protected virtual void OnButtonAddClicked(object sender, System.EventArgs e)
@@ -199,7 +205,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 						LoadRepositories (rep, args.Iter);
 				} catch (Exception ex) {
 					store.AppendValues (args.Iter, null, "ERROR: " + ex.Message, "", true);
-					Console.WriteLine (ex);
+					Runtime.LoggingService.Error (ex);
 				}
 					
 				// If after all there are no children, return false

@@ -323,35 +323,44 @@ namespace MonoDevelop.VersionControl
 			
 			bool res = false;
 			
-			switch (cmd) {
-				case Commands.Update:
-					res = UpdateCommand.Update (repo, path, test);
-					break;
-				case Commands.Diff:
-					res = DiffView.Show (repo, path, test);
-					break;
-				case Commands.Log:
-					res = LogView.Show (repo, path, isDir, null, test);
-					break;
-				case Commands.Status:
-					res = StatusView.Show (repo, path, test);
-					break;
-				case Commands.Commit:
-					res = CommitCommand.Commit (repo, path, test);
-					break;
-				case Commands.Add:
-					res = AddCommand.Add (repo, path, test);
-					break;
-				case Commands.Remove:
-					res = RemoveCommand.Remove (repo, path, isDir, test);
-					break;
-				case Commands.Revert:
-					res = RevertCommand.Revert (repo, path, test);
-					break;
-				case Commands.Publish:
-					if (isDir)
-						res = PublishCommand.Publish (pentry, path, test);
-					break;
+			try {
+				switch (cmd) {
+					case Commands.Update:
+						res = UpdateCommand.Update (repo, path, test);
+						break;
+					case Commands.Diff:
+						res = DiffView.Show (repo, path, test);
+						break;
+					case Commands.Log:
+						res = LogView.Show (repo, path, isDir, null, test);
+						break;
+					case Commands.Status:
+						res = StatusView.Show (repo, path, test);
+						break;
+					case Commands.Commit:
+						res = CommitCommand.Commit (repo, path, test);
+						break;
+					case Commands.Add:
+						res = AddCommand.Add (repo, path, test);
+						break;
+					case Commands.Remove:
+						res = RemoveCommand.Remove (repo, path, isDir, test);
+						break;
+					case Commands.Revert:
+						res = RevertCommand.Revert (repo, path, test);
+						break;
+					case Commands.Publish:
+						if (isDir)
+							res = PublishCommand.Publish (pentry, path, test);
+						break;
+				}
+			}
+			catch (Exception ex) {
+				if (test)
+					Runtime.LoggingService.Error (ex);
+				else
+					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+				return TestResult.Disable;
 			}
 			
 			return res ? TestResult.Enable : TestResult.Disable;

@@ -24,18 +24,27 @@ namespace MonoDevelop.VersionControl
 		
 		public static bool Revert (Repository vc, string[] path, bool test)
 		{
-			if (test) {
-				foreach (string s in path)
-					if (!vc.CanRevert (s))
-						return false;
+			try {
+				if (test) {
+					foreach (string s in path)
+						if (!vc.CanRevert (s))
+							return false;
+					return true;
+				}
+
+				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?")))
+					return false;
+
+				new RevertWorker(vc, path).Start();
 				return true;
 			}
-
-			if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?")))
+			catch (Exception ex) {
+				if (test)
+					Runtime.LoggingService.Error (ex);
+				else
+					IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
 				return false;
-
-			new RevertWorker(vc, path).Start();
-			return true;
+			}
 		}
 
 		private class RevertWorker : Task {

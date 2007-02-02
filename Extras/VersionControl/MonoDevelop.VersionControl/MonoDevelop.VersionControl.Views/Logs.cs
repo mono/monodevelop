@@ -63,18 +63,26 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		public LogView (string filepath, bool isDirectory, Revision[] history, Repository vc) 
-			: base(Path.GetFileName(filepath) + " Log") {
+			: base(Path.GetFileName(filepath) + " Log")
+		{
 			this.vc = vc;
 			this.filepath = filepath;
 			this.history = history;
 			
-			this.vinfo = vc.GetVersionInfo (filepath, false);
+			try {
+				this.vinfo = vc.GetVersionInfo (filepath, false);
+			}
+			catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("Version control command failed."));
+			}
 
 			// Widget setup
 			
 			VBox box = new VBox(false, 6);
 			
 			widget = box;
+			if (vinfo == null)
+				widget.Sensitive = false;
 
 			// Create the toolbar
 			
