@@ -1024,7 +1024,7 @@ namespace CSharpBinding.Parser
 			return parserContext.GetClass (cls.FullyQualifiedName);
 		}
 
-		public LanguageItemCollection IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent)
+		public LanguageItemCollection IsAsResolve (string expression, int caretLine, int caretColumn, string fileName, string fileContent, bool excludeInterfaces)
 		{
 			LanguageItemCollection result = new LanguageItemCollection ();
 			this.caretLine = caretLine;
@@ -1092,7 +1092,7 @@ namespace CSharpBinding.Parser
 			}
 
 			foreach (IClass iclass in parserContext.GetSubclassesTree (returnClass, (string[]) ns.ToArray (typeof(string)))) {
-				if (!result.Contains (iclass))
+				if (!result.Contains (iclass) && !(excludeInterfaces && (iclass.ClassType == ClassType.Interface || iclass.IsAbstract)))
 					result.Add (iclass);
 			}
 			

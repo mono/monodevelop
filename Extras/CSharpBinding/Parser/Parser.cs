@@ -119,11 +119,6 @@ namespace CSharpBinding.Parser
 			return new Resolver (parserContext).CtrlSpace (caretLine, caretColumn, fileName);
 		}
 
-		public LanguageItemCollection IsAsResolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
-		{
-			return new Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent);
-		}
-		
 		public ResolveResult Resolve (IParserContext parserContext, string expression, int caretLineNumber, int caretColumn, string fileName, string fileContent)
 		{
 			return new Resolver (parserContext).Resolve (expression, caretLineNumber, caretColumn, fileName, fileContent);

@@ -1,5 +1,14 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/CSharpTextEditorExtension.cs, Parser/Resolver.cs: Implemented
+	  code completion for "throw new". Don't show interfaces and abstract
+	  classes when completing "new".
+	* Parser/Parser.cs: Removed.
+	* CSharpAmbience.cs: Make sure instantiated generic classes are shown
+	  with the correct name.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: When typing '#', move it to the
 	  first column is there is no other text before. Implemented code
 	  completion for compiler directives. Don't show sealed methods in

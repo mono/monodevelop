@@ -52,24 +52,38 @@ namespace CSharpBinding
 			
 			int i = ctx.TriggerOffset;
 			if (charTyped == ' ' && GetPreviousToken ("new", ref i)) {
-				if (GetPreviousToken ("=", ref i)) {
+				string token = GetPreviousToken (ref i);
+				Console.WriteLine ("tt: " + token);
+				if (token == "=" || token == "throw") {
+				
 					IParserContext pctx = GetParserContext ();
-					string ex = expressionFinder.FindExpression (Editor.GetText (0, i), i - 2).Expression;
 					CodeCompletionDataProvider cp = new CodeCompletionDataProvider (pctx, GetAmbience ());
+					Resolver res = new Resolver (pctx);
+					
+					IReturnType rt;
+					string ex;
 					caretColumn -= (i - ctx.TriggerOffset);
 					
-					// Find the type of the variable that will hold the object
-					Resolver res = new Resolver (pctx);
-					IReturnType rt = res.internalResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text);
-					if (rt == null)
-						return null;
-					
+					if (token == "throw") {
+						rt = new DefaultReturnType ("System.Exception");
+						ex = "System.Exception";
+					}
+					else {
+						ex = expressionFinder.FindExpression (Editor.GetText (0, i), i - 2).Expression;
+						
+						// Find the type of the variable that will hold the object
+						rt = res.internalResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text);
+						if (rt == null) {
+							cp.Dispose ();
+							return null;
+						}
+					}
 					cp.DefaultCompletionString = rt.Name;
-					cp.AddResolveResults (pctx.IsAsResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text));
+					cp.AddResolveResults (res.IsAsResolve (ex, caretLineNumber, caretColumn, FileName, Editor.Text, true));
 					
 					// Add the variable type itself to the results list (IsAsResolve only returns subclasses)
 					IClass cls = pctx.GetClass (rt.FullyQualifiedName, rt.GenericArguments);
-					if (cls != null)
+					if (cls != null && cls.ClassType != ClassType.Interface)
 						cp.AddResolveResult (cls);
 					
 					return cp;
@@ -123,7 +137,8 @@ namespace CSharpBinding
 			if (charTyped == ' ') {
 				if (expression == "is" || expression == "as") {
 					string expr = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 5).Expression;
-					completionProvider.AddResolveResults (parserContext.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text));
+					Resolver res = new Resolver (parserContext);
+					completionProvider.AddResolveResults (res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false));
 				}
 				else if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing")) {
 					string[] namespaces = parserContext.GetNamespaceList ("", true, true);
@@ -163,7 +178,9 @@ namespace CSharpBinding
 			}
 			if (s.Length == 0)
 				return null;
-				
+			if (!char.IsLetterOrDigit (s[0]))
+				return s;
+
 			int endp = i;
 			while (s.Length > 0 && (char.IsLetterOrDigit (s[0]) || s[0] == '_')) {
 				i--;

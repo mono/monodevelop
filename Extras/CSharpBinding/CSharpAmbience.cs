@@ -98,14 +98,14 @@ namespace CSharpBinding
 		
 		string ConvertTypeName (string typeName, ConversionFlags conversionFlags)
 		{
-			int i = typeName.IndexOf ('`');
-			if (i == -1)
+			int p = typeName.IndexOf ('`');
+			if (p == -1)
 				return GetIntrinsicTypeName (typeName);
 
-			StringBuilder res = new StringBuilder (GetIntrinsicTypeName (typeName.Substring (0, i)));
-			i = typeName.IndexOf ('[', i);
+			StringBuilder res = new StringBuilder (GetIntrinsicTypeName (typeName.Substring (0, p)));
+			int i = typeName.IndexOf ('[', p);
 			if (i == -1)
-				return typeName;
+				return typeName.Substring (0, p);
 
 			if (!ParseGenericParamList (res, typeName, ref i, conversionFlags))
 				return typeName;
@@ -226,12 +226,7 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
-			string tname;
-			int ig = c.Name.IndexOf ('`');
-			if (ig != -1)
-				tname = c.Name.Substring (0, ig);
-			else
-				tname = c.Name;
+			string tname = ConvertTypeName (c.Name, conversionFlags);
 			
 			if (c.ClassType == ClassType.Delegate && c.Methods.Count > 0) {
 				foreach(IMethod m in c.Methods) {
