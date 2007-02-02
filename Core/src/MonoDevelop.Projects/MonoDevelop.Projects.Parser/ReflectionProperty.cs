@@ -54,13 +54,6 @@ namespace MonoDevelop.Projects.Parser
 			if (methodBase != null) {
 				modifiers |= ReflectionMethod.GetModifiers (methodBase.Attributes);
 				
-				if (methodBase.IsVirtual) {
-					modifiers |= ModifierEnum.Virtual;
-				}
-				if (methodBase.IsAbstract) {
-					modifiers |= ModifierEnum.Abstract;
-				}
-				
 			} else { // assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}

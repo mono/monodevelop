@@ -729,19 +729,32 @@ namespace MonoDevelop.Projects.Parser
 		{
 			lock (rwlock)
 			{
+				ClassUpdateInformation classInfo = new ClassUpdateInformation ();
+				
 				FileEntry fe = files [fileName] as FileEntry;
 				if (fe == null) return;
 				
 				foreach (ClassEntry ce in fe.ClassEntries) {
 					if (ce.Class == null) ce.Class = ReadClass (ce);
-					ce.Class = CompoundClass.RemoveFile (ce.Class, fileName);
-					if (ce.Class == null)
+					IClass c = CompoundClass.RemoveFile (ce.Class, fileName);
+					if (c == null) {
+						classInfo.Removed.Add (ce.Class);
+						RemoveSubclassReferences (ce);
+						UnresolveSubclasses (ce);
 						ce.NamespaceRef.Remove (ce.Name);
+					} else
+						ce.Class = c;
 				}
 				
 				files.Remove (fileName);
 				modified = true;
+
+				OnFileRemoved (fileName, classInfo);
 			}
+		}
+		
+		protected virtual void OnFileRemoved (string fileName, ClassUpdateInformation classInfo)
+		{
 		}
 		
 		public ClassUpdateInformation UpdateClassInformation (ClassCollection newClasses, string fileName)
@@ -795,8 +808,6 @@ namespace MonoDevelop.Projects.Parser
 								ce.Class = ReadClass (ce);
 								c = ce.Class;
 							}
-							RemoveSubclassReferences (ce);
-							UnresolveSubclasses (ce);
 							IClass removed = CompoundClass.RemoveFile (c, fileName);
 							if (removed != null) {
 								// It's still a compound class
@@ -805,6 +816,8 @@ namespace MonoDevelop.Projects.Parser
 								res.Modified.Add (removed);
 							} else {
 								// It's not a compoudnd class. Remove it.
+								RemoveSubclassReferences (ce);
+								UnresolveSubclasses (ce);
 								res.Removed.Add (c);
 								ce.NamespaceRef.Remove (ce.Name);
 							}

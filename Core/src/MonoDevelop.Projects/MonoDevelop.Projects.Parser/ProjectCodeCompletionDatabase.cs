@@ -279,6 +279,13 @@ namespace MonoDevelop.Projects.Parser
 			Flush ();
 			return res;
 		}
+		
+		protected override void OnFileRemoved (string fileName, ClassUpdateInformation classInfo)
+		{
+			if (classInfo.Removed.Count > 0)
+				parserDatabase.NotifyParseInfoChange (fileName, classInfo, project);
+		}
+
 	}
 }
 

@@ -84,13 +84,6 @@ namespace MonoDevelop.Projects.Parser
 			
 			modifiers = GetModifiers (methodBase.Attributes);
 			
-			if (methodBase.IsVirtual) {
-				modifiers |= ModifierEnum.Virtual;
-			}
-			if (methodBase.IsAbstract) {
-				modifiers |= ModifierEnum.Abstract;
-			}
-			
 			foreach (ParameterDefinition paramInfo in methodBase.Parameters) {
 				parameters.Add(new ReflectionParameter(paramInfo, node));
 			}
@@ -122,6 +115,12 @@ namespace MonoDevelop.Projects.Parser
 				modifiers |= ModifierEnum.Static;
 			if ((attributes & MethodAttributes.SpecialName) != 0)
 				modifiers |= ModifierEnum.SpecialName;
+			if ((attributes & MethodAttributes.Virtual) != 0)
+				modifiers |= ModifierEnum.Virtual;
+			if ((attributes & MethodAttributes.Abstract) != 0)
+				modifiers |= ModifierEnum.Abstract;
+			if ((attributes & MethodAttributes.Final) != 0)
+				modifiers |= ModifierEnum.Sealed;
 			
 			MethodAttributes access = attributes & MethodAttributes.MemberAccessMask;
 			
