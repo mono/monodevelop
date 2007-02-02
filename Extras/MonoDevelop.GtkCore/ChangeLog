@@ -1,5 +1,11 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Intercept calls
+	  to the IPositionable interface, and show the editor page when
+	  jumping to a line.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: When looking for
 	  the window class, avoid returning the generated partial class.
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Show the editor

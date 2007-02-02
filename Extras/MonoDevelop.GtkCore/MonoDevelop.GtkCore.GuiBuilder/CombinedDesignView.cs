@@ -43,7 +43,7 @@ using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : AbstractViewContent
+	public class CombinedDesignView : AbstractViewContent, IPositionable
 	{
 		IViewContent content;
 		Gtk.Notebook notebook;
@@ -215,6 +215,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override object GetContent (Type type)
 		{
+			if (type == typeof(IPositionable)) {
+				// Intercept the IPositionable interface, since we need to
+				// switch to the text editor when jumping to a line
+				if (content.GetContent (type) != null)
+					return this;
+				else
+					return null;
+			}
+			
 			object ob = base.GetContent (type);
 			if (ob == null)
 				return content.GetContent (type);
@@ -224,9 +233,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void JumpTo (int line, int column)
 		{
-			IPositionable ip = (IPositionable) GetContent (typeof(IPositionable));
-			if (ip != null)
+			IPositionable ip = (IPositionable) content.GetContent (typeof(IPositionable));
+			if (ip != null) {
+				ShowPage (0);
 				ip.JumpTo (line, column);
+			}
 		}
 	}
 }
