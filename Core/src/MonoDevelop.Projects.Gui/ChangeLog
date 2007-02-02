@@ -1,3 +1,9 @@
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	  Set the project directory as default path for the file entries.
+	  Fixes bug #80386 and #79223.
+
 2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs,

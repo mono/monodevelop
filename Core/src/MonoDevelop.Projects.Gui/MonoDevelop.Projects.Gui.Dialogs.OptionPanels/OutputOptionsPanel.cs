@@ -35,17 +35,27 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			[Glade.Widget] CheckButton externalConsoleCheckButton;			
 			
 			DotNetProjectConfiguration configuration;
+			Project project;
 
 			public  OutputOptionsPanelWidget(IProperties CustomizationObject) : base ("Base.glade", "OutputOptionsPanel")
  			{			
 				configuration = (DotNetProjectConfiguration)((IProperties)CustomizationObject).GetProperty("Config");
+				project = (Project)((IProperties)CustomizationObject).GetProperty("Project");
 				externalConsoleCheckButton.Toggled += new EventHandler (ExternalConsoleToggle);
 				
 				assemblyNameEntry.Text = configuration.OutputAssembly;
+				parametersEntry.Text = configuration.CommandLineParameters;
+				
+				outputPathButton.DefaultPath = project.BaseDirectory;
 				outputPathButton.Filename = configuration.OutputDirectory;
-				parametersEntry.Text      = configuration.CommandLineParameters;
+				
+				executeButton.DefaultPath = project.BaseDirectory;
 				executeButton.Filename = configuration.ExecuteScript;
+				
+				beforeButton.DefaultPath = project.BaseDirectory;
  				beforeButton.Filename = configuration.ExecuteBeforeBuild;
+ 				
+				afterButton.DefaultPath = project.BaseDirectory;
  				afterButton.Filename = configuration.ExecuteAfterBuild;
 				
  				externalConsoleCheckButton.Active = configuration.ExternalConsole;
