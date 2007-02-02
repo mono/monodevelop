@@ -1,5 +1,11 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Warn the user if
+	  the gtk-sharp-2 package can't be found. Some distros don't include
+	  the .pc file in the gtk# package, only in the -devel package.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from Stetic module.
 
 2007-01-31  Lluis Sanchez Gual <lluis@novell.com> 

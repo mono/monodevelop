@@ -193,6 +193,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 				SteticApp.UpdateWidgetLibraries (false);
 			}
+			else {
+				// Some gtk# packages don't include the .pc file unless you install gtk-sharp-devel
+				if (Runtime.SystemAssemblyService.GetPackage ("gtk-sharp-2.0") == null) {
+					string msg = GettextCatalog.GetString ("ERROR: MonoDevelop could not find the Gtk# 2.0 development package. Compilation of projects depending on Gtk# libraries will fail. You may need to install development packages for gtk-sharp-2.0.");
+					args.ProgressMonitor.Log.WriteLine ();
+					args.ProgressMonitor.Log.WriteLine (msg);
+				}
+			}
 		}
 		
 		static bool HasOpenDesigners (Project project)
