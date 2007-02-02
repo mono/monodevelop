@@ -1,5 +1,11 @@
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Search/WholeProjectDocumentIterator.cs: When
+	  searching look into all kind of files, not only in those that are
+	  going to be compiled.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: The Move call will delete
 	  the file from the project, so get the old ProjectFile object before
 	  doing the move.

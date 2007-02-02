@@ -75,8 +75,7 @@ namespace MonoDevelop.Ide.Gui.Search
 		void AddFiles(Project project)
 		{
 			foreach (ProjectFile file in project.ProjectFiles) {
-				if (file.BuildAction == BuildAction.Compile &&
-				    file.Subtype     == Subtype.Code) {
+				if (file.Subtype == Subtype.Code) {
 					files.Add(file.Name);
 				}
 			}
