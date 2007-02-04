@@ -63,6 +63,7 @@ namespace AspNetAddIn.Parser.Internal
 
 		public string Filename {
 			get { return fileName; }
+			set { fileName = value; }
 		}
 
 		public int BeginLine {

@@ -24,7 +24,8 @@ namespace AspNetAddIn
 				case WebSubtype.WebForm:
 				case WebSubtype.WebControl:
 				case WebSubtype.WebHandler:
-				case WebSubtype.WebService:	
+				case WebSubtype.WebService:
+				case WebSubtype.MasterPage:	
 					IDisplayBinding db = IdeApp.Workbench.DisplayBindings.GetBindingForMimeType ("text");
 					return (db != null);
 				default:

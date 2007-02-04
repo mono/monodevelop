@@ -26,6 +26,8 @@
 		<FileTemplate id = "EmptyWebHandler" resource = "EmptyWebHandler.xft.xml"/>
 		<FileTemplate id = "EmptyWebControl" resource = "EmptyWebControl.xft.xml"/>
 		<FileTemplate id = "EmptyWebService" resource = "EmptyWebService.xft.xml"/>
+		<FileTemplate id = "EmptyMasterPage" resource = "MasterPageWithNoCodeBehind.xft.xml" />
+		<FileTemplate id = "EmptyMasterPageWithCodeBehind" resource = "MasterPageWithCodeBehind.xft.xml" />
 		<FileTemplate id = "CodeBehindWebControl" resource = "CodeBehindWebControl.xft.xml"/>
 		<FileTemplate id = "CodeBehindWebService" resource = "CodeBehindWebService.xft.xml"/>
 		<FileTemplate id = "CodeBehindWebForm" resource = "CodeBehindWebForm.xft.xml"/>
@@ -44,7 +46,7 @@
 		<FileFilter	id = "AspNetWebFiles"
 				insertbefore = "AllFiles"
 				_label = "ASP.NET Files"
-				extensions = "*.aspx,*.ashx,*.asmx,*.ascx" />
+				extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings">

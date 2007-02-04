@@ -38,12 +38,18 @@ namespace AspNetAddIn.Parser.Tree
 	{
 		string name;
 		TagAttributes attributes;
-			
+		
 		public DirectiveNode (ILocation location, string name, TagAttributes attributes)
 			: base (location)
 		{
 			this.name = name;
 			this.attributes = attributes;
+			
+			//FIXME: workaround for weird parser MasterPage bug
+			if (string.IsNullOrEmpty(name))
+				foreach (string key in attributes.Keys)
+					if (key.ToLower() == "master")
+						this.name = "Master";
 		}
 		
 		public override void AcceptVisit (Visitor visitor)

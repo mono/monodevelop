@@ -89,8 +89,8 @@ namespace AspNetAddIn.Parser.Internal
 					return null;
 
 				//FIXME: encoding
-				TextReader reader = new StreamReader (FileName);
-				fileText = reader.ReadToEnd ();				
+				using (TextReader reader = new StreamReader (FileName))
+					fileText = reader.ReadToEnd ();			
 				return fileText;
 			}
 		}

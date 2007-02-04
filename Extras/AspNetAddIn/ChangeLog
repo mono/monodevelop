@@ -1,3 +1,21 @@
+2007-02-04 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Parser/Tree/DirectiveNode.cs: Workaround for parser bug, so that 
+	  Codebehind for MasterPages can be found.
+
+	* Parser/Internal/*: Update from mcs class tree.
+	
+	* Parser/PageInfoVisitor.cs:
+	* Project/AspNetDisplayBinding.cs: Handle MasterPages.
+
+2007-02-04 John Anderson <sontek@gmail.com>
+
+	* Templates/MasterPageWithNoCodeBehind.xft.xml:
+	* Templates/MasterPageWithCodeBehind.xft.xml:
+	* Makefile.am:
+	* AspNetAddIn.mdp:
+	* AspNetAddIn.addin.xml: Added templates for MasterPages.
+
 2007-02-01  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Project/AspNetAppProject.cs: More informative error messages.

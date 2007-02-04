@@ -33,7 +33,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using AspNetAddIn.Parser.Tree;
-//using System.Web.Util;
 
 namespace AspNetAddIn.Parser.Internal
 {
@@ -91,7 +90,7 @@ namespace AspNetAddIn.Parser.Internal
 		public string VerbatimID {
 			set {
 				tokenizer.Verbatim = true;
-				verbatimID = value.ToUpper (CultureInfo.InvariantCulture);
+				verbatimID = value;
 			}
 		}
 		
@@ -316,6 +315,7 @@ namespace AspNetAddIn.Parser.Internal
 			int token;
 			TagAttributes attributes;
 			string id;
+			bool wellFormedForServer = true;
 
 			attributes = new TagAttributes ();
 			while ((token = tokenizer.get_token ()) != Token.EOF){
@@ -335,6 +335,7 @@ namespace AspNetAddIn.Parser.Internal
 				if (Eat ('=')){
 					if (Eat (Token.ATTVALUE)){
 						attributes.Add (id, tokenizer.Value);
+						wellFormedForServer &= tokenizer.AlternatingQuotes;
 					} else if (Eat ('<') && Eat ('%')) {
 						tokenizer.Verbatim = true;
 						attributes.Add (id, "<%" + 
@@ -351,6 +352,12 @@ namespace AspNetAddIn.Parser.Internal
 			}
 
 			tokenizer.put_back ();
+
+			if (attributes.IsRunAtServer () && !wellFormedForServer) {
+				OnError ("The server tag is not well formed.");
+				return null;
+			}
+			
 			return attributes;
 		}
 
@@ -365,8 +372,9 @@ namespace AspNetAddIn.Parser.Internal
 				token = tokenizer.get_token ();
 			}
 
+			end = end.ToLower (CultureInfo.InvariantCulture);
 			while (token != Token.EOF){
-				if (Char.ToUpper ((char) token, CultureInfo.InvariantCulture) == end [i]){
+				if (Char.ToLower ((char) token, CultureInfo.InvariantCulture) == end [i]){
 					if (++i >= end.Length)
 						break;
 					token = tokenizer.get_token ();
@@ -380,6 +388,9 @@ namespace AspNetAddIn.Parser.Internal
 				vb_text.Append ((char) token);
 				token = tokenizer.get_token ();
 			} 
+
+			if (token == Token.EOF)
+				OnError ("Expecting " + end + " and got EOF.");
 
 			return RemoveComments (vb_text.ToString ());
 		}

@@ -56,6 +56,8 @@ FILES = \
 	Parser/Tree/Visitor.cs
 
 RES = \
+	Templates/MasterPageWithCodeBehind.xft.xml \
+	Templates/MasterPageWithNoCodeBehind.xft.xml \
 	Templates/EmptyWebHandler.xft.xml \
 	Templates/EmptyWebForm.xft.xml \
 	Templates/EmptyWebControl.xft.xml \

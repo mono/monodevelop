@@ -41,7 +41,7 @@ namespace AspNetAddIn.Parser.Internal
 		public const int EOF 		= 0x0200000;
 		public const int IDENTIFIER 	= 0x0200001;
 		public const int DIRECTIVE 	= 0x0200002;
-		public const int ATTVALUE   	= 0x0200003;
+		public const int ATTVALUE	= 0x0200003;
 		public const int TEXT	    	= 0x0200004;
 		public const int DOUBLEDASH 	= 0x0200005;
 		public const int CLOSING 	= 0x0200006;
@@ -57,6 +57,7 @@ namespace AspNetAddIn.Parser.Internal
 		int position;
 		bool inTag;
 		bool expectAttrValue;
+		bool alternatingQuotes;
 		bool hasPutBack;
 		bool verbatim;
 		bool have_value;
@@ -167,6 +168,7 @@ namespace AspNetAddIn.Parser.Internal
 			int c;
 			int last = 0;
 			bool inServerTag = false;
+			alternatingQuotes = true;
 			
 			while ((c = sr.Peek ()) != -1) {
 				if (c == '%' && last == '<') {
@@ -189,6 +191,8 @@ namespace AspNetAddIn.Parser.Internal
 						read_char ();
 						break;
 					}
+				} else if (quoted && c == quoteChar) {
+					alternatingQuotes = false;
 				}
 
 				sb.Append ((char) c);
@@ -305,6 +309,10 @@ namespace AspNetAddIn.Parser.Internal
 		public bool ExpectAttrValue {
 			get { return expectAttrValue; }
 			set { expectAttrValue = value; }
+		}
+		
+		public bool AlternatingQuotes {
+			get { return alternatingQuotes; }
 		}
 		
 		public int BeginLine {

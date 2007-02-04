@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Template	Originator="John Anderson"
+			Created="2007/02/03"
+			LastModified="2007/02/03">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>MasterPage with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<Category>ASP.NET</Category>
+		<LanguageName>*</LanguageName>
+		<_Description>Creates an ASP.NET MasterPage with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetFile name="${Name}.master">
+			<FileText>
+				<![CDATA[<%@ Master Language="${Language}" CodeFile="${Name}.master.cs" Inherits="${Namespace}.${Name}" %>
+${Doctype}
+<html>
+<head>
+	<title>${Name}</title>
+</head>
+<body>
+<div id="container">
+<form runat="server">
+    <asp:contentplaceholder id="contentPlaceHolder" runat="server" /> 
+</form>
+</div>
+</body>
+</html>]]>
+			</FileText>
+		</AspNetFile>
+		
+		<CodeTranslationFile name="${Name}.master.${LanguageExtension}">
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace}
+{
+	public partial class ${Name} : System.Web.UI.MasterPage 
+	{
+
+	}
+}]]>
+		</CodeTranslationFile>
+	</TemplateFiles>
+	<FileOptions/>
+</Template>
