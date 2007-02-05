@@ -218,7 +218,7 @@ namespace MonoDevelop.WelcomePage
 					project.AppendChild(element);
 					// Name
 					element = xml.CreateElement("Name");
-					element.InnerText = Path.GetFileNameWithoutExtension(ri.Uri);
+					element.InnerText = (ri.Private != null && ri.Private.Length > 0) ? ri.Private : Path.GetFileNameWithoutExtension(ri.Uri);
 					project.AppendChild(element);
 					// Date Modified
 					element = xml.CreateElement("DateModified");
