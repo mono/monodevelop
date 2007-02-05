@@ -180,7 +180,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.UseStock = true;
             this.buttonAdd.UseUnderline = true;
-            this.buttonAdd.Label = Mono.Unix.Catalog.GetString("gtk-add");
+            this.buttonAdd.Label = "gtk-add";
             this.vbuttonbox1.Add(this.buttonAdd);
             Gtk.ButtonBox.ButtonBoxChild w10 = ((Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonAdd]));
             w10.Expand = false;
@@ -191,7 +191,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.UseStock = true;
             this.buttonRemove.UseUnderline = true;
-            this.buttonRemove.Label = Mono.Unix.Catalog.GetString("gtk-remove");
+            this.buttonRemove.Label = "gtk-remove";
             this.vbuttonbox1.Add(this.buttonRemove);
             Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonRemove]));
             w11.Position = 1;
@@ -203,7 +203,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.buttonEdit.Name = "buttonEdit";
             this.buttonEdit.UseStock = true;
             this.buttonEdit.UseUnderline = true;
-            this.buttonEdit.Label = Mono.Unix.Catalog.GetString("gtk-edit");
+            this.buttonEdit.Label = "gtk-edit";
             this.vbuttonbox1.Add(this.buttonEdit);
             Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonEdit]));
             w12.Position = 2;
@@ -281,7 +281,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.buttonEditMessage.Name = "buttonEditMessage";
             this.buttonEditMessage.UseStock = true;
             this.buttonEditMessage.UseUnderline = true;
-            this.buttonEditMessage.Label = Mono.Unix.Catalog.GetString("gtk-edit");
+            this.buttonEditMessage.Label = "gtk-edit";
             this.boxMessage.Add(this.buttonEditMessage);
             Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.boxMessage[this.buttonEditMessage]));
             w20.Position = 1;
@@ -344,7 +344,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.labelRepository = new Gtk.Label();
             this.labelRepository.Name = "labelRepository";
             this.labelRepository.Xalign = 0F;
-            this.labelRepository.LabelProp = Mono.Unix.Catalog.GetString("");
+            this.labelRepository.LabelProp = "";
             this.table1.Add(this.labelRepository);
             Gtk.Table.TableChild w26 = ((Gtk.Table.TableChild)(this.table1[this.labelRepository]));
             w26.LeftAttach = ((uint)(1));
@@ -383,7 +383,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.button559.Name = "button559";
             this.button559.UseStock = true;
             this.button559.UseUnderline = true;
-            this.button559.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
+            this.button559.Label = "gtk-cancel";
             this.AddActionWidget(this.button559, -6);
             Gtk.ButtonBox.ButtonBoxChild w31 = ((Gtk.ButtonBox.ButtonBoxChild)(w30[this.button559]));
             w31.Expand = false;
@@ -395,7 +395,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.UseStock = true;
             this.buttonOk.UseUnderline = true;
-            this.buttonOk.Label = Mono.Unix.Catalog.GetString("gtk-ok");
+            this.buttonOk.Label = "gtk-ok";
             this.AddActionWidget(this.buttonOk, -5);
             Gtk.ButtonBox.ButtonBoxChild w32 = ((Gtk.ButtonBox.ButtonBoxChild)(w30[this.buttonOk]));
             w32.Position = 1;

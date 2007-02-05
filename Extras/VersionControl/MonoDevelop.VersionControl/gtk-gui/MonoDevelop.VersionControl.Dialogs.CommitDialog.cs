@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.button29.Name = "button29";
             this.button29.UseStock = true;
             this.button29.UseUnderline = true;
-            this.button29.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
+            this.button29.Label = "gtk-cancel";
             this.AddActionWidget(this.button29, -6);
             Gtk.ButtonBox.ButtonBoxChild w11 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.button29]));
             w11.Expand = false;
@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.button31.Name = "button31";
             this.button31.UseStock = true;
             this.button31.UseUnderline = true;
-            this.button31.Label = Mono.Unix.Catalog.GetString("gtk-ok");
+            this.button31.Label = "gtk-ok";
             this.AddActionWidget(this.button31, -5);
             Gtk.ButtonBox.ButtonBoxChild w12 = ((Gtk.ButtonBox.ButtonBoxChild)(w10[this.button31]));
             w12.Position = 1;

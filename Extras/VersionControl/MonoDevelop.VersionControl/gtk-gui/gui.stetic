@@ -44,7 +44,7 @@
                         <child>
                           <widget class="Gtk.Label" id="label3">
                             <property name="MemberName" />
-                            <property name="LabelProp">Type:</property>
+                            <property name="LabelProp" translatable="yes">Type:</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -105,7 +105,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp">Connect to Repository</property>
+                    <property name="LabelProp" translatable="yes">Connect to Repository</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -209,7 +209,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
-                    <property name="LabelProp">Registered Repositories</property>
+                    <property name="LabelProp" translatable="yes">Registered Repositories</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -250,7 +250,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextOnly</property>
-                        <property name="Label">Browse...</property>
+                        <property name="Label" translatable="yes">Browse...</property>
                         <property name="IsDialogButton">False</property>
                         <signal name="Clicked" handler="OnButtonBrowseClicked" />
                       </widget>
@@ -355,7 +355,7 @@
                   <widget class="Gtk.Label" id="label5">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Repository:</property>
+                    <property name="LabelProp" translatable="yes">Repository:</property>
                   </widget>
                   <packing>
                     <property name="AutoSize">True</property>
@@ -373,7 +373,7 @@
                   <widget class="Gtk.Label" id="labelMessage">
                     <property name="MemberName">labelMessage</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Message:</property>
+                    <property name="LabelProp" translatable="yes">Message:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
@@ -393,7 +393,7 @@
                   <widget class="Gtk.Label" id="labelName">
                     <property name="MemberName">labelName</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Module name:</property>
+                    <property name="LabelProp" translatable="yes">Module name:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -432,7 +432,7 @@
                   <widget class="Gtk.Label" id="labelTargetDir">
                     <property name="MemberName">labelTargetDir</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Target directory:</property>
+                    <property name="LabelProp" translatable="yes">Target directory:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -1101,7 +1101,7 @@
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes" context="yes" comments="">|Select the files to commit:</property>
+                <property name="LabelProp" translatable="yes">Select the files to commit:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1177,7 +1177,7 @@
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp">Commit message:</property>
+                <property name="LabelProp" translatable="yes">Commit message:</property>
               </widget>
               <packing>
                 <property name="PackType">End</property>
