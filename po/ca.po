@@ -3942,7 +3942,7 @@ msgstr "Crea fitxers pkg-config per tots els elements de solució"
 #
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:1
 msgid "Also remove the file '{0}'"
-msgstr "No s'ha pogut suprimir el fitxer '{0}'"
+msgstr "Suprimir també el fitxer '{0}'"
 
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:2
 #, fuzzy
