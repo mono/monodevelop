@@ -41,6 +41,7 @@ namespace AspNetAddIn
 				case "application/x-asmx":
 				case "application/x-ashx":
 				case "application/x-asax":
+				case "application/x-master-page":
 					return true;
 				default:
 					return false;

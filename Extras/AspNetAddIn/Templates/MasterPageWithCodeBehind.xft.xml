@@ -16,7 +16,7 @@
 	<TemplateFiles>
 		<AspNetFile name="${Name}.master">
 			<FileText>
-				<![CDATA[<%@ Master Language="${Language}" CodeFile="${Name}.master.cs" Inherits="${Namespace}.${Name}" %>
+				<![CDATA[<%@ Master Language="${Language}" CodeFile="${Name}.master.${LanguageExtension}" Inherits="Master" %>
 ${Doctype}
 <html>
 <head>
@@ -38,13 +38,10 @@ ${Doctype}
 using System.Web;
 using System.Web.UI;
 
-namespace ${Namespace}
+public partial class ${Name} : System.Web.UI.MasterPage 
 {
-	public partial class ${Name} : System.Web.UI.MasterPage 
-	{
-
-	}
-}]]>
+}
+]]>
 		</CodeTranslationFile>
 	</TemplateFiles>
 	<FileOptions/>

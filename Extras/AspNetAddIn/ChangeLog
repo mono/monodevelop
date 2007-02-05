@@ -1,3 +1,12 @@
+2007-02-05 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Templates/MasterPageWithCodeBehind.xft.xml:
+	* Project/AspNetDisplayBinding.cs:
+	* Parser/PageInfoVisitor.cs: Fix errors in last commit that came from
+	  my misunderstanding of how the CodeBehind model doesn't apply to 
+	  MasterPages. The CodeBehindService will need support for the 
+	  CodeBeside model at some point. 
+
 2007-02-04 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Parser/Tree/DirectiveNode.cs: Workaround for parser bug, so that 

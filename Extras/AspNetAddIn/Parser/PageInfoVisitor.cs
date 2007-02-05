@@ -60,9 +60,9 @@ namespace AspNetAddIn.Parser
 				case "application":
 					type = WebSubtype.Global;
 					break;
-				case "master":
-					type = WebSubtype.MasterPage;
-					break;
+				//case "master":
+				//	type = WebSubtype.MasterPage;
+				//	break;
 				default:
 					type = WebSubtype.None;
 					return;
