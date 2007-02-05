@@ -8,6 +8,7 @@ REFS =  \
 	-r:System.Web \
 	-r:System.Web.Services \
 	-r:System.Xml \
+	-r:Mono.Posix \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
@@ -19,6 +20,7 @@ REFS =  \
 FILES = \
 AssemblyInfo.cs \
 gtk-gui/generated.cs \
+gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs \
 MonoDevelop.WebReferences/CodeGenerator.cs \
 MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
 MonoDevelop.WebReferences/DiscoveryProtocol.cs \

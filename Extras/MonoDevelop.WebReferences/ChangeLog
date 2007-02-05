@@ -1,3 +1,10 @@
+2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.WebReferences.mdp, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: i18n fixes and split stetic
+	  generated code in several files.
+
 2006-11-29 Gideon de Swardt <gdeswardt@gmail.com>
 	* Makefile.in: 
 	Remove the Makefile.in from source, should not have been committed in the first place.

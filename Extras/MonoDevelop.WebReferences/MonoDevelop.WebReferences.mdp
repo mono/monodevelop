@@ -14,7 +14,7 @@
     </Configuration>
   </Configurations>
   <DeployTargets>
-    <DeployTarget Handler="MonoDevelop.DirectoryDeploy" Name="Make" Path="/home/gdeswardt/Sandbox/MonoDevelop.AddIns/MonoDevelop.WebReferences/MonoDevelop.WebReferences" ctype="DirectoryDeployTarget" />
+    <DeployTarget Handler="MonoDevelop.DirectoryDeploy" Name="Make" ctype="DirectoryDeployTarget" />
   </DeployTargets>
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
@@ -61,6 +61,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <GtkDesignInfo>
     <ExportedWidgets />
