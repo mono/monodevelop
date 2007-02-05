@@ -223,12 +223,6 @@ namespace MonoDevelop.Autotools
 
 		public void Save ()
 		{
-			//FIXME: Use dictionaryentry?
-			/*foreach (string var in VarToValuesDict.Keys) {
-				if (VarToValuesDict [var] != null)
-					SaveVariable (var);
-			}*/
-
 			foreach (string var in DirtyVariables) {
 				if (VarToValuesDict [var] != null)
 					SaveVariable (var);
@@ -237,7 +231,7 @@ namespace MonoDevelop.Autotools
 			DirtyVariables.Clear ();
 
 			using (StreamWriter sw = new StreamWriter (fileName))
-				sw.WriteLine (content);
+				sw.Write (content);
 		}
 		
 		void ThrowMakefileVarNotFound (string var)

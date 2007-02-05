@@ -352,6 +352,7 @@ namespace MonoDevelop.Autotools
     		}
 
 		bool dirty = false;
+		bool emitResourceId = true;
 
 		public object Clone ()
 		{
@@ -469,6 +470,8 @@ namespace MonoDevelop.Autotools
 			ReadFiles (BuildFilesVar, BuildAction.Compile, "Build", promptForRemoval);
 			ReadFiles (DeployFilesVar, BuildAction.FileCopy, "Deploy", promptForRemoval);
 			ReadFiles (OthersVar, BuildAction.Nothing, "Others", promptForRemoval);
+
+			emitResourceId = false;
 			ReadFiles (ResourcesVar, BuildAction.EmbedAsResource, "Resources", promptForRemoval);
 
 			if (!SyncReferences)
@@ -586,8 +589,12 @@ namespace MonoDevelop.Autotools
 					if (buildAction == BuildAction.EmbedAsResource && fname.IndexOf (',') >= 0) {
 						string [] tmp = fname.Split (new char [] {','}, 2);
 						fname = tmp [0];
-						if (tmp.Length > 1)
+						if (tmp.Length > 1) {
 							resourceId = tmp [1];
+							// Emit resourceId if atleast one of the resources
+							// specifies it
+							emitResourceId = true;
+						}
 					}
 
 					if ((fname.Length > 2 && fname [0] == '$' && fname [1] == '(') && !UseAutotools) {
@@ -1043,7 +1050,7 @@ namespace MonoDevelop.Autotools
 					else
 						str = EncodeFileName (str, "srcdir", false);
 
-					if (pf.BuildAction == BuildAction.EmbedAsResource)
+					if (pf.BuildAction == BuildAction.EmbedAsResource && emitResourceId)
 						//FIXME: When to write resource ids?
 						str = String.Format ("{0}{1},{2}", fileVar.Prefix, str, pf.ResourceId);
 					else
