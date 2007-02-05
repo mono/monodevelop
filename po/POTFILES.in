@@ -272,6 +272,7 @@ Extras/prj2make-sharp-lib/SlnFileFormat.cs
 Extras/prj2make-sharp-lib/MSBuildFileFormat.cs
 Extras/prj2make-sharp-lib/MSBuildSolution.cs
 Extras/PythonBinding/Gui/CompilerParametersPanel.cs
+Extras/VBNetBinding/VBBindingCompilerServices.cs
 Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs
 Extras/VBNetBinding/Gui/CodeGenerationPanel.cs
 Extras/VBNetBinding/templates/EmptyVBFile.xft.xml
@@ -293,10 +294,18 @@ Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.View
 Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs
 Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs
 Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs
+Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs
 Extras/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs
 Extras/MonoDevelop.Autotools/SolutionDeployer.cs
 Extras/MonoDevelop.Autotools/Commands.cs
 Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs
 Extras/MonoDevelop.Autotools/TarballTargetEditorWidget.cs
+Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs
+Extras/MonoDevelop.Autotools/MakefileOptionPanel.cs
+Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs
+Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs
+Extras/MonoDevelop.Autotools/MakefileData.cs
+Extras/MonoDevelop.Autotools/CustomMakefile.cs
 Extras/MonoDevelop.WebReferences/MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs
 
