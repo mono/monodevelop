@@ -124,6 +124,11 @@ namespace MonoDevelop.Projects
 		
 		public bool IsCombineEntryFile (string filename)
 		{
+			return ExtensionChain.IsCombineEntryFile (filename);
+		}
+		
+		internal bool IsCombineEntryFileInternal (string filename)
+		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 				
@@ -208,6 +213,11 @@ namespace MonoDevelop.Projects
 		public override void Save (IProgressMonitor monitor, CombineEntry entry)
 		{
 			entry.OnSave (monitor);
+		}
+		
+		public override bool IsCombineEntryFile (string filename)
+		{
+			return Services.ProjectService.IsCombineEntryFileInternal (filename);
 		}
 		
 		public override CombineEntry Load (IProgressMonitor monitor, string fileName)

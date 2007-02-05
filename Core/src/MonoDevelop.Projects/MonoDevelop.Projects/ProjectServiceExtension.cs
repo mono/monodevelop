@@ -14,6 +14,11 @@ namespace MonoDevelop.Projects
 			Next.Save (monitor, entry);
 		}
 		
+		public virtual bool IsCombineEntryFile (string fileName)
+		{
+			return Next.IsCombineEntryFile (fileName);
+		}
+		
 		public virtual CombineEntry Load (IProgressMonitor monitor, string fileName)
 		{
 			return Next.Load (monitor, fileName);
