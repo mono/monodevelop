@@ -16,11 +16,14 @@ namespace MonoDevelop.Projects.Gui.Deployment {
         private MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector selector;
         
         protected virtual void Build() {
+            Stetic.Gui.Initialize();
             // Widget MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget
             Stetic.BinContainer.Attach(this);
+            this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget";
             // Container child MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.Gtk.Container+ContainerChild
             this.selector = new MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector();
+            this.selector.Events = ((Gdk.EventMask)(256));
             this.selector.Name = "selector";
             this.Add(this.selector);
             if ((this.Child != null)) {

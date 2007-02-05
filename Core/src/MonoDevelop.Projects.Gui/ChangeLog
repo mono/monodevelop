@@ -1,3 +1,15 @@
+2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am: i18n fixes.
+
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Always use

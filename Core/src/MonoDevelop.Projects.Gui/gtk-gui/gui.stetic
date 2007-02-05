@@ -6,17 +6,16 @@
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget" design-size="481 96">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
-        <property name="Events">0</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes" context="yes" comments="">|Directory prefix:</property>
+            <property name="LabelProp" translatable="yes">Directory prefix:</property>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -28,7 +27,6 @@
         <child>
           <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="BrowserTitle">Select Directory</property>
             <signal name="PathChanged" handler="OnFolderEntryPathChanged" />
           </widget>
@@ -42,9 +40,8 @@
         <child>
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes" context="yes" comments="">|Application name (to use as subdirectory name in the installation prefix):</property>
+            <property name="LabelProp" translatable="yes">Application name (to use as subdirectory name in the installation prefix):</property>
           </widget>
           <packing>
             <property name="Position">2</property>
@@ -56,13 +53,11 @@
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <child>
               <widget class="Gtk.Entry" id="nameEntry">
                 <property name="MemberName" />
                 <property name="WidthRequest">275</property>
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="IsEditable">True</property>
                 <property name="InvisibleChar">●</property>
                 <signal name="Changed" handler="OnNameEntryChanged" />
@@ -86,26 +81,27 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget" design-size="300 300">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector" id="selector">
         <property name="MemberName" />
+        <property name="Events">ButtonPressMask</property>
         <signal name="ConfigurationChanged" handler="OnSelectorConfigurationChanged" />
       </widget>
     </child>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget" design-size="348 50">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
-        <property name="Events">0</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes" context="yes" comments="">|Target directory:</property>
+            <property name="LabelProp" translatable="yes">Target directory:</property>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -117,7 +113,6 @@
         <child>
           <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <signal name="PathChanged" handler="OnFolderEntryPathChanged" />
           </widget>
           <packing>
@@ -132,22 +127,20 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector" design-size="300 300">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
-        <property name="Events">0</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="Xalign">0</property>
-                <property name="LabelProp">Target:</property>
+                <property name="LabelProp" translatable="yes">Target:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -159,7 +152,6 @@
             <child>
               <widget class="Gtk.ComboBox" id="comboHandlers">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="IsTextCombo">True</property>
                 <property name="Items" />
                 <signal name="Changed" handler="OnComboHandlersChanged" />
@@ -180,7 +172,6 @@
         <child>
           <widget class="Gtk.HSeparator" id="hseparator1">
             <property name="MemberName" />
-            <property name="Events">0</property>
           </widget>
           <packing>
             <property name="Position">1</property>
@@ -192,7 +183,6 @@
         <child>
           <widget class="Gtk.EventBox" id="editorBox">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <child>
               <placeholder />
             </child>
@@ -207,16 +197,15 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget" design-size="428 325">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
-        <property name="Events">0</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Events">0</property>
             <property name="VscrollbarPolicy">Automatic</property>
             <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">EtchedIn</property>
@@ -224,7 +213,6 @@
               <widget class="Gtk.TreeView" id="targetsTree">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
               </widget>
             </child>
           </widget>
@@ -236,13 +224,11 @@
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.Button" id="buttonAdd">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-add</property>
@@ -261,7 +247,6 @@
               <widget class="Gtk.Button" id="buttonRemove">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-remove</property>
@@ -280,7 +265,6 @@
               <widget class="Gtk.Button" id="buttonEdit">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-edit</property>
@@ -298,7 +282,6 @@
             <child>
               <widget class="Gtk.HSeparator" id="hseparator1">
                 <property name="MemberName" />
-                <property name="Events">0</property>
               </widget>
               <packing>
                 <property name="Position">3</property>
@@ -311,7 +294,6 @@
               <widget class="Gtk.Button" id="buttonUp">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-up</property>
@@ -330,7 +312,6 @@
               <widget class="Gtk.Button" id="buttonDown">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-down</property>
@@ -358,17 +339,16 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget" design-size="300 158">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
-        <property name="Events">0</property>
         <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp">Command:</property>
+            <property name="LabelProp" translatable="yes">Command:</property>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -381,7 +361,6 @@
           <widget class="Gtk.Entry" id="cmdEntry">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Events">0</property>
             <property name="IsEditable">True</property>
             <property name="InvisibleChar">●</property>
             <signal name="Changed" handler="OnCmdEntryChanged" />
@@ -396,9 +375,8 @@
         <child>
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp">Arguments:</property>
+            <property name="LabelProp" translatable="yes">Arguments:</property>
           </widget>
           <packing>
             <property name="Position">2</property>
@@ -411,7 +389,6 @@
           <widget class="Gtk.Entry" id="argsEntry">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Events">0</property>
             <property name="IsEditable">True</property>
             <property name="InvisibleChar">●</property>
             <signal name="Changed" handler="OnArgsEntryChanged" />
@@ -427,8 +404,7 @@
           <widget class="Gtk.CheckButton" id="checkExternal">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Events">0</property>
-            <property name="Label">Run in external console</property>
+            <property name="Label" translatable="yes">Run in external console</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <signal name="Clicked" handler="OnCheckExternalClicked" />
@@ -444,8 +420,7 @@
           <widget class="Gtk.CheckButton" id="checkDisposeExternal">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Events">0</property>
-            <property name="Label">Dispose console after running</property>
+            <property name="Label" translatable="yes">Dispose console after running</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <signal name="Clicked" handler="OnCheckDisposeExternalClicked" />
