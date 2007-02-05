@@ -71,12 +71,19 @@ namespace MonoDevelop.Ide.Gui
 				return app.Command.GetHashCode ();
 		}
 		
-		public void OpenFile (string filePath)
+		public Document OpenFile (string filePath)
+		{
+			return OpenFile (filePath, null);
+		}
+		
+		public Document OpenFile (string filePath, string encoding)
 		{
 			if (binding != null)
-				IdeApp.Workbench.OpenDocument (filePath, -1, -1, true, null, binding);
-			else
+				return IdeApp.Workbench.OpenDocument (filePath, -1, -1, true, encoding, binding);
+			else {
 				app.Launch (filePath);
+				return null;
+			}
 		}
 	}
 }

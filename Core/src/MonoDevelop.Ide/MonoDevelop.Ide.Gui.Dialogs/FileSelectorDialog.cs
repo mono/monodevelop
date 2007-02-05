@@ -41,10 +41,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public class FileSelectorDialog: FileSelector
 	{
-		Gtk.OptionMenu encodingMenu;
 		Hashtable filterPairs;
 		int selectOption;
 		int firstEncIndex;
+		
+		Gtk.Label encodingLabel;
+		Gtk.OptionMenu encodingMenu;
+		
+		Gtk.Label viewerLabel;
+		Gtk.ComboBox viewerSelector;
+		ArrayList currentViewers = new ArrayList ();
 		
 		public FileSelectorDialog (string title): this (title, Gtk.FileChooserAction.Open)
 		{
@@ -99,23 +105,44 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			// Add the text encoding selector
-			HBox box = new HBox ();
-			Label lab = new Label (GettextCatalog.GetString ("_Character Coding:"));
-			lab.Xalign = 0;
-			box.PackStart (lab, false, false, 0);
+			Table table = new Table (2, 2, false);
+			table.RowSpacing = 6;
+			table.ColumnSpacing = 6;
+			
+			encodingLabel = new Label (GettextCatalog.GetString ("_Character Coding:"));
+			encodingLabel.Xalign = 0;
+			table.Attach (encodingLabel, 0, 1, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 			
 			encodingMenu = new Gtk.OptionMenu ();
 			FillEncodings ();
 			encodingMenu.SetHistory (0);
-			box.PackStart (encodingMenu, true, true, 6);
-			box.ShowAll ();
+			table.Attach (encodingMenu, 1, 2, 0, 1, AttachOptions.Expand|AttachOptions.Fill, AttachOptions.Expand|AttachOptions.Fill, 0, 0);
 
-			this.ExtraWidget = box;
-			
 			encodingMenu.Changed += EncodingChanged;
+			
+			// Add the viewer selector
+			viewerLabel = new Label (GettextCatalog.GetString ("Open With:"));
+			viewerLabel.Xalign = 0;
+			table.Attach (viewerLabel, 0, 1, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+			
+			viewerSelector = Gtk.ComboBox.NewText ();
+			table.Attach (viewerSelector, 1, 2, 1, 2, AttachOptions.Expand|AttachOptions.Fill, AttachOptions.Expand|AttachOptions.Fill, 0, 0);
+			FillViewers ();
+			viewerSelector.Changed += OnViewerChanged;
+			
+			table.ShowAll ();
+			this.ExtraWidget = table;
+			
+			// Give back the height that the extra widgets take
+			int w, h;
+			GetSize (out w, out h);
+			Resize (w, h + table.SizeRequest ().Height);
 			
 			if (action == Gtk.FileChooserAction.SelectFolder)
 				ShowEncodingSelector = false;
+				
+			if (action != Gtk.FileChooserAction.Open)
+				ShowViewerSelector = false;
 		}
 		
 		public string Encoding {
@@ -142,8 +169,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		}
 		
 		public bool ShowEncodingSelector {
-			get { return ExtraWidget.Visible; }
-			set { ExtraWidget.Visible = value; }
+			get { return encodingLabel.Visible; }
+			set { encodingLabel.Visible = encodingMenu.Visible = value; }
+		}
+		
+		public bool ShowViewerSelector {
+			get { return viewerLabel.Visible; }
+			set { viewerLabel.Visible = viewerSelector.Visible = value; }
 		}
 		
 		void FillEncodings ()
@@ -204,6 +236,58 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
+		void FillViewers ()
+		{
+			((Gtk.ListStore)viewerSelector.Model).Clear ();
+			currentViewers.Clear ();
+			
+			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
+				return;
+			 
+			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename)) {
+				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
+				currentViewers.Add (null);
+			}
+			FileViewer[] vs = IdeApp.Workbench.GetFileViewers (Filename);
+			foreach (FileViewer vw in vs) {
+				if (!vw.IsExternal) {
+					viewerSelector.AppendText (vw.Title);
+					currentViewers.Add (vw);
+				}
+			}
+			viewerSelector.Active = 0;
+			viewerLabel.Sensitive = viewerSelector.Sensitive = currentViewers.Count > 1;
+		}
+		
+		void OnViewerChanged (object s, EventArgs args)
+		{
+			UpdateExtraWidgets ();
+		}
+		
+		void UpdateExtraWidgets ()
+		{
+			if (Filename == null || Filename.Length == 0 || System.IO.Directory.Exists (Filename)) {
+				encodingLabel.Sensitive = encodingMenu.Sensitive = false;
+				viewerLabel.Sensitive = viewerSelector.Sensitive = false;
+				return;
+			}
+			    
+			if (IdeApp.Services.ProjectService.IsCombineEntryFile (Filename))
+				encodingLabel.Sensitive = encodingMenu.Sensitive = (SelectedViewer != null);
+			else
+				encodingLabel.Sensitive = encodingMenu.Sensitive = true;
+
+			viewerLabel.Sensitive = viewerSelector.Sensitive = currentViewers.Count > 1;
+		}
+		
+		public FileViewer SelectedViewer {
+			get {
+				if (viewerSelector.Active == -1)
+					return null;
+				return currentViewers [viewerSelector.Active] as FileViewer;
+			}
+		}
+		
 		protected override void OnSelectionChanged ()
 		{
 			base.OnSelectionChanged ();
@@ -211,13 +295,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (ExtraWidget == null || this.Action != Gtk.FileChooserAction.Open)
 				return;
 			
-			if (Filename != null && Filename.Length > 0 && 
-			    !MonoDevelop.Projects.Services.ProjectService.IsCombineEntryFile (Filename) &&
-			    !System.IO.Directory.Exists (Filename))
-			{
-				ExtraWidget.Sensitive = true;
-			} else
-				ExtraWidget.Sensitive = false;
+			UpdateExtraWidgets ();
+			FillViewers ();
 		}
 		
 		public override void Dispose ()

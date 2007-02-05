@@ -110,6 +110,13 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.IsUntitled; }
 		}
 		
+		public string Title {
+			get {
+				IViewContent view = Window.ViewContent;
+				return view.IsUntitled ? view.UntitledName : view.ContentName;
+			}
+		}
+		
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
 		}

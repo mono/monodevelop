@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Templates
 					fileName = fileName + defaultExtension;
 				}
 				else if (!string.IsNullOrEmpty  (language)) {
-					IDotNetLanguageBinding languageBinding = GetDotNetLanguageBinding (language);
+					ILanguageBinding languageBinding = GetLanguageBinding (language);
 					fileName = languageBinding.GetFileName (fileName);
 				} 
 			}
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Templates
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
 			if (!string.IsNullOrEmpty (language)) {
-				IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
+				ILanguageBinding binding = GetLanguageBinding (language);
 				if (binding != null)
 					languageExtension = Path.GetExtension (binding.GetFileName ("Default")).Remove (0, 1);
 			}
@@ -220,9 +220,9 @@ namespace MonoDevelop.Ide.Templates
 			tags ["FileName"] = fileName;
 		}
 		
-		protected IDotNetLanguageBinding GetDotNetLanguageBinding (string language)
+		protected ILanguageBinding GetLanguageBinding (string language)
 		{
-			IDotNetLanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;
+			ILanguageBinding binding = MonoDevelop.Projects.Services.Languages.GetBindingPerLanguageName (language);
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;
@@ -245,10 +245,12 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
-					IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
-					System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-					if (provider != null)
-						return provider.IsValidIdentifier (name);
+					IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+					if (binding != null) {
+						System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+						if (provider != null)
+							return provider.IsValidIdentifier (name);
+					}
 				}
 				return name.IndexOfAny (Path.InvalidPathChars) == -1;
 			}

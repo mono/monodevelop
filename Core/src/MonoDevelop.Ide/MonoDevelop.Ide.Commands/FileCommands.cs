@@ -112,8 +112,10 @@ namespace MonoDevelop.Ide.Commands
 						return;
 					}
 					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-					if (ps.IsCombineEntryFile (name))
+					if (ps.IsCombineEntryFile (name) && fs.SelectedViewer == null)
 						IdeApp.ProjectOperations.OpenCombine (name);
+					else if (fs.SelectedViewer != null)
+						fs.SelectedViewer.OpenFile (name, fs.Encoding);
 					else
 						IdeApp.Workbench.OpenDocument (name, fs.Encoding);
 				}	

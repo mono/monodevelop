@@ -295,6 +295,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 			
 				CombineEntry entry = projectService.ReadCombineEntry (filename, monitor);
+				if (monitor.IsCancelRequested)
+					return;
+
 				if (!(entry is Combine)) {
 					Combine loadingCombine = new Combine();
 					loadingCombine.Entries.Add (entry);

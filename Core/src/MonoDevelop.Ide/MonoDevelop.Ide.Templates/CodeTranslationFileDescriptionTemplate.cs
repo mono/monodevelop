@@ -60,11 +60,10 @@ namespace MonoDevelop.Ide.Templates
 			if ((sourceLang == null) || (sourceLang.Length == 0))
 				sourceLang = "C#";
 			
-			IDotNetLanguageBinding sourceBinding = GetDotNetLanguageBinding (sourceLang);
-			if (sourceBinding == null)
-				throw new InvalidOperationException ("Invalid Code Translation template: there is no binding for the source language.");
-			
-			CodeDomProvider provider = sourceBinding.GetCodeDomProvider ();
+			CodeDomProvider provider = null;
+			IDotNetLanguageBinding sourceBinding = GetLanguageBinding (sourceLang) as IDotNetLanguageBinding;
+			if (sourceBinding != null)
+				provider = sourceBinding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new InvalidOperationException ("Invalid Code Translation template: the source language '" + sourceLang + "' does not have support for CodeDom.");
 			
@@ -81,8 +80,10 @@ namespace MonoDevelop.Ide.Templates
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
-			IDotNetLanguageBinding binding = GetDotNetLanguageBinding (language);
-			CodeDomProvider provider = binding.GetCodeDomProvider ();
+			CodeDomProvider provider = null;
+			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			if (binding != null)
+				provider = binding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
 			ICodeGenerator generator = provider.CreateGenerator();

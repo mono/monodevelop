@@ -1,3 +1,19 @@
+2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs: Avoid
+	  using IDotNetLanguageBinding where ILanguageBinding can be used.
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Allow opening combine entry
+	  files in the editor.
+	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: Allow selecting
+	  the file viewer to use when opening a file.
+	* MonoDevelop.Ide.Gui/Document.cs: Added title property.
+	* MonoDevelop.Ide.Gui/FileViewer.cs: Allow providing an encoding to the
+	  OpenFile method.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Check for the
+	  IsCancelRequested flag when loading a combine.
+
 2006-02-02 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Ide.addin.xml: added icon to select-all action 
