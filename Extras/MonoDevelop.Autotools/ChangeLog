@@ -1,3 +1,9 @@
+2007-02-06  Ankit Jain  <jankit@novell.com>
+
+	* MakefileOptionPanelWidget.cs: Combo boxes for file variables should
+	react to change in 'Sync' checkbox.
+	* gtk-gui/*: Updated.
+
 2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileOptionPanel.cs, MakefileOptionPanelWidget.cs: Moved all

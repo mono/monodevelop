@@ -324,11 +324,32 @@ namespace MonoDevelop.Autotools
 
 		void SetActive (bool active)
 		{
+			this.lblAssemblyNameVar.Sensitive = active;
+			this.comboAssemblyName.Sensitive = active;
+
+			this.lblOutputDirVar.Sensitive = active;
+			this.comboOutputDir.Sensitive = active;
+
 			this.cbFileSync.Sensitive = active;
 			HandleFileSyncClicked (cbFileSync);
-	
+
+			this.cbKeepFilesSync.Sensitive = active;
+			HandleKeepFilesSyncClicked (cbKeepFilesSync);
+			
+			this.cbKeepDeployFilesSync.Sensitive = active;
+			HandleKeepDeployFilesSyncClicked (cbKeepDeployFilesSync);
+			
+			this.cbKeepResourcesSync.Sensitive = active;
+			HandleKeepResourcesSyncClicked (cbKeepResourcesSync);
+
+			this.cbKeepOthersSync.Sensitive = active;
+			HandleKeepOthersSyncClicked (cbKeepOthersSync);
+
 			this.cbKeepRefSync.Sensitive = active;
 			HandleKeepRefSyncClicked (cbKeepRefSync);
+
+			this.cbAutotoolsProject.Sensitive = active;
+			HandleCbAutotoolsProjectClicked (cbAutotoolsProject);
 		}
 
 		protected virtual void OnCbFileSyncClicked(object sender, System.EventArgs e)
@@ -351,10 +372,23 @@ namespace MonoDevelop.Autotools
 		
 		void HandleKeepRefSyncClicked (CheckButton cb)
 		{
+			bool state;
 			if (cb.Sensitive)
-				table4.Sensitive = cb.Active;
+				state = cb.Active;
 			else
-				table4.Sensitive = false;
+				state = false;
+			
+			this.lblGacRef.Sensitive = state;
+			this.comboGacRefVar.Sensitive = state;
+			this.entryGacRefPattern.Sensitive = state;
+
+			this.lblAsmRef.Sensitive = state;
+			this.comboAsmRefVar.Sensitive = state;
+			this.entryAsmRefPattern.Sensitive = state;
+
+			this.lblProjectRef.Sensitive = state;
+			this.comboProjectRefVar.Sensitive = state;
+			this.entryProjectRefPattern.Sensitive = state;
 		}
 
 		protected virtual void OnCbAutotoolsProjectClicked(object sender, System.EventArgs e)
@@ -429,6 +463,74 @@ namespace MonoDevelop.Autotools
 		
 		protected virtual void OnFileEntryMakefilePathFocusOutEvent (object sender, System.EventArgs e)
 		{
+		}
+
+		protected virtual void OnCbKeepFilesSyncClicked(object sender, System.EventArgs e)
+		{
+			HandleKeepFilesSyncClicked ((CheckButton) sender);
+		}
+
+		void HandleKeepFilesSyncClicked (CheckButton cb)
+		{
+			bool state;
+			if (cb.Sensitive)
+				state = cb.Active;
+			else
+				state = false;
+
+			this.comboFilesVar.Sensitive = state;
+			this.entryFilesPattern.Sensitive = state;
+		}
+
+		protected virtual void OnCbKeepDeployFilesSyncClicked(object sender, System.EventArgs e)
+		{
+			HandleKeepDeployFilesSyncClicked ((CheckButton) sender);
+		}
+
+		void HandleKeepDeployFilesSyncClicked (CheckButton cb)
+		{
+			bool state;
+			if (cb.Sensitive)
+				state = cb.Active;
+			else
+				state = false;
+
+			this.comboDeployFilesVar.Sensitive = state;
+			this.entryDeployFilesPattern.Sensitive = state;
+		}
+
+		protected virtual void OnCbKeepResourcesSyncClicked(object sender, System.EventArgs e)
+		{
+			HandleKeepResourcesSyncClicked ((CheckButton) sender);
+		}
+
+		void HandleKeepResourcesSyncClicked (CheckButton cb)
+		{
+			bool state;
+			if (cb.Sensitive)
+				state = cb.Active;
+			else
+				state = false;
+
+			this.comboResourcesVar.Sensitive = state;
+			this.entryResourcesPattern.Sensitive = state;
+		}
+
+		protected virtual void OnCbKeepOthersSyncClicked(object sender, System.EventArgs e)
+		{
+			HandleKeepOthersSyncClicked ((CheckButton) sender);
+		}
+
+		void HandleKeepOthersSyncClicked (CheckButton cb)
+		{
+			bool state;
+			if (cb.Sensitive)
+				state = cb.Active;
+			else
+				state = false;
+
+			this.comboOthersVar.Sensitive = state;
+			this.entryOthersPattern.Sensitive = state;
 		}
 	}
 }
