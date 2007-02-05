@@ -19,8 +19,11 @@ FILES = \
 	Commands.cs	\
 	Handler.cs \
 	IMakefileHandler.cs	\
+	ImportMakefileDialog.cs \
 	ISimpleAutotoolsSetup.cs \
 	Makefile.cs	\
+	MakefileProject.cs \
+	MakefileReaderExtension.cs \
 	Set.cs				\
 	SimpleProjectMakefileHandler.cs	\
 	SolutionDeployer.cs	\

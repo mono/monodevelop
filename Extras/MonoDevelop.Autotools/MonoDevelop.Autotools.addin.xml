@@ -27,6 +27,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions" extension-nodes="Class">
+		<Class class = "MonoDevelop.Autotools.MakefileReaderExtension" id="MakefileReaderExtension" />
 		<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" />
 	</Extension>
 

@@ -1,3 +1,18 @@
+2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileOptionPanel.cs, MakefileOptionPanelWidget.cs: Moved all
+	  validation code from MakefileOptionPanel to
+	  MakefileOptionPanelWidget, so it can be reused by the import
+	  dialog.
+	* ImportMakefileDialog.cs: New dialog for importing makefiles.
+	* MonoDevelop.Autotools.addin.xml: Registered new extension.
+	* MonoDevelop.Autotools.mdp, Makefile.am: Added new files.
+	* MakefileReaderExtension.cs: Extension for importing makefiles into
+	  projects.
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MakefileProject.cs: New project class.
+
 2007-02-05  Ankit Jain  <jankit@novell.com>
 
 	* MakefileProjectServiceExtension.cs: New.

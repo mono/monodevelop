@@ -17,10 +17,9 @@ namespace MonoDevelop.Autotools
 		MakefileData data;
 		ComboBox [] combos = null;
 		
-		public MakefileOptionPanelWidget (IProperties customizationObject, MakefileData tmpData)
+		public MakefileOptionPanelWidget (Project project, MakefileData tmpData)
 			: this ()
 		{
-			Project project = (Project) customizationObject.GetProperty ("Project");
 			this.data = tmpData;
 			
 			if (data == null) {
@@ -95,6 +94,15 @@ namespace MonoDevelop.Autotools
 			this.fileEntryMakefilePath.FocusOutEvent += new FocusOutEventHandler (OnMakefilePathFocusOut);
 		}
 		
+		public void SetImportMode ()
+		{
+			lblMakefileName.Hide ();
+			fileEntryMakefilePath.Hide ();
+			cbEnableMakefileIntegration.Hide ();
+			headerSep1.Hide ();
+			headerSep2.Hide ();
+		}
+		
 		public MakefileOptionPanelWidget()
 		{
 			this.Build();
@@ -104,9 +112,8 @@ namespace MonoDevelop.Autotools
 				comboAssemblyName, comboOutputDir};
 		}
 		
-		public MakefileData Store (IProperties customizationObject)
+		public bool Store (Project project)
 		{
-			Project project = (Project) customizationObject.GetProperty ("Project");
 			data.IntegrationEnabled = this.cbEnableMakefileIntegration.Active;
 			data.RelativeMakefileName = this.fileEntryMakefilePath.Path;
 			
@@ -156,10 +163,82 @@ namespace MonoDevelop.Autotools
 			data.OutputDirVar = GetActiveVar (comboOutputDir);
 			data.BuildTargetName = this.BuildTargetName.Text;
 			data.CleanTargetName = this.CleanTargetName.Text;
+			
+			// Data validation
 
-			return data;
+			MakefileData oldData = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			MakefileData tmpData = data;
+
+			if (tmpData.IntegrationEnabled) {
+				//Validate
+				try {
+					tmpData.Makefile.GetVariables ();	
+				} catch (Exception e) {
+					IdeApp.Services.MessageService.ShowError (e, GettextCatalog.GetString (
+						"Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName),
+						(Window) Toplevel, true);
+					return false;
+				}
+
+				if (tmpData.IsAutotoolsProject &&
+					!File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.in"))) {
+					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
+						"Path specified for configure.in is invalid: {0}", tmpData.RelativeConfigureInPath),
+						(Window) Toplevel, true);
+					return false;
+				}
+
+				if (tmpData.SyncReferences &&
+					(String.IsNullOrEmpty (tmpData.GacRefVar.Name) ||
+					String.IsNullOrEmpty (tmpData.AsmRefVar.Name) ||
+					String.IsNullOrEmpty (tmpData.ProjectRefVar.Name))) {
+
+					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
+						"'Sync References' is enabled, but one of Reference variables is not set. Please correct this."),
+						(Window) Toplevel, true);
+					return false;
+				}
+			
+				if (!CheckNonEmptyFileVar (tmpData.BuildFilesVar, "Build"))
+					return false;
+
+				if (!CheckNonEmptyFileVar (tmpData.DeployFilesVar, "Deploy"))
+					return false;
+
+				if (!CheckNonEmptyFileVar (tmpData.ResourcesVar, "Resources"))
+					return false;
+
+				if (!CheckNonEmptyFileVar (tmpData.OthersVar, "Others"))
+					return false;
+
+				//FIXME: All file vars must be distinct
+
+				//FIXME: Do this only if there are changes b/w tmpData and Data
+				project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] = tmpData;
+
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+					GettextCatalog.GetString ("Updating project"), "gtk-run", true);
+
+				tmpData.UpdateProject (monitor, oldData == null || (!oldData.IntegrationEnabled && tmpData.IntegrationEnabled));
+			}
+
+ 			return true;
 		}
 
+		bool CheckNonEmptyFileVar (MakefileVar var, string id)
+		{
+			if (var.Sync && String.IsNullOrEmpty (var.Name.Trim ())) {
+				IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
+					"File variable ({0}) is set for sync'ing, but no valid variable is selected." + 
+					"Either disable the sync'ing or select a variable name.", id),
+					(Window) Toplevel, true);
+
+				return false;
+			}
+
+			return true;
+		}
+		
 		string GetActiveVar (ComboBox combo)
 		{
 			Gtk.TreeIter iter;
