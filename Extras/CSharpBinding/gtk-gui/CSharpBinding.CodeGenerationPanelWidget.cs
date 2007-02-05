@@ -89,7 +89,7 @@ namespace CSharpBinding {
             this.label82 = new Gtk.Label();
             this.label82.Name = "label82";
             this.label82.Xalign = 0F;
-            this.label82.LabelProp = "<b>Code Generation</b>";
+            this.label82.LabelProp = Mono.Unix.Catalog.GetString("<b>Code Generation</b>");
             this.label82.UseMarkup = true;
             this.vbox62.Add(this.label82);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox62[this.label82]));
@@ -103,7 +103,7 @@ namespace CSharpBinding {
             this.label81 = new Gtk.Label();
             this.label81.WidthRequest = 18;
             this.label81.Name = "label81";
-            this.label81.LabelProp = "";
+            this.label81.LabelProp = Mono.Unix.Catalog.GetString("");
             this.hbox56.Add(this.label81);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox56[this.label81]));
             w2.Position = 0;
@@ -169,7 +169,7 @@ namespace CSharpBinding {
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = "Compiler Code Page:";
+            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Compiler Code Page:");
             this.table7.Add(this.label1);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.table7[this.label1]));
             w8.TopAttach = ((uint)(3));
@@ -180,7 +180,7 @@ namespace CSharpBinding {
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
-            this.label2.LabelProp = "Win32 Icon:";
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("Win32 Icon:");
             this.table7.Add(this.label2);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table7[this.label2]));
             w9.TopAttach = ((uint)(4));
@@ -191,7 +191,7 @@ namespace CSharpBinding {
             this.label86 = new Gtk.Label();
             this.label86.Name = "label86";
             this.label86.Xalign = 0F;
-            this.label86.LabelProp = "Compile _Target:";
+            this.label86.LabelProp = Mono.Unix.Catalog.GetString("Compile _Target:");
             this.label86.UseUnderline = true;
             this.table7.Add(this.label86);
             Gtk.Table.TableChild w10 = ((Gtk.Table.TableChild)(this.table7[this.label86]));
@@ -201,7 +201,7 @@ namespace CSharpBinding {
             this.label87 = new Gtk.Label();
             this.label87.Name = "label87";
             this.label87.Xalign = 0F;
-            this.label87.LabelProp = "Define S_ymbols:";
+            this.label87.LabelProp = Mono.Unix.Catalog.GetString("Define S_ymbols:");
             this.label87.UseUnderline = true;
             this.table7.Add(this.label87);
             Gtk.Table.TableChild w11 = ((Gtk.Table.TableChild)(this.table7[this.label87]));
@@ -213,7 +213,7 @@ namespace CSharpBinding {
             this.label88 = new Gtk.Label();
             this.label88.Name = "label88";
             this.label88.Xalign = 0F;
-            this.label88.LabelProp = "_Main Class:";
+            this.label88.LabelProp = Mono.Unix.Catalog.GetString("_Main Class:");
             this.label88.UseUnderline = true;
             this.table7.Add(this.label88);
             Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table7[this.label88]));
@@ -260,7 +260,7 @@ namespace CSharpBinding {
             this.label90 = new Gtk.Label();
             this.label90.Name = "label90";
             this.label90.Xalign = 0F;
-            this.label90.LabelProp = "<b>Warnings</b>";
+            this.label90.LabelProp = Mono.Unix.Catalog.GetString("<b>Warnings</b>");
             this.label90.UseMarkup = true;
             this.label90.UseUnderline = true;
             this.vbox62.Add(this.label90);
@@ -275,7 +275,7 @@ namespace CSharpBinding {
             this.label72 = new Gtk.Label();
             this.label72.WidthRequest = 18;
             this.label72.Name = "label72";
-            this.label72.LabelProp = "";
+            this.label72.LabelProp = Mono.Unix.Catalog.GetString("");
             this.hbox47.Add(this.label72);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox47[this.label72]));
             w19.Position = 0;
@@ -292,7 +292,7 @@ namespace CSharpBinding {
             // Container child hbox55.Gtk.Box+BoxChild
             this.label80 = new Gtk.Label();
             this.label80.Name = "label80";
-            this.label80.LabelProp = "_Warning Level:";
+            this.label80.LabelProp = Mono.Unix.Catalog.GetString("_Warning Level:");
             this.label80.UseUnderline = true;
             this.hbox55.Add(this.label80);
             Gtk.Box.BoxChild w20 = ((Gtk.Box.BoxChild)(this.hbox55[this.label80]));
@@ -322,7 +322,7 @@ namespace CSharpBinding {
             this.generateOverflowChecksCheckButton = new Gtk.CheckButton();
             this.generateOverflowChecksCheckButton.CanFocus = true;
             this.generateOverflowChecksCheckButton.Name = "generateOverflowChecksCheckButton";
-            this.generateOverflowChecksCheckButton.Label = "_Generate overflow checks";
+            this.generateOverflowChecksCheckButton.Label = Mono.Unix.Catalog.GetString("_Generate overflow checks");
             this.generateOverflowChecksCheckButton.DrawIndicator = true;
             this.generateOverflowChecksCheckButton.UseUnderline = true;
             this.vbox64.Add(this.generateOverflowChecksCheckButton);
@@ -334,7 +334,7 @@ namespace CSharpBinding {
             this.allowUnsafeCodeCheckButton = new Gtk.CheckButton();
             this.allowUnsafeCodeCheckButton.CanFocus = true;
             this.allowUnsafeCodeCheckButton.Name = "allowUnsafeCodeCheckButton";
-            this.allowUnsafeCodeCheckButton.Label = "Allow '_unsafe' code";
+            this.allowUnsafeCodeCheckButton.Label = Mono.Unix.Catalog.GetString("Allow '_unsafe' code");
             this.allowUnsafeCodeCheckButton.DrawIndicator = true;
             this.allowUnsafeCodeCheckButton.UseUnderline = true;
             this.vbox64.Add(this.allowUnsafeCodeCheckButton);
@@ -346,7 +346,7 @@ namespace CSharpBinding {
             this.enableOptimizationCheckButton = new Gtk.CheckButton();
             this.enableOptimizationCheckButton.CanFocus = true;
             this.enableOptimizationCheckButton.Name = "enableOptimizationCheckButton";
-            this.enableOptimizationCheckButton.Label = "Enable _optimizations";
+            this.enableOptimizationCheckButton.Label = Mono.Unix.Catalog.GetString("Enable _optimizations");
             this.enableOptimizationCheckButton.DrawIndicator = true;
             this.enableOptimizationCheckButton.UseUnderline = true;
             this.vbox64.Add(this.enableOptimizationCheckButton);
@@ -358,7 +358,7 @@ namespace CSharpBinding {
             this.warningsAsErrorsCheckButton = new Gtk.CheckButton();
             this.warningsAsErrorsCheckButton.CanFocus = true;
             this.warningsAsErrorsCheckButton.Name = "warningsAsErrorsCheckButton";
-            this.warningsAsErrorsCheckButton.Label = "Treat warnings as _errors";
+            this.warningsAsErrorsCheckButton.Label = Mono.Unix.Catalog.GetString("Treat warnings as _errors");
             this.warningsAsErrorsCheckButton.DrawIndicator = true;
             this.warningsAsErrorsCheckButton.UseUnderline = true;
             this.vbox64.Add(this.warningsAsErrorsCheckButton);
@@ -370,7 +370,7 @@ namespace CSharpBinding {
             this.generateDebugInformationCheckButton = new Gtk.CheckButton();
             this.generateDebugInformationCheckButton.CanFocus = true;
             this.generateDebugInformationCheckButton.Name = "generateDebugInformationCheckButton";
-            this.generateDebugInformationCheckButton.Label = "Emit _debugging information";
+            this.generateDebugInformationCheckButton.Label = Mono.Unix.Catalog.GetString("Emit _debugging information");
             this.generateDebugInformationCheckButton.DrawIndicator = true;
             this.generateDebugInformationCheckButton.UseUnderline = true;
             this.vbox64.Add(this.generateDebugInformationCheckButton);
@@ -382,7 +382,7 @@ namespace CSharpBinding {
             this.generateXmlOutputCheckButton = new Gtk.CheckButton();
             this.generateXmlOutputCheckButton.CanFocus = true;
             this.generateXmlOutputCheckButton.Name = "generateXmlOutputCheckButton";
-            this.generateXmlOutputCheckButton.Label = "Generate _xml documentation";
+            this.generateXmlOutputCheckButton.Label = Mono.Unix.Catalog.GetString("Generate _xml documentation");
             this.generateXmlOutputCheckButton.DrawIndicator = true;
             this.generateXmlOutputCheckButton.UseUnderline = true;
             this.vbox64.Add(this.generateXmlOutputCheckButton);

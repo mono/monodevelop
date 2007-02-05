@@ -140,7 +140,7 @@
                       <widget class="Gtk.Label" id="label1">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp">Compiler Code Page:</property>
+                        <property name="LabelProp" translatable="yes">Compiler Code Page:</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">3</property>
@@ -160,7 +160,7 @@
                       <widget class="Gtk.Label" id="label2">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp">Win32 Icon:</property>
+                        <property name="LabelProp" translatable="yes">Win32 Icon:</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">4</property>

@@ -8,6 +8,7 @@ PARSE = parse.exe
 REFS = -r:System \
        -r:System.Xml \
 	-r:System.Drawing \
+	-r:Mono.Posix \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
