@@ -1,0 +1,10 @@
+<objects>
+  <object type="MonoDevelop.Autotools.MakefileOptionPanelWidget" palette-category="widget" allow-children="false">
+    <itemgroups>
+      <itemgroup ref="Gtk.Widget" />
+    </itemgroups>
+    <signals>
+      <itemgroup ref="Gtk.Widget" />
+    </signals>
+  </object>
+</objects>

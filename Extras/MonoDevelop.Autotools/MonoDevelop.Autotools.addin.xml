@@ -26,6 +26,10 @@
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
 	</Extension>
 	
+	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions" extension-nodes="Class">
+		<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" />
+	</Extension>
+
 	<Extension path = "/SharpDevelop/Commands">
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
 			_label = "Generate Autotools Files"
@@ -60,11 +64,18 @@
 			class = "MonoDevelop.AutoTools.SolutionOptionsPanel" />
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
+		<DialogPanel id= "Makefile" _label = "Makefile Integration"
+			class = "MonoDevelop.Autotools.MakefileOptionPanel" />
+	</Extension>
+
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.Combine"
 			name = "MakePkgConfig" type = "System.Boolean" />
 		<ItemProperty class = "MonoDevelop.Projects.Combine"
 			name = "MakeLibPC" type = "System.Boolean" />
+		<ItemProperty class = "MonoDevelop.Projects.Project"
+			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
 	</Extension>
 	
 </AddIn>

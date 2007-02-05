@@ -27,7 +27,15 @@ FILES = \
 	SolutionOptionsPanel.cs	\
 	SolutionMakefileHandler.cs	\
 	TarballTargetEditorWidget.cs \
-	TemplateEngine.cs
+	TemplateEngine.cs \
+	CustomMakefile.cs \
+	MakefileOptionPanel.cs \
+	MakefileOptionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
+	gtk-gui/generated.cs \
+	MakefileProjectServiceExtension.cs \
+	MakefileData.cs \
+	MakefileVar.cs
 
 RES =
 
