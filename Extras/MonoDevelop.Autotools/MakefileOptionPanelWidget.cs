@@ -89,6 +89,7 @@ namespace MonoDevelop.Autotools
 				this.fileEntryConfigureInPath.DefaultPath = data.AbsoluteConfigureInPath;
 
 			this.BuildTargetName.Text = data.BuildTargetName;
+			this.ExecuteTargetName.Text = data.ExecuteTargetName;
 			this.CleanTargetName.Text = data.CleanTargetName;
 				
 			this.fileEntryMakefilePath.FocusOutEvent += new FocusOutEventHandler (OnMakefilePathFocusOut);
@@ -119,19 +120,19 @@ namespace MonoDevelop.Autotools
 			
 			data.BuildFilesVar.Sync = this.cbKeepFilesSync.Active;
 			data.BuildFilesVar.Name = GetActiveVar (comboFilesVar);
-			data.BuildFilesVar.Prefix = this.entryFilesPattern.Text;
+			data.BuildFilesVar.Prefix = this.entryFilesPattern.Text.Trim ();
 
 			data.DeployFilesVar.Sync = this.cbKeepDeployFilesSync.Active;
 			data.DeployFilesVar.Name = GetActiveVar (comboDeployFilesVar);
-			data.DeployFilesVar.Prefix = this.entryDeployFilesPattern.Text;
+			data.DeployFilesVar.Prefix = this.entryDeployFilesPattern.Text.Trim ();
 
 			data.ResourcesVar.Sync = this.cbKeepResourcesSync.Active;
 			data.ResourcesVar.Name = GetActiveVar (comboResourcesVar);
-			data.ResourcesVar.Prefix = this.entryResourcesPattern.Text;
+			data.ResourcesVar.Prefix = this.entryResourcesPattern.Text.Trim ();
 
 			data.OthersVar.Sync = this.cbKeepOthersSync.Active;
 			data.OthersVar.Name = GetActiveVar (comboOthersVar);
-			data.OthersVar.Prefix = this.entryOthersPattern.Text;
+			data.OthersVar.Prefix = this.entryOthersPattern.Text.Trim ();
 
 			if (!this.cbFileSync.Active) {
 				// Files sync is unchecked, disable syncing of all files
@@ -145,15 +146,15 @@ namespace MonoDevelop.Autotools
 			data.SyncReferences = this.cbKeepRefSync.Active;
 			data.GacRefVar.Sync = this.cbKeepResourcesSync.Active;
 			data.GacRefVar.Name = GetActiveVar (comboGacRefVar);
-			data.GacRefVar.Prefix = this.entryGacRefPattern.Text;
+			data.GacRefVar.Prefix = this.entryGacRefPattern.Text.Trim ();
 
 			data.AsmRefVar.Sync = this.cbKeepResourcesSync.Active;
 			data.AsmRefVar.Name = GetActiveVar (comboAsmRefVar);
-			data.AsmRefVar.Prefix = this.entryAsmRefPattern.Text;
+			data.AsmRefVar.Prefix = this.entryAsmRefPattern.Text.Trim ();
 
 			data.ProjectRefVar.Sync = this.cbKeepResourcesSync.Active;
 			data.ProjectRefVar.Name = GetActiveVar (comboProjectRefVar);
-			data.ProjectRefVar.Prefix = this.entryProjectRefPattern.Text;
+			data.ProjectRefVar.Prefix = this.entryProjectRefPattern.Text.Trim ();
 
 			data.IsAutotoolsProject = this.cbAutotoolsProject.Active;
 			if (this.cbAutotoolsProject.Active)
@@ -161,8 +162,9 @@ namespace MonoDevelop.Autotools
 			
 			data.AssemblyNameVar = GetActiveVar (comboAssemblyName);
 			data.OutputDirVar = GetActiveVar (comboOutputDir);
-			data.BuildTargetName = this.BuildTargetName.Text;
-			data.CleanTargetName = this.CleanTargetName.Text;
+			data.BuildTargetName = this.BuildTargetName.Text.Trim ();
+			data.ExecuteTargetName = this.ExecuteTargetName.Text.Trim ();
+			data.CleanTargetName = this.CleanTargetName.Text.Trim ();
 			
 			// Data validation
 

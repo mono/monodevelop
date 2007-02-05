@@ -325,5 +325,42 @@ namespace MonoDevelop.Autotools
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
 		}
 
+		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		{
+			Project project = entry as Project;
+			if (project == null) {
+				base.Execute (monitor, entry, context);
+				return;
+			}
+
+			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.ExecuteTargetName)) {
+				base.Execute (monitor, entry, context);
+				return;
+			}
+
+			IConsole console = context.ConsoleFactory.CreateConsole (true);
+			monitor.BeginTask (GettextCatalog.GetString ("Executing {0}", project.Name), 1);
+			try
+			{
+				ProcessWrapper process = Runtime.ProcessService.StartProcess ("make",
+						data.ExecuteTargetName,
+						project.BaseDirectory,
+						console.Out,
+						console.Error,
+						null);
+				process.WaitForOutput ();
+
+				monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", process.ExitCode));
+				monitor.Step (1);
+			} catch (Exception e) {
+				monitor.ReportError (GettextCatalog.GetString ("Project could not be executed: "), e);
+				return;
+			} finally {
+				monitor.EndTask ();
+				console.Dispose ();
+			}
+		}
+
 	}
 }

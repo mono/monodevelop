@@ -1,5 +1,13 @@
 2007-02-06  Ankit Jain  <jankit@novell.com>
 
+	* MakefileProjectServiceExtension.cs (Execute): New.
+	* MakefileOptionPanelWidget.cs: Add ExecuteTargetName and update.
+	Trim () strings from entry boxes.
+	* gtk-gui/*: Update.
+	* MakefileData.cs (.ctor): Set default value for buildTargetName to "all".
+
+2007-02-06  Ankit Jain  <jankit@novell.com>
+
 	* MakefileOptionPanel.cs (CheckNonEmptyFileVar): Remove. Has been moved
 	to MakefileOptionPanelWidget.cs 
 	* MakefileData.cs: Emit resourceId while writing only if atleast one of

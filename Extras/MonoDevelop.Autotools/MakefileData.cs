@@ -58,7 +58,7 @@ namespace MonoDevelop.Autotools
 		{
 			integrationEnabled = false;
 			relativeMakefileName = String.Empty;
-			buildTargetName = "";
+			buildTargetName = "all";
 			cleanTargetName = "clean";
 			executeTargetName = "";
 		}
