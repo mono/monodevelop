@@ -18,7 +18,7 @@ namespace Stetic.SteticGenerated {
             // Widget MonoDevelop.ChangeLogAddIn.AddLogEntryDialog
             cobj.Events = ((Gdk.EventMask)(256));
             cobj.Name = "MonoDevelop.ChangeLogAddIn.AddLogEntryDialog";
-            cobj.Title = "ChangeLog";
+            cobj.Title = Mono.Unix.Catalog.GetString("ChangeLog");
             // Internal child MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.VBox
             Gtk.VBox w1 = cobj.VBox;
             w1.Events = ((Gdk.EventMask)(256));
@@ -35,7 +35,7 @@ namespace Stetic.SteticGenerated {
             bindings["label3"] = w3;
             w3.Name = "label3";
             w3.Xalign = 0F;
-            w3.LabelProp = "ChangeLog entry:";
+            w3.LabelProp = Mono.Unix.Catalog.GetString("ChangeLog entry:");
             w2.Add(w3);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(w2[w3]));
             w4.Position = 0;

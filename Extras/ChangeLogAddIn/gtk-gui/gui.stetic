@@ -23,7 +23,7 @@
               <widget class="Gtk.Label" id="label3">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp">ChangeLog entry:</property>
+                <property name="LabelProp" translatable="yes">ChangeLog entry:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>

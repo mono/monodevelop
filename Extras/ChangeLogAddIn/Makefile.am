@@ -7,6 +7,7 @@ REFS =	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
+	-r:Mono.Posix \
 	$(GECKO_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
