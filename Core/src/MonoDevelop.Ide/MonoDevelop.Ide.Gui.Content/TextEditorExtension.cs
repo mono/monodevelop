@@ -84,7 +84,16 @@ namespace MonoDevelop.Ide.Gui.Content
 			bool res;
 			
 			if (currentCompletionContext != null) {
-				if (CompletionListWindow.ProcessKeyEvent (key, modifier))
+				autoHideCompletionWindow = false;
+				if (CompletionListWindow.ProcessKeyEvent (key, modifier)) {
+					autoHideCompletionWindow = true;
+					return true;
+				}
+				autoHideCompletionWindow = false;
+			}
+			
+			if (ParameterInformationWindowManager.IsWindowVisible) {
+				if (ParameterInformationWindowManager.ProcessKeyEvent (key, modifier))
 					return true;
 				autoHideCompletionWindow = false;
 			}
@@ -94,8 +103,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			else
 				res = Next.KeyPress (key, modifier);
 
-			autoHideCompletionWindow = true;
-				
+			// Handle code completion
+			
 			if (completionWidget != null && currentCompletionContext == null) {
 				ICompletionDataProvider cp = null;
 				if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ControlMask) != 0) {
@@ -114,6 +123,20 @@ namespace MonoDevelop.Ide.Gui.Content
 				else
 					currentCompletionContext = null;
 			}
+			
+			// Handle parameter completion
+			
+			if (ParameterInformationWindowManager.IsWindowVisible)
+				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
+
+			ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+			IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, (char)(uint)key);
+			if (paramProvider != null) {
+				ParameterInformationWindowManager.ShowWindow (ctx, paramProvider);
+			}
+			
+			autoHideCompletionWindow = true;
+			
 			return res;
 		}
 		
@@ -124,8 +147,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		void OnCompletionContextChanged (object o, EventArgs a)
 		{
-			if (autoHideCompletionWindow)
+			if (autoHideCompletionWindow) {
 				CompletionListWindow.HideWindow ();
+				ParameterInformationWindowManager.HideWindow ();
+			}
 		}
 
 		public virtual void CursorPositionChanged ()
@@ -137,6 +162,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		
 		public virtual ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext completionContext, char completionChar)
+		{
+			return null;
+		}
+		
+		public virtual IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
 		}
