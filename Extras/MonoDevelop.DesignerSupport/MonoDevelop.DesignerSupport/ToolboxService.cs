@@ -100,7 +100,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void AddUserItems ()
 		{
-			Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog ("Add items to toolbox", (Gtk.Window) IdeApp.Services.MessageService.RootWindow, Gtk.FileChooserAction.Open);
+			Gtk.FileChooserDialog fcd = new Gtk.FileChooserDialog (GettextCatalog.GetString ("Add items to toolbox"), (Gtk.Window) IdeApp.Services.MessageService.RootWindow, Gtk.FileChooserAction.Open);
 			fcd.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			fcd.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
 			fcd.DefaultResponse = Gtk.ResponseType.Ok;

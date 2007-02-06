@@ -35,6 +35,7 @@ using Gtk;
 using System;
 using System.ComponentModel;
 using System.Windows.Forms.Design;
+using MonoDevelop.Core;
  
 namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		}
 		
 		public override string TabName {
-			get {return "Properties"; }
+			get {return GettextCatalog.GetString ("Properties"); }
 		}
 		
 		public override bool CanExtend (object extendee)

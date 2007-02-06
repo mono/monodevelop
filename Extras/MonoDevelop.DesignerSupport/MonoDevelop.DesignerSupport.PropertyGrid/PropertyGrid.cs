@@ -38,6 +38,7 @@ using Gtk;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms.Design;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
@@ -90,12 +91,12 @@ public class PropertyGrid : Gtk.VBox
 		
 		catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
 		catButton.IconWidget = new Image (new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png"));
-		catButton.SetTooltip (tips, "Sort in categories", null);
+		catButton.SetTooltip (tips, GettextCatalog.GetString ("Sort in categories"), null);
 		catButton.Toggled += new EventHandler (toolbarClick);
 		toolbar.Insert (catButton, 0);
 		
 		alphButton = new RadioToolButton (catButton, Stock.SortAscending);
-		alphButton.SetTooltip (tips, "Sort alphabetically", null);
+		alphButton.SetTooltip (tips, GettextCatalog.GetString ("Sort alphabetically"), null);
 		alphButton.Clicked += new EventHandler (toolbarClick);
 		toolbar.Insert (alphButton, 1);
 		

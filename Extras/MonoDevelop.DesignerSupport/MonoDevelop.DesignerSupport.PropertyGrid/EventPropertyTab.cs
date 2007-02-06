@@ -35,6 +35,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
+using MonoDevelop.Core;
  
 namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		}
 		
 		public override string TabName {
-			get {return "Events"; }
+			get {return GettextCatalog.GetString ("Events"); }
 		}
 		
 		public override bool CanExtend (object extendee)
