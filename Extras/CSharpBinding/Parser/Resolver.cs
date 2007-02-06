@@ -350,7 +350,7 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine("ClassType = " + curType.ClassType);
 			if (curType.ClassType == ClassType.Interface && !showStatic) {
 				foreach (IReturnType s in curType.BaseTypes) {
-					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, true);
+					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, s.GenericArguments, true, true);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
 						ListMembers(members, baseClass);
 					}
@@ -369,7 +369,7 @@ namespace CSharpBinding.Parser
 		public IClass BaseClass(IClass curClass)
 		{
 			foreach (IReturnType s in curClass.BaseTypes) {
-				IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, true, true);
+				IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, s.GenericArguments, true, true);
 				if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 					return baseClass;
 				}
@@ -524,7 +524,14 @@ namespace CSharpBinding.Parser
 
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				curType = SearchType ("System.Array", null, null);
-
+				
+			return SearchClassMember (curType, memberName, includeMethods, out curType, out member);
+		}
+		
+		bool SearchClassMember (IClass curType, string memberName, bool includeMethods, out IClass resultType, out IDecoration member)
+		{
+			resultType = curType;
+			
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
 					if (f.Name == memberName && MustBeShowen(curType, f)) {
@@ -572,11 +579,18 @@ namespace CSharpBinding.Parser
 					}
 				}
 			}
+			
+			// Don't look in interfaces, unless the base type is already an interface.
+			
 			foreach (IReturnType baseType in curType.BaseTypes) {
-				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, true, true);
-				if (c != null)
-					return SearchClassMember (new ReturnType(c.FullyQualifiedName), memberName, includeMethods, out curType, out member);
+				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
+				if (c != null && (c.ClassType != ClassType.Interface || curType.ClassType == ClassType.Interface)) {
+					if (SearchClassMember (c, memberName, includeMethods, out resultType, out member))
+						return true;
+				}
 			}
+			
+			member = null;
 			return false;
 		}
 		
@@ -869,40 +883,45 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
+			// Look for an exact match
+			
 			c = parserContext.GetClass (name, genericArguments);
-			if (c != null) {
-//				Console.WriteLine("Found!");
+			if (c != null)
 				return c;
+				
+
+			// The enclosing namespace has preference over the using directives.
+			// Check it now.
+
+			if (callingClass != null)
+			{
+				string fullname = callingClass.FullyQualifiedName;
+				string[] namespaces = fullname.Split(new char[] {'.'});
+				string curnamespace = "";
+				int i = 0;
+				
+				do {
+					curnamespace += namespaces[i] + '.';
+					c = parserContext.GetClass (curnamespace + name, genericArguments);
+					if (c != null) {
+						return c;
+					}
+					i++;
+				}
+				while (i < namespaces.Length);
 			}
+			
+			// Now try to find the class using the included namespaces
+			
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-//						Console.WriteLine("In UsingRegion");
 						c = parserContext.SearchType (u, name, genericArguments);
-						if (c != null) {
-//							Console.WriteLine("SearchType Successfull!!!");
+						if (c != null)
 							return c;
-						}
 					}
 				}
 			}
-			if (callingClass == null) {
-				return null;
-			}
-			string fullname = callingClass.FullyQualifiedName;
-			string[] namespaces = fullname.Split(new char[] {'.'});
-			string curnamespace = "";
-			int i = 0;
-			
-			do {
-				curnamespace += namespaces[i] + '.';
-				c = parserContext.GetClass (curnamespace + name, genericArguments);
-				if (c != null) {
-					return c;
-				}
-				i++;
-			}
-			while (i < namespaces.Length);
 			
 			return null;
 		}
@@ -915,7 +934,6 @@ namespace CSharpBinding.Parser
 				
 			foreach (IUsing u in unit.Usings) {
 				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-					string aliasResult = null;
 					foreach (DictionaryEntry e in u.Aliases) {
 						if ((string)e.Value == name)
 							return (string)e.Key;
@@ -937,7 +955,7 @@ namespace CSharpBinding.Parser
 				return true;
 			}
 			foreach (IReturnType baseClass in c.BaseTypes) {
-				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, true, true);
+				IClass bc = parserContext.GetClass (baseClass.FullyQualifiedName, baseClass.GenericArguments, true, true);
 				if (IsClassInInheritanceTree(possibleBaseClass, bc)) {
 					return true;
 				}
@@ -1131,7 +1149,7 @@ namespace CSharpBinding.Parser
 				if (variables != null && variables.Count > 0) {
 					foreach (LocalLookupVariable v in variables) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							result.Add(new DefaultParameter (null, name, new ReturnType (v.TypeRef.SystemType)));
+							result.Add(new DefaultParameter (null, name, new ReturnType (ReturnType.GetSystemType (v.TypeRef.Type))));
 							break;
 						}
 					}

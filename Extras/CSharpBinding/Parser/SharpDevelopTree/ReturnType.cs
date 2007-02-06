@@ -1,11 +1,33 @@
-// created on 04.08.2003 at 18:08
 
 using MonoDevelop.Projects.Parser;
+using System.Collections.Generic;
 
 namespace CSharpBinding.Parser.SharpDevelopTree
 {
 	public class ReturnType : DefaultReturnType
 	{
+		static Dictionary<string, string> types = new Dictionary<string, string>();
+		
+		static ReturnType ()
+		{
+			types.Add("bool",    "System.Boolean");
+			types.Add("byte",    "System.Byte");
+			types.Add("char",    "System.Char");
+			types.Add("decimal", "System.Decimal");
+			types.Add("double",  "System.Double");
+			types.Add("float",   "System.Single");
+			types.Add("int",     "System.Int32");
+			types.Add("long",    "System.Int64");
+			types.Add("object",  "System.Object");
+			types.Add("sbyte",   "System.SByte");
+			types.Add("short",   "System.Int16");
+			types.Add("string",  "System.String");
+			types.Add("uint",    "System.UInt32");
+			types.Add("ulong",   "System.UInt64");
+			types.Add("ushort",  "System.UInt16");
+			types.Add("void",    "System.Void");
+		}
+		
 		public ReturnType (string fullyQualifiedName): base (fullyQualifiedName)
 		{
 		}
@@ -23,7 +45,7 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		
 		public ReturnType (ICSharpCode.NRefactory.Parser.AST.TypeReference type, IClass resolvedClass)
 		{
-			this.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : type.SystemType;
+			this.FullyQualifiedName  = resolvedClass != null ? resolvedClass.FullyQualifiedName : GetSystemType (type.Type);
 			this.pointerNestingLevel = type.PointerNestingLevel;
 			SetArrayDimensions (type.RankSpecifier);
 			
@@ -45,9 +67,9 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		public static string GetFullTypeName (ICSharpCode.NRefactory.Parser.AST.TypeReference type)
 		{
 			if (type.GenericTypes != null && type.GenericTypes.Count > 0)
-				return string.Concat (type.SystemType, "`", type.GenericTypes.Count);
+				return string.Concat (GetSystemType (type.Type), "`", type.GenericTypes.Count);
 			else
-				return type.SystemType;
+				return GetSystemType (type.Type);
 		}
 		
 		void SetArrayDimensions (int[] dimensions)
@@ -71,6 +93,15 @@ namespace CSharpBinding.Parser.SharpDevelopTree
 		internal static ReturnType Convert (MonoDevelop.Projects.Parser.GenericParameter gp)
 		{
 			return new ReturnType (gp.Name, null, 0, null, false);
+		}
+		
+		internal static string GetSystemType (string type)
+		{
+			string val;
+			if (types.TryGetValue (type, out val))
+				return val;
+			else
+				return type;
 		}
 	}
 }

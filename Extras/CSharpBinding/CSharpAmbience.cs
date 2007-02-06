@@ -236,10 +236,8 @@ namespace CSharpBinding
 					builder.Append(' ');
 				}
 			} else if (UseFullyQualifiedMemberNames(conversionFlags)) {
-				// Remove the '`#' that is appended to names of generic types
 				AppendPangoHtmlTag (builder, tname, "b", conversionFlags);
 			} else {
-				// Remove the '`#' that is appended to names of generic types
 				AppendPangoHtmlTag (builder, tname, "b", conversionFlags);
 			}
 			
@@ -580,17 +578,9 @@ namespace CSharpBinding
 				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
 			} else {
 				if (UseFullyQualifiedMemberNames(conversionFlags)) {
-					// Remove the '`#' that is appended to names of generic types
-					if (returnType.GenericArguments != null)
-						builder.Append (returnType.FullyQualifiedName.Substring(0, returnType.FullyQualifiedName.LastIndexOf("`")));
-					else
-						builder.Append (returnType.FullyQualifiedName);
+					builder.Append (ConvertTypeName (returnType.FullyQualifiedName, conversionFlags));
 				} else {
-					// Remove the '`#' that is appended to names of generic types
-					if (returnType.GenericArguments != null)
-						builder.Append (returnType.Name.Substring(0, returnType.Name.LastIndexOf("`")));
-					else
-						builder.Append (returnType.Name);
+					builder.Append (ConvertTypeName (returnType.Name, conversionFlags));
 				}
 			}
 			

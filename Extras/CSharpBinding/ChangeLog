@@ -1,3 +1,19 @@
+2007-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OverrideCompletionData.cs: Moved from CSharpTextEditorExtension.
+	* Gui/CSharpParameterDataProvider.cs, Gui/CSharpTextEditorExtension.cs,
+	  CSharpBinding.mdp, Makefile.am: Implemented support for parameter
+	  information window.
+	* Parser/Resolver.cs: When searching a class, look in the calling class
+	  namespace before looking in using directives. Some fixes for
+	  generic types.
+	* Parser/CodeGenerator.cs: Some fixes for generic types.
+	* Parser/SharpDevelopTree/ReturnType.cs: Use our own system type table,
+	  since the one from NRefactory has some VB types and does case
+	  insensitive lookups.
+	* CSharpAmbience.cs: Added some ConvertTypeName calls to show the
+	  correct name for instantiated generic types.
+
 2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp,

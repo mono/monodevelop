@@ -14,6 +14,11 @@ namespace CSharpBinding
 {
 	public class CSharpTextEditorExtension: TextEditorExtension
 	{
+		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
+		{
+			return System.IO.Path.GetExtension (doc.Title) == ".cs";
+		}
+
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.numbersign) {
@@ -30,6 +35,49 @@ namespace CSharpBinding
 			}
 			return base.KeyPress (key, modifier);
 		}
+		
+		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)
+		{
+			if (completionChar == '(') {
+				IParserContext pctx = GetParserContext ();
+				
+				// Get the text from the begining of the line
+				int lin, col;
+				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
+				int lineStart = Editor.GetPositionFromLineColumn (lin, 1);
+				string line = Editor.GetText (lineStart, Editor.CursorPosition - 1);
+				
+				// Find the expression before the '('
+				ExpressionFinder expressionFinder = new ExpressionFinder (null);
+				string ex = expressionFinder.FindExpression (line, line.Length - 1).Expression;
+				if (ex == null)
+					return null;
+
+				// This is a bit of a hack, but for the resolver to properly resolve a constructor
+				// call needs the new keyword and the brackets, so let's provide them
+				int i = Editor.CursorPosition - 2 - ex.Length;
+				if (GetPreviousToken ("new", ref i))
+					ex = "new " + ex + "()";
+				
+				// Find the language item at that position
+				Resolver res = new Resolver (pctx);
+				ILanguageItem it = res.ResolveIdentifier (pctx, ex, lin, col - 1, FileName, Editor.Text);
+				
+				// Create the parameter data provider if a method is found.
+				if (it is IMethod) {
+					IMethod met = (IMethod) it;
+					if (met.IsConstructor)
+						return new CSharpParameterDataProvider (Editor, met.DeclaringType);
+					else
+						return new CSharpParameterDataProvider (Editor, met.DeclaringType, met.Name);
+				}
+				else if (it is IClass) {
+					return new CSharpParameterDataProvider (Editor, (IClass)it);
+				}
+			}
+			return null;
+		}
+
 
 		public override ICompletionDataProvider HandleCodeCompletion (ICodeCompletionContext ctx, char charTyped)
 		{
@@ -97,18 +145,14 @@ namespace CSharpBinding
 			
 				// Look for modifiers, in order to find the beginning of the declaration
 				int firstMod = i;
-				bool isSealed;
 				for (int n=0; n<3; n++) {
 					string mod = GetPreviousToken (ref i);
-					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal") {
+					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
 						firstMod = i;
 					}
 					else if (mod == "static") {
+						// static methods are not overridable
 						return null;
-					}
-					else if (mod == "sealed") {
-						firstMod = i;
-						isSealed = true;
 					}
 					else
 						break;
@@ -257,199 +301,11 @@ namespace CSharpBinding
 			cp.AddCompletionData (new CodeCompletionData ("warning", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("error", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("line", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line hidden", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("line default", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("region", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("endregion", "md-literal"));
 			return cp;
-		}
-	}
-	
-	class OverrideCompletionData: CodeCompletionData, IActionCompletionData
-	{
-		ILanguageItem item;
-		IEditableTextBuffer editor;
-		CSharpAmbience ambience;
-		string typedModifiers;
-		int insertOffset;
-		string indent;
-		
-		public OverrideCompletionData (IEditableTextBuffer editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb)
-		{
-			this.typedModifiers = typedModifiers;
-			this.insertOffset = insertOffset;
-			this.ambience = amb;
-			this.editor = editor;
-			this.item = item;
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-			
-			if (item is IIndexer) {
-				IIndexer ind = (IIndexer) item;
-				Image = IdeApp.Services.Icons.GetIcon (ind);
-				StringBuilder sb = new StringBuilder ("this [");
-				ambience.Convert (ind.Parameters, sb, flags);
-				sb.Append ("]");
-				Text = new string[] { sb.ToString () };
-				Description = ambience.Convert(item);
-				DescriptionPango = ambience.Convert (item, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
-				CompletionString = "this";
-				Documentation = item.Documentation;
-			}
-			else if (item is IMethod) {
-				IMethod met = (IMethod) item;
-				Image = IdeApp.Services.Icons.GetIcon (met);
-				StringBuilder sb = new StringBuilder (met.Name + " (");
-				ambience.Convert (met.Parameters, sb, flags);
-				sb.Append (")");
-				Text = new string[] { sb.ToString () };
-				Description = ambience.Convert (met);
-				DescriptionPango = ambience.Convert (met, ConversionFlags.StandardConversionFlags | ConversionFlags.IncludePangoMarkup);
-				CompletionString = met.Name;
-				Documentation = met.Documentation;
-			}
-			else
-				FillCodeCompletionData (item, ambience);
-		}
-		
-		public void InsertAction (ICompletionWidget widget, ICodeCompletionContext context)
-		{
-			indent = GetIndentString (insertOffset + 1);
-			
-			// Remove the partially completed word
-			editor.DeleteText (insertOffset, editor.CursorPosition - insertOffset);
-
-			// Get the modifiers of the new override
-			IMember mem = (IMember) item;
-			string modifiers = GetModifiers (mem, typedModifiers);
-			if (modifiers.Length > 0) modifiers += " ";
-			if ((mem.IsVirtual || mem.IsAbstract) && mem.DeclaringType.ClassType != ClassType.Interface)
-				modifiers += "override ";
-			
-			if (item is IMethod)
-				InsertMethod ((IMethod) item, modifiers);
-			if (item is IProperty)
-				InsertProperty ((IProperty) item, modifiers);
-			if (item is IEvent)
-				InsertEvent ((IEvent) item, modifiers);
-			if (item is IIndexer)
-				InsertIndexer ((IIndexer) item, modifiers);
-		}
-		
-		void InsertMethod (IMethod method, string modifiers)
-		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-				
-			string text = modifiers + ambience.Convert (method, flags);
-			text += "\n" + indent + "{\n" + indent + "\t";
-			int cpos = insertOffset + text.Length;
-			text += "\n" + indent + "}\n";
-			
-			editor.InsertText (insertOffset, text);
-			editor.CursorPosition = cpos;
-			editor.Select (cpos, cpos);
-		}
-		
-		void InsertProperty (IProperty prop, string modifiers)
-		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-			int cpos = -1;
-			string text = modifiers + ambience.Convert (prop.ReturnType, flags) + " " + prop.Name + " {\n";
-			
-			if (prop.CanGet) {
-				text += indent + "\tget { ";
-				cpos = insertOffset + text.Length;
-				text += " }\n";
-			}
-			if (prop.CanSet) {
-				text += indent + "\tset { ";
-				if (!prop.CanGet)
-					cpos = insertOffset + text.Length;
-				text += " }\n";
-			}
-			
-			text += indent + "}\n";
-			
-			editor.InsertText (insertOffset, text);
-			editor.CursorPosition = cpos;
-			editor.Select (cpos, cpos);
-		}
-		
-		void InsertEvent (IEvent ev, string modifiers)
-		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-			string text = modifiers + "event " + ambience.Convert (ev.ReturnType, flags) + " " + ev.Name + " {\n";
-			
-			int cpos;
-			text += indent + "\tadd { ";
-			cpos = insertOffset + text.Length;
-			text += " }\n";
-			text += indent + "\tremove { ";
-			text += " }\n";
-			
-			text += indent + "}\n";
-			
-			editor.InsertText (insertOffset, text);
-			editor.CursorPosition = cpos;
-			editor.Select (cpos, cpos);
-		}
-		
-		void InsertIndexer (IIndexer indexer, string modifiers)
-		{
-			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-			
-			int cpos;
-			
-			StringBuilder sb = new StringBuilder ();
-			sb.Append (modifiers).Append (ambience.Convert (indexer.ReturnType)).Append (" this [");
-			ambience.Convert (indexer.Parameters, sb, flags);
-			sb.Append ("] {\n");
-			sb.Append (indent).Append ("\tget { ");
-			cpos = insertOffset + sb.Length;
-			sb.Append (" }\n");
-			sb.Append (indent).Append ("\tset { ");
-			sb.Append (" }\n").Append (indent).Append ("}");
-			
-			editor.InsertText (insertOffset, sb.ToString ());
-			editor.CursorPosition = cpos;
-			editor.Select (cpos, cpos);
-		}
-		
-		string GetIndentString (int pos)
-		{
-			string c = editor.GetText (pos - 1, pos);
-			int nwpos = pos;
-			while (c.Length > 0 && c != "\n") {
-				if (c[0] != ' ' && c[0] != '\t')
-					nwpos = pos;
-				pos--;
-				c = editor.GetText (pos - 1, pos);
-			}
-			return editor.GetText (pos, nwpos - 1);
-		}
-		
-		string GetModifiers (IDecoration dec, string typedModifiers)
-		{
-			string res = "";
-			
-			if (dec.IsPublic) {
-				res = "public";
-			} else if (dec.IsPrivate) {
-				res = "";
-			} else if (dec.IsProtectedAndInternal) {
-				res = "protected internal";
-			} else if (dec.IsProtectedOrInternal) {
-				res = "internal protected";
-			} else if (dec.IsInternal) {
-				res = "internal";
-			} else if (dec.IsProtected) {
-				res = "protected";
-			}
-			if (typedModifiers.IndexOf ("sealed") != -1) {
-				if (res.Length > 0)
-					return res + " sealed";
-				else
-					return "sealed";
-			}
-			else
-				return res;
 		}
 	}
 }

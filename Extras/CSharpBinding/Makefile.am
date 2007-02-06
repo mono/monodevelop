@@ -24,6 +24,8 @@ FILES = \
 Gui/ChooseRuntimePanel.cs \
 Gui/CodeGenerationPanel.cs \
 Gui/CSharpTextEditorExtension.cs \
+Gui/CSharpParameterDataProvider.cs \
+Gui/OverrideCompletionData.cs \
 Parser/SharpDevelopTree/Destructor.cs \
 Parser/SharpDevelopTree/Constructor.cs \
 Parser/SharpDevelopTree/Method.cs \

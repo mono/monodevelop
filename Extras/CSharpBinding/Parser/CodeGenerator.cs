@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using CSharpBinding.Parser.SharpDevelopTree;
 
 namespace CSharpBinding.Parser
 {
@@ -178,7 +179,7 @@ namespace CSharpBinding.Parser
 				
 			if (type.BaseTypes != null) {
 				foreach (IReturnType bc in type.BaseTypes) {
-					IClass bcls = ctx.ParserContext.GetClass (bc.FullyQualifiedName, true, true);
+					IClass bcls = ctx.ParserContext.GetClass (bc.FullyQualifiedName, bc.GenericArguments, true, true);
 					if (bcls != null && IsExpectedClass (bcls))
 						return true;
 				}
@@ -188,8 +189,8 @@ namespace CSharpBinding.Parser
 		
 		public override object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
-			if (member is IClass && member.Name == GetNameWithoutPrefix (fieldDeclaration.TypeReference.SystemType)) {
-				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, fieldDeclaration.TypeReference.SystemType, fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
+			if (member is IClass && member.Name == GetNameWithoutPrefix (ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type))) {
+				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type), fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
 				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
 					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
 				}
