@@ -1,3 +1,12 @@
+2007-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Infrastructure for supporting parameter information windows.
+
 2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp,

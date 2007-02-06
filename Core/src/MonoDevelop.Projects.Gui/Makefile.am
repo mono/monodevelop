@@ -48,7 +48,11 @@ MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs \
 MonoDevelop.Projects.Gui.Completion/ICompletionData.cs \
 MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs \
 MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs \
+MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs \
 MonoDevelop.Projects.Gui.Completion/ListWindow.cs \
+MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs \
+MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs \
+MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs \
 MonoDevelop.Projects.Gui.Completion/TextUtilities.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs \
