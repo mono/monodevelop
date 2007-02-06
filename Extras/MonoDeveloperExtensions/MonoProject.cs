@@ -199,6 +199,13 @@ namespace MonoDeveloper
 			return error;
 		}
 		
+		protected override void OnClean ()
+		{
+			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
+			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Profile + " clean", conf.OutputDirectory, null);
+			proc.WaitForOutput ();
+		}
+
 		public void Install (IProgressMonitor monitor)
 		{
 			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
