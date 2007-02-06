@@ -237,6 +237,10 @@ Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs
 Extras/MonoDevelop.Autotools/SolutionOptionsPanel.cs
 Extras/MonoDevelop.Autotools/TarballTargetEditorWidget.cs
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml
+Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs
+Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs
+Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs
+Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs
 Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml
 Extras/MonoDevelop.GtkCore/gui.glade
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml
