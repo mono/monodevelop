@@ -1,3 +1,7 @@
+2007-02-06  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoQuery/MonoQuery.addin.xml: added translatable string for SQL definition pad
+
 2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/MonoQueryService.cs: Use the FileService for copying and

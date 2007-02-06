@@ -52,7 +52,7 @@
 			<NodeBuilder id = "ParametersNodeBuilder" class = "MonoQuery.ParametersNodeBuilder"/>
 		</SolutionPad>
 		
-		<Pad id = "MonoQuery.SqlDefinitionPad" class = "MonoQuery.SqlDefinitionPad" defaultPlacement = "Bottom"/>
+		<Pad id = "MonoQuery.SqlDefinitionPad" class = "MonoQuery.SqlDefinitionPad" defaultPlacement = "Bottom"  _label = "SQL Definition"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
