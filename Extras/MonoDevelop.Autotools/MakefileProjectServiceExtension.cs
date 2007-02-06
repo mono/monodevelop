@@ -172,14 +172,14 @@ namespace MonoDevelop.Autotools
 			TempFileCollection tf = new TempFileCollection ();
 			//FIXME: regexMcsError: this is default for cs projects built with (g)mcs,
 			//FIXME: should be customizable by user
-			ICompilerResult cr = ParseOutput (tf, output, regexMcsError, regexMcsWarning);
+			ICompilerResult cr = ParseOutput (tf, output, project.BaseDirectory, regexMcsError, regexMcsWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
 
 			return cr;
 		}
 
-		ICompilerResult ParseOutput (TempFileCollection tf, string output, Regex regexError, Regex regexWarning)
+		ICompilerResult ParseOutput (TempFileCollection tf, string output, string baseDir, Regex regexError, Regex regexWarning)
 		{
 			StringBuilder compilerOutput = new StringBuilder();
 			
@@ -190,6 +190,7 @@ namespace MonoDevelop.Autotools
 			//Regex generalError = new Regex(@"(?<error>.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
 			
 			Stack<string> dirs = new Stack<string> ();
+			dirs.Push (baseDir);
 			StringReader sr = new StringReader (output);
 			while (true) {
 
