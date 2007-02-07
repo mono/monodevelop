@@ -1,3 +1,8 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileData.cs: Write the resource id to the makefile only when
+	  really necessary.
+
 2007-02-07  Ankit Jain  <jankit@novell.com>
 
 	* MakefileProjectServiceExtension.cs (ParseOutput): Add a 'baseDir'
