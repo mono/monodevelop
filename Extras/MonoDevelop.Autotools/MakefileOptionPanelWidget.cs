@@ -222,6 +222,8 @@ namespace MonoDevelop.Autotools
 					GettextCatalog.GetString ("Updating project"), "gtk-run", true);
 
 				tmpData.UpdateProject (monitor, oldData == null || (!oldData.IntegrationEnabled && tmpData.IntegrationEnabled));
+			} else {
+				oldData. IntegrationEnabled = false;
 			}
 
  			return true;
