@@ -199,10 +199,10 @@ namespace MonoDeveloper
 			return error;
 		}
 		
-		protected override void OnClean ()
+		protected override void OnClean (IProgressMonitor monitor)
 		{
 			MonoProjectConfiguration conf = (MonoProjectConfiguration) ActiveConfiguration;
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Profile + " clean", conf.OutputDirectory, null);
+			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Profile + " clean", conf.OutputDirectory, monitor.Log, monitor.Log, null);
 			proc.WaitForOutput ();
 		}
 

@@ -9,7 +9,6 @@
       <Entry build="True" name="MonoDeveloperExtensions_nunit" configuration="Debug" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <StartMode startupentry="MonoDeveloperExtensions" single="True">
     <Execute type="None" entry="MonoDeveloperExtensions" />
     <Execute type="None" entry="MonoDeveloperExtensions_nunit" />

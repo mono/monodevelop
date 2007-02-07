@@ -1,3 +1,9 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.mds, MonoDeveloperExtensions.mdp,
+	  NUnit/NUnit.mdp: Updated.
+	* MonoProject.cs: Track api changes.
+
 2007-02-06  Ankit Jain  <jankit@novell.com>
 
 	* Commands.cs: Remove all svn commands. We have svn integrated now.
