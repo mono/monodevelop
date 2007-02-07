@@ -66,7 +66,7 @@ namespace MonoDevelop.NUnit
 			return conf;
 		}
 		
-		protected override void OnClean ()
+		protected override void OnClean (IProgressMonitor monitor)
 		{
 		}
 		

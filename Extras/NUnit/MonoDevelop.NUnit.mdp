@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./nunit.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/NUnitAssemblyGroup.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -64,6 +63,7 @@
     <File name="./templates/NUnitTestClass.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelopNUnit.addin.xml" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

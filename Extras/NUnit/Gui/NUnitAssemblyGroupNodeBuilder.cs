@@ -121,6 +121,7 @@ namespace MonoDevelop.NUnit
 		{
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
 			project.ParentCombine.RemoveEntry (project);
+			project.Dispose ();
 			IdeApp.ProjectOperations.SaveCombine ();
 		}
 	}
