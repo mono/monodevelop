@@ -90,20 +90,20 @@
     <File name="./MonoDevelop.Projects.Parser/PropertyCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/TagCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/TypedCSharpCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractComment.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractCompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultComment.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultCompilationUnit.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractDecoration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractEvent.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractField.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractIndexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultEvent.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultField.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultIndexer.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractMethod.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultMethod.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractNamedEntity.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractParameter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Parser/AbstractReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultParameter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultProperty.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Parser/DefaultReturnType.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/AbstractUsing.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/DefaultRegion.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentAttribute.cs" subtype="Code" buildaction="Compile" />
