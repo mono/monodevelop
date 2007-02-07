@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using MonoDevelop.Prj2Make.Schema.Prjx;
 using MonoDevelop.Prj2Make.Schema.Csproj;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 
 using CSharpBinding;
@@ -449,7 +450,7 @@ namespace MonoDevelop.Prj2Make
 		public string CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
 		{
 			try {
-				FileStream fsIn = null;
+				TextFileReader fsIn = null;
 				XmlSerializer xmlDeSer = null;
 				MonoDevelop.Prj2Make.Schema.Csproj.VisualStudioProject csprojObj = null;
 				
@@ -465,7 +466,7 @@ namespace MonoDevelop.Prj2Make
 				prjxObj.FileName = prjxFileName;
 
 				// Load the csproj
-				fsIn = new FileStream (csprojFileName, FileMode.Open);	    
+				fsIn = new TextFileReader (csprojFileName);	    
 				xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
 				csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);	    
 				fsIn.Close();
