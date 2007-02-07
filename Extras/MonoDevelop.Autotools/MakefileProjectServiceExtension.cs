@@ -113,10 +113,6 @@ namespace MonoDevelop.Autotools
 		//TODO
 		public override bool GetNeedsBuilding (CombineEntry entry)
 		{
-			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data != null)
-				return true;
-
 			return base.GetNeedsBuilding (entry);
 		}
 
@@ -281,21 +277,20 @@ namespace MonoDevelop.Autotools
 			return error;
 		}
 
-		public override void Clean (CombineEntry entry)
+		public override void Clean (IProgressMonitor monitor, CombineEntry entry)
 		{
 			Project proj = entry as Project;
 			if (proj == null) {
-				base.Clean (entry);
+				base.Clean (monitor, entry);
 				return;
 			}
 
 			MakefileData data = proj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.CleanTargetName)) {
-				base.Clean (entry); 
+				base.Clean (monitor, entry); 
 				return;
 			}
 
-			IProgressMonitor monitor = new NullProgressMonitor ();
 			monitor.BeginTask ( GettextCatalog.GetString( "Cleaning project"), 1);
 			try
 			{
