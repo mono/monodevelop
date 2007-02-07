@@ -417,6 +417,9 @@ namespace MonoDevelop.Autotools
 
 		IProgressMonitor monitor = null;
 
+		// VarName -> Encode filenames Eg. $(srcdir)
+		Dictionary<string, bool> encodeValues;
+
 		//use events.. 
 		public void UpdateProject (IProgressMonitor monitor, bool promptForRemoval)
 		{
@@ -466,6 +469,17 @@ namespace MonoDevelop.Autotools
 					AbsoluteConfigureInPath, OwnerProject.Name, e.Message));
 			}
 
+			if (encodeValues == null) {
+				encodeValues = new Dictionary<string, bool> ();
+			} else {
+				encodeValues.Clear ();
+			}
+
+			encodeValues [BuildFilesVar.Name] = false;
+			encodeValues [DeployFilesVar.Name] = false;
+			encodeValues [OthersVar.Name] = false;
+			encodeValues [ResourcesVar.Name] = false;
+
 			ReadFiles (BuildFilesVar, BuildAction.Compile, "Build", promptForRemoval);
 			ReadFiles (DeployFilesVar, BuildAction.FileCopy, "Deploy", promptForRemoval);
 			ReadFiles (OthersVar, BuildAction.Nothing, "Others", promptForRemoval);
@@ -487,6 +501,10 @@ namespace MonoDevelop.Autotools
 					GacRefVar.Extra.Clear ();
 					AsmRefVar.Extra.Clear ();
 					ProjectRefVar.Extra.Clear ();
+
+					encodeValues [GacRefVar.Name] = false;
+					encodeValues [AsmRefVar.Name] = false;
+					encodeValues [ProjectRefVar.Name] = false;
 
 					ReadReferences (GacRefVar, ReferenceType.Gac, "Gac References", dotnetProject);
 
@@ -573,6 +591,7 @@ namespace MonoDevelop.Autotools
 			// True if the user has been warned that filenames contain Variables
 			// but no configure.in path is set
 			bool autotoolsWarned = false;
+			bool varFound = false;
 
 			foreach (string f in files) { 
 				string fname = f.Trim ();
@@ -605,7 +624,9 @@ namespace MonoDevelop.Autotools
 						continue;
 					}
 
-					fname = ResolveBuildVars (fname);
+					varFound = false;
+					fname = ResolveBuildVars (fname, ref varFound);
+					encodeValues [fileVar.Name] |= varFound;
 
 					//File path in the makefile are relative to the makefile,
 					//but have to be added to the project as relative to project.BaseDirectory
@@ -678,8 +699,7 @@ namespace MonoDevelop.Autotools
 			foreach (string r in references) {
 				//Handle -r:System,System.Data also
 				try { 
-					ParseReference (r.Trim (), usePrefix, refVar.Prefix, len, refType, 
-						project, refVar.Extra);
+					ParseReference (r.Trim (), usePrefix, refVar, len, refType, project);
 				} catch (Exception e) {
 					Console.WriteLine ("Unable to parse reference '{0}'. Ignoring.", r);
 					monitor.ReportWarning (GettextCatalog.GetString (
@@ -708,13 +728,13 @@ namespace MonoDevelop.Autotools
     		}
 
 		//FIXME: change return type to bool, on false, extra.Add (reference)
-		void ParseReference (string reference, bool usePrefix, string prefix, int len, ReferenceType refType, 
-				DotNetProject project, List<string> extra)
+		void ParseReference (string reference, bool usePrefix, MakefileVar refVar, int len, ReferenceType refType, 
+				DotNetProject project)
 		{
 			string rname = reference;
 			if (rname.Length > 3 && rname [0] == '$' && rname [1] == '(' && rname [rname.Length - 1] == ')') {
 				if (!UseAutotools) {
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 					return;
 				}
 
@@ -722,7 +742,7 @@ namespace MonoDevelop.Autotools
 
 				if (!rname.EndsWith ("_LIBS)")) {
 					//Not a pkgconfig *_LIBS var
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 					return;
 				}
 
@@ -731,7 +751,7 @@ namespace MonoDevelop.Autotools
 				if (pkgNames == null) {
 					Console.WriteLine ("Package named '{0}' not found in configure.in. Ignoring reference to {1}",
 						pkgVarName, rname);
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 					return;
 				}
 
@@ -741,7 +761,7 @@ namespace MonoDevelop.Autotools
 						continue;
 
 					// Add all successfully added packages to ReferencedPackages
-					if (LoadPackageReference (pkgName, project, prefix)) {
+					if (LoadPackageReference (pkgName, project, refVar.Prefix)) {
 						ReferencedPackages.Add (pkgName);
 						added = true;
 					}
@@ -749,7 +769,7 @@ namespace MonoDevelop.Autotools
 
 				// none of the packages could be added
 				if (!added)
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 
 				return;
 			}
@@ -761,29 +781,31 @@ namespace MonoDevelop.Autotools
 					if (ReferencedPackages.Contains (s))
 						continue;
 
-					if (LoadPackageReference (s, project, prefix))
+					if (LoadPackageReference (s, project, refVar.Prefix))
 						ReferencedPackages.Add (s);
 					else
-						//extra.Add (reference);
-						extra.Add ("-pkg:" + s);
+						refVar.Extra.Add ("-pkg:" + s);
 				}
 
 				return;
 			}
 
-			if (usePrefix && String.Compare (prefix, 0, rname, 0, len) == 0)
+			if (usePrefix && String.Compare (refVar.Prefix, 0, rname, 0, len) == 0)
 				rname = rname.Substring (len);
 
 			//FIXME: try/catch around the split refs ?
+			bool varFound = false;
 			foreach (string r in rname.Split (new char [] {','})) {
 				string refname = r;
 				if (refname.StartsWith ("$(") && !UseAutotools) {
 					//Eg. -r:$(top_builddir)/foo.dll
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 					continue;
 				}
 
-				refname = ResolveBuildVars (refname);
+				varFound = false;
+				refname = ResolveBuildVars (refname, ref varFound);
+				encodeValues [refVar.Name] |= varFound;
 
 				//if refname is part of a package then add as gac
 				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0 &&
@@ -806,7 +828,7 @@ namespace MonoDevelop.Autotools
 
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"Invalid assembly reference : {0}. Ignoring.", refname));
-					extra.Add (reference);
+					refVar.Extra.Add (reference);
 					continue;
 				}
 
@@ -912,8 +934,9 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		string ResolveBuildVars (string filename)
+		string ResolveBuildVars (string filename, ref bool varFound)
 		{   
+			varFound = false;
 			if (filename.IndexOf ('$') < 0)
 				return filename;
 
@@ -939,8 +962,10 @@ namespace MonoDevelop.Autotools
 
 					string varname = filename.Substring (i + 2, j - (i + 2));
 
-					if (BuildVariables.ContainsKey (varname))
+					if (BuildVariables.ContainsKey (varname)) {
 						sb.Append (BuildVariables [varname]);
+						varFound = true;
+					}
 					else
 						sb.Append ("$(" + varname + ")");
 					i = j;
@@ -1038,10 +1063,12 @@ namespace MonoDevelop.Autotools
 					else
 						str = pf.RelativePath;
 
-					if (pf.IsExternalToProject)
-						str = EncodeFileName (str, "top_srcdir", false);
-					else
-						str = EncodeFileName (str, "srcdir", false);
+					if (encodeValues [fileVar.Name]) {
+						if (pf.IsExternalToProject)
+							str = EncodeFileName (str, "top_srcdir", false);
+						else
+							str = EncodeFileName (str, "srcdir", false);
+					}
 
 					// Emit the resource ID only when it is different from the file name
 					if (pf.BuildAction == BuildAction.EmbedAsResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != Path.GetFileName (str))
@@ -1089,15 +1116,15 @@ namespace MonoDevelop.Autotools
 				switch (refType) {
 				case ReferenceType.Gac:
 					//Assemblies coming from packages are always added as Gac
-					refstr = GacRefToString (pr, hasAcSubstPackages);
+					refstr = GacRefToString (pr, hasAcSubstPackages, refVar);
 					if (refstr == null)
 						continue;
 					break;
 				case ReferenceType.Assembly:
-					refstr = AsmRefToString (pr.Reference);
+					refstr = AsmRefToString (pr.Reference, refVar);
 					break;
 				case ReferenceType.Project:
-					refstr = ProjectRefToString (pr);
+					refstr = ProjectRefToString (pr, refVar);
 					if (refstr == null)
 						continue;
 					break;
@@ -1124,7 +1151,7 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		string GacRefToString (ProjectReference pr, Dictionary<string, bool> hasAcSubstPackages)
+		string GacRefToString (ProjectReference pr, Dictionary<string, bool> hasAcSubstPackages, MakefileVar refVar)
 		{
 			//Gac ref can be a full name OR a path!
 			//FIXME: Use GetReferencedFileName and GetPackageFromPath ?
@@ -1146,7 +1173,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (pkg == null)
-				return AsmRefToString (pr.GetReferencedFileNames () [0]);
+				return AsmRefToString (pr.GetReferencedFileNames () [0], refVar);
 
 			// Reference is from a package
 
@@ -1194,23 +1221,24 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		string AsmRefToString (string reference)
+		string AsmRefToString (string reference, MakefileVar refVar)
 		{
-			if (reference.StartsWith (BaseDirectory))
-				return GetRelativePath (reference);
-			else
+			if (!reference.StartsWith (BaseDirectory) && encodeValues [refVar.Name])
 				//Reference is external to this project
 				return EncodeFileName (reference, "top_builddir", true);
+
+			// !external and !encode
+			return GetRelativePath (reference);
 		}
 
-		string ProjectRefToString (ProjectReference pr)
+		string ProjectRefToString (ProjectReference pr, MakefileVar refVar)
 		{
 			string [] tmp = pr.GetReferencedFileNames ();
 			if (tmp == null || tmp.Length == 0)
 				//Reference not found, ignoring
 				return null;
 
-			return AsmRefToString (tmp [0]);
+			return AsmRefToString (tmp [0], refVar);
 		}
 
 	}

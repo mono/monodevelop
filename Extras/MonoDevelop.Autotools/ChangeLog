@@ -1,3 +1,14 @@
+2007-02-07  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs (encodeValues): New. Dictionary to keep track of which
+	variables to encode when emitting.
+	(UpdateProject): Initialize encodeValues.
+	(ReadFilesActual): Keep track of whether encoding is required or not.
+	(ParseReference): Likewise. Alter signature to take a MakefileVar param.
+	(ResolveBuildVars): Add a ref param 'varFound'
+	(WriteFiles): EncodeFilename only if required.
+	(AsmRefToString): Likewise.
+
 2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MakefileData.cs: Write the resource id to the makefile only when
