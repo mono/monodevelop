@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			
 			properties = new DefaultProperties();
 			properties.SetProperty("Project", project);
+			properties.SetProperty("CombineEntry", project);
 			
 			AddNodes(properties, Gtk.TreeIter.Zero, node.BuildChildItems(this));			
 			
@@ -76,6 +77,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 				
 				DefaultProperties configNodeProperties = new DefaultProperties();
 				configNodeProperties.SetProperty("Project", project);
+				configNodeProperties.SetProperty("CombineEntry", project);
 				configNodeProperties.SetProperty("Config", config);
 				AddNodes(configNodeProperties, newNode, configurationNode.BuildChildItems(this));
 			}

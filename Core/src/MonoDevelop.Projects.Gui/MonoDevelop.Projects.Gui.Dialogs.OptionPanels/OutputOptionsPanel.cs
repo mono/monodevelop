@@ -28,9 +28,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			[Glade.Widget] Entry assemblyNameEntry;
 			[Glade.Widget] Gnome.FileEntry outputPathButton;
 			[Glade.Widget] Entry parametersEntry;
-			[Glade.Widget] Gnome.FileEntry beforeButton;
-			[Glade.Widget] Gnome.FileEntry executeButton;
-			[Glade.Widget] Gnome.FileEntry afterButton;
 			[Glade.Widget] CheckButton pauseConsoleOutputCheckButton;			
 			[Glade.Widget] CheckButton externalConsoleCheckButton;			
 			
@@ -48,15 +45,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				
 				outputPathButton.DefaultPath = project.BaseDirectory;
 				outputPathButton.Filename = configuration.OutputDirectory;
-				
-				executeButton.DefaultPath = project.BaseDirectory;
-				executeButton.Filename = configuration.ExecuteScript;
-				
-				beforeButton.DefaultPath = project.BaseDirectory;
- 				beforeButton.Filename = configuration.ExecuteBeforeBuild;
- 				
-				afterButton.DefaultPath = project.BaseDirectory;
- 				afterButton.Filename = configuration.ExecuteAfterBuild;
 				
  				externalConsoleCheckButton.Active = configuration.ExternalConsole;
  				pauseConsoleOutputCheckButton.Active = configuration.PauseConsoleOutput;
@@ -81,9 +69,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				configuration.OutputAssembly = assemblyNameEntry.Text;
 				configuration.OutputDirectory = outputPathButton.Filename;
 				configuration.CommandLineParameters = parametersEntry.Text;
-				configuration.ExecuteBeforeBuild = beforeButton.Filename;
-				configuration.ExecuteAfterBuild = afterButton.Filename;
-				configuration.ExecuteScript = executeButton.Filename;
  				configuration.ExternalConsole = externalConsoleCheckButton.Active;
 				configuration.PauseConsoleOutput = pauseConsoleOutputCheckButton.Active;
 				return true;

@@ -33,6 +33,9 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties" extension-nodes="DialogPanel" description="Dialog panels for project configuration options.">
+			<DialogPanel id = "CustomCommands"
+			             _label = "Custom Commands"
+			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for solution options.">
@@ -61,6 +64,9 @@
 		<DialogPanel id = "EntryConfigurations"
 			             _label = "Configurations"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
+		<DialogPanel id = "CustomCommands"
+		             _label = "Custom Commands"
+		             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IDeployTargetEditor.">

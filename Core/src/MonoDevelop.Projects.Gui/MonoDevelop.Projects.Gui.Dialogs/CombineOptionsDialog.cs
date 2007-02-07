@@ -57,6 +57,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			properties = new DefaultProperties();
 			properties.SetProperty ("Combine", combine);
+			properties.SetProperty ("CombineEntry", combine);
 			properties.SetProperty ("CombineConfigData", configData);
 			
 			AddNodes (properties, Gtk.TreeIter.Zero, node.BuildChildItems (this));			
@@ -80,6 +81,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			foreach (IConfiguration config in configData.Configurations) {
 				DefaultProperties configNodeProperties = new DefaultProperties();
 				configNodeProperties.SetProperty("Combine", combine);
+				configNodeProperties.SetProperty("CombineEntry", combine);
 				configNodeProperties.SetProperty("Config", config);
 				configNodeProperties.SetProperty ("CombineConfigData", configData);
 				

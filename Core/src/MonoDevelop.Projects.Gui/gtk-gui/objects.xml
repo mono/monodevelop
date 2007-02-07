@@ -39,4 +39,17 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="CustomCommandWidget Signals">
+        <signal name="CommandCreated" />
+        <signal name="CommandRemoved" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

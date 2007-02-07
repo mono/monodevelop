@@ -35,6 +35,9 @@ MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs \
+MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs \
+MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs \
+MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs \
 MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs \
@@ -65,6 +68,8 @@ gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidg
 gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs \
 gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs \
 gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs \
+gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs \
 gtk-gui/generated.cs
 
 RES= \

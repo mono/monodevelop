@@ -1,3 +1,19 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  Base.glade, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Implemented options panels for configuring custom commands for
+	  projects.
+
 2007-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp, Makefile.am,

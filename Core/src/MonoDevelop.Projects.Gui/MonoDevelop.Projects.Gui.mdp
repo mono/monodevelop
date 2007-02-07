@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./Base.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
@@ -75,6 +74,11 @@
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
@@ -100,6 +104,8 @@
       <Widget>MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector</Widget>
       <Widget>MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget</Widget>
       <Widget>MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget</Widget>
+      <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget</Widget>
+      <Widget>MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
   <DeploymentInformation strategy="File">
