@@ -42,7 +42,6 @@ namespace MonoDevelop.Autotools
 				this.fileEntryMakefilePath.Path = data.AbsoluteMakefileName;
 				this.fileEntryMakefilePath.DefaultPath = data.AbsoluteMakefileName;
 				this.cbEnableMakefileIntegration.Active = data.IntegrationEnabled;
-				this.fileEntryMakefilePath.Sensitive = data.IntegrationEnabled;
 
 				HandleEnableMakefileIntegrationClicked (cbEnableMakefileIntegration.Active);
 
