@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide.Templates
 			StringParserService stringParserService = Runtime.StringParserService;
 			
 			if (projectOptions.GetAttribute ("language") == "") {
-				if (defaultLanguage == null || defaultLanguage == "")
+/*				if (defaultLanguage == null || defaultLanguage == "")
 					throw new InvalidOperationException ("Language not specified in template");
-				projectOptions.SetAttribute ("language", defaultLanguage);
+*/				projectOptions.SetAttribute ("language", defaultLanguage);
 			}
 			
 			Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);

@@ -327,7 +327,6 @@ namespace MonoDevelop.Ide.Gui
 
 				Services.DispatchService.GuiDispatch (new StatefulMessageHandler (RestoreCombinePreferences), CurrentOpenCombine);
 				
-				SaveCombine ();
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);

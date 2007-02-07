@@ -1,5 +1,12 @@
 2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Don't require a
+	  default language (not needed for generic projects).
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Don't save the combine
+	  after opening it.
+
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs,
 	  MonoDevelop.Ide.addin.xml: Show the list of custom project commands
 	  in the context menu and in the project menu.
