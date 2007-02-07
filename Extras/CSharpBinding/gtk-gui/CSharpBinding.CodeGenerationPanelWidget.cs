@@ -79,14 +79,15 @@ namespace CSharpBinding {
             Stetic.Gui.Initialize();
             // Widget CSharpBinding.CodeGenerationPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Events = ((Gdk.EventMask)(256));
             this.Name = "CSharpBinding.CodeGenerationPanelWidget";
             // Container child CSharpBinding.CodeGenerationPanelWidget.Gtk.Container+ContainerChild
             this.vbox62 = new Gtk.VBox();
+            this.vbox62.Events = ((Gdk.EventMask)(0));
             this.vbox62.Name = "vbox62";
             this.vbox62.Spacing = 12;
             // Container child vbox62.Gtk.Box+BoxChild
             this.label82 = new Gtk.Label();
+            this.label82.Events = ((Gdk.EventMask)(0));
             this.label82.Name = "label82";
             this.label82.Xalign = 0F;
             this.label82.LabelProp = Mono.Unix.Catalog.GetString("<b>Code Generation</b>");
@@ -98,12 +99,14 @@ namespace CSharpBinding {
             w1.Fill = false;
             // Container child vbox62.Gtk.Box+BoxChild
             this.hbox56 = new Gtk.HBox();
+            this.hbox56.Events = ((Gdk.EventMask)(0));
             this.hbox56.Name = "hbox56";
             // Container child hbox56.Gtk.Box+BoxChild
             this.label81 = new Gtk.Label();
             this.label81.WidthRequest = 18;
+            this.label81.Events = ((Gdk.EventMask)(0));
             this.label81.Name = "label81";
-            this.label81.LabelProp = Mono.Unix.Catalog.GetString("");
+            this.label81.LabelProp = "";
             this.hbox56.Add(this.label81);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox56[this.label81]));
             w2.Position = 0;
@@ -111,18 +114,22 @@ namespace CSharpBinding {
             w2.Fill = false;
             // Container child hbox56.Gtk.Box+BoxChild
             this.vbox65 = new Gtk.VBox();
+            this.vbox65.Events = ((Gdk.EventMask)(0));
             this.vbox65.Name = "vbox65";
             this.vbox65.Spacing = 6;
             // Container child vbox65.Gtk.Box+BoxChild
             this.table7 = new Gtk.Table(((uint)(5)), ((uint)(2)), false);
+            this.table7.Events = ((Gdk.EventMask)(0));
             this.table7.Name = "table7";
             this.table7.RowSpacing = ((uint)(6));
             this.table7.ColumnSpacing = ((uint)(6));
             // Container child table7.Gtk.Table+TableChild
             this.hbox1 = new Gtk.HBox();
+            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             // Container child hbox1.Gtk.Box+BoxChild
             this.codepageEntry = Gtk.ComboBoxEntry.NewText();
+            this.codepageEntry.Events = ((Gdk.EventMask)(0));
             this.codepageEntry.Name = "codepageEntry";
             this.hbox1.Add(this.codepageEntry);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.codepageEntry]));
@@ -139,9 +146,11 @@ namespace CSharpBinding {
             w4.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.hbox57 = new Gtk.HBox();
+            this.hbox57.Events = ((Gdk.EventMask)(0));
             this.hbox57.Name = "hbox57";
             // Container child hbox57.Gtk.Box+BoxChild
             this.compileTargetCombo = new Gtk.ComboBox();
+            this.compileTargetCombo.Events = ((Gdk.EventMask)(0));
             this.compileTargetCombo.Name = "compileTargetCombo";
             this.hbox57.Add(this.compileTargetCombo);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox57[this.compileTargetCombo]));
@@ -156,6 +165,7 @@ namespace CSharpBinding {
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.iconEntry = new MonoDevelop.Components.FileEntry();
+            this.iconEntry.Events = ((Gdk.EventMask)(0));
             this.iconEntry.Name = "iconEntry";
             this.table7.Add(this.iconEntry);
             Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.table7[this.iconEntry]));
@@ -167,6 +177,7 @@ namespace CSharpBinding {
             w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label1 = new Gtk.Label();
+            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Compiler Code Page:");
@@ -178,6 +189,7 @@ namespace CSharpBinding {
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label2 = new Gtk.Label();
+            this.label2.Events = ((Gdk.EventMask)(0));
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("Win32 Icon:");
@@ -189,6 +201,7 @@ namespace CSharpBinding {
             w9.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table7.Gtk.Table+TableChild
             this.label86 = new Gtk.Label();
+            this.label86.Events = ((Gdk.EventMask)(0));
             this.label86.Name = "label86";
             this.label86.Xalign = 0F;
             this.label86.LabelProp = Mono.Unix.Catalog.GetString("Compile _Target:");
@@ -199,6 +212,7 @@ namespace CSharpBinding {
             w10.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table7.Gtk.Table+TableChild
             this.label87 = new Gtk.Label();
+            this.label87.Events = ((Gdk.EventMask)(0));
             this.label87.Name = "label87";
             this.label87.Xalign = 0F;
             this.label87.LabelProp = Mono.Unix.Catalog.GetString("Define S_ymbols:");
@@ -211,6 +225,7 @@ namespace CSharpBinding {
             w11.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table7.Gtk.Table+TableChild
             this.label88 = new Gtk.Label();
+            this.label88.Events = ((Gdk.EventMask)(0));
             this.label88.Name = "label88";
             this.label88.Xalign = 0F;
             this.label88.LabelProp = Mono.Unix.Catalog.GetString("_Main Class:");
@@ -223,6 +238,7 @@ namespace CSharpBinding {
             w12.YOptions = ((Gtk.AttachOptions)(0));
             // Container child table7.Gtk.Table+TableChild
             this.mainClassEntry = new Gtk.ComboBoxEntry();
+            this.mainClassEntry.Events = ((Gdk.EventMask)(0));
             this.mainClassEntry.Name = "mainClassEntry";
             this.table7.Add(this.mainClassEntry);
             Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table7[this.mainClassEntry]));
@@ -235,6 +251,7 @@ namespace CSharpBinding {
             // Container child table7.Gtk.Table+TableChild
             this.symbolsEntry = new Gtk.Entry();
             this.symbolsEntry.CanFocus = true;
+            this.symbolsEntry.Events = ((Gdk.EventMask)(0));
             this.symbolsEntry.Name = "symbolsEntry";
             this.symbolsEntry.IsEditable = true;
             this.symbolsEntry.InvisibleChar = '●';
@@ -258,6 +275,7 @@ namespace CSharpBinding {
             w17.Fill = false;
             // Container child vbox62.Gtk.Box+BoxChild
             this.label90 = new Gtk.Label();
+            this.label90.Events = ((Gdk.EventMask)(0));
             this.label90.Name = "label90";
             this.label90.Xalign = 0F;
             this.label90.LabelProp = Mono.Unix.Catalog.GetString("<b>Warnings</b>");
@@ -270,12 +288,14 @@ namespace CSharpBinding {
             w18.Fill = false;
             // Container child vbox62.Gtk.Box+BoxChild
             this.hbox47 = new Gtk.HBox();
+            this.hbox47.Events = ((Gdk.EventMask)(0));
             this.hbox47.Name = "hbox47";
             // Container child hbox47.Gtk.Box+BoxChild
             this.label72 = new Gtk.Label();
             this.label72.WidthRequest = 18;
+            this.label72.Events = ((Gdk.EventMask)(0));
             this.label72.Name = "label72";
-            this.label72.LabelProp = Mono.Unix.Catalog.GetString("");
+            this.label72.LabelProp = "";
             this.hbox47.Add(this.label72);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox47[this.label72]));
             w19.Position = 0;
@@ -283,14 +303,17 @@ namespace CSharpBinding {
             w19.Fill = false;
             // Container child hbox47.Gtk.Box+BoxChild
             this.vbox64 = new Gtk.VBox();
+            this.vbox64.Events = ((Gdk.EventMask)(0));
             this.vbox64.Name = "vbox64";
             this.vbox64.Spacing = 6;
             // Container child vbox64.Gtk.Box+BoxChild
             this.hbox55 = new Gtk.HBox();
+            this.hbox55.Events = ((Gdk.EventMask)(0));
             this.hbox55.Name = "hbox55";
             this.hbox55.Spacing = 6;
             // Container child hbox55.Gtk.Box+BoxChild
             this.label80 = new Gtk.Label();
+            this.label80.Events = ((Gdk.EventMask)(0));
             this.label80.Name = "label80";
             this.label80.LabelProp = Mono.Unix.Catalog.GetString("_Warning Level:");
             this.label80.UseUnderline = true;
@@ -302,6 +325,7 @@ namespace CSharpBinding {
             // Container child hbox55.Gtk.Box+BoxChild
             this.warningLevelSpinButton = new Gtk.SpinButton(0, 4, 1);
             this.warningLevelSpinButton.CanFocus = true;
+            this.warningLevelSpinButton.Events = ((Gdk.EventMask)(0));
             this.warningLevelSpinButton.Name = "warningLevelSpinButton";
             this.warningLevelSpinButton.Adjustment.PageIncrement = 1;
             this.warningLevelSpinButton.Adjustment.PageSize = 1;
@@ -321,6 +345,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.generateOverflowChecksCheckButton = new Gtk.CheckButton();
             this.generateOverflowChecksCheckButton.CanFocus = true;
+            this.generateOverflowChecksCheckButton.Events = ((Gdk.EventMask)(0));
             this.generateOverflowChecksCheckButton.Name = "generateOverflowChecksCheckButton";
             this.generateOverflowChecksCheckButton.Label = Mono.Unix.Catalog.GetString("_Generate overflow checks");
             this.generateOverflowChecksCheckButton.DrawIndicator = true;
@@ -333,6 +358,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.allowUnsafeCodeCheckButton = new Gtk.CheckButton();
             this.allowUnsafeCodeCheckButton.CanFocus = true;
+            this.allowUnsafeCodeCheckButton.Events = ((Gdk.EventMask)(0));
             this.allowUnsafeCodeCheckButton.Name = "allowUnsafeCodeCheckButton";
             this.allowUnsafeCodeCheckButton.Label = Mono.Unix.Catalog.GetString("Allow '_unsafe' code");
             this.allowUnsafeCodeCheckButton.DrawIndicator = true;
@@ -345,6 +371,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.enableOptimizationCheckButton = new Gtk.CheckButton();
             this.enableOptimizationCheckButton.CanFocus = true;
+            this.enableOptimizationCheckButton.Events = ((Gdk.EventMask)(0));
             this.enableOptimizationCheckButton.Name = "enableOptimizationCheckButton";
             this.enableOptimizationCheckButton.Label = Mono.Unix.Catalog.GetString("Enable _optimizations");
             this.enableOptimizationCheckButton.DrawIndicator = true;
@@ -357,6 +384,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.warningsAsErrorsCheckButton = new Gtk.CheckButton();
             this.warningsAsErrorsCheckButton.CanFocus = true;
+            this.warningsAsErrorsCheckButton.Events = ((Gdk.EventMask)(0));
             this.warningsAsErrorsCheckButton.Name = "warningsAsErrorsCheckButton";
             this.warningsAsErrorsCheckButton.Label = Mono.Unix.Catalog.GetString("Treat warnings as _errors");
             this.warningsAsErrorsCheckButton.DrawIndicator = true;
@@ -369,6 +397,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.generateDebugInformationCheckButton = new Gtk.CheckButton();
             this.generateDebugInformationCheckButton.CanFocus = true;
+            this.generateDebugInformationCheckButton.Events = ((Gdk.EventMask)(0));
             this.generateDebugInformationCheckButton.Name = "generateDebugInformationCheckButton";
             this.generateDebugInformationCheckButton.Label = Mono.Unix.Catalog.GetString("Emit _debugging information");
             this.generateDebugInformationCheckButton.DrawIndicator = true;
@@ -381,6 +410,7 @@ namespace CSharpBinding {
             // Container child vbox64.Gtk.Box+BoxChild
             this.generateXmlOutputCheckButton = new Gtk.CheckButton();
             this.generateXmlOutputCheckButton.CanFocus = true;
+            this.generateXmlOutputCheckButton.Events = ((Gdk.EventMask)(0));
             this.generateXmlOutputCheckButton.Name = "generateXmlOutputCheckButton";
             this.generateXmlOutputCheckButton.Label = Mono.Unix.Catalog.GetString("Generate _xml documentation");
             this.generateXmlOutputCheckButton.DrawIndicator = true;

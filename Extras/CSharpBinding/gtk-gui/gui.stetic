@@ -6,14 +6,15 @@
   </import>
   <widget class="Gtk.Bin" id="CSharpBinding.CodeGenerationPanelWidget" design-size="356 416">
     <property name="MemberName" />
-    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.VBox" id="vbox62">
         <property name="MemberName" />
+        <property name="Events">0</property>
         <property name="Spacing">12</property>
         <child>
           <widget class="Gtk.Label" id="label82">
             <property name="MemberName" />
+            <property name="Events">0</property>
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;Code Generation&lt;/b&gt;</property>
             <property name="UseMarkup">True</property>
@@ -28,10 +29,12 @@
         <child>
           <widget class="Gtk.HBox" id="hbox56">
             <property name="MemberName" />
+            <property name="Events">0</property>
             <child>
               <widget class="Gtk.Label" id="label81">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
+                <property name="Events">0</property>
                 <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
@@ -44,10 +47,12 @@
             <child>
               <widget class="Gtk.VBox" id="vbox65">
                 <property name="MemberName" />
+                <property name="Events">0</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Table" id="table7">
                     <property name="MemberName" />
+                    <property name="Events">0</property>
                     <property name="NRows">5</property>
                     <property name="NColumns">2</property>
                     <property name="RowSpacing">6</property>
@@ -55,9 +60,11 @@
                     <child>
                       <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <child>
                           <widget class="Gtk.ComboBoxEntry" id="codepageEntry">
                             <property name="MemberName" />
+                            <property name="Events">0</property>
                             <property name="IsTextCombo">True</property>
                             <property name="Items" />
                           </widget>
@@ -88,9 +95,11 @@
                     <child>
                       <widget class="Gtk.HBox" id="hbox57">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <child>
                           <widget class="Gtk.ComboBox" id="compileTargetCombo">
                             <property name="MemberName" />
+                            <property name="Events">0</property>
                             <property name="IsTextCombo">False</property>
                             <property name="Items" />
                           </widget>
@@ -119,6 +128,7 @@
                     <child>
                       <widget class="MonoDevelop.Components.FileEntry" id="iconEntry">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">4</property>
@@ -139,6 +149,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label1">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Compiler Code Page:</property>
                       </widget>
@@ -159,6 +170,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label2">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Win32 Icon:</property>
                       </widget>
@@ -179,6 +191,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label86">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Compile _Target:</property>
                         <property name="UseUnderline">True</property>
@@ -198,6 +211,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label87">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">Define S_ymbols:</property>
                         <property name="UseUnderline">True</property>
@@ -220,6 +234,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label88">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="Xalign">0</property>
                         <property name="LabelProp" translatable="yes">_Main Class:</property>
                         <property name="UseUnderline">True</property>
@@ -242,6 +257,7 @@
                     <child>
                       <widget class="Gtk.ComboBoxEntry" id="mainClassEntry">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="IsTextCombo">False</property>
                         <property name="Items" />
                       </widget>
@@ -265,6 +281,7 @@
                       <widget class="Gtk.Entry" id="symbolsEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="Events">0</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -306,6 +323,7 @@
         <child>
           <widget class="Gtk.Label" id="label90">
             <property name="MemberName" />
+            <property name="Events">0</property>
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;Warnings&lt;/b&gt;</property>
             <property name="UseMarkup">True</property>
@@ -321,10 +339,12 @@
         <child>
           <widget class="Gtk.HBox" id="hbox47">
             <property name="MemberName" />
+            <property name="Events">0</property>
             <child>
               <widget class="Gtk.Label" id="label72">
                 <property name="MemberName" />
                 <property name="WidthRequest">18</property>
+                <property name="Events">0</property>
                 <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
@@ -337,14 +357,17 @@
             <child>
               <widget class="Gtk.VBox" id="vbox64">
                 <property name="MemberName" />
+                <property name="Events">0</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.HBox" id="hbox55">
                     <property name="MemberName" />
+                    <property name="Events">0</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Label" id="label80">
                         <property name="MemberName" />
+                        <property name="Events">0</property>
                         <property name="LabelProp" translatable="yes">_Warning Level:</property>
                         <property name="UseUnderline">True</property>
                         <property name="MnemonicWidget">warningLevelSpinButton</property>
@@ -360,6 +383,7 @@
                       <widget class="Gtk.SpinButton" id="warningLevelSpinButton">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="Events">0</property>
                         <property name="Upper">4</property>
                         <property name="PageIncrement">1</property>
                         <property name="PageSize">1</property>
@@ -387,6 +411,7 @@
                   <widget class="Gtk.CheckButton" id="generateOverflowChecksCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">_Generate overflow checks</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -403,6 +428,7 @@
                   <widget class="Gtk.CheckButton" id="allowUnsafeCodeCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Allow '_unsafe' code</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -419,6 +445,7 @@
                   <widget class="Gtk.CheckButton" id="enableOptimizationCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Enable _optimizations</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -435,6 +462,7 @@
                   <widget class="Gtk.CheckButton" id="warningsAsErrorsCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Treat warnings as _errors</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -451,6 +479,7 @@
                   <widget class="Gtk.CheckButton" id="generateDebugInformationCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Emit _debugging information</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -467,6 +496,7 @@
                   <widget class="Gtk.CheckButton" id="generateXmlOutputCheckButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Generate _xml documentation</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
