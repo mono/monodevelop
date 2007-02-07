@@ -248,7 +248,11 @@ namespace MonoDevelop.Projects.Serialization
 				}
 				else {
 					DataNode data = prop.Serialize (serCtx, val);
-					if (data == null) continue;
+					if (data == null)
+						continue;
+					// Don't write empty collections
+					if (data is DataItem && !((DataItem)data).HasItemData && prop.DataType is CollectionDataType)
+						continue;
 					col.Add (data);
 				}
 			}

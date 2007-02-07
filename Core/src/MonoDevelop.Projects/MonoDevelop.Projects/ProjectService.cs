@@ -225,9 +225,9 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.ReadFile (fileName, monitor);
 		}
 		
-		public override void Clean (CombineEntry entry)
+		public override void Clean (IProgressMonitor monitor, CombineEntry entry)
 		{
-			entry.OnClean ();
+			entry.OnClean (monitor);
 		}
 		
 		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)

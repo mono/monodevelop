@@ -42,8 +42,8 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectBindings" extension-nodes="ProjectBinding" description="Project bindings.">
-		<ProjectBinding id = "DotNet"
-						class = "MonoDevelop.Projects.DotNetProjectBinding" />
+		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
+		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
 	</Extension>
 	  
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats" extension-nodes="FileFormat" description="File format handlers for projects and solutions.">
@@ -57,6 +57,8 @@
 		<DataType class = "MonoDevelop.Projects.Combine" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.DotNetProject" />
+		<DataType class = "MonoDevelop.Projects.GenericProject" />
+		<DataType class = "MonoDevelop.Projects.GenericProjectConfiguration" />
 		<DataType class = "MonoDevelop.Projects.Deployment.InstallDeployTarget" />
 		<DataType class = "MonoDevelop.Projects.Deployment.DirectoryDeployTarget" />
 		<DataType class = "MonoDevelop.Projects.Deployment.LocalFileCopyConfiguration" />
@@ -85,5 +87,8 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions" extension-nodes="Class" description="Project service extensions. Specified classes must be a subclass of ProjectServiceExtension.">
+		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 	</Extension>
 </AddIn>

@@ -64,16 +64,6 @@ namespace MonoDevelop.Projects
 			set { executeScript = value; }
 		}
 		
-		public virtual string ExecuteBeforeBuild {
-			get { return executeBeforeBuild; }
-			set { executeBeforeBuild = value; }
-		}
-		
-		public virtual string ExecuteAfterBuild {
-			get { return executeAfterBuild; }
-			set { executeAfterBuild = value; }
-		}
-		
 		public virtual bool RunWithWarnings {
 			get { return runWithWarnings; }
 			set { runWithWarnings = value; }

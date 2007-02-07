@@ -1,10 +1,10 @@
 //
-// UnknownCombineEntry.cs
+// MakefileProjectBinding.cs
 //
 // Author:
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,41 +27,33 @@
 //
 
 using System;
+using System.IO;
+using System.Xml;
+using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects
 {
-	public class UnknownCombineEntry: CombineEntry
+	public class GenericProjectBinding : IProjectBinding
 	{
-		public UnknownCombineEntry()
-		{
+		public virtual string Name {
+			get { return "GenericProject"; }
 		}
 		
-		public override IConfiguration CreateConfiguration (string name)
+		public Project CreateProject (ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return null;
+			return new GenericProject (info, projectOptions);
 		}
 		
-		protected internal override void OnClean (IProgressMonitor monitor)
-		{
-		}
-		
-		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
+		public Project CreateSingleFileProject (string file)
 		{
 			return null;
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
-		{
-		}
-		
-		protected internal override bool OnGetNeedsBuilding ()
+		public bool CanCreateSingleFileProject (string file)
 		{
 			return false;
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool value)
-		{
 		}
 	}
 }

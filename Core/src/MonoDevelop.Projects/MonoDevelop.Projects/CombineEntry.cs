@@ -361,19 +361,51 @@ namespace MonoDevelop.Projects
 				ConfigurationRemoved (this, args);
 		}
 		
-		public void Clean ()
+		public void Clean (IProgressMonitor monitor)
 		{
-			Services.ProjectService.ExtensionChain.Clean (this);
+			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
+			if (conf != null) {
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeClean);
+				if (monitor.IsCancelRequested)
+					return;
+			}
+			
+			Services.ProjectService.ExtensionChain.Clean (monitor, this);
+			
+			if (conf != null && !monitor.IsCancelRequested)
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterClean);
 		}
 		
 		public ICompilerResult Build (IProgressMonitor monitor)
 		{
-			return InternalBuild (monitor);
+			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
+			if (conf != null) {
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeBuild);
+				if (monitor.IsCancelRequested)
+					return new DefaultCompilerResult (new CompilerResults (null), "");
+			}
+			
+			ICompilerResult res = InternalBuild (monitor);
+			
+			if (conf != null && !monitor.IsCancelRequested)
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterBuild);
+				
+			return res;
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context)
 		{
+			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
+			if (conf != null) {
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeExecute);
+				if (monitor.IsCancelRequested)
+					return;
+			}
+			
 			Services.ProjectService.ExtensionChain.Execute (monitor, this, context);
+			
+			if (conf != null && !monitor.IsCancelRequested)
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterExecute);
 		}
 		
 		public bool NeedsBuilding {
@@ -386,7 +418,7 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.ExtensionChain.Build (monitor, this);
 		}
 		
-		internal protected abstract void OnClean ();
+		internal protected abstract void OnClean (IProgressMonitor monitor);
 		internal protected abstract ICompilerResult OnBuild (IProgressMonitor monitor);
 		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context);
 		internal protected abstract bool OnGetNeedsBuilding ();

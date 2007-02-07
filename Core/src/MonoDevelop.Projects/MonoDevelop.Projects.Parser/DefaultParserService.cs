@@ -1453,6 +1453,40 @@ namespace MonoDevelop.Projects.Parser
 			if (c != null)
 				return c;
 
+			// If the name matches an alias, try using the alias first.
+			if (unit != null) {
+				string aliasResult = FindAlias (name, unit);
+				if (aliasResult != null) {
+					// Don't provide the compilation unit when trying to resolve the alias,
+					// since aliases are not affected by other 'using' directives.
+					c = GetClass (db, aliasResult, null, false, true);
+					if (c != null)
+						return c;
+				}
+			}
+			
+			// The enclosing namespace has preference over the using directives.
+			// Check it now.
+
+			if (callingClass != null) {
+				string fullname = callingClass.FullyQualifiedName;
+				string[] namespaces = fullname.Split(new char[] {'.'});
+				string curnamespace = "";
+				int i = 0;
+				
+				do {
+					curnamespace += namespaces[i] + '.';
+					c = GetClass (db, curnamespace + name, null, false, true);
+					if (c != null) {
+						return c;
+					}
+					i++;
+				}
+				while (i < namespaces.Length);
+			}
+			
+			// Now try to find the class using the included namespaces
+			
 			if (unit != null) {
 				foreach (IUsing u in unit.Usings) {
 					if (u != null) {
@@ -1463,24 +1497,24 @@ namespace MonoDevelop.Projects.Parser
 					}
 				}
 			}
-			if (callingClass == null) {
+			
+			return null;
+		}
+		
+		string FindAlias (string name, ICompilationUnit unit)
+		{
+			// If the name matches an alias, try using the alias first.
+			if (unit == null)
 				return null;
-			}
-			string fullname = callingClass.FullyQualifiedName;
-			string[] namespaces = fullname.Split(new char[] {'.'});
-			string curnamespace = "";
-			int i = 0;
-			
-			do {
-				curnamespace += namespaces[i] + '.';
-				c = GetClass (db, curnamespace + name, null, false, true);
-				if (c != null) {
-					return c;
+				
+			foreach (IUsing u in unit.Usings) {
+				if (u != null) {
+					foreach (DictionaryEntry e in u.Aliases) {
+						if ((string)e.Value == name)
+							return (string)e.Key;
+					}
 				}
-				i++;
 			}
-			while (i < namespaces.Length);
-			
 			return null;
 		}
 		

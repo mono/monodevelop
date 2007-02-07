@@ -17,6 +17,10 @@ namespace MonoDevelop.Projects
 	{
 		[ItemProperty("name")]
 		string name = null;
+		
+		[ItemProperty ("CustomCommands")]
+		[ItemProperty ("Command", Scope=1)]
+		CustomCommandCollection customCommands = new CustomCommandCollection ();
 
 		Hashtable properties;
 		
@@ -25,6 +29,10 @@ namespace MonoDevelop.Projects
 			set { name = value; }
 		}
 
+		public CustomCommandCollection CustomCommands {
+			get { return customCommands; }
+		}
+		
 		public object Clone()
 		{
 			IConfiguration conf = (IConfiguration) MemberwiseClone ();
@@ -46,6 +54,7 @@ namespace MonoDevelop.Projects
 			}
 			else
 				properties = null;
+			customCommands = other.customCommands.Clone ();
 		}
 		
 		public override string ToString()

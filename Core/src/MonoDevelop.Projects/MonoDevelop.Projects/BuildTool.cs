@@ -89,7 +89,7 @@ namespace MonoDevelop.Projects
 				return (res.ErrorCount == 0) ? 0 : 1;
 			}
 			else if (command == "clean") {
-				centry.Clean ();
+				centry.Clean (monitor);
 				return 0;
 			} else {
 				Console.WriteLine ("Unknown command '{0}'", command);

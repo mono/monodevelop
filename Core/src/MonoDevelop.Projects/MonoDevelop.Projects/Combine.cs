@@ -611,12 +611,12 @@ namespace MonoDevelop.Projects
 			inserted[index] = true;
 		}
 		
-		protected internal override void OnClean ()
+		protected internal override void OnClean (IProgressMonitor monitor)
 		{
 			if (ActiveConfiguration == null)
 				return;
 			foreach (CombineConfigurationEntry cce in ((CombineConfiguration)ActiveConfiguration).Entries)
-				cce.Entry.Clean ();
+				cce.Entry.Clean (monitor);
 		}
 		
 		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)

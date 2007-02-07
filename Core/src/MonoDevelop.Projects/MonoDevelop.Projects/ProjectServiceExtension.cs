@@ -24,9 +24,9 @@ namespace MonoDevelop.Projects
 			return Next.Load (monitor, fileName);
 		}
 		
-		public virtual void Clean (CombineEntry entry)
+		public virtual void Clean (IProgressMonitor monitor, CombineEntry entry)
 		{
-			Next.Clean (entry);
+			Next.Clean (monitor, entry);
 		}
 		
 		public virtual ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)

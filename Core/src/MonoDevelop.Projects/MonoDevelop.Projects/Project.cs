@@ -335,8 +335,20 @@ namespace MonoDevelop.Projects
 		
 		ICompilerResult InternalBuild (IProgressMonitor monitor, bool buildReferences)
 		{
-			if (!buildReferences)
-				return Services.ProjectService.ExtensionChain.Build (monitor, this);
+			if (!buildReferences) {
+				if (!NeedsBuilding)
+					return new DefaultCompilerResult (new CompilerResults (null), "");
+					
+				try {
+					monitor.BeginTask (GettextCatalog.GetString ("Building Project: {0} ({1})", Name, ActiveConfiguration.Name), 1);
+					
+					// This will end calling OnBuild ()
+					return Services.ProjectService.ExtensionChain.Build (monitor, this);
+					
+				} finally {
+					monitor.EndTask ();
+				}
+			}
 				
 			// Get a list of all projects that need to be built (including this),
 			// and build them in the correct order
@@ -353,14 +365,16 @@ namespace MonoDevelop.Projects
 				
 			monitor.BeginTask (null, referenced.Count);
 			foreach (Project p in referenced) {
-				ICompilerResult res = p.Build (monitor, false);
-				cres.Errors.AddRange (res.CompilerResults.Errors);
-				monitor.Step (1);
-				builds++;
-				if (res.ErrorCount > 0) {
-					failedBuilds = 1;
-					break;
+				if (p.NeedsBuilding) {
+					ICompilerResult res = p.Build (monitor, false);
+					cres.Errors.AddRange (res.CompilerResults.Errors);
+					builds++;
+					if (res.ErrorCount > 0) {
+						failedBuilds = 1;
+						break;
+					}
 				}
+				monitor.Step (1);
 				if (monitor.IsCancelRequested)
 					break;
 			}
@@ -370,55 +384,41 @@ namespace MonoDevelop.Projects
 		
 		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
-			if (!NeedsBuilding)
+			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build);
 				return new DefaultCompilerResult (new CompilerResults (null), "");
-			
-			try {
-			
-				IBuildStep[] steps = BuildPipeline;
-				
-				monitor.BeginTask (GettextCatalog.GetString ("Building Project: {0} Configuration: {1}", Name, ActiveConfiguration.Name), steps.Length);
-				
-				Runtime.StringParserService.Properties["Project"] = Name;
-				
-				ICompilerResult res = null;
-				
-				foreach (IBuildStep step in steps) {
-					ICompilerResult sres = step.Build (monitor, this);
-					if (sres != null) {
-						if (res != null) {
-							CompilerResults cres = new CompilerResults (null);
-							cres.Errors.AddRange (res.CompilerResults.Errors);
-							cres.Errors.AddRange (sres.CompilerResults.Errors);
-							res = new DefaultCompilerResult (cres, res.CompilerOutput + "\n" + sres.CompilerOutput);
-						} else
-							res = sres;
-					}
-					monitor.Step (1);
-				}
-				
-				isDirty = false;
-				
-				if (res != null) {
-					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
-					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", res.WarningCount, res.WarningCount);
-				
-					monitor.Log.WriteLine(GettextCatalog.GetString("Build complete -- ") + errorString + ", " + warningString);
-				}
-				
-				return res;
-			} finally {
-				monitor.EndTask ();
 			}
+
+			// create output directory, if not exists
+			string outputDir = conf.OutputDirectory;
+			try {
+				DirectoryInfo directoryInfo = new DirectoryInfo(outputDir);
+				if (!directoryInfo.Exists) {
+					directoryInfo.Create();
+				}
+			} catch (Exception e) {
+				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
+			}
+		
+			Runtime.StringParserService.Properties["Project"] = Name;
+			
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
+			ICompilerResult res = DoBuild (monitor);
+			
+			isDirty = false;
+			
+			if (res != null) {
+				string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
+				string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", res.WarningCount, res.WarningCount);
+			
+				monitor.Log.WriteLine(GettextCatalog.GetString("Build complete -- ") + errorString + ", " + warningString);
+			}
+			
+			return res;
 		}
 		
-		protected virtual IBuildStep[] BuildPipeline {
-			get {
-				return (IBuildStep[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/BuildPipeline", typeof(IBuildStep));
-			}
-		}
-
-		protected internal override void OnClean ()
+		protected internal override void OnClean (IProgressMonitor monitor)
 		{
 			isDirty = true;
 			
@@ -471,44 +471,11 @@ namespace MonoDevelop.Projects
 			} catch (Exception e) {
 				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
 			}
-			
-			if (conf != null && conf.ExecuteBeforeBuild != "" && File.Exists(conf.ExecuteBeforeBuild)) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", conf.ExecuteBeforeBuild));
-				ProcessStartInfo ps = GetBuildTaskStartInfo(conf.ExecuteBeforeBuild);
-				Process process = new Process();
-				process.StartInfo = ps;
-				process.Start();
-				monitor.Log.Write (process.StandardOutput.ReadToEnd());
-				monitor.Log.WriteLine ();
-			}
 		}
 		
 		protected virtual ICompilerResult DoBuild (IProgressMonitor monitor)
 		{
 			return new DefaultCompilerResult (new CompilerResults (null), "");
-		}
-		
-		protected virtual void DoPostBuild (IProgressMonitor monitor)
-		{
-			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
-
-			if (conf != null && conf.ExecuteAfterBuild != "" && File.Exists(conf.ExecuteAfterBuild)) {
-				monitor.Log.WriteLine ();
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", conf.ExecuteAfterBuild));
-				ProcessStartInfo ps = GetBuildTaskStartInfo(conf.ExecuteAfterBuild);
-				Process process = new Process();
-				process.StartInfo = ps;
-				process.Start();
-				monitor.Log.Write (process.StandardOutput.ReadToEnd());
-			}
-		}
-		
-		private ProcessStartInfo GetBuildTaskStartInfo(string file) {
-			ProcessStartInfo ps = new ProcessStartInfo(file);
-			ps.UseShellExecute = false;
-			ps.RedirectStandardOutput = true;
-			ps.WorkingDirectory = BaseDirectory;
-			return ps;
 		}
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
@@ -593,6 +560,9 @@ namespace MonoDevelop.Projects
 		protected virtual DateTime GetLastBuildTime ()
 		{
 			string file = GetOutputFileName ();
+			if (file == null)
+				return DateTime.MinValue;
+
 			FileInfo finfo = new FileInfo (file);
 			if (!finfo.Exists) return DateTime.MinValue;
 			else return finfo.LastWriteTime;
@@ -741,34 +711,6 @@ namespace MonoDevelop.Projects
 			{
 				if (!project.isDirty) project.CheckNeedsBuild ();
 				return project.isDirty;
-			}
-		}
-		
-		class PreBuildStep: IBuildStep
-		{
-			public ICompilerResult Build (IProgressMonitor monitor, Project project)
-			{
-				project.DoPreBuild (monitor);
-				return null;
-			}
-			
-			public bool NeedsBuilding (Project project)
-			{
-				return false;
-			}
-		}
-		
-		class PostBuildStep: IBuildStep
-		{
-			public ICompilerResult Build (IProgressMonitor monitor, Project project)
-			{
-				project.DoPostBuild (monitor);
-				return null;
-			}
-			
-			public bool NeedsBuilding (Project project)
-			{
-				return false;
 			}
 		}
 	}

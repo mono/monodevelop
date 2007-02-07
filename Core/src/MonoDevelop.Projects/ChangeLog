@@ -1,3 +1,31 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/CustomCommandType.cs,
+	  MonoDevelop.Projects/CustomCommandCollection.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/CustomCommand.cs,
+	  MonoDevelop.Projects/AbstractProjectConfiguration.cs,
+	  MonoDevelop.Projects/AbstractConfiguration.cs: Implemented support
+	  for custom commands in projects and combines.
+	* MonoDevelop.Projects/ProjectServiceExtension.cs,
+	  MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/Combine.cs,
+	  MonoDevelop.Projects/UnknownCombineEntry.cs,
+	  MonoDevelop.Projects/BuildTool.cs: The clean method now takes a
+	  progress monitor as parameter.
+	* MonoDevelop.Projects/GenericProjectBinding.cs,
+	  MonoDevelop.Projects/GenericProject.cs: Implemented new generic
+	  project type, which can contain any kind of file.
+	* MonoDevelop.Projects/Project.cs: Use the new custom command stuff.
+	  Removed the extensible build pipeline, since the new project
+	  service extensions already allow extending the build process.
+	* MonoDevelop.Projects.Serialization/ClassDataType.cs: Don't serialize
+	  empty collections.
+	* MonoDevelop.Projects.addin.xml: Registered new project type.
+	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Add support for
+	  aliases in the resolver.
+
 2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectServiceExtension.cs,
