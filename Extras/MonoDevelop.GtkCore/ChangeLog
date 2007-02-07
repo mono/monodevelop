@@ -1,3 +1,12 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml: Make sure the code generation
+	  extension is executed before the last step.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	  Hide the add window commands when the project is not DotNet
+	* MonoDevelop.GtkCore.mdp, lib/libsteticui.dll, lib/libstetic.dll:
+	  Updated.
+
 2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Intercept calls

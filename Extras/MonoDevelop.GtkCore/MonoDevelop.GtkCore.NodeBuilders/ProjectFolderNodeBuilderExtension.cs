@@ -72,10 +72,22 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			AddNewWindow ("DialogFileTemplate");
 		}
 		
+		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewDialog)]
+		public void UpdateAddNewDialogToProject (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
+		}
+		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
 		public void AddNewWindowToProject()
 		{
 			AddNewWindow ("WindowFileTemplate");
+		}
+		
+		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
+		public void UpdateAddNewWindowToProject (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
 		}
 		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
@@ -84,10 +96,22 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			AddNewWindow ("WidgetFileTemplate");
 		}
 		
+		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
+		public void UpdateAddNewWidgetToProject (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
+		}
+		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
 		public void AddNewActionGroupToProject()
 		{
 			AddNewWindow ("ActionGroupFileTemplate");
+		}
+		
+		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
+		public void UpdateAddNewActionGroupToProject(CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
 		}
 		
 		[CommandHandler (GtkCommands.ImportGladeFile)]
@@ -95,6 +119,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			GuiBuilderService.ImportGladeFile (project);
+		}
+		
+		[CommandUpdateHandler (GtkCommands.ImportGladeFile)]
+		protected void UpdateImportGladeFile (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
 		}
 		
 		[CommandHandler (GtkCommands.EditIcons)]
@@ -105,6 +135,18 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			Stetic.Project sp = gp.SteticProject;
 			sp.EditIcons ();
 			gp.Save ();
+		}
+		
+		[CommandUpdateHandler (GtkCommands.EditIcons)]
+		protected void UpdateEditIcons (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
+		}
+		
+		bool CanAddWindow ()
+		{
+			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			return (project != null);
 		}
 		
 		public void AddNewWindow (string id)

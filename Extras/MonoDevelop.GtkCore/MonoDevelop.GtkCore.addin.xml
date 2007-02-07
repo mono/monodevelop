@@ -154,7 +154,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension" />
+		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
 	</Extension>
 </AddIn>
 
