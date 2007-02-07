@@ -133,7 +133,7 @@ namespace MonoDevelop.Autotools
 			varToValuesDict = new Dictionary<string, List<string>> ();
 			//FIXME: make this static
 			Regex varExp = new Regex(
-				@"[.|\n]*^(?<varname>[a-zA-Z_0-9]*)((?<sep>[ \t]*:?=[ \t]*\n$)|((?<sep>\s*:?=\s*)" +
+				@"[.|\n]*^(?<varname>[a-zA-Z_0-9]*)((?<sep>[ \t]*:?=[ \t]*$)|((?<sep>\s*:?=\s*)" +
 				multilineMatch + "))", RegexOptions.Multiline);
 
 			foreach (Match m in varExp.Matches (content)) {
