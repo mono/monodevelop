@@ -836,6 +836,11 @@ namespace MonoDevelop.Ide.Gui
 			public void Run (IAsyncOperation op) { Project.Dispose (); }
 		}
 		
+		public void Clean (CombineEntry entry)
+		{
+			entry.Clean (new NullProgressMonitor ());
+		}
+		
 		public IAsyncOperation BuildFile (string file)
 		{
 			Project tempProject = projectService.CreateSingleFileProject (file);
@@ -870,7 +875,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
-			entry.Clean ();
+			Clean (entry);
 			return Build (entry);
 		}
 

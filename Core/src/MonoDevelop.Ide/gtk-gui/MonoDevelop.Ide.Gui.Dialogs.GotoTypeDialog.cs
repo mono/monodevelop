@@ -22,6 +22,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
         private Gtk.Button button4;
         
         protected virtual void Build() {
+            Stetic.Gui.Initialize();
             // Widget MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog";
@@ -63,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.button1.Name = "button1";
             this.button1.UseStock = true;
             this.button1.UseUnderline = true;
-            this.button1.Label = Mono.Unix.Catalog.GetString("gtk-cancel");
+            this.button1.Label = "gtk-cancel";
             this.AddActionWidget(this.button1, -6);
             Gtk.ButtonBox.ButtonBoxChild w5 = ((Gtk.ButtonBox.ButtonBoxChild)(w4[this.button1]));
             w5.Expand = false;
@@ -75,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.button4.Name = "button4";
             this.button4.UseStock = true;
             this.button4.UseUnderline = true;
-            this.button4.Label = Mono.Unix.Catalog.GetString("gtk-ok");
+            this.button4.Label = "gtk-ok";
             this.AddActionWidget(this.button4, -5);
             Gtk.ButtonBox.ButtonBoxChild w6 = ((Gtk.ButtonBox.ButtonBoxChild)(w4[this.button4]));
             w6.Position = 1;

@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./templates/AppConfigFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/BlankCombine.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -268,6 +267,7 @@
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./templates/GenericProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
@@ -308,9 +308,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/log4net.dll" />
   </References>
-  <GtkDesignInfo partialTypes="True">
-    <ExportedWidgets />
-  </GtkDesignInfo>
+  <GtkDesignInfo partialTypes="True" />
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

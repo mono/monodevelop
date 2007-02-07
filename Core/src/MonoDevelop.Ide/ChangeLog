@@ -1,3 +1,15 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.addin.xml: Show the list of custom project commands
+	  in the context menu and in the project menu.
+	* templates/GenericProject.xpt.xml, MonoDevelop.Ide.mdp, Makefile.am:
+	  Added new generic project template.
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs: Updated.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added new method for
+	  cleaning combine entries.
+
 2007-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Integrate support

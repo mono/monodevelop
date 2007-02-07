@@ -252,6 +252,10 @@
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets"
 				defaultHandler = "MonoDevelop.Ide.Commands.ConfigureDeployTargetsHandler"
 				_label = "Configure deploy targets..." />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList"
+				defaultHandler = "MonoDevelop.Ide.Commands.CustomCommandListHandler"
+				type="array"
+				_label = "Custom command list" />
 
 
 		<!-- FileCommands -->
@@ -505,6 +509,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "DeploySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
 		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
@@ -602,6 +607,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "DeploySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
 		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
@@ -885,6 +891,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 			<SeparatorItem id = "DeploySeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
 			<ItemSet id = "DeployTargets" _label = "Deploy to">
@@ -975,6 +982,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectTemplates" extension-nodes="ProjectTemplate" description="Project templates to be shown in the New Project dialog.">
 		<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions" extension-nodes="Class" description="Extensions to the text editor. Classes must be a subclass of TextEditorExtension.">

@@ -268,6 +268,7 @@ templates/EmptyResourceFile.xft.xml \
 templates/EmptyStruct.xft.xml \
 templates/EmptyTextFile.xft.xml \
 templates/EmptyXMLFile.xft.xml \
+templates/GenericProject.xpt.xml \
 Base.glade \
 icons/SplashScreen.png \
 icons/mono-powered.png \

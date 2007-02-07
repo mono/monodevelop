@@ -12,6 +12,14 @@ namespace Stetic {
     
     
     internal class Gui {
+        
+        private static bool initialized;
+        
+        internal static void Initialize() {
+            if ((Stetic.Gui.initialized == false)) {
+                Stetic.Gui.initialized = true;
+            }
+        }
     }
     
     internal class ActionGroups {

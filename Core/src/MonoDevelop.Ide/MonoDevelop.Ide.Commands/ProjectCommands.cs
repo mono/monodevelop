@@ -17,6 +17,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Deployment;
+using CustomCommand = MonoDevelop.Projects.CustomCommand;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -54,7 +55,8 @@ namespace MonoDevelop.Ide.Commands
 		CleanSolution,
 		LocalCopyReference,
 		DeployTargetList,
-		ConfigureDeployTargets
+		ConfigureDeployTargets,
+		CustomCommandList
 	}
 	
 	internal class RunHandler: CommandHandler
@@ -320,7 +322,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.CurrentOpenCombine.Clean ();
+			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -333,7 +335,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Clean ();
+			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -450,6 +452,39 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
+		}
+	}
+	
+	internal class CustomCommandListHandler: CommandHandler
+	{
+		protected override void Run (object c)
+		{
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			CustomCommand cmd = (CustomCommand) c;
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			
+			Thread t = new Thread (
+				delegate () {
+					using (monitor) {
+						cmd.Execute (monitor, ce);
+					}
+				}
+			);
+			t.IsBackground = true;
+			t.Start ();
+		}
+		
+		protected override void Update (CommandArrayInfo info)
+		{
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			if (ce != null) {
+				AbstractConfiguration conf = ce.ActiveConfiguration as AbstractConfiguration;
+				if (conf != null) {
+					foreach (CustomCommand cmd in conf.CustomCommands)
+						if (cmd.Type == CustomCommandType.Custom)
+							info.Add (cmd.Name, cmd);
+				}
+			}
 		}
 	}
 	
