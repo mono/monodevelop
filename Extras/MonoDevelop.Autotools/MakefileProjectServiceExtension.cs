@@ -171,6 +171,8 @@ namespace MonoDevelop.Autotools
 			ICompilerResult cr = ParseOutput (tf, output, project.BaseDirectory, regexMcsError, regexMcsWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
+			else
+				entry.NeedsBuilding = false;
 
 			return cr;
 		}

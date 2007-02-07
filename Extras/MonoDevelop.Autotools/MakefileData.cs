@@ -993,6 +993,24 @@ namespace MonoDevelop.Autotools
 
 			return filename;
 		}
+		
+
+		string NormalizeFileName (string fileName)
+		{
+			// Cosmetic fix: remove the "./" prefix
+			
+			if (!fileName.StartsWith ("./"))
+				return fileName;
+				
+			do {
+				if (fileName.StartsWith ("./"))
+					fileName = fileName.Substring (2);
+				else if (fileName.StartsWith ("/"))
+					fileName = fileName.Substring (1);
+				else
+					return fileName;
+			} while (true);
+		}
 
 		//Writing methods
 
@@ -1076,6 +1094,7 @@ namespace MonoDevelop.Autotools
 					else
 						str = String.Format ("{0}{1}", fileVar.Prefix, str);
 
+					str = NormalizeFileName (str);
 					files.Add (str);
 				}
 			}
@@ -1083,6 +1102,9 @@ namespace MonoDevelop.Autotools
 			foreach (string s in fileVar.Extra)
 				files.Add (s);
 
+			// Keep the file list sorted in the makefile
+			files.Sort ();
+			
 			Makefile.SetListVariable (fileVar.Name, files);
 			return true;
 		}

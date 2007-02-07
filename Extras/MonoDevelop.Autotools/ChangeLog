@@ -1,3 +1,10 @@
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileProjectServiceExtension.cs: Reset the needs building flag
+	  after successfully building a project.
+	* MakefileData.cs: Cosmetic fixes. Remove "./" from relative names, and
+	  keep file lists sorted.
+
 2007-02-07  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs (Store): Save 'disabled' state.
