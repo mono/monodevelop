@@ -13,32 +13,31 @@ using AspNetAddIn.Parser;
 namespace AspNetAddIn
 {
 	
-	public class VerifyCodeBehindBuildStep : IBuildStep
+	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
-		
-		public ICompilerResult Build (IProgressMonitor monitor, Project project)
+		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry project)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			
 			if (aspProject == null)
-				return null;
+				return base.Build (monitor, project);
 			
 			//check the codebehind verification options
 			//TODO: add options for warnings as errors, ignoring parse errors etc
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
 			if (!config.AutoGenerateCodeBehindMembers) {
 				monitor.Log.WriteLine ("Skipping CodeBehind verification.");
-				return null;
+				return base.Build (monitor, project);
 			}
 			
 			monitor.Log.WriteLine ("Verifying CodeBehind...");
 			
-			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
 			ctx.UpdateDatabase ();
 			
 			int addedMembers = 0;
 			
-			foreach (ProjectFile file in project.ProjectFiles) {
+			foreach (ProjectFile file in aspProject.ProjectFiles) {
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
 				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl))
 						continue;
@@ -79,12 +78,7 @@ namespace AspNetAddIn
 				monitor.Log.WriteLine ("No changes made to CodeBehind classes.");
 			}
 			
-			return null;
-		}
-		
-		public bool NeedsBuilding (Project project)
-		{
-			return false;
+			return base.Build (monitor, project);
 		}
 	}
 }

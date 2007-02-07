@@ -84,10 +84,8 @@
 		                class = "AspNetAddIn.AspNetDisplayBinding"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/BuildPipeline">
-		<Conditional activeproject="AspNetApp">
-			<Class insertbefore = "MainBuildStep" class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
-		</Conditional>
+	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+		<Class class = "AspNetAddIn.VerifyCodeBehindBuildStep" />
 	</Extension>
 	
 </AddIn>
