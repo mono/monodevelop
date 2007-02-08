@@ -1,3 +1,8 @@
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Dock.mdp, Makefile.am: Synchronized the MD project and
+	  the Makefile
+
 2006-09-26  Jacob Ilsø Christensen <jacobilsoe@gmail.com> 
 
 	* DockMaster.cs: Changed lines to solid when dragging
