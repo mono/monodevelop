@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hseparator2 = new Gtk.HSeparator();
+            this.hseparator2.Events = ((Gdk.EventMask)(0));
             this.hseparator2.Name = "hseparator2";
             this.vbox1.Add(this.hseparator2);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox1[this.hseparator2]));
@@ -64,6 +65,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w1.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
+            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
@@ -80,6 +82,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.comboType.AppendText("After Clean");
             this.comboType.AppendText("Custom Command");
             this.comboType.CanFocus = true;
+            this.comboType.Events = ((Gdk.EventMask)(0));
             this.comboType.Name = "comboType";
             this.comboType.Active = 0;
             this.hbox1.Add(this.comboType);
@@ -90,6 +93,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child hbox1.Gtk.Box+BoxChild
             this.buttonRemove = new Gtk.Button();
             this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Events = ((Gdk.EventMask)(0));
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.UseStock = true;
             this.buttonRemove.UseUnderline = true;
@@ -107,15 +111,17 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w4.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.tableData = new Gtk.Table(((uint)(2)), ((uint)(3)), false);
+            this.tableData.Events = ((Gdk.EventMask)(0));
             this.tableData.Name = "tableData";
             this.tableData.RowSpacing = ((uint)(6));
             this.tableData.ColumnSpacing = ((uint)(6));
             // Container child tableData.Gtk.Table+TableChild
             this.buttonBrowse = new Gtk.Button();
             this.buttonBrowse.CanFocus = true;
+            this.buttonBrowse.Events = ((Gdk.EventMask)(0));
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.UseUnderline = true;
-            this.buttonBrowse.Label = Mono.Unix.Catalog.GetString("Browse...");
+            this.buttonBrowse.Label = MonoDevelop.Core.GettextCatalog.GetString("Browse...");
             this.tableData.Add(this.buttonBrowse);
             Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.tableData[this.buttonBrowse]));
             w5.TopAttach = ((uint)(1));
@@ -127,6 +133,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child tableData.Gtk.Table+TableChild
             this.entryCommand = new Gtk.Entry();
             this.entryCommand.CanFocus = true;
+            this.entryCommand.Events = ((Gdk.EventMask)(0));
             this.entryCommand.Name = "entryCommand";
             this.entryCommand.IsEditable = true;
             this.entryCommand.InvisibleChar = '●';
@@ -140,6 +147,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child tableData.Gtk.Table+TableChild
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
+            this.entryName.Events = ((Gdk.EventMask)(0));
             this.entryName.Name = "entryName";
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
@@ -150,9 +158,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableData.Gtk.Table+TableChild
             this.label1 = new Gtk.Label();
+            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Command:");
+            this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Command:");
             this.tableData.Add(this.label1);
             Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.tableData[this.label1]));
             w8.TopAttach = ((uint)(1));
@@ -161,9 +170,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableData.Gtk.Table+TableChild
             this.labelName = new Gtk.Label();
+            this.labelName.Events = ((Gdk.EventMask)(0));
             this.labelName.Name = "labelName";
             this.labelName.Xalign = 0F;
-            this.labelName.LabelProp = Mono.Unix.Catalog.GetString("Name:");
+            this.labelName.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Name:");
             this.tableData.Add(this.labelName);
             Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.tableData[this.labelName]));
             w9.XOptions = ((Gtk.AttachOptions)(4));
@@ -175,13 +185,15 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             w10.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.boxData = new Gtk.HBox();
+            this.boxData.Events = ((Gdk.EventMask)(0));
             this.boxData.Name = "boxData";
             this.boxData.Spacing = 6;
             // Container child boxData.Gtk.Box+BoxChild
             this.checkExternalCons = new Gtk.CheckButton();
             this.checkExternalCons.CanFocus = true;
+            this.checkExternalCons.Events = ((Gdk.EventMask)(0));
             this.checkExternalCons.Name = "checkExternalCons";
-            this.checkExternalCons.Label = Mono.Unix.Catalog.GetString("Run on e_xternal console");
+            this.checkExternalCons.Label = MonoDevelop.Core.GettextCatalog.GetString("Run on e_xternal console");
             this.checkExternalCons.DrawIndicator = true;
             this.checkExternalCons.UseUnderline = true;
             this.boxData.Add(this.checkExternalCons);
@@ -192,8 +204,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child boxData.Gtk.Box+BoxChild
             this.checkPauseCons = new Gtk.CheckButton();
             this.checkPauseCons.CanFocus = true;
+            this.checkPauseCons.Events = ((Gdk.EventMask)(0));
             this.checkPauseCons.Name = "checkPauseCons";
-            this.checkPauseCons.Label = Mono.Unix.Catalog.GetString("Pause _console output");
+            this.checkPauseCons.Label = MonoDevelop.Core.GettextCatalog.GetString("Pause _console output");
             this.checkPauseCons.DrawIndicator = true;
             this.checkPauseCons.UseUnderline = true;
             this.boxData.Add(this.checkPauseCons);

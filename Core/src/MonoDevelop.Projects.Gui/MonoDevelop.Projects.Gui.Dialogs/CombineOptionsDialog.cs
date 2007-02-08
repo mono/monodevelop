@@ -65,6 +65,13 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			SelectFirstNode ();	
 		}
 		
+		protected override bool StoreContents ()
+		{
+			if (base.StoreContents ())
+				configData.Update ();
+			return true;
+		}
+		
 		void OnConfigChanged (object o, EventArgs a)
 		{
 			Gtk.TreeIter iter;

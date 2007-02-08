@@ -27,13 +27,15 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.Name = "MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget";
             // Container child MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.Gtk.Container+ContainerChild
             this.vbox2 = new Gtk.VBox();
+            this.vbox2.Events = ((Gdk.EventMask)(0));
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
+            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Target directory:");
+            this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Target directory:");
             this.vbox2.Add(this.label1);
             Gtk.Box.BoxChild w1 = ((Gtk.Box.BoxChild)(this.vbox2[this.label1]));
             w1.Position = 0;
@@ -41,6 +43,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w1.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.folderEntry = new MonoDevelop.Components.FolderEntry();
+            this.folderEntry.Events = ((Gdk.EventMask)(0));
             this.folderEntry.Name = "folderEntry";
             this.vbox2.Add(this.folderEntry);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox2[this.folderEntry]));

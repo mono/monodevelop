@@ -13,16 +13,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 		
 		public override void LoadPanelContents ()
 		{
-			try {
 			IProperties props = (IProperties) CustomizationObject;
 			configuration = props.GetProperty("Config") as AbstractConfiguration;
 			if (configuration != null) {
 				CombineEntry entry = (CombineEntry) props.GetProperty("CombineEntry");
 				commands = configuration.CustomCommands.Clone ();
 				Add (new CustomCommandPanelWidget (entry, commands));
-			}
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
 			}
 		}
 

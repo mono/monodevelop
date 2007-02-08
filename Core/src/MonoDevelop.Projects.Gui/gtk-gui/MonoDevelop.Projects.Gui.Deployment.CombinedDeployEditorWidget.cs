@@ -41,11 +41,13 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.Name = "MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget";
             // Container child MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.Gtk.Container+ContainerChild
             this.hbox1 = new Gtk.HBox();
+            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
+            this.scrolledwindow1.Events = ((Gdk.EventMask)(0));
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
@@ -53,6 +55,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             this.targetsTree = new Gtk.TreeView();
             this.targetsTree.CanFocus = true;
+            this.targetsTree.Events = ((Gdk.EventMask)(0));
             this.targetsTree.Name = "targetsTree";
             this.scrolledwindow1.Add(this.targetsTree);
             this.hbox1.Add(this.scrolledwindow1);
@@ -60,11 +63,13 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w2.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
+            this.vbox2.Events = ((Gdk.EventMask)(0));
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             // Container child vbox2.Gtk.Box+BoxChild
             this.buttonAdd = new Gtk.Button();
             this.buttonAdd.CanFocus = true;
+            this.buttonAdd.Events = ((Gdk.EventMask)(0));
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.UseStock = true;
             this.buttonAdd.UseUnderline = true;
@@ -77,6 +82,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox2.Gtk.Box+BoxChild
             this.buttonRemove = new Gtk.Button();
             this.buttonRemove.CanFocus = true;
+            this.buttonRemove.Events = ((Gdk.EventMask)(0));
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.UseStock = true;
             this.buttonRemove.UseUnderline = true;
@@ -89,6 +95,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox2.Gtk.Box+BoxChild
             this.buttonEdit = new Gtk.Button();
             this.buttonEdit.CanFocus = true;
+            this.buttonEdit.Events = ((Gdk.EventMask)(0));
             this.buttonEdit.Name = "buttonEdit";
             this.buttonEdit.UseStock = true;
             this.buttonEdit.UseUnderline = true;
@@ -100,6 +107,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w5.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hseparator1 = new Gtk.HSeparator();
+            this.hseparator1.Events = ((Gdk.EventMask)(0));
             this.hseparator1.Name = "hseparator1";
             this.vbox2.Add(this.hseparator1);
             Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
@@ -109,6 +117,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox2.Gtk.Box+BoxChild
             this.buttonUp = new Gtk.Button();
             this.buttonUp.CanFocus = true;
+            this.buttonUp.Events = ((Gdk.EventMask)(0));
             this.buttonUp.Name = "buttonUp";
             this.buttonUp.UseStock = true;
             this.buttonUp.UseUnderline = true;
@@ -121,6 +130,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox2.Gtk.Box+BoxChild
             this.buttonDown = new Gtk.Button();
             this.buttonDown.CanFocus = true;
+            this.buttonDown.Events = ((Gdk.EventMask)(0));
             this.buttonDown.Name = "buttonDown";
             this.buttonDown.UseStock = true;
             this.buttonDown.UseUnderline = true;

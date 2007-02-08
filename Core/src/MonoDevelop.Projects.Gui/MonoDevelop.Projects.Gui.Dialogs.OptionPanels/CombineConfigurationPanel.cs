@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			public bool Store()
 			{
-				configData.Update ();
+				// Data stored at dialog level
 				return true;
 			}
 		}
