@@ -86,10 +86,13 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" ExecuteTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../" OutputDirVar="" AssemblyNameVar="">
     <BuildFilesVar Sync="True" Name="FILES" />

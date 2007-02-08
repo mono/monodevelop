@@ -8,10 +8,10 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
 
 FILES =  \
 	gtk-gui/generated.cs \
