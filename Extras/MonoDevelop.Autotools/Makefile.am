@@ -64,9 +64,9 @@ $(DATA_FILE_BUILD): $(srcdir)/$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(FILES) $(RES)
+$(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Autotools
 assembly_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES)

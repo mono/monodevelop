@@ -91,6 +91,7 @@ namespace MonoDevelop.Autotools
 				monitor.EndTask ();
 			}
 
+			entry.NeedsBuilding = false;
 			return entry;
 		}
 
