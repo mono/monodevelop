@@ -422,6 +422,12 @@ namespace MonoDevelop.Projects
 		{
 			isDirty = true;
 			
+			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
+			if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+				config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean);
+				return;
+			}
+			
 			// Delete the generated assembly
 			string file = GetOutputFileName ();
 			if (file != null) {
@@ -432,7 +438,6 @@ namespace MonoDevelop.Projects
 			}
 
 			// Delete referenced assemblies
-			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
 			if (config != null)
 				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
@@ -481,21 +486,11 @@ namespace MonoDevelop.Projects
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
 			AbstractProjectConfiguration configuration = (AbstractProjectConfiguration) ActiveConfiguration;
-				
-			string args = configuration.CommandLineParameters;
 			
-			if (configuration.ExecuteScript != null && configuration.ExecuteScript.Length > 0) {
-				IConsole console;
-				if (configuration.ExternalConsole)
-					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
-				else
-					console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
-
-				ProcessWrapper p = Runtime.ProcessService.StartConsoleProcess (configuration.ExecuteScript, args, BaseDirectory, console, null);
-				p.WaitForOutput ();
-			} else {
+			if (configuration != null && configuration.CustomCommands.HasCommands (CustomCommandType.Execute)) {
+				configuration.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Execute, context);
+			} else
 				DoExecute (monitor, context);
-			}
 		}
 		
 		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context)
@@ -538,7 +533,8 @@ namespace MonoDevelop.Projects
 			}
 			
 			foreach (ProjectFile file in ProjectFiles) {
-				if (file.BuildAction == BuildAction.Exclude) continue;
+				if (file.BuildAction == BuildAction.Exclude || file.BuildAction == BuildAction.Nothing)
+					continue;
 				FileInfo finfo = new FileInfo (file.FilePath);
 				if (finfo.Exists && finfo.LastWriteTime > tim) {
 					isDirty = true;

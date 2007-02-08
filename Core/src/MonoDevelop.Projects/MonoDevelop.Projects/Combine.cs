@@ -408,6 +408,12 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
+			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute)) {
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Execute, context);
+				return;
+			}
+			
 			if (singleStartup) {
 				if (StartupEntry != null)
 					StartupEntry.Execute (monitor, context);
@@ -613,9 +619,16 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnClean (IProgressMonitor monitor)
 		{
-			if (ActiveConfiguration == null)
+			CombineConfiguration config = ActiveConfiguration as CombineConfiguration;
+			if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+				config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean);
 				return;
-			foreach (CombineConfigurationEntry cce in ((CombineConfiguration)ActiveConfiguration).Entries)
+			}
+			
+			if (config == null)
+				return;
+
+			foreach (CombineConfigurationEntry cce in config.Entries)
 				cce.Entry.Clean (monitor);
 		}
 		
@@ -625,6 +638,14 @@ namespace MonoDevelop.Projects
 				monitor.ReportError (GettextCatalog.GetString ("The solution does not have an active configuration."), null);
 				return new DefaultCompilerResult (new CompilerResults (null), "", 0, 1);
 			}
+			
+			CombineConfiguration config = ActiveConfiguration as CombineConfiguration;
+			if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Build)) {
+				config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build);
+				return new DefaultCompilerResult (new CompilerResults (null), "", 0, 0);
+			}
+			
+			
 			CombineEntryCollection allProjects = GetAllBuildableEntries (ActiveConfiguration.Name);
 			monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
 			try {

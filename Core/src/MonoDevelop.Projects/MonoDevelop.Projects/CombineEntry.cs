@@ -397,7 +397,7 @@ namespace MonoDevelop.Projects
 		{
 			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeExecute);
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeExecute, context);
 				if (monitor.IsCancelRequested)
 					return;
 			}
@@ -405,7 +405,7 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.ExtensionChain.Execute (monitor, this, context);
 			
 			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterExecute);
+				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterExecute, context);
 		}
 		
 		public bool NeedsBuilding {

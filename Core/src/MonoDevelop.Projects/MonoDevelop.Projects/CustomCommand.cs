@@ -62,6 +62,11 @@ namespace MonoDevelop.Projects
 		
 		public void Execute (IProgressMonitor monitor, CombineEntry entry)
 		{
+			Execute (monitor, entry, null);
+		}
+		
+		public void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
+		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0}", command));
 			
 			int i = command.IndexOf (' ');
@@ -78,15 +83,33 @@ namespace MonoDevelop.Projects
 			if (File.Exists (localPath))
 				exe = localPath;
 			
-			ProcessWrapper proc;
-			if (externalConsole) {
-				IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
-				proc = Runtime.ProcessService.StartConsoleProcess (exe, args, entry.BaseDirectory, console, null);
-			} else {
-				proc = Runtime.ProcessService.StartProcess (exe, args, entry.BaseDirectory, monitor.Log, monitor.Log, null, false);
+			IProcessAsyncOperation oper;
+			
+			if (context != null) {
+				IConsole console;
+				if (externalConsole)
+					console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
+				else
+					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
+				IExecutionHandler handler = context.ExecutionHandlerFactory.CreateExecutionHandler ("Native");
+				oper = handler.Execute (exe, args, entry.BaseDirectory, console);
 			}
-			proc.WaitForOutput ();
-			if (proc.ExitCode == 0)
+			else {
+				if (externalConsole) {
+					IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
+					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, entry.BaseDirectory, console, null);
+				} else {
+					oper = Runtime.ProcessService.StartProcess (exe, args, entry.BaseDirectory, monitor.Log, monitor.Log, null, false);
+				}
+			}
+				
+			monitor.CancelRequested += delegate {
+				if (!oper.IsCompleted)
+					oper.Cancel ();
+			};
+			
+			oper.WaitForCompleted ();
+			if (!oper.Success)
 				monitor.AsyncOperation.Cancel ();
 		}
 	}

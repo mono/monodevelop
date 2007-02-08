@@ -23,9 +23,14 @@ namespace MonoDevelop.Projects
 		
 		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type)
 		{
+			ExecuteCommand (monitor, entry, type, null);
+		}
+		
+		public void ExecuteCommand (IProgressMonitor monitor, CombineEntry entry, CustomCommandType type, ExecutionContext context)
+		{
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type)
-					cmd.Execute (monitor, entry);
+					cmd.Execute (monitor, entry, context);
 				if (monitor.IsCancelRequested)
 					break;
 			}
