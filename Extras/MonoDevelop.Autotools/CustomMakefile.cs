@@ -44,7 +44,7 @@ namespace MonoDevelop.Autotools
 	{
 		string content;
 		//FIXME: Improve the regex
-		string multilineMatch = @"(((?<content>.*)(?<!\\)\n)|((?<content>.*?)\s*\\\n([ \t]*(?<content>.*?)\s*\\\n)*[ \t]*(?<content>.*?)(?<!\\)\n))";
+		static string multilineMatch = @"(((?<content>.*)(?<!\\)\n)|((?<content>.*?)\s*\\\n([ \t]*(?<content>.*?)\s*\\\n)*[ \t]*(?<content>.*?)(?<!\\)\n))";
 		string fileName;
 		
 		Dictionary<string, List<string>> varToValuesDict;
@@ -83,6 +83,16 @@ namespace MonoDevelop.Autotools
 				if (dirtyVariables == null)
 					dirtyVariables = new List<string> ();
 				return dirtyVariables;
+			}
+		}
+
+		static Regex varRegex = null;
+		static Regex VariablesRegex {
+			get {
+				if (varRegex == null)
+					varRegex = new Regex(@"[.|\n]*^(?<varname>[a-zA-Z_0-9]*)((?<sep>[ \t]*:?=[ \t]*$)|((?<sep>\s*:?=\s*)" +
+						multilineMatch + "))", RegexOptions.Multiline);
+				return varRegex;
 			}
 		}
 
@@ -131,12 +141,7 @@ namespace MonoDevelop.Autotools
 		void InitVarToValuesDict ()
 		{
 			varToValuesDict = new Dictionary<string, List<string>> ();
-			//FIXME: make this static
-			Regex varExp = new Regex(
-				@"[.|\n]*^(?<varname>[a-zA-Z_0-9]*)((?<sep>[ \t]*:?=[ \t]*$)|((?<sep>\s*:?=\s*)" +
-				multilineMatch + "))", RegexOptions.Multiline);
-
-			foreach (Match m in varExp.Matches (content)) {
+			foreach (Match m in VariablesRegex.Matches (content)) {
 				if (!m.Success)
 					continue;
 
