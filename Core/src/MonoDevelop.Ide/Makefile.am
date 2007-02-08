@@ -17,14 +17,14 @@ REFS =  \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTKHTML_SHARP_LIBS) \
-	-r:$(top_buildir)/build/bin/log4net.dll \
-	-r:$(top_buildir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Dock.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Documentation.dll \
-	-r:$(top_buildir)/build/AddIns/MonoDevelop.Projects.Gui.dll
+	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll
 
 FILES =  \
 	gtk-gui/generated.cs \

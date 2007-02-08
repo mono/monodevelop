@@ -1,5 +1,9 @@
 2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Fix variable name.
+
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp, Makefile.am: Synchronized the MD project and the
 	  Makefile
 
