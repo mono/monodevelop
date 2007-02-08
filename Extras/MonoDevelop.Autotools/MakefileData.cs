@@ -930,8 +930,12 @@ namespace MonoDevelop.Autotools
 		public static void ResolveProjectReferences (Combine c, IProgressMonitor monitor)
 		{
 			Dictionary<string, Project> projects = new Dictionary<string, Project> ();
-			foreach (Project p in c.GetAllProjects ())
-				projects [p.GetOutputFileName ()] = p;
+			foreach (Project p in c.GetAllProjects ()) {
+				string filename = p.GetOutputFileName ();
+				// Can be null for Generic projects
+				if (!String.IsNullOrEmpty (filename))
+					projects [filename] = p;
+			}
 
 			foreach (Project sproj in projects.Values) {
 				MakefileData mdata = sproj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;

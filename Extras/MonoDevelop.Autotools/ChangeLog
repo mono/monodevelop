@@ -1,5 +1,9 @@
 2007-02-08  Ankit Jain <jankit@novell.com> 
 
+	* MakefileData.cs: OutputFileName can be null for generic projects.
+
+2007-02-08  Ankit Jain <jankit@novell.com> 
+
 	* CustomMakefile.cs: Make Regex for makefile variables static.
 
 2007-02-08  Ankit Jain  <jankit@novell.com>
