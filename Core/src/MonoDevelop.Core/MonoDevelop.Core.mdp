@@ -13,10 +13,7 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
-    <File name="./MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/AbstractService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/IStringTagProvider.cs" subtype="Code" buildaction="Compile" />
@@ -149,19 +146,27 @@
     <File name="./MonoDevelop.Core.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./MonoDevelop.Core/FileService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Core.FileSystem" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Cecil.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="ICSharpCode.SharpZipLib, Version=2.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/log4net.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/log4net.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Cecil.dll" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" ExecuteTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../" OutputDirVar="" AssemblyNameVar="">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

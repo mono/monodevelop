@@ -1,3 +1,10 @@
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Make Cancel method safe
+	  to exceptions.
+	* MonoDevelop.Core.mdp, Makefile.am: Synchronized the Makefile and the
+	  MD project.
+
 2007-01-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/AddIn.cs,

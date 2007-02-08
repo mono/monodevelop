@@ -73,8 +73,12 @@ namespace MonoDevelop.Core.Execution
 		
 		void IAsyncOperation.Cancel ()
 		{
-			if (!done)
-				Kill ();
+			try {
+				if (!done)
+					Kill ();
+			} catch (Exception ex) {
+				Runtime.LoggingService.Error (ex);
+			}
 		}
 
 		void IAsyncOperation.WaitForCompleted ()
