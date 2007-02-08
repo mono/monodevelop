@@ -43,23 +43,29 @@ namespace MonoDevelop.Autotools
 {
 	public class MakefileProjectServiceExtension : ProjectServiceExtension
 	{
+		bool hasParentCombine = false;
 		public override CombineEntry Load (IProgressMonitor monitor, string fileName)
 		{
+			bool oldHasParentCombine = hasParentCombine;
+			hasParentCombine = true;
 			CombineEntry entry = base.Load (monitor, fileName);
 			if (entry == null)
 				return null;
 			
 			Combine c = entry as Combine;
-			if (c != null) {
+			if (c != null && !oldHasParentCombine) {
+				hasParentCombine = false;
+
 				//Resolve project references
 				try {
-					MakefileData.ResolveProjectReferences (c);
+					MakefileData.ResolveProjectReferences (c, monitor);
 				} catch (Exception e) {
 					Console.WriteLine (GettextCatalog.GetString (
 						"Error resolving Makefile based project references for solution {0}", c.Name));
 					monitor.ReportError (GettextCatalog.GetString (
 						"Error resolving Makefile based project references for solution {0}", c.Name), e);
 				}
+
 				return entry;
 			}
 

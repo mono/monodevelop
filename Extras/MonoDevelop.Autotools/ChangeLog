@@ -1,5 +1,15 @@
 2007-02-08  Ankit Jain  <jankit@novell.com>
 
+	* MakefileProjectServiceExtension.cs (Load): Resolve project references
+	once the top-level combine has loaded.
+	* MakefileData.cs: Cache gac refererences to prevent repeats. Remove
+	repeats from the project file, if any. Save the makefile after resolving
+	project references.
+	Add only valid assemblies as Gac refs, others could be project references.
+	Prevent repeats for assembly/project references.
+
+2007-02-08  Ankit Jain  <jankit@novell.com>
+
 	* MakefileOptionPanelWidget.cs (.ctor): Don't set .Sensitive for
 	fileEntryMakefilePath.
 

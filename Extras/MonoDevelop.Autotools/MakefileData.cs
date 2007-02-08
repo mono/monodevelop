@@ -332,12 +332,11 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		//FIXME: not required to be public, no property needed
-		List<string> unresolvedReferences;
-		List<string> UnresolvedReferences {
+		Dictionary <string, string> unresolvedReferences;
+		Dictionary <string, string> UnresolvedReferences {
 			get { 
 				if (unresolvedReferences == null)
-					unresolvedReferences = new List<string> ();
+					unresolvedReferences = new Dictionary <string, string> ();
 				return unresolvedReferences;
 			}
     		}
@@ -377,7 +376,8 @@ namespace MonoDevelop.Autotools
 			data.OutputDirVar = this.OutputDirVar;
 			data.AssemblyNameVar = this.AssemblyNameVar;
 
-			data.unresolvedReferences = new List<string> (this.UnresolvedReferences);
+			// This shouldn't be required
+			//data.unresolvedReferences = new List<string> (this.UnresolvedReferences);
 
 			return data;
 		}
@@ -506,6 +506,29 @@ namespace MonoDevelop.Autotools
 					encodeValues [AsmRefVar.Name] = false;
 					encodeValues [ProjectRefVar.Name] = false;
 
+					existingGacRefs = new Dictionary<string, ProjectReference> ();
+					newGacRefs = new Dictionary<string, ProjectReference> ();
+
+					List<ProjectReference> toRemove = new List<ProjectReference> ();
+					foreach (ProjectReference pref in OwnerProject.ProjectReferences) {
+						if (pref.ReferenceType == ReferenceType.Gac) {
+							string [] files = pref.GetReferencedFileNames ();
+							if (files == null)
+								continue;
+
+							// this should help normalize paths like /foo//bar/../
+							string fullpath = Path.GetFullPath (files [0]);
+							if (existingGacRefs.ContainsKey (fullpath))
+								toRemove.Add (pref);
+							else
+								existingGacRefs [fullpath] = pref;
+						}
+					}
+
+					// Remove the repeats
+					foreach (ProjectReference pref in toRemove)
+						OwnerProject.ProjectReferences.Remove (pref);
+
 					ReadReferences (GacRefVar, ReferenceType.Gac, "Gac References", dotnetProject);
 
 					// !SaveReferences indicates that previous ref reading failed
@@ -516,8 +539,15 @@ namespace MonoDevelop.Autotools
 						ReadReferences (ProjectRefVar, ReferenceType.Project, "Project References", dotnetProject);
 					
 					//Resolve References
+					//Required when UpdateProject gets called by ui
 					if (ownerProject.RootCombine != null)
-						ResolveProjectReferences (ownerProject.RootCombine);
+						ResolveProjectReferences (ownerProject.RootCombine, monitor);
+
+					foreach (ProjectReference pr in existingGacRefs.Values)
+						ownerProject.ProjectReferences.Remove (pr);
+
+					existingGacRefs.Clear ();
+					newGacRefs.Clear ();
 				}
 			} catch (Exception e) {
 				Console.WriteLine ("Error in loading references : {0}. Skipping syncing of references", e.Message);
@@ -659,6 +689,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		Dictionary<string, ProjectReference> existingGacRefs = null;
+		Dictionary<string, ProjectReference> newGacRefs = null;
 
 		void ReadReferences (MakefileVar refVar, ReferenceType refType, string id, DotNetProject project)
 		{
@@ -679,16 +710,6 @@ namespace MonoDevelop.Autotools
 				SaveReferences = false;
 				return;
 			}
-
-			existingGacRefs = new Dictionary<string, ProjectReference> ();
-			foreach (ProjectReference pref in OwnerProject.ProjectReferences) {
-				if (pref.ReferenceType == ReferenceType.Gac) {
-					string [] files = pref.GetReferencedFileNames ();
-					if (files != null)
-						existingGacRefs [files [0]] = pref;
-				}
-			}
-
 			//FIXME: Trim?
 			bool usePrefix = !String.IsNullOrEmpty (refVar.Prefix);
 			int len = 0;
@@ -708,13 +729,7 @@ namespace MonoDevelop.Autotools
 				}
 			}
 
-			if (existingGacRefs.Count > 0) {
-				foreach (ProjectReference pref in existingGacRefs.Values)
-					project.ProjectReferences.Remove (pref);
-			}
-
 			referencedPackages = null;
-			existingGacRefs = null;
 		}
 
 		//FIXME: Doesn't need to be public
@@ -757,8 +772,10 @@ namespace MonoDevelop.Autotools
 
 				bool added = false;
 				foreach (string pkgName in pkgNames) {
-					if (ReferencedPackages.Contains (pkgName))
+					if (ReferencedPackages.Contains (pkgName)) {
+						added = true;
 						continue;
+					}
 
 					// Add all successfully added packages to ReferencedPackages
 					if (LoadPackageReference (pkgName, project, refVar.Prefix)) {
@@ -813,33 +830,25 @@ namespace MonoDevelop.Autotools
 					continue;
 				
 				string fullpath = Path.GetFullPath (Path.Combine (BaseDirectory, refname));
-				if (existingGacRefs.ContainsKey (fullpath)) {
-					existingGacRefs.Remove (fullpath);
+				if (TryGetExistingGacRef (fullpath) != null)
 					continue;
-				}
 
 				// Check that its a valid assembly
 				string fullname = null;
 				try {
 					fullname = AssemblyName.GetAssemblyName (fullpath).FullName;
 				} catch {
-					Console.WriteLine (GettextCatalog.GetString (
-						"Invalid assembly reference : {0}. Ignoring.", refname));
+				}
 
-					monitor.ReportWarning (GettextCatalog.GetString (
-						"Invalid assembly reference : {0}. Ignoring.", refname));
-					refVar.Extra.Add (reference);
+				// Valid assembly, From a package, add as Gac
+				if (fullname != null && Runtime.SystemAssemblyService.GetPackageFromPath (fullpath) != null) {
+					AddNewGacReference (project, fullname, fullpath);
 					continue;
 				}
 
-				if (Runtime.SystemAssemblyService.GetPackageFromPath (fullpath) != null && fullname != null) {
-					ProjectReference pref = new ProjectReference (ReferenceType.Gac, fullname);
-					project.ProjectReferences.Add (pref);
-					continue;
-				}
-
-				//Else add to unresolved project refs
-				UnresolvedReferences.Add (fullpath);
+				//Else add to unresolved project refs, avoid repeats
+				if (!UnresolvedReferences.ContainsKey (fullpath))
+					UnresolvedReferences [fullpath] = fullpath;
 			}
 		}
 
@@ -853,22 +862,13 @@ namespace MonoDevelop.Autotools
 
 			foreach (string s in pkg.Assemblies) {
 				try {
-					//Get fullname of the assembly
-					string fullname = AssemblyName.GetAssemblyName (s).ToString ();
-
-					//ParseReference (fullname, false, prefix, 0, ReferenceType.Gac, project, null);
 					string fullpath = Path.GetFullPath (s);
-					ProjectReference pref = null;
-					if (existingGacRefs.ContainsKey (fullpath)) {
-						pref = existingGacRefs [fullpath];
-						//FIXME: if dup gac refs are there in the makefile, then 
-						//the second will get added, and so the project will now have dups!
-						existingGacRefs.Remove (fullpath);
-						return true;
-					}
+					if (TryGetExistingGacRef (fullpath) != null)
+						continue;
 
-					pref = new ProjectReference (ReferenceType.Gac, fullname);
-					project.ProjectReferences.Add (pref);
+					//Get fullname of the assembly
+					string fullname = AssemblyName.GetAssemblyName (s).FullName;
+					AddNewGacReference (project, fullname, fullpath);
 				} catch {
 					//Ignore
 					Console.WriteLine ("Error: Invalid assembly reference ({0}) found in package {1}. Ignoring.",
@@ -894,43 +894,69 @@ namespace MonoDevelop.Autotools
 			if (fullname == null)
 				return null;
 
-			ProjectReference pref = null;
-
 			string fullpath = Runtime.SystemAssemblyService.GetAssemblyLocation (fullname);
-			if (existingGacRefs.ContainsKey (fullpath)) {
-				pref = existingGacRefs [fullpath];
-				existingGacRefs.Remove (fullpath);
+			ProjectReference pref = TryGetExistingGacRef (fullpath);
+			if (pref != null)
 				return pref;
+
+			return AddNewGacReference (project, fullname, fullpath);
+		}
+
+		ProjectReference TryGetExistingGacRef (string fullpath)
+		{
+			if (existingGacRefs.ContainsKey (fullpath)) {
+				ProjectReference ret = existingGacRefs [fullpath];
+				existingGacRefs.Remove (fullpath);
+				newGacRefs [fullpath] = ret;
+
+				return ret;
 			}
 
-			pref = new ProjectReference (ReferenceType.Gac, fullname);
+			if (newGacRefs.ContainsKey (fullpath))
+				return newGacRefs [fullpath];
+
+			return null;
+		}
+
+		ProjectReference AddNewGacReference (Project project, string fullname, string fullpath)
+		{
+			ProjectReference pref = new ProjectReference (ReferenceType.Gac, fullname);
 			project.ProjectReferences.Add (pref);
+			newGacRefs [fullpath] = pref;
 
 			return pref;
 		}
 
-		public static void ResolveProjectReferences (Combine c)
+		public static void ResolveProjectReferences (Combine c, IProgressMonitor monitor)
 		{
-			CombineEntryCollection projects = c.GetAllProjects ();
-			foreach (Project sproj in projects) {
+			Dictionary<string, Project> projects = new Dictionary<string, Project> ();
+			foreach (Project p in c.GetAllProjects ())
+				projects [p.GetOutputFileName ()] = p;
+
+			foreach (Project sproj in projects.Values) {
 				MakefileData mdata = sproj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (mdata == null || mdata.UnresolvedReferences.Count == 0)
+				if (mdata == null)
 					continue;
 
-				List<string> toRemove = new List<string> ();
-				foreach (string refstr in mdata.UnresolvedReferences) {
-					//Resolve
-					foreach (Project p in projects) {
-						if (String.Compare (p.GetOutputFileName (), refstr) == 0) {
-							sproj.ProjectReferences.Add (new ProjectReference (p));
+				if (mdata.UnresolvedReferences.Count != 0) {
+					List<string> toRemove = new List<string> ();
+					foreach (string refstr in mdata.UnresolvedReferences.Keys) {
+						if (projects.ContainsKey (refstr)) {
+							sproj.ProjectReferences.Add (new ProjectReference (projects [refstr]));
 							toRemove.Add (refstr);
-							break;
 						}
 					}
+
+					foreach (string s in toRemove)
+						mdata.UnresolvedReferences.Remove (s);
+
+					foreach (string s in mdata.UnresolvedReferences.Keys)
+						sproj.ProjectReferences.Add (new ProjectReference (ReferenceType.Assembly, s));
+
+					mdata.UnresolvedReferences.Clear ();
 				}
 
-				foreach (string s in toRemove)
-					mdata.UnresolvedReferences.Remove (s);
+				mdata.UpdateMakefile (monitor);
 			}
 		}
 
@@ -1022,16 +1048,6 @@ namespace MonoDevelop.Autotools
 				return;
 
 			this.monitor = monitor;
-
-			if (UnresolvedReferences.Count > 0) {
-				//Add all references that could not be resolved as Asm refs
-				foreach (string s in UnresolvedReferences)
-					ownerProject.ProjectReferences.Add (new ProjectReference (ReferenceType.Assembly, s));
-
-				//Clearing it
-				UnresolvedReferences.Clear ();
-			}
-
 			bool makeRelative = (OwnerProject.BaseDirectory != BaseDirectory);
 
 			//FIXME: If anything fails while writing, skip completely
