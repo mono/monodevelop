@@ -1,3 +1,8 @@
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, NRefactory.mdp: Added MD project and synchronized it
+	  with the makefile.
+
 2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Project/Src/Parser/CSharp/Parser.cs: Store the location of field
