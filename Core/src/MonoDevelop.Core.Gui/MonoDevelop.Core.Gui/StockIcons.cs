@@ -48,7 +48,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string InternalMethod = "md-internal-method";
 		public static readonly string InternalProperty = "md-internal-property";
 		public static readonly string InternalStruct = "md-internal-struct";
-		public static readonly string Library = "md-library";
 		public static readonly string Literal = "md-literal";
 		public static readonly string Method = "md-method";
 		public static readonly string MiscFiles = "md-misc-files";
@@ -99,7 +98,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string SaveAllIcon = "md-save-all-icon";
 		public static readonly string SaveAsIcon = Gtk.Stock.SaveAs;
 		public static readonly string SaveIcon = Gtk.Stock.Save;
-		public static readonly string SelectionArrow = "md-selection-arrow";
 		public static readonly string SharpDevelopIcon = "md-sharp-develop-icon";
 		public static readonly string SolutionIcon = "md-solution-icon";
 		public static readonly string SplitWindow = "md-split-window";
@@ -107,7 +105,6 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string TaskListIcon = "md-task-list-icon";
 		public static readonly string TextFileIcon = "md-text-file-icon";
 		public static readonly string TipOfTheDay = "md-tip-of-the-day";
-		public static readonly string TipOfTheDayIcon = "md-tip-of-the-day-icon";
 		public static readonly string ToggleBookmark = "md-toggle-bookmark";
 		public static readonly string UndoIcon = Gtk.Stock.Undo;
 		public static readonly string Warning = Gtk.Stock.DialogWarning;

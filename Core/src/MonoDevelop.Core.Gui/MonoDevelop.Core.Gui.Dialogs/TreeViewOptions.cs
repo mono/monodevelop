@@ -52,11 +52,17 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 		
 		protected void AcceptEvent (object sender, EventArgs e)
 		{
+			StoreContents ();
+		}
+		
+		protected virtual bool StoreContents ()
+		{
 			foreach (AbstractOptionPanel pane in OptionPanels) {
 				if (!pane.ReceiveDialogMessage (DialogMessage.OK))
-					return;
+					return false;
 			}
 			TreeViewOptionDialog.Hide ();
+			return true;
 		}
 		
 		protected CommandManager CommandManager {

@@ -13,14 +13,12 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./Base.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/BreakPoint.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/ExecutionMarker.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/FileIcons.XmlIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/GeneralWizardBackground" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.AboutIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.BuildCombine" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.BuildCurrentSelectedProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Class" subtype="Code" buildaction="EmbedAsResource" />
@@ -31,21 +29,15 @@
     <File name="./icons/Icons.16x16.ClosedReferenceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.ClosedResourceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.CombineIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.CopyLeftIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.DRIVE" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Delegate" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Desktop" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Empty" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Enum" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Event" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Field" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.FindIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.FindInFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.FindNextIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.FullScreen" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.GotoNextbookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.GotoPrevbookmark" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Information" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Interface" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.InternalClass" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.InternalDelegate" subtype="Code" buildaction="EmbedAsResource" />
@@ -56,24 +48,18 @@
     <File name="./icons/Icons.16x16.InternalMethod" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.InternalProperty" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.InternalStruct" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.Library" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Literal" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Method" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.MiscFiles" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.MyComputer" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.NETWORK" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.NameSpace" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.NewFolderIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.NewSolutionIcon.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.NewCombineIcon.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.NextWindowIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.OpenFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.OpenFolderBitmap" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.OpenProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.OpenReferenceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.OpenResourceFolder" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.OutputIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.PersonalFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.PrivateClass" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.PrivateDelegate" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.PrivateEnum" subtype="Code" buildaction="EmbedAsResource" />
@@ -98,19 +84,14 @@
     <File name="./icons/Icons.16x16.ReplaceInFiles" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.SaveAllIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.SelectionArrow" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.SolutionIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.SplitWindow" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.Struct" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.SubTypes" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.SuperTypes" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.TaskListIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.16x16.TextFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.TipOfTheDay" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.XMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.32x32.ASPFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.CombineIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.EmptyFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.EmptyProjectIcon" subtype="Code" buildaction="EmbedAsResource" />
@@ -118,9 +99,7 @@
     <File name="./icons/Icons.32x32.ResourceFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.TextFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.XMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.AboutImage" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.SharpDevelopIcon" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./icons/Icons.TipOfTheDayIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/package-x-generic_22.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/package-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/system-software-update.png" subtype="Code" buildaction="EmbedAsResource" />
@@ -130,7 +109,6 @@
     <File name="./icons/comment.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/uncomment.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/visual-studio.png" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui/IMessageService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Components/FileBrowser.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.Gui.Utils/FileIconLoader.cs" subtype="Code" buildaction="Compile" />
@@ -192,19 +170,16 @@
     <File name="./MonoDevelop.Core.Gui.addin.xml" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./icons/view-fullscreen.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/view-fullscreen_22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/Icons.24x24.SaveAllIcon" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/Icons.SharpDevelopIcon-22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/edit-select-all.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/edit-select-all_22.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/Icons.16x16.TextFileIcon" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
-    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -212,7 +187,19 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="ICSharpCode.SharpZipLib, Version=2.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" ExecuteTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../" OutputDirVar="" AssemblyNameVar="">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

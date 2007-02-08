@@ -1,3 +1,18 @@
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, Makefile.am: Synchronized the MD project
+	  and the Makefile
+	* MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs: Allow overriding the
+	  store method at dialog level.
+	* MonoDevelop.Core.Gui/StockIcons.cs, icons/Icons.16x16.Information,
+	  icons/Icons.16x16.SelectionArrow, icons/Icons.AboutImage,
+	  icons/Icons.16x16.FindIcon, icons/Icons.16x16.OpenFileIcon,
+	  icons/Icons.16x16.SubTypes, icons/Icons.16x16.NextWindowIcon,
+	  icons/Icons.16x16.AboutIcon, icons/Icons.16x16.Library,
+	  icons/Icons.16x16.SuperTypes, icons/Icons.32x32.ASPFileIcon,
+	  icons/Icons.TipOfTheDayIcon, MonoDevelop.Core.Gui.addin.xml:
+	  Removed some unused and ugly icons.
+
 2006-02-02 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Core.Gui/StockIcons.cs: removed unused (SD) stock icons
