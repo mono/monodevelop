@@ -15,8 +15,8 @@ all: $(ASSEMBLY) $(ASSEMBLY).config
 REFS = \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
-$(ASSEMBLY): $(build_sources) $(RES)
-	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(RES:%=/resource:%) $(build_sources)
+$(ASSEMBLY): $(build_sources) $(build_resources)
+	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config
