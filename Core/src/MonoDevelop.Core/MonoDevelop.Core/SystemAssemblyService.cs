@@ -32,6 +32,16 @@ namespace MonoDevelop.Core
 		{
 			return new ClrVersion [] { ClrVersion.Net_1_1, ClrVersion.Net_2_0 };
 		}
+		
+		public SystemPackage RegisterPackage (string name, string version, string description, ClrVersion targetVersion, params string[] assemblyFiles)
+		{
+			SystemPackage p = new SystemPackage ();
+			foreach (string asm in assemblyFiles)
+				AddAssembly (asm, p);
+			p.Initialize (name, version, description, assemblyFiles, targetVersion, true);
+			packages.Add (p);
+			return p;
+		}
 
 		// Returns the list of installed assemblies for the given runtime version.
 		public ICollection GetAssemblyPaths (ClrVersion clrVersion)
@@ -305,7 +315,7 @@ namespace MonoDevelop.Core
 				list.Add (assembly);
 			}
 
-			package.Initialize ("mono", version, "The Mono runtime", (string[]) list.ToArray (typeof(string)), ver);
+			package.Initialize ("mono", version, "The Mono runtime", (string[]) list.ToArray (typeof(string)), ver, false);
 			packages.Add (package);
 		}
 		
@@ -350,7 +360,7 @@ namespace MonoDevelop.Core
 				AddAssembly (assembly, package);
 			}
 
-			package.Initialize (pname, version, desc, (string[]) fullassemblies.ToArray (typeof(string)), ClrVersion.Default);
+			package.Initialize (pname, version, desc, (string[]) fullassemblies.ToArray (typeof(string)), ClrVersion.Default, false);
 			packages.Add (package);
 			packagesHash [pname] = package;
 		}

@@ -1,3 +1,9 @@
+2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Core/SystemPackage.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs: Added method for
+	  registering new (add-in provided) packages.
+
 2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Make Cancel method safe

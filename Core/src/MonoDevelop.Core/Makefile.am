@@ -137,16 +137,16 @@ FILES =  \
 GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 		  AssemblyInfo.cs
 
-RES = 
+RES =    
 
 REFS =  \
-	-r:System \
-	-r:Mono.Posix \
-	-r:System.Xml \
-	-r:System.Runtime.Remoting \
-	-r:ICSharpCode.SharpZipLib \
 	-r:$(top_builddir)/build/bin/log4net.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:ICSharpCode.SharpZipLib \
+	-r:Mono.Posix \
+	-r:System \
+	-r:System.Runtime.Remoting \
+	-r:System.Xml
 
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
 

@@ -36,10 +36,12 @@ namespace MonoDevelop.Core
 		string version;
 		string description;
 		string[] assemblies;
+		bool isInternal;
 		ClrVersion targetVersion;
 		
-		internal void Initialize (string name, string version, string description, string[] assemblies, ClrVersion targetVersion)
+		internal void Initialize (string name, string version, string description, string[] assemblies, ClrVersion targetVersion, bool isInternal)
 		{
+			this.isInternal = isInternal;
 			this.name = name;
 			this.version = version;
 			this.assemblies = assemblies;
@@ -63,8 +65,15 @@ namespace MonoDevelop.Core
 			get { return targetVersion; }
 		}
 		
+		// The package is part of the mono SDK
 		public bool IsCorePackage {
 			get { return name == "mono"; }
+		}
+		
+		// The package has been registered by an add-in, and is not installed
+		// in the system.
+		public bool IsInternalPackage {
+			get { return isInternal; }
 		}
 		
 		public string[] Assemblies {	
