@@ -220,7 +220,7 @@ namespace MonoDevelop.Autotools
 				return;
 
 			//FIXME: Umm too expensive
-			content = String.Format ("{0}\n{1}{2}", 
+			content = String.Format ("{0}{1}{2}", 
 					content.Substring (0, match.Index),
 					GetVariable (var),
 					content.Substring (match.Index + match.Length));
@@ -228,12 +228,16 @@ namespace MonoDevelop.Autotools
 
 		public void Save ()
 		{
+			string oldContent = content;
 			foreach (string var in DirtyVariables) {
 				if (VarToValuesDict [var] != null)
 					SaveVariable (var);
 			}
 
 			DirtyVariables.Clear ();
+
+			if (String.Compare (oldContent, content) == 0)
+				return;
 
 			using (StreamWriter sw = new StreamWriter (fileName))
 				sw.Write (content);

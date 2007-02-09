@@ -1069,6 +1069,25 @@ namespace MonoDevelop.Autotools
 				WriteReferences (GacRefVar, ReferenceType.Gac, makeRelative, "Gac");
 				WriteReferences (AsmRefVar, ReferenceType.Assembly, makeRelative, "Assembly");
 				WriteReferences (ProjectRefVar, ReferenceType.Project, makeRelative, "Project");
+			
+				// Sort list of references in the makefile,
+				// but sort only once per distinct var
+				List<string> list = Makefile.GetListVariable (GacRefVar.Name);
+				if (list != null)
+					list.Sort ();
+
+				if (String.Compare (AsmRefVar.Name, GacRefVar.Name) != 0) {
+					list = Makefile.GetListVariable (AsmRefVar.Name);
+					if (list != null)
+						list.Sort ();
+				}
+
+				if ((String.Compare (ProjectRefVar.Name, GacRefVar.Name) != 0) && 
+					(String.Compare (ProjectRefVar.Name, AsmRefVar.Name) != 0)) {
+					list = Makefile.GetListVariable (ProjectRefVar.Name);
+					if (list != null)
+						list.Sort ();
+				}
 			}
 
 			Save ();
