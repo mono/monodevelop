@@ -501,10 +501,6 @@ namespace MonoDevelop.Autotools
 			try {
 				SaveReferences = true;
 
-				//Clear all Assembly & Project references
-				RemoveReferences (ReferenceType.Assembly);
-				RemoveReferences (ReferenceType.Project);
-
 				//Do these for DotNetProject only
 				DotNetProject dotnetProject = ownerProject as DotNetProject;
 				if (dotnetProject != null) {
@@ -564,18 +560,6 @@ namespace MonoDevelop.Autotools
 			}
 
 			this.monitor = null;
-		}
-
-		void RemoveReferences (ReferenceType refType)
-		{
-			List<ProjectReference> toRemove = new List<ProjectReference> ();
-
-			foreach (ProjectReference pref in ownerProject.ProjectReferences)
-				if (pref.ReferenceType == refType)
-					toRemove.Add (pref);
-
-			foreach (ProjectReference pref in toRemove)
-				ownerProject.ProjectReferences.Remove (pref);
 		}
 
 		void ReadFiles (MakefileVar fileVar, BuildAction buildAction, string id, bool promptForRemoval)
@@ -738,9 +722,8 @@ namespace MonoDevelop.Autotools
 			referencedPackages = null;
 		}
 
-		//FIXME: Doesn't need to be public
 		List<string> referencedPackages;
-		public List<string> ReferencedPackages  {
+		List<string> ReferencedPackages  {
 			get {
 				if (referencedPackages == null)
 					referencedPackages = new List<string> ();
@@ -949,19 +932,45 @@ namespace MonoDevelop.Autotools
 					continue;
 
 				if (mdata.UnresolvedReferences.Count != 0) {
+				
+					Dictionary<string, ProjectReference> asmProjectRefs =
+						new Dictionary<string, ProjectReference> ();
+
+					foreach (ProjectReference pr in sproj.ProjectReferences) {
+						if (pr.ReferenceType != ReferenceType.Assembly &&
+							pr.ReferenceType != ReferenceType.Project)
+							continue;
+						
+						string [] files = pr.GetReferencedFileNames ();
+						if (files != null)
+							asmProjectRefs [files [0]] = pr;
+					}
+
 					List<string> toRemove = new List<string> ();
 					foreach (string refstr in mdata.UnresolvedReferences.Keys) {
-						if (projects.ContainsKey (refstr)) {
-							sproj.ProjectReferences.Add (new ProjectReference (projects [refstr]));
+						if (asmProjectRefs.ContainsKey (refstr)) {
+							// ref already exists in the project
 							toRemove.Add (refstr);
+							asmProjectRefs.Remove (refstr);
+						} else {
+							// Try as a project ref
+							if (projects.ContainsKey (refstr)) {
+								sproj.ProjectReferences.Add (new ProjectReference (projects [refstr]));
+								toRemove.Add (refstr);
+							}
 						}
 					}
 
 					foreach (string s in toRemove)
 						mdata.UnresolvedReferences.Remove (s);
 
+					// Add all remaining unresolved refs as Assembly refs
 					foreach (string s in mdata.UnresolvedReferences.Keys)
 						sproj.ProjectReferences.Add (new ProjectReference (ReferenceType.Assembly, s));
+						
+					// Remove asm/project refs not found in UnresolvedReferences
+					foreach (ProjectReference pr in asmProjectRefs.Values)
+						sproj.ProjectReferences.Remove (pr);
 
 					mdata.UnresolvedReferences.Clear ();
 				}
@@ -1013,7 +1022,7 @@ namespace MonoDevelop.Autotools
 
 		//Converts a absolute filename to use the specified buildvar like top_builddir,
 		//if applicable
-		public string EncodeFileName (string filename, string varname, bool isAbsolute)
+		string EncodeFileName (string filename, string varname, bool isAbsolute)
 		{
 			if (!UseAutotools)
 				return filename;
