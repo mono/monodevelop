@@ -95,17 +95,17 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(ASSEMBLY): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
-		$(RES:%=/resource:%) $(build_sources)
+		$(build_resources:%=/resource:%) $(build_sources)
 
 check: all $(TESTASSEMBLY)	
 	MONO_PATH=../../build/AddIns nunit-console $(TESTASSEMBLY)
 
-$(TESTASSEMBLY) : $(build_test_sources) $(RES)
+$(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) /r:$(ASSEMBLY) \
-	$(monodoc_libflags) $(RES:%=/resource:%) $(build_test_sources)
+	$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_test_sources)
 
 parse: $(PARSE)
 

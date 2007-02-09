@@ -226,8 +226,6 @@ namespace CSharpBinding
 				builder.Append(' ');
 			}
 			
-			string tname = ConvertTypeName (c.Name, conversionFlags);
-			
 			if (c.ClassType == ClassType.Delegate && c.Methods.Count > 0) {
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
@@ -236,9 +234,9 @@ namespace CSharpBinding
 					builder.Append(' ');
 				}
 			} else if (UseFullyQualifiedMemberNames(conversionFlags)) {
-				AppendPangoHtmlTag (builder, tname, "b", conversionFlags);
+				AppendPangoHtmlTag (builder, ConvertTypeName (c.FullyQualifiedName, conversionFlags), "b", conversionFlags);
 			} else {
-				AppendPangoHtmlTag (builder, tname, "b", conversionFlags);
+				AppendPangoHtmlTag (builder, ConvertTypeName (c.Name, conversionFlags), "b", conversionFlags);
 			}
 			
 			// Display generic parameters only if told so
