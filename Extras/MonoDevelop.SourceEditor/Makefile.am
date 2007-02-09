@@ -64,9 +64,9 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(ASSEMBLY) : $(build_sources) $(RES)
+$(ASSEMBLY) : $(build_sources) $(build_resources)
 	mkdir -p $(top_builddir)/build/bin
-	$(CSC) $(CSC_FLAGS) $(RES:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) \
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) \
 	&& cp $(CONFIG) $(top_builddir)/build/AddIns/.
 
 assemblydir = $(MD_ADDIN_DIR)

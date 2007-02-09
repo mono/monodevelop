@@ -1,3 +1,10 @@
+2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added some null
+	  checks. A file may not always be able to return a parser context.
+	* Makefile.am: distcheck fixes
+	* MonoDevelop.SourceEditor.mdp: Flush.
+
 2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs: Track

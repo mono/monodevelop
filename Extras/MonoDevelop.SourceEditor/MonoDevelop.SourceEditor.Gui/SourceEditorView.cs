@@ -138,8 +138,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				tipItem = item;
 
 				HideLanguageItemWindow ();
+				
+				IParserContext pctx = GetParserContext ();
+				if (pctx == null)
+					return false;
 
-				languageItemWindow = new LanguageItemWindow (tipItem, GetParserContext (), GetAmbience ());
+				languageItemWindow = new LanguageItemWindow (tipItem, pctx, GetAmbience ());
 				
 				int ox, oy;
 				this.GetWindow (TextWindowType.Text).GetOrigin (out ox, out oy);
@@ -372,6 +376,9 @@ namespace MonoDevelop.SourceEditor.Gui
 				fileName = ParentEditor.DisplayBinding.UntitledName;
 
 			IParserContext ctx = GetParserContext ();
+			if (ctx == null)
+				return null;
+
 			IExpressionFinder expressionFinder = null;
 			if (fileName != null)
 				expressionFinder = ctx.GetExpressionFinder (fileName);
