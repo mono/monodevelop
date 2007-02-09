@@ -52,11 +52,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public void Dispose ()
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-
-			info.GuiBuilderProject.Reloaded -= OnUpdateFiles;
-			info.GuiBuilderProject.WindowAdded -= OnUpdateFiles;
-			info.GuiBuilderProject.WindowRemoved -= OnUpdateFiles;
-			info.GuiBuilderProject.SteticProject.ActionGroupsChanged -= OnUpdateFiles;
+			if (info != null) {
+				info.GuiBuilderProject.Reloaded -= OnUpdateFiles;
+				info.GuiBuilderProject.WindowAdded -= OnUpdateFiles;
+				info.GuiBuilderProject.WindowRemoved -= OnUpdateFiles;
+				info.GuiBuilderProject.SteticProject.ActionGroupsChanged -= OnUpdateFiles;
+			}
 		}
 		
 		void OnUpdateFiles (object s, EventArgs args)

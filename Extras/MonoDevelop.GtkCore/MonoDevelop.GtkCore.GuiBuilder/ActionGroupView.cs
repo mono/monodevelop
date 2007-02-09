@@ -49,6 +49,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			this.project = project;
 			this.group = group;
+			project.Disposed += OnDisposeProject;
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
 
@@ -70,6 +71,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 		}
 		
+		void OnDisposeProject (object s, EventArgs args)
+		{
+			RemoveButton (1);
+			CloseDesigner ();
+		}
+		
 		public Stetic.ActionGroupComponent ActionGroup {
 			get { return group; }
 			set { Load (value.Name); }
@@ -77,7 +84,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void ShowPage (int npage)
 		{
-			if (group != null) {
+			if (designer != null && group != null) {
 				// At every page switch update the generated code, to make sure code completion works
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
@@ -99,6 +106,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, group);
 			
 			base.Save (fileName);
+			if (designer == null)
+				return;
+
 			codeBinder.UpdateBindings (fileName);
 			
 			designer.Save ();
@@ -107,11 +117,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (oldBuildFile != newBuildFile)
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
 
-			project.Save ();
+			project.Save (true);
 		}
 		
-		public override void Dispose ()
+		public void CloseDesigner ()
 		{
+			if (designer == null)
+				return;
+			project.Disposed -= OnDisposeProject;
 			designer.BindField -= OnBindField;
 			designer.RootComponentChanged -= OnRootComponentChanged;
 			designer.ModifiedChanged -= OnGroupModified;
@@ -119,6 +132,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.SignalChanged -= OnSignalChanged;
 			designer.Dispose ();
 			designer = null;
+		}
+		
+		public override void Dispose ()
+		{
+			CloseDesigner ();
 			base.Dispose ();
 		}
 		
@@ -129,7 +147,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void SelectAction (Stetic.ActionComponent action)
 		{
-			designer.SelectedAction = action;
+			if (designer != null)
+				designer.SelectedAction = action;
 		}
 		
 		public override void JumpToSignalHandler (Stetic.Signal signal)
@@ -142,12 +161,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					break;
 				}
 			}
-		}
-		
-		protected override void OnDocumentActivated ()
-		{
-			// FIXME: uncomment
-			// designer.UpdateObjectViewers ();
 		}
 		
 		void OnGroupModified (object s, EventArgs a)

@@ -35,14 +35,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 								
 							// If there are warnings, "touch" the stetic file, so the code will be regenerated.
 							if (gen.Messages.Length > 0) {
-								try {
-									FileInfo fi = new FileInfo (info.SteticFile);
-									fi.LastWriteTime = DateTime.Now;
-									fi = new FileInfo (info.SteticGeneratedFile);
-									fi.LastWriteTime = DateTime.Now;
-								} catch {
-									// Ignore errors here
-								}
+								info.ForceCodeGenerationOnBuild ();
 							}
 						}
 						return res;

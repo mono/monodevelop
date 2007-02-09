@@ -101,6 +101,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return button;
 		}
 		
+		public void RemoveButton (int npage)
+		{
+			notebook.RemovePage (npage);
+			toolbar.Remove (toolbar.Children [npage]);
+			ShowPage (0);
+		}
+		
 		public override MonoDevelop.Projects.Project Project {
 			get { return base.Project; }
 			set { 

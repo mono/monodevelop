@@ -137,7 +137,7 @@
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
 		<Conditional activeproject="DotNet">
 			<DialogPanel id = "SteticOptionsPanel"
-			             _label = "Widget Export"
+			             _label = "GTK# Settings"
 			             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
 		</Conditional>
 	</Extension>

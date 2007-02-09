@@ -129,7 +129,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 					string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
 					rootWidget.Name = fullName;
-					fproject.Save ();
+					fproject.Save (true);
 				}
 				return true;
 			} catch (Exception ex) {

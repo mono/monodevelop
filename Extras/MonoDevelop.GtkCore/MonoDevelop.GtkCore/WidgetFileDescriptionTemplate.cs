@@ -105,7 +105,7 @@ namespace MonoDevelop.GtkCore
 				doc.LoadXml (content);
 				
 				Stetic.WidgetComponent w = gproject.AddNewComponent (doc.DocumentElement);
-				gproject.Save ();
+				gproject.Save (false);
 				
 				if (!w.IsWindow)
 					info.AddExportedWidget (fullName);
@@ -121,7 +121,7 @@ namespace MonoDevelop.GtkCore
 				doc.LoadXml (content);
 				
 				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
-				gproject.Save ();
+				gproject.Save (false);
 				return;
 			}
 			

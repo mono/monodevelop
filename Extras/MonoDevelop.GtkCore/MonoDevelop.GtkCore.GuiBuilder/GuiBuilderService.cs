@@ -359,15 +359,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				GtkCoreService.UpdateObjectsFile (project);
 			}
 
-			// Use Gettext for labels if there is a reference to Mono.Posix.
-			bool useGettext = false;
-			foreach (ProjectReference pref in project.ProjectReferences) {
-				if (pref.Reference.StartsWith ("Mono.Posix")) {
-					useGettext = true;
-					break;
-				}
-			}
-			
 			ArrayList projects = new ArrayList ();
 			projects.Add (info.GuiBuilderProject.File);
 			
@@ -384,13 +375,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// Generate the code in another process if stetic is not isolated
 						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
 						using (cob) {
-							generationResult = cob.GenerateCode (projects, useGettext, info.GeneratePartialClasses);
+							generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, info.GeneratePartialClasses);
 						}
 					} else {
 						// No need to create another process, since stetic has its own backend process
 						// or the widget libraries have no custom wrappers
 						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
-						options.UseGettext = useGettext;
+						options.UseGettext = info.GenerateGettext;
+						options.GettextClass = info.GettextClass;
 						options.UsePartialClasses = info.GeneratePartialClasses;
 						options.GenerateSingleFile = false;
 						generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
@@ -436,7 +428,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			// Make sure the generated files are added to the project
-			info.UpdateGtkFolder ();
+			if (info.UpdateGtkFolder ()) {
+				Gtk.Application.Invoke (delegate {
+					IdeApp.ProjectOperations.SaveProject (project);
+				});
+			}
 			
 			return generationResult;
 		}
@@ -445,7 +441,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, bool usePartialClasses)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, string gettextClass, bool usePartialClasses)
 		{
 			Gtk.Application.Init ();
 			
@@ -459,6 +455,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 			options.UseGettext = useGettext;
+			options.GettextClass = gettextClass;
 			options.UsePartialClasses = usePartialClasses;
 			options.GenerateSingleFile = false;
 			

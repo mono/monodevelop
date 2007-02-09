@@ -1,3 +1,34 @@
+2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gui.glade, MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Added options
+	  for enabling/disabling gtk support, and for gettext support.
+	* MonoDevelop.GtkCore.addin.xml: Change options panel name.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs: Make sure the
+	  MD project is saved together with the stetic project, if necessary.
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs,
+	  MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs: Avoid saving
+	  the MD project twice.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs: If gtk
+	  integration status changes for a project, refresh the tree.
+	* MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs: Null check.
+	* MonoDevelop.GtkCore/GtkDesignInfo.cs: Added support for gettext and
+	  gettext class options for generated code.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Added events for notifying
+	  when the gtk integration status changes for a project.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	* Makefile.am: distcheck fixes
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: When a designer
+	  project is disposed, hide the designer view in the editor.
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs:
+	  Factorized some code into GtkDesignInfo.
+
 2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Make sure the code generation

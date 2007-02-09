@@ -134,7 +134,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			GuiBuilderProject gp = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			sp.EditIcons ();
-			gp.Save ();
+			gp.Save (true);
 		}
 		
 		[CommandUpdateHandler (GtkCommands.EditIcons)]

@@ -57,6 +57,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
 		public event EventHandler Reloaded;
+		public event EventHandler Disposed;
 	
 		public GuiBuilderProject (Project project, string fileName)
 		{
@@ -128,12 +129,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public void Save ()
+		public void Save (bool saveMdProject)
 		{
 			if (gproject != null && !hasError)
 				gproject.Save (fileName);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			info.UpdateGtkFolder ();
+			if (info.UpdateGtkFolder () && saveMdProject)
+				IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		public string File {
@@ -160,6 +162,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
+			if (Disposed != null)
+				Disposed (this, EventArgs.Empty);
 			Unload ();
 		}
 		
@@ -262,7 +266,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.AddWidgetLibrary (pref);
-				Save ();
+				Save (false);
 			}
 		}
 		
@@ -271,7 +275,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.RemoveWidgetLibrary (pref);
-				Save ();
+				Save (false);
 			}
 		}
 
@@ -307,7 +311,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			int response = dialog.Run ();
 			if (response == (int)Gtk.ResponseType.Ok) {
 				SteticProject.ImportGlade (dialog.Filename);
-				Save ();
+				Save (true);
 			}
 			dialog.Destroy ();
 		}
@@ -430,7 +434,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return;
 			}
 			gproject.WidgetLibraries = newLibs;
-			Save ();
+			Save (true);
 		}
 	}
 	

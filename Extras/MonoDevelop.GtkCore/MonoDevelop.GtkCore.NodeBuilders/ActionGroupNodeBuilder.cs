@@ -138,8 +138,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 								project.ProjectFiles.Remove (file);
 						}
 						gproject.RemoveActionGroup (group);
-						gproject.Save ();
-						project.Save (IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ());
+						gproject.Save (false);
+						IdeApp.ProjectOperations.SaveProject (project);
 					}
 				}
 			}

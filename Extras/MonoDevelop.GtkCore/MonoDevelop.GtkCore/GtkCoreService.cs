@@ -51,6 +51,8 @@ namespace MonoDevelop.GtkCore
 			Runtime.FileService.FileChanged += new FileEventHandler (OnFileChanged);
 		}
 		
+		public static event GtkSupportEvent GtkSupportChanged;
+		
 		public static GtkDesignInfo GetGtkInfo (Project project)
 		{
 			if (!(project is DotNetProject))
@@ -73,7 +75,24 @@ namespace MonoDevelop.GtkCore
 
 			info = new GtkDesignInfo ((DotNetProject) project);
 			info.UpdateGtkFolder ();
+			
+			if (GtkSupportChanged != null)
+				GtkSupportChanged (project, true);
+
 			return info;
+		}
+		
+		internal static void DisableGtkSupport (Project project)
+		{
+			GtkDesignInfo info = GetGtkInfo (project);
+			if (info == null)
+				return;
+
+			project.ExtendedProperties ["GtkDesignInfo"] = null;
+			info.Dispose ();
+			
+			if (GtkSupportChanged != null)
+				GtkSupportChanged (project, false);
 		}
 		
 		internal static bool SupportsPartialTypes (DotNetProject project)
@@ -441,4 +460,6 @@ namespace MonoDevelop.GtkCore
 			GtkCoreService.Initialize ();
 		}
 	}
+	
+	public delegate void GtkSupportEvent (Project project, bool enabled);
 }

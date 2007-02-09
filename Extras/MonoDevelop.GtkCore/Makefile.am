@@ -94,10 +94,10 @@ $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
 	cp $< $@
 
-$(ASSEMBLY): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library \
-	$(RES:%=/resource:%) $(build_sources) $(REFS)
+	$(build_resources:%=/resource:%) $(build_sources) $(REFS)
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN) $(SRC_STETIC_FILES) 

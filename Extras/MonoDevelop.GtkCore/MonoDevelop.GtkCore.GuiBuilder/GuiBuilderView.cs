@@ -60,6 +60,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
 			this.window = window;
+			window.Project.Disposed += OnDisposeProject;
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
 			designer = window.Project.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
@@ -108,17 +109,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.SetActive ();
 		}
 		
+		void OnDisposeProject (object s, EventArgs args)
+		{
+			if (actionsButtonVisible)
+				RemoveButton (2);
+			RemoveButton (1);
+			CloseDesigner ();
+		}
+		
 		public GuiBuilderWindow Window {
 			get { return window; }
 		}
 		
 		public void SetActive ()
 		{
-			designer.SetActive ();
+			if (designer != null)
+				designer.SetActive ();
 		}
 		
-		public override void Dispose ()
+		void CloseDesigner ()
 		{
+			if (designer == null)
+				return;
+			window.Project.Disposed -= OnDisposeProject;
 			designer.BindField -= OnBindWidgetField;
 			designer.ModifiedChanged -= OnWindowModifiedChanged;
 			designer.SignalAdded -= OnSignalAdded;
@@ -137,18 +150,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				actionsBox.Destroy ();
 				actionsBox = null;
 			}
-			base.Dispose ();
+			designer.Dispose ();
+			designer = null;
 		}
 		
-		protected override void OnDocumentActivated ()
+		public override void Dispose ()
 		{
-//			editSession.SetDesignerActive ();
-			// FIXME
+			CloseDesigner ();
+			base.Dispose ();
 		}
 		
 		public override void ShowPage (int npage)
 		{
-			if (window != null && !ErrorMode) {
+			if (designer != null && window != null && !ErrorMode) {
 				// At every page switch update the generated code, to make sure code completion works
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
@@ -172,7 +186,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnActionshanged (object s, EventArgs args)
 		{
-			if (!actionsButtonVisible && !ErrorMode) {
+			if (designer != null && !actionsButtonVisible && !ErrorMode) {
 				actionsButtonVisible = true;
 				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 			}
@@ -215,6 +229,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			base.Save (fileName);
 			
+			if (designer == null)
+				return;
+			
 			string oldName = window.RootWidget.Name;
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (window.Project.Project, window.RootWidget);
  
@@ -229,7 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (oldBuildFile != newBuildFile)
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
 			
-			window.Project.Save ();
+			window.Project.Save (true);
 			
 			if (window.RootWidget.Name != oldName) {
 				// The name of the component has changed. If this component is being
@@ -251,7 +268,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get {
 				// There is no need to check if the action group designer is modified
 				// since changes in the action group are as well changes in the designed widget
-				return base.IsDirty || designer.Modified;
+				return base.IsDirty || (designer != null && designer.Modified);
 			}
 			set {
 				base.IsDirty = value;
@@ -274,14 +291,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void ShowDesignerView ()
 		{
-			ShowPage (1);
+			if (designer != null)
+				ShowPage (1);
 		}
 		
 		public void ShowActionDesignerView (string name)
 		{
-			ShowPage (2);
-			if (!ErrorMode)
-				actionsBox.ActiveGroup = name;
+			if (designer != null) {
+				ShowPage (2);
+				if (!ErrorMode)
+					actionsBox.ActiveGroup = name;
+			}
 		}
 		
 		bool ErrorMode {
