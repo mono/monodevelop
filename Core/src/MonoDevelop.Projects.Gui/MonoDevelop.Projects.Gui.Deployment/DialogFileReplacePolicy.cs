@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Gui.Deployment
 				GettextCatalog.GetString ("_Abort deployment")
 			};
 			
-			string message = GettextCatalog.GetString ("The target file {0} already exists, and was last modified at {1}. The replacement file, {2}, was modified on {2}. What would you like to do?", target, targetModified, source, sourceModified);
+			string message = GettextCatalog.GetString ("The target file {0} already exists, and was last modified at {1}. The replacement file, {2}, was modified on {3}. What would you like to do?", target, targetModified, source, sourceModified);
 			
 			int answer = MonoDevelop.Core.Gui.Services.MessageService.ShowCustomDialog (GettextCatalog.GetString ("File already exists"), message, buttons);
 			
