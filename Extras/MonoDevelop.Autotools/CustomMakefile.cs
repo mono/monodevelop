@@ -108,14 +108,13 @@ namespace MonoDevelop.Autotools
 				return null;
 			
 			StringBuilder sb = new StringBuilder ();
-			sb.AppendFormat ("\n{0} = ", var);
+			sb.AppendFormat ("{0} = ", var);
 			if (list.Count > 1) {
 				foreach (string s in list)
 					sb.AppendFormat (" \\\n\t{0}", s);
 			} else if (list.Count == 1) {
 				sb.Append (list [0]);
 			}
-			sb.Append ("\n");
 
 			return sb.ToString ();
 		}
@@ -212,18 +211,21 @@ namespace MonoDevelop.Autotools
 		void SaveVariable (string var)
 		{
 			//FIXME: Make this static
-			Regex varExp = new Regex(@"[.|\n]*^" + var + @"((?<sep>\s*:?=\s*\n)|((?<sep>\s*:?=\s*)" + multilineMatch + "))", 
+			Regex varExp = new Regex(@"[.|\n]*^(?<var>" + var + @"((?<sep>\s*:?=\s*\n)|((?<sep>\s*:?=\s*)" + multilineMatch + ")))", 
 				RegexOptions.Multiline);
 			
 			Match match = varExp.Match (content);
 			if (!match.Success) 
 				return;
 
+			Group grp = match.Groups ["var"];
+			int varLength = grp.ToString ().Trim (' ','\n').Length;
+			
 			//FIXME: Umm too expensive
-			content = String.Format ("{0}{1}{2}", 
-					content.Substring (0, match.Index),
+			content = String.Concat ( 
+					content.Substring (0, grp.Index),
 					GetVariable (var),
-					content.Substring (match.Index + match.Length));
+					content.Substring (grp.Index + varLength));
 		}
 
 		public void Save ()
