@@ -120,7 +120,7 @@ namespace MonoDevelop.Autotools
 						dllReferences.Write ( newPath );
 					} 
 					else if (reference.ReferenceType == ReferenceType.Project) continue; // handled elsewhere
-					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not support yet", 
+					else throw new Exception ( GettextCatalog.GetString  ("Project Reference Type {0} not supported yet", 
 								reference.ReferenceType.ToString() ) );
 				}
 				templateEngine.Variables["REFERENCES"] = references.ToString();
