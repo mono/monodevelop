@@ -1,3 +1,27 @@
+2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Diff/Diff.mdp, VersionControl.mds,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  DiffWidget/DiffWidget.mdp: Flush.
+	* MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl/Makefile.am: distcheck fixes.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl/VersionControl.addin.xml,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:
+	  Removed dependency to editor add-in.
+	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs,
+	  MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	  Minor fixes.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:
+	  Added File Open button to the toolbar.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:
+	  Show the content of revisions using the MD text editor, and with
+	  the correct mime type.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs: Fix
+	  spelling.
+
 2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs,

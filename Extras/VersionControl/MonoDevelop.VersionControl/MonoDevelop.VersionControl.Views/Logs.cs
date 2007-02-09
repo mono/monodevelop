@@ -5,7 +5,6 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Components;
-using MonoDevelop.SourceEditor.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -281,43 +280,28 @@ namespace MonoDevelop.VersionControl.Views
 		
 			protected override void Finished() {
 				if (text1 == null || text2 == null) return;
-				DiffView.Show(name + " " + revision.ToString(), text1, text2);
+				DiffView.Show(name + " (revision " + revision.ToString() + ")", text1, text2);
 			}
 		}
 		
 	}
 
-	public class HistoricalFileView : BaseView 
+	public class HistoricalFileView
 	{
-		MonoDevelop.SourceEditor.Gui.SourceEditor widget;
-	
 		public static void Show(string name, string file, string text) {
-			HistoricalFileView d = new HistoricalFileView(name, file, text);
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (file);
+			if (mimeType == null || mimeType.Length == 0)
+				mimeType = "text/plain";
+			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (name, mimeType, text);
+			doc.IsDirty = false;
 		}
 			
 		public static void Show(string file, Repository vc, string revPath, Revision revision) {
-			new Worker(Path.GetFileName(file) + " " + revision.ToString(),
+			new Worker(Path.GetFileName(file) + " (revision " + revision.ToString() + ")",
 				file, vc, revPath, revision).Start();
 		}
 		
 			
-		public HistoricalFileView(string name, string file, string text) 
-			: base(name) {
-			
-			// How do I get it to recognize the language of the file?
-			widget = new MonoDevelop.SourceEditor.Gui.SourceEditor(null);
-			widget.Text = text;
-			widget.View.Editable = false;
-			widget.ShowAll();
-		}
-		
-		public override Gtk.Widget Control { 
-			get {
-				return widget;
-			}
-		}
-	
 		internal class Worker : Task {
 			Repository vc;
 			string name, file;

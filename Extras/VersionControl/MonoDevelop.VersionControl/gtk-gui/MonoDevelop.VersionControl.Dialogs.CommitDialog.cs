@@ -39,6 +39,8 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Dialogs.CommitDialog";
             this.Title = Mono.Unix.Catalog.GetString("Commit Files");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.HasSeparator = false;
             // Internal child MonoDevelop.VersionControl.Dialogs.CommitDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

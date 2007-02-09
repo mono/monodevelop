@@ -83,6 +83,8 @@ namespace MonoDevelop.VersionControl.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Select Repository");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.HasSeparator = false;
             // Internal child MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

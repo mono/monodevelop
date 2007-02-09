@@ -21,9 +21,9 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(ASSEMBLY): $(build_sources)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) --unsafe $(build_sources) $(REFS) $(RES:%=/resource:%) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) --unsafe $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/$(ADDIN)
 EXTRA_DIST = $(FILES) $(ADDIN) $(RES)

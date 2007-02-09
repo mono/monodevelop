@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 	
 			using (SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish)) {
 				dlg.ModuleName = moduleName;
-				dlg.Message = GettextCatalog.GetString ("Initial checking of module {0}", moduleName);
+				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
 					w.Start ();

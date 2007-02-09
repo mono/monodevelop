@@ -38,7 +38,9 @@ namespace MonoDevelop.VersionControl.Dialogs {
             // Widget MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog
             this.Name = "MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog";
             this.Title = Mono.Unix.Catalog.GetString("Repository Configuration");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.DefaultWidth = 500;
+            this.HasSeparator = false;
             // Internal child MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

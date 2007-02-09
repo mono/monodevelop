@@ -12,7 +12,6 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.SourceEditor.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
@@ -107,6 +106,13 @@ namespace MonoDevelop.VersionControl.Views
 			btnRefresh.IsImportant = true;
 			btnRefresh.Clicked += new EventHandler (OnRefresh);
 			commandbar.Insert (btnRefresh, -1);
+			
+			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
+			
+			Gtk.ToolButton btnOpen = new Gtk.ToolButton (Gtk.Stock.Open);
+			btnOpen.IsImportant = true;
+			btnOpen.Clicked += new EventHandler (OnOpen);
+			commandbar.Insert (btnOpen, -1);
 			
 			commandbar.Insert (new Gtk.SeparatorToolItem (), -1);
 			
@@ -532,6 +538,21 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			string[] files = GetCurrentFiles ();
 			RevertCommand.Revert (vc, files, false);
+		}
+		
+		void OnOpen (object s, EventArgs args)
+		{
+			string[] files = GetCurrentFiles ();
+			if (files.Length == 0)
+				return;
+			else if (files.Length == 1)
+				IdeApp.Workbench.OpenDocument (files [0], true);
+			else {
+				if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length))) {
+					for (int n=0; n<files.Length; n++)
+						IdeApp.Workbench.OpenDocument (files[n], n==0);
+				}
+			}
 		}
 		
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)

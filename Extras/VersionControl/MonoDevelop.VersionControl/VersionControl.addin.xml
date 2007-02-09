@@ -18,7 +18,6 @@
 	    <AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
 		<AddIn id="MonoDevelop.Projects" version="0.12.0"/>
 	    <AddIn id="MonoDevelop.Ide" version="0.12.0"/>
-	    <AddIn id="MonoDevelop.SourceEditor" version="0.12.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
