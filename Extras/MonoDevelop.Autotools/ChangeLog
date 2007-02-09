@@ -1,5 +1,11 @@
 2007-02-09  Ankit Jain <jankit@novell.com> 
 
+	* MakefileOptionPanelWidget.cs: Add a null check.
+	* MakefileData.cs: Refactor encodeValues into a property. Initiliaze it
+	  outside UpdateProject.
+
+2007-02-09  Ankit Jain <jankit@novell.com> 
+
 	* MakefileData.cs: Keep the list of references sorted in the makefile.
 	* CustomMakefile.cs: Write to the makefile only if something changed.
 

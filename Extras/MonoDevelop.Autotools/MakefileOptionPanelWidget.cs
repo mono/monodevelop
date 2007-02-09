@@ -222,7 +222,8 @@ namespace MonoDevelop.Autotools
 
 				tmpData.UpdateProject (monitor, oldData == null || (!oldData.IntegrationEnabled && tmpData.IntegrationEnabled));
 			} else {
-				oldData. IntegrationEnabled = false;
+				if (oldData != null)
+					oldData.IntegrationEnabled = false;
 			}
 
  			return true;

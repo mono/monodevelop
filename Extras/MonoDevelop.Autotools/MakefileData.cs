@@ -419,6 +419,25 @@ namespace MonoDevelop.Autotools
 
 		// VarName -> Encode filenames Eg. $(srcdir)
 		Dictionary<string, bool> encodeValues;
+		Dictionary<string, bool> EncodeValues {
+			get {
+				if (encodeValues == null) {
+					encodeValues = new Dictionary<string, bool> ();
+
+					// Default is false!
+					encodeValues [BuildFilesVar.Name] = false;
+					encodeValues [DeployFilesVar.Name] = false;
+					encodeValues [OthersVar.Name] = false;
+					encodeValues [ResourcesVar.Name] = false;
+
+					encodeValues [GacRefVar.Name] = false;
+					encodeValues [AsmRefVar.Name] = false;
+					encodeValues [ProjectRefVar.Name] = false;
+				}
+
+				return encodeValues;
+			}
+		}
 
 		//use events.. 
 		public void UpdateProject (IProgressMonitor monitor, bool promptForRemoval)
@@ -456,6 +475,8 @@ namespace MonoDevelop.Autotools
 			}
 
 			dirty = true;
+			encodeValues = null;
+
 			try {
 				if (IsAutotoolsProject)
 					configuredPackages = new ConfiguredPackagesManager (Path.Combine (AbsoluteConfigureInPath, "configure.in"));
@@ -468,17 +489,6 @@ namespace MonoDevelop.Autotools
 					"Error trying to read configure.in ({0}) for project {1} : {2} ",
 					AbsoluteConfigureInPath, OwnerProject.Name, e.Message));
 			}
-
-			if (encodeValues == null) {
-				encodeValues = new Dictionary<string, bool> ();
-			} else {
-				encodeValues.Clear ();
-			}
-
-			encodeValues [BuildFilesVar.Name] = false;
-			encodeValues [DeployFilesVar.Name] = false;
-			encodeValues [OthersVar.Name] = false;
-			encodeValues [ResourcesVar.Name] = false;
 
 			ReadFiles (BuildFilesVar, BuildAction.Compile, "Build", promptForRemoval);
 			ReadFiles (DeployFilesVar, BuildAction.FileCopy, "Deploy", promptForRemoval);
@@ -501,10 +511,6 @@ namespace MonoDevelop.Autotools
 					GacRefVar.Extra.Clear ();
 					AsmRefVar.Extra.Clear ();
 					ProjectRefVar.Extra.Clear ();
-
-					encodeValues [GacRefVar.Name] = false;
-					encodeValues [AsmRefVar.Name] = false;
-					encodeValues [ProjectRefVar.Name] = false;
 
 					existingGacRefs = new Dictionary<string, ProjectReference> ();
 					newGacRefs = new Dictionary<string, ProjectReference> ();
@@ -656,7 +662,7 @@ namespace MonoDevelop.Autotools
 
 					varFound = false;
 					fname = ResolveBuildVars (fname, ref varFound);
-					encodeValues [fileVar.Name] |= varFound;
+					EncodeValues [fileVar.Name] |= varFound;
 
 					//File path in the makefile are relative to the makefile,
 					//but have to be added to the project as relative to project.BaseDirectory
@@ -822,7 +828,7 @@ namespace MonoDevelop.Autotools
 
 				varFound = false;
 				refname = ResolveBuildVars (refname, ref varFound);
-				encodeValues [refVar.Name] |= varFound;
+				EncodeValues [refVar.Name] |= varFound;
 
 				//if refname is part of a package then add as gac
 				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0 &&
@@ -1072,6 +1078,8 @@ namespace MonoDevelop.Autotools
 			
 				// Sort list of references in the makefile,
 				// but sort only once per distinct var
+				// (Required as we are comparing the full makefile as a string,
+				//  to detect changes!)
 				List<string> list = Makefile.GetListVariable (GacRefVar.Name);
 				if (list != null)
 					list.Sort ();
@@ -1120,7 +1128,7 @@ namespace MonoDevelop.Autotools
 					else
 						str = pf.RelativePath;
 
-					if (encodeValues [fileVar.Name]) {
+					if (EncodeValues [fileVar.Name]) {
 						if (pf.IsExternalToProject)
 							str = EncodeFileName (str, "top_srcdir", false);
 						else
@@ -1284,7 +1292,7 @@ namespace MonoDevelop.Autotools
 
 		string AsmRefToString (string reference, MakefileVar refVar)
 		{
-			if (!reference.StartsWith (BaseDirectory) && encodeValues [refVar.Name])
+			if (!reference.StartsWith (BaseDirectory) && EncodeValues [refVar.Name])
 				//Reference is external to this project
 				return EncodeFileName (reference, "top_builddir", true);
 
