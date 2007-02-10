@@ -1,3 +1,25 @@
+2007-02-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Added
+	  null check.
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs: Don't crash if some
+	  properties of a template are not set.
+	* Base.glade: Made the references dialog a bit bigger by default. Also
+	  removed the expander, since there is now an VPaned which can be
+	  used to shrink the refs list.
+	* MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs: Show the
+	  project path by default in the file browser.
+	* MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs: Show an icon
+	  for each selected reference.
+	* MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs: Show an icon
+	  together with the name of the reference.
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Make sure the
+	  cyclic reference warning is shown at the end of the list.
+	* MonoDevelop.Ide.mdp, Makefile.am: Synchronized mdp project with
+	  makefile.
+	* MonoDevelop.Ide.Gui/SdStatusBar.cs: Make sure the status bar is at
+	  least hight enough to show an icon of Menu size.
+
 2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Fix variable name.

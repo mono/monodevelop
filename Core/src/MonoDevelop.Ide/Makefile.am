@@ -1,30 +1,30 @@
 
 
 REFS =  \
-	-r:System \
-	-r:System.Drawing \
-	-r:System.Xml \
-	-r:ICSharpCode.SharpZipLib \
-	-r:System.Data \
-	-r:System.Web.Services \
-	-r:Mono.Posix \
-	-r:Mono.GetOptions \
-	-r:System.Runtime.Remoting \
-	$(GLADE_SHARP_LIBS) \
-	$(GTK_SHARP_LIBS) \
-	$(MONODOC_LIBS) \
 	$(GECKO_SHARP_LIBS) \
-	$(GNOME_VFS_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
+	$(GNOME_VFS_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	$(GTKHTML_SHARP_LIBS) \
+	$(MONODOC_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/log4net.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Dock.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll
+	-r:ICSharpCode.SharpZipLib \
+	-r:Mono.GetOptions \
+	-r:Mono.Posix \
+	-r:System \
+	-r:System.Data \
+	-r:System.Drawing \
+	-r:System.Runtime.Remoting \
+	-r:System.Web.Services \
+	-r:System.Xml
 
 FILES =  \
 	gtk-gui/generated.cs \

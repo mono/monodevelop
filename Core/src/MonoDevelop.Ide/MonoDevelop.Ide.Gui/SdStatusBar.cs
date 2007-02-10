@@ -86,6 +86,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			Progress.Hide ();
 			Progress.PulseStep = 0.3;
+			
+			int w, h;
+			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
+			statusLabel.HeightRequest = h;
 		}
 		
 		public void SetModeStatus (string status)
@@ -117,7 +121,7 @@ namespace MonoDevelop.Ide.Gui
 				currentStatusImage = null;
 			}
 			if (message != null)
-				statusLabel.Text = " " + message;
+				statusLabel.Text = " " + message.Replace ("\n", " ");
 			else
 				statusLabel.Text = "";
 		}
@@ -132,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (message != null)
-				statusLabel.Text = message;
+				statusLabel.Text = message.Replace ("\n", " ");
 			else
 				statusLabel.Text = "";
 		}

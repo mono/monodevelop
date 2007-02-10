@@ -130,6 +130,9 @@ namespace MonoDevelop.Ide.Templates
 				fileName = sps.Parse (name, HashtableToStringArray (tags));
 			}
 			
+			if (fileName == null)
+				throw new InvalidOperationException ("File name not provided in template");
+			
 			//give it an extension if it didn't get one (compatibility with pre-substition behaviour)
 			if (Path.GetExtension (fileName).Length == 0) {
 				if (!string.IsNullOrEmpty  (defaultExtension)) {

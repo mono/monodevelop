@@ -20,31 +20,40 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		SelectReferenceDialog selectDialog;
 		ClrVersion version;
 
-		TreeStore store;
+		ListStore store;
 		TreeView treeView;
 		
 		public GacReferencePanel(SelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new TreeStore (typeof (string), typeof (string), typeof(string), typeof(bool), typeof(string), typeof(string));
+			store = new ListStore (typeof (string), typeof (string), typeof(string), typeof(bool), typeof(string), typeof(string));
 			treeView = new TreeView (store);
 
 			TreeViewColumn firstColumn = new TreeViewColumn ();
-			firstColumn.Title = GettextCatalog.GetString ("Reference Name");
 			CellRendererToggle tog_render = new CellRendererToggle ();
 			tog_render.Toggled += new Gtk.ToggledHandler (AddReference);
 			firstColumn.PackStart (tog_render, false);
 			firstColumn.AddAttribute (tog_render, "active", 3);
 
-			CellRendererText text_render = new CellRendererText ();
-			firstColumn.PackStart (text_render, true);
-			firstColumn.AddAttribute (text_render, "text", 0);
-			
 			treeView.AppendColumn (firstColumn);
-			firstColumn.Resizable = true;
+			
+			TreeViewColumn secondColumn = new TreeViewColumn ();
+			secondColumn.Title = GettextCatalog.GetString ("Assembly");
+			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			secondColumn.PackStart (crp, false);
+			crp.StockId = "md-package";
+
+			CellRendererText text_render = new CellRendererText ();
+			secondColumn.PackStart (text_render, true);
+			secondColumn.AddAttribute (text_render, "text", 0);
+			
+			treeView.AppendColumn (secondColumn);
+
 			treeView.AppendColumn (GettextCatalog.GetString ("Version"), new CellRendererText (), "text", 1);
 			treeView.AppendColumn (GettextCatalog.GetString ("Package"), new CellRendererText (), "text", 5);
+			
+			treeView.Columns[1].Resizable = true;
 
 			store.SetSortColumnId (0, SortType.Ascending);
 			store.SetSortFunc (0, new TreeIterCompareFunc (SortTree));

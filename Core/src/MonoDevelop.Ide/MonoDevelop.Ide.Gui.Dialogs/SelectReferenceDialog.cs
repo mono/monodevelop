@@ -21,22 +21,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	
 	internal class SelectReferenceDialog
 	{
-		TreeStore refTreeStore;
+		ListStore refTreeStore;
 		[Widget] Dialog    AddReferenceDialog;
 		[Widget] TreeView  ReferencesTreeView;
 //		[Widget] Button    okbutton;
 //		[Widget] Button    cancelbutton;
 		[Widget] Button    RemoveReferenceButton;
 		[Widget] Notebook  mainBook;
+		
 		GacReferencePanel gacRefPanel;
-
 		ProjectReferencePanel projectRefPanel;
+		AssemblyReferencePanel assemblyRefPanel;
 		Project configureProject;
 		
 		const int NameColumn = 0;
 		const int TypeNameColumn = 1;
 		const int LocationColumn = 2;
 		const int ProjectReferenceColumn = 3;
+		const int IconColumn = 4;
 		
 		public ProjectReferenceCollection ReferenceInformations {
 			get {
@@ -69,11 +71,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public void SetProject (Project configureProject)
 		{
 			this.configureProject = configureProject;
-			((TreeStore) ReferencesTreeView.Model).Clear ();
+			((ListStore) ReferencesTreeView.Model).Clear ();
 
 			projectRefPanel.SetProject (configureProject);
 			gacRefPanel.SetProject (configureProject);
 			gacRefPanel.Reset ();
+			assemblyRefPanel.SetBasePath (configureProject.BaseDirectory);
 
 			foreach (ProjectReference refInfo in configureProject.ProjectReferences)
 				AddReference (refInfo);
@@ -97,7 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo);
+			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, "md-closed-folder");
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -108,14 +111,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Project p = c.FindProject (refInfo.Reference);
 			if (p == null) return TreeIter.Zero;
 			
+			string iconName = Services.Icons.GetImageForProjectType (p.ProjectType);
 			projectRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo);
+			return refTreeStore.AppendValues (System.IO.Path.GetFileName (refInfo.Reference), GetTypeText (refInfo), p.BaseDirectory, refInfo, iconName);
 		}
 
 		TreeIter AddGacReference (ProjectReference refInfo)
 		{
 			gacRefPanel.SignalRefChange (refInfo.Reference, true);
-			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo);
+			return refTreeStore.AppendValues (System.IO.Path.GetFileNameWithoutExtension (refInfo.Reference), GetTypeText (refInfo), refInfo.Reference, refInfo, "md-package");
 		}
 		
 		public SelectReferenceDialog(Project configureProject)
@@ -123,21 +127,32 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Glade.XML refXML = new Glade.XML (null, "Base.glade", "AddReferenceDialog", null);
 			refXML.Autoconnect (this);
 			
-			refTreeStore = new TreeStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference));
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(string));
 			ReferencesTreeView.Model = refTreeStore;
 
-			ReferencesTreeView.AppendColumn (GettextCatalog.GetString("Reference Name"), new CellRendererText (), "text", NameColumn);
+			TreeViewColumn col = new TreeViewColumn ();
+			col.Title = GettextCatalog.GetString("Reference");
+			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			col.PackStart (crp, false);
+			col.AddAttribute (crp, "stock-id", IconColumn);
+			CellRendererText text_render = new CellRendererText ();
+			col.PackStart (text_render, true);
+			col.AddAttribute (text_render, "text", NameColumn);
+			
+			ReferencesTreeView.AppendColumn (col);
 			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", TypeNameColumn);
 			ReferencesTreeView.AppendColumn (GettextCatalog.GetString ("Location"), new CellRendererText (), "text", LocationColumn);
 			
 			projectRefPanel = new ProjectReferencePanel (this);
 			gacRefPanel = new GacReferencePanel (this);
+			assemblyRefPanel = new AssemblyReferencePanel (this);
 			SetProject (configureProject);
 			
 			mainBook.RemovePage (mainBook.CurrentPage);
 			mainBook.AppendPage (gacRefPanel, new Label (GettextCatalog.GetString ("Packages")));
 			mainBook.AppendPage (projectRefPanel, new Label (GettextCatalog.GetString ("Projects")));
-			mainBook.AppendPage (new AssemblyReferencePanel (this), new Label (GettextCatalog.GetString (".Net Assembly")));
+			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
+			mainBook.Page = 0;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
 			AddReferenceDialog.ShowAll ();
 			OnChanged (null, null);

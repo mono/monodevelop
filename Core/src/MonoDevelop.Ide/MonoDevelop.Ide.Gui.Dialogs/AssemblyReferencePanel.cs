@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		SelectReferenceDialog selectDialog;
 		FileChooserWidget chooser;
 		
-		public AssemblyReferencePanel(SelectReferenceDialog selectDialog)
+		public AssemblyReferencePanel (SelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
 			
@@ -51,6 +51,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			BorderWidth = 6;
 			Spacing = 6;
 			ShowAll();
+		}
+		
+		public void SetBasePath (string path)
+		{
+			chooser.SetCurrentFolder (path);
 		}
 		
 		void SelectReferenceDialog(object sender, EventArgs e)

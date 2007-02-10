@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.selectDialog = selectDialog;
 			
 			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool));
-			store.SetSortColumnId (0, SortType.Ascending);
+			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			treeView = new TreeView (store);
 			
 			TreeViewColumn firstColumn = new TreeViewColumn ();
@@ -104,6 +104,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			} while (store.IterNext (ref looping_iter));
 		}
 		
+		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+		{
+			string s1 = (string) store.GetValue (a, 0);
+			string s2 = (string) store.GetValue (b, 0);
+			if (s1 == string.Empty) return 1;
+			if (s2 == string.Empty) return -1;
+			return String.Compare (s1, s2, true);
+		}
+		
 		void PopulateListView (Project configureProject)
 		{
 			Combine openCombine = IdeApp.ProjectOperations.CurrentOpenCombine;
@@ -129,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 			
 			if (circDeps)
-				store.AppendValues ("" + (char)200, "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
+				store.AppendValues ("", "<span foreground='dimgrey'>" + GettextCatalog.GetString ("(Projects referencing '{0}' are not shown,\nsince cyclic dependencies are not allowed)", configureProject.Name) + "</span>", null, false, null, false);
 		}
 		
 		bool ProjectReferencesProject (Project project, string targetProject)

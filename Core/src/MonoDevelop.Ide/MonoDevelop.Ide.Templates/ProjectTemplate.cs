@@ -190,9 +190,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 			this.id = id;
 			
-			originator   = doc.DocumentElement.Attributes["originator"].InnerText;
-			created      = doc.DocumentElement.Attributes["created"].InnerText;
-			lastmodified = doc.DocumentElement.Attributes["lastModified"].InnerText;
+			originator   = doc.DocumentElement.GetAttribute ("originator");
+			created      = doc.DocumentElement.GetAttribute ("created");
+			lastmodified = doc.DocumentElement.GetAttribute ("lastModified");
 			
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			
