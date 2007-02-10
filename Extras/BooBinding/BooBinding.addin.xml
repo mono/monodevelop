@@ -71,6 +71,10 @@
                      class = "BooBinding.BooLanguageBinding" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Workbench/TextEditorExtensions">
+    <Class class = "BooBinding.Gui.BooTextEditorExtension" />
+  </Extension>
+
   <Extension path = "/Workspace/Parser">
 	<Class id    = "BooParser"
 	       class = "BooBinding.Parser.BooParser"/>

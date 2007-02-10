@@ -149,8 +149,8 @@ class BooParser(IParser):
 			//ShowException(e)
 			return null
 	
-	def IsAsResolve (parserContext as IParserContext, expression as string , caretLineNumber as int , caretColumn as int , fileName as string , fileContent as string ) as LanguageItemCollection:
-		return Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent)
+	def IsAsResolve (parserContext as IParserContext, expression as string , caretLineNumber as int , caretColumn as int , fileName as string , fileContent as string, include_ifaces as bool) as LanguageItemCollection:
+		return Resolver (parserContext).IsAsResolve (expression, caretLineNumber, caretColumn, fileName, fileContent, include_ifaces)
 
 	def Resolve(parserContext as IParserContext, expression as string, caretLineNumber as int, caretColumn as int, fileName as string, fileContent as string) as ResolveResult:
 		Log ("Resolve ${expression} (${caretLineNumber}/${caretColumn})")

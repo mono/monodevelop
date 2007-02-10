@@ -243,8 +243,22 @@ class Resolver:
 	
 	#region IsAsResolve
 
-	def IsAsResolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as LanguageItemCollection: 
-		return null
+	# XXX: Finish implementing!
+	def IsAsResolve(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string, include_ifaces as bool) as LanguageItemCollection: 
+		_caretLine = caretLine
+		_caretColumn = caretColumn
+		result = LanguageItemCollection ()
+
+		parse_info = _parserContext.GetParseInformation (fileName)
+		cu = parse_info.MostRecentCompilationUnit as DefaultCompilationUnit
+		_compilationUnit = cu
+		return null if not _compilationUnit
+
+		expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expression)
+		return null if not expr
+
+		visitor = ExpressionTypeVisitor(Resolver : self)
+		visitor.Visit(expr)
 
 	def MonodocResolver(expression as string, caretLine as int, caretColumn as int, fileName as string, fileContent as string) as string: 
 		return null

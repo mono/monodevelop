@@ -24,6 +24,7 @@ FormattingStrategy/BooFormattingStrategy.boo \
 Gui/ShellTextView.boo \
 Gui/IShellModel.boo \
 Gui/BooShellModel.boo \
+Gui/BooTextEditorExtension.boo \
 Gui/OptionPanels/CodeCompilationPanel.boo \
 Gui/OptionPanels/GeneralShellPanel.boo \
 Gui/OptionPanels/GeneralBooShellPanel.boo \
