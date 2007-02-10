@@ -26,7 +26,6 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 	{
 		Ambience			ambience = null;
 		
-		string              fileName = null;
 		SourceEditorView    textArea;
 		IndexerCollection   methods  = new IndexerCollection (null);
 		
@@ -49,7 +48,6 @@ namespace MonoDevelop.SourceEditor.InsightWindow
 		int initialOffset;
 		public void SetupDataProvider(Project project, string fileName, SourceEditorView textArea)
 		{
-			this.fileName = fileName;
 			this.textArea = textArea;
 			Gtk.TextIter initialIter = textArea.Buffer.GetIterAtMark (textArea.Buffer.InsertMark);
 			initialOffset = initialIter.Offset;

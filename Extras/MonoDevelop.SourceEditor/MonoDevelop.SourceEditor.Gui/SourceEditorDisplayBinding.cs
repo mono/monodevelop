@@ -773,6 +773,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			switch (e.Key) {
 				case "DefaultFont":
 					se.View.ModifyFont (TextEditorProperties.Font);
+					se.UpdateMarkerSize ();
 					break;
 				case "ShowLineNumbers":
 					se.View.ShowLineNumbers = TextEditorProperties.ShowLineNumbers;

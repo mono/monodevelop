@@ -103,7 +103,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				stylesTreeView.Selection.SelectIter (first);
 			}
 
-			private void OnButtonToggled (object sender, EventArgs a)
+			protected void OnButtonToggled (object sender, EventArgs a)
 			{
 				SourceTagStyle sts = currentStyle;
 				sts.Bold = boldToggle.Active;
@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				restoreDefaultButton.Sensitive = true;
 			}
 
-			private void OnColorSet (object sender, EventArgs a)
+			protected void OnColorSet (object sender, EventArgs a)
 			{
 				SourceTagStyle sts = currentStyle;
 				sts.Foreground = fgColorButton.Color;
@@ -125,13 +125,13 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				restoreDefaultButton.Sensitive = true;
 			}
 
-			private void OnHighlightingToggled (object sender, EventArgs a)
+			protected void OnHighlightingToggled (object sender, EventArgs a)
 			{
 				CheckButton cb = sender as CheckButton;
 				childrenVBox.Sensitive = cb.Active;
 			}
 
-			private void OnLanguageSelected (object sender, EventArgs a)
+			protected void OnLanguageSelected (object sender, EventArgs a)
 			{
 				TreeIter iter;
 				if (sourceLanguages.GetActiveIter (out iter)) {
@@ -139,7 +139,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				}
 			}
 
-			private void OnRestoreClicked (object sender, EventArgs a)
+			protected void OnRestoreClicked (object sender, EventArgs a)
 			{
 				currentLanguage = svs.RestoreDefaults (currentLanguage);
 				OnStyleChanged (stylesTreeView.Selection, EventArgs.Empty);

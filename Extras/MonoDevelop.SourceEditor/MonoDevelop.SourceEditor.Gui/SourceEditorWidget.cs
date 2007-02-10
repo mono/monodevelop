@@ -1,6 +1,7 @@
 using Gtk;
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.SourceEditor.Document;
@@ -25,6 +26,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		public SourceEditorDisplayBindingWrapper DisplayBinding;
 		protected Gnome.PrintJob printJob;
 		protected PrintDialog printDialog;
+		Dictionary<string,Gdk.Pixbuf> markers = new Dictionary<string,Gdk.Pixbuf> ();
 		
 		static Gdk.Pixbuf dragIconPixbuf;
 		static Gdk.Pixbuf executionMarkerPixbuf;
@@ -32,7 +34,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		static SourceEditor ()
 		{
-			dragIconPixbuf = new Gdk.Pixbuf (drag_icon_xpm);
+			dragIconPixbuf = Gdk.Pixbuf.LoadFromResource ("bookmark.png");
 			executionMarkerPixbuf = Services.Resources.GetIcon (Stock.ExecutionMarker);
 			breakPointPixbuf = Services.Resources.GetIcon (Stock.BreakPoint);
 		}
@@ -51,9 +53,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			this.VscrollbarPolicy = PolicyType.Automatic;
 			this.HscrollbarPolicy = PolicyType.Automatic;
 			
-			View.SetMarkerPixbuf ("SourceEditorBookmark", dragIconPixbuf);
-			View.SetMarkerPixbuf ("ExecutionMark", executionMarkerPixbuf);
-			View.SetMarkerPixbuf ("BreakpointMark", breakPointPixbuf);
+			AddMarker ("SourceEditorBookmark", dragIconPixbuf);
+			AddMarker ("ExecutionMark", executionMarkerPixbuf);
+			AddMarker ("BreakpointMark", breakPointPixbuf);
 			
 			Add (View);
 		}
@@ -96,6 +98,49 @@ namespace MonoDevelop.SourceEditor.Gui
 			string selectedText = Buffer.GetSelectedText ();
 			if (selectedText != null && selectedText.Length > 0)
 				SearchReplaceManager.SearchOptions.SearchPattern = selectedText.Split ('\n')[0];
+		}
+		
+		public void AddMarker (string name, Gdk.Pixbuf image)
+		{
+			// Keep track of markers in a dictionary. It is used in case the
+			// line height of the editor changes.
+			markers.Add (name, image);
+			View.SetMarkerPixbuf (name, FixMarkerSize (image));
+		}
+		
+		internal void UpdateMarkerSize ()
+		{
+			// Makes sure markers are not bigger than the line height
+			foreach (KeyValuePair<string, Gdk.Pixbuf> entry in markers) {
+				View.SetMarkerPixbuf (entry.Key, FixMarkerSize (entry.Value));
+			}
+		}
+		
+		Gdk.Pixbuf FixMarkerSize (Gdk.Pixbuf pix)
+		{
+			// Returns a marker image with a size that fits the line height
+			
+			TextIter iter = View.Buffer.GetIterAtMark (View.Buffer.InsertMark);
+			int markerSize = View.GetIterLocation (iter).Height;
+			
+			if (pix.Height <= markerSize)
+				return pix;
+				
+			int width = pix.Width;
+			int height = markerSize;
+			
+			if ((pix.Width - width) > (pix.Height - height)) {
+				if (pix.Width != width) {
+					float prop = (float) pix.Height / (float) pix.Width;
+					return pix.ScaleSimple (width, (int)(width * prop), Gdk.InterpType.Bilinear);
+				}
+			} else {
+				if (pix.Height != height) {
+					float prop = (float) pix.Width / (float) pix.Height;
+					return pix.ScaleSimple ((int)(height * prop), height, Gdk.InterpType.Bilinear);
+				}
+			}
+			return pix;
 		}
 		
 		[CommandHandler (SearchCommands.Find)]
@@ -208,7 +253,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			{
 				case (int)PrintButtons.Print:
 					int result = printJob.Print ();
-					if (result != 0) ;//TODO show error message
+					if (result != 0)
+						IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
 					goto default;
 				case (int)PrintButtons.Preview:
 					PrintPreviewDocument ();
@@ -290,66 +336,5 @@ namespace MonoDevelop.SourceEditor.Gui
 			else
 				info.Enabled = DisplayBinding.ContentName != null;
 		}
-
-		private static readonly string [] drag_icon_xpm = new string [] {
-			"36 48 9 1",
-			" 	c None",
-			".	c #020204",
-			"+	c #8F8F90",
-			"@	c #D3D3D2",
-			"#	c #AEAEAC",
-			"$	c #ECECEC",
-			"%	c #A2A2A4",
-			"&	c #FEFEFC",
-			"*	c #BEBEBC",
-			"               .....................",
-			"              ..&&&&&&&&&&&&&&&&&&&.",
-			"             ...&&&&&&&&&&&&&&&&&&&.",
-			"            ..&.&&&&&&&&&&&&&&&&&&&.",
-			"           ..&&.&&&&&&&&&&&&&&&&&&&.",
-			"          ..&&&.&&&&&&&&&&&&&&&&&&&.",
-			"         ..&&&&.&&&&&&&&&&&&&&&&&&&.",
-			"        ..&&&&&.&&&@&&&&&&&&&&&&&&&.",
-			"       ..&&&&&&.*$%$+$&&&&&&&&&&&&&.",
-			"      ..&&&&&&&.%$%$+&&&&&&&&&&&&&&.",
-			"     ..&&&&&&&&.#&#@$&&&&&&&&&&&&&&.",
-			"    ..&&&&&&&&&.#$**#$&&&&&&&&&&&&&.",
-			"   ..&&&&&&&&&&.&@%&%$&&&&&&&&&&&&&.",
-			"  ..&&&&&&&&&&&.&&&&&&&&&&&&&&&&&&&.",
-			" ..&&&&&&&&&&&&.&&&&&&&&&&&&&&&&&&&.",
-			"................&$@&&&@&&&&&&&&&&&&.",
-			".&&&&&&&+&&#@%#+@#@*$%$+$&&&&&&&&&&.",
-			".&&&&&&&+&&#@#@&&@*%$%$+&&&&&&&&&&&.",
-			".&&&&&&&+&$%&#@&#@@#&#@$&&&&&&&&&&&.",
-			".&&&&&&@#@@$&*@&@#@#$**#$&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&@%&%$&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&$#@@$&&&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&+&$+&$&@&$@&&$@&&&&&&&&&&.",
-			".&&&&&&&&&+&&#@%#+@#@*$%&+$&&&&&&&&.",
-			".&&&&&&&&&+&&#@#@&&@*%$%$+&&&&&&&&&.",
-			".&&&&&&&&&+&$%&#@&#@@#&#@$&&&&&&&&&.",
-			".&&&&&&&&@#@@$&*@&@#@#$#*#$&&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&$%&%$&&&&&&&&.",
-			".&&&&&&&&&&$#@@$&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&&&+&$%&$$@&$@&&$@&&&&&&&&.",
-			".&&&&&&&&&&&+&&#@%#+@#@*$%$+$&&&&&&.",
-			".&&&&&&&&&&&+&&#@#@&&@*#$%$+&&&&&&&.",
-			".&&&&&&&&&&&+&$+&*@&#@@#&#@$&&&&&&&.",
-			".&&&&&&&&&&$%@@&&*@&@#@#$#*#&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&$%&%$&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&$#@@$&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&&+&$%&$$@&$@&&$@&&&&.",
-			".&&&&&&&&&&&&&&&+&&#@%#+@#@*$%$+$&&.",
-			".&&&&&&&&&&&&&&&+&&#@#@&&@*#$%$+&&&.",
-			".&&&&&&&&&&&&&&&+&$+&*@&#@@#&#@$&&&.",
-			".&&&&&&&&&&&&&&$%@@&&*@&@#@#$#*#&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&$%&%$&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.",
-			".&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.",
-			"...................................."
-		};
 	}
 }

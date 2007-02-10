@@ -5,10 +5,6 @@ ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 FILES = \
 MonoDevelop.SourceEditor/SourceViewService.cs \
 MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs \
-MonoDevelop.SourceEditor.InsightWindow/IInsightDataProvider.cs \
-MonoDevelop.SourceEditor.InsightWindow/IndexerInsightDataProvider.cs \
-MonoDevelop.SourceEditor.InsightWindow/InsightWindow.cs \
-MonoDevelop.SourceEditor.InsightWindow/MethodInsightDataProvider.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs \
 MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
@@ -34,7 +30,8 @@ MonoDevelop.SourceEditor/Services.cs
 
 RES = \
 texteditoraddin.glade \
-EditorBindings.glade
+EditorBindings.glade \
+bookmark.png
 
 GENERATED_FILES = \
 AssemblyInfo.cs

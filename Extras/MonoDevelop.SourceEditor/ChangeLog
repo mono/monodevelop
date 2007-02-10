@@ -1,3 +1,19 @@
+2007-02-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs: Make sure markers
+	  are not bigger than the height of a text line.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs,
+	  MonoDevelop.SourceEditor.InsightWindow/IndexerInsightDataProvider.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs: Fix
+	  warnings.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Removed unneeded
+	  code when trying to find the language item for which to show help.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Update
+	  marker sizes when font size changes.
+	* bookmark.png: New bookmark icon.
+	* Makefile.am, MonoDevelop.SourceEditor.mdp: Removed obsolete classes.
+
 2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added some null

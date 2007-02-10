@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor.Gui.Dialogs
 			GotoLineDialog.Hide ();
 		}
 		
-		void on_btn_go_to_line_clicked (object sender, EventArgs e)
+		protected void on_btn_go_to_line_clicked (object sender, EventArgs e)
 		{
 			try {
 				IPositionable view = IdeApp.Workbench.ActiveDocument.GetContent<IPositionable> ();

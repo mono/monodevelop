@@ -291,7 +291,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 
-		bool changeFocus ()
+		protected bool changeFocus ()
 		{
 			View.GrabFocus ();
 			return false;

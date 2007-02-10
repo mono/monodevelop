@@ -21,7 +21,6 @@ using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.SourceEditor.Actions;
 using MonoDevelop.SourceEditor.Document;
-using MonoDevelop.SourceEditor.InsightWindow;
 using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.SourceEditor;
@@ -335,30 +334,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		internal bool MonodocResolver ()
 		{
 			TextIter insertIter = buf.GetIterAtMark (buf.InsertMark);
-			TextIter triggerIter = TextIter.Zero;
-			try {
-				do {
-					switch (insertIter.Char[0]) {
-					case ' ':
-					case '\t':
-					case '\r':
-					case '\n':
-					case '.':
-					case ';':
-					case '(':
-					case '[':
-						triggerIter = insertIter;
-						break;
-					}
-					if (!triggerIter.Equals (TextIter.Zero))
-						break;
-					insertIter.ForwardChar ();
-				} while (insertIter.LineOffset != 0);
-				triggerIter.ForwardChar ();
-			} catch {
-				return false;
-			}
-			ILanguageItem languageItem = GetLanguageItem (triggerIter);
+			ILanguageItem languageItem = GetLanguageItem (insertIter);
 			
 			if (languageItem == null)
 				return false;
