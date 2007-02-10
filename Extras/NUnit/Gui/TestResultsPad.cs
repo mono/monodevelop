@@ -97,7 +97,7 @@ namespace MonoDevelop.NUnit
 			panel = new VBox ();
 			
 			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			panel.PackStart (toolbar, false, false, 0);
 			
 			buttonSuccess = new ToggleToolButton ();
@@ -130,7 +130,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleToolButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.IconWidget = Services.Resources.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.SmallToolbar);
+			buttonOutput.IconWidget = Services.Resources.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.IsImportant = true;
 			buttonOutput.SetTooltip (tips, GettextCatalog.GetString ("Show Output"), GettextCatalog.GetString ("Show Output"));
@@ -305,7 +305,7 @@ namespace MonoDevelop.NUnit
 		
 		public void AddStartMessage ()
 		{
-			Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.SmallToolbar, "");
+			Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
 			string msg = string.Format (GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
 			failuresStore.AppendValues (infoIcon, msg, rootTest);
 		}
@@ -323,7 +323,7 @@ namespace MonoDevelop.NUnit
 			if (errorMessage != null)
 				msg += ": " + errorMessage;
 
-			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.SmallToolbar, "");
+			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null);
 			failuresStore.AppendValues (testRow, null, Escape (error.GetType().Name + ": " + error.Message), null);
 			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null);
@@ -466,7 +466,8 @@ namespace MonoDevelop.NUnit
 				if (!buttonIgnored.Active)
 					return;
 				TreeIter testRow = failuresStore.AppendValues (CircleImage.NotRun, Escape (test.FullName), test);
-				failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
+				if (result.Message != null)
+					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
 			}
 			if (result.ConsoleOutput != null)

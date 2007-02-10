@@ -27,6 +27,9 @@
 								</CustomAttributes>
 								<Members>
 									<MemberMethod Attributes="Public, Final" Name="TestCase" ReturnType="System.Void">
+										<CustomAttributes>
+											<AttributeDeclaration Name="Test" />
+										</CustomAttributes>
 									</MemberMethod>
 								</Members>
 							</TypeDeclaration>

@@ -431,6 +431,11 @@ namespace MonoDevelop.NUnit
 			{
 				return test.Name == name;
 			}
+
+			public bool Exclude
+			{
+				get { return false; }
+			}
 		}
 	}
 }

@@ -1,3 +1,22 @@
+2007-02-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.NUnit.mdp: Synchronized the MD project and the Makefile
+	* MonoDevelopNUnit.addin.xml: Removed nunit dependency. Added new
+	  project template.
+	* Services/ExternalTestRunner.cs, Services/NUnitAssemblyTestSuite.cs:
+	  Track api changes in NUnit.
+	* Services/NUnitService.cs: Register the nunit package is none is
+	  installed.
+	* Gui/TestResultsPad.cs: Make the toolbar smaller. Added null check for
+	  empty result messages when a test is ignored.
+	* lib, lib/nunit.framework.dll, lib/nunit.core.dll: Bundle nunit
+	  together with the add-in.
+	* Makefile.am: Synchronized the MD project and the Makefile. Bundle
+	  nunit together with the add-in.
+	* templates/NUnitTestClass.xft.xml: Latest NUnit versions require the
+	  Test attribute to be applied to test methods.
+	* templates/NUnitProject.xpt.xml: New project template.
+
 2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp: Updated.

@@ -36,6 +36,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using NUnit.Core;
+using NF = NUnit.Framework;
 
 namespace MonoDevelop.NUnit
 {
@@ -51,6 +52,10 @@ namespace MonoDevelop.NUnit
 			TestSuite rootTS = LoadTestSuite (path, suiteName);
 			if (rootTS == null)
 				throw new Exception ("Test suite '" + suiteName + "' not found.");
+
+			// Force the loading of the NUnit.Framework assembly.
+			// It's needed since that dll is not located in the test dll directory.
+			typeof(NF.Assert).ToString ();
 
 			TextWriter origStdout = Console.Out;
 			TextWriter origStderr = Console.Error;
@@ -114,6 +119,10 @@ namespace MonoDevelop.NUnit
 		
 		public TestInfo GetTestInfo (string path)
 		{
+			// Force the loading of the NUnit.Framework assembly.
+			// It's needed since that dll is not located in the test dll directory.
+			typeof(NF.Assert).ToString ();
+
 			TestSuite rootTS = LoadTestSuite (path, "");
 			return BuildTestInfo (rootTS);
 		}
@@ -252,6 +261,11 @@ namespace MonoDevelop.NUnit
 			t.Status = TestStatus.Ready;
 			context.Monitor.EndTest (t, res);
 		}
+		
+		public void TestOutput (TestOutput testOutput)
+		{
+		}
+
 
 		UnitTest GetLocalTest (Test t)
 		{

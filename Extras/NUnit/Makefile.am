@@ -1,93 +1,101 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/NUnit
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
-
-REFS = -r:System \
-       -r:System.Xml \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	$(NUNIT_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
-	$(NUNIT_LIBS)
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:./lib/nunit.core.dll \
+	-r:./lib/nunit.framework.dll \
+	-r:System \
+	-r:System.Xml
 
-FILES = \
-AssemblyInfo.cs \
-Commands/NUnitCommands.cs \
-Gui/CircleImage.cs \
-Gui/TestPad.cs \
-Gui/TestResultsPad.cs \
-Gui/TestNodeBuilder.cs \
-Gui/TestChart.cs \
-Gui/NUnitOptionsPanel.cs \
-Gui/UnitTestOptionsDialog.cs \
-Gui/NUnitAssemblyGroupNodeBuilder.cs \
-Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs \
-Gui/TestAssemblyNodeBuilder.cs \
-Project/NUnitAssemblyGroupFileFormat.cs \
-Project/NUnitAssemblyGroupProject.cs \
-Project/TestAssembly.cs \
-Project/TestAssemblyCollection.cs \
-Services/CombineTestGroup.cs \
-Services/ITestProvider.cs \
-Services/NUnitService.cs \
-Services/SystemTestProvider.cs \
-Services/ITestProgressMonitor.cs \
-Services/TestContext.cs \
-Services/UnitTestCollection.cs \
-Services/UnitTest.cs \
-Services/UnitTestGroup.cs \
-Services/UnitTestResult.cs \
-Services/UnitTestStatus.cs \
-Services/ExternalTestRunner.cs \
-Services/NUnitAssemblyTestSuite.cs \
-Services/NUnitProjectTestSuite.cs \
-Services/NUnitTestCase.cs \
-Services/NUnitTestSuite.cs \
-Services/GeneralTestOptions.cs \
-Services/NUnitOptions.cs \
-Services/IResultsStore.cs \
-Services/UnitTestResultsStore.cs \
-Services/XmlResultsStore.cs
+FILES =  \
+	AssemblyInfo.cs \
+	Commands/NUnitCommands.cs \
+	Gui/CircleImage.cs \
+	Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs \
+	Gui/NUnitAssemblyGroupNodeBuilder.cs \
+	Gui/NUnitOptionsPanel.cs \
+	Gui/TestAssemblyNodeBuilder.cs \
+	Gui/TestChart.cs \
+	Gui/TestNodeBuilder.cs \
+	Gui/TestPad.cs \
+	Gui/TestResultsPad.cs \
+	Gui/UnitTestOptionsDialog.cs \
+	Project/NUnitAssemblyGroupFileFormat.cs \
+	Project/NUnitAssemblyGroupProject.cs \
+	Project/TestAssembly.cs \
+	Project/TestAssemblyCollection.cs \
+	Services/CombineTestGroup.cs \
+	Services/ExternalTestRunner.cs \
+	Services/GeneralTestOptions.cs \
+	Services/IResultsStore.cs \
+	Services/ITestProgressMonitor.cs \
+	Services/ITestProvider.cs \
+	Services/NUnitAssemblyTestSuite.cs \
+	Services/NUnitOptions.cs \
+	Services/NUnitProjectTestSuite.cs \
+	Services/NUnitService.cs \
+	Services/NUnitTestCase.cs \
+	Services/NUnitTestSuite.cs \
+	Services/SystemTestProvider.cs \
+	Services/TestContext.cs \
+	Services/UnitTest.cs \
+	Services/UnitTestCollection.cs \
+	Services/UnitTestGroup.cs \
+	Services/UnitTestResult.cs \
+	Services/UnitTestResultsStore.cs \
+	Services/UnitTestStatus.cs \
+	Services/XmlResultsStore.cs
 
-RES = \
-nunit.glade \
-templates/NUnitAssemblyGroup.xpt.xml \
-templates/NUnitTestClass.xft.xml \
-Gui/NUnit.Running.png \
-Gui/NUnit.Failed.png \
-Gui/NUnit.SuccessAndFailed.png \
-Gui/NUnit.None.png \
-Gui/NUnit.NotRun.png \
-Gui/NUnit.Loading.png \
-Gui/NUnit.Success.png
+RES =  \
+	Gui/NUnit.Failed.png \
+	Gui/NUnit.Loading.png \
+	Gui/NUnit.None.png \
+	Gui/NUnit.NotRun.png \
+	Gui/NUnit.Running.png \
+	Gui/NUnit.Success.png \
+	Gui/NUnit.SuccessAndFailed.png \
+	nunit.glade \
+	templates/NUnitAssemblyGroup.xpt.xml \
+	templates/NUnitProject.xpt.xml \
+	templates/NUnitTestClass.xft.xml
+
+
+NUNIT_FILES = \
+nunit.core.dll
+
+SRC_NUNIT_FILES = $(addprefix $(srcdir)/lib/, $(NUNIT_FILES))
+BUILD_NUNIT_FILES = $(addprefix $(ADDIN_BUILD)/, $(NUNIT_FILES))
 
 ADDIN = MonoDevelopNUnit.addin.xml
 
-if ENABLE_NUNIT
-all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-else
-all:
-endif
+all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(BUILD_NUNIT_FILES)
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(FILES) $(RES)
+$(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
+	cp $< $@
 
-if ENABLE_NUNIT
+$(ASSEMBLY): $(FILES) $(build_resources)
+	mkdir -p $(ADDIN_BUILD)
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+
+
 assemblydir = $(MD_ADDIN_DIR)/NUnit
-assembly_DATA = $(ASSEMBLY) $(ADDIN)
+assembly_DATA = $(ASSEMBLY) $(ADDIN) $(SRC_NUNIT_FILES)
 
-endif
-
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NUNIT_FILES)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(SRC_NUNIT_FILES)
 
 include $(top_srcdir)/Makefile.include

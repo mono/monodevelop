@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Collections;
 using System.Threading;
 
@@ -48,6 +49,13 @@ namespace MonoDevelop.NUnit
 		
 		public NUnitService ()
 		{
+			if (Runtime.SystemAssemblyService.GetPackage ("nunit") == null) {
+				string basePath = Path.GetDirectoryName (GetType().Assembly.Location);
+				Runtime.SystemAssemblyService.RegisterPackage ("nunit", "2.2.9.0", "NUnit", ClrVersion.Default,
+					Path.Combine (basePath, "nunit.core.dll"),
+					Path.Combine (basePath, "nunit.framework.dll")
+				);
+			}
 		}
 		
 		public override void InitializeService ()
