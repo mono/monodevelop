@@ -73,7 +73,7 @@ namespace MonoDevelop.SourceEditor.Actions
 	{
 		public override void Execute (SourceEditorView sourceView)
 		{
-			if (!sourceView.IndentSelection (true))
+			if (!sourceView.IndentSelection (true, true))
 				PassToBase = true;
 		}
 	}
@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor.Actions
 	{
 		public override void Execute (SourceEditorView sourceView)
 		{
-			if (!sourceView.IndentSelection (false) && !sourceView.InsertTemplate ())
+			if (!sourceView.IndentSelection (false, true) && !sourceView.InsertTemplate ())
 				PassToBase = true;
 		}
 	}		

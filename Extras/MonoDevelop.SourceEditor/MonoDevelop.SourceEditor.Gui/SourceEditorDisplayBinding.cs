@@ -633,12 +633,12 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void ICodeStyleOperations.IndentSelection ()
 		{
-			se.View.IndentSelection (false);
+			se.View.IndentSelection (false, false);
 		}
 		
 		void ICodeStyleOperations.UnIndentSelection ()
 		{
-			se.View.IndentSelection (true);
+			se.View.IndentSelection (true, false);
 		}
 #endregion 
 

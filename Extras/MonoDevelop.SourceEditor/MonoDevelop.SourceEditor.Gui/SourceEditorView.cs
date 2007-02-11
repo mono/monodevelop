@@ -547,27 +547,33 @@ namespace MonoDevelop.SourceEditor.Gui
 
 
 #region Indentation
-		public bool IndentSelection (bool unindent)
+		public bool IndentSelection (bool unindent, bool requireLineSelection)
 		{
 			TextIter begin, end;
-			if (!buf.GetSelectionBounds (out begin, out end))
-				return false;
+			bool hasSelection = buf.GetSelectionBounds (out begin, out end);
+			if (!hasSelection) {
+				if (requireLineSelection)
+					return false;
+				else
+					begin = end = buf.GetIterAtMark (buf.InsertMark);
+			}
 			
 			int y0 = begin.Line, y1 = end.Line;
+			
+			if (requireLineSelection && y0 == y1)
+				return false;
 
 			// If last line isn't selected, it's illogical to indent it.
-			if (end.StartsLine())
+			if (end.StartsLine() && hasSelection && y0 != y1)
 				y1--;
 
-			if (y0 == y1)
-				return false;
-			
 			using (AtomicUndo a = new AtomicUndo (buf)) {
 				if (unindent)
 					UnIndentLines (y0, y1);
 				else
 					IndentLines (y0, y1);
-				SelectLines (y0, y1);
+				if (hasSelection)
+					SelectLines (y0, y1);
 			}
 			
 			return true;
@@ -645,10 +651,13 @@ namespace MonoDevelop.SourceEditor.Gui
 		void SelectLines (int y0, int y1)
 		{
 			Buffer.PlaceCursor (Buffer.GetIterAtLine (y0));
-			
-			TextIter end = Buffer.GetIterAtLine (y1);
-			end.ForwardToLineEnd ();
-			Buffer.MoveMark ("selection_bound", end);
+
+			if (y1 < Buffer.EndIter.Line) {
+				TextIter end = Buffer.GetIterAtLine (y1 + 1);
+				end.LineOffset = 0;
+				Buffer.MoveMark ("selection_bound", end);
+			} else
+				Buffer.MoveMark ("selection_bound", Buffer.EndIter);
 		}
 
 #endregion
