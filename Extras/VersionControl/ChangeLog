@@ -1,3 +1,10 @@
+2007-02-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	  Use the svn_client_cat2 instead of svn_client_cat. This version of
+	  the method can get old revisions of a file even when the file was
+	  moved from another directory. Fixes bug #80318.
+
 2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Diff/Diff.mdp, VersionControl.mds,

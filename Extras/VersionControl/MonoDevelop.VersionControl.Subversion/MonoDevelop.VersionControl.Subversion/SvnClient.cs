@@ -220,7 +220,8 @@ namespace MonoDevelop.VersionControl.Subversion
 				StreamCollector collector = new StreamCollector(stream);
 				IntPtr svnstream = svn_stream_create(IntPtr.Zero, localpool);
 				svn_stream_set_write(svnstream, new svn_readwrite_fn_t(collector.Func));
-				CheckError(svn_client_cat(svnstream, pathorurl, ref revision, ctx, localpool));
+				Rev peg_revision = Rev.Blank;
+				CheckError(svn_client_cat2(svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
 			}
@@ -968,8 +969,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_url_from_path (
 			ref IntPtr url, string path_or_url, IntPtr pool);
 
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_cat (
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_cat2 (
 			IntPtr stream, string path_or_url,
+			ref Rev peg_revision,
 			ref Rev revision,
 			IntPtr ctx, IntPtr pool);
 		
