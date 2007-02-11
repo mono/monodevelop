@@ -114,7 +114,16 @@ namespace MonoDevelop.Ide.Commands
 			
 			if (item is IClass) {
 				txt = GettextCatalog.GetString ("Class {0}", item.Name);
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to base"), new RefactoryOperation (refactorer.GoToBase));
+				IClass cls = (IClass) item;
+				if (cls.BaseTypes.Count > 0) {
+					foreach (IReturnType rt in cls.BaseTypes) {
+						IClass bc = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
+						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
+							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to base"), new RefactoryOperation (refactorer.GoToBase));
+							break;
+						}
+					}
+				}
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
 			}
 			else if (item is IField) {

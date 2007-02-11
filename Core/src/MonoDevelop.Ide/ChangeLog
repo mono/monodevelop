@@ -1,3 +1,9 @@
+2007-02-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show the go to
+	  base command if the selected class does not have a base class, or
+	  we can't jump to it.
+
 2007-02-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Added
