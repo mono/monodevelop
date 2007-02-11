@@ -1,3 +1,8 @@
+2007-02-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Remove nunit references, since nunit is now included in
+	  the add-in.
+
 2007-02-11  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	*Makefile.am: install also nunit.framework.dll, otherwise addin will not start on some systems
