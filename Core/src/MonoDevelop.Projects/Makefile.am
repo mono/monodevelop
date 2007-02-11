@@ -4,13 +4,13 @@ CONFIG = MonoDevelop.Projects.dll.config
   
 
 REFS =  \
-	-r:System \
-	-r:System.Xml \
-	-r:System.Drawing \
-	-r:Mono.Posix \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Posix \
+	-r:System \
+	-r:System.Drawing \
+	-r:System.Xml
 
 FILES =  \
 	MonoDevelop.Projects.Ambience/Ambience.cs \

@@ -153,12 +153,19 @@ namespace MonoDevelop.Projects
 			
 			foreach (ProjectReference pr in ProjectReferences) {
 				DefaultCompilerResult refres = null;
-				if (pr.ReferenceType == ReferenceType.Project && pr.GetReferencedFileNames ().Length == 0) {
-					if (refres == null)
-						refres = new DefaultCompilerResult ();
-					string msg = GettextCatalog.GetString ("Referenced project '{0}' not found in the solution.", pr.Reference);
-					monitor.ReportError (msg, null);
-					refres.AddError (msg);
+				if (pr.ReferenceType == ReferenceType.Project) {
+					// Ignore non-dotnet projects
+					Project p = RootCombine.FindProject (pr.Reference);
+					if (p != null && !(p is DotNetProject))
+						continue;
+
+					if (p == null || pr.GetReferencedFileNames ().Length == 0) {
+						if (refres == null)
+							refres = new DefaultCompilerResult ();
+						string msg = GettextCatalog.GetString ("Referenced project '{0}' not found in the solution.", pr.Reference);
+						monitor.ReportError (msg, null);
+						refres.AddError (msg);
+					}
 				}
 				if (refres != null)
 					return refres;
