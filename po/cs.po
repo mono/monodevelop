@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: monodevelop 0.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-21 20:41+0100\n"
-"PO-Revision-Date: 2007-02-07 00:11+0100\n"
+"PO-Revision-Date: 2007-02-11 16:43+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -106,10 +106,10 @@ msgid "Loading..."
 msgstr "Nahrávám..."
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:13
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
 #: ../Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade.h:1
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:7
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:11
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:218
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
@@ -145,7 +145,7 @@ msgstr "Zaregistrovat on-line repositář"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
 msgid "Select _All"
 msgstr "Vybrat _vše"
 
@@ -197,7 +197,7 @@ msgid "Home"
 msgstr "Domů"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:144
 msgid "Location"
 msgstr "Umístění"
 
@@ -223,15 +223,15 @@ msgid "Open with terminal"
 msgstr "Otevřít v terminálu"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:248
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:313
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:25
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:315
 msgid "Rename"
 msgstr "Přejmenovat"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
 #: ../Extras/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml.h:2
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:115
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:208
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:207
 msgid "Delete"
 msgstr "Smazat"
 
@@ -373,7 +373,7 @@ msgid "Add-in"
 msgstr "Rozšíření"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:53
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:28
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:55
 msgid "Version"
@@ -410,8 +410,8 @@ msgstr "Operace úspěšně dokončena."
 msgid "Steps"
 msgstr "Kroky"
 
-#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:188
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
+#: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs:194
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:75
 msgid "MonoDevelop Preferences"
 msgstr "Nastavení MonoDevelopu"
 
@@ -622,7 +622,7 @@ msgstr "Uzamknout položky doku"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:1
 msgid "   "
-msgstr ""
+msgstr "   "
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:2
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:1
@@ -630,7 +630,7 @@ msgstr ""
 #: ../Extras/NemerleBinding/Nemerle.glade.h:1
 #: ../Extras/VBNetBinding/VB.glade.h:1
 msgid "    "
-msgstr ""
+msgstr "    "
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:3
 msgid "<b>Code generation options</b>"
@@ -811,8 +811,8 @@ msgid "Search in:"
 msgstr "Hledat v:"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
-msgid "Selected references"
-msgstr "Zvolené reference"
+msgid "Selected references:"
+msgstr "Zvolené reference:"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
 msgid "Show _output pad when build starts"
@@ -896,7 +896,7 @@ msgid "_Mark All"
 msgstr "_Označit všechny"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:68
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:47
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
 msgid "_Name:"
 msgstr "_Jméno:"
 
@@ -948,17 +948,9 @@ msgstr "Použít celé názvy typů"
 msgid "_Working Directory:"
 msgstr "Pracovní složka:"
 
-#: ../Core/src/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:28
+#: ../Core/src/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:29
 msgid "Go to Type"
 msgstr "Jít na typ"
-
-#: ../Core/src/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:66
-msgid "gtk-cancel"
-msgstr "gtk-cancel"
-
-#: ../Core/src/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:78
-msgid "gtk-ok"
-msgstr "gtk-ok"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:1
 msgid "# Any single digit"
@@ -981,9 +973,9 @@ msgid "Active Layout"
 msgstr "Aktuální uspořádání"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:6
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:308
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:310
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:113
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:204
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:203
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:1
 msgid "Add"
 msgstr "Přidat"
@@ -1118,535 +1110,539 @@ msgid "Cu_t"
 msgstr "_Vyjmout"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:40
+msgid "Custom command list"
+msgstr "Seznam uživatelských příkazů"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:41
 msgid "Cut the selection"
 msgstr "Vyjmout výběr"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:41
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:42
 msgid "Debug"
 msgstr "Ladit"
 
 #. DebugCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:43
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
 msgid "Debug Application..."
 msgstr "Ladit aplikaci..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:44
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
 msgid "Delete Current layout"
 msgstr "Smazat aktuální uspořádání"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:45
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
 msgid "Delete the selection"
 msgstr "Smazat výběr"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:47
 msgid "Deploy"
 msgstr "Umístit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:47
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:48
 msgid "Deploy target list"
 msgstr "Seznam cílů umístění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:48
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
 msgid "Deploy to"
 msgstr "Umístit do"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:49
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:6
 msgid "Deployment"
 msgstr "Umístění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:50
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
 msgid "Display Options List"
 msgstr "Zobrazit seznam možností"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:51
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
 msgid "Edit References..."
 msgstr "Editovat reference..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:52
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
 msgid "External Tools"
 msgstr "Externí nástroje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:53
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:54
 msgid "F_ind In Files..."
 msgstr "Najít v souborech..."
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:55
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:190
 msgid "Find"
 msgstr "Hledat"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:56
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
 msgid "Find Next Selection"
 msgstr "Najít následující výskyt selekce"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:57
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
 msgid "Find _Next"
 msgstr "Najít _následující"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:58
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
 msgid "Find _Previous"
 msgstr "Najít _předchozí"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:59
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
 msgid "Find _Previous Selection"
 msgstr "Najít _předchozí výskyt selekce"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:60
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
 msgid "Find next"
 msgstr "Najít následující"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:61
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
 msgid "Full Screen"
 msgstr "Celá obrazovka"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:62
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
 msgid "Go to Type..."
 msgstr "Jít na typ..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:63
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
 msgid "GotDotNet"
 msgstr "GotDotNet"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:64
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
 msgid "Group members by access"
 msgstr "Seskupit členy podle přístupu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:65
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
 msgid "Group members by member type"
 msgstr "Seskupit členy podle typu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:66
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
 msgid "Include"
 msgstr "Začlenit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:67
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
 msgid "Include To Project"
 msgstr "Zahrnout do projektu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:68
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
 msgid "Layout"
 msgstr "Uspořádání"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:69
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
 msgid "Layout List"
 msgstr "Seznam uspořádání"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:70
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:71
 msgid "Load/Save"
 msgstr "Načtení/Uložení"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:71
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
 msgid "Local Copy Reference"
 msgstr "Lokální kopie reference"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:72
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:73
 msgid "Mono Project"
 msgstr "Mono projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:75
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
 msgid "MonoDevelop Project Files"
 msgstr "Projekt MonoDevelopu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:76
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
 msgid "MonoDevelop Solution Files"
 msgstr "Sestava MonoDevelopu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:77
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
 msgid "N_ew Project..."
 msgstr "Nový projekt..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:78
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
 msgid "Nested namespaces"
 msgstr "Vnořené adresové prostory"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:79
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
 msgid "New File..."
 msgstr "Nový soubor..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:80
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:367
 msgid "New Folder"
 msgstr "Nová složka"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:81
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:82
 msgid "New _File..."
 msgstr "_Nový soubor..."
 
 #. FileCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:83
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
 msgid "O_pen..."
 msgstr "_Otevřít..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:84
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
 msgid "Open"
 msgstr "Otevřít"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:85
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:86
 msgid "Open With"
 msgstr "Otevřít _s"
 
 #. FileCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:87
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
 msgid "Open file or solution"
 msgstr "Otevřít soubor nebo sestavu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:88
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
 msgid "OpenWithList"
 msgstr "Otevřít _s"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:89
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
 msgid "Options..."
 msgstr "Volby..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:90
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
 msgid "Paste"
 msgstr "Vložit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:91
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
 msgid "Pause"
 msgstr "Pozastavit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:92
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
 msgid "Pre_ferences..."
 msgstr "_Nastavení..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:93
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
 msgid "R_eplace In Files..."
 msgstr "Nahradit v _souborech..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:94
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
 msgid "Re_name"
 msgstr "Přejme_novat"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:95
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:96
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
 msgid "Rebuild Solution"
 msgstr "Znovu sestavit sestavu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:97
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
 msgid "Recent Files"
 msgstr "Nedávné soubory"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
 msgid "Recent Projects"
 msgstr "Nedávné projekty"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:99
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
 msgid "Recent Solu_tions"
 msgstr "Nedávné sestavy"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:100
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
 msgid "Recent _Files"
 msgstr "Nedávné _soubory"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:101
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:102
 msgid "Redo last undone action"
 msgstr "Zopakovat poslední akci vrácenou zpět"
 
 #. RefactoryCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
 msgid "Refactory Operations"
 msgstr "Operace re-faktorizace"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:6
 msgid "Refresh"
 msgstr "Obnovit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:105
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:216
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:215
 msgid "Replace"
 msgstr "Nahradit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
 msgid "Reset Options"
 msgstr "Vrátit na implicitní volby"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
 msgid "Run"
 msgstr "Spustit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
 msgid "Save"
 msgstr "Uložit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
 msgid "Save All"
 msgstr "Uložit vše"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
 msgid "Save _As..."
 msgstr "Uložit _jako"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
 msgid "Save all open files"
 msgstr "Uložit všechny otevřené soubory"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
 msgid "Save the active document"
 msgstr "Uložit aktivní dokument"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
 msgid "Set As Startup Project"
 msgstr "Nastavit jako projekt pro spouštění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
 msgid "Show All Files"
 msgstr "Zobrazit všechny soubory"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
 msgid "Show project structure"
 msgstr "Zobrazit strukturu projektu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
 msgid "Show public members only"
 msgstr "Zobrazovat pouze veřejné členy"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
 msgid "Solution"
 msgstr "Sestava"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
 msgid "Standard"
 msgstr "Standardní"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
 msgid "Step Into"
 msgstr "Vstoupit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
 msgid "Step Out"
 msgstr "Vyskočit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
 msgid "Step Over"
 msgstr "Přeskočit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:65
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:60
 msgid "Stop"
 msgstr "Zastavit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
 msgid "Stop current build or application execution"
 msgstr "Zastavit aktuální proces překladu nebo sestavení"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
 msgid "Switch Active Layout"
 msgstr "Přepnout aktivní rozložení"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:62
 msgid "Task List"
 msgstr "Seznam úloh"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
 msgid "Toggle Breakpoint"
 msgstr "Přepnout Breakpoint"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
 msgid "Tool List"
 msgstr "Seznam nástrojů"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
 msgid "Toolbars"
 msgstr "Lišty nástrojů"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
 msgid "Tools"
 msgstr "Nástroje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
 msgid "Undo last action"
 msgstr "Vrátit poslední akci zpět"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
 msgid "User Tasks"
 msgstr "Úkoly"
 
 #. ViewCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
 msgid "View List"
 msgstr "Seznam pohledů"
 
 #. <DialogPanel id = "SelectCulture"
 #. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 #. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
 msgid "Visual Style"
 msgstr "Vizuální styl"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
 msgid "Window List"
 msgstr "Seznam dokumentů"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
 msgid "[!] Any one character not in the set"
 msgstr "[!] - Jakýkoliv znak, který není v kolekci"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
 msgid "[] Any one character in the set"
 msgstr "[] - Jakýkoliv znak v kolekci"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
 msgid "_About..."
 msgstr "O _aplikaci..."
 
 #. ToolCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
 msgid "_Add-in Manager..."
 msgstr "Správa rozšíření..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:20
 msgid "_Advanced"
 msgstr "Pokročilé"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
 msgid "_Clear Recent Files"
 msgstr "_Vymazat seznam"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
 msgid "_Clear Recent Solutions"
 msgstr "_Vymazat seznam"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
 msgid "_Close File"
 msgstr "_Zavřít soubor"
 
 #. EditCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
 msgid "_Copy"
 msgstr "_Kopírovat"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
 msgid "_Delete"
 msgstr "S_mazat"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
 msgid "_Delete Current Layout"
 msgstr "Smazat aktuální uspořádání"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
 msgid "_Edit"
 msgstr "_Upravit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
 msgid "_File"
 msgstr "_Soubor"
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
 msgid "_Find..."
 msgstr "_Najít..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
 msgid "_Full Screen"
 msgstr "_Celá obrazovka"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
 msgid "_Indent Selection"
 msgstr "Zvětšit odsazení"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
 msgid "_Layouts"
 msgstr "_Uspořádání"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
 msgid "_Lowercase Selection"
 msgstr "Převést výběr na malá písmena"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
 msgid "_New Layout..."
 msgstr "_Nové uspořádání..."
 
 #. WindowCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
 msgid "_Next Window"
 msgstr "_Následující dokument"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
 msgid "_Paste"
 msgstr "V_ložit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
 msgid "_Previous Window"
 msgstr "_Předchozí dokument"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
 msgid "_Project"
 msgstr "_Projekt"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
 msgid "_Quit"
 msgstr "_Konec"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
 msgid "_Redo"
 msgstr "Zn_ovu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
 msgid "_Reload File"
 msgstr "Načíst soubor znovu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:172
 msgid "_Remove From Project"
 msgstr "Odstranit z projektu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:172
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:173
 msgid "_Replace..."
 msgstr "Na_hradit"
 
 #. HelpCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:174
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:175
 msgid "_Tip of the Day..."
 msgstr "Dnešní _tip"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:175
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:176
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
 msgid "_Tools"
 msgstr "Nás_troje"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:176
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:177
 msgid "_Uncomment Line(s)"
 msgstr "O_dkomentovat řádek(-ky)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:177
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:178
 msgid "_Undo"
 msgstr "_Zpět"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:178
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:179
 msgid "_Unindent Selection"
 msgstr "Zmenšit odsazení"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:179
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:180
 msgid "_Uppercase Selection"
 msgstr "Převést výběr na _velká písmena"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:180
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:181
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:181
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:182
 msgid "_Web"
 msgstr "_Web"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:182
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:183
 msgid "_Window"
 msgstr "_Dokumenty"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:183
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:184
 msgid "_Word Count..."
 msgstr "Počet _slov..."
 
@@ -1693,42 +1689,42 @@ msgstr "Vymazat seznam"
 msgid "load solution {0}"
 msgstr "Načíst sestavu {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:157
 msgid "Resume"
 msgstr "Pokračovat"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:232
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:246
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:248
 #, csharp-format
 msgid "Build {0}"
 msgstr "Sestavit {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:234
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:236
 #, csharp-format
 msgid "Build Solution {0}"
 msgstr "Sestavit sestavu {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:236
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:238
 #, csharp-format
 msgid "Build Project {0}"
 msgstr "Sestavit projekt {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:275
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:283
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:285
 #, csharp-format
 msgid "Rebuild {0}"
 msgstr "Znovu sestavit {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:343
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
 #, csharp-format
 msgid "Clean {0}"
 msgstr "Vyčistit {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:412
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:414
 msgid "(default)"
 msgstr "(výchozí)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:418
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:420
 msgid "No deploy targets available"
 msgstr "Nejsou definovány žádné cíle umístění"
 
@@ -1745,45 +1741,45 @@ msgstr "Najít reference"
 msgid "Class {0}"
 msgstr "Třída {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:122
 msgid "Go to base"
 msgstr "Jít na bázovou třídu"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
 msgid "Find derived classes"
 msgstr "Hledat odvozené třídy"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:130
 #, csharp-format
 msgid "Field {0} : {1}"
 msgstr "Pole {0} : {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:124
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
 #, csharp-format
 msgid "Property {0} : {1}"
 msgstr "Vlastnost {0} : {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:136
 #, csharp-format
 msgid "Event {0}"
 msgstr "Událost {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
 #, csharp-format
 msgid "Method {0}"
 msgstr "Metoda {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:140
 #, csharp-format
 msgid "Indexer {0}"
 msgstr "Indexer {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:142
 #, csharp-format
 msgid "Parameter {0}"
 msgstr "Parametr {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:147
 #, csharp-format
 msgid "Variable {0}"
 msgstr "Proměnná {0}"
@@ -1863,7 +1859,7 @@ msgstr "PŘE"
 msgid "Assemblies"
 msgstr ".Net Asembly"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:72
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:77
 #, csharp-format
 msgid "File '{0}' is not a valid .Net Assembly"
 msgstr "Soubor '{0}' není platnou .Net Asembly"
@@ -1945,13 +1941,13 @@ msgstr "Přidat nebo _odstranit"
 msgid "Solution Workbench"
 msgstr "Systém Sestav"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:34
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:129
-msgid "Reference Name"
-msgstr "Název reference"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:42
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:173
+msgid "Assembly"
+msgstr "Asembly"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:47
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:172
 msgid "Package"
 msgstr "Balíček"
 
@@ -1967,9 +1963,9 @@ msgid "Can't load bitmap {0} using default"
 msgstr "Nemohu načíst bitmapu {0}, použiji výchozí"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:484
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:8
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:83
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:19
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:12
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:85
 msgid "Name:"
 msgstr "Jméno:"
 
@@ -2024,7 +2020,7 @@ msgid "Solution Location"
 msgstr "Složka sestavy"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:174
 msgid "Project"
 msgstr "Projekt"
 
@@ -2032,7 +2028,7 @@ msgstr "Projekt"
 msgid "Directory"
 msgstr "Složka"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:141
 #, csharp-format
 msgid ""
 "(Projects referencing '{0}' are not shown,\n"
@@ -2099,25 +2095,25 @@ msgstr "Neplatný název složky: {0}"
 msgid "Invalid file mask: {0}"
 msgstr "Neplatná maska souboru: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:134
+msgid "Reference"
+msgstr "Reference"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:143
 msgid "Type"
 msgstr "Typ"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:152
 msgid "Packages"
 msgstr "Balíčky"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:153
 msgid "Projects"
 msgstr "Projekty"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:154
 msgid ".Net Assembly"
 msgstr ".Net Asembly"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:158
-msgid "Assembly"
-msgstr "Asembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
 msgid "Released under the GNU General Public license."
@@ -2184,7 +2180,7 @@ msgstr "Počet slov"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:246
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/CommentTasksView.cs:98
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:40
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:160
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:166
 msgid "File"
 msgstr "Soubor"
 
@@ -2540,7 +2536,7 @@ msgstr "Operace ukládání selhala."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:226
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:342
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1042
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1046
 msgid "Copying files..."
 msgstr "Kopíruji soubory..."
 
@@ -2709,67 +2705,67 @@ msgstr "Ukládám..."
 msgid "File not found: {0}"
 msgstr "Soubor nenalezen: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:331
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:330
 msgid "Solution loaded."
 msgstr "Sestava načtena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:398
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:397
 msgid "Solution saved."
 msgstr "Sestava uložena."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:400
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:413
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:399
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:412
 msgid "Save failed."
 msgstr "Ukládání selhalo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:411
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:410
 msgid "Project saved."
 msgstr "Projekt uložen."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:499
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:522
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:498
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:521
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "Soubor '{0}' nemohl být načten."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:514
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:513
 msgid "Add to Solution"
 msgstr "Přidat do sestavy"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:715
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:714
 msgid "Deploy Output"
 msgstr "Výstup umístění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:755
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:788
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:754
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:787
 msgid "Execution failed."
 msgstr "Spuštění selhalo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:805
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:864
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:804
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:868
 msgid "No runnable executable found."
 msgstr "Nebyla nalezena binárka ke spuštění."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:849
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:853
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "Soubor {0} nelze zkompilovat."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:900
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:904
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:972
 msgid "Build failed."
 msgstr "Sestavení se nezdařilo."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:918
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:922
 msgid "Save changed files?"
 msgstr "Uložit změněné soubory?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:950
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:954
 msgid "---------------------- Done ----------------------"
 msgstr "-------------------- Dokončeno --------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:958
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:403
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:962
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:412
 #, csharp-format
 msgid "{0} error"
 msgid_plural "{0} errors"
@@ -2777,8 +2773,8 @@ msgstr[0] "{0} chyba"
 msgstr[1] "{0} chyby"
 msgstr[2] "{0} chyb"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:959
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:404
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:963
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:413
 #, csharp-format
 msgid "{0} warning"
 msgid_plural "{0} warnings"
@@ -2786,42 +2782,42 @@ msgstr[0] "{0} upozornění"
 msgstr[1] "{0} upozornění"
 msgstr[2] "{0} upozornění"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:962
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:966
 msgid "Build successful."
 msgstr "Sestavení úspěšně ukončeno."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:964
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:966
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:970
 msgid "Build: "
 msgstr "Sestavení:"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1014
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1018
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "Nemohu získat žádný soubor z '{0}'."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1026
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1030
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "Nemohu vytvořit složku '{0}'"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1037
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1041
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "Složka '{0}' nemohla být smazána."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1060
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1064
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "Soubor '{0}' nemohl být vytvořen."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:108
 #, csharp-format
 msgid "Error : {0}"
 msgstr "Chyba: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:114
 #, csharp-format
 msgid " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>{1,-3}</span>  ch <span font_family='fixed'>{2,-3}</span> "
 msgstr " ř <span font_family='fixed'>{0,-4}</span>  sl <span font_family='fixed'>{1,-3}</span>  zn <span font_family='fixed'>{2,-3}</span> "
@@ -3013,7 +3009,7 @@ msgid "File {0} could not be written."
 msgstr "Soubor '{0}' nemohl být smazán."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:67
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:160
 #, csharp-format
 msgid "The file '{0}' already exists in the project."
 msgstr "Soubor '{0}' již v projektu existuje."
@@ -3100,220 +3096,204 @@ msgid "Empty XML File"
 msgstr "Prázdný XML soubor"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:2
-msgid "<b>Execute scripts </b>"
-msgstr "<b>Skripty pro spuštění</b>"
-
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
 msgid "<b>Include</b>"
 msgstr "<b>Zahrnout</b>"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:4
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:3
 msgid "<b>On Project Load</b>"
 msgstr "<b>Při otvírání projektu</b>"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:5
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:4
 msgid "<b>Output Directory</b>"
 msgstr "<b>Složka výstupu</b>"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:6
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:5
 msgid "<b>Output</b>"
 msgstr "<b>Výstup</b>"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:7
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:6
 msgid "<b>Project Information</b>"
 msgstr "<b>Informace o projektu</b>"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:7
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:85
 msgid "Action"
 msgstr "Akce"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
 msgid "Add New Deploy Target"
 msgstr "Přidat nový cíl umístění"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
 msgid "Are you sure you want to delete this configuration?"
 msgstr "Opravdu chcete smazat tuto konfiguraci?"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
 msgid "Assembly _name:"
 msgstr "Název asembly:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
 msgid "Automatically _include found files"
 msgstr "Automaticky _zahrnovat nalezené soubory"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
 msgid "Compilation _target"
 msgstr "Cíl kompilace"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
 msgid "Create configurations for all solution items"
 msgstr "Vytvořit konfigurace ve všech položkách sestavy"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
 msgid "Delete Configuration"
 msgstr "Smazat konfiguraci"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
 msgid "Delete also configurations in solution items"
 msgstr "Smazat konfigurace ve všech položkách sestavy"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
 msgid "Deployment Targets"
 msgstr "Cíle umístění"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
 msgid "Edit Deploy Target"
 msgstr "Editovat cíl umístění"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:19
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
 msgid "Enable _viewstate"
 msgstr "Povolit zobrazení stavu"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:20
-msgid "Execute co_mmand:"
-msgstr "Příkaz spouštění:"
-
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
 msgid "New Configuration"
 msgstr "Nová konfigurace"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
 msgid "New name:"
 msgstr "Nové jméno:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
 msgid "Output _path:"
 msgstr "Umístění výstu_pu:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:25
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
 msgid "Paramet_ers:"
 msgstr "Param_etry:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
 msgid "Pause _console output"
 msgstr "Pozastavit výstup konzole"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
 msgid "Rename Configuration"
 msgstr "Přejmenovat konfiguraci"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
 msgid "Rename configurations in all solution items"
 msgstr "Přejmenovat konfigurace ve všech položkách sestavy"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
 msgid "Run on e_xternal console"
 msgstr "Spustit v e_xterní konzoli"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
 msgid "Runtime _version:"
 msgstr "_Verze runtime:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
 msgid "Search for new _files on load"
 msgstr "Hledat nové _soubory během načítání"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
 msgid "Select a target configuration for each solution item:"
 msgstr "Zvolte cílovou konfiguraci pro každou položku sestavy:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
 msgid "Select deploy script"
 msgstr "Zvolit skript umístění"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
 msgid "Select output directory"
 msgstr "Vybrat adresář pro výstup"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
 msgid "Select output path"
 msgstr "Vybrat adresář pro výstup"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
 msgid "Select target location"
 msgstr "Vybrat umístění cíle"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
 msgid "Set as Default"
 msgstr "Nastavit jako výchozí"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
 msgid "Target type:"
 msgstr "Typ cíle:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
 msgid "With _scriptfile"
 msgstr "S pomocí skriptu"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
-msgid "_After build:"
-msgstr "Po sestavení:"
-
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
-msgid "_Before build:"
-msgstr "Před sestavením:"
-
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:43
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
 msgid "_Deploy target:"
 msgstr "Cíl umístění:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
 msgid "_Description:"
 msgstr "_Popis:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
 msgid "_Include files in compile run"
 msgstr "_Zahrnovat soubory při překladu"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
 msgid "_Multiple Startup Project"
 msgstr "Při spuštění více projektová konfigurace"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:48
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
 msgid "_Project Files"
 msgstr "Projektové soubory"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:49
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
 msgid "_Single Startup Project"
 msgstr "Při spuštění jedno projektová konfigurace"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:50
+#: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
 msgid "_Version:"
 msgstr "_Verze:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:44
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:46
 msgid "Command:"
 msgstr "Příkaz:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:65
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:69
 msgid "Arguments:"
 msgstr "Argumenty:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:86
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:92
 msgid "Run in external console"
 msgstr "Spustit v externí konzoli"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:97
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:104
 msgid "Dispose console after running"
 msgstr "Zavřít konzoli po skončení běhu programu"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs:46
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs:49
 msgid "Target:"
 msgstr "Cíl:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:42
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:44
 msgid "Directory prefix:"
 msgstr "Prefix složky:"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:61
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:65
 msgid "Application name (to use as subdirectory name in the installation prefix):"
 msgstr "Název aplikace (bude použit jako název podsložky v prefixu instalace):"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs:36
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:357
+#: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs:38
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:359
 msgid "Target directory:"
 msgstr "Adresář cíle:"
 
@@ -3330,12 +3310,16 @@ msgid "Compile"
 msgstr "Překlad"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:64
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:65
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
 msgid "Configurations"
 msgstr "Konfigurace"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:6
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
+msgid "Custom Commands"
+msgstr "Uživatelské příkazy"
+
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
 #: ../Extras/BooBinding/BooBinding.addin.xml.h:4
 #: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
 #: ../Extras/JavaBinding/JavaBinding.addin.xml.h:2
@@ -3344,15 +3328,15 @@ msgstr "Konfigurace"
 msgid "General"
 msgstr "Základní"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:8
 msgid "Project options"
 msgstr "Možnosti projektu"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:8
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:9
 msgid "Solution Information"
 msgstr "Informace o sestavě"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:9
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:10
 msgid "Startup Properties"
 msgstr "Nastavení spouštění"
 
@@ -3386,8 +3370,8 @@ msgstr "Přerušit umístění"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:72
 #, csharp-format
-msgid "The target file {0} already exists, and was last modified at {1}. The replacement file, {2}, was modified on {2}. What would you like to do?"
-msgstr "Cílový soubor {0} již existuje a byl naposledy modifikován {1}.  Soubor k nahrazení {2},  byl modifikován {2}. Jak chcete situaci řešit?"
+msgid "The target file {0} already exists, and was last modified at {1}. The replacement file, {2}, was modified on {3}. What would you like to do?"
+msgstr "Cílový soubor {0} již existuje a byl naposledy modifikován {1}.  Soubor k nahrazení, {2},  byl modifikován {3}. Jak chcete situaci řešit?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
 msgid "Solution Options"
@@ -3440,7 +3424,7 @@ msgstr "Položka"
 #. tell the user we encountered and worked around an issue
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:105
 msgid "The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."
-msgstr ""
+msgstr "Definice spouštění pro tuto sestavu byly neplatné. Nové prázdné definice byly vytvořeny."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
 #, csharp-format
@@ -3461,17 +3445,17 @@ msgstr "Skript cíle umístění neexistuje"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:72
 msgid "There are no deployment handlers available for this solution item."
-msgstr ""
+msgstr "Nejsou k dispozici žádné obsluhy pro umístění této položky sestavy."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:123
 msgid "(default target)"
 msgstr "(výchozí cíl)"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:72
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:60
 msgid "Invalid assembly name specified"
 msgstr "Neplatný název asembly"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:77
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:65
 msgid "Invalid output directory specified"
 msgstr "Neplatná složka výstupu"
 
@@ -3479,19 +3463,19 @@ msgstr "Neplatná složka výstupu"
 msgid "Project Options"
 msgstr "Možnosti projektu"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:70
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:184
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:219
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:71
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:186
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:221
 msgid "(Active)"
 msgstr "(Aktivní)"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:314
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:7
 msgid "Remove"
 msgstr "Odstranit"
 
-#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
+#: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:318
 msgid "Set as active"
 msgstr "Označit jako aktivní"
 
@@ -3533,16 +3517,16 @@ msgstr "Re-faktoruji projekt: {0}"
 msgid "Could not look for references in file '{0}': {1}"
 msgstr "Nepodařilo se nalézt zdroje v souboru '{0}': {1}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:625
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:638
 msgid "The solution does not have an active configuration."
 msgstr "Sestava nemá žádnou aktivní konfiguraci."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:629
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:650
 #, csharp-format
 msgid "Building Solution {0}"
 msgstr "Sestavuji sestavu: {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:636
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:657
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
@@ -3652,24 +3636,19 @@ msgstr "Nezdařilo se načtení sestavy: {0}"
 msgid "Generating database"
 msgstr "Vytvářím databázi"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:380
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:343
 #, csharp-format
-msgid "Building Project: {0} Configuration: {1}"
-msgstr "Sestavuji projekt: {0} Konfigurace: {1}"
+msgid "Building Project: {0} ({1})"
+msgstr "Sestavuji projekt: {0} ({1})"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:406
-msgid "Build complete -- "
-msgstr "Sestavení dokončeno --"
-
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:476
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:497
-#, csharp-format
-msgid "Executing: {0}"
-msgstr "Spouštím: {0}"
-
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:736
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:702
 msgid "Performing main compilation..."
 msgstr "Provádím hlavní kompilaci..."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:415
+msgid "Build complete -- "
+msgstr "Sestavení dokončeno --"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:138
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:151
@@ -3831,7 +3810,7 @@ msgstr "XSP web server"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:1
 #: ../Extras/CSharpBinding/CSharp.glade.h:1
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:92
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:93
 #: ../Extras/JavaBinding/Java.glade.h:1
 #: ../Extras/NemerleBinding/Nemerle.glade.h:2
 #: ../Extras/VBNetBinding/VB.glade.h:2
@@ -3853,7 +3832,7 @@ msgstr "<b>Bezpečnost</b>"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:5
 msgid "Autogenerate CodeBehind members before compilation"
-msgstr ""
+msgstr "Automaticky generovat CodeBehind členy před kompilací."
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:6
 msgid "Certificate location:"
@@ -3894,35 +3873,35 @@ msgstr "Pozastavit výstup konzole"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebControl.xft.xml.h:1
 msgid "Creates an ASP.NET user control with a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET uživatelský prvek s CodeBehind třídou."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebControl.xft.xml.h:2
 msgid "User Control with CodeBehind"
-msgstr ""
+msgstr "Uživatelský prvek s CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebForm.xft.xml.h:1
 msgid "Creates an ASP.NET Web Form with a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET webový formulář s CodeBehind třídou."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebForm.xft.xml.h:2
 msgid "Web Form with CodeBehind"
-msgstr ""
+msgstr "Webový formulář s CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebHandler.xft.xml.h:1
 msgid "Creates an ASP.NET Web Handler with a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET webový handler s CodeBehind třídou."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebHandler.xft.xml.h:2
 msgid "Web Handler with CodeBehind"
-msgstr ""
+msgstr "Webový handler s CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebService.xft.xml.h:1
 msgid "Creates an ASP.NET web service with a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET webovou službu s CodeBehind třídou."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebService.xft.xml.h:2
 msgid "Web Service with CodeBehind"
-msgstr ""
+msgstr "Webová služba s CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebControl.xft.xml.h:1
 msgid "Creates an empty ASP.NET user control."
@@ -3959,19 +3938,19 @@ msgstr "Webová služba"
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithCodeBehind.xft.xml.h:1
 msgid "Creates an ASP.NET MasterPage with a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET hlavní stránku s CodeBehind třídou."
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithCodeBehind.xft.xml.h:2
 msgid "MasterPage with CodeBehind"
-msgstr ""
+msgstr "Hlavní stránka s CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithNoCodeBehind.xft.xml.h:1
 msgid "Creates an ASP.NET MasterPage without a CodeBehind class."
-msgstr ""
+msgstr "Vytvoří ASP.NET hlavní stránku bez CodeBehind třídy."
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithNoCodeBehind.xft.xml.h:2
 msgid "MasterPage without CodeBehind"
-msgstr ""
+msgstr "Hlavní stránka  bez CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/WebApplication.xpt.xml.h:1
 msgid "Creates a new ASP.NET Web Application project."
@@ -4152,6 +4131,8 @@ msgid ""
 "Error while trying to invoke '{0}' to compile resource '{1}' :\n"
 " {2}"
 msgstr ""
+"Volání '{0}' skončilo neúspěšně, nepodařilo se zkompilovat zdroj '{1}' :\n"
+" {2}"
 
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:227
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:230
@@ -4168,78 +4149,78 @@ msgstr ""
 "{2}\n"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:2
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:263
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:281
 #: ../Extras/JavaBinding/Java.glade.h:4
 #: ../Extras/VBNetBinding/VB.glade.h:3
 msgid "<b>Warnings</b>"
 msgstr "<b>Varování</b>"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:3
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:337
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:363
 #: ../Extras/VBNetBinding/VB.glade.h:4
 msgid "Allow '_unsafe' code"
 msgstr "Povolit '_unsafe' kód"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:4
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:194
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:207
 #: ../Extras/JavaBinding/Java.glade.h:6
 msgid "Compile _Target:"
 msgstr "Cíl kompilace:"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:5
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:204
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:218
 #: ../Extras/JavaBinding/Java.glade.h:8
 msgid "Define S_ymbols:"
 msgstr "Definovat _symboly:"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:6
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:373
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:402
 #: ../Extras/JavaBinding/Java.glade.h:9
 msgid "Emit _debugging information"
 msgstr "Generování informací la_dění"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:7
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:349
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:376
 #: ../Extras/JavaBinding/Java.glade.h:10
 #: ../Extras/VBNetBinding/VB.glade.h:7
 msgid "Enable _optimizations"
 msgstr "_Optimalizovat kód"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:8
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:385
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:415
 #: ../Extras/VBNetBinding/VB.glade.h:8
 msgid "Generate _xml documentation"
 msgstr "Generovat _xml dokumentaci"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:9
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:361
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:389
 #: ../Extras/JavaBinding/Java.glade.h:15
 #: ../Extras/VBNetBinding/VB.glade.h:9
 msgid "Treat warnings as _errors"
 msgstr "Považovat varování _za chyby"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:10
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:325
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:350
 #: ../Extras/VBNetBinding/VB.glade.h:10
 msgid "_Generate overflow checks"
 msgstr "_Generovat testy přetečení"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:11
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:216
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:231
 #: ../Extras/JavaBinding/Java.glade.h:16
 msgid "_Main Class:"
 msgstr "_Hlavní třída:"
 
 #: ../Extras/CSharpBinding/CSharp.glade.h:12
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:295
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:318
 msgid "_Warning Level:"
 msgstr "Úroveň varo_vání:"
 
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:172
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:183
 msgid "Compiler Code Page:"
 msgstr "Kódová stránka kompilace:"
 
-#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:183
+#: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:195
 msgid "Win32 Icon:"
 msgstr "Win32 ikona:"
 
@@ -4625,7 +4606,7 @@ msgstr "Soubory autotools již pro tuto sestavu existují. Přejete si je nahrad
 msgid "Autotools Output"
 msgstr "Výstup autotools"
 
-#: ../Extras/MonoDevelop.Autotools/CustomMakefile.cs:240
+#: ../Extras/MonoDevelop.Autotools/CustomMakefile.cs:251
 #, csharp-format
 msgid "Makefile variable {0} not found in the file."
 msgstr "Makefile proměnná {0} nebyla v souboru nalezena."
@@ -4661,7 +4642,7 @@ msgstr "Proměnná složky výstupu:"
 #. FIXME: ResetAll  : use for new data, use for new makefile
 #. Load values
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:414
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:55
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:54
 msgid "Makefile"
 msgstr "Makefile"
 
@@ -4739,185 +4720,179 @@ msgstr "Jméno projektu:"
 msgid "Please enter a valid project name"
 msgstr "Prosím vepište platné jméno projektu"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:428
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:449
 msgid "Internal Error: ownerProject not set"
 msgstr "Interní chyba: majitel projektu není nastaven"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:436
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:457
 #, csharp-format
 msgid "Invalid makefile : {0}. Disabling Makefile integration."
 msgstr "Neplatný Makefile : {0}. Zakazuji jeho integraci."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:445
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:466
 msgid "Enable Makefile integration"
 msgstr "Povolit integraci Makefile"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:446
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:467
 msgid "Enabling Makefile integration. You can choose to have either the Project or the Makefile be used as the master copy. This is done only when enabling this feature. After this, the Makefile will be taken as the master copy."
 msgstr "Povolit integraci Makefile. Zvolte jestli projektový soubor či Makefile bude použito jako iniciální zdroj pro synchronizaci. Ta bude prováděna pouze pokud ji povolíte. Poté bude jako zdroj brán Makefile."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:466
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:489
 #, csharp-format
 msgid "Error trying to read configure.in ({0}) for project {1} : {2} "
 msgstr "Vyskytla se chyba při načítání configure.in ({0}) pro projekt {1} : {2} "
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:510
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:557
 #, csharp-format
 msgid "Error in loading references : {0}. Skipping syncing of references"
 msgstr "Vyskytla se chyba při načítání referencí:  {0}. Vynechávám jejich aktualizaci."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:537
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:572
 #, csharp-format
 msgid "Error in loading files for {0}. Skipping."
 msgstr "Vyskytla se chyba při načítání souborů pro {0}.  Vynechávám."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:553
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:557
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:588
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:592
 #, csharp-format
 msgid "Makefile variable '{0}' not found. Skipping syncing of {1} File list for project {2}."
 msgstr "Proměnná Makefile '{0}' nebyla nalezena. Vynechávám synchronizaci{1} souborů pro projekt {2}."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:604
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:608
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:636
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:640
 #, csharp-format
 msgid "Files in variable '{0}' contain variables which cannot be parsed without path to the configure.in being set. Ignoring such files."
 msgstr "Soubory v proměnné '{0}' obsahují proměnné, které nemohou být načteny bez nastavené cesty ke 'configure.in'. Vynechávám tyto soubory."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:659
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:663
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:694
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:698
 #, csharp-format
 msgid "Makefile variable '{0}' not found. Skipping syncing of {1} all references for project {2}."
 msgstr "Proměnná Makefile '{0}' nebyla nalezena. Vynechávám synchronizacivšech {1} referencí pro projekt {2}."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:693
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:717
 #, csharp-format
 msgid "Unable to parse reference '{0}', reason : {1}. Ignoring."
 msgstr "Nezdařilo se přečíst referenci '{0}', důvod: {1}. Ignoruji."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:812
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:815
-#, csharp-format
-msgid "Invalid assembly reference : {0}. Ignoring."
-msgstr "Neplatná assembly reference: {0}. Ignoruji."
-
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1032
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1034
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1124
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1126
 #, csharp-format
 msgid "Makefile variable '{0}' not found. Skipping writing of {1} Files to the makefile."
 msgstr "Proměnná Makefile '{0}' nebyla nalezena. Vynechávám zápis{1} souborů do Makefile."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1078
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1081
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1176
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1179
 #, csharp-format
 msgid "Makefile variable '{0}' not found. Skipping syncing of {1} references."
 msgstr "Proměnná Makefile '{0}' nebyla nalezena. Vynechávám synchronizaci{1} referencí."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1179
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1184
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1277
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1282
 #, csharp-format
 msgid "A reference to package '{0}' is being emitted, as atleast one assembly from the package is used in the project. But it is not specified in the configure.in, you might need to add it for successfully building on other systems."
-msgstr ""
+msgstr "Reference balíčku '{0}' je zapsána, alespoň jedna asembly z balíčku je použita v projektu, ale není specifikována v configure.in. Mohla by být potřeba pro úspěšné sestavení na jiných systémech."
 
 #. FIXME: Exception type?
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1244
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1343
 #, csharp-format
 msgid "Unable to find configure.in at {0}"
 msgstr "Nepodařilo se najít 'configure.in' v {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:180
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:179
 #, csharp-format
 msgid "Specified makefile is invalid: {0}"
 msgstr "Vybraný Makefile je neplatný: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:188
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:187
 #, csharp-format
 msgid "Path specified for configure.in is invalid: {0}"
 msgstr "Daná cesta k configure.in je neplatná: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:199
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:198
 msgid "'Sync References' is enabled, but one of Reference variables is not set. Please correct this."
 msgstr "Synchronizace referencí je povolena, ale žádné proměnné referencí nebylynastaveny. Prosím sjednejte nápravu."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:222
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:221
 msgid "Updating project"
 msgstr "Aktualizuji projekt"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:234
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:236
 #, csharp-format
 msgid "File variable ({0}) is set for sync'ing, but no valid variable is selected.Either disable the sync'ing or select a variable name."
-msgstr ""
+msgstr "Proměnná souboru ({0}) je označena pro synchronizaci, ale není zvolena platná proměnná. Zvolte jméno proměnné nebo zakažte synchronizaci."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:450
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:452
 msgid "Error while trying to read the specified Makefile"
 msgstr "Při načítání proměnných z vybraného Makefile se vyskytla chyba"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:458
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:460
 msgid "No variables found in the selected Makefile"
 msgstr "Ve vybraném Makefile nebyly nalezeny žádné proměnné"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:59
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:61
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:64
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:66
 #, csharp-format
 msgid "Error resolving Makefile based project references for solution {0}"
-msgstr ""
+msgstr "Nepodařilo se vyřešit reference Makefile pro sestavu {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:75
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:81
 msgid "Updating project from Makefile"
 msgstr "Aktualizuji projekt z Makefile"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:83
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:89
 #, csharp-format
 msgid "Error loading Makefile for project {0}"
 msgstr "Při načítání Makefile pro projekt {0} se vyskytla chyba"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:109
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
 #, csharp-format
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "Vyskytla se chyba při ukládání Makefile ({0}) projektu {1}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:138
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:141
 #, csharp-format
 msgid "Building {0}"
 msgstr "Sestavuji {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:164
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:167
 msgid "Project could not be built: "
 msgstr "Projekt nemohl být sestaven:"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:177
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:180
 msgid "Build failed. See Build Output panel."
 msgstr "Sestavení se nezdařilo. Více naleznete v panelu seznamu chyb."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:299
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:303
 msgid "Cleaning project"
 msgstr "Čistím projekt"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:313
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:317
 #: ../Extras/MonoDevelop.Autotools/SolutionDeployer.cs:150
 #: ../Extras/MonoDevelop.Autotools/SolutionDeployer.cs:168
 #, csharp-format
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Vyskytla se nespecifikovaná chyba při vykonávání '{0}'"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:319
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:323
 msgid "Project could not be cleaned: "
 msgstr "Projekt nemohl být vyčištěn:"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:326
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:330
 msgid "Project successfully cleaned"
 msgstr "Projekt úspěšně vyčištěn"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:344
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:348
 #, csharp-format
 msgid "Executing {0}"
 msgstr "Spouštím {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:355
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:359
 #, csharp-format
 msgid "The application exited with code: {0}"
 msgstr "Aplikace ukončila běh s návratovou hodnotou: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:358
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:362
 msgid "Project could not be executed: "
 msgstr "Projekt nemohl být vynechán:"
 
@@ -4945,7 +4920,7 @@ msgstr "Projekt nelze umístit."
 #. handled elsewhere
 #: ../Extras/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:123
 #, csharp-format
-msgid "Project Reference Type {0} not support yet"
+msgid "Project Reference Type {0} not supported yet"
 msgstr "Typ projektové reference {0} není zatím podporován"
 
 #: ../Extras/MonoDevelop.Autotools/SimpleProjectMakefileHandler.cs:216
@@ -5028,11 +5003,11 @@ msgstr "Sestava není umístielná."
 
 #: ../Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs:73
 msgid "Child projects / solutions cannot be in the same directory as their parent"
-msgstr ""
+msgstr "Vnořené projekty/sestavy nemohou být ve stejné složce jako rodičovská sestava."
 
 #: ../Extras/MonoDevelop.Autotools/SolutionMakefileHandler.cs:76
 msgid "Child projects / solutions must be in sub-directories of their parent"
-msgstr ""
+msgstr "Vnořené projekty/sestavy nemohou být v podsložce rodičovské sestavy."
 
 #: ../Extras/MonoDevelop.Autotools/SolutionOptionsPanel.cs:52
 msgid "Create pkg-config files for libraries"
@@ -5062,11 +5037,11 @@ msgstr "Vlastnosti"
 
 #: ../Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml.h:2
 msgid "Show CodeBehind classes with parent files"
-msgstr ""
+msgstr "Zobrazit třídy s CodeBehind k zdrojovým souborům"
 
 #: ../Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml.h:3
 msgid "Show CodeBehind files"
-msgstr ""
+msgstr "Zobrazit soubory s CodeBehind"
 
 #: ../Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml.h:4
 msgid "Toolbox"
@@ -5093,78 +5068,107 @@ msgid "Install"
 msgstr "Instalovat"
 
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:1
+msgid "<b>Internationalization</b>"
+msgstr "<b>Zmezinárodnění</b>"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:2
 msgid "Also remove the file '{0}'"
 msgstr "Také odebrat soubor '{0}'"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:2
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:3
 msgid "Bind Widget Design"
 msgstr "Navázat widget na proměnou"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:3
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:4
 msgid "Bind the design to an existing class"
 msgstr "Navázat návrh na již existující třídu"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:4
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:5
 msgid "Create a new class"
 msgstr "Vytvořit novou třídu"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:5
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:6
+msgid "Enable GTK# support"
+msgstr "Povolit podporu GTK#"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:7
+msgid "Enable gettext support"
+msgstr "Povolit podporu Gettextu"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:8
 msgid "GUI Designer"
 msgstr "Návrhář GUI"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:6
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:9
+msgid "Gettext class:"
+msgstr "Třída použitá pro Gettext:"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:10
 msgid "Location:"
 msgstr "Umístění:"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:9
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:13
 msgid "Namespace:"
 msgstr "Jmenný prostor:"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:10
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:14
 msgid "Select a class: "
 msgstr "Zvolte třídu:"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:11
-msgid "Select the widget classes you want to export:"
-msgstr "Označte třídy widgetů, které chcete exportovat:"
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:15
+msgid "Select the widget classes you want make available in the widget palette:"
+msgstr "Označte třídy widgetů, které chcete nabízet v paletě widgetů:"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:12
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:16
 msgid "The class that was bound to the design currently edited could not be found. Please select the class you want to bind to the design:"
 msgstr "Třída, která byla svázána s právě editovaným návrhem, nebyla nalezena.Zvolte třídu, ke které chcete návrh asociovat:"
 
-#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:13
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:17
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:58
 #, csharp-format
 msgid "The widget design {0} is not currently bound to a class."
 msgstr "Návrh widgetu {0} momentálně není svázán s žádnou třídou."
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:18
+msgid "This assembly is a widget library"
+msgstr "Tato asembly je knihovnou widgetů"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:19
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:72
+msgid "User Interface"
+msgstr "Uživatelské rozhraní"
+
+#: ../Extras/MonoDevelop.GtkCore/gui.glade.h:20
+msgid "Widget Library"
+msgstr "Knihovna widgetů"
 
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:1
 msgid "Edit Project Icons..."
 msgstr "Upravit ikony projektu..."
 
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:2
+msgid "GTK# Settings"
+msgstr "GTK# Nastavení"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:3
 msgid "Import Glade file..."
 msgstr "Importovat soubor programu Glade..."
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:3
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:4
 msgid "New Action Group..."
 msgstr "Nová skupina akcí..."
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:4
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:5
 msgid "New Dialog..."
 msgstr "Nový dialog..."
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:5
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:6
 msgid "New Widget..."
 msgstr "Nový widget..."
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:6
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:7
 msgid "New Window..."
 msgstr "Nové okno..."
-
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:7
-msgid "Widget Export"
-msgstr "Export widgetů"
 
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:8
 msgid "Widget Properties"
@@ -5194,9 +5198,9 @@ msgstr "Opravdu chcete smazat skupinu akcí '{0}'?"
 msgid "Are you sure you want to delete '{0}'?"
 msgstr "Opravdu chcete smazat '{0}'?"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:63
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:103
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:177
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:64
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:104
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:191
 msgid "Actions"
 msgstr "Akce"
 
@@ -5219,14 +5223,10 @@ msgid "Generating GUI code for project '{0}'..."
 msgstr "Generuji kód GUI pro projekt '{0}'..."
 
 #. Something went wrong while creating the designer. Show it, but don't do aything else.
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:68
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:90
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:69
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:91
 msgid "Designer"
 msgstr "Návrhář"
-
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:72
-msgid "User Interface"
-msgstr "Uživatelské rozhraní"
 
 #: ../Extras/MonoDevelop.GtkCore/templates/ActionGroupPartial.xft.xml.h:1
 #: ../Extras/MonoDevelop.GtkCore/templates/ActionGroup.xft.xml.h:1
@@ -5420,7 +5420,7 @@ msgstr "Přizpůsobení"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:2
 msgid "Buffer Options"
-msgstr ""
+msgstr "Vlastnosti buferu"
 
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:3
 msgid "Clear Bookmarks"
@@ -5558,19 +5558,23 @@ msgstr "Znovu načíst"
 msgid "Ignore"
 msgstr "Ignorovat"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:171
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:216
 msgid "File:"
 msgstr "Soubor:"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:218
 msgid "Page"
 msgstr "Strana"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:185
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:230
 msgid "Print Source Code"
 msgstr "Tisk zdrojového kódu"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:227
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:257
+msgid "Print operation failed."
+msgstr "Operace tisku selhala."
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:273
 msgid "Print Preview - Source Code"
 msgstr "_Náhled před tiskem - zdrojový kód"
 
@@ -5889,7 +5893,7 @@ msgstr ""
 
 #: ../Extras/NemerleBinding/Nemerle.glade.h:10
 msgid "General tail call optimization"
-msgstr ""
+msgstr "Obecné 'tail call' optimalizace"
 
 #: ../Extras/NemerleBinding/Nemerle.glade.h:11
 msgid "Ignore warnings"
@@ -6025,7 +6029,7 @@ msgstr "  <b>Ignorováno</b>: "
 msgid "Test execution cancelled."
 msgstr "Zrušeno spuštění testu."
 
-#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:512
 msgid "Running "
 msgstr "Probíhá"
 
@@ -6176,36 +6180,36 @@ msgstr "Jméno souboru '{0}' není platné. Ignoruji jej."
 msgid "The project file {0} must be converted to msbuild format to be added to a msbuild solution. Convert?"
 msgstr "Projektový soubor {0} musí být ve formátu 'msbuild', aby mohl být přidán do sestavy. Chcete jej zkonvertovat?"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:456
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:457
 msgid "Importing project: "
 msgstr "Importuji projekt: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:504
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:505
 msgid "Could not import project:"
 msgstr "Nemohu importovat projekt:"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:519
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:520
 msgid "Importing solution"
 msgstr "Importuji sestavu"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:533
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:534
 msgid "Project file not found: "
 msgstr "Soubor projektu nenalezen: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:554
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:555
 msgid "The solution could not be imported."
 msgstr "Tato sestava nemohla být importována."
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:619
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:655
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:620
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:656
 msgid "Assembly reference could not be imported: "
 msgstr "Nelze importovat referenci na assembly:"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:700
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:701
 msgid "Can't import file: "
 msgstr "Nemohu importovat soubor: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:746
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:747
 #, csharp-format
 msgid "Output directory '{0}' can't be mapped to a local directory. The directory '{1}' will be used instead"
 msgstr "Výstupní složka '{0}' nemohla být namapována do lokální složky. Složka '{1}' bude použita místo ní."
@@ -6316,12 +6320,12 @@ msgstr "Soubory VB.NET"
 msgid "Commit Files"
 msgstr "Soubory pro odevzdání (commit)"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:56
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:58
 msgid "Select the files to commit:"
 msgstr "Označte soubory k odevzdání (commit):"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:108
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:186
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:110
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:192
 msgid "Commit message:"
 msgstr "Zpráva odevzdání (commit):"
 
@@ -6329,8 +6333,8 @@ msgstr "Zpráva odevzdání (commit):"
 msgid "Repository Configuration"
 msgstr "Konfigurace repozitáře"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:74
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:112
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:76
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:114
 msgid "Type:"
 msgstr "Typ:"
 
@@ -6338,27 +6342,27 @@ msgstr "Typ:"
 msgid "Select Repository"
 msgstr "Zvolte repositář"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:150
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:152
 msgid "Connect to Repository"
 msgstr "Připojit se k repositáři"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:224
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:226
 msgid "Registered Repositories"
 msgstr "Registrované repositáře"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:251
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:253
 msgid "Browse..."
 msgstr "Procházet..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:316
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:318
 msgid "Repository:"
 msgstr "Repositář:"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:325
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:327
 msgid "Message:"
 msgstr "Zpráva:"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:336
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:338
 msgid "Module name:"
 msgstr "Název modulu:"
 
@@ -6381,18 +6385,18 @@ msgstr "Uživatel:"
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:51
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:45
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:362
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:76
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:75
 msgid "Version control command failed."
 msgstr "Příkaz správy verzí selhal."
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:31
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:152
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:158
 msgid "Status"
 msgstr "Status"
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs:35
 #, csharp-format
-msgid "Initial checking of module {0}"
+msgid "Initial check-in of module {0}"
 msgstr "Počáteční získání modulu {0}"
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:35
@@ -6419,98 +6423,103 @@ msgstr "Neverzováno"
 msgid "Updating version control repository"
 msgstr "Aktualizuji repositář správy verzí"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:51
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:50
 #, csharp-format
 msgid "Retrieving history for {0}..."
 msgstr "Získávám historii pro {0}..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:95
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:94
 msgid "View Changes"
 msgstr "Zobrazit změny"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:100
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:99
 msgid "View File"
 msgstr "Zobrazit soubor"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:138
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:137
 msgid "Revision"
 msgstr "Revize"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:139
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:138
 msgid "Date"
 msgstr "Datum"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:140
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:139
 msgid "Author"
 msgstr "Autor"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:141
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:140
 msgid "Message"
 msgstr "Zpráva"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:156
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:155
 msgid "(No message)"
 msgstr "(Žádná zpráva)"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:167
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:166
 msgid "Operation"
 msgstr "Operace"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:177
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:176
 msgid "File Path"
 msgstr "Cesta souboru"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:212
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:211
 msgid "Modify"
 msgstr "Změnit"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:266
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:265
 #, csharp-format
 msgid "Retreiving changes in {0} at revision {1}..."
 msgstr "Získávám změny {0} pro revizi {1}..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:270
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:278
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:269
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:277
 #, csharp-format
 msgid "Getting text of {0} at revision {1}..."
 msgstr "Získávám text {0} pro revizi {1}..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:337
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:321
 #, csharp-format
 msgid "Retreiving content of {0} at revision {1}..."
 msgstr "Získávám obsah {0} pro revizi {1}..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:96
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:95
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:8
 msgid "Revert"
 msgstr "Navrátit"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:292
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:298
 msgid "No files have local modifications."
 msgstr "Nenalezeny soubory lokálně modifikovány."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:294
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:300
 msgid "No files have local or remote modifications."
 msgstr "Nenalezeny soubory lokálně či vzdáleně modifikovány."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:391
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:397
 #, csharp-format
 msgid "Commit message for file '{0}':"
 msgstr "Zpráva odevzdání (commit) pro soubor '{0}':"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:393
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:399
 msgid "Commit message (multiple selection):"
 msgstr "Zpráva odevzdání (commit) - vícenásobný výběr:"
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:617
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:551
+#, csharp-format
+msgid "Do you want to open all {0} files?"
+msgstr "Chcete otevřít všech {0} souborů?"
+
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:638
 msgid "Loading data..."
 msgstr "Načítám data ..."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:653
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:674
 msgid "No differences found"
 msgstr "Rozdíly nebyly nalezeny."
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:683
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:704
 msgid "Could not get diff information. "
 msgstr "Nelze získat informace o rozdílech."
 
