@@ -1,3 +1,7 @@
+2007-02-11  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	*Makefile.am: install also nunit.framework.dll, otherwise addin will not start on some systems
+
 2007-02-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp: Synchronized the MD project and the Makefile

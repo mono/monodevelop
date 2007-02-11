@@ -70,7 +70,8 @@ RES =  \
 
 
 NUNIT_FILES = \
-nunit.core.dll
+nunit.core.dll \
+nunit.framework.dll
 
 SRC_NUNIT_FILES = $(addprefix $(srcdir)/lib/, $(NUNIT_FILES))
 BUILD_NUNIT_FILES = $(addprefix $(ADDIN_BUILD)/, $(NUNIT_FILES))
