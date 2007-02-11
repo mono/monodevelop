@@ -60,7 +60,8 @@ namespace MonoDevelop.Prj2Make
 		
 		public bool CanReadFile (string file)
 		{
-			return String.Compare (Path.GetExtension (file), ".sln", true) == 0;
+			return (String.Compare (Path.GetExtension (file), ".sln", true) == 0 &&
+				GetSlnFileVersion (file) == "9.00");
 		}
 		
 		public bool CanWriteFile (object obj)
@@ -339,9 +340,9 @@ namespace MonoDevelop.Prj2Make
 		//
 		Combine LoadSolution (string fileName, IProgressMonitor monitor)
 		{
-			//string version = GetSlnFileVersion (fileName);
-			//if (version != "9.00")
-			//	throw new UnknownProjectVersionException (fileName, version);
+			string version = GetSlnFileVersion (fileName);
+			if (version != "9.00")
+				throw new UnknownProjectVersionException (fileName, version);
 
 			ListDictionary globals = null;
 			MSBuildSolution combine = null;
@@ -443,7 +444,17 @@ namespace MonoDevelop.Prj2Make
 					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
 				{
 					MSBuildProject project = null;
-					projectPath = Path.GetFullPath (MapPath (Path.GetDirectoryName (fileName), projectPath));
+					string path = MapPath (Path.GetDirectoryName (fileName), projectPath);
+					if (String.IsNullOrEmpty (path)) {
+						monitor.ReportWarning (GettextCatalog.GetString (
+							"Invalid project path found in {0} : {1}", fileName, projectPath));
+						Console.WriteLine (GettextCatalog.GetString (
+							"Invalid project path found in {0} : {1}", fileName, projectPath));
+
+						continue;
+					}
+
+					projectPath = Path.GetFullPath (path);
 					try {
 						project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as MSBuildProject;
 						entries [projectGuid] = project;
@@ -775,6 +786,9 @@ namespace MonoDevelop.Prj2Make
 			strInput = reader.ReadLine();
 
 			match = regex.Match(strInput);
+			if (!match.Success)
+				match = regex.Match (reader.ReadLine ());
+
 			if (match.Success)
 			{
 				strVersion = match.Groups[1].Value;

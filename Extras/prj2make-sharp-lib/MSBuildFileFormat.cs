@@ -102,8 +102,7 @@ namespace MonoDevelop.Prj2Make
 
 			DotNetProject project = node as DotNetProject;
 			if (project == null)
-				//FIXME: Argument exception?
-				return;
+				throw new InvalidOperationException ("The provided object is not a DotNetProject");
 			
 			string tmpfilename = String.Empty;
 			try {
@@ -671,7 +670,8 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (elem, "LogicalName", ns, projectFile.ResourceId);
 				
 				//DependentUpon is relative to the basedir of the 'pf' (resource file)
-				EnsureChildValue (d.ProjectFileElements [projectFile], "DependentUpon", ns,
+				if (!String.IsNullOrEmpty (projectFile.DependsOn))
+					EnsureChildValue (elem, "DependentUpon", ns,
 						Runtime.FileService.AbsoluteToRelativePath (
 							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn));
 			}
