@@ -478,7 +478,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int lvWidth, lvHeight;
 			int rowWidth;
 			
-			this.GdkWindow.GetSize (out lvWidth, out lvHeight);
+			this.GetSizeRequest (out lvWidth, out lvHeight);
 
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;

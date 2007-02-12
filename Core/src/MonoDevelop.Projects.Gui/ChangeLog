@@ -1,3 +1,9 @@
+2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: In CalcVisibleRows
+	  get the window size using GetSizeRequest, since the size is later
+	  being set with SetSizeRequest.
+
 2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs: Fixe
