@@ -389,7 +389,8 @@ namespace MonoDevelop.Projects.Serialization
 						DataItem root = new DataItem ();
 						root.Name = value.Name;
 						root.UniqueNames = ((DataItem)value).UniqueNames;
-						ukwnDataRoot.ItemData.Add (root);
+						if (ukwnDataRoot != null)
+							ukwnDataRoot.ItemData.Add (root);
 						Deserialize (serCtx, obj, ((DataItem)value).ItemData, root, baseName + value.Name + "/");
 					}
 					else if (obj is IExtendedDataItem && (value.Name != "ctype" || baseName.Length > 0)) {
