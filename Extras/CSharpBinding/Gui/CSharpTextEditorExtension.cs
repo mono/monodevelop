@@ -56,7 +56,7 @@ namespace CSharpBinding
 				// This is a bit of a hack, but for the resolver to properly resolve a constructor
 				// call needs the new keyword and the brackets, so let's provide them
 				int i = Editor.CursorPosition - 2 - ex.Length;
-				if (GetPreviousToken ("new", ref i))
+				if (GetPreviousToken ("new", ref i, true))
 					ex = "new " + ex + "()";
 				
 				// Find the language item at that position
@@ -99,8 +99,8 @@ namespace CSharpBinding
 			// Code completion of "new"
 			
 			int i = ctx.TriggerOffset;
-			if (charTyped == ' ' && GetPreviousToken ("new", ref i)) {
-				string token = GetPreviousToken (ref i);
+			if (charTyped == ' ' && GetPreviousToken ("new", ref i, false)) {
+				string token = GetPreviousToken (ref i, true);
 				if (token == "=" || token == "throw") {
 				
 					IParserContext pctx = GetParserContext ();
@@ -141,12 +141,12 @@ namespace CSharpBinding
 			// Check for 'overridable' completion
 			
 			i = ctx.TriggerOffset;
-			if (charTyped == ' ' && GetPreviousToken ("override", ref i)) {
+			if (charTyped == ' ' && GetPreviousToken ("override", ref i, false)) {
 			
 				// Look for modifiers, in order to find the beginning of the declaration
 				int firstMod = i;
 				for (int n=0; n<3; n++) {
-					string mod = GetPreviousToken (ref i);
+					string mod = GetPreviousToken (ref i, true);
 					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
 						firstMod = i;
 					}
@@ -199,10 +199,10 @@ namespace CSharpBinding
 			return completionProvider;
 		}
 		
-		bool GetPreviousToken (string token, ref int i)
+		bool GetPreviousToken (string token, ref int i, bool allowLineChange)
 		{
 			string s = Editor.GetText (i-1, i);
-			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t')) {
+			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t' || (allowLineChange && s[0] == '\n'))) {
 				i--;
 				s = Editor.GetText (i-1, i);
 			}
@@ -213,10 +213,10 @@ namespace CSharpBinding
 			return Editor.GetText (i, i + token.Length) == token;
 		}
 		
-		string GetPreviousToken (ref int i)
+		string GetPreviousToken (ref int i, bool allowLineChange)
 		{
 			string s = Editor.GetText (i-1, i);
-			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t')) {
+			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t' || (allowLineChange && s[0] == '\n'))) {
 				i--;
 				s = Editor.GetText (i-1, i);
 			}

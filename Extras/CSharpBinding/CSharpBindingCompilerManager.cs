@@ -57,6 +57,8 @@ namespace CSharpBinding
 							}
 							if (pkg.IsCorePackage) {
 								writer.WriteLine ("\"/r:" + Path.GetFileName (fileName) + "\"");
+							} else if (pkg.IsInternalPackage) {
+								writer.WriteLine ("\"/r:" + fileName + "\"");
 							} else if (!pkg_references.Contains (pkg.Name)) {
 								pkg_references.Add (pkg.Name);
 								writer.WriteLine ("\"-pkg:" + pkg.Name + "\"");
