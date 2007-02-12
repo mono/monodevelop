@@ -1,3 +1,7 @@
+2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DockItem.cs: Fixed bug #76646.
+
 2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Dock.mdp, Makefile.am: Synchronized the MD project and

@@ -440,8 +440,11 @@ namespace Gdl
 				Gdk.WindowAttributesType.Visual;
 			GdkWindow = new Gdk.Window (ParentWindow, attributes, (int)attributes_mask);
 			GdkWindow.UserData = Handle;
-			
-			Style = Style.Attach (GdkWindow);
+
+//			I don't know why the following line is needed, but it makes MD crash when
+//			the gtk theme changes (e.g. when changing to Glider). It seems to work ok without it.
+//			Style = Style.Attach (GdkWindow);
+
 			Style.SetBackground (GdkWindow, State);
 			
 			GdkWindow.SetBackPixmap (null, true);
