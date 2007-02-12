@@ -1,3 +1,8 @@
+2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs: Return
+	  the correct parent object for resources. Fixes bug #80705.
+
 2007-02-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't show the go to

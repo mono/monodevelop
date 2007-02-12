@@ -74,6 +74,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override object GetParentObject (object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
+			if (file.BuildAction == BuildAction.EmbedAsResource)
+				return new ResourceFolder (file.Project);
 			string dir = Path.GetDirectoryName (file.FilePath);
 			if (dir == file.Project.BaseDirectory)
 				return file.Project;
