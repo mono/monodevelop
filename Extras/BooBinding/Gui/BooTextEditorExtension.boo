@@ -23,11 +23,16 @@ import System
 
 import MonoDevelop.Projects.Parser
 import MonoDevelop.Ide.Gui.Content
+import MonoDevelop.Ide.Gui
 import MonoDevelop.Projects.Gui.Completion
 
 import BooBinding.Parser
 
 public class BooTextEditorExtension (TextEditorExtension):
+
+	override def ExtendsEditor (doc as Document, editor as IEditableTextBuffer) as bool:
+		return System.IO.Path.GetExtension (doc.Title) == ".boo";
+
 	override def HandleCodeCompletion (ctx as ICodeCompletionContext, typed_char as System.Char) as ICompletionDataProvider:
 		return null if not typed_char in (char('.'), char(' '))
 		
