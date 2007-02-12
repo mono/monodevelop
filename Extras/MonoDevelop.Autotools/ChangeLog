@@ -1,3 +1,10 @@
+2007-02-13  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs: Add support for custom regexes for compiler messages.
+	* MakefileOptionPanelWidget.cs: Add widgets for custom regex.
+	* MakefileProjectServiceExtension.cs: Use the new custom regexes
+	MakefileData.
+
 2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs: Fix spelling.

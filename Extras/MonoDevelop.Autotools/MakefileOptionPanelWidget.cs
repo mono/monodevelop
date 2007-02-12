@@ -36,12 +36,17 @@ namespace MonoDevelop.Autotools
 
 				this.fileEntryMakefilePath.DefaultPath = project.BaseDirectory;
 
+				FillCompilerMessageCombo ();
+
 				HandleEnableMakefileIntegrationClicked (false);
 				//FIXME: Look for configure.in in parent dirs
 			} else {
 				this.fileEntryMakefilePath.Path = data.AbsoluteMakefileName;
 				this.fileEntryMakefilePath.DefaultPath = data.AbsoluteMakefileName;
 				this.cbEnableMakefileIntegration.Active = data.IntegrationEnabled;
+
+				FillCompilerMessageCombo ();
+				SetActiveVar (comboMessageType, data.MessageRegexName);
 
 				HandleEnableMakefileIntegrationClicked (cbEnableMakefileIntegration.Active);
 
@@ -50,7 +55,6 @@ namespace MonoDevelop.Autotools
 
 			//FIXME: ResetAll  : use for new data, use for new makefile
 			//Load values
-
 			this.fileEntryMakefilePath.BrowserTitle = GettextCatalog.GetString ("Makefile");
 		
 			this.cbKeepFilesSync.Active = data.BuildFilesVar.Sync;
@@ -90,7 +94,9 @@ namespace MonoDevelop.Autotools
 			this.BuildTargetName.Text = data.BuildTargetName;
 			this.ExecuteTargetName.Text = data.ExecuteTargetName;
 			this.CleanTargetName.Text = data.CleanTargetName;
-				
+
+			HandleComboMessageTypeChanged (comboMessageType);
+
 			this.fileEntryMakefilePath.FocusOutEvent += new FocusOutEventHandler (OnMakefilePathFocusOut);
 		}
 		
@@ -165,6 +171,12 @@ namespace MonoDevelop.Autotools
 			data.ExecuteTargetName = this.ExecuteTargetName.Text.Trim ();
 			data.CleanTargetName = this.CleanTargetName.Text.Trim ();
 			
+			data.MessageRegexName = GetActiveVar (comboMessageType);
+			if (data.MessageRegexName == "Custom") {
+				data.CustomErrorRegex = this.entryErrorRegex.Text;
+				data.CustomWarningRegex = this.entryWarningRegex.Text;
+			}
+			
 			// Data validation
 
 			MakefileData oldData = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
@@ -213,6 +225,23 @@ namespace MonoDevelop.Autotools
 					return false;
 
 				//FIXME: All file vars must be distinct
+				try {
+					tmpData.GetErrorRegex (true);
+				} catch (Exception e) {
+					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
+						"Invalid regex for Error messages. : {0}", e.Message),
+						(Window) Toplevel, true);
+					return false;
+				}
+
+				try {
+					tmpData.GetWarningRegex (true);
+				} catch (Exception e) {
+					IdeApp.Services.MessageService.ShowError (null, GettextCatalog.GetString (
+						"Invalid regex for Warning messages. : {0}", e.Message),
+						(Window) Toplevel, true);
+					return false;
+				}
 
 				//FIXME: Do this only if there are changes b/w tmpData and Data
 				project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] = tmpData;
@@ -293,6 +322,15 @@ namespace MonoDevelop.Autotools
 			SetActiveVar (comboAssemblyName, data.AssemblyNameVar);
 			SetActiveVar (comboOutputDir, data.OutputDirVar);
 		}
+		
+		void FillCompilerMessageCombo ()
+		{
+			foreach (string s in MakefileData.CompilerMessageRegex.Keys)
+				comboMessageType.AppendText (s);
+				
+			comboMessageType.AppendText ("Custom");		
+			comboMessageType.Active = 0;
+		}
 
 		protected virtual void OnEnableMakefileIntegrationClicked (object sender, System.EventArgs e)
 		{
@@ -354,6 +392,13 @@ namespace MonoDevelop.Autotools
 
 			this.cbAutotoolsProject.Sensitive = active;
 			HandleCbAutotoolsProjectClicked (cbAutotoolsProject);
+
+			this.comboMessageType.Sensitive = active;
+			label7.Sensitive = active;
+			lblErrorRegex.Sensitive = active;
+			lblMessageType.Sensitive = active;
+			lblWarningRegex.Sensitive = active;
+			HandleComboMessageTypeChanged (comboMessageType);
 		}
 
 		protected virtual void OnCbFileSyncClicked(object sender, System.EventArgs e)
@@ -381,6 +426,10 @@ namespace MonoDevelop.Autotools
 				state = cb.Active;
 			else
 				state = false;
+			
+			this.label6.Sensitive = state;
+			this.lblCol5.Sensitive = state;
+			this.lblCol6.Sensitive = state;
 			
 			this.lblGacRef.Sensitive = state;
 			this.comboGacRefVar.Sensitive = state;
@@ -536,5 +585,34 @@ namespace MonoDevelop.Autotools
 			this.comboOthersVar.Sensitive = state;
 			this.entryOthersPattern.Sensitive = state;
 		}
+
+		protected virtual void OnComboMessageTypeChanged(object sender, System.EventArgs e)
+		{
+			HandleComboMessageTypeChanged (comboMessageType);
+		}
+		
+		void HandleComboMessageTypeChanged (ComboBox cb)
+		{
+			string active = GetActiveVar (cb);
+			bool isCustom = (active == "Custom");
+			bool state;
+			if (cb.Sensitive)
+				state = isCustom;
+			else
+				state = false;
+			
+			if (!isCustom) {
+				this.entryErrorRegex.Text = MakefileData.CompilerMessageRegex [active][0];
+				this.entryWarningRegex.Text = MakefileData.CompilerMessageRegex [active][1];
+			} else if (data.MessageRegexName == "Custom") {
+				// Custom selected and data.MessageRegexName == "Custom"
+				this.entryErrorRegex.Text = data.CustomErrorRegex;
+				this.entryWarningRegex.Text = data.CustomWarningRegex;
+			}
+			
+			this.entryErrorRegex.Sensitive = state;
+			this.entryWarningRegex.Sensitive = state;
+		}
+		
 	}
 }

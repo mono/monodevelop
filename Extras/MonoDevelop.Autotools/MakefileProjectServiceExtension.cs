@@ -173,9 +173,10 @@ namespace MonoDevelop.Autotools
 			}
 
 			TempFileCollection tf = new TempFileCollection ();
-			//FIXME: regexMcsError: this is default for cs projects built with (g)mcs,
-			//FIXME: should be customizable by user
-			ICompilerResult cr = ParseOutput (tf, output, project.BaseDirectory, regexMcsError, regexMcsWarning);
+			Regex regexError = data.GetErrorRegex (false);
+			Regex regexWarning = data.GetWarningRegex (false);
+
+			ICompilerResult cr = ParseOutput (tf, output, project.BaseDirectory, regexError, regexWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
 			else
@@ -187,7 +188,7 @@ namespace MonoDevelop.Autotools
 		ICompilerResult ParseOutput (TempFileCollection tf, string output, string baseDir, Regex regexError, Regex regexWarning)
 		{
 			StringBuilder compilerOutput = new StringBuilder();
-			
+
 			CompilerResults cr = new CompilerResults(tf);
 			
 			// we have 2 formats for the error output the csc gives :
@@ -210,15 +211,21 @@ namespace MonoDevelop.Autotools
 					continue;
 				}
 			
-				CompilerError error = CreateCompilerErrorFromString (curLine, dirs, regexError);
+				CompilerError error = null;
 				
-				if (error != null)
-					cr.Errors.Add (error);
+				if (regexError != null) {
+					error = CreateCompilerErrorFromString (curLine, dirs, regexError);
 
-				error = CreateCompilerErrorFromString (curLine, dirs, regexWarning);
-				if (error != null) {
-					cr.Errors.Add (error);
-					error.IsWarning = true;
+					if (error != null)
+						cr.Errors.Add (error);
+				}
+
+				if (regexWarning != null) {
+					error = CreateCompilerErrorFromString (curLine, dirs, regexWarning);
+					if (error != null) {
+						cr.Errors.Add (error);
+						error.IsWarning = true;
+					}
 				}
 			}
 			sr.Close();
@@ -228,14 +235,6 @@ namespace MonoDevelop.Autotools
 
 		// Snatched from our codedom code :-).
 		//FIXME: Get this from the language binding.. if a known lang
-		// <file> can be relative or absolute.. use two different vars?
-		static Regex regexMcsError = new Regex (
-				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*error\s*(?<number>.*):\s(?<message>.*)",
-				RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-		static Regex regexMcsWarning = new Regex (
-				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*warning\s*(?<number>.*):\s(?<message>.*)",
-				RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		static Regex regexEnterDir = new Regex (@"make\[[0-9]*\]: ([a-zA-Z]*) directory `(.*)'");
 		
@@ -266,24 +265,47 @@ namespace MonoDevelop.Autotools
 			if (error_string.StartsWith ("make"))
 				return null;
 
-			match=regex.Match(error_string);
-			if (!match.Success) return null;
-			if (String.Empty != match.Result("${file}")) {
-				error.FileName=match.Result("${file}");
+			match = regex.Match (error_string);
+			if (!match.Success)
+				return null;
+
+			string str = GetValue (match, "${file}");
+			if (str != null) {
+				error.FileName = str;
 				if (! Path.IsPathRooted (error.FileName) && dirs.Count > 0)
 					error.FileName = Path.Combine (dirs.Peek (), error.FileName);
 			}
-			if (String.Empty != match.Result("${line}"))
-				error.Line=Int32.Parse(match.Result("${line}"));
-			if (String.Empty != match.Result("${column}")) {
-				if (match.Result("${column}") == "255+")
+
+			str = GetValue (match, "${line}");
+			if (str != null)
+				error.Line = Int32.Parse (str);
+
+			str = GetValue (match, "${column}");
+			if (str != null) {
+				if (str == "255+")
 					error.Column = -1;
 				else
-					error.Column=Int32.Parse(match.Result("${column}"));
+					error.Column = Int32.Parse (str);
 			}
-			error.ErrorNumber=match.Result("${number}");
-			error.ErrorText=match.Result("${message}");
+
+			str = GetValue (match, "${number}");
+			if (str != null)
+				error.ErrorNumber = match.Result("${number}");
+
+			str = GetValue (match, "${message}");
+			if (str != null)
+				error.ErrorText = match.Result("${message}");
+
 			return error;
+		}
+
+		static string GetValue (Match match, string var)
+		{
+			string str = match.Result (var);
+			if (str != var && !String.IsNullOrEmpty (str))
+				return str;
+			else
+				return null;
 		}
 
 		public override void Clean (IProgressMonitor monitor, CombineEntry entry)

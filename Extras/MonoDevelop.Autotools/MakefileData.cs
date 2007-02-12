@@ -163,7 +163,7 @@ namespace MonoDevelop.Autotools
 			set { cleanTargetName = value;}
 		}
 
-		[ItemProperty]
+		[ItemProperty (DefaultValue = "")]
 		public string ExecuteTargetName {
 			get { return executeTargetName; }
 			set { executeTargetName = value;}
@@ -278,6 +278,69 @@ namespace MonoDevelop.Autotools
 			}
 			set { projectRefVar = value; }
 		}
+		
+		string errorRegex = String.Empty;
+		[ItemProperty (Name = "MessageRegex/Error", DefaultValue = "")]
+		public string CustomErrorRegex {
+			get {
+				if (MessageRegexName != "Custom")
+					return String.Empty;
+				return errorRegex;
+			}
+			set { errorRegex = value; }
+		}
+		
+		string warningRegex = String.Empty;
+		[ItemProperty (Name = "MessageRegex/Warning", DefaultValue = "")]
+		public string CustomWarningRegex {
+			get {
+				if (MessageRegexName != "Custom")
+					return String.Empty;
+				return warningRegex;
+			}
+			set { warningRegex = value; }			
+		}
+		
+		string messageRegexName = "C# (mcs)";
+		[ItemProperty (Name = "MessageRegex/Name", DefaultValue = "C# (mcs)")]
+		public string MessageRegexName {
+			get { return messageRegexName; }
+			set {
+				if (value != "Custom") {
+					// !Custom
+					if (CompilerMessageRegex.ContainsKey (value)) {
+						errorRegex = CompilerMessageRegex [value][0];
+						warningRegex = CompilerMessageRegex [value][1];
+					} else {
+						Console.WriteLine ("Error: Invalid value for MessageRegexName : {0}", value);
+						//FIXME: If !valid then throw
+					}
+				}
+				messageRegexName = value;
+			}
+		}
+		
+		// Custom is not stored in this list!
+		static Dictionary<string, string []> compilerMessageRegex;
+		static public Dictionary<string, string[]> CompilerMessageRegex {
+			get {
+				if (compilerMessageRegex == null)
+					InitCompilerMessageRegex ();
+				return compilerMessageRegex;
+			}
+		}
+
+		static Regex [] customRegex = null;
+
+		// Regex(string) to Regex object
+		static Dictionary<string, Regex> regexTable;
+		static Dictionary<string, Regex> RegexTable {
+			get {
+				if (regexTable == null)
+					regexTable = new Dictionary<string, Regex> ();
+				return regexTable;
+			}
+		}
 
 		string relativeConfigureInPath = String.Empty;
 		[ItemProperty (DefaultValue = "")]
@@ -311,14 +374,14 @@ namespace MonoDevelop.Autotools
 		}
 
 		string outputDirVar;
-		[ItemProperty]
+		[ItemProperty (DefaultValue = "")]
 		public string OutputDirVar {
 			get { return outputDirVar; }
 			set { outputDirVar = value;}
     		}
 
 		string assemblyNameVar;
-		[ItemProperty]
+		[ItemProperty (DefaultValue = "")]
 		public string AssemblyNameVar {
 			get { return assemblyNameVar; }
 			set { assemblyNameVar = value;}
@@ -339,7 +402,7 @@ namespace MonoDevelop.Autotools
 					unresolvedReferences = new Dictionary <string, string> ();
 				return unresolvedReferences;
 			}
-    		}
+ 		}
 
 		Dictionary<string, string> buildVariables ;
 		public Dictionary<string, string> BuildVariables  {
@@ -348,7 +411,7 @@ namespace MonoDevelop.Autotools
 					buildVariables = new Dictionary<string, string> ();
 				return buildVariables;
 			}
-    		}
+		}
 
 		bool dirty = false;
 
@@ -376,10 +439,29 @@ namespace MonoDevelop.Autotools
 			data.OutputDirVar = this.OutputDirVar;
 			data.AssemblyNameVar = this.AssemblyNameVar;
 
+			data.CustomErrorRegex = this.CustomErrorRegex;
+			data.CustomWarningRegex = this.CustomWarningRegex;
+			data.MessageRegexName = this.MessageRegexName;
 			// This shouldn't be required
 			//data.unresolvedReferences = new List<string> (this.UnresolvedReferences);
 
 			return data;
+		}
+
+		static void InitCompilerMessageRegex ()
+		{
+			compilerMessageRegex = new Dictionary<string, string[]> ();
+			compilerMessageRegex ["C# (mcs)"] = new string [2];
+			compilerMessageRegex ["C# (mcs)"][0] = 
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*error\s*(?<number>.*):\s(?<message>.*)";
+			compilerMessageRegex ["C# (mcs)"][1] = 
+				@"(^\s*(?<file>.*)\((?<line>\d*){1}(,(?<column>\d*[\+]*))?\)(:|)\s+)*warning\s*(?<number>.*):\s(?<message>.*)";
+			
+			compilerMessageRegex ["gcc"] = new string [2];
+			compilerMessageRegex ["gcc"][0] = 
+				@"^\s*(?<file>.*):(?<line>\d*){1}\s*:\s*error\s*:\s(?<message>.*)";
+			compilerMessageRegex ["gcc"][1] = 
+				@"^\s*(?<file>.*):(?<line>\d*){1}\s*:\s*warning\s*:\s(?<message>.*)";
 		}
 
 		void InitBuildVars ()
@@ -413,6 +495,51 @@ namespace MonoDevelop.Autotools
 		public void Save ()
 		{
 			Makefile.Save ();
+		}
+
+		public Regex GetErrorRegex (bool throwOnError)
+		{
+			return GetCompilerMessageRegex (0, throwOnError);
+		}
+
+		public Regex GetWarningRegex (bool throwOnError)
+		{
+			return GetCompilerMessageRegex (1, throwOnError);
+		}
+
+		Regex GetCompilerMessageRegex (int index, bool throwOnError)
+		{
+			if (index < 0 || index > 1)
+				throw new ArgumentException ("index");
+
+			string str = null;
+			if (MessageRegexName != "Custom") {
+				str = CompilerMessageRegex [MessageRegexName][index];
+				if (!RegexTable.ContainsKey (str))
+					RegexTable [str] = new Regex (str, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+				return RegexTable [str];
+			}
+
+			// Custom
+			if (customRegex == null)
+				customRegex = new Regex [2];
+
+			str = index == 0 ? CustomErrorRegex : CustomWarningRegex;
+			if (customRegex [index] == null || customRegex [index].ToString () != str) {
+				try {
+					customRegex [index] = new Regex (str, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+				} catch (ArgumentException e) {
+					// Invalid regex string
+					Console.WriteLine ("Invalid {0}Regex '{1}' specified for project {2}",
+						(index == 0 ? "Error" : "Warning"), str, OwnerProject.Name);
+					customRegex [index] = null;
+					if (throwOnError)
+						throw e;
+				}
+			}
+
+			return customRegex [index];
 		}
 
 		IProgressMonitor monitor = null;
