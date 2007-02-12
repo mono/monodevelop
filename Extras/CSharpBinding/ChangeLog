@@ -1,5 +1,11 @@
 2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* CSharpBinding.mdp: Added project reference for NRefactory.
+	* Parser/CSharpVisitor.cs: Collect parameter flags when parsing a
+	  method. Fixes bug #80814.
+
+2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Gui/CSharpTextEditorExtension.cs: Allow crossing line boundaries when
 	  looking for tokens. Fixes bug #80719.
 	* CSharpBindingCompilerManager.cs: Handle internal packages.

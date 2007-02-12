@@ -218,9 +218,7 @@ namespace CSharpBinding.Parser
 			ParameterCollection parameters = new ParameterCollection();
 			if (typeDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in typeDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
-					parameters.Add(p);
+					parameters.Add (CreateParameter (par, method));
 				}
 			}
 			method.Parameters = parameters;
@@ -254,9 +252,7 @@ namespace CSharpBinding.Parser
 			ParameterCollection parameters = method.Parameters;
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter (method, par.ParameterName, parType);
-					parameters.Add(p);
+					parameters.Add (CreateParameter (par, method));
 				}
 			}
 			
@@ -272,6 +268,19 @@ namespace CSharpBinding.Parser
 			
 			c.Methods.Add(method);
 			return method;
+		}
+		
+		IParameter CreateParameter (AST.ParameterDeclarationExpression par, IMember declaringMember)
+		{
+			ReturnType parType = new ReturnType (par.TypeReference);
+			DefaultParameter p = new DefaultParameter (declaringMember, par.ParameterName, parType);
+			if ((par.ParamModifier & AST.ParamModifier.Out) != 0)
+				p.Modifier |= ParameterModifier.Out;
+			if ((par.ParamModifier & AST.ParamModifier.Ref) != 0)
+				p.Modifier |= ParameterModifier.Ref;
+			if ((par.ParamModifier & AST.ParamModifier.Params) != 0)
+				p.Modifier |= ParameterModifier.Params;
+			return p;
 		}
 		
 		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
@@ -393,9 +402,7 @@ namespace CSharpBinding.Parser
 			ParameterCollection parameters = new ParameterCollection();
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter (constructor, par.ParameterName, parType);
-					parameters.Add(p);
+					parameters.Add (CreateParameter (par, constructor));
 				}
 			}
 			constructor.Parameters = parameters;
@@ -503,9 +510,7 @@ namespace CSharpBinding.Parser
 			DefaultIndexer i = new DefaultIndexer (new ReturnType(indexerDeclaration.TypeReference), parameters, (ModifierEnum)mf, region, bodyRegion);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter (i, par.ParameterName, parType);
-					parameters.Add(p);
+					parameters.Add (CreateParameter (par, i));
 				}
 			}
 			FillAttributes (i, indexerDeclaration.Attributes);
