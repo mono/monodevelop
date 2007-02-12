@@ -388,9 +388,8 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			Dictionary<string, CombineEntry> entries = new Dictionary<string, CombineEntry> ();
-			Regex regex = new Regex(@"Project\(""(\{.*\})""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
 			foreach (Section sec in projectSections) {
-				Match match = regex.Match (lines [sec.Start]);
+				Match match = ProjectRegex.Match (lines [sec.Start]);
 				if (!match.Success) {
 					Runtime.LoggingService.DebugFormat (GettextCatalog.GetString (
 						"Invalid Project definition on line number #{0} in file '{1}'. Ignoring.",
@@ -516,8 +515,6 @@ namespace MonoDevelop.Prj2Make
 
 		void ParseGlobal (StreamReader reader, List<string> lines, ListDictionary dict)
 		{
-			Regex regex = new Regex (@"GlobalSection\s*\(([^)]*)\)\s*=\s*(\w*)");
-
 			//Process GlobalSection-s
 			while (reader.Peek () >= 0) {
 				string s = GetNextLine (reader, lines).Trim ();
@@ -525,7 +522,7 @@ namespace MonoDevelop.Prj2Make
 					//Skip blank lines
 					continue;
 
-				Match m = regex.Match (s);
+				Match m = GlobalSectionRegex.Match (s);
 				if (!m.Success) {
 					if (String.Compare (s, "EndGlobal", true) == 0)
 						return;
@@ -781,13 +778,12 @@ namespace MonoDevelop.Prj2Make
 			string strInput = null;
 			Match match;
 			StreamReader reader = new StreamReader(strInSlnFile);
-			Regex regex = new Regex(@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");
 			
 			strInput = reader.ReadLine();
 
-			match = regex.Match(strInput);
+			match = SlnVersionRegex.Match(strInput);
 			if (!match.Success)
-				match = regex.Match (reader.ReadLine ());
+				match = SlnVersionRegex.Match (reader.ReadLine ());
 
 			if (match.Success)
 			{
@@ -848,8 +844,34 @@ namespace MonoDevelop.Prj2Make
 				return path;
 		}
 
+		// static regexes
+		static Regex projectRegex = null;
+		static Regex ProjectRegex {
+			get {
+				if (projectRegex == null)
+					projectRegex = new Regex(@"Project\(""(\{.*\})""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
+				return projectRegex;
+			}
+		}
 
-	
+		static Regex globalSectionRegex = null;
+		static Regex GlobalSectionRegex {
+			get {
+				if (globalSectionRegex == null)
+					globalSectionRegex = new Regex (@"GlobalSection\s*\(([^)]*)\)\s*=\s*(\w*)"); 
+				return globalSectionRegex;
+			}
+		}
+
+		static Regex slnVersionRegex = null;
+		static Regex SlnVersionRegex {
+			get {
+				if (slnVersionRegex == null)
+					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d.\d\d)");
+				return slnVersionRegex;
+			}
+		}
+
 	}
 
 	class Section {
