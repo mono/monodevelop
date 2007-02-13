@@ -60,6 +60,11 @@ namespace MonoDevelop.SourceEditor
 								sts.Italic = bool.Parse (reader.GetAttribute ("italic"));
 								sts.Underline = bool.Parse (reader.GetAttribute ("underline"));
 								sts.Strikethrough = bool.Parse (reader.GetAttribute ("strikethrough"));
+								string mask = reader.GetAttribute ("mask");
+								if (mask == null || mask.Length == 0)
+									sts.Mask = 2;
+								else
+									sts.Mask = uint.Parse (mask);
 								sts.IsDefault = false;
 								ParseColor (reader.GetAttribute ("foreground"), ref sts.Foreground);
 								ParseColor (reader.GetAttribute ("background"), ref sts.Background);
@@ -156,6 +161,12 @@ namespace MonoDevelop.SourceEditor
 					writer.WriteStartAttribute (null, "background", null);
 						writer.WriteString (tag.TagStyle.Background.ToString ());
 					writer.WriteEndAttribute ();
+
+					if (tag.TagStyle.Mask != 2) {
+						writer.WriteStartAttribute (null, "mask", null);
+							writer.WriteString (tag.TagStyle.Mask.ToString ());
+						writer.WriteEndAttribute ();
+					}
 
 					writer.WriteEndElement ();
 					Runtime.LoggingService.DebugFormat ("Preserved style {0} {1}", sl.Name, tag.Id);

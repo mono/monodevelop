@@ -41,6 +41,8 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] ColorButton bgColorButton;
 			[Glade.Widget] Button restoreDefaultButton;
 			[Glade.Widget] VBox childrenVBox;
+			[Glade.Widget] CheckButton checkColor;
+			[Glade.Widget] CheckButton checkBackground;
 
 			SourceViewService svs = (SourceViewService) ServiceManager.GetService (typeof (SourceViewService));
 			SourceLanguage currentLanguage;
@@ -87,6 +89,10 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				strikeToggle.Active = sts.Strikethrough;
 				fgColorButton.Color = sts.Foreground;
 				bgColorButton.Color = sts.Background;
+				checkColor.Active = (sts.Mask & 2) != 0;
+				checkBackground.Active = (sts.Mask & 1) != 0;
+				fgColorButton.Sensitive = checkColor.Active;
+				bgColorButton.Sensitive = checkBackground.Active;
 				restoreDefaultButton.Sensitive = !sts.IsDefault;
 			}
 
@@ -120,6 +126,10 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				SourceTagStyle sts = currentStyle;
 				sts.Foreground = fgColorButton.Color;
 				sts.Background = bgColorButton.Color;
+				sts.Mask = checkColor.Active ? 2u : 0u;
+				sts.Mask += checkBackground.Active ? 1u : 0u;
+				fgColorButton.Sensitive = checkColor.Active;
+				bgColorButton.Sensitive = checkBackground.Active;
 				sts.IsDefault = false;
 				currentLanguage.SetTagStyle (styleid, sts);
 				restoreDefaultButton.Sensitive = true;
