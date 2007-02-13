@@ -456,6 +456,12 @@ namespace MonoDevelop.Prj2Make
 					projectPath = Path.GetFullPath (path);
 					try {
 						project = Services.ProjectService.ReadCombineEntry (projectPath, monitor) as MSBuildProject;
+						if (project == null) {
+							Console.WriteLine ("Internal Error: Didn't get the expected MSBuildProject for {0} project.",
+								projectPath);
+							continue;
+						}
+
 						entries [projectGuid] = project;
 						combine.ProjectsByGuid [project.Data.Guid] = project;
 

@@ -78,25 +78,46 @@ namespace MonoDevelop.Prj2Make
 
 			string extn = Path.GetExtension (args.FileName);
 
-			//FIXME: Use IFileFormat.CanReadFile 
-			if (String.Compare (extn, ".mdp", true) == 0 || String.Compare (extn, ".mds", true) == 0) {
+			IFileFormat slnff = new SlnFileFormat ();
+			IFileFormat prjff = new MSBuildFileFormat ();
+
+			if (!slnff.CanReadFile (args.FileName) && !prjff.CanReadFile (args.FileName)) {
 				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString (
 					"The project file {0} must be converted to msbuild format to be added " + 
 					"to a msbuild solution. Convert?", args.FileName), "Conversion required")) {
 					args.Cancel = true;
 					return;
 				}
+			} else {
+				// vs2005 solution/project
+				return;
 			}
 
 			IProgressMonitor monitor = new NullProgressMonitor ();
-			CombineEntry ce = Services.ProjectService.ReadCombineEntry (args.FileName, monitor);
-			ce = ConvertToMSBuild (ce, false);
-			args.FileName = ce.FileName;
+			slnff = new VS2003SlnFileFormat ();
+			prjff = new VS2003ProjectFileFormat ();
 
-			if (String.Compare (extn, ".mds", true) == 0)
-				UpdateProjectReferences (((Combine) ce), true);
+			if (slnff.CanReadFile (args.FileName)) {
+				// VS2003 solution
+				Combine c = VS2003SlnFileFormat.ImportSlnAsMSBuild (args.FileName);
+				c.Save (monitor);
 
-			ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
+				args.FileName = c.FileName;
+			} else if (prjff.CanReadFile (args.FileName)) {
+				// VS2003 project
+
+				DotNetProject proj = VS2003ProjectFileFormat.ImportCsprojAsMSBuild (args.FileName);
+				args.FileName = proj.FileName;
+			} else {
+				CombineEntry ce = Services.ProjectService.ReadCombineEntry (args.FileName, monitor);
+				ce = ConvertToMSBuild (ce, false);
+				args.FileName = ce.FileName;
+
+				if (String.Compare (extn, ".mds", true) == 0)
+					UpdateProjectReferences (((Combine) ce), true);
+
+				ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
+			}
 		}
 
 		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
@@ -138,7 +159,7 @@ namespace MonoDevelop.Prj2Make
 			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
 		}
 
-		static CombineEntry ConvertToMSBuild (CombineEntry ce, bool prompt)
+		internal static CombineEntry ConvertToMSBuild (CombineEntry ce, bool prompt)
 		{
 			Combine newCombine = ce as Combine;
 			CombineEntry ret = ce;
@@ -181,7 +202,7 @@ namespace MonoDevelop.Prj2Make
 			return ret;
 		}
 
-		static void UpdateProjectReferences (Combine c, bool saveProjects)
+		internal static void UpdateProjectReferences (Combine c, bool saveProjects)
 		{
 			CombineEntryCollection allProjects = c.GetAllProjects ();
 

@@ -1,3 +1,21 @@
+2007-02-13 Ankit Jain  <jankit@novell.com>
+
+	* VS2003SlnFileFormat.cs: New.
+	* VS2003ProjectFileFormat.cs: New.
+	* MSBuildProject.cs (GetDefaultResourceIdInternal): Make static.
+	* MsPrjHelper.cs (CreatePrjxFromCsproj): Add new overload.
+	(MsSlnToCmbxHelper): Likewise.
+	Set DefaultNamespace. Set resource id.
+	* MSBuildSolution.cs (HandleAddEntry): Handle adding vs2003 sln/project.	
+	(ConvertToMSBuild): Make internal.
+	(UpdateProjectReferences): Likewise.
+	* prj2make-sharp-lib.addin.xml: Remove references to importing VS2003 project.
+	Add new file formats.
+	* SlnFileFormat.cs: Add null check.
+	* MSBuildFileFormat.cs (CanReadFile): Check root element of the *proj file.
+	Make condition regex static.
+	* prj2make-sharp-lib.mdp, Makefile.am: Sync mdp project with makefile.
+
 2007-02-12 Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs: Make regex objects static.

@@ -449,6 +449,12 @@ namespace MonoDevelop.Prj2Make
 		
 		public string CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor)
 		{
+			DotNetProject project = CreatePrjxFromCsproj (csprojFileName, monitor, true);
+			return project.FileName;
+		}
+
+		public DotNetProject CreatePrjxFromCsproj (string csprojFileName, IProgressMonitor monitor, bool save)
+		{
 			try {
 				TextFileReader fsIn = null;
 				XmlSerializer xmlDeSer = null;
@@ -466,7 +472,7 @@ namespace MonoDevelop.Prj2Make
 				prjxObj.FileName = prjxFileName;
 
 				// Load the csproj
-				fsIn = new TextFileReader (csprojFileName);	    
+				fsIn = new TextFileReader (csprojFileName);
 				xmlDeSer = new XmlSerializer (typeof(VisualStudioProject));
 				csprojObj = (VisualStudioProject) xmlDeSer.Deserialize (fsIn);	    
 				fsIn.Close();
@@ -478,6 +484,7 @@ namespace MonoDevelop.Prj2Make
 				prjxObj.Description = "";
 				prjxObj.NewFileSearch = NewFileSearch.None;
 				prjxObj.EnableViewState = true;
+				prjxObj.DefaultNamespace = csprojObj.CSHARP.Build.Settings.RootNamespace;
 
 				GetContents (prjxObj, csprojObj.CSHARP.Files.Include, prjxObj.ProjectFiles, monitor);
 				monitor.Step (1);
@@ -497,9 +504,10 @@ namespace MonoDevelop.Prj2Make
 						));
 				}
 				monitor.Step (1);
-				prjxObj.Save (monitor);
+				if (save)
+					prjxObj.Save (monitor);
 				monitor.Step (1);
-				return prjxFileName;
+				return prjxObj;
 
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not import project:") + csprojFileName, ex);
@@ -510,6 +518,12 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		public string MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor)
+		{
+			Combine c = MsSlnToCmbxHelper (slnFileName, monitor, true);
+			return c.FileName;
+		}
+
+		public Combine MsSlnToCmbxHelper (string slnFileName, IProgressMonitor monitor, bool save)
 		{
 			Combine cmbxObj = new Combine();
 			cmbxFileName = String.Format ("{0}.mds",
@@ -534,21 +548,32 @@ namespace MonoDevelop.Prj2Make
 						monitor.ReportWarning (GettextCatalog.GetString ("Project file not found: ") + pi.csprojpath);
 						continue;
 					}
-					string prjName = CreatePrjxFromCsproj (mappedPath, monitor);
-					monitor.Step (1);
-					if (prjName != null)
-						cmbxObj.AddEntry (prjName, monitor);
-					else
+					DotNetProject prj = CreatePrjxFromCsproj (mappedPath, monitor, save);
+					if (prj == null)
 						return null;
+
+					monitor.Step (1);
+					if (save) {
+						string prjName = prj.FileName;
+						if (prjName != null)
+							cmbxObj.AddEntry (prjName, monitor);
+						else
+							return null;
+					} else {
+						cmbxObj.Entries.Add (prj);
+					}
 					monitor.Step (1);
 				}
 				
 				monitor.EndTask ();
 				monitor.Step (1);
 
-				cmbxObj.Save (cmbxFileName, monitor);
+				cmbxObj.FileName = cmbxFileName;
+				if (save)
+					cmbxObj.Save (cmbxFileName, monitor);
+
 				monitor.Step (1);
-				return cmbxFileName;
+				return cmbxObj;
 			}
 			catch (Exception e)
 			{
@@ -702,6 +727,8 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 				flOut.Name = name;
+				// Adding here as GetDefaultResourceIdInternal needs flOut.Project
+				files.Add (flOut);
 				
 				switch (fl.SubType)
 				{
@@ -720,6 +747,7 @@ namespace MonoDevelop.Prj2Make
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.EmbeddedResource:
 						flOut.BuildAction = BuildAction.EmbedAsResource;
+						flOut.ResourceId = MSBuildProject.GetDefaultResourceIdInternal (flOut);
 						break;
 					case MonoDevelop.Prj2Make.Schema.Csproj.FileBuildAction.None:
 						flOut.BuildAction = BuildAction.Nothing;
@@ -727,8 +755,6 @@ namespace MonoDevelop.Prj2Make
 				}
 				flOut.DependsOn = fl.DependentUpon;
 				flOut.Data = "";
-				
-				files.Add (flOut);
 			}
 		}
 

@@ -20,32 +20,24 @@
 		<AddIn id="VBBinding" version="0.4"/>
 	</Dependencies>
 	
-	<Extension path = "/SharpDevelop/Commands">
-		<Command id = "MonoDevelop.Prj2Make.Commands.ImportSolution"
-			_label = "_Import Visual Studio .NET 2003 Project..."
-			defaultHandler = "MonoDevelop.Prj2Make.ImportPrj"
-			description = "Imports solutions created with MS Visual Studio .NET 2003"
-			icon = "md-visual-studio" />
-	</Extension>
-	
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats" extension-nodes="FileFormat" description="File format handlers for projects and solutions.">
 		<FileFormat id="SlnFileFormat"
 		            class="MonoDevelop.Prj2Make.SlnFileFormat"/>
 		<FileFormat id="MSBuildFileFormat"
 		            class="MonoDevelop.Prj2Make.MSBuildFileFormat"/>
+		<FileFormat id="VS2003SlnFileFormat"
+		            class="MonoDevelop.Prj2Make.VS2003SlnFileFormat"/>
+		<FileFormat id="VS2003ProjectFileFormat"
+		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Combine/FileFilter" extension-nodes="FileFilter" >
 		<FileFilter id = "SlnCombine"
-		            _label = "Visual Studio 2005 Solution"
+		            _label = "Visual Studio Solution"
 		            extensions = "*.sln"/>
 		<FileFilter id = "MSBuildProject"
-		            _label = "Visual Studio 2005 Project"
+		            _label = "Visual Studio Project"
 		            extensions = "*.csproj,*.vbproj"/>
-	</Extension>
-
-	<Extension path="/SharpDevelop/Workbench/MainMenu/File">
-		<CommandItem id = "MonoDevelop.Prj2Make.Commands.ImportSolution" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 	</Extension>
 </AddIn>
 

@@ -76,7 +76,22 @@ namespace MonoDevelop.Prj2Make
 
 		public bool CanReadFile (string file)
 		{
-			return (GetLanguage (file) != null);
+			if (GetLanguage (file) == null)
+				return false;
+
+			//FIXME: Need a better way to check the rootelement
+			try {
+				XmlReader xr = XmlReader.Create (file);
+				xr.Read ();
+				if (xr.NodeType == XmlNodeType.Element && String.Compare (xr.LocalName, "Project") == 0 &&
+					String.Compare (xr.NamespaceURI, ns) == 0)
+					return true;
+			} catch {
+				return false;
+			}
+
+			return false;
+
 		}
 
 		public bool CanWriteFile (object obj)
@@ -292,10 +307,7 @@ namespace MonoDevelop.Prj2Make
 				return false;
 
 			//FIXME: This will get instantiated repeatedly, save this
-			Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
-			StringDictionary dic = ParseCondition (
-					regex,
-					elem.Attributes ["Condition"].Value);
+			StringDictionary dic = ParseCondition (elem.Attributes ["Condition"].Value);
 
 			string varUpper = varName.ToUpper ();
 			if (dic.Keys.Count == 1 && 
@@ -438,12 +450,10 @@ namespace MonoDevelop.Prj2Make
 
 			//Load configurations
 			iter = nav.Select ("/tns:Project/tns:PropertyGroup[@Condition]", NamespaceManager);
-			Regex regex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
 			while (iter.MoveNext ()) {
 				string tmp = String.Empty;
 				string tmp2 = String.Empty;
 				StringDictionary dic = ParseCondition (
-						regex, 
 						iter.Current.GetAttribute ("Condition", NamespaceManager.DefaultNamespace));
 
 				string configname = GetConfigName (dic);
@@ -662,7 +672,7 @@ namespace MonoDevelop.Prj2Make
 			if (projectFile.BuildAction == BuildAction.EmbedAsResource) {
 				MSBuildProject msproj = project as MSBuildProject;
 				if (msproj == null || 
-					msproj.GetDefaultResourceIdInternal (projectFile) != projectFile.ResourceId)
+					MSBuildProject.GetDefaultResourceIdInternal (projectFile) != projectFile.ResourceId)
 					//Emit LogicalName if we are writing elements for a Non-MSBuidProject,
 					//(eg. when converting a gtk-sharp project, it might depend on non-vs
 					// style resource naming)
@@ -1027,14 +1037,14 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		StringDictionary ParseCondition (Regex regex, string condition)
+		StringDictionary ParseCondition (string condition)
 		{
 			StringDictionary dic = new StringDictionary ();
 
 			if (condition == null || condition.Length == 0)
 				return dic;
 
-			Match m = regex.Match (condition);
+			Match m = ConditionRegex.Match (condition);
 			if (!m.Success)
 				return dic;
 
@@ -1245,6 +1255,15 @@ namespace MonoDevelop.Prj2Make
 				return "VBNet";
 
 			return null;
+		}
+
+		static Regex conditionRegex = null;
+		static Regex ConditionRegex {
+			get {
+				if (conditionRegex == null)
+					conditionRegex = new Regex (@"'([^']*)'\s*==\s*'([^']*)'");
+				return conditionRegex;
+			}
 		}
 	}
 

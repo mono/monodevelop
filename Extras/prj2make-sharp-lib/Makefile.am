@@ -3,38 +3,39 @@ ADDIN = prj2make-sharp-lib.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/prj2makesharp
 ASSEMBLY = $(ADDIN_BUILD)/prj2make-sharp-lib.dll
 
-REFS =	-r:System \
-	-r:System.Xml \
+REFS =  \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/VBNetBinding.dll
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Xml
 
-
-FILES = \
-MsPrjHelper.cs \
-PrjHelper.cs \
-MdPrjHelper.cs \
-CsprojInfo.cs \
-PrjxInfo.cs \
-pkgconfiginvoker.cs \
-sharp_d_cmbx.cs \
-sharp_d_prjx.cs \
-csproj_ver2003.cs \
-prj2make-sharp-lib-Commands.cs \
-MSBuildFileFormat.cs \
-SlnFileFormat.cs \
-IResourceIdBuilder.cs \
-CSharpResourceIdBuilder.cs \
-VBNetResourceIdBuilder.cs \
-MSBuildProject.cs \
-MSBuildData.cs \
-SlnData.cs \
-MSBuildSolution.cs
+FILES =  \
+	csproj_ver2003.cs \
+	CsprojInfo.cs \
+	CSharpResourceIdBuilder.cs \
+	IResourceIdBuilder.cs \
+	MdPrjHelper.cs \
+	MsPrjHelper.cs \
+	MSBuildData.cs \
+	MSBuildFileFormat.cs \
+	MSBuildProject.cs \
+	MSBuildSolution.cs \
+	pkgconfiginvoker.cs \
+	PrjHelper.cs \
+	PrjxInfo.cs \
+	sharp_d_cmbx.cs \
+	sharp_d_prjx.cs \
+	SlnData.cs \
+	SlnFileFormat.cs \
+	VBNetResourceIdBuilder.cs \
+	VS2003ProjectFileFormat.cs \
+	VS2003SlnFileFormat.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs

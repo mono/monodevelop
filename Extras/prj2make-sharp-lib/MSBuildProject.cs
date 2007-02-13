@@ -59,7 +59,7 @@ namespace MonoDevelop.Prj2Make
 			return GetDefaultResourceIdInternal (pf);
 		}
 
-		internal string GetDefaultResourceIdInternal (ProjectFile pf)
+		internal static string GetDefaultResourceIdInternal (ProjectFile pf)
 		{
 			IResourceIdBuilder rb;
 			DotNetProject project = (DotNetProject) pf.Project;
