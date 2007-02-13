@@ -204,12 +204,20 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (item is IMember) {
 				IMember mem = (IMember) item;
-				if (mem.DeclaringType != null && mem.DeclaringType.Region != null && mem.Region != null)
-					IdeApp.Workbench.OpenDocument (mem.DeclaringType.Region.FileName, mem.Region.BeginLine, mem.Region.BeginColumn, true);
+				string file = null;
+				if (mem.Region == null)
+					return;
+				else if (mem.Region.FileName != null)
+					file = mem.Region.FileName;
+				else if (mem.DeclaringType != null)
+					file = GetClassFileName (mem.DeclaringType);
+				if (file != null)
+					IdeApp.Workbench.OpenDocument (file, mem.Region.BeginLine, mem.Region.BeginColumn, true);
 			} else if (item is IClass) {
 				IClass cls = (IClass) item;
-				if (cls.Region != null)
-					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn, true);
+				string file = GetClassFileName (cls);
+				if (cls.Region != null && file != null)
+					IdeApp.Workbench.OpenDocument (file, cls.Region.BeginLine, cls.Region.BeginColumn, true);
 			} else if (item is LocalVariable) {
 				LocalVariable cls = (LocalVariable) item;
 				if (cls.Region != null)
@@ -219,9 +227,32 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CanJumpToDeclaration (ILanguageItem item)
 		{
-			return ((item is IMember && ((IMember)item).Region != null) || 
-			    (item is IClass && ((IClass)item).Region != null) || 
-			    (item is LocalVariable && ((LocalVariable)item).Region != null)); 
+			if (item is IMember) {
+				IMember mem = (IMember) item;
+				if (mem.Region == null)
+					return false;
+				else if (mem.Region.FileName != null)
+					return true;
+				else if (mem.DeclaringType != null)
+					return GetClassFileName (mem.DeclaringType) != null;
+			} else if (item is IClass) {
+				IClass cls = (IClass) item;
+				return cls.Region != null && GetClassFileName (cls) != null;
+			} else if (item is LocalVariable) {
+				LocalVariable cls = (LocalVariable) item;
+				return cls.Region != null;
+			}
+			return false;
+		}
+		
+		string GetClassFileName (IClass cls)
+		{
+			if (cls.Region != null && cls.Region.FileName != null)
+				return cls.Region.FileName;
+			if (cls.DeclaredIn is IClass)
+				return GetClassFileName ((IClass) cls.DeclaredIn);
+			else
+				return null;
 		}
 		
 		public void SaveCombinePreferences ()
