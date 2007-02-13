@@ -136,6 +136,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info.UpdateGtkFolder () && saveMdProject)
 				IdeApp.ProjectOperations.SaveProject (project);
+			GuiBuilderService.StoreConfiguration ();
 		}
 		
 		public string File {

@@ -1,3 +1,11 @@
+2007-02-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from SVN. Includes
+	  fixes for bugs #80722, #79427 and #80127.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Store some
+	  Stetic configuration in the MD properties.
+
 2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gui.glade, MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs,

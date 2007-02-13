@@ -69,8 +69,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) MonoDevelop.Core.Gui.Services.DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
-				if (steticApp != null)
+				if (steticApp != null) {
+					StoreConfiguration ();
 					steticApp.Dispose ();
+				}
 			};
 		}
 		
@@ -84,10 +86,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (steticApp == null) {
 					steticApp = new Stetic.Application (IsolationMode);
 					steticApp.AllowInProcLibraries = false;
+					steticApp.ShowNonContainerWarning = Runtime.Properties.GetProperty ("MonoDevelop.GtkCore.ShowNonContainerWarning", true);
 				}
 				return steticApp;
 			}
 		}
+		
+		internal static void StoreConfiguration ()
+		{
+			Runtime.Properties.SetProperty ("MonoDevelop.GtkCore.ShowNonContainerWarning", steticApp.ShowNonContainerWarning);
+			Runtime.Properties.SaveProperties ();
+		}
+
 		
 		public static GuiBuilderProject GetGuiBuilderProject (Project project)
 		{
