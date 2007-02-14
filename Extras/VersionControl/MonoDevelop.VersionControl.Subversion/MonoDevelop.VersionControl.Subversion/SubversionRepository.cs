@@ -55,6 +55,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override bool CanAdd (string sourcepath)
 		{
+			if (IsVersioned (sourcepath) && File.Exists (sourcepath) && !Directory.Exists (sourcepath)) {
+				VersionInfo srcInfo = GetVersionInfo (sourcepath, false);
+				return srcInfo.Status == VersionStatus.ScheduledDelete;
+			}
+
 			return Svn.CanAdd (this, sourcepath);
 		}
 		
@@ -161,7 +166,25 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override void Add (string path, bool recurse, IProgressMonitor monitor)
 		{
-			Svn.Add (path, recurse, monitor);
+			if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
+				VersionInfo srcInfo = GetVersionInfo (path, false);
+				if (srcInfo.Status == VersionStatus.ScheduledDelete) {
+					// It is a file that was deleted. It can be restored now since it's going
+					// to be added again.
+					// First of all, make a copy of the file
+					string tmp = Path.GetTempFileName ();
+					File.Copy (path, tmp, true);
+					
+					// Now revert the status of the file
+					Revert (path, false, monitor);
+					
+					// Copy the file over the old one and clean up
+					File.Copy (tmp, path, true);
+					File.Delete (tmp);
+				}
+			}
+			else
+				Svn.Add (path, recurse, monitor);
 		}
 		
 		public override void MoveFile (string srcPath, string destPath, bool force, IProgressMonitor monitor)

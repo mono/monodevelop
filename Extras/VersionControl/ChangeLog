@@ -1,3 +1,10 @@
+2007-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:
+	  Allow re-adding a file which has been deleted, but the delete has
+	  not yet been committed.
+
 2007-02-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:

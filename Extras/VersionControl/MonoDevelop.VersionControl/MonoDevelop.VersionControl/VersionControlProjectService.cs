@@ -291,7 +291,7 @@ namespace MonoDevelop.VersionControl
 		{
 			string path = args.ProjectFile.FilePath;
 			Repository repo = GetRepository (args.Project, path);
-			if (repo != null && !repo.IsVersioned (path) && repo.CanAdd (path)) {
+			if (repo != null && repo.CanAdd (path)) {
 				using (IProgressMonitor monitor = GetStatusMonitor ()) {
 					repo.Add (path, false, monitor);
 				}
