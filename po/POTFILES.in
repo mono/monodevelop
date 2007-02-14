@@ -27,7 +27,6 @@ Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.addin.xml
 Core/src/MonoDevelop.Core/MonoDevelop.Core/FileService.cs
-Core/src/MonoDevelop.Core/MonoDevelop.Core/GettextCatalog.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs
 Core/src/MonoDevelop.Dock/DockItem.cs
 Core/src/MonoDevelop.Dock/DockItemGrip.cs
@@ -182,8 +181,6 @@ Extras/CSharpBinding/CSharp.glade
 Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
 Extras/CSharpBinding/Gui/CodeGenerationPanel.cs
 Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
-Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml
-Extras/CSharpBinding/templates/CSharpWebService.xft.xml
 Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml
 Extras/CSharpBinding/templates/EmptyProject.xpt.xml
 Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml
@@ -196,11 +193,6 @@ Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml
 Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml
 Extras/CSharpBinding/templates/Library.xpt.xml
 Extras/DebuggerAddIn/MonoDevelopDebugger.addin.xml
-Extras/GladeAddIn/GladeAddIn.addin.xml
-Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs
-Extras/GladeAddIn/GladeAddIn.Gui/WindowsFolderNodeBuilder.cs
-Extras/GladeAddIn/templates/GladeDialog.xft.xml
-Extras/GladeAddIn/templates/GladeWindow.xft.xml
 Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs
 Extras/ILAsmBinding/ILAsmBinding.addin.xml
 Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml
@@ -323,10 +315,6 @@ Extras/prj2make-sharp-lib/MsPrjHelper.cs
 Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml
 Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs
 Extras/prj2make-sharp-lib/SlnFileFormat.cs
-Extras/PythonBinding/Gui/CompilerParametersPanel.cs
-Extras/PythonBinding/PythonBinding.addin.xml
-Extras/PythonBinding/templates/PythonConsoleProject.xpt.xml
-Extras/PythonBinding/templates/PythonGtkProject.xpt.xml
 Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs
 Extras/VBNetBinding/Gui/CodeGenerationPanel.cs
 Extras/VBNetBinding/templates/EmptyVBFile.xft.xml
