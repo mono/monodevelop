@@ -247,33 +247,36 @@ namespace MonoDevelop.GtkCore
 				projectModified = true;
 			}
 
-			// Create files for all widgets
-			ArrayList partialFiles = new ArrayList ();
-			
-			foreach (GuiBuilderWindow win in GuiBuilderProject.Windows) {
-				string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
-				partialFiles.Add (fn);
-				if (!project.IsFileInProject (fn)) {
-					project.AddFile (fn, BuildAction.Compile);
-					projectModified = true;
+			if (!GuiBuilderProject.HasError)
+			{
+				// Create files for all widgets
+				ArrayList partialFiles = new ArrayList ();
+				
+				foreach (GuiBuilderWindow win in GuiBuilderProject.Windows) {
+					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false);
+					partialFiles.Add (fn);
+					if (!project.IsFileInProject (fn)) {
+						project.AddFile (fn, BuildAction.Compile);
+						projectModified = true;
+					}
 				}
-			}
-			
-			foreach (Stetic.ActionGroupComponent ag in GuiBuilderProject.SteticProject.GetActionGroups ()) {
-				string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
-				partialFiles.Add (fn);
-				if (!project.IsFileInProject (fn)) {
-					project.AddFile (fn, BuildAction.Compile);
-					projectModified = true;
+				
+				foreach (Stetic.ActionGroupComponent ag in GuiBuilderProject.SteticProject.GetActionGroups ()) {
+					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
+					partialFiles.Add (fn);
+					if (!project.IsFileInProject (fn)) {
+						project.AddFile (fn, BuildAction.Compile);
+						projectModified = true;
+					}
 				}
-			}
-			
-			// Remove all project files which are not in the generated list
-			foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
-				if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
-					project.ProjectFiles.Remove (pf);
-					Runtime.FileService.DeleteFile (pf.FilePath);
-					projectModified = true;
+				
+				// Remove all project files which are not in the generated list
+				foreach (ProjectFile pf in project.ProjectFiles.GetFilesInPath (GtkGuiFolder)) {
+					if (pf.FilePath != SteticGeneratedFile && pf.FilePath != ObjectsFile && pf.FilePath != SteticFile && !partialFiles.Contains (pf.FilePath)) {
+						project.ProjectFiles.Remove (pf);
+						Runtime.FileService.DeleteFile (pf.FilePath);
+						projectModified = true;
+					}
 				}
 			}
 			

@@ -54,11 +54,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		bool hasError;
 		bool needsUpdate = true;
 		
+		FileSystemWatcher watcher;
+		DateTime lastSaveTime;
+		object fileSaveLock = new object ();
+		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
 		public event EventHandler Reloaded;
-		public event EventHandler Disposed;
-	
+		public event EventHandler Unloaded;
+		public event EventHandler Changed;
+
 		public GuiBuilderProject (Project project, string fileName)
 		{
 			this.fileName = fileName;
@@ -86,12 +91,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (project).ResourceProvider;
 			gproject.ComponentAdded += new Stetic.ComponentEventHandler (OnAddWidget);
 			gproject.ComponentRemoved += new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
+			gproject.ActionGroupsChanged += OnGroupsChanged;
 			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
 			project.ReferenceAddedToProject += OnReferenceAdded;
 			project.ReferenceRemovedFromProject += OnReferenceRemoved;
 			
 			foreach (Stetic.WidgetComponent ob in gproject.GetComponents ())
 				RegisterWindow (ob);
+				
+			// Monitor changes in the file
+			lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
+			watcher = new FileSystemWatcher ();
+			watcher.Path = Path.GetDirectoryName (fileName);
+			watcher.Filter = Path.GetFileName (fileName);
+			watcher.Changed += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
+			watcher.EnableRaisingEvents = true;
 		}
 		
 		void Unload ()
@@ -99,11 +113,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (gproject == null)
 				return;
 
+			if (Unloaded != null)
+				Unloaded (this, EventArgs.Empty);
+
 			foreach (GuiBuilderWindow win in formInfos)
 				win.Dispose ();
 
 			gproject.ComponentAdded -= new Stetic.ComponentEventHandler (OnAddWidget);
 			gproject.ComponentRemoved -= new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
+			gproject.ActionGroupsChanged -= OnGroupsChanged;
 			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
 			project.ReferenceAddedToProject -= OnReferenceAdded;
 			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
@@ -113,6 +131,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			needsUpdate = true;
 			hasError = false;
 			GuiBuilderService.SteticApp.UpdateWidgetLibraries (false);
+			
+			watcher.Dispose ();
+			watcher = null;
+			NotifyChanged ();
+		}
+		
+		void OnSteticFileChanged (object s, FileSystemEventArgs args)
+		{
+			lock (fileSaveLock) {
+				if (lastSaveTime == System.IO.File.GetLastWriteTime (fileName))
+					return;
+			}
+			
+			if (GuiBuilderService.HasOpenDesigners (project)) {
+				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? Unsaved changes in the open GTK designers will be lost.", project.Name)))
+					return;
+			}
+			Reload ();
 		}
 		
 		public void Reload ()
@@ -120,6 +156,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Unload ();
 			if (Reloaded != null)
 				Reloaded (this, EventArgs.Empty);
+			NotifyChanged ();
+		}
+		
+		public bool HasError {
+			get { return hasError; }
 		}
 		
 		public bool IsEmpty {
@@ -131,8 +172,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Save (bool saveMdProject)
 		{
-			if (gproject != null && !hasError)
-				gproject.Save (fileName);
+			if (gproject != null && !hasError) {
+				lock (fileSaveLock) {
+					gproject.Save (fileName);
+					lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
+				}
+			}
+				
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info.UpdateGtkFolder () && saveMdProject)
 				IdeApp.ProjectOperations.SaveProject (project);
@@ -163,8 +209,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
-			if (Disposed != null)
-				Disposed (this, EventArgs.Empty);
+			watcher.Dispose ();
 			Unload ();
 		}
 		
@@ -201,6 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (WindowAdded != null)
 				WindowAdded (this, new WindowEventArgs (win));
+			NotifyChanged ();
 		}
 	
 		void UnregisterWindow (GuiBuilderWindow win)
@@ -214,6 +260,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				WindowRemoved (this, new WindowEventArgs (win));
 
 			win.Dispose ();
+			NotifyChanged ();
 		}
 		
 		public void Remove (GuiBuilderWindow win)
@@ -261,6 +308,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (GuiBuilderWindow win in toDelete)
 				Remove (win);
 */		}
+
+		void OnGroupsChanged (object s, EventArgs a)
+		{
+			NotifyChanged ();
+		}
 
 		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
 		{
@@ -344,10 +396,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
+		public GuiBuilderWindow GetWindow (string name)
+		{
+			foreach (GuiBuilderWindow win in Windows) {
+				if (name == win.Name)
+					return win;
+			}
+			return null;
+		}
+		
 		public Stetic.ActionGroupComponent GetActionGroupForFile (string fileName)
 		{
 			foreach (Stetic.ActionGroupComponent group in SteticProject.GetActionGroups ()) {
 				if (fileName == GetSourceCodeFile (group))
+					return group;
+			}
+			return null;
+		}
+		
+		public Stetic.ActionGroupComponent GetActionGroup (string name)
+		{
+			foreach (Stetic.ActionGroupComponent group in SteticProject.GetActionGroups ()) {
+				if (name == group.Name)
 					return group;
 			}
 			return null;
@@ -405,6 +475,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void UpdateLibraries ()
 		{
+			if (hasError)
+				return;
+
 			string[] oldLibs = gproject.WidgetLibraries;
 			
 			ArrayList libs = new ArrayList ();
@@ -436,6 +509,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			gproject.WidgetLibraries = newLibs;
 			Save (true);
+		}
+		
+		void NotifyChanged ()
+		{
+			if (Changed != null)
+				Changed (this, EventArgs.Empty);
 		}
 	}
 	

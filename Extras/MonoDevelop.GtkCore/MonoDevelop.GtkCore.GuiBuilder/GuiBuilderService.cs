@@ -213,7 +213,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		static bool HasOpenDesigners (Project project)
+		internal static bool HasOpenDesigners (Project project)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project)
@@ -351,6 +351,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (File.Exists (info.SteticGeneratedFile) && File.Exists (info.SteticFile)) {
 				if (File.GetLastWriteTime (info.SteticGeneratedFile) > File.GetLastWriteTime (info.SteticFile))
 					return null;
+			}
+			
+			if (info.GuiBuilderProject.HasError) {
+				monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);
+				monitor.AsyncOperation.Cancel ();
+				return null;
 			}
 			
 			if (info.GuiBuilderProject.IsEmpty) 

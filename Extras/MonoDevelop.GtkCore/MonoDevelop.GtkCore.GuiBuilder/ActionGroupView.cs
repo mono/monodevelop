@@ -44,12 +44,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		CodeBinder codeBinder;
 		GuiBuilderProject project;
 		Stetic.ActionGroupComponent group;
+		string groupName;
 		
 		public ActionGroupView (IViewContent content, Stetic.ActionGroupComponent group, GuiBuilderProject project): base (content)
 		{
+			groupName = group.Name;
 			this.project = project;
-			this.group = group;
-			project.Disposed += OnDisposeProject;
+			LoadDesigner ();
+		}
+		
+		void LoadDesigner ()
+		{
+			group = project.GetActionGroup (groupName);
+			if (group == null)
+				// Group not found
+				return;
+				
+			project.Unloaded += OnDisposeProject;
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
 
@@ -71,10 +82,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder = new CodeBinder (project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 		}
 		
+		public void CloseDesigner ()
+		{
+			if (designer == null)
+				return;
+			project.Unloaded -= OnDisposeProject;
+			designer.BindField -= OnBindField;
+			designer.RootComponentChanged -= OnRootComponentChanged;
+			designer.ModifiedChanged -= OnGroupModified;
+			designer.SignalAdded -= OnSignalAdded;
+			designer.SignalChanged -= OnSignalChanged;
+			designer.Dispose ();
+			designer = null;
+			
+			project.Reloaded += OnReloadProject;
+		}
+		
 		void OnDisposeProject (object s, EventArgs args)
 		{
 			RemoveButton (1);
 			CloseDesigner ();
+		}
+		
+		void OnReloadProject (object s, EventArgs args)
+		{
+			if (designer == null)
+				LoadDesigner ();
 		}
 		
 		public Stetic.ActionGroupComponent ActionGroup {
@@ -120,23 +153,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			project.Save (true);
 		}
 		
-		public void CloseDesigner ()
-		{
-			if (designer == null)
-				return;
-			project.Disposed -= OnDisposeProject;
-			designer.BindField -= OnBindField;
-			designer.RootComponentChanged -= OnRootComponentChanged;
-			designer.ModifiedChanged -= OnGroupModified;
-			designer.SignalAdded -= OnSignalAdded;
-			designer.SignalChanged -= OnSignalChanged;
-			designer.Dispose ();
-			designer = null;
-		}
-		
 		public override void Dispose ()
 		{
 			CloseDesigner ();
+			project.Reloaded -= OnReloadProject;
 			base.Dispose ();
 		}
 		

@@ -146,7 +146,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		bool CanAddWindow ()
 		{
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
-			return (project != null);
+			if (project != null) {
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+				return (info == null || !info.GuiBuilderProject.HasError);
+			}
+			return false;
 		}
 		
 		public void AddNewWindow (string id)

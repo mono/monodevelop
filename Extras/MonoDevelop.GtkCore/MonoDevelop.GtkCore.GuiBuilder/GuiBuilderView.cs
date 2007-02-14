@@ -56,14 +56,28 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		bool actionsButtonVisible;
 		
 		CodeBinder codeBinder;
+		GuiBuilderProject gproject;
+		string rootName;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
 		{
-			this.window = window;
-			window.Project.Disposed += OnDisposeProject;
+			rootName = window.Name;
+			gproject = window.Project;
+			LoadDesigner ();
+		}
+		
+		void LoadDesigner ()
+		{
+			this.window = gproject.GetWindow (rootName);
+			if (window == null) {
+				// The window doesn't exist anymore
+				return;
+			}
 			
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
-			designer = window.Project.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
+			gproject.Unloaded += OnDisposeProject;
+			
+			GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
+			designer = gproject.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
 			if (designer.RootComponent == null) {
 				// Something went wrong while creating the designer. Show it, but don't do aything else.
 				AddButton (GettextCatalog.GetString ("Designer"), designer);
@@ -73,7 +87,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			designer.AllowWidgetBinding = (info != null && !info.GeneratePartialClasses);
 			
-			codeBinder = new CodeBinder (window.Project.Project, new OpenDocumentFileProvider (), designer.RootComponent);
+			codeBinder = new CodeBinder (gproject.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 			
 			designer.BindField += OnBindWidgetField;
 			designer.ModifiedChanged += OnWindowModifiedChanged;
@@ -103,7 +117,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (actionsBox.HasData) {
 				AddButton (GettextCatalog.GetString ("Actions"), actionsPage);
 				actionsButtonVisible = true;
-			}
+			} else
+				actionsButtonVisible = false;
 			
 			designer.ShowAll ();
 			designer.SetActive ();
@@ -115,6 +130,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				RemoveButton (2);
 			RemoveButton (1);
 			CloseDesigner ();
+		}
+		
+		void OnReloadProject (object s, EventArgs args)
+		{
+			if (designer == null)
+				LoadDesigner ();
 		}
 		
 		public GuiBuilderWindow Window {
@@ -131,7 +152,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (designer == null)
 				return;
-			window.Project.Disposed -= OnDisposeProject;
+			gproject.Unloaded -= OnDisposeProject;
 			designer.BindField -= OnBindWidgetField;
 			designer.ModifiedChanged -= OnWindowModifiedChanged;
 			designer.SignalAdded -= OnSignalAdded;
@@ -152,11 +173,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			designer.Dispose ();
 			designer = null;
+			gproject.Reloaded += OnReloadProject;
 		}
 		
 		public override void Dispose ()
 		{
 			CloseDesigner ();
+			gproject.Reloaded -= OnReloadProject;
 			base.Dispose ();
 		}
 		
@@ -167,9 +190,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
 				if (info != null && info.GeneratePartialClasses)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)window.Project.Project, designer.RootComponent, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, false, false);
 			}
 			base.ShowPage (npage);
 		}
@@ -233,7 +256,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			string oldName = window.RootWidget.Name;
-			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (window.Project.Project, window.RootWidget);
+			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget);
  
 			codeBinder.UpdateBindings (fileName);
 			if (!ErrorMode) {
@@ -241,25 +264,25 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				actionsBox.Save ();
 			}
 			
-			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (window.Project.Project, window.RootWidget);
+			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget);
 			
 			if (oldBuildFile != newBuildFile)
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
 			
-			window.Project.Save (true);
+			gproject.Save (true);
 			
 			if (window.RootWidget.Name != oldName) {
 				// The name of the component has changed. If this component is being
 				// exported by the library, then the component reference also has to
 				// be updated in the project configuration
 				
-				GtkDesignInfo info = GtkCoreService.GetGtkInfo (window.Project.Project);
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (gproject.Project);
 				if (info.IsExported (oldName)) {
 					info.RemoveExportedWidget (oldName);
 					info.AddExportedWidget (codeBinder.TargetObject.Name);
 					info.UpdateGtkFolder ();
-					GtkCoreService.UpdateObjectsFile (window.Project.Project);
-					IdeApp.ProjectOperations.SaveProject (window.Project.Project);
+					GtkCoreService.UpdateObjectsFile (gproject.Project);
+					IdeApp.ProjectOperations.SaveProject (gproject.Project);
 				}
 			}
 		}

@@ -1,3 +1,17 @@
+2007-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs,
+	  MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Detect external
+	  changes in the gui.stetic files, and reload it when it changes.
+	  Take into account that the load of gui.stetic can fail. Added
+	  several workarounds for this case.
+
 2007-02-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from SVN. Includes
