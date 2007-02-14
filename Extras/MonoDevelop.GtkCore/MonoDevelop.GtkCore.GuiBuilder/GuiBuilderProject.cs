@@ -209,7 +209,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
-			watcher.Dispose ();
+			if (watcher != null)
+				watcher.Dispose ();
 			Unload ();
 		}
 		

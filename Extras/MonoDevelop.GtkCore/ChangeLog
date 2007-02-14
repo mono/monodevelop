@@ -1,5 +1,10 @@
 2007-02-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Added missing
+	  null check.
+
+2007-02-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
 	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Ask for user
 	  confirmation when reloading a designer only when the designer has
