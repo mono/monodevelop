@@ -195,7 +195,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 					foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 						GtkDesignInfo info = GtkCoreService.GetGtkInfo (prj);
-						if (info != null && !HasOpenDesigners (prj)) {
+						if (info != null && !HasOpenDesigners (prj, false)) {
 							info.ReloadGuiBuilderProject ();
 						}
 					}
@@ -213,10 +213,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal static bool HasOpenDesigners (Project project)
+		internal static bool HasOpenDesigners (Project project, bool modifiedOnly)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
-				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project)
+				if ((doc.GetContent<GuiBuilderView>() != null || doc.GetContent<ActionGroupView>() != null) && doc.Project == project && (!modifiedOnly || doc.IsDirty))
 					return true;
 			}
 			return false;

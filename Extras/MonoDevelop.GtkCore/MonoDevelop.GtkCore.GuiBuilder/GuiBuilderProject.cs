@@ -144,7 +144,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return;
 			}
 			
-			if (GuiBuilderService.HasOpenDesigners (project)) {
+			if (GuiBuilderService.HasOpenDesigners (project, true)) {
 				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? Unsaved changes in the open GTK designers will be lost.", project.Name)))
 					return;
 			}
