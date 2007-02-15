@@ -1,59 +1,60 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/JavaBinding.dll
-
-REFS = -r:System \
-	-r:System.Xml \
-	-r:System.Drawing \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	$(GTK_SHARP_LIBS) \
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Drawing \
+	-r:System.Xml
 
-FILES = \
-Gui/ProjectConfigurationPropertyPanel.cs \
-Gui/GlobalOptionsPanel.cs \
-Project/JavaCompilerParameters.cs \
-JavaBindingCompilerServices.cs \
-JavaCompiler.cs \
-JavaLanguageBinding.cs
+FILES =  \
+	Gui/GlobalOptionsPanel.cs \
+	Gui/ProjectConfigurationPropertyPanel.cs \
+	JavaBindingCompilerServices.cs \
+	JavaCompiler.cs \
+	JavaLanguageBinding.cs \
+	Project/JavaCompilerParameters.cs
 
-RES = \
-Java.glade \
-templates/EmptyJavaFile.xft.xml \
-templates/EmptyJavaProject.xpt.xml \
-templates/IkvmConsoleApplicationProject.xpt.xml \
-templates/IkvmGladeApplicationProject.xpt.xml \
-templates/IkvmGnomeApplicationProject.xpt.xml \
-templates/IkvmGtkApplicationProject.xpt.xml \
-templates/IkvmLibraryProject.xpt.xml \
-templates/JavaApplet.xft.xml \
-templates/JavaApplicationProject.xpt.xml \
-templates/JavaApplication.xft.xml \
-templates/JavaConsoleApplicationProject.xpt.xml \
-templates/JavaDialog.xft.xml \
-templates/JavaFrame.xft.xml \
-templates/JavaOKDialog.xft.xml \
-templates/JavaPanel.xft.xml \
-icons/Java.File.EmptyFile \
-icons/Java.File.Form \
-icons/Java.File.FullFile \
-icons/Java.FileIcon \
-icons/Java.File.NewClass \
-icons/Java.File.WebFile \
-icons/Java.Project.DOSProject \
-icons/Java.Project.EmptyProject \
-icons/Java.Project.Form \
-icons/Java.Project.FullProject \
-icons/Java.ProjectIcon \
-icons/Java.Project.Library \
-icons/Java.Project.ServiceProject \
-icons/Java.Project.UserControl \
-icons/Java.Project.WebProject
+RES =  \
+	icons/Java.File.EmptyFile \
+	icons/Java.File.Form \
+	icons/Java.File.FullFile \
+	icons/Java.File.NewClass \
+	icons/Java.File.WebFile \
+	icons/Java.FileIcon \
+	icons/Java.Project.DOSProject \
+	icons/Java.Project.EmptyProject \
+	icons/Java.Project.Form \
+	icons/Java.Project.FullProject \
+	icons/Java.Project.Library \
+	icons/Java.Project.ServiceProject \
+	icons/Java.Project.UserControl \
+	icons/Java.Project.WebProject \
+	icons/Java.ProjectIcon \
+	Java.glade \
+	templates/EmptyJavaFile.xft.xml \
+	templates/EmptyJavaProject.xpt.xml \
+	templates/IkvmConsoleApplicationProject.xpt.xml \
+	templates/IkvmGladeApplicationProject.xpt.xml \
+	templates/IkvmGnomeApplicationProject.xpt.xml \
+	templates/IkvmGtkApplicationProject.xpt.xml \
+	templates/IkvmLibraryProject.xpt.xml \
+	templates/JavaApplet.xft.xml \
+	templates/JavaApplication.xft.xml \
+	templates/JavaApplicationProject.xpt.xml \
+	templates/JavaConsoleApplicationProject.xpt.xml \
+	templates/JavaDialog.xft.xml \
+	templates/JavaFrame.xft.xml \
+	templates/JavaOKDialog.xft.xml \
+	templates/JavaPanel.xft.xml
+
 
 ADDIN = JavaBinding.addin.xml
 
@@ -67,9 +68,9 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(FILES) $(RES)
+$(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 if ENABLE_JAVA
 assemblydir = $(MD_ADDIN_DIR)/BackendBindings
