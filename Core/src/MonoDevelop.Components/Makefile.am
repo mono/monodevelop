@@ -2,14 +2,15 @@
 ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Components.dll
 
 REFS =  \
+	$(GECKO_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
+	$(GNOME_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
-	-r:System.Xml \
-	$(GLADE_SHARP_LIBS) \
-	$(GTK_SHARP_LIBS) \
-	$(GECKO_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS) \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	-r:System.Xml
 
 FILES =  \
 	gtk-gui/generated.cs \

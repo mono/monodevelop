@@ -13,11 +13,12 @@ namespace Stetic {
     
     internal class Gui {
         
-        public static void Build(object cobj, System.Type type) {
-            Stetic.Gui.Build(cobj, type.FullName);
-        }
+        private static bool initialized;
         
-        public static void Build(object cobj, string id) {
+        internal static void Initialize() {
+            if ((Stetic.Gui.initialized == false)) {
+                Stetic.Gui.initialized = true;
+            }
         }
     }
     
@@ -28,7 +29,7 @@ namespace Stetic {
         }
         
         public static Gtk.ActionGroup GetActionGroup(string name) {
-        	return null;
+            return null;
         }
     }
 }
