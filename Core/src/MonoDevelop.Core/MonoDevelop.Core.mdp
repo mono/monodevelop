@@ -148,6 +148,8 @@
     <File name="./MonoDevelop.Core/FileEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.FileSystem/FileSystemExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Core.FileSystem/DefaultFileSystemExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Core/GettextCatalog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -158,7 +160,11 @@
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/log4net.dll" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Cecil.dll" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <ExcludedFiles>
+      <File>./MonoDevelop.Core/GettextCatalog.cs</File>
+      <File>./AssemblyInfo.cs</File>
+    </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />

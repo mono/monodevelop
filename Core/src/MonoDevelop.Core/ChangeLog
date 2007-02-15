@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.mdp: Added missing files.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Execution/ProcessWrapper.cs: Improved protection
 	  against exceptions.
 	* MonoDevelop.Core.mdp, Makefile.am: Flush.

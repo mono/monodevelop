@@ -137,7 +137,7 @@ FILES =  \
 GENERATED_FILES = MonoDevelop.Core/GettextCatalog.cs \
 		  AssemblyInfo.cs
 
-RES =                                        
+RES =                                              
 
 REFS =  \
 	-r:$(top_builddir)/build/bin/log4net.dll \
