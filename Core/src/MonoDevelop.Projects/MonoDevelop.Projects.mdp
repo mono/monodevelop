@@ -219,7 +219,7 @@
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.addin.xml" subtype="Code" buildaction="Nothing" />
+    <File name="./MonoDevelop.Projects.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./MonoDevelop.Projects.Ambience/Ambience.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Documentation/IDocumentationService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/CommentTasksChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
@@ -249,6 +249,7 @@
     <File name="./MonoDevelop.Projects/CustomCommandType.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/GenericProject.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/GenericProjectBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -259,7 +260,10 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Cecil.dll" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <ExcludedFiles>
+      <File>./AssemblyInfo.cs</File>
+    </ExcludedFiles>
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar />
