@@ -2,7 +2,7 @@ RUNTIME = mono
 ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Dock.dll
 TEST = $(top_builddir)/build/AddIns/dock-test.exe
 
-RES = \
+RES =  \
 	layout.glade \
 	stock-close-12.png \
 	stock-menu-left-12.png \
@@ -12,30 +12,37 @@ RES = \
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY)
 
-REFS = -r:System.Xml -r:Mono.Posix.dll $(GTK_SHARP_LIBS) $(GLADE_SHARP_LIBS)
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	-r:Mono.Posix \
+	-r:System \
+	-r:System.Xml
 
-FILES = AssemblyInfo.cs \
-	DockedHandler.cs \
-	DockMaster.cs \
-	Stock.cs \
-	DockObjectFlags.cs \
-	DockNotebook.cs \
-	DockRequest.cs \
+FILES =  \
+	AfterAttribute.cs \
+	AssemblyInfo.cs \
+	DetachedHandler.cs \
+	Dock.cs \
 	DockBar.cs \
 	DockBarButton.cs \
-	DockLayout.cs \
-	DockPlacement.cs \
-	DetachedHandler.cs \
-	DockItemGrip.cs \
+	DockedHandler.cs \
 	DockItem.cs \
-	DockPlaceholder.cs \
-	DockObject.cs \
-	Dock.cs \
-	DockPaned.cs \
 	DockItemBehavior.cs \
+	DockItemGrip.cs \
+	DockLayout.cs \
+	DockMaster.cs \
+	DockNotebook.cs \
+	DockObject.cs \
+	DockObjectFlags.cs \
+	DockPaned.cs \
+	DockPlaceholder.cs \
+	DockPlacement.cs \
+	DockRequest.cs \
+	DragNotebook.cs \
 	ExportAttribute.cs \
-	AfterAttribute.cs\
-	DragNotebook.cs
+	Stock.cs
 
 TEST_FILES = $(srcdir)/GdlDockTest.cs
 
