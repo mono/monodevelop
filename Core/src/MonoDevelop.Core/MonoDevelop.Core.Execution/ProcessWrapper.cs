@@ -41,30 +41,32 @@ namespace MonoDevelop.Core.Execution
 		
 		private void CaptureOutput ()
 		{
-			string s;
-
-			if (OutputStreamChanged != null)
-			{
-				while ((s = StandardOutput.ReadLine()) != null) {
-					if (OutputStreamChanged != null)
-						OutputStreamChanged (this, s);
+			try {
+				string s;
+				if (OutputStreamChanged != null) {
+					while ((s = StandardOutput.ReadLine()) != null) {
+						if (OutputStreamChanged != null)
+							OutputStreamChanged (this, s);
+					}
 				}
+			} finally {
+				endEventOut.Set ();
 			}
-			endEventOut.Set ();
 		}
 		
 		private void CaptureError ()
 		{
-			string s;
-			
-			if (ErrorStreamChanged != null)
-			{
-				while ((s = StandardError.ReadLine()) != null) {
-					if (ErrorStreamChanged != null)
-						ErrorStreamChanged (this, s);
-				}					
+			try {
+				string s;
+				if (ErrorStreamChanged != null) {
+					while ((s = StandardError.ReadLine()) != null) {
+						if (ErrorStreamChanged != null)
+							ErrorStreamChanged (this, s);
+					}					
+				}
+			} finally {
+				endEventErr.Set ();
 			}
-			endEventErr.Set ();
 		}
 		
 		int IProcessAsyncOperation.ExitCode {
@@ -74,8 +76,11 @@ namespace MonoDevelop.Core.Execution
 		void IAsyncOperation.Cancel ()
 		{
 			try {
-				if (!done)
+				if (!done) {
 					Kill ();
+					captureOutputThread.Abort ();
+					captureErrorThread.Abort ();
+				}
 			} catch (Exception ex) {
 				Runtime.LoggingService.Error (ex);
 			}
