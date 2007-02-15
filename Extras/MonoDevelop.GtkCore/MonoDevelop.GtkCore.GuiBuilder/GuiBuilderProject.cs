@@ -50,13 +50,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.Project gproject;
 		Project project;
 		string fileName;
-		internal bool UpdatingWindow;
 		bool hasError;
 		bool needsUpdate = true;
 		
 		FileSystemWatcher watcher;
 		DateTime lastSaveTime;
 		object fileSaveLock = new object ();
+		bool disposed;
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
@@ -72,7 +72,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void Load ()
 		{
-			if (gproject != null)
+			if (gproject != null || disposed)
 				return;
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
@@ -97,7 +97,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			project.ReferenceRemovedFromProject += OnReferenceRemoved;
 			
 			foreach (Stetic.WidgetComponent ob in gproject.GetComponents ())
-				RegisterWindow (ob);
+				RegisterWindow (ob, false);
 				
 			// Monitor changes in the file
 			lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
@@ -148,11 +148,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? Unsaved changes in the open GTK designers will be lost.", project.Name)))
 					return;
 			}
-			Reload ();
+			if (!disposed)
+				Reload ();
 		}
 		
 		public void Reload ()
 		{
+			if (disposed)
+				return;
 			Unload ();
 			if (Reloaded != null)
 				Reloaded (this, EventArgs.Empty);
@@ -166,12 +169,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public bool IsEmpty {
 			get {
 				// If the project is not loaded, assume not empty
-				return gproject == null || Windows.Count == 0; 
+				return gproject != null && Windows.Count == 0; 
 			}
 		}
 		
 		public void Save (bool saveMdProject)
 		{
+			if (disposed)
+				return;
+
 			if (gproject != null && !hasError) {
 				lock (fileSaveLock) {
 					gproject.Save (fileName);
@@ -209,6 +215,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void Dispose ()
 		{
+			disposed = true;
 			if (watcher != null)
 				watcher.Dispose ();
 			Unload ();
@@ -216,13 +223,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public bool IsActive ()
 		{
-			return GuiBuilderService.SteticApp.ActiveProject == SteticProject;
+			return GuiBuilderService.SteticApp.ActiveProject == SteticProject && !disposed;
 		}
 		
 		public Stetic.WidgetComponent AddNewComponent (Stetic.ComponentType type, string name)
 		{
 			Stetic.WidgetComponent c = SteticProject.AddNewComponent (type, name);
-			RegisterWindow (c);
+			RegisterWindow (c, true);
 			return c;
 		}
 		
@@ -232,11 +239,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Register the window now, don't wait for the WidgetAdded event since
 			// it may take some time, and the GuiBuilderWindow object is needed
 			// just after this call
-			RegisterWindow (c);
+			RegisterWindow (c, true);
 			return c;
 		}
 	
-		void RegisterWindow (Stetic.WidgetComponent widget)
+		void RegisterWindow (Stetic.WidgetComponent widget, bool notify)
 		{
 			foreach (GuiBuilderWindow w in formInfos)
 				if (w.RootWidget == widget)
@@ -245,9 +252,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
 			formInfos.Add (win);
 			
-			if (WindowAdded != null)
-				WindowAdded (this, new WindowEventArgs (win));
-			NotifyChanged ();
+			if (notify) {
+				if (WindowAdded != null)
+					WindowAdded (this, new WindowEventArgs (win));
+				NotifyChanged ();
+			}
 		}
 	
 		void UnregisterWindow (GuiBuilderWindow win)
@@ -277,16 +286,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 		void OnAddWidget (object s, Stetic.ComponentEventArgs args)
 		{
-			if (UpdatingWindow)
-				return;
-			RegisterWindow ((Stetic.WidgetComponent)args.Component);
+			if (!disposed)
+				RegisterWindow ((Stetic.WidgetComponent)args.Component, true);
 		}
 		
 		void OnRemoveWidget (object s, Stetic.ComponentRemovedEventArgs args)
 		{
-			if (UpdatingWindow)
+			if (disposed)
 				return;
-			
 			foreach (GuiBuilderWindow form in Windows) {
 				if (form.RootWidget.Name == args.ComponentName) {
 					UnregisterWindow (form);
@@ -312,11 +319,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		void OnGroupsChanged (object s, EventArgs a)
 		{
-			NotifyChanged ();
+			if (!disposed)
+				NotifyChanged ();
 		}
 
 		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
 		{
+			if (disposed)
+				return;
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.AddWidgetLibrary (pref);
@@ -326,6 +336,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnReferenceRemoved (object ob, ProjectReferenceEventArgs args)
 		{
+			if (disposed)
+				return;
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.RemoveWidgetLibrary (pref);
@@ -476,7 +488,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void UpdateLibraries ()
 		{
-			if (hasError)
+			if (hasError || disposed)
 				return;
 
 			string[] oldLibs = gproject.WidgetLibraries;
@@ -514,7 +526,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void NotifyChanged ()
 		{
-			if (Changed != null)
+			if (Changed != null && !disposed)
 				Changed (this, EventArgs.Empty);
 		}
 	}
