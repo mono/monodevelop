@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AssemblyInfo.cs: Avoid incremental change of version.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Dock.mdp, Makefile.am: Synchronized MD project with
 	  makefile.
 

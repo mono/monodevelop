@@ -33,7 +33,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("(C) 2004-2005 MonoDevelop contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
 
