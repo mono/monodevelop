@@ -4,7 +4,13 @@ ASSEMBLY = $(ADDIN_BUILD)/Diff.dll
 
 REFS = -r:System.Xml
 
-FILES = Diff.cs Merge.cs Patch.cs StructuredDiff.cs TextDiff.cs UnifiedDiff.cs
+FILES =  \
+	Diff.cs \
+	Merge.cs \
+	Patch.cs \
+	StructuredDiff.cs \
+	TextDiff.cs \
+	UnifiedDiff.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 

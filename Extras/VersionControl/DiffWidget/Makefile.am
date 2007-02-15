@@ -2,8 +2,9 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/DiffWidget.dll
 
-REFS = -r:$(ADDIN_BUILD)/Diff.dll \
-	$(GTK_SHARP_LIBS)
+REFS =  \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll
 FILES = widget.cs
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)

@@ -1,5 +1,17 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Diff/Diff.mdp, Diff/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  DiffWidget/Makefile.am, DiffWidget/DiffWidget.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl/Makefile.am: Synchronize MD project and
+	  makefile.
+	* MonoDevelop.VersionControl.Subversion/gtk-gui/generated.cs: Updated.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
 	  Added debug message.
 

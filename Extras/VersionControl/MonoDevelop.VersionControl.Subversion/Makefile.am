@@ -3,19 +3,23 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 ADDIN = MonoDevelop.VersionControl.Subversion.addin.xml
 
-REFS = 	/r:Mono.Posix.dll \
-       $(GTK_SHARP_LIBS) \
-	   /r:$(ADDIN_BUILD)/VersionControlAddIn.dll \
-	   /r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	   /r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll
+REFS =  \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Posix
 
-FILES = MonoDevelop.VersionControl.Subversion/SubversionRepository.cs \
-		MonoDevelop.VersionControl.Subversion/SvnClient.cs \
-		MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs \
-		MonoDevelop.VersionControl.Subversion/LibApr.cs \
-		gtk-gui/generated.cs
+FILES =  \
+	gtk-gui/generated.cs \
+	MonoDevelop.VersionControl.Subversion/LibApr.cs \
+	MonoDevelop.VersionControl.Subversion/SubversionRepository.cs \
+	MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs \
+	MonoDevelop.VersionControl.Subversion/SvnClient.cs
 
-RES = gtk-gui/objects.xml
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)

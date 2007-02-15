@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <import>
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
   </import>
   <icon-factory>
