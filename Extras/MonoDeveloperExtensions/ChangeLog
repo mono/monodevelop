@@ -1,5 +1,10 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am, MonoDeveloperExtensions.mdp, NUnit/Makefile.am,
+	  NUnit/NUnit.mdp: Synchronized MD project and makefile.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AssemblyInfo.cs: Removed version auto-increment.
 
 2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 

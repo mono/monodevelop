@@ -1,26 +1,27 @@
 SUBDIRS = . NUnit
 
-FILES = \
-AssemblyInfo.cs \
-MonoCombine.cs \
-MonoMakefile.cs \
-MonoMakefileFormat.cs \
-MonoProject.cs \
-Commands.cs \
-MonoProjectConfiguration.cs
+FILES =  \
+	AssemblyInfo.cs \
+	Commands.cs \
+	MonoCombine.cs \
+	MonoMakefile.cs \
+	MonoMakefileFormat.cs \
+	MonoProject.cs \
+	MonoProjectConfiguration.cs
 
-REFS = -r:System \
-       -r:System.Data \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+REFS =  \
+	$(GCONF_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	$(GTKSOURCEVIEW_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
-	$(GCONF_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS)
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Data
 
 ADDIN = MonoDeveloperExtensions.addin.xml
 
