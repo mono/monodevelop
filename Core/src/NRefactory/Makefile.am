@@ -4,8 +4,8 @@ ASSEMBLY = $(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
 	-r:System \
-	-r:System.Xml \
-	-r:System.Drawing
+	-r:System.Drawing \
+	-r:System.Xml
 
 FILES =  \
 	Project/Configuration/AssemblyInfo.cs \

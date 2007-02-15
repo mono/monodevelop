@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, NRefactory.mdp: Disabled building through makefile. Set
+	  target runtime to 2.0.
+
 2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, NRefactory.mdp: Added MD project and synchronized it
