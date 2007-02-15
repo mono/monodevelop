@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.mdp: Copy the config file together with the dll.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.mdp: Disabled building through makefile. Added
 	  missing file.
 
