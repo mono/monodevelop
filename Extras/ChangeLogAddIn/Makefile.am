@@ -1,26 +1,24 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/ChangeLogAddIn
 ASSEMBLY = $(ADDIN_BUILD)/ChangeLogAddIn.dll
 
-REFS =	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
-	-r:Mono.Posix \
-	$(GECKO_SHARP_LIBS) \
+REFS =  \
 	$(GTK_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Posix
 
-FILES = \
+FILES =  \
+	AddLogEntryDialog.cs \
+	AssemblyInfo.cs \
 	ChangeLogAddIn.cs \
 	ChangeLogAddInOptionsPanel.cs \
-	AddLogEntryDialog.cs \
-	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
 	CommitDialogExtensionWidget.cs \
-	AssemblyInfo.cs
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs
 
 ADDIN = ChangeLogAddIn.addin.xml
 
