@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs: Fix incorrect cast.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp: Disabled building through makefile. Added
 	  missing file.
 

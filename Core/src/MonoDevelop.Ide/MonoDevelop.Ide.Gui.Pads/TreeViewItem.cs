@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			TreeViewItem it = (TreeViewItem) thisNode;
+			TreeViewItem it = (TreeViewItem) thisNode.DataItem;
 			return it.Label;
 		}
 
