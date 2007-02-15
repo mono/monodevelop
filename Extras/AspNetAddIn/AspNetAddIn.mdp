@@ -15,7 +15,6 @@
   </Configurations>
   <Contents>
     <File name="./AspNetAddIn.addin.xml" subtype="Code" buildaction="Nothing" />
-    <File name="./Project" subtype="Directory" buildaction="Compile" />
     <File name="./Project/AspNetAppProject.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/AspNetAppProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/AspNetAppProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
@@ -28,10 +27,6 @@
     <File name="./Templates/CodeBehindWebForm.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/CodeBehindWebHandler.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/WebApplication.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./Gui" subtype="Directory" buildaction="Compile" />
-    <File name="./Parser" subtype="Directory" buildaction="Compile" />
-    <File name="./Parser/Tree" subtype="Directory" buildaction="Compile" />
-    <File name="./Parser/Internal" subtype="Directory" buildaction="Compile" />
     <File name="./Parser/Internal/AspParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parser/Internal/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parser/Internal/Location.cs" subtype="Code" buildaction="Compile" />
@@ -57,7 +52,6 @@
     <File name="./Parser/Document.cs" subtype="Code" buildaction="Compile" />
     <File name="./Project/XspParameters.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/XspOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./ChangeLog" subtype="Code" buildaction="Compile" />
     <File name="./Templates/EmptyWebService.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Templates/CodeBehindWebService.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Project/AspNetDisplayBinding.cs" subtype="Code" buildaction="Compile" />
@@ -81,15 +75,23 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles>
       <ExcludeFile file="./Makefile.am" />
