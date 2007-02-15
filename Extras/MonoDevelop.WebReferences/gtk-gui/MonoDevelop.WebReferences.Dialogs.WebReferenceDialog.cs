@@ -39,6 +39,8 @@ namespace Stetic.SteticGenerated {
             cobj.Name = "MonoDevelop.WebReferences.Dialogs.WebReferenceDialog";
             cobj.Title = Mono.Unix.Catalog.GetString("Add Web Reference");
             cobj.Icon = Gdk.Pixbuf.LoadFromResource("WebReference.Service.png");
+            cobj.WindowPosition = ((Gtk.WindowPosition)(4));
+            cobj.HasSeparator = false;
             // Internal child MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.VBox
             Gtk.VBox w8 = cobj.VBox;
             w8.Events = ((Gdk.EventMask)(256));
