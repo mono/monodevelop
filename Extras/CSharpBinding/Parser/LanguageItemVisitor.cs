@@ -160,6 +160,10 @@ namespace CSharpBinding.Parser
 					return null;
 				}
 				
+				object res = resolver.SearchClassMember (returnType, fieldReferenceExpression.FieldName, true);
+				if (res != null)
+					return res;
+				resolver.ShowStatic = true;
 				return resolver.SearchClassMember (returnType, fieldReferenceExpression.FieldName, true);
 			}
 			return null;

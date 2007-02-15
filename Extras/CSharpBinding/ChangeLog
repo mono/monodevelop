@@ -1,3 +1,9 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/LanguageItemVisitor.cs, Parser/TypeVisitor.cs: When resolving
+	  a field reference, look for static members if instance members
+	  can't be found. Fixes bug #80841.
+
 2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp: Added project reference for NRefactory.

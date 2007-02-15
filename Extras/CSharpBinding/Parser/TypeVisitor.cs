@@ -247,7 +247,11 @@ namespace CSharpBinding.Parser
 					}
 					return null;
 				}
-				return resolver.SearchMember(returnType, fieldReferenceExpression.FieldName);
+				object res = resolver.SearchMember (returnType, fieldReferenceExpression.FieldName);
+				if (res != null)
+					return res;
+				resolver.ShowStatic = true;
+				return resolver.SearchMember (returnType, fieldReferenceExpression.FieldName);
 			}
 //			Console.WriteLine("returnType of child is null!");
 			return null;
