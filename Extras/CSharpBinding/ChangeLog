@@ -1,5 +1,11 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Parser/Resolver.cs: When checking for accessibility take into account
+	  the qualifier type. There are some restrictions when accessing to
+	  protected members from incorrect qualifier types.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Parser/Resolver.cs, Parser/LanguageItemVisitor.cs: Properly resolve
 	  generic type identifiers. Fixes bug #80840.
 

@@ -314,10 +314,10 @@ namespace CSharpBinding.Parser
 			//Console.WriteLine("Returning Result!");
 			if (returnClass.FullyQualifiedName == "System.Void")
 				return null;
-			return new ResolveResult(returnClass, ListMembers(new LanguageItemCollection(), returnClass));
+			return new ResolveResult(returnClass, ListMembers(new LanguageItemCollection(), returnClass, returnClass));
 		}
 		
-		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass curType)
+		LanguageItemCollection ListMembers (LanguageItemCollection members, IClass qualifierClass, IClass curType)
 		{
 //			Console.WriteLine("LIST MEMBERS!!!");
 //			Console.WriteLine("showStatic = " + showStatic);
@@ -328,29 +328,29 @@ namespace CSharpBinding.Parser
 //			Console.WriteLine(curType.Fields.Count + " fields");
 			if (showStatic) {
 				foreach (IClass c in curType.InnerClasses) {
-					if (IsAccessible(curType, c)) {
+					if (IsAccessible(qualifierClass, curType, c)) {
 						members.Add(c);
 					}
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
-				if (MustBeShowen(curType, p)) {
+				if (MustBeShowen (qualifierClass, curType, p)) {
 					members.Add(p);
 				}
 			}
 			foreach (IMethod m in curType.Methods) {
-				if (MustBeShowen(curType, m)) {
+				if (MustBeShowen (qualifierClass, curType, m)) {
 					members.Add(m);
 				}
 			}
 			
 			foreach (IEvent e in curType.Events) {
-				if (MustBeShowen(curType, e)) {
+				if (MustBeShowen (qualifierClass, curType, e)) {
 					members.Add(e);
 				}
 			}
 			foreach (IField f in curType.Fields) {
-				if (MustBeShowen(curType, f)) {
+				if (MustBeShowen (qualifierClass, curType, f)) {
 					members.Add(f);
 				}
 			}
@@ -359,14 +359,14 @@ namespace CSharpBinding.Parser
 				foreach (IReturnType s in curType.BaseTypes) {
 					IClass baseClass = parserContext.GetClass (s.FullyQualifiedName, s.GenericArguments, true, true);
 					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
-						ListMembers(members, baseClass);
+						ListMembers (members, qualifierClass, baseClass);
 					}
 				}
 			} else {
 				IClass baseClass = BaseClass(curType);
 				if (baseClass != null) {
 //					Console.WriteLine("Base Class = " + baseClass.FullyQualifiedName);
-					ListMembers(members, baseClass);
+					ListMembers (members, qualifierClass, baseClass);
 				}
 			}
 //			Console.WriteLine("listing finished");
@@ -384,7 +384,7 @@ namespace CSharpBinding.Parser
 			return null;
 		}
 		
-		bool IsAccessible(IClass c, IDecoration member)
+		bool IsAccessible (IClass qualifier, IClass c, IDecoration member)
 		{
 //			Console.WriteLine("member.Modifiers = " + member.Modifiers);
 			if ((member.Modifiers & ModifierEnum.Internal) == ModifierEnum.Internal) {
@@ -394,7 +394,7 @@ namespace CSharpBinding.Parser
 //				Console.WriteLine("IsAccessible");
 				return true;
 			}
-			if ((member.Modifiers & ModifierEnum.Protected) == ModifierEnum.Protected && IsClassInInheritanceTree(c, callingClass)) {
+			if ((member.Modifiers & ModifierEnum.Protected) == ModifierEnum.Protected && IsClassInInheritanceTree (callingClass, qualifier)) {
 //				Console.WriteLine("IsAccessible");
 				return true;
 			}
@@ -404,7 +404,7 @@ namespace CSharpBinding.Parser
 			return c.FullyQualifiedName == callingClass.FullyQualifiedName;
 		}
 		
-		bool MustBeShowen (IClass c, IDecoration member)
+		bool MustBeShowen (IClass qualifierClass, IClass c, IDecoration member)
 		{
 			if (c.ClassType == ClassType.Enum && (member is IField))
 				return showStatic;
@@ -415,7 +415,7 @@ namespace CSharpBinding.Parser
 				//// enum type fields are not shown here - there is no info in member about enum field
 				return false;
 			}
-			return IsAccessible(c, member);
+			return IsAccessible (qualifierClass, c, member);
 		}
 		
 		public ArrayList SearchMethod(IReturnType type, string memberName)
@@ -435,18 +435,23 @@ namespace CSharpBinding.Parser
 			return SearchMethod(new ArrayList(), curType, memberName);
 		}
 		
-		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)
+		ArrayList SearchMethod (ArrayList methods, IClass curType, string memberName)
+		{
+			return SearchMethod (methods, curType, curType, memberName);
+		}
+		
+		ArrayList SearchMethod (ArrayList methods, IClass qualifierClass, IClass curType, string memberName)
 		{
 			foreach (IMethod m in curType.Methods) {
 				if (m.Name == memberName &&
-				    MustBeShowen(curType, m) &&
+				    MustBeShowen (qualifierClass, curType, m) &&
 				    !((m.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					methods.Add(m);
 				}
 			}
 			IClass baseClass = BaseClass(curType);
 			if (baseClass != null) {
-				return SearchMethod(methods, baseClass, memberName);
+				return SearchMethod(methods, qualifierClass, baseClass, memberName);
 			}
 			showStatic = false;
 			return methods;
@@ -456,21 +461,21 @@ namespace CSharpBinding.Parser
 		{
 			IClass curType = SearchType (type, null);
 			if (curType != null) {
-				return SearchIndexer(new ArrayList(), curType);
+				return SearchIndexer(new ArrayList(), curType, curType);
 			}
 			return new ArrayList();
 		}
 		
-		public ArrayList SearchIndexer(ArrayList indexer, IClass curType)
+		public ArrayList SearchIndexer (ArrayList indexer, IClass qualifierClass, IClass curType)
 		{
 			foreach (IIndexer i in curType.Indexer) {
-				if (MustBeShowen(curType, i) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
+				if (MustBeShowen(qualifierClass, curType, i) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
 				}
 			}
 			IClass baseClass = BaseClass(curType);
 			if (baseClass != null) {
-				return SearchIndexer(indexer, baseClass);
+				return SearchIndexer (indexer, qualifierClass, baseClass);
 			}
 			showStatic = false;
 			return indexer;
@@ -532,16 +537,16 @@ namespace CSharpBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				curType = SearchType ("System.Array", null, null);
 				
-			return SearchClassMember (curType, memberName, includeMethods, out curType, out member);
+			return SearchClassMember (curType, curType, memberName, includeMethods, out curType, out member);
 		}
 		
-		bool SearchClassMember (IClass curType, string memberName, bool includeMethods, out IClass resultType, out IDecoration member)
+		bool SearchClassMember (IClass qualifierClass, IClass curType, string memberName, bool includeMethods, out IClass resultType, out IDecoration member)
 		{
 			resultType = curType;
 			
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
-					if (f.Name == memberName && MustBeShowen(curType, f)) {
+					if (f.Name == memberName && MustBeShowen (qualifierClass, curType, f)) {
 						showStatic = false;
 						member = f; // enum members have the type of the enum
 						return true;
@@ -550,28 +555,28 @@ namespace CSharpBinding.Parser
 			}
 			if (showStatic) {
 				foreach (IClass c in curType.InnerClasses) {
-					if (c.Name == memberName && IsAccessible(curType, c)) {
+					if (c.Name == memberName && IsAccessible (qualifierClass, curType, c)) {
 						member = c;
 						return true;
 					}
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
-				if (p.Name == memberName && MustBeShowen(curType, p)) {
+				if (p.Name == memberName && MustBeShowen (qualifierClass, curType, p)) {
 					showStatic = false;
 					member = p;
 					return true;
 				}
 			}
 			foreach (IField f in curType.Fields) {
-				if (f.Name == memberName && MustBeShowen(curType, f)) {
+				if (f.Name == memberName && MustBeShowen (qualifierClass, curType, f)) {
 					showStatic = false;
 					member = f;
 					return true;
 				}
 			}
 			foreach (IEvent e in curType.Events) {
-				if (e.Name == memberName && MustBeShowen(curType, e)) {
+				if (e.Name == memberName && MustBeShowen (qualifierClass, curType, e)) {
 					showStatic = false;
 					member = e;
 					return true;
@@ -579,7 +584,7 @@ namespace CSharpBinding.Parser
 			}
 			if (includeMethods) {
 				foreach (IMethod m in curType.Methods) {
-					if (m.Name == memberName && MustBeShowen(curType, m)) {
+					if (m.Name == memberName && MustBeShowen (qualifierClass, curType, m)) {
 						showStatic = false;
 						member = m;
 						return true;
@@ -592,7 +597,7 @@ namespace CSharpBinding.Parser
 			foreach (IReturnType baseType in curType.BaseTypes) {
 				IClass c = parserContext.GetClass (baseType.FullyQualifiedName, baseType.GenericArguments, true, true);
 				if (c != null && (c.ClassType != ClassType.Interface || curType.ClassType == ClassType.Interface)) {
-					if (SearchClassMember (c, memberName, includeMethods, out resultType, out member))
+					if (SearchClassMember (qualifierClass, c, memberName, includeMethods, out resultType, out member))
 						return true;
 				}
 			}
@@ -1163,7 +1168,7 @@ namespace CSharpBinding.Parser
 				}
 			}
 			if (callingClass != null) {
-				ListMembers(result, callingClass);
+				ListMembers(result, callingClass, callingClass);
 			}
 			string n = "";
 			result.AddRange(parserContext.GetNamespaceContents (n, true));
