@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.Gui.Utils/DesktopApplication.cs: Ooops, fix build.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.Gui.mdp: Added missing file.
 	* MonoDevelop.Core.Gui.Utils/DesktopApplication.cs: Fix warning.
 
