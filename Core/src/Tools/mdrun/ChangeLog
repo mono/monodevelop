@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* mdrun.mdp: Set target runtime to 2.0.
+	* src/AssemblyInfo.cs: Avoid incremental change of version.
+
 2006-05-05 Lluis Sanchez Gual  <lluis@novell.com>
 
 	* src/mdrun.cs: Added parameter for querying the available apps.
