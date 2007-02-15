@@ -20,7 +20,7 @@ namespace MonoDevelop.Core.AddIns
 	public class DefaultAddInTreeNode : IAddInTreeNode
 	{
 		Hashtable childNodes = new Hashtable();
-		ArrayList sortedNodes = new ArrayList ();
+		ArrayList sortedNodes;
 		bool needsResort;
 		ICodon    codon      = null;
 		ConditionCollection conditionCollection = null;
@@ -81,6 +81,8 @@ namespace MonoDevelop.Core.AddIns
 		internal void AddNode (string id, DefaultAddInTreeNode child)
 		{
 			ChildNodes [id] = child;
+			if (sortedNodes == null)
+				sortedNodes = new ArrayList ();
 			sortedNodes.Add (child);
 			needsResort = true;
 		}
@@ -110,10 +112,16 @@ namespace MonoDevelop.Core.AddIns
 		/// </returns>
 		IAddInTreeNode[] GetSubnodesAsSortedArray()
 		{
-			if (!needsResort)
-				return (IAddInTreeNode[]) sortedNodes.ToArray (typeof(IAddInTreeNode));
+			if (!needsResort) {
+				if (sortedNodes == null)
+					return new IAddInTreeNode [0];
+				else
+					return (IAddInTreeNode[]) sortedNodes.ToArray (typeof(IAddInTreeNode));
+			}
 			
 			needsResort = false;
+			if (sortedNodes == null || sortedNodes.Count == 0)
+				return new IAddInTreeNode [0];
 			
 			ArrayList sorted = new ArrayList ();
 			foreach (IAddInTreeNode tnode in sortedNodes) {

@@ -1,5 +1,11 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs: Avoid creating
+	  unnecessary arraylists.
+	* Makefile.am: Flush.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Core.mdp: Added missing files.
 
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
