@@ -56,7 +56,10 @@ namespace MonoDevelop.Projects
 		
 		public CombineEntry ReadCombineEntry (string file, IProgressMonitor monitor)
 		{
-			return ExtensionChain.Load (monitor, file);
+			CombineEntry entry = ExtensionChain.Load (monitor, file);
+			if (entry != null)
+				entry.NeedsReload = false;
+			return entry;
 		}
 		
 		internal CombineEntry ReadFile (string file, IProgressMonitor monitor)

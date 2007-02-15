@@ -27,6 +27,9 @@ namespace MonoDevelop.Projects
 		ConfigurationCollection configurations;
 		Hashtable extendedProperties;
 		CombineEntryEventArgs thisCombineArgs;
+		
+		DateTime lastSaveTime;
+		bool savingFlag;
 
 		Combine parentCombine;
 		IConfiguration activeConfiguration;
@@ -156,8 +159,36 @@ namespace MonoDevelop.Projects
 		
 		public void Save (IProgressMonitor monitor)
 		{
-			Services.ProjectService.ExtensionChain.Save (monitor, this);
-			OnSaved (thisCombineArgs);
+			try {
+				savingFlag = true;
+				Services.ProjectService.ExtensionChain.Save (monitor, this);
+				OnSaved (thisCombineArgs);
+				lastSaveTime = GetLastWriteTime ();
+			} finally {
+				savingFlag = false;
+			}
+		}
+		
+		public virtual bool NeedsReload {
+			get {
+				return !savingFlag && lastSaveTime != GetLastWriteTime ();
+			}
+			set {
+				if (value)
+					lastSaveTime = DateTime.MinValue;
+				else
+					lastSaveTime = GetLastWriteTime ();
+			}
+		}
+		
+		DateTime GetLastWriteTime ()
+		{
+			try {
+				if (FileName != null && FileName.Length > 0 && File.Exists (FileName))
+					return File.GetLastWriteTime (FileName);
+			} catch {
+			}
+			return lastSaveTime;
 		}
 		
 		protected internal virtual void OnSave (IProgressMonitor monitor)

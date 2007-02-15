@@ -1,3 +1,20 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Reset the NeedsReload flag
+	  just after loading a project.
+	* MonoDevelop.Projects/CombineEntry.cs: Added methods for checking if a
+	  combine entry needs to be reloaded (that is, the underlying file
+	  has been modified).
+	* MonoDevelop.Projects/Combine.cs,
+	  MonoDevelop.Projects/CombineEntryCollection.cs: Implemented support
+	  for reloading a combine entry.
+	* MonoDevelop.Projects/UnknownCombineEntry.cs: Added property for
+	  storing the error message that generated this unknown entry.
+	* MonoDevelop.Projects/CmbxFileFormat.cs: If a combine entry can't be
+	  loaded, generate an UnknowCombineEntry object, which will be shown
+	  in the project pad with an error message.
+	* MonoDevelop.Projects.mdp: Flush.
+
 2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Serialization/ClassDataType.cs: Added missing

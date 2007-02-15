@@ -33,8 +33,38 @@ namespace MonoDevelop.Projects
 {
 	public class UnknownCombineEntry: CombineEntry
 	{
-		public UnknownCombineEntry()
+		string loadError = string.Empty;
+		bool unloaded;
+		
+		public UnknownCombineEntry ()
 		{
+			NeedsReload = false;
+		}
+		
+		public override string FileName {
+			get { return base.FileName; }
+			set { base.FileName = value; NeedsReload = false; }
+		}
+
+		
+		public string LoadError {
+			get { return loadError; }
+			set { loadError = value; }
+		}
+		
+		public bool UnloadedEntry {
+			get { return unloaded; }
+			set { unloaded = value; }
+		}
+		
+		public override string Name {
+			get {
+				if (FileName != null && FileName.Length > 0)
+					return System.IO.Path.GetFileNameWithoutExtension (FileName);
+				else
+					return GettextCatalog.GetString ("Unknown entry");
+			}
+			set { }
 		}
 		
 		public override IConfiguration CreateConfiguration (string name)
@@ -61,6 +91,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		protected internal override void OnSetNeedsBuilding (bool value)
+		{
+		}
+		
+		protected internal override void OnSave (IProgressMonitor monitor)
 		{
 		}
 	}

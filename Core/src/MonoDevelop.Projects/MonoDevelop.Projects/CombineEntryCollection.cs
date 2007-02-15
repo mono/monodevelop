@@ -74,6 +74,19 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		internal void Replace (CombineEntry entry, CombineEntry newEntry)
+		{
+			int i = IndexOf (entry);
+			list [i] = newEntry;
+			if (parentCombine != null) {
+				entry.SetParentCombine (null);
+				newEntry.SetParentCombine (parentCombine);
+			}
+
+			// Don't notify the parent combine here since Replace is only
+			// used internally when reloading entries
+		}
+		
 		public int IndexOf (CombineEntry entry)
 		{
 			return list.IndexOf (entry);

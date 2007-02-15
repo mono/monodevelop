@@ -190,6 +190,59 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public CombineEntry ReloadEntry (IProgressMonitor monitor, CombineEntry entry)
+		{
+			if (Entries.IndexOf (entry) == -1)
+				throw new InvalidOperationException ("Combine entry '" + entry.Name + "' does not belong to combine '" + Name + "'");
+
+			// Load the new entry
+			
+			CombineEntry newEntry;
+			try {
+				newEntry = Services.ProjectService.ReadCombineEntry (entry.FileName, monitor);
+			} catch (Exception ex) {
+				UnknownCombineEntry e = new UnknownCombineEntry ();
+				e.LoadError = ex.Message;
+				e.FileName = entry.FileName;
+				newEntry = e;
+			}
+			
+			// Replace the old entry by the new entry in the execute definitions
+			
+			foreach (CombineExecuteDefinition exDef in CombineExecuteDefinitions) {
+				if (exDef.Entry == entry) {
+					exDef.Entry = newEntry;
+					break;
+				}
+			}
+
+			// Replace in the configurations as well
+			
+			foreach (CombineConfiguration dentry in Configurations) {
+				foreach (CombineConfigurationEntry cce in dentry.Entries) {
+					if (cce.Entry == entry)
+						cce.Entry = newEntry;
+				}
+			}
+
+			if (StartupEntry == entry)
+				StartupEntry = newEntry;
+			
+			// Replace in the file list
+			Entries.Replace (entry, newEntry);
+			
+			DisconnectChildEntryEvents (entry);
+			ConnectChildEntryEvents (newEntry);
+
+			NotifyModified ();
+			OnEntryRemoved (new CombineEntryEventArgs (entry));
+			OnEntryAdded (new CombineEntryEventArgs (newEntry));
+			
+			entry.Dispose ();
+			
+			return newEntry;
+		}
+		
 		internal void NotifyEntryAdded (CombineEntry entry)
 		{
 			if (StartupEntry == null)
@@ -230,7 +283,15 @@ namespace MonoDevelop.Projects
 					entry.Configurations.Add(new CombineConfiguration(conf.Name));			
 			
 			combineExecuteDefinitions.Add (new CombineExecuteDefinition (entry, EntryExecuteType.None));
+			
+			ConnectChildEntryEvents (entry);
 
+			NotifyModified ();
+			OnEntryAdded (new CombineEntryEventArgs (entry));
+		}
+		
+		void ConnectChildEntryEvents (CombineEntry entry)
+		{
 			if (entry is Project)
 			{
 				Project project = entry as Project;
@@ -255,9 +316,6 @@ namespace MonoDevelop.Projects
 			}
 			entry.Modified += entryModifiedHandler;
 			entry.Saved += entrySavedHandler;
-			
-			NotifyModified ();
-			OnEntryAdded (new CombineEntryEventArgs (entry));
 		}
 		
 		public override DataCollection Serialize (ITypeSerializer handler)
@@ -311,30 +369,7 @@ namespace MonoDevelop.Projects
 
 		internal void NotifyEntryRemoved (CombineEntry entry)
 		{
-			Project pce = entry as Project;
-			if (pce != null) {
-				pce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-				pce.FileAddedToProject -= fileAddedToProjectHandler;
-				pce.FileChangedInProject -= fileChangedInProjectHandler;
-				pce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-				pce.FileRenamedInProject -= fileRenamedInProjectHandler;
-				pce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-				pce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
-			}
-			else {
-				Combine cce = entry as Combine;
-				if (cce != null) {
-					cce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-					cce.FileAddedToProject -= fileAddedToProjectHandler;
-					cce.FileChangedInProject -= fileChangedInProjectHandler;
-					cce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-					cce.FileRenamedInProject -= fileRenamedInProjectHandler;
-					cce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-					cce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
-				}
-			}
-			entry.Modified -= entryModifiedHandler;
-			entry.Saved -= entrySavedHandler;
+			DisconnectChildEntryEvents (entry);
 
 			// remove execute definition
 			CombineExecuteDefinition removeExDef = null;
@@ -359,6 +394,34 @@ namespace MonoDevelop.Projects
 			
 			NotifyModified ();
 			OnEntryRemoved (new CombineEntryEventArgs (entry));
+		}
+		
+		void DisconnectChildEntryEvents (CombineEntry entry)
+		{
+			Project pce = entry as Project;
+			if (pce != null) {
+				pce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
+				pce.FileAddedToProject -= fileAddedToProjectHandler;
+				pce.FileChangedInProject -= fileChangedInProjectHandler;
+				pce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
+				pce.FileRenamedInProject -= fileRenamedInProjectHandler;
+				pce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
+				pce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
+			}
+			else {
+				Combine cce = entry as Combine;
+				if (cce != null) {
+					cce.FileRemovedFromProject -= fileRemovedFromProjectHandler;
+					cce.FileAddedToProject -= fileAddedToProjectHandler;
+					cce.FileChangedInProject -= fileChangedInProjectHandler;
+					cce.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
+					cce.FileRenamedInProject -= fileRenamedInProjectHandler;
+					cce.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
+					cce.ReferenceAddedToProject -= referenceAddedToProjectHandler;
+				}
+			}
+			entry.Modified -= entryModifiedHandler;
+			entry.Saved -= entrySavedHandler;
 		}
 		
 		private void RemoveReferencesToProject(Project projectToRemove)

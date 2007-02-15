@@ -224,7 +224,15 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", baseFile), files.Count);
 				try {
 					foreach (string nodefile in files) {
-						entries.Add ((CombineEntry) Services.ProjectService.ReadCombineEntry (nodefile, monitor));
+						try {
+							CombineEntry entry = (CombineEntry) Services.ProjectService.ReadCombineEntry (nodefile, monitor);
+							entries.Add (entry);
+						} catch (Exception ex) {
+							UnknownCombineEntry entry = new UnknownCombineEntry ();
+							entry.FileName = nodefile;
+							entry.LoadError = ex.Message;
+							entries.Add (entry);
+						}
 						monitor.Step (1);
 					}
 				} finally {
