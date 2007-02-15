@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Gui.Utils
 {
 	public struct DesktopApplication
 	{
-		string id;
+		protected string id;
 		string displayName;
 		string command;
 		
