@@ -94,6 +94,10 @@ namespace MonoDevelop.Autotools
 			this.BuildTargetName.Text = data.BuildTargetName;
 			this.ExecuteTargetName.Text = data.ExecuteTargetName;
 			this.CleanTargetName.Text = data.CleanTargetName;
+			
+			cbBuildTarget.Active = BuildTargetName.Sensitive = data.BuildTargetName != string.Empty;
+			cbRunTarget.Active = ExecuteTargetName.Sensitive = data.ExecuteTargetName != string.Empty;
+			cbCleanTarget.Active = CleanTargetName.Sensitive = data.CleanTargetName != string.Empty;
 
 			HandleComboMessageTypeChanged (comboMessageType);
 
@@ -613,6 +617,38 @@ namespace MonoDevelop.Autotools
 			this.entryErrorRegex.Sensitive = state;
 			this.entryWarningRegex.Sensitive = state;
 		}
-		
+
+		protected virtual void OnCbBuildTargetClicked(object sender, System.EventArgs e)
+		{
+			if (cbBuildTarget.Active) {
+				BuildTargetName.Sensitive = true;
+				BuildTargetName.Text = "all";
+			} else {
+				BuildTargetName.Sensitive = false;
+				BuildTargetName.Text = "";
+			}
+		}
+
+		protected virtual void OnCbRunTargetClicked(object sender, System.EventArgs e)
+		{
+			if (cbRunTarget.Active) {
+				ExecuteTargetName.Sensitive = true;
+				ExecuteTargetName.Text = "run";
+			} else {
+				ExecuteTargetName.Sensitive = false;
+				ExecuteTargetName.Text = "";
+			}
+		}
+
+		protected virtual void OnCbCleanTargetClicked(object sender, System.EventArgs e)
+		{
+			if (cbCleanTarget.Active) {
+				CleanTargetName.Sensitive = true;
+				CleanTargetName.Text = "clean";
+			} else {
+				CleanTargetName.Sensitive = false;
+				CleanTargetName.Text = "";
+			}
+		}
 	}
 }

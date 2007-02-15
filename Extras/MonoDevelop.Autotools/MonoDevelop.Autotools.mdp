@@ -45,6 +45,7 @@
     <File name="./MonoDevelop.Autotools.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./templates" subtype="Directory" buildaction="Compile" />
+    <File name="./FileNodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />

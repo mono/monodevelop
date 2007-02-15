@@ -34,6 +34,9 @@
 		<Command id = "MonoDevelop.Autotools.Commands.GenerateFiles"
 			_label = "Generate Autotools Files"
 			description="Generate autotools files for a solution"/>
+		<Command id = "MonoDevelop.Autotools.Commands.SynchWithMakefile"
+			type="check"
+			_label = "Include in Synchronized Makefile" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
@@ -44,6 +47,14 @@
 		<SeparatorItem id = "Separator1" />
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode/Include">
+		<CommandItem id = "MonoDevelop.Autotools.Commands.SynchWithMakefile" insertafter="Include"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder class = "MonoDevelop.Autotools.FileNodeBuilderExtension"/>
+	</Extension>
+	
 	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">
 	</Extension>
 	

@@ -38,6 +38,7 @@ FILES = \
 	gtk-gui/generated.cs \
 	MakefileProjectServiceExtension.cs \
 	MakefileData.cs \
+	FileNodeBuilderExtension.cs \
 	MakefileVar.cs
 
 RES =

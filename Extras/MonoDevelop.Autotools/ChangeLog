@@ -1,3 +1,17 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MakefileProjectServiceExtension.cs: Don't run make if the build
+	  target is not specified.
+	* MonoDevelop.Autotools.addin.xml, FileNodeBuilderExtension.cs,
+	  Commands.cs, MakefileData.cs: Allow excluding a file from the
+	  makefile integration. Added menu option for enabling/disabling the
+	  exclusion.
+	* MakefileOptionPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/gui.stetic: Added checkboxes for enabling/disabling
+	  makefile targets.
+	* MonoDevelop.Autotools.mdp, Makefile.am: Added new file.
+
 2007-02-13  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs: Add support for custom regexes for compiler messages.

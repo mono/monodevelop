@@ -53,6 +53,10 @@ namespace MonoDevelop.Autotools
 		string executeTargetName;
 		Project ownerProject;
 		CustomMakefile makefile;
+		
+		[ItemProperty ("ExcludedFiles")]
+		[ProjectPathItemProperty("File", Scope=1)]
+		List<string> excludedFiles = new List<string> ();
 
 		public MakefileData ()
 		{
@@ -412,6 +416,20 @@ namespace MonoDevelop.Autotools
 				return buildVariables;
 			}
 		}
+		
+		public bool IsFileExcluded (string fileName)
+		{
+			return excludedFiles.Contains (fileName);
+		}
+		
+		public void SetFileExcluded (string fileName, bool exclude)
+		{
+			if (exclude)
+				excludedFiles.Add (fileName);
+			else
+				excludedFiles.Remove (fileName);
+			dirty = true;
+		}
 
 		bool dirty = false;
 
@@ -695,6 +713,7 @@ namespace MonoDevelop.Autotools
 				fileVar.SaveEnabled = true;
 				ReadFilesActual (fileVar, buildAction, id, promptForRemoval);
 			} catch (Exception e) {
+				Runtime.LoggingService.Error (e);
 				Console.WriteLine ("Error in loading files for {0}. Skipping.", id);
 				monitor.ReportWarning (GettextCatalog.GetString ("Error in loading files for {0}. Skipping.", id));
 				fileVar.SaveEnabled = false;
@@ -795,13 +814,16 @@ namespace MonoDevelop.Autotools
 					if (buildAction == BuildAction.EmbedAsResource && resourceId != null)
 						pf.ResourceId = resourceId;
 				} catch (Exception e) {
+					Runtime.LoggingService.Error (e);
 					fileVar.Extra.Add (f);
 				}
 			}
 
 			if (existingFiles.Count > 0) {
-				foreach (ProjectFile file in existingFiles.Values)
-					ownerProject.ProjectFiles.Remove (file);
+				foreach (ProjectFile file in existingFiles.Values) {
+					if (!IsFileExcluded (file.FilePath))
+						ownerProject.ProjectFiles.Remove (file);
+				}
 			}
 		}
 
@@ -1069,7 +1091,7 @@ namespace MonoDevelop.Autotools
 							continue;
 						
 						string [] files = pr.GetReferencedFileNames ();
-						if (files != null)
+						if (files.Length > 0)
 							asmProjectRefs [files [0]] = pr;
 					}
 
@@ -1256,6 +1278,8 @@ namespace MonoDevelop.Autotools
 
 			List<string> files = new List<string> ();
 			foreach (ProjectFile pf in OwnerProject.ProjectFiles) {
+				if (IsFileExcluded (pf.FilePath))
+					continue;
 				if (pf.BuildAction == action) {
 					string str = null;
 					if (makeRelative)

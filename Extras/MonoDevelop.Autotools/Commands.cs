@@ -39,7 +39,8 @@ namespace MonoDevelop.Autotools
 {
 	public enum Commands
 	{
-		GenerateFiles
+		GenerateFiles,
+		SynchWithMakefile
 	}
 	
 	class NodeExtension : NodeBuilderExtension

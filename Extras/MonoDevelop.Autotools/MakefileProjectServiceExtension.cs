@@ -44,6 +44,7 @@ namespace MonoDevelop.Autotools
 	public class MakefileProjectServiceExtension : ProjectServiceExtension
 	{
 		bool hasParentCombine = false;
+		
 		public override CombineEntry Load (IProgressMonitor monitor, string fileName)
 		{
 			bool oldHasParentCombine = hasParentCombine;
@@ -131,7 +132,7 @@ namespace MonoDevelop.Autotools
 				return base.Build (monitor, entry);
 
 			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-			if (data == null || !data.IntegrationEnabled)
+			if (data == null || !data.IntegrationEnabled || String.IsNullOrEmpty (data.BuildTargetName))
 				return base.Build (monitor, entry);
 
 			//FIXME: Gen autofoo ? autoreconf?
