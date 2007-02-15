@@ -73,12 +73,17 @@ public class MonoDevelopProcessHost
 				pc.WaitForExit ();
 			} catch {
 			}
-			rp.Dispose ();
+			
+			try {
+				rp.Dispose ();
+			} catch {
+			}
 			
 			if (unixPath != null)
 				File.Delete (unixPath);
 			
-		} catch {
+		} catch (Exception ex) {
+			Console.WriteLine (ex);
 		}
 		
 		return 0;
