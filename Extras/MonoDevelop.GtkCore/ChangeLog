@@ -1,5 +1,13 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Fix nullref.
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs: Log
+	  error message.
+	* Makefile.am, MonoDevelop.GtkCore.mdp: Synchronized MD project and
+	  makefile.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Avoid throwing
 	  delayed events after the project has been disposed.
 

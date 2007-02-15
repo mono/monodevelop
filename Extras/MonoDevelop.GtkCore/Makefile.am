@@ -3,68 +3,67 @@ ADDIN = MonoDevelop.GtkCore.addin.xml
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 
-REFS =	-r:System \
-	-r:System.Xml \
-	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
+REFS =  \
 	$(GCONF_SHARP_LIBS) \
-	-r:$(srcdir)/lib/libstetic.dll \
-	-r:$(srcdir)/lib/libsteticui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	$(GLADE_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll
+	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:./lib/libstetic.dll \
+	-r:./lib/libsteticui.dll \
+	-r:System \
+	-r:System.Xml
 
-FILES = \
-MonoDevelop.GtkCore/GtkCoreService.cs \
-MonoDevelop.GtkCore/GtkDesignInfo.cs \
-MonoDevelop.GtkCore/ProjectResourceProvider.cs \
-MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
-MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs \
-MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs \
-MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
-MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
-MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
-MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
-MonoDevelop.GtkCore.Commands/GladeCommands.cs \
-MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
-MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs \
-MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
-MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs \
-MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs \
-MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs \
-MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
-MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs \
-MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs \
-MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
-MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
-MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
-MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs
+FILES =  \
+	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
+	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
+	MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
+	MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
+	MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
+	MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
+	MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs \
+	MonoDevelop.GtkCore.GuiBuilder/ClassUtils.cs \
+	MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs \
+	MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
+	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
+	MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/WindowsFolder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs \
+	MonoDevelop.GtkCore/GtkCoreService.cs \
+	MonoDevelop.GtkCore/GtkDesignInfo.cs \
+	MonoDevelop.GtkCore/ProjectResourceProvider.cs \
+	MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs \
+	MonoDevelop.GtkCore/WidgetFileTemplateFullClass.cs \
+	MonoDevelop.GtkCore/WidgetFileTemplatePartialClass.cs
 
-RES = \
-gui.glade \
-icons/dialog.png \
-icons/widget.png \
-icons/window.png \
-icons/actiongroup.png \
-templates/ActionGroup.xft.xml \
-templates/Window.xft.xml \
-templates/Widget.xft.xml \
-templates/Dialog.xft.xml \
-templates/ActionGroupPartial.xft.xml \
-templates/WindowPartial.xft.xml \
-templates/WidgetPartial.xft.xml \
-templates/DialogPartial.xft.xml
+RES =  \
+	gui.glade \
+	icons/actiongroup.png \
+	icons/widget.png \
+	templates/ActionGroup.xft.xml \
+	templates/ActionGroupPartial.xft.xml \
+	templates/Dialog.xft.xml \
+	templates/DialogPartial.xft.xml \
+	templates/Widget.xft.xml \
+	templates/WidgetPartial.xft.xml \
+	templates/Window.xft.xml \
+	templates/WindowPartial.xft.xml
 
 STETIC_FILES = \
 libstetic.dll \

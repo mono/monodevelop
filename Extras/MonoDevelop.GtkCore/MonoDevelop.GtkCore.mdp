@@ -29,12 +29,9 @@
     <File name="./templates/Dialog.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/Window.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelop.GtkCore" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore/GtkDesignInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore/GtkCoreService.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.GtkCore.Dialogs" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.GtkCore.NodeBuilders" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs" subtype="Code" buildaction="Compile" />
@@ -44,7 +41,6 @@
     <File name="./templates/Widget.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./icons" subtype="Directory" buildaction="Compile" />
     <File name="./icons/window.png" subtype="Code" buildaction="Nothing" />
     <File name="./icons/dialog.png" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs" subtype="Code" buildaction="Compile" />
@@ -63,24 +59,38 @@
     <File name="./templates/WidgetPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/WindowPartial.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
+    <File name="./icons/widget.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/actiongroup.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../contrib/Mono.Cecil.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Assembly" localcopy="True" refto="./lib/libstetic.dll" />
     <ProjectReference type="Assembly" localcopy="True" refto="./lib/libsteticui.dll" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp-peditors, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../build/bin/Mono.Cecil.dll" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

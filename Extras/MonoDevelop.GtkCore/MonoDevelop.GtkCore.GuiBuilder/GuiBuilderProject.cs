@@ -488,7 +488,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void UpdateLibraries ()
 		{
-			if (hasError || disposed)
+			if (hasError || disposed || gproject == null)
 				return;
 
 			string[] oldLibs = gproject.WidgetLibraries;

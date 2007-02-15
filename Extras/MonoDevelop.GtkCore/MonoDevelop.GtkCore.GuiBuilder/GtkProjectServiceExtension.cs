@@ -58,6 +58,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						Messages = res.Warnings;
 				} catch (Exception ex) {
 					Error = ex;
+					Runtime.LoggingService.Error (ex);
 					Messages = new string [] { Error.Message };
 				}
 				Monitor.PulseAll (this);
