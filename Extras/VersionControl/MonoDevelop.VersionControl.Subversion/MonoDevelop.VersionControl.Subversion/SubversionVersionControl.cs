@@ -31,8 +31,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			try {
 				string url = Client.GetPathUrl (path);
 				return new SubversionRepository (this, url);
-			} catch {
+			} catch (Exception ex) {
 				// No SVN
+				// FIXME: hack to help diagnose a bug
+				if (!ex.Message.Contains ("is not a working copy"))
+					Console.WriteLine (ex);
 				return null;
 			}
 		}
