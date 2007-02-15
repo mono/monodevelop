@@ -1,31 +1,33 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/WelcomePage
 ASSEMBLY = $(ADDIN_BUILD)/WelcomePage.dll
-
-REFS = -r:System.Xml \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+REFS =  \
 	$(GECKO_SHARP_LIBS) \
-	$(GTK_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Xml
 
-FILES = \
+FILES =  \
 	WelcomePageCommands.cs \
 	WelcomePageOptionPanel.cs \
 	WelcomePageView.cs
 
-RES =
-
-DATA_FILES = \
+RES =                                                      
+ 
+DATA_FILES =  \
 	mono-bg.png \
 	mono-logo.png \
 	WelcomePage.css \
-	WelcomePageContent.xml \
-	WelcomePage.xsl 
+	WelcomePage.xsl \
+	WelcomePageContent.xml
+
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
@@ -41,9 +43,9 @@ $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(notdir $@) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(FILES) $(RES)
+$(ASSEMBLY): $(FILES) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(RES:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 assemblydir = $(MD_ADDIN_DIR)/WelcomePage
 assembly_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES)
