@@ -94,7 +94,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" ExecuteTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../" OutputDirVar="" AssemblyNameVar="">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />

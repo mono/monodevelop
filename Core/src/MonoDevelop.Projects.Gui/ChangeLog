@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Flush.
+	* Base.glade: Cosmetic fix.
+
 2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: In CalcVisibleRows
