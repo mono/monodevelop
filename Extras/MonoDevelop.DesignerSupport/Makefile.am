@@ -1,80 +1,77 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
-
-REFS = -r:System \
-	-r:System.Xml \
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
 	-r:System.Design \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \
-	-r:System.Windows.Forms \
 	-r:System.Web \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
-	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	-r:System.Windows.Forms \
+	-r:System.Xml
 
-FILES = \
-	MonoDevelop.DesignerSupport/PropertyPad.cs \
-	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
-	MonoDevelop.DesignerSupport/ToolboxPad.cs \
-	MonoDevelop.DesignerSupport/WrapperDesignView.cs \
-	MonoDevelop.DesignerSupport/ToolboxService.cs \
-	MonoDevelop.DesignerSupport/CodeBehindService.cs \
-	MonoDevelop.DesignerSupport/BindingService.cs \
-	MonoDevelop.DesignerSupport/MemberExistsException.cs \
-	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
-	 \
-	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
-	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
+FILES =  \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindClassBuilder.cs \
+	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
-	\
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/GridRow.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs \
-	 \
+	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
+	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BaseEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BoolEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/NumberEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/NumberEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/StringEditor.cs \
-	 \
+	MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/GridRow.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
 	MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs \
-	MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs \
-	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
+	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
-	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
+	MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxLoader.cs \
-	MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs \
+	MonoDevelop.DesignerSupport.Toolbox/ToolboxStore.cs \
+	MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs \
+	MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs \
+	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
+	MonoDevelop.DesignerSupport/BindingService.cs \
+	MonoDevelop.DesignerSupport/CodeBehindService.cs \
+	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
+	MonoDevelop.DesignerSupport/MemberExistsException.cs \
+	MonoDevelop.DesignerSupport/PropertyPad.cs \
+	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
+	MonoDevelop.DesignerSupport/ToolboxPad.cs \
+	MonoDevelop.DesignerSupport/ToolboxService.cs \
+	MonoDevelop.DesignerSupport/WrapperDesignView.cs
 
-RES = \
+RES =  \
+	icons/group-by-category.png \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.DefaultPropertyTab.bmp \
-	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png \
 	icons/MonoDevelop.DesignerSupport.PropertyGrid.EventPropertyTab.bmp \
-	icons/group-by-category.png
+	icons/MonoDevelop.DesignerSupport.PropertyGrid.SortByCat.png
+
 
 ADDIN = MonoDevelop.DesignerSupport.addin.xml
 
@@ -88,10 +85,10 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(ASSEMBLY): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
-		$(RES:%=/resource:%) $(build_sources)
+		$(build_resources:%=/resource:%) $(build_sources)
 
 if ENABLE_DESIGNERSUPP
 csharpbindinglibdir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport

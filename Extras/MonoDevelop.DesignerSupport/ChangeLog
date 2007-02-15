@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Synchronized the MD
+	  project and the Makefile
+
 2007-02-06  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs,
