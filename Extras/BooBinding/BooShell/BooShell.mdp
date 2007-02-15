@@ -1,37 +1,45 @@
-<Project name="BooShell" fileversion="2.0" language="Boo" clr-version="Net_1_1" ctype="DotNetProject">
+<Project name="BooShell" fileversion="2.0" language="Boo" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/BackendBindings/" assembly="BooShell" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="../../../build/AddIns/BackendBindings/" assembly="BooShell" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration genwarnings="False" ducky="False" culture="" ctype="BooCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./BooShell.boo" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Useful, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.CodeDom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>
