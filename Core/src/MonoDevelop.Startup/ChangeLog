@@ -1,5 +1,9 @@
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Startup.mdp, Makefile.am: Set target runtime to 2.0.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Startup.mdp, Makefile.am: Synchronized MD project and
 	  makefile.
 
