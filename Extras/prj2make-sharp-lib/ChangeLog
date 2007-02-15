@@ -1,3 +1,7 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* prj2make-sharp-lib.mdp: Updated.
+
 2007-02-13 Ankit Jain  <jankit@novell.com>
 
 	* VS2003SlnFileFormat.cs: New.
