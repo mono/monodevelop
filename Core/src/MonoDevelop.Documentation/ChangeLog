@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Documentation.mdp: Synchronized MD project
+	  and makefile.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com> 
 
 	* MonoDevelop.Documentation.mdp: Added reference to

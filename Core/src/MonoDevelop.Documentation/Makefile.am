@@ -1,14 +1,13 @@
 
 ASSEMBLY = $(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll
 
-REFS = \
-	-r:System.Xml \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+REFS =  \
+	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	$(MONODOC_LIBS)
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System.Xml
 
-FILES= \
-MonoDevelop.Documentation/DocumentationService.cs
+FILES = MonoDevelop.Documentation/DocumentationService.cs
 
 GENERATED_FILES = \
 AssemblyInfo.cs
