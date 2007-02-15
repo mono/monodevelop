@@ -21,6 +21,7 @@
       <Entry build="True" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
+      <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -43,9 +44,9 @@
       <Entry build="True" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
+      <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <StartMode startupentry="BooBinding" single="True">
     <Execute type="None" entry="MonoDevelop.NUnit" />
     <Execute type="None" entry="CSharpBinding" />
@@ -67,6 +68,7 @@
     <Execute type="None" entry="AspNetEdit" />
     <Execute type="None" entry="MonoDevelop.DesignerSupport" />
     <Execute type="None" entry="MonoDevelop.Autotools" />
+    <Execute type="None" entry="MonoDevelop.WebReferences" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -89,5 +91,6 @@
     <Entry filename="./AspNetEdit/AspNetEdit.mdp" />
     <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
     <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
+    <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
   </Entries>
 </Combine>
