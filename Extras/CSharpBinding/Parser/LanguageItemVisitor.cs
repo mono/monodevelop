@@ -67,7 +67,10 @@ namespace CSharpBinding.Parser
 				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
 					// It may be a call to a constructor
-					return resolver.SearchType (id, null, resolver.CompilationUnit);
+					if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0)
+						return resolver.SearchType (id + "`" + invocationExpression.TypeArguments.Count, null, resolver.CompilationUnit);
+					else
+						return resolver.SearchType (id, null, resolver.CompilationUnit);
 				}
 				// TODO: Find the right method
 				return ResolveOverload (methods, invocationExpression, data);
