@@ -1,48 +1,51 @@
-FILES = \
-Schema/IndexConstraintSchema.cs \
-Schema/OperatorSchema.cs \
-Schema/GroupSchema.cs \
-Schema/ColumnSchema.cs \
-Schema/SchemaSchema.cs \
-Schema/RoleSchema.cs \
-Schema/ISchema.cs \
-Schema/PrimaryKeyConstraintSchema.cs \
-Schema/AbstractSchema.cs \
-Schema/TriggerSchema.cs \
-Schema/RuleSchema.cs \
-Schema/ForeignKeyConstraintSchema.cs \
-Schema/SequenceSchema.cs \
-Schema/ViewSchema.cs \
-Schema/DataTypeSchema.cs \
-Schema/UniqueConstraintSchema.cs \
-Schema/UserSchema.cs \
-Schema/ParameterSchema.cs \
-Schema/CheckConstraintSchema.cs \
-Schema/LanguageSchema.cs \
-Schema/ConstraintSchema.cs \
-Schema/PrivilegeSchema.cs \
-Schema/AggregateSchema.cs \
-Schema/TableSchema.cs \
-Schema/ProcedureSchema.cs \
-Providers/MySqlDbProvider.cs \
-Providers/DbProviderBase.cs \
-Providers/NpgsqlDbProvider.cs \
-Providers/SqliteDbProvider.cs \
-Providers/OracleDbProvider.cs \
-Providers/FirebirdDbProvider.cs \
-Providers/OdbcDbProvider.cs \
-Providers/SybaseDbProvider.cs \
-Providers/SqlDbProvider.cs \
-AssemblyInfo.cs
 
-REFS = \
--r:System.Data \
--r:Npgsql \
--r:ByteFX.Data \
--r:Mono.Data.SqliteClient \
--r:System.Data.OracleClient \
--r:Mono.Data.SybaseClient \
--r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll
+FILES =  \
+	AssemblyInfo.cs \
+	Providers/DbProviderBase.cs \
+	Providers/FirebirdDbProvider.cs \
+	Providers/MySqlDbProvider.cs \
+	Providers/NpgsqlDbProvider.cs \
+	Providers/OdbcDbProvider.cs \
+	Providers/OracleDbProvider.cs \
+	Providers/SqlDbProvider.cs \
+	Providers/SqliteDbProvider.cs \
+	Providers/SybaseDbProvider.cs \
+	Schema/AbstractSchema.cs \
+	Schema/AggregateSchema.cs \
+	Schema/CheckConstraintSchema.cs \
+	Schema/ColumnSchema.cs \
+	Schema/ConstraintSchema.cs \
+	Schema/DataTypeSchema.cs \
+	Schema/ForeignKeyConstraintSchema.cs \
+	Schema/GroupSchema.cs \
+	Schema/IndexConstraintSchema.cs \
+	Schema/ISchema.cs \
+	Schema/LanguageSchema.cs \
+	Schema/OperatorSchema.cs \
+	Schema/ParameterSchema.cs \
+	Schema/PrimaryKeyConstraintSchema.cs \
+	Schema/PrivilegeSchema.cs \
+	Schema/ProcedureSchema.cs \
+	Schema/RoleSchema.cs \
+	Schema/RuleSchema.cs \
+	Schema/SchemaSchema.cs \
+	Schema/SequenceSchema.cs \
+	Schema/TableSchema.cs \
+	Schema/TriggerSchema.cs \
+	Schema/UniqueConstraintSchema.cs \
+	Schema/UserSchema.cs \
+	Schema/ViewSchema.cs
+
+REFS =  \
+	-r:$(top_builddir)/build/AddIns/MonoQuery/FirebirdSql.Data.Firebird.dll \
+	-r:ByteFX.Data \
+	-r:Mono.Data.SqliteClient \
+	-r:Mono.Data.SybaseClient \
+	-r:Npgsql \
+	-r:System \
+	-r:System.Data \
+	-r:System.Data.OracleClient
+
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
 

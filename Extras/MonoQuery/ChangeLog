@@ -1,3 +1,10 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Data.Sql.mds, tests/Mono.Data.Sql.Tests.mdp,
+	  Mono.Data.Sql/Makefile.am, Mono.Data.Sql/Mono.Data.Sql.mdp,
+	  MonoQuery/Makefile.am, MonoQuery/MonoQuery.mdp: Synchronized the MD
+	  project and the Makefile
+
 2007-02-06  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoQuery/MonoQuery.addin.xml: added translatable string for SQL definition pad

@@ -1,7 +1,7 @@
 <Combine name="MonoQuery" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry build="False" name="Mono.Data.Sql" configuration="Debug" />
+      <Entry build="True" name="Mono.Data.Sql" configuration="Debug" />
       <Entry build="True" name="Mono.Data.Sql.Tests" configuration="Debug" />
       <Entry build="True" name="MonoQuery" configuration="Debug" />
     </Configuration>
@@ -11,7 +11,6 @@
       <Entry build="True" name="MonoQuery" configuration="Release" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <StartMode startupentry="Mono.Data.Sql" single="True">
     <Execute type="None" entry="Mono.Data.Sql" />
     <Execute type="None" entry="Mono.Data.Sql.Tests" />
