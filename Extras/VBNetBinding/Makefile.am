@@ -2,57 +2,58 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/VBNetBinding.dll
 
-REFS =	-r:System.dll \
-	-r:System.Xml.dll \
-	-r:System.Drawing.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/bin/NRefactory.dll \
+REFS =  \
+	$(GLADE_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS)
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/bin/NRefactory.dll \
+	-r:System \
+	-r:System.Drawing \
+	-r:System.Xml
 
-FILES = \
-AssemblyInfo.cs \
-VBAmbience.cs \
-VBBindingCompilerServices.cs \
-VBLanguageBinding.cs \
-Gui/CodeGenerationPanel.cs \
-Parser/ExpressionFinder.cs \
-Parser/Parser.cs \
-Parser/Resolver.cs \
-Parser/TypeVisitor.cs \
-Parser/VBNetVisitor.cs \
-Parser/SharpDevelopTree/Class.cs \
-Parser/SharpDevelopTree/CompilationUnit.cs \
-Parser/SharpDevelopTree/Constructor.cs \
-Parser/SharpDevelopTree/ReturnType.cs \
-Project/VBCompilerParameters.cs
+FILES =  \
+	AssemblyInfo.cs \
+	Gui/CodeGenerationPanel.cs \
+	Parser/ExpressionFinder.cs \
+	Parser/Parser.cs \
+	Parser/Resolver.cs \
+	Parser/SharpDevelopTree/Class.cs \
+	Parser/SharpDevelopTree/CompilationUnit.cs \
+	Parser/SharpDevelopTree/Constructor.cs \
+	Parser/SharpDevelopTree/ReturnType.cs \
+	Parser/TypeVisitor.cs \
+	Parser/VBNetVisitor.cs \
+	Project/VBCompilerParameters.cs \
+	VBAmbience.cs \
+	VBBindingCompilerServices.cs \
+	VBLanguageBinding.cs
 
-RES = \
-VB.glade \
-templates/EmptyVBFile.xft.xml \
-templates/EmptyVBProject.xpt.xml \
-templates/VBConsoleApplicationProject.xpt.xml \
-templates/VBGtkSharpProject.xpt.xml \
-templates/VBGtkSharp2Project.xpt.xml \
-icons/VB.File.EmptyFile \
-icons/VB.File.Form \
-icons/VB.File.FullFile \
-icons/VB.FileIcon \
-icons/VB.File.NewClass \
-icons/VB.File.WebFile \
-icons/VB.Project.DOSProject \
-icons/VB.Project.EmptyProject \
-icons/VB.Project.Form \
-icons/VB.Project.FullProject \
-icons/VB.ProjectIcon \
-icons/VB.Project.Library \
-icons/VB.Project.ServiceProject \
-icons/VB.Project.UserControl \
-icons/VB.Project.WebProject
+RES =  \
+	icons/VB.File.EmptyFile \
+	icons/VB.File.Form \
+	icons/VB.File.FullFile \
+	icons/VB.File.NewClass \
+	icons/VB.File.WebFile \
+	icons/VB.FileIcon \
+	icons/VB.Project.DOSProject \
+	icons/VB.Project.EmptyProject \
+	icons/VB.Project.Form \
+	icons/VB.Project.FullProject \
+	icons/VB.Project.Library \
+	icons/VB.Project.ServiceProject \
+	icons/VB.Project.UserControl \
+	icons/VB.Project.WebProject \
+	icons/VB.ProjectIcon \
+	templates/EmptyVBFile.xft.xml \
+	templates/EmptyVBProject.xpt.xml \
+	templates/VBConsoleApplicationProject.xpt.xml \
+	templates/VBGtkSharp2Project.xpt.xml \
+	templates/VBGtkSharpProject.xpt.xml \
+	VB.glade
 
 ADDIN = VBNetBinding.addin.xml
 
@@ -62,10 +63,10 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/.
 
-$(ASSEMBLY): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -out:$@ -target:library $(REFS) \
-		$(RES:%=/resource:%) \
+		$(build_resources:%=/resource:%) \
 		$(build_sources)
 
 vbnetbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings

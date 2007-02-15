@@ -13,8 +13,23 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VBAmbience.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VBBindingCompilerServices.cs" subtype="Code" buildaction="Compile" />
+    <File name="./VBLanguageBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/Resolver.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/TypeVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/VBNetVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/SharpDevelopTree/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/SharpDevelopTree/Constructor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Project/VBCompilerParameters.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./VB.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/EmptyVBFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/EmptyVBProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -36,28 +51,11 @@
     <File name="./icons/VB.Project.ServiceProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/VB.Project.UserControl" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/VB.Project.WebProject" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VBAmbience.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VBBindingCompilerServices.cs" subtype="Code" buildaction="Compile" />
-    <File name="./VBLanguageBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Gui/CodeGenerationPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/ExpressionFinder.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/Parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/Resolver.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/TypeVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/VBNetVisitor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/CompilationUnit.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/Constructor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Parser/SharpDevelopTree/ReturnType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Project/VBCompilerParameters.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.SourceEditor" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -65,6 +63,18 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="NRefactory" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>
