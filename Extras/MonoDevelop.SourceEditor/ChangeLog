@@ -1,3 +1,8 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.SourceEditor.mdp: Synchronized MD project
+	  and makefile.
+
 2007-02-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* EditorBindings.glade,

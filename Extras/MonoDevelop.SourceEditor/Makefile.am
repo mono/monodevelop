@@ -2,54 +2,56 @@ DLLNAME = MonoDevelop.SourceEditor.dll
 CONFIG = $(DLLNAME).config
 ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
 
-FILES = \
-MonoDevelop.SourceEditor/SourceViewService.cs \
-MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs \
-MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs \
-MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs \
-MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
-MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs \
-MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs \
-MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs \
-MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs \
-MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs \
-MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs \
-MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs \
-MonoDevelop.SourceEditor.Document/DefaultFormattingStrategy.cs \
-MonoDevelop.SourceEditor.FormattingStrategy/IFormattableDocument.cs \
-MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs \
-MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs \
-MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \
-MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs \
-MonoDevelop.SourceEditor/EditorCommands.cs \
-MonoDevelop.SourceEditor.Actions/IEditAction.cs \
-MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
-MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs \
-MonoDevelop.SourceEditor.Codons/EditActionCodon.cs \
-MonoDevelop.SourceEditor/Services.cs
+FILES =  \
+	MonoDevelop.SourceEditor.Actions/DefaultEditActions.cs \
+	MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
+	MonoDevelop.SourceEditor.Actions/IEditAction.cs \
+	MonoDevelop.SourceEditor.Codons/EditActionCodon.cs \
+	MonoDevelop.SourceEditor.Document/DefaultFormattingStrategy.cs \
+	MonoDevelop.SourceEditor.FormattingStrategy/IFormattableDocument.cs \
+	MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs \
+	MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs \
+	MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \
+	MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs \
+	MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs \
+	MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs \
+	MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs \
+	MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs \
+	MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs \
+	MonoDevelop.SourceEditor.Gui/LanguageItemWindow.cs \
+	MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs \
+	MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs \
+	MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
+	MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs \
+	MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs \
+	MonoDevelop.SourceEditor/EditorCommands.cs \
+	MonoDevelop.SourceEditor/Services.cs \
+	MonoDevelop.SourceEditor/SourceViewService.cs
 
-RES = \
-texteditoraddin.glade \
-EditorBindings.glade \
-bookmark.png
+RES =  \
+	bookmark.png \
+	EditorBindings.glade \
+	texteditoraddin.glade
 
 GENERATED_FILES = \
 AssemblyInfo.cs
 
-REFS = -r:System \
-       -r:System.Drawing \
-       -r:System.Xml \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+REFS =  \
+	$(GCONF_SHARP_LIBS) \
+	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
+	$(GNOME_VFS_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	$(GTKSOURCEVIEW_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	$(GTK_SHARP_LIBS) \
-	$(GNOME_VFS_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
-	$(GCONF_SHARP_LIBS) \
-	$(GTKSOURCEVIEW_SHARP_LIBS)
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Drawing \
+	-r:System.Xml
 
 ADDIN = MonoDevelop.SourceEditor.addin.xml
 
