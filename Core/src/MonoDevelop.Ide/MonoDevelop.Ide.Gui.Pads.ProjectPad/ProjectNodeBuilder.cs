@@ -350,6 +350,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.SaveProject (p);
 		}
 		
+		[CommandHandler (ProjectCommands.Reload)]
+		public void OnReload ()
+		{
+			Project p = (Project) CurrentNode.DataItem;
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+				p.ParentCombine.ReloadEntry (m, p);
+			}
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.Reload)]
+		public void OnUpdateReload (CommandInfo info)
+		{
+			Project p = (Project) CurrentNode.DataItem;
+			info.Visible = (p.ParentCombine != null) && p.NeedsReload;
+		}
+		
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.Copy | DragOperation.Move;

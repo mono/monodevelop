@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using System.Resources;
@@ -235,9 +236,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 				root.RestoreState (state);
 		}
 		
-		void SetBuilders (NodeBuilder[] builders, TreePadOption[] options)
+		void SetBuilders (NodeBuilder[] buildersArray, TreePadOption[] options)
 		{
 			// Create default options
+			
+			List<NodeBuilder> builders = new List<NodeBuilder> ();
+			foreach (NodeBuilder nb in buildersArray) {
+				if (!(nb is TreeViewItemBuilder))
+					builders.Add (nb);
+			}
+			builders.Add (new TreeViewItemBuilder ());
 			
 			this.options = options;
 			globalOptions = new TreeOptions ();
@@ -261,7 +269,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 					throw new InvalidOperationException (string.Format ("Invalid NodeBuilder type: {0}. NodeBuilders must inherit either from TypeNodeBuilder or NodeBuilderExtension", nb.GetType()));
 			}
 			
-			NodeBuilders = builders;
+			NodeBuilders = builders.ToArray ();
 			
 			foreach (NodeBuilder nb in builders)
 				nb.SetContext (builderContext);
@@ -1276,7 +1284,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			
 			internal NodeBuilder[] NodeBuilderChain {
-				get { return (NodeBuilder[]) store.GetValue (currentIter, TreeViewPad.BuilderChainColumn); }
+				get {
+					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (currentIter, TreeViewPad.BuilderChainColumn);
+					if (chain != null)
+						return chain;
+					else
+						return new NodeBuilder [0];
+				}
 			}
 			
 			public bool Selected {

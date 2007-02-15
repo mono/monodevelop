@@ -138,6 +138,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
@@ -158,6 +159,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TaskListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TreePadOption.cs \
+	MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs \
 	MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs \
 	MonoDevelop.Ide.Gui.Pads/TypeNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs \

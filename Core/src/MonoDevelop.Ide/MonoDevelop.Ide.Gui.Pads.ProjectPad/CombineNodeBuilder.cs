@@ -254,6 +254,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			CurrentNode.Expanded = true;
 		}
 		
+		[CommandHandler (ProjectCommands.Reload)]
+		public void OnReload ()
+		{
+			Combine combine = (Combine) CurrentNode.DataItem;
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+				combine.ParentCombine.ReloadEntry (m, combine);
+			}
+		}
+		
+		[CommandUpdateHandler (ProjectCommands.Reload)]
+		public void OnUpdateReload (CommandInfo info)
+		{
+			Combine combine = (Combine) CurrentNode.DataItem;
+			info.Visible = (combine.ParentCombine != null) && combine.NeedsReload;
+		}
+		
 		void OnEntryInserted (ITreeNavigator nav)
 		{
 			nav.Selected = true;

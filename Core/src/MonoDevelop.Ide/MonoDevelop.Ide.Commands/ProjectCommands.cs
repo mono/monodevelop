@@ -56,7 +56,8 @@ namespace MonoDevelop.Ide.Commands
 		LocalCopyReference,
 		DeployTargetList,
 		ConfigureDeployTargets,
-		CustomCommandList
+		CustomCommandList,
+		Reload
 	}
 	
 	internal class RunHandler: CommandHandler

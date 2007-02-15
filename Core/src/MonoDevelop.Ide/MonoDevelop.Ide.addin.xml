@@ -256,6 +256,8 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.CustomCommandListHandler"
 				type="array"
 				_label = "Custom command list" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload"
+				_label = "Reload" />
 
 
 		<!-- FileCommands -->
@@ -509,6 +511,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "DeploySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
@@ -607,6 +610,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "DeploySeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
@@ -642,6 +646,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 	</Extension>
 	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a project in the solution pad.">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+	</Extension>
 
 	<!--<Extension path = "/SharpDevelop/Workbench/FileFilter" extension-nodes="FileFilter" description="File filters for the Open File dialog.">
 		<FileFilter id = "AllFiles"
@@ -672,6 +679,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ResourceFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFileNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
 
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class">

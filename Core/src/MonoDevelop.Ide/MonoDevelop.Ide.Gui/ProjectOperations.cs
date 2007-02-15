@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui
 		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
 		CombineEntryEventHandler entryAddedToCombineHandler;
 		CombineEntryEventHandler entryRemovedFromCombineHandler;
-
+		
 		internal ProjectOperations ()
 		{
 			fileAddedToProjectHandler = (ProjectFileEventHandler) Services.DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
@@ -103,6 +103,8 @@ namespace MonoDevelop.Ide.Gui
 			parserDatabase = Services.ParserService.CreateParserDatabase ();
 			parserDatabase.TrackFileChanges = true;
 			parserDatabase.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+			
+			GLib.Timeout.Add (2000, OnRunProjectChecks);
 		}
 		
 		public IParserDatabase ParserDatabase {
@@ -286,6 +288,7 @@ namespace MonoDevelop.Ide.Gui
 				parserDatabase.Unload (closedCombine);
 
 				OnCombineClosed(new CombineEventArgs(closedCombine));
+				OnEntryUnloaded (closedCombine);
 				closedCombine.Dispose();
 			}
 		}
@@ -354,16 +357,96 @@ namespace MonoDevelop.Ide.Gui
 				SearchForNewFiles ();
 
 				parserDatabase.Load (openCombine);
-				OnCombineOpened(new CombineEventArgs(openCombine));
-
-				Services.DispatchService.GuiDispatch (new StatefulMessageHandler (RestoreCombinePreferences), CurrentOpenCombine);
 				
-				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
-			} finally {
 				monitor.Dispose ();
+				return;
 			}
+			
+			Gtk.Application.Invoke (delegate {
+				using (monitor) {
+					OnEntryLoaded (openCombine);
+					OnCombineOpened (new CombineEventArgs (openCombine));
+					RestoreCombinePreferences (openCombine);
+					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+				}
+			});
+		}
+		
+		void OnEntryLoaded (CombineEntry entry)
+		{
+			if (entry is Combine) {
+				foreach (CombineEntry ce in ((Combine)entry).Entries)
+					OnEntryLoaded (ce);
+			}
+		}
+		
+		void OnEntryUnloaded (CombineEntry entry)
+		{
+			if (entry is Combine) {
+				foreach (CombineEntry ce in ((Combine)entry).Entries)
+					OnEntryUnloaded (ce);
+			}
+		}
+		
+		bool OnRunProjectChecks ()
+		{
+			// If any project has been modified, reload it
+			if (openCombine != null)
+				OnCheckProject (openCombine);
+			return true;
+		}
+		
+		void OnCheckProject (CombineEntry entry)
+		{
+			if (entry.NeedsReload) {
+				bool warn = false;
+				if (entry is Project) {
+					warn = HasOpenDocuments ((Project) entry, false);
+				} else if (entry is Combine) {
+					foreach (Project p in ((Combine)entry).GetAllProjects ()) {
+						if (HasOpenDocuments (p, false)) {
+							warn = true;
+							break;
+						}
+					}
+				}
+				
+				if (!warn || IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("The project '{0}' has been modified by an external application. Do you want to reload it? All project files will be closed.", entry.Name))) {
+					if (entry == openCombine) {
+						string file = openCombine.FileName;
+						CloseCombine (true);
+						OpenCombine (file);
+					}
+					else {
+						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+							entry.ParentCombine.ReloadEntry (m, entry);
+						}
+					}
+
+					if (entry is Combine)
+						return;
+				} else
+					entry.NeedsReload = false;
+			}
+			
+			if (entry is Combine) {
+				ArrayList ens = new ArrayList ();
+				foreach (CombineEntry ce in ((Combine)entry).Entries)
+					ens.Add (ce);
+				foreach (CombineEntry ce in ens)
+					OnCheckProject (ce);
+			}
+		}
+		
+		internal bool HasOpenDocuments (Project project, bool modifiedOnly)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if (doc.Project == project && (!modifiedOnly || doc.IsDirty))
+					return true;
+			}
+			return false;
 		}
 		
 		void SearchForNewFiles ()
@@ -1173,12 +1256,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		void NotifyEntryAddedToCombine (object sender, CombineEntryEventArgs args)
 		{
+			OnEntryLoaded (args.CombineEntry);
 			if (EntryAddedToCombine != null)
 				EntryAddedToCombine (sender, args);
 		}
 		
 		void NotifyEntryRemovedFromCombine (object sender, CombineEntryEventArgs args)
 		{
+			OnEntryUnloaded (args.CombineEntry);
 			NotifyEntryRemovedFromCombineRec (args.CombineEntry);
 		}
 		

@@ -1,3 +1,22 @@
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.addin.xml: Added new Reload command.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs: Show
+	  combine entries which could not be loaded in the project pad.
+	* MonoDevelop.Ide.Gui.Pads/FileList.cs: Dispatch file watcher events
+	  through the gui thread.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Implemented new type for
+	  showing arbitrary strings in a TreeViewPad.
+	* MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs: New type for showing
+	  arbitrary strings in a TreeViewPad.
+	* MonoDevelop.Ide.mdp, Makefile.am: Added new files.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Track changes in combine
+	  entry files, and reload them when they change. Make sure the
+	  CombineOpened event is fired in the gui thread.
+
 2007-02-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Allow jumping to
