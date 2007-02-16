@@ -28,6 +28,7 @@
 
 
 using System;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Parser;
 
 namespace MonoDevelop.Projects.Parser
@@ -41,6 +42,10 @@ namespace MonoDevelop.Projects.Parser
 		{
 			AddFile (file);
 			this.file = file;
+			
+			string requiredRefUri = "Assembly:";
+			requiredRefUri += Runtime.SystemAssemblyService.GetAssemblyNameForVersion (typeof(object).Assembly.GetName().ToString(), ClrVersion.Net_1_1);
+			AddReference (requiredRefUri);
 		}
 		
 		public ClassUpdateInformation UpdateFromParseInfo (IParseInformation parserInfo)

@@ -1,5 +1,10 @@
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/SimpleCodeCompletionDatabase.cs: Add
+	  corlib reference to single file code completion databases.
+
+2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/MdpFileFormat.cs,
 	  MonoDevelop.Projects/PrjxFileFormat.cs: Don't use the file service
 	  for temporary file deletes, since it may have side effects.
