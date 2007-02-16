@@ -47,6 +47,7 @@ namespace MonoDevelop.Components.Commands
 		bool disposed;
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
+		int guiLock;
 		
 		Gtk.AccelGroup accelGroup;
 		
@@ -74,6 +75,26 @@ namespace MonoDevelop.Components.Commands
 		public void Dispose ()
 		{
 			disposed = true;
+		}
+		
+		public void LockAll ()
+		{
+			guiLock++;
+			if (guiLock == 1) {
+				foreach (CommandToolbar toolbar in toolbars)
+					toolbar.Sensitive = false;
+			}
+		}
+		
+		public void UnlockAll ()
+		{
+			if (guiLock == 1) {
+				foreach (CommandToolbar toolbar in toolbars)
+					toolbar.Sensitive = true;
+			}
+			
+			if (guiLock > 0)
+				guiLock--;
 		}
 		
 		public bool EnableIdleUpdate {
@@ -231,6 +252,9 @@ namespace MonoDevelop.Components.Commands
 
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget)
 		{
+			if (guiLock > 0)
+				return false;
+
 			ActionCommand cmd = null;
 			try {
 				cmd = GetActionCommand (commandId);
@@ -313,20 +337,26 @@ namespace MonoDevelop.Components.Commands
 						if (cmd.CommandArray) {
 							info.ArrayInfo = new CommandArrayInfo (info);
 							cui.Run (cmdTarget, info.ArrayInfo);
-							if (!info.ArrayInfo.Bypass)
+							if (!info.ArrayInfo.Bypass) {
+								if (guiLock > 0)
+									info.Enabled = false;
 								return info;
+							}
 						}
 						else {
 							info.Bypass = false;
 							cui.Run (cmdTarget, info);
-							if (!info.Bypass)
+							if (!info.Bypass) {
+								if (guiLock > 0)
+									info.Enabled = false;
 								return info;
+							}
 						}
 						bypass = true;
 					}
 					
 					if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
-						info.Enabled = true;
+						info.Enabled = guiLock == 0;
 						info.Visible = true;
 						return info;
 					}
@@ -344,6 +374,8 @@ namespace MonoDevelop.Components.Commands
 				info.Enabled = false;
 				info.Visible = true;
 			}
+			if (guiLock > 0)
+				info.Enabled = false;
 			return info;
 		}
 		
@@ -553,6 +585,8 @@ namespace MonoDevelop.Components.Commands
 				GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
 				toolbarUpdaterRunning = true;
 			}
+			if (guiLock > 0)
+				toolbar.Sensitive = false;
 		}
 		
 		void UpdateToolbars ()
