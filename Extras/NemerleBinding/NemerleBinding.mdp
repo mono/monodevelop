@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./Nemerle.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./NemerleEmptyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
