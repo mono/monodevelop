@@ -13,8 +13,6 @@ namespace PythonBinding
 {
 	public class PythonCompilerManager
 	{
-		FileUtilityService fileUtilityService = (FileUtilityService) ServiceManager.GetService (typeof (FileUtilityService));
-		
 		public string GetCompiledOutputName (string fileName)
 		{
 			return Path.ChangeExtension (fileName, ".exe");
@@ -24,7 +22,7 @@ namespace PythonBinding
 		{
 			PythonProject p = (PythonProject) project;
 			PythonCompilerParameters compilerparameters = (PythonCompilerParameters) p.ActiveConfiguration;
-			string exe  = fileUtilityService.GetDirectoryNameWithSeparator (compilerparameters.OutputDirectory) + compilerparameters.OutputAssembly + ".exe";
+			string exe  = Runtime.FileService.GetDirectoryNameWithSeparator (compilerparameters.OutputDirectory) + compilerparameters.OutputAssembly + ".exe";
 			return exe;
 		}
 		

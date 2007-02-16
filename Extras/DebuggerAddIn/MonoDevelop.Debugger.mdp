@@ -13,7 +13,6 @@
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <Contents>
     <File name="./DebuggerPaths.cs" subtype="Code" buildaction="Compile" />
     <File name="./DebuggingService.cs" subtype="Code" buildaction="Compile" />
@@ -39,6 +38,5 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Project" localcopy="True" refto="ICSharpCode.SharpRefactory" />
   </References>
 </Project>
