@@ -172,9 +172,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
 			
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
-				project.Save (m);
-			}
+			IdeApp.ProjectOperations.SaveProject (project);
 			CurrentNode.Expanded = true;
 		}
 	}

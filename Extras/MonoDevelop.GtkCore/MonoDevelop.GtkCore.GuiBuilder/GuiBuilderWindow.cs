@@ -203,7 +203,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				throw new UserException ("Could not create class " + fullName);
 			
 			Project.Project.AddFile (cls.Region.FileName, BuildAction.Compile);
-			Project.Project.Save (IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ());
+			IdeApp.ProjectOperations.SaveProject (Project.Project);
 			
 			// Make sure the database is up-to-date
 			IdeApp.ProjectOperations.ParserDatabase.UpdateFile (Project.Project, cls.Region.FileName, null);
