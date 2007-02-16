@@ -9,16 +9,16 @@
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
-      <Entry build="True" name="NemerleBinding" configuration="Debug" />
+      <Entry build="False" name="NemerleBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.GtkCore" configuration="Debug" />
       <Entry build="True" name="WelcomePage" configuration="Debug" />
       <Entry build="True" name="prj2make-sharp-lib" configuration="Debug" />
-      <Entry build="True" name="VBNetBinding" configuration="" />
-      <Entry build="True" name="MonoDevelop.Debugger" configuration="Debug" />
+      <Entry build="True" name="VBNetBinding" configuration="Debug" />
+      <Entry build="False" name="MonoDevelop.Debugger" configuration="Debug" />
       <Entry build="True" name="ChangeLogAddIn" configuration="Debug" />
-      <Entry build="True" name="MonoDeveloperExtensions" configuration="" />
+      <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
       <Entry build="True" name="AspNetAddIn" configuration="Debug" />
-      <Entry build="True" name="AspNetEdit" configuration="Debug" />
+      <Entry build="False" name="AspNetEdit" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
