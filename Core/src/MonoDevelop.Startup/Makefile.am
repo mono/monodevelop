@@ -3,7 +3,7 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.exe
 
 FILES = MonoDevelop.Startup/MonoDevelopMain.cs
 
-RES =     
+RES =            
 
 GENERATED_FILES = \
 AssemblyInfo.cs
