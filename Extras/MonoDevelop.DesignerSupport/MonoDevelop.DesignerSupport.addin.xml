@@ -5,19 +5,19 @@
        url         = "http://www.monodevelop.com/"
        description = "Supporting services and pads for visual design tools."
 	   category    = "IDE extensions"
-       version     = "0.0.1">
+       version     = "0.13.0">
 	
 	<Runtime>
 		<Import assembly = "MonoDevelop.DesignerSupport.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.12.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
-    	<AddIn id="MonoDevelop.Projects" version="0.12.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.12.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
-		<AddIn id="MonoDevelop.SourceEditor" version="0.12.0"/>
+	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
+	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
+    	<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/Workspace/Services">
