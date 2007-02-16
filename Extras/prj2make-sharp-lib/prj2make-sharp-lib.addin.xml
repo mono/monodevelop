@@ -5,19 +5,19 @@
        url       = ""
        description = "Generates MonoDevelop solutions from Visual Studio .NET solutions files"
 	   category    = "IDE extensions"
-       version   = "0.12">
+       version   = "0.13.0">
 
 	<Runtime>
 		<Import assembly="prj2make-sharp-lib.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.12.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.12.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.12.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.12.0"/>
-		<AddIn id="CSharpBinding" version="0.7"/>
-		<AddIn id="VBBinding" version="0.4"/>
+	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
+	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
+	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<AddIn id="CSharpBinding" version="0.13.0"/>
+		<AddIn id="VBBinding" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats" extension-nodes="FileFormat" description="File format handlers for projects and solutions.">
