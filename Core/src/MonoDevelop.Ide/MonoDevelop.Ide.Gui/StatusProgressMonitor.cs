@@ -40,14 +40,18 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.Image icon;
 		bool showErrorDialogs;
 		bool showTaskTitles;
+		bool lockGui;
 		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles)
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui)
 		{
+			this.lockGui = lockGui;
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
 			icon = Services.Resources.GetImage (iconName, Gtk.IconSize.Menu);
 			Services.StatusBar.BeginProgress (title);
 			Services.StatusBar.SetMessage (icon, title);
+			if (lockGui)
+				IdeApp.Workbench.LockGui ();
 		}
 		
 		protected override void OnProgressChanged ()
@@ -61,6 +65,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override void OnCompleted ()
 		{
+			if (lockGui)
+				IdeApp.Workbench.UnlockGui ();
+				
 			Services.StatusBar.EndProgress ();
 
 			if (Errors.Count > 0) {

@@ -61,14 +61,14 @@ namespace MonoDevelop.Ide.Gui
 			return GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
 		}
 		
-		public IProgressMonitor GetLoadProgressMonitor ()
+		public IProgressMonitor GetLoadProgressMonitor (bool lockGui)
 		{
-			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.OpenFileIcon, true);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.OpenFileIcon, true, false, lockGui);
 		}
 		
-		public IProgressMonitor GetSaveProgressMonitor ()
+		public IProgressMonitor GetSaveProgressMonitor (bool lockGui)
 		{
-			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true, false);
+			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.SaveIcon, true, false, lockGui);
 		}
 		
 		public IConsole CreateConsole (bool closeOnDispose)
@@ -81,12 +81,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, true);
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false);
 		}
 		
-		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs, bool showTaskTitle)
+		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle);
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui);
 		}
 		
 		public IProgressMonitor GetBackgroundProgressMonitor (string title, string icon)

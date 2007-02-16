@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
 		IStatusBarService statusBarService;
+		int guiLock;
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
@@ -205,6 +206,16 @@ namespace MonoDevelop.Ide.Gui
 		public void DeleteLayout (string name)
 		{
 			workbench.WorkbenchLayout.DeleteLayout (name);
+		}
+		
+		public void LockGui ()
+		{
+			IdeApp.CommandService.CommandManager.LockAll ();
+		}
+		
+		public void UnlockGui ()
+		{
+			IdeApp.CommandService.CommandManager.UnlockAll ();
 		}
 		
 		public void SaveAll ()

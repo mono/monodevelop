@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.Gui
 		Combine  openCombine    = null;
 		IParserDatabase parserDatabase;
 		CodeRefactorer refactorer;
+		Hashtable combineEntryLock = new Hashtable ();
 
 		ICompilerResult lastResult = new DefaultCompilerResult ();
 		
@@ -303,7 +304,7 @@ namespace MonoDevelop.Ide.Gui
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true);
 			
 			object[] data = new object[] { filename, monitor };
 			Services.DispatchService.BackgroundDispatch (new StatefulMessageHandler (backgroundLoadCombine), data);
@@ -420,7 +421,7 @@ namespace MonoDevelop.Ide.Gui
 						OpenCombine (file);
 					}
 					else {
-						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
 							entry.ParentCombine.ReloadEntry (m, entry);
 						}
 					}
@@ -505,7 +506,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveCombine()
 		{
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				openCombine.Save (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
@@ -518,7 +519,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveProject (Project project)
 		{
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
 			try {
 				project.Save (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
@@ -570,6 +571,7 @@ namespace MonoDevelop.Ide.Gui
 					
 				if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
 					selectedProject.NeedsBuilding = true;
+					SaveProject (selectedProject);
 				}
 			} else if (entry is Combine) {
 				Combine combine = (Combine) entry;
@@ -580,10 +582,9 @@ namespace MonoDevelop.Ide.Gui
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
 				if (panelId != null)
 					optionsDialog.SelectPanel (panelId);
-				optionsDialog.Run ();
+				if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok)
+					SaveCombine ();
 			}
-			
-			SaveCombine ();
 		}
 		
 		public CombineEntry CreateProject (Combine parentCombine)
@@ -651,7 +652,7 @@ namespace MonoDevelop.Ide.Gui
 				AddingEntryToCombine (this, args);
 			if (args.Cancel)
 				return null;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor ()) {
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 				return combine.AddEntry (args.FileName, monitor);
 			}
 		}

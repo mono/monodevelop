@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnReload ()
 		{
 			Combine combine = (Combine) CurrentNode.DataItem;
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 				combine.ParentCombine.ReloadEntry (m, combine);
 			}
 		}

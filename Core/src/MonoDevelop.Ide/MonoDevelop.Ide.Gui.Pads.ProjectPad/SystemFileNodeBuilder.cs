@@ -146,9 +146,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else
 				project.AddFile (file.Path, BuildAction.Nothing);
 			
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
-				project.Save (m);
-			}
+			IdeApp.ProjectOperations.SaveProject (project);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]

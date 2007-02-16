@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnReload ()
 		{
 			Project p = (Project) CurrentNode.DataItem;
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 				p.ParentCombine.ReloadEntry (m, p);
 			}
 		}

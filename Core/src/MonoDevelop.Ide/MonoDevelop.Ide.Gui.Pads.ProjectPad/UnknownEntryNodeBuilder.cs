@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnReload ()
 		{
 			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor ()) {
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 				entry.ParentCombine.ReloadEntry (m, entry);
 			}
 		}

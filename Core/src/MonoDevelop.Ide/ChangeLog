@@ -1,5 +1,23 @@
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs:
+	  Track api changes.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Use
+	  ProjectOperations.SaveProject to save projects.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Lock the gui when
+	  saving/loading a project. When showing the options dialog, only
+	  save the combine if the user clicks on OK.
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Optionally lock the gui
+	  while the progress monitor is active.
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added methods for locking/unlocking
+	  the gui.
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Allow locking the main
+	  window on saving/loading operations.
+
+2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.addin.xml: Change add-in versions to 0.13.
 	* MonoDevelop.Ide.Gui/IdeStartup.cs,
 	  MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Don't use
