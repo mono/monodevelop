@@ -7,7 +7,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
-RES =                                                
+RES =                                                         
  
 FILES = BooShell.boo
 
