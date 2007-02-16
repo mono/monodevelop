@@ -162,7 +162,7 @@ namespace CSharpBinding
 				
 				IParserContext pctx = GetParserContext ();
 				Resolver res = new Resolver (pctx);
-				IClass cls = res.GetCallingClass (line, column, FileName, Editor.Text, true);
+				IClass cls = res.GetCallingClass (line, column, FileName, true);
 				if (cls != null) {
 					string typedModifiers = Editor.GetText (firstMod, ctx.TriggerOffset);
 					return GetOverridablesCompletionData (pctx, ctx, cls, firstMod, typedModifiers);
@@ -185,6 +185,11 @@ namespace CSharpBinding
 					completionProvider.AddResolveResults (res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false));
 				}
 				else if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing")) {
+					Resolver res = new Resolver (parserContext);
+					// Don't show namespaces when "using" is not a namespace directive
+					IClass cls = res.GetCallingClass (caretLineNumber, caretColumn, FileName, false);
+					if (cls != null)
+						return null;
 					string[] namespaces = parserContext.GetNamespaceList ("", true, true);
 					completionProvider.AddResolveResults (new ResolveResult(namespaces));
 				}

@@ -160,17 +160,17 @@ namespace CSharpBinding.Parser
 			return type;
 		}
 		
-		public IClass GetCallingClass (int line, int col, string fileName, string fileContent, bool onlyClassDeclaration)
+		public IClass GetCallingClass (int line, int col, string fileName, bool onlyClassDeclaration)
 		{
 			IParseInformation parseInfo = parserContext.GetParseInformation (fileName);
 			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			if (fileCompilationUnit == null)
+				return null;
 
 			CSharpVisitor cSharpVisitor = new CSharpVisitor();
 			currentUnit = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			
 			currentFile = fileName;
-			if (fileCompilationUnit == null)
-				return null;
 		
 			this.caretLine = line;
 			this.caretColumn = col;
