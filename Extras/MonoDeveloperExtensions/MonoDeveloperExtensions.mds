@@ -1,5 +1,5 @@
 <Combine name="MonoDeveloperExtensions" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDeveloperExtensions" configuration="Debug" />
       <Entry build="True" name="MonoDeveloperExtensions_nunit" configuration="Debug" />
