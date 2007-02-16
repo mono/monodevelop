@@ -173,22 +173,22 @@ namespace MonoDevelop.Ide.Gui.Search
 			if (reader.Modified)
 			{
 				string fileBackup = Path.GetTempFileName ();
-				Runtime.FileService.CopyFile (fileName, fileBackup);
+				File.Copy (fileName, fileBackup, true);
 				
 				try {
-					Runtime.FileService.DeleteFile (fileName);
+					File.Delete (fileName);
 					reader.SaveToFile (fileName);
 					reader.Close ();
 				}
 				catch
 				{
 					reader.Close ();
-					if (File.Exists (fileName)) Runtime.FileService.DeleteFile (fileName);
-					Runtime.FileService.MoveFile (fileBackup, fileName);
+					if (File.Exists (fileName)) File.Delete (fileName);
+					File.Move (fileBackup, fileName);
 					throw;
 				}
 				
-				Runtime.FileService.DeleteFile (fileBackup);
+				File.Delete (fileBackup);
 			}
 			else
 				reader.Close ();

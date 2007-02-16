@@ -1,3 +1,11 @@
+2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.addin.xml: Change add-in versions to 0.13.
+	* MonoDevelop.Ide.Gui/IdeStartup.cs,
+	  MonoDevelop.Ide.Gui.Search/ForwardTextFileIterator.cs: Don't use
+	  the file service for temporary file deletes, since it may have side
+	  effects.
+
 2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewItem.cs: Fix incorrect cast.
