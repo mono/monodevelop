@@ -104,7 +104,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void RemoveButton (int npage)
 		{
 			notebook.RemovePage (npage);
-			toolbar.Remove (toolbar.Children [npage]);
+			Gtk.Widget cw = toolbar.Children [npage];
+			toolbar.Remove (cw);
+			cw.Destroy ();
 			ShowPage (0);
 		}
 		
@@ -154,9 +156,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			Gtk.Widget w = content.Control;
 			content.Dispose ();
-			w.Destroy ();
+	
+			// Remove and destroy the contents of the Notebook, since the destroy event is
+			// not propagated to pages in some gtk versions.
+			
+			foreach (Gtk.Widget cw in notebook.Children) {
+				Gtk.Widget lw = notebook.GetTabLabel (cw);
+				notebook.Remove (cw);
+				cw.Destroy ();
+				if (lw != null)
+					lw.Destroy ();
+			}
+			
 			content = null;
-			box.Destroy ();
 			box = null;
 			base.Dispose ();
 		}

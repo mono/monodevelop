@@ -161,17 +161,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ComponentNameChanged -= OnComponentNameChanged;
 			designer.RootComponentChanged -= OnRootComponentChanged;
 			
-			if (designerPage != null) {
-				designerPage.Dispose ();
+			if (designerPage != null)
 				designerPage = null;
-			}
+			
 			if (actionsPage != null) {
-				actionsPage.Dispose ();
-				actionsBox.Dispose ();
-				actionsBox.Destroy ();
+				actionsBox.BindField -= OnBindActionField;
+				actionsBox.ModifiedChanged -= OnActionshanged;
 				actionsBox = null;
+				actionsPage = null;
 			}
-			designer.Dispose ();
+			// designer.Dispose() will be called when the designer is destroyed.
 			designer = null;
 			gproject.Reloaded += OnReloadProject;
 		}
@@ -180,6 +179,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			CloseDesigner ();
 			gproject.Reloaded -= OnReloadProject;
+			codeBinder = null;
 			base.Dispose ();
 		}
 		
@@ -260,8 +260,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
  
 			codeBinder.UpdateBindings (fileName);
 			if (!ErrorMode) {
-				designer.Save ();
-				actionsBox.Save ();
+				if (designer != null)
+					designer.Save ();
+				if (actionsBox != null)
+					actionsBox.Save ();
 			}
 			
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget);
