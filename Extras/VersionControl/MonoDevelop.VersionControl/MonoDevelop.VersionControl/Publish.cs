@@ -33,10 +33,16 @@ namespace MonoDevelop.VersionControl
 			using (SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish)) {
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
-					w.Start ();
-				}
+				do {
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+						if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project to the repository '{0}'?", dlg.Repository.Name))) {
+							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
+							w.Start ();
+							break;
+						}
+					} else
+						break;
+				} while (true);
 			}
 			return true;
 		}
