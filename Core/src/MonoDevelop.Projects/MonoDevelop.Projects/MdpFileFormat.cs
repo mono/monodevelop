@@ -61,20 +61,45 @@ namespace MonoDevelop.Projects
 			if (project == null)
 				throw new InvalidOperationException ("The provided object is not a Project");
 
-			StreamWriter sw = new StreamWriter (file);
+			string tmpfilename = String.Empty;
 			try {
-				monitor.BeginTask (GettextCatalog.GetString("Saving project: {0}", file), 1);
+				try {
+					if (File.Exists (file))
+						tmpfilename = Path.GetTempFileName ();
+				} catch (IOException) {
+				}
+
+				if (tmpfilename == String.Empty) {
+					WriteFileInternal (file, file, project, monitor);
+				} else {
+					WriteFileInternal (file, tmpfilename, project, monitor);
+					File.Delete (file);
+					File.Move (tmpfilename, file);
+				}
+			} catch (Exception ex) {
+				if (tmpfilename != String.Empty)
+					File.Delete (tmpfilename);
+				throw;
+			}
+		}
+
+		void WriteFileInternal (string actualFile, string outFile, Project project, IProgressMonitor monitor)
+		{
+			StreamWriter sw = new StreamWriter (outFile);
+			try {
+				monitor.BeginTask (GettextCatalog.GetString("Saving project: {0}", actualFile), 1);
 				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
-				ser.SerializationContext.BaseFile = file;
+				ser.SerializationContext.BaseFile = actualFile;
 				ser.Serialize (sw, project, typeof(Project));
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", file), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", actualFile), ex);
+				throw;
 			} finally {
 				monitor.EndTask ();
 				sw.Close ();
 			}
 		}
-		
+
 		public object ReadFile (string fileName, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = null;

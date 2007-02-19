@@ -62,22 +62,47 @@ namespace MonoDevelop.Projects
 			if (combine == null)
 				throw new InvalidOperationException ("The provided object is not a Combine");
 
-			StreamWriter sw = new StreamWriter (file);
+			string tmpfilename = String.Empty;
 			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
+				try {
+					if (File.Exists (file))
+						tmpfilename = Path.GetTempFileName ();
+				} catch (IOException) {
+				}
+
+				if (tmpfilename == String.Empty) {
+					WriteFileInternal (file, file, combine, monitor);
+				} else {
+					WriteFileInternal (file, tmpfilename, combine, monitor);
+					File.Delete (file);
+					File.Move (tmpfilename, file);
+				}
+			} catch (Exception ex) {
+				if (tmpfilename != String.Empty)
+					File.Delete (tmpfilename);
+				throw;
+			}
+		}
+
+		void WriteFileInternal (string actualFile, string outFile, Combine combine, IProgressMonitor monitor)
+		{
+			StreamWriter sw = new StreamWriter (outFile);
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", actualFile), 1);
 				XmlTextWriter tw = new XmlTextWriter (sw);
 				tw.Formatting = Formatting.Indented;
-				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, file);
+				DataSerializer serializer = new DataSerializer (Services.ProjectService.DataContext, actualFile);
 				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor);
 				combineWriter.WriteCombine (tw, combine);
 			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", actualFile), ex);
+				throw;
 			} finally {
 				monitor.EndTask ();
 				sw.Close ();
 			}
 		}
-		
+	
 		public object ReadFile (string file, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
