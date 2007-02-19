@@ -240,7 +240,6 @@ namespace MonoDevelop.Ide.Gui
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
 			}
-			this.Remove (this.Child);
 			content.Dispose ();
 			tabLabel.Dispose ();
 
