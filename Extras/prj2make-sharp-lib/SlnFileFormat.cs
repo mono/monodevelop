@@ -96,7 +96,7 @@ namespace MonoDevelop.Prj2Make
 				} else {
 					WriteFileInternal (tmpfilename, c, monitor);
 					File.Delete (file);
-					Runtime.FileService.MoveFile (tmpfilename, file);
+					File.Move (tmpfilename, file);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
