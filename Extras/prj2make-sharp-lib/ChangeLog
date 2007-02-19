@@ -1,3 +1,9 @@
+2007-02-20  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs: Project type guids are per-project type, support
+	that.
+	(WriteProjects): Add a 'monitor' param.
+
 2007-02-19  Ankit Jain  <jankit@novell.com>
 
 	* SlnFileFormat.cs (WriteFile): Use File.Delete for deleting temporary

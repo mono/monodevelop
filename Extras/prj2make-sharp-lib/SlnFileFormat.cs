@@ -47,7 +47,7 @@ namespace MonoDevelop.Prj2Make
 	internal class SlnFileFormat: IFileFormat
 	{
 		static Guid folderTypeGuid = new Guid ("2150E333-8FDC-42A3-9474-1A3956D46DE8");
-		static Guid projectTypeGuid = new Guid ("FAE04EC0-301F-11D3-BF4B-00C04F79EFBC");
+		static Dictionary<string, Guid> projectTypeGuids = null;
 
 		public string Name {
 			get { return "Visual Studio .NET 2005 Solution"; }
@@ -120,7 +120,7 @@ namespace MonoDevelop.Prj2Make
 				sw.WriteLine ("#MonoDevelop");
 
 				//Write the projects
-				WriteProjects (c, c.RootCombine.BaseDirectory, sw);
+				WriteProjects (c, c.RootCombine.BaseDirectory, sw, monitor);
 
 				//Write the lines for unknownProjects
 				SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
@@ -174,7 +174,7 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		void WriteProjects (Combine combine, string baseDirectory, StreamWriter writer)
+		void WriteProjects (Combine combine, string baseDirectory, StreamWriter writer, IProgressMonitor monitor)
 		{
 			foreach (CombineEntry ce in combine.Entries) {
 				Combine c = ce as Combine;
@@ -193,8 +193,16 @@ namespace MonoDevelop.Prj2Make
 
 					l = msbData.Extra;
 
+					DotNetProject project = (DotNetProject)ce;
+					if (!ProjectTypeGuids.ContainsKey (project.LanguageName)) {
+						// FIXME: Should not happen, temp
+						monitor.ReportWarning (GettextCatalog.GetString ("Saving for project {0} not supported. Ignoring.",
+							ce.FileName));
+						continue;
+					}
+
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
-						projectTypeGuid.ToString ().ToUpper (),
+						ProjectTypeGuids [project.LanguageName].ToString ().ToUpper (),
 						ce.Name, 
 						Runtime.FileService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
 						msbData.Guid);
@@ -222,7 +230,7 @@ namespace MonoDevelop.Prj2Make
 
 				writer.WriteLine ("EndProject");
 				if (c != null)
-					WriteProjects (c, baseDirectory, writer);
+					WriteProjects (c, baseDirectory, writer, monitor);
 			}
 		}
 
@@ -399,15 +407,16 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				Guid projTypeGuid = SlnFileFormat.projectTypeGuid;
+				Guid projTypeGuid = ProjectTypeGuids ["C#"];
 				try {
 					projTypeGuid = new Guid (match.Groups [1].Value);
 				} catch (FormatException) {
 					//Use default guid as projectGuid
 					Runtime.LoggingService.Debug (GettextCatalog.GetString (
-						"Invalid Project type guid '{0}' on line #{1}. Trying to read as a Project.",
+						"Invalid Project type guid '{0}' on line #{1}. Ignoring.",
 						match.Groups [1].Value,
 						sec.Start + 1));
+					continue;
 				}
 
 				string projectName = match.Groups[2].Value;
@@ -433,11 +442,16 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				if (projTypeGuid != projectTypeGuid)
+				if (!ProjectTypeGuids.ContainsValue (projTypeGuid)) {
 					Runtime.LoggingService.Debug (GettextCatalog.GetString (
-						"Unknown project type guid '{0}' on line #{1}. Trying to read as a project.",
+						"Unknown project type guid '{0}' on line #{1}. Ignoring.",
 						projTypeGuid,
 						sec.Start + 1));
+					monitor.ReportWarning (GettextCatalog.GetString (
+						"{0}({1}): Unsupported or unrecognized project : '{2}'. See logs.", 
+						fileName, sec.Start + 1, projectPath));
+					continue;
+				}
 
 				if (!projectPath.StartsWith("http://") &&
 					(projectPath.EndsWith (".csproj") || projectPath.EndsWith (".vbproj")))
@@ -878,6 +892,16 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
+		static Dictionary<string, Guid> ProjectTypeGuids {
+			get {
+				if (projectTypeGuids == null) {
+					projectTypeGuids = new Dictionary<string, Guid> ();
+					projectTypeGuids ["C#"] = new Guid ("FAE04EC0-301F-11D3-BF4B-00C04F79EFBC");
+					projectTypeGuids ["VBNet"] = new Guid ("F184B08F-C81C-45F6-A57F-5ABD9991F28F");
+				}
+				return projectTypeGuids;
+			}
+		}
 	}
 
 	class Section {
