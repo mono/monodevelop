@@ -257,6 +257,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
+			VersionControlProjectService.FileStatusChanged -= OnFileStatusChanged;
 			base.Dispose ();
 		}
 		
