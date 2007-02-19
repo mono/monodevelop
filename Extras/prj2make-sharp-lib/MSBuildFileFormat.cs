@@ -82,11 +82,13 @@ namespace MonoDevelop.Prj2Make
 			//FIXME: Need a better way to check the rootelement
 			try {
 				XmlReader xr = XmlReader.Create (file);
-				xr.Read ();
+				xr.MoveToContent ();
+
 				if (xr.NodeType == XmlNodeType.Element && String.Compare (xr.LocalName, "Project") == 0 &&
 					String.Compare (xr.NamespaceURI, ns) == 0)
 					return true;
-			} catch {
+			} catch (Exception e) {
+				Console.WriteLine (GettextCatalog.GetString ("Error reading file {0} : ", e.ToString ()));
 				return false;
 			}
 
@@ -132,7 +134,7 @@ namespace MonoDevelop.Prj2Make
 					WriteFileInternal (file, project, monitor);
 				} else {
 					WriteFileInternal (tmpfilename, project, monitor);
-					Runtime.FileService.DeleteFile (file);
+					File.Delete (file);
 					Runtime.FileService.MoveFile (tmpfilename, file);
 				}
 			} catch (Exception ex) {
@@ -140,7 +142,7 @@ namespace MonoDevelop.Prj2Make
 				Console.WriteLine ("Could not save project: {0}, {1}", file, ex);
 
 				if (tmpfilename != String.Empty)
-					Runtime.FileService.DeleteFile (tmpfilename);
+					File.Delete (tmpfilename);
 				throw;
 			} finally {
 				monitor.EndTask ();
@@ -391,6 +393,9 @@ namespace MonoDevelop.Prj2Make
 
 			XPathNavigator nav = doc.CreateNavigator ();
 			nav.MoveToFirstChild ();
+
+			while (! (nav.UnderlyingObject is XmlElement))
+				nav.MoveToNext ();
 
 			if (nav.NamespaceURI != ns)
 				throw new UnknownProjectVersionException (fname, nav.NamespaceURI);

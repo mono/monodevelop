@@ -33,7 +33,7 @@ namespace MonoDevelop.Prj2Make
 			//FIXME: Need a better way to check the rootelement
 			try {
 				using (XmlReader xr = XmlReader.Create (file)) {
-					xr.Read ();
+					xr.MoveToContent ();
 					if (xr.NodeType == XmlNodeType.Element && String.Compare (xr.LocalName, "VisualStudioProject") == 0)
 						return true;
 				}

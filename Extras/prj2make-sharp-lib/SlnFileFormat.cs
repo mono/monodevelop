@@ -95,7 +95,7 @@ namespace MonoDevelop.Prj2Make
 					WriteFileInternal (file, c, monitor);
 				} else {
 					WriteFileInternal (tmpfilename, c, monitor);
-					Runtime.FileService.DeleteFile (file);
+					File.Delete (file);
 					Runtime.FileService.MoveFile (tmpfilename, file);
 				}
 			} catch (Exception ex) {
@@ -103,7 +103,7 @@ namespace MonoDevelop.Prj2Make
 				Console.WriteLine ("Could not save solution: {0}, {1}", file, ex);
 
 				if (tmpfilename != String.Empty)
-					Runtime.FileService.DeleteFile (tmpfilename);
+					File.Delete (tmpfilename);
 				throw;
 			} finally {
 				monitor.EndTask ();

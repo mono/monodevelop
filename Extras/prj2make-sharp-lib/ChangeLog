@@ -1,3 +1,14 @@
+2007-02-19  Ankit Jain  <jankit@novell.com>
+
+	* SlnFileFormat.cs (WriteFile): Use File.Delete for deleting temporary
+	files.
+	* MSBuildFileFormat.cs (WriteFile): Likewise.
+	(CanReadFile): Use XmlReader.MoveToContent to get to the content nodes.
+	(LoadProject): Skip non-element (eg. comment) nodes when looking for
+	root.
+	* VS2003ProjectFileFormat.cs (CanReadFile): Use XmlReader.MoveToContent to 
+	get to the content nodes.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml: Change add-in versions to 0.13.
