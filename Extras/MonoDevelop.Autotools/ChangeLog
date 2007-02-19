@@ -1,3 +1,9 @@
+2007-02-20  Ankit Jain  <jankit@novell.com>
+
+	* MakefileOptionPanelWidget.cs: Ensure that entry boxes for make targets
+	are activated only if required when loading the gui. These should be
+	activated only if a valid makefile is specified.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml: Change add-in versions to 0.13.

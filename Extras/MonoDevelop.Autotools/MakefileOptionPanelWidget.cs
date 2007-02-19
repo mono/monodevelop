@@ -370,6 +370,15 @@ namespace MonoDevelop.Autotools
 
 		void SetActive (bool active)
 		{
+			this.cbBuildTarget.Sensitive = active;
+			OnCbBuildTargetClicked (null, null);
+
+			this.cbRunTarget.Sensitive = active;
+			OnCbRunTargetClicked (null, null);
+
+			this.cbCleanTarget.Sensitive = active;
+			OnCbCleanTargetClicked (null, null);
+
 			this.lblAssemblyNameVar.Sensitive = active;
 			this.comboAssemblyName.Sensitive = active;
 
@@ -620,7 +629,7 @@ namespace MonoDevelop.Autotools
 
 		protected virtual void OnCbBuildTargetClicked(object sender, System.EventArgs e)
 		{
-			if (cbBuildTarget.Active) {
+			if (cbBuildTarget.Sensitive && cbBuildTarget.Active) {
 				BuildTargetName.Sensitive = true;
 				BuildTargetName.Text = "all";
 			} else {
@@ -631,7 +640,7 @@ namespace MonoDevelop.Autotools
 
 		protected virtual void OnCbRunTargetClicked(object sender, System.EventArgs e)
 		{
-			if (cbRunTarget.Active) {
+			if (cbRunTarget.Sensitive && cbRunTarget.Active) {
 				ExecuteTargetName.Sensitive = true;
 				ExecuteTargetName.Text = "run";
 			} else {
@@ -642,7 +651,7 @@ namespace MonoDevelop.Autotools
 
 		protected virtual void OnCbCleanTargetClicked(object sender, System.EventArgs e)
 		{
-			if (cbCleanTarget.Active) {
+			if (cbCleanTarget.Sensitive && cbCleanTarget.Active) {
 				CleanTargetName.Sensitive = true;
 				CleanTargetName.Text = "clean";
 			} else {
