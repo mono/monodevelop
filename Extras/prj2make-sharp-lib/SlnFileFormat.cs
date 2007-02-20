@@ -566,6 +566,8 @@ namespace MonoDevelop.Prj2Make
 
 			List<CombineConfigurationEntry> noBuildList = new List<CombineConfigurationEntry> ();
 			Dictionary<string, CombineConfigurationEntry> cache = new Dictionary<string, CombineConfigurationEntry> ();
+			Dictionary<string, string> ignoredProjects = new Dictionary<string, string> ();
+			
 			List<string> extras = new List<string> ();
 
 			for (int i = 0; i < sec.Count - 2; i ++) {
@@ -610,8 +612,13 @@ namespace MonoDevelop.Prj2Make
 				string slnConfig = t [1];
 
 				if (!sln.ProjectsByGuid.ContainsKey (projGuid)) {
-					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found. Ignoring", 
+					if (ignoredProjects.ContainsKey (projGuid))
+						// already warned
+						continue;
+
+					Console.WriteLine ("{0} ({1}) : Warning: Project with guid = '{2}' not found or not loaded. Ignoring", 
 						sln.FileName, lineNum + 1, projGuid);
+					ignoredProjects [projGuid] = projGuid;
 					continue;
 				}
 
