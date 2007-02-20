@@ -4681,7 +4681,7 @@ msgstr "Compilador :"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1002
 msgid "Warnings regex :"
-msgstr Expresión regular para advertencia :"
+msgstr "Expresión regular para advertencia :"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1019
 msgid "Messages Regex"
