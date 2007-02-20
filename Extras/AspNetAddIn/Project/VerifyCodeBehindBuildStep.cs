@@ -26,7 +26,7 @@ namespace AspNetAddIn
 			//TODO: add options for warnings as errors, ignoring parse errors etc
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.ActiveConfiguration;
 			if (!config.AutoGenerateCodeBehindMembers) {
-				monitor.Log.WriteLine ("Skipping CodeBehind verification.");
+				monitor.Log.WriteLine ("Auto-generation of CodeBehind members is disabled. Skipping CodeBehind verification.");
 				return base.Build (monitor, project);
 			}
 			
