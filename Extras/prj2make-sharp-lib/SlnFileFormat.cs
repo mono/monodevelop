@@ -46,8 +46,8 @@ namespace MonoDevelop.Prj2Make
 {
 	internal class SlnFileFormat: IFileFormat
 	{
-		static Guid folderTypeGuid = new Guid ("2150E333-8FDC-42A3-9474-1A3956D46DE8");
-		static Dictionary<string, Guid> projectTypeGuids = null;
+		static string folderTypeGuid = "2150E333-8FDC-42A3-9474-1A3956D46DE8";
+		static Dictionary<string, string> projectTypeGuids = null;
 
 		public string Name {
 			get { return "Visual Studio .NET 2005 Solution"; }
@@ -202,7 +202,7 @@ namespace MonoDevelop.Prj2Make
 					}
 
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
-						ProjectTypeGuids [project.LanguageName].ToString ().ToUpper (),
+						ProjectTypeGuids [project.LanguageName],
 						ce.Name, 
 						Runtime.FileService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
 						msbData.Guid);
@@ -217,7 +217,7 @@ namespace MonoDevelop.Prj2Make
 					l = slnData.Extra;
 					
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
-						folderTypeGuid.ToString ().ToUpper (),
+						folderTypeGuid,
 						ce.Name, 
 						ce.Name,
 						slnData.Guid);
@@ -407,9 +407,9 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				Guid projTypeGuid = ProjectTypeGuids ["C#"];
 				try {
-					projTypeGuid = new Guid (match.Groups [1].Value);
+					// Valid guid?
+					new Guid (match.Groups [1].Value);
 				} catch (FormatException) {
 					//Use default guid as projectGuid
 					Runtime.LoggingService.Debug (GettextCatalog.GetString (
@@ -419,9 +419,10 @@ namespace MonoDevelop.Prj2Make
 					continue;
 				}
 
-				string projectName = match.Groups[2].Value;
-				string projectPath = match.Groups[3].Value;
-				string projectGuid = match.Groups[4].Value;
+				string projTypeGuid = match.Groups [1].Value.ToUpper ();
+				string projectName = match.Groups [2].Value;
+				string projectPath = match.Groups [3].Value;
+				string projectGuid = match.Groups [4].Value;
 
 				if (projTypeGuid == folderTypeGuid) {
 					//Solution folder
@@ -869,7 +870,7 @@ namespace MonoDevelop.Prj2Make
 		static Regex ProjectRegex {
 			get {
 				if (projectRegex == null)
-					projectRegex = new Regex(@"Project\(""(\{.*\})""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
+					projectRegex = new Regex(@"Project\(""\{(.*)\}""\) = ""(.*)"", ""(.*)"", ""(\{.*\})""");
 				return projectRegex;
 			}
 		}
@@ -892,12 +893,13 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		static Dictionary<string, Guid> ProjectTypeGuids {
+		static Dictionary<string, string> ProjectTypeGuids {
 			get {
 				if (projectTypeGuids == null) {
-					projectTypeGuids = new Dictionary<string, Guid> ();
-					projectTypeGuids ["C#"] = new Guid ("FAE04EC0-301F-11D3-BF4B-00C04F79EFBC");
-					projectTypeGuids ["VBNet"] = new Guid ("F184B08F-C81C-45F6-A57F-5ABD9991F28F");
+					projectTypeGuids = new Dictionary<string, string> ();
+					// values must be in UpperCase
+					projectTypeGuids ["C#"] = "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC";
+					projectTypeGuids ["VBNet"] = "F184B08F-C81C-45F6-A57F-5ABD9991F28F";
 				}
 				return projectTypeGuids;
 			}
