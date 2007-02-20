@@ -108,12 +108,13 @@ namespace MonoDevelop.Autotools
 				return null;
 			
 			StringBuilder sb = new StringBuilder ();
-			sb.AppendFormat ("{0} = ", var);
+			sb.AppendFormat ("{0} =", var);
 			if (list.Count > 1) {
+				sb.Append (" ");
 				foreach (string s in list)
 					sb.AppendFormat (" \\\n\t{0}", s);
 			} else if (list.Count == 1) {
-				sb.Append (list [0]);
+				sb.Append (" " + list [0]);
 			}
 
 			return sb.ToString ();

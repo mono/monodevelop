@@ -1,3 +1,7 @@
+2007-02-21  Ankit Jain  <jankit@novell.com>
+
+	* CustomMakefile.cs: Avoid adding extra spaces for empty variables.
+
 2007-02-20  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs: Support escaping filenames. Escaping only '\' and '#'
