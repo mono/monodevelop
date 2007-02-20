@@ -1,3 +1,8 @@
+2007-02-21  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs (AddReferenceToProject): Ensure
+	that the dialog is closed even in case of exception being thrown.
+
 2007-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Added missing

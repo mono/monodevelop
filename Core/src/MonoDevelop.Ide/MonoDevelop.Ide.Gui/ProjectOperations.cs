@@ -676,29 +676,32 @@ namespace MonoDevelop.Ide.Gui
 		{
 			bool res = false;
 			
-			if (selDialog == null)
-				selDialog = new SelectReferenceDialog(project);
-			else
-				selDialog.SetProject (project);
+			try {
+				if (selDialog == null)
+					selDialog = new SelectReferenceDialog(project);
+				else
+					selDialog.SetProject (project);
 
-			if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
-				ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
-				
-				ArrayList toDelete = new ArrayList ();
-				foreach (ProjectReference refInfo in project.ProjectReferences)
-					if (!newRefs.Contains (refInfo))
-						toDelete.Add (refInfo);
-				
-				foreach (ProjectReference refInfo in toDelete)
-						project.ProjectReferences.Remove (refInfo);
+				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
+					ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
+					
+					ArrayList toDelete = new ArrayList ();
+					foreach (ProjectReference refInfo in project.ProjectReferences)
+						if (!newRefs.Contains (refInfo))
+							toDelete.Add (refInfo);
+					
+					foreach (ProjectReference refInfo in toDelete)
+							project.ProjectReferences.Remove (refInfo);
 
-				foreach (ProjectReference refInfo in selDialog.ReferenceInformations)
-					if (!project.ProjectReferences.Contains (refInfo))
-						project.ProjectReferences.Add(refInfo);
-				
-				res = true;
+					foreach (ProjectReference refInfo in selDialog.ReferenceInformations)
+						if (!project.ProjectReferences.Contains (refInfo))
+							project.ProjectReferences.Add(refInfo);
+					
+					res = true;
+				}
+			} finally {
+				selDialog.Hide ();
 			}
-			selDialog.Hide ();
 			return res;
 		}
 		
