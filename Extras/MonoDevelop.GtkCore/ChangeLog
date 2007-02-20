@@ -1,5 +1,9 @@
 2007-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
+	Updated from Stetic module. Includes fix for bug #80864.
+
+2007-02-20  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from SVN. Fixes some
 	  memory leaks and bug #79453.
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Explicitely
