@@ -767,6 +767,8 @@ namespace MonoDevelop.Autotools
 						//FIXME: If it doesn't match, then?
 						fname = fname.Substring (len);
 
+					fname = UnescapeString (fname);
+
 					string resourceId = null;
 					if (buildAction == BuildAction.EmbedAsResource && fname.IndexOf (',') >= 0) {
 						string [] tmp = fname.Split (new char [] {','}, 2);
@@ -1182,8 +1184,13 @@ namespace MonoDevelop.Autotools
 			else
 				varpath = GetRelativePath (BuildVariables [varname]);
 
-			if (filename.StartsWith (varpath))
-				return String.Format ("$({0}){1}{2}", varname, Path.DirectorySeparatorChar, filename.Substring (varpath.Length));
+			if (filename.StartsWith (varpath)) {
+				string suffix = filename.Substring (varpath.Length);
+				if (suffix [0] == Path.DirectorySeparatorChar)
+					return String.Format ("$({0}){1}", varname, suffix);
+				else
+					return String.Format ("$({0}){1}{2}", varname, Path.DirectorySeparatorChar, suffix);
+			}
 
 			return filename;
 		}
@@ -1288,6 +1295,9 @@ namespace MonoDevelop.Autotools
 					else
 						str = pf.RelativePath;
 
+					string unescapedFileName = Path.GetFileName (str);
+					str = EscapeString (str);
+
 					if (EncodeValues [fileVar.Name]) {
 						if (pf.IsExternalToProject)
 							str = EncodeFileName (str, "top_srcdir", false);
@@ -1296,8 +1306,8 @@ namespace MonoDevelop.Autotools
 					}
 
 					// Emit the resource ID only when it is different from the file name
-					if (pf.BuildAction == BuildAction.EmbedAsResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != Path.GetFileName (str))
-						str = String.Format ("{0}{1},{2}", fileVar.Prefix, str, pf.ResourceId);
+					if (pf.BuildAction == BuildAction.EmbedAsResource && pf.ResourceId != null && pf.ResourceId.Length > 0 && pf.ResourceId != unescapedFileName)
+						str = String.Format ("{0}{1},{2}", fileVar.Prefix, str, EscapeString (pf.ResourceId));
 					else
 						str = String.Format ("{0}{1}", fileVar.Prefix, str);
 
@@ -1468,6 +1478,45 @@ namespace MonoDevelop.Autotools
 				return null;
 
 			return AsmRefToString (tmp [0], refVar);
+		}
+
+		static string EscapeString (string str)
+		{
+			StringBuilder sb = new StringBuilder ();
+			int len = str.Length;
+			for (int i = 0; i < len; i ++) {
+				char c = str [i];
+				if (c == '\\' || c == '#')
+					sb.Append ("\\");
+				
+				sb.Append (c);
+			}
+			
+			return sb.ToString ();
+		}
+		
+		static string UnescapeString (string str)
+		{
+			if (str.IndexOf ('\\') < 0)
+				return str;
+			
+			StringBuilder sb = new StringBuilder ();
+			int len = str.Length;
+			for (int i = 0; i < len; i ++) {
+				char c = str [i];
+				if (c != '\\' || i == len - 1) {
+					sb.Append (c);
+					continue;
+				}
+				char next = str [i + 1];
+				if (next != '\\' && next != '#')
+					sb.Append ("\\");
+				
+				sb.Append (next);
+				i ++;
+			}
+			
+			return sb.ToString ();
 		}
 
 	}
