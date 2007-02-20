@@ -30,6 +30,7 @@ using System;
 using System.Reflection;
 
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -58,20 +59,29 @@ namespace MonoQuery.Commands
 		protected override void Run ()
 		{
 			ConnectionDialog dialog = new ConnectionDialog ();
-			int retval = dialog.Run ();
-			if (retval == (int) Gtk.ResponseType.Ok) {
-				Assembly asm = Assembly.GetAssembly (typeof (Mono.Data.Sql.DbProviderBase));
-				DbProviderBase provider = (DbProviderBase) asm.CreateInstance (dialog.ConnectionType.FullName);
-				if (provider == null)
-					return;
-				provider.Name = dialog.ConnectionName;
-				provider.ConnectionString = dialog.ConnectionString;
-				
-				MonoQueryService service = (MonoQueryService)
-					ServiceManager.GetService (typeof (MonoQueryService));
-				service.Providers.Add ( (DbProviderBase) provider);
+			try {
+				int retval = dialog.Run ();
+				if (retval == (int) Gtk.ResponseType.Ok) {
+					if (String.IsNullOrEmpty (dialog.ConnectionString)) {
+						IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString (
+							"Connection string cannot be blank."));
+						return;
+					}
+
+					Assembly asm = Assembly.GetAssembly (typeof (Mono.Data.Sql.DbProviderBase));
+					DbProviderBase provider = (DbProviderBase) asm.CreateInstance (dialog.ConnectionType.FullName);
+					if (provider == null)
+						return;
+					provider.Name = dialog.ConnectionName;
+					provider.ConnectionString = dialog.ConnectionString;
+					
+					MonoQueryService service = (MonoQueryService)
+						ServiceManager.GetService (typeof (MonoQueryService));
+					service.Providers.Add ( (DbProviderBase) provider);
+				}
+			} finally {
+				dialog.Destroy ();
 			}
-			dialog.Destroy ();
 		}
 	}
 }
