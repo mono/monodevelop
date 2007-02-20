@@ -82,7 +82,7 @@ namespace MonoDevelop.Components.Commands
 			guiLock++;
 			if (guiLock == 1) {
 				foreach (CommandToolbar toolbar in toolbars)
-					toolbar.Sensitive = false;
+					toolbar.SetEnabled (false);
 			}
 		}
 		
@@ -90,7 +90,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (guiLock == 1) {
 				foreach (CommandToolbar toolbar in toolbars)
-					toolbar.Sensitive = true;
+					toolbar.SetEnabled (true);
 			}
 			
 			if (guiLock > 0)
@@ -586,7 +586,7 @@ namespace MonoDevelop.Components.Commands
 				toolbarUpdaterRunning = true;
 			}
 			if (guiLock > 0)
-				toolbar.Sensitive = false;
+				toolbar.SetEnabled (false);
 		}
 		
 		void UpdateToolbars ()

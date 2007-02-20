@@ -63,5 +63,13 @@ namespace MonoDevelop.Components.Commands
 					item.Show ();
 			}
 		}
+		
+		public void SetEnabled (bool enabled)
+		{
+			foreach (Gtk.Widget item in Children) {
+				if (item.GetType () == typeof(Gtk.ToolItem))
+					item.Sensitive = enabled;
+			}
+		}
 	}
 }
