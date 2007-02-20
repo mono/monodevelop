@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop rev2237\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-09 23:24+0100\n"
+"POT-Creation-Date: 2007-02-16 18:38+0100\n"
 "PO-Revision-Date: 2005-03-01 16:34+0100\n"
 "Last-Translator: Andrés G. Aragoneses <knocte@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -111,7 +111,7 @@ msgstr "Cargando..."
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:74
 #: ../Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade.h:1
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:11
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:218
 #: ../Extras/MonoQuery/MonoQuery/monoquery.glade.h:5
 msgid "MonoDevelop"
 msgstr "MonoDevelop"
@@ -147,7 +147,7 @@ msgstr "Registrar un repositorio en línea"
 
 #: ../Core/src/MonoDevelop.Core.Gui/Base.glade.h:21
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:46
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
 msgid "Select _All"
 msgstr "Seleccion_ar todo"
 
@@ -199,7 +199,7 @@ msgid "Home"
 msgstr "Carpeta de inicio"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:144
 msgid "Location"
 msgstr "Ubicación"
 
@@ -381,7 +381,7 @@ msgid "Add-in"
 msgstr "Complemento"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs:77
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:46
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:53
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:28
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:55
 msgid "Version"
@@ -586,12 +586,12 @@ msgid "Initializing service: "
 msgstr "Iniciando servicio:"
 
 #. Hide menuitem
-#: ../Core/src/MonoDevelop.Dock/DockItem.cs:792
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:795
 msgid "Hide"
 msgstr "Ocultar"
 
 #. Lock menuitem
-#: ../Core/src/MonoDevelop.Dock/DockItem.cs:797
+#: ../Core/src/MonoDevelop.Dock/DockItem.cs:800
 msgid "Lock"
 msgstr "Bloquear"
 
@@ -828,8 +828,8 @@ msgid "Search in:"
 msgstr "Buscar en:"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:47
-msgid "Selected references"
-msgstr "Referencias seleccionadas"
+msgid "Selected references:"
+msgstr "Referencias seleccionadas:"
 
 #: ../Core/src/MonoDevelop.Ide/Base.glade.h:48
 msgid "Show _output pad when build starts"
@@ -1376,294 +1376,299 @@ msgid "Refresh"
 msgstr "Refrescar"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:106
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:367
+msgid "Reload"
+msgstr "Recargar"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs:185
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:215
 msgid "Replace"
 msgstr "Reemplazar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:107
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
 msgid "Reset Options"
 msgstr "Restablecer opciones"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
 msgid "Run"
 msgstr "Ejecutar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:109
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
 msgid "Save"
 msgstr "Guardar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
 msgid "Save All"
 msgstr "Guardar todo"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:111
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
 msgid "Save _As..."
 msgstr "Gu_ardar como..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:112
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
 msgid "Save all open files"
 msgstr "Guardar todos los archivos abiertos"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:113
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:114
 msgid "Save the active document"
 msgstr "Guardar el documento activo"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:115
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
 msgid "Set As Startup Project"
 msgstr "Establecer como proyecto de inicio"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:116
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
 msgid "Show All Files"
 msgstr "Mostrar todos los archivos"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
 msgid "Show project structure"
 msgstr "Mostrar la estructura del proyecto"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
 msgid "Show public members only"
 msgstr "Mostrar sólo miembros públicos"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:119
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
 msgid "Solution"
 msgstr "Solución"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:120
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
 msgid "Standard"
 msgstr "Estándar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
 msgid "Step Into"
 msgstr "Avanzar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:122
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
 msgid "Step Out"
 msgstr "Avanzar al final"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:123
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
 msgid "Step Over"
 msgstr "Avanzar sobre"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:124
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:65
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/SearchResultPad.cs:60
 msgid "Stop"
 msgstr "Detener"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:125
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
 msgid "Stop current build or application execution"
 msgstr "Detener la construcción o ejecución actual"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:126
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
 msgid "Switch Active Layout"
 msgstr "Conmutar disposición activa"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:62
 msgid "Task List"
 msgstr "Lista de tareas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:128
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
 msgid "Toggle Breakpoint"
 msgstr "Conmutar punto de ruptura"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
 msgid "Tool List"
 msgstr "Lista de herramientas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
 msgid "Toolbars"
 msgstr "Barras de herramientas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
 msgid "Tools"
 msgstr "Herramientas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
 msgid "Undo last action"
 msgstr "Deshacer la última acción"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:134
 msgid "User Tasks"
 msgstr "Tareas del usuario"
 
 #. ViewCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:135
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:136
 msgid "View List"
 msgstr "Lista de vistas"
 
 #. <DialogPanel id = "SelectCulture"
 #. _label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
 #. class = "MonoDevelop.Gui.Dialogs.OptionPanels.IDEOptionPanel"/>
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
 msgid "Visual Style"
 msgstr "Estilo visual"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
 msgid "Window List"
 msgstr "Lista de ventanas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:141
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
 msgid "[!] Any one character not in the set"
 msgstr "[!] Cualquier caracter que no esté en el conjunto"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:142
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
 msgid "[] Any one character in the set"
 msgstr "[] Cualquier caracter en el conjunto"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:143
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:144
 msgid "_About..."
 msgstr "_Acerca de..."
 
 #. ToolCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:145
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
 msgid "_Add-in Manager..."
 msgstr "_Gestor de complementos..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:146
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:20
 msgid "_Advanced"
 msgstr "_Avanzado"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:147
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
 msgid "_Clear Recent Files"
 msgstr "Limpiar ar_chivos recientes"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:148
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
 msgid "_Clear Recent Solutions"
 msgstr "_Limpiar soluciones recientes"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:149
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:150
 msgid "_Close File"
 msgstr "_Cerrar archivo"
 
 #. EditCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:151
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
 msgid "_Copy"
 msgstr "_Copiar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:152
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
 msgid "_Delete"
 msgstr "_Eliminar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:153
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
 msgid "_Delete Current Layout"
 msgstr "_Eliminar disposición actual"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:154
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
 msgid "_Edit"
 msgstr "_Editar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:155
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:156
 msgid "_File"
 msgstr "_Archivo"
 
 #. SearchCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
 msgid "_Find..."
 msgstr "_Buscar..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:158
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
 msgid "_Full Screen"
 msgstr "_Pantalla completa"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
 msgid "_Help"
 msgstr "Ay_uda"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:160
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
 msgid "_Indent Selection"
 msgstr "_Indentar la selección"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:161
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
 msgid "_Layouts"
 msgstr "_Disposiciones"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:162
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
 msgid "_Lowercase Selection"
 msgstr "Convertir a minúscu_las"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:163
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:164
 msgid "_New Layout..."
 msgstr "_Nueva disposición..."
 
 #. WindowCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:165
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
 msgid "_Next Window"
 msgstr "Siguie_nte ventana"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:166
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
 msgid "_Paste"
 msgstr "_Pegar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:167
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
 msgid "_Previous Window"
 msgstr "Ventana _anterior"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:168
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
 msgid "_Project"
 msgstr "_Proyecto"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:169
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
 msgid "_Quit"
 msgstr "_Salir"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:170
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
 msgid "_Redo"
 msgstr "_Rehacer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:171
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:172
 msgid "_Reload File"
 msgstr "_Recargar archivo"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:172
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:173
 msgid "_Remove From Project"
 msgstr "Quita_r del proyecto"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:173
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:174
 msgid "_Replace..."
 msgstr "_Reemplazar..."
 
 #. HelpCommands
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:175
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:176
 msgid "_Tip of the Day..."
 msgstr "_Consejo del día..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:176
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:177
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs:126
 msgid "_Tools"
 msgstr "_Herramientas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:177
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:178
 msgid "_Uncomment Line(s)"
 msgstr "_Descomentar línea(s)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:178
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:179
 msgid "_Undo"
 msgstr "_Deshacer"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:179
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:180
 msgid "_Unindent Selection"
 msgstr "_Desindentar la selección"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:180
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:181
 msgid "_Uppercase Selection"
 msgstr "Convertir a Mayúsc_ulas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:181
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:182
 msgid "_View"
 msgstr "_Ver"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:182
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:183
 msgid "_Web"
 msgstr "_Web"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:183
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:184
 msgid "_Window"
 msgstr "_Ventana"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:184
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:185
 msgid "_Word Count..."
 msgstr "C_ontar palabras..."
 
@@ -1710,42 +1715,42 @@ msgstr "Limpiar proyectos recientes"
 msgid "load solution {0}"
 msgstr "cargar solución {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:158
 msgid "Resume"
 msgstr "Continuar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:234
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:248
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:235
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:249
 #, csharp-format
 msgid "Build {0}"
 msgstr "Construir {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:236
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:237
 #, csharp-format
 msgid "Build Solution {0}"
 msgstr "Construir solución {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:238
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:239
 #, csharp-format
 msgid "Build Project {0}"
 msgstr "Construir proyecto {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:277
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:285
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:278
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:286
 #, csharp-format
 msgid "Rebuild {0}"
 msgstr "Reconstruir {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:345
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:346
 #, csharp-format
 msgid "Clean {0}"
 msgstr "Limpiar {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:414
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:415
 msgid "(default)"
 msgstr "(predeterminado)"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:420
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:421
 msgid "No deploy targets available"
 msgstr "No hay objetivos de despliegue disponibles"
 
@@ -1762,45 +1767,45 @@ msgstr "Buscar referencias"
 msgid "Class {0}"
 msgstr "Clase {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:122
 msgid "Go to base"
 msgstr "Ir a base"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:118
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
 msgid "Find derived classes"
 msgstr "Buscar clases derivadas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:130
 #, csharp-format
 msgid "Field {0} : {1}"
 msgstr "Campo {0} : {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:124
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
 #, csharp-format
 msgid "Property {0} : {1}"
 msgstr "Propiedad {0}: {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:136
 #, csharp-format
 msgid "Event {0}"
 msgstr "Evento {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
 #, csharp-format
 msgid "Method {0}"
 msgstr "Método {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:131
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:140
 #, csharp-format
 msgid "Indexer {0}"
 msgstr "Indexador {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:142
 #, csharp-format
 msgid "Parameter {0}"
 msgstr "Parámetro {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:147
 #, csharp-format
 msgid "Variable {0}"
 msgstr "Variable {0}"
@@ -1881,7 +1886,7 @@ msgstr "OVR"
 msgid "Assemblies"
 msgstr "Ensamblados"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:72
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:77
 #, csharp-format
 msgid "File '{0}' is not a valid .Net Assembly"
 msgstr "El archivo '{0}' no es un ensamblado .Net válido"
@@ -1967,13 +1972,13 @@ msgstr "Añadir o quitar..."
 msgid "Solution Workbench"
 msgstr "Banco de trabajo de la solución"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:34
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:129
-msgid "Reference Name"
-msgstr "Nombre de referencia"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:42
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:173
+msgid "Assembly"
+msgstr "Ensamblado"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:47
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:172
 msgid "Package"
 msgstr "Paquete"
 
@@ -2046,7 +2051,7 @@ msgid "Solution Location"
 msgstr "Ubicación de la solución"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:43
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:159
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:174
 msgid "Project"
 msgstr "Proyecto"
 
@@ -2054,7 +2059,7 @@ msgstr "Proyecto"
 msgid "Directory"
 msgstr "Directorio"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:132
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:141
 #, csharp-format
 msgid ""
 "(Projects referencing '{0}' are not shown,\n"
@@ -2121,25 +2126,25 @@ msgstr "Nombre de directorio no válido: {0}"
 msgid "Invalid file mask: {0}"
 msgstr "Máscara de archivo inválida: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:134
+msgid "Reference"
+msgstr "Referencia"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:143
 msgid "Type"
 msgstr "Tipo"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:152
 msgid "Packages"
 msgstr "Paquetes"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:139
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:153
 msgid "Projects"
 msgstr "Proyectos"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:154
 msgid ".Net Assembly"
 msgstr "Ensamblado .Net"
-
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:158
-msgid "Assembly"
-msgstr "Ensamblado"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
 msgid "Released under the GNU General Public license."
@@ -2199,7 +2204,7 @@ msgstr "Debe situarse en modo proyecto"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:191
 msgid "Word Count"
-msgstr "Contar Palabras"
+msgstr "Contar palabras"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/WordCountDialog.cs:208
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:224
@@ -2456,7 +2461,6 @@ msgstr[1] "{0} mensajes"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:40
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs:14
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:671
 msgid "Files"
 msgstr "Archivos"
 
@@ -2580,7 +2584,7 @@ msgstr "La operación de guardado ha fallado."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:226
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:342
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1046
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1161
 msgid "Copying files..."
 msgstr "Copiando archivos..."
 
@@ -2628,7 +2632,7 @@ msgid "External Files"
 msgstr "Archivos externos"
 
 #. assume duplicate file
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:108
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:110
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:157
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:105
 msgid "File or directory name is already in use, choose a different one."
@@ -2637,7 +2641,7 @@ msgstr ""
 "distinto."
 
 #. new file name with wildcard (*, ?) characters in it
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:112
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:159
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:107
 msgid ""
@@ -2647,7 +2651,7 @@ msgstr ""
 "El nombre de archivo que ha escogido contiene caracteres no válidos. Por "
 "favor, escoja un nombre de archivo diferente."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:141
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:143
 #, csharp-format
 msgid "Are you sure you want to remove file {0} from project {1}?"
 msgstr "¿Está seguro de que desea excluir el archivo {0} del proyecto {1}?"
@@ -2686,12 +2690,10 @@ msgid "Do you really want to remove project {0} from solution {1}"
 msgstr "¿Está seguro de que desea eliminar el proyecto {0} de la solución {1}?"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:80
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:926
 msgid "References"
 msgstr "Referencias"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:494
 msgid "Resources"
 msgstr "Recursos"
 
@@ -2734,7 +2736,7 @@ msgid_plural "{0} matches"
 msgstr[0] "{0} coincidencia"
 msgstr[1] "{0} coincidencias"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:1043
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:1051
 msgid "Display Options"
 msgstr "Opciones de visualización"
 
@@ -2755,72 +2757,79 @@ msgstr "Traza de la aplicación"
 msgid "Saving..."
 msgstr "Guardando..."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:287
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:507
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:322
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:518
 #, csharp-format
 msgid "File not found: {0}"
 msgstr "Archivo no encontrado: {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:330
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:373
 msgid "Solution loaded."
 msgstr "Solución cargada."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:397
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:417
+#, csharp-format
+msgid ""
+"The project '{0}' has been modified by an external application. Do you want "
+"to reload it? All project files will be closed."
+msgstr "El proyecto '{0}' ha sido modificado por una aplicación externa. ¿Desea recargarlo? Todos los archivos del proyecto se cerrarán."
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:512
 msgid "Solution saved."
 msgstr "Solución guardada."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:399
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:412
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:514
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:527
 msgid "Save failed."
 msgstr "Error al guardar"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:410
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:525
 msgid "Project saved."
 msgstr "Proyecto guardado."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:498
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:521
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:613
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:636
 #, csharp-format
 msgid "The file '{0}' could not be loaded."
 msgstr "El archivo '{0}' no pudo ser cargado."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:513
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:628
 msgid "Add to Solution"
 msgstr "Añadir a solución"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:714
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:829
 msgid "Deploy Output"
 msgstr "Traza del despliegue"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:754
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:787
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:869
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:902
 msgid "Execution failed."
 msgstr "Ejecución fallida."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:804
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:868
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:919
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:983
 msgid "No runnable executable found."
 msgstr "No se encontró ningún ejecutable."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:853
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
 #, csharp-format
 msgid "The file {0} can't be compiled."
 msgstr "El archivo {0} no puede compilarse."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:904
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:972
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1019
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1087
 msgid "Build failed."
 msgstr "Construcción fallida."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:922
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1037
 msgid "Save changed files?"
 msgstr "¿Guardar archivos modificados?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:954
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1069
 msgid "---------------------- Done ----------------------"
 msgstr "---------------------- Hecho ---------------------"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:962
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1077
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:412
 #, csharp-format
 msgid "{0} error"
@@ -2828,7 +2837,7 @@ msgid_plural "{0} errors"
 msgstr[0] "{0} error"
 msgstr[1] "{0} errores"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:963
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1078
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:413
 #, csharp-format
 msgid "{0} warning"
@@ -2836,42 +2845,42 @@ msgid_plural "{0} warnings"
 msgstr[0] "{0} advertencia"
 msgstr[1] "{0} advertencias"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:966
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1081
 msgid "Build successful."
 msgstr "Construcción satisfactoria."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:968
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:970
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1083
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1085
 msgid "Build: "
 msgstr "Construcción: "
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1018
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1133
 #, csharp-format
 msgid "Could not get any file from '{0}'."
 msgstr "No se pudo obtener ningún archivo desde '{0}'."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1030
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1145
 #, csharp-format
 msgid "Could not create directory '{0}'."
 msgstr "No se pudo crear el directorio '{0}'."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1041
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1156
 #, csharp-format
 msgid "Directory '{0}' could not be deleted."
 msgstr "El directorio '{0}' no pudo ser eliminado."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1064
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1179
 #, csharp-format
 msgid "File '{0}' could not be created."
 msgstr "El archivo '{0}' no pudo ser creado."
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:99
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:104
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:103
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:108
 #, csharp-format
 msgid "Error : {0}"
 msgstr "Error : {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:110
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/SdStatusBar.cs:114
 #, csharp-format
 msgid ""
 " ln <span font_family='fixed'>{0,-4}</span>  col <span font_family='fixed'>"
@@ -2918,7 +2927,7 @@ msgstr[1] ""
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:115
 msgid "Search completed. "
-msgstr "Búsqueda completada."
+msgstr "Búsqueda completada. "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Search/SearchReplaceInFilesManager.cs:121
 #, csharp-format
@@ -2955,7 +2964,7 @@ msgstr[1] "Reemplazar todo terminado. {0} resultados encontrados."
 msgid "Search string not found:"
 msgstr "La cadena buscada no se encontró:"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:98
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:105
 msgid "Ready"
 msgstr "Listo"
 
@@ -2963,34 +2972,34 @@ msgstr "Listo"
 msgid "Are you sure that you want to reload the file?"
 msgstr "¿Está seguro de que quiere recargar el archivo?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:63
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:64
 msgid "Initializing Main Window"
 msgstr "Inicializando la ventana principal"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:318
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:329
 #, csharp-format
 msgid "Opening {0}"
 msgstr "Abriendo {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:433
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:444
 msgid "Do you want to save the current changes?"
 msgstr "¿Desea guardar los cambios actuales?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:445
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:456
 msgid "Do you really want to discard your changes?"
 msgstr "¿Está seguro de que desea descartar sus cambios?"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:477
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:488
 msgid "Invalid file name"
 msgstr "Nombre de archivo inválido"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:491
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:502
 #, csharp-format
 msgid "{0} is a directory"
 msgstr "{0} es un directorio"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:648
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:658
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:659
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:669
 #, csharp-format
 msgid "The file '{0}' could not be opened."
 msgstr "El archivo '{0}' no pudo ser abierto."
@@ -3068,7 +3077,7 @@ msgid "File {0} could not be written."
 msgstr "El archivo {0} no pudo ser guardado."
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:67
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:157
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:160
 #, csharp-format
 msgid "The file '{0}' already exists in the project."
 msgstr "El archivo '{0}' ya existe en el proyecto."
@@ -3437,7 +3446,9 @@ msgstr "_Abortar despliegue"
 msgid ""
 "The target file {0} already exists, and was last modified at {1}. The "
 "replacement file, {2}, was modified on {3}. What would you like to do?"
-msgstr "El archivo objetivo {0} ya existe, y su última modificación fue en {1}. El archivo de reemplazamiento, {2}, fue modificado en {3}. ¿Qué desea hacer?"
+msgstr ""
+"El archivo objetivo {0} ya existe, y su última modificación fue en {1}. El "
+"archivo de reemplazamiento, {2}, fue modificado en {3}. ¿Qué desea hacer?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
 msgid "Solution Options"
@@ -3472,7 +3483,7 @@ msgstr "Debe existir por lo menos una configuración."
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:186
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:200
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:27
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
 msgid "None"
 msgstr "Ninguno"
 
@@ -3552,14 +3563,14 @@ msgstr "Establecer como activo"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:67
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:86
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:87
 #, csharp-format
 msgid "Saving solution: {0}"
 msgstr "Guardando solución: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:74
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:101
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:102
 #, csharp-format
 msgid "Could not save solution: {0}"
 msgstr "No se pudo guardar la solución: {0}"
@@ -3576,7 +3587,7 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:224
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:322
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:323
 #, csharp-format
 msgid "Loading solution: {0}"
 msgstr "Cargando solución: {0}"
@@ -3592,16 +3603,16 @@ msgstr "Refactorizando proyecto {0}"
 msgid "Could not look for references in file '{0}': {1}"
 msgstr "No se pudieron buscar referencias en el archivo '{0}': {1}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:638
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:701
 msgid "The solution does not have an active configuration."
 msgstr "La solución no tiene una configuración activa."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:650
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:713
 #, csharp-format
 msgid "Building Solution {0}"
 msgstr "Construyendo solución {0}"
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:657
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:720
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
@@ -3662,7 +3673,7 @@ msgstr ""
 "Lenguaje '{0}' desconocido. Es probable que necesite instalar un complemento "
 "adicional para soportar este lenguaje."
 
-#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:159
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:165
 #, csharp-format
 msgid "Referenced project '{0}' not found in the solution."
 msgstr "El proyecto referenciado '{0}' no se ha encontrado en la solución."
@@ -3670,7 +3681,7 @@ msgstr "El proyecto referenciado '{0}' no se ha encontrado en la solución."
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:66
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:68
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:110
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:124
 #, csharp-format
 msgid "Saving project: {0}"
 msgstr "Guardando proyecto: {0}"
@@ -3678,7 +3689,7 @@ msgstr "Guardando proyecto: {0}"
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:71
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:73
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:125
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:139
 #, csharp-format
 msgid "Could not save project: {0}"
 msgstr "No se pudo guardar el proyecto: {0}"
@@ -3696,7 +3707,7 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:117
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:84
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:361
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:372
 #, csharp-format
 msgid "Loading project: {0}"
 msgstr "Cargando proyecto: {0}"
@@ -3704,13 +3715,13 @@ msgstr "Cargando proyecto: {0}"
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:123
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
 #: ../Extras/NUnit/Project/NUnitAssemblyGroupFileFormat.cs:96
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:364
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:375
 #, csharp-format
 msgid "Could not load project: {0}"
 msgstr "No se pudo cargar el proyecto: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:105
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:326
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:327
 #, csharp-format
 msgid "Could not load solution: {0}"
 msgstr "No se pudo cargar la solución: {0}"
@@ -4020,7 +4031,6 @@ msgid "Creates an ASP.NET web service."
 msgstr "Crear un servicio web ASP.NET."
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebService.xft.xml.h:2
-#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:2
 msgid "Web Service"
 msgstr "Servicio web"
 
@@ -4209,14 +4219,14 @@ msgstr "Archivos XML"
 msgid "{0} could not be found or is invalid."
 msgstr "El archivo {0} no se encontró o no es válido."
 
-#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:204
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:206
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:212
 #, csharp-format
 msgid "Compiling resource {0} with {1}"
 msgstr "Compilando recurso {0} con {1}"
 
-#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:213
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:215
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:217
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:221
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:223
 #, csharp-format
@@ -4227,8 +4237,8 @@ msgstr ""
 "Ocurrió un error al intentar invocar '{0}' para compilar el recurso '{1}' :\n"
 " {2}"
 
-#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:227
-#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:230
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:229
+#: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:232
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:235
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:238
 #, csharp-format
@@ -4352,18 +4362,6 @@ msgstr "Proyecto de consola"
 msgid "Creates a new C# console project."
 msgstr "Crea un nuevo proyecto C# de consola."
 
-#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
-msgid "Creates a secure C# Web Service, using SessionState"
-msgstr "Crea un servicio web seguro en C#, usando SessionState"
-
-#: ../Extras/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:2
-msgid "Secure Web Service"
-msgstr "Servicio web seguro"
-
-#: ../Extras/CSharpBinding/templates/CSharpWebService.xft.xml.h:1
-msgid "Creates a C# Web Service."
-msgstr "Crea un servicio web en C#."
-
 #: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
 msgid "Creates an empty C# file."
 msgstr "Crea un archivo C# vacío."
@@ -4437,82 +4435,23 @@ msgstr "Crea una ventana Gtk# principal."
 msgid "Creates an empty C# class library"
 msgstr "Crea una librería de clases C# vacía"
 
-#: ../Extras/GladeAddIn/GladeAddIn.addin.xml.h:1
-msgid "Add New Dialog"
-msgstr "Añadir nuevo diálogo"
-
-#: ../Extras/GladeAddIn/GladeAddIn.addin.xml.h:2
-msgid "Add New Window"
-msgstr "Añadir nueva ventana"
-
-#: ../Extras/GladeAddIn/GladeAddIn.addin.xml.h:3
-msgid "Glade Properties"
-msgstr "Propiedades Glade"
-
-#: ../Extras/GladeAddIn/GladeAddIn.addin.xml.h:4
-msgid "Glade Widgets"
-msgstr "Componentes Glade"
-
-#: ../Extras/GladeAddIn/GladeAddIn.addin.xml.h:5
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:9
-msgid "Widget Tree"
-msgstr "Árbol de componentes"
-
-#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:77
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:78
-msgid "Source Code"
-msgstr "Código fuente"
-
-#: ../Extras/GladeAddIn/GladeAddIn.Gui/GuiBuilderView.cs:82
-msgid "Window Designer"
-msgstr "Diseñador de ventanas"
-
-#: ../Extras/GladeAddIn/GladeAddIn.Gui/WindowsFolderNodeBuilder.cs:63
-msgid "Windows and Dialogs"
-msgstr "Ventanas y diálogos"
-
-#: ../Extras/GladeAddIn/templates/GladeDialog.xft.xml.h:1
-msgid "Creates a Glade dialog."
-msgstr "Crear un diálogo Glade."
-
-#: ../Extras/GladeAddIn/templates/GladeDialog.xft.xml.h:2
-#: ../Extras/MonoDevelop.GtkCore/templates/DialogPartial.xft.xml.h:2
-#: ../Extras/MonoDevelop.GtkCore/templates/Dialog.xft.xml.h:2
-msgid "Dialog"
-msgstr "Diálogo"
-
-#: ../Extras/GladeAddIn/templates/GladeWindow.xft.xml.h:1
-msgid "Creates a Glade window."
-msgstr "Crear una ventana Glade."
-
-#: ../Extras/GladeAddIn/templates/GladeWindow.xft.xml.h:2
-#: ../Extras/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml.h:2
-#: ../Extras/MonoDevelop.GtkCore/templates/Window.xft.xml.h:2
-msgid "Window"
-msgstr "Ventana"
-
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
-#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
 msgid "Include debug information"
 msgstr "Incluir información de depuración"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:59
-#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:51
 msgid "Output path"
 msgstr "Ruta de destino"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
-#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
 msgid "Assembly name"
 msgstr "Nombre del ensamblado"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
-#: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
 msgid "Target options"
 msgstr "Opciones del objetivo"
 
 #: ../Extras/ILAsmBinding/ILAsmBinding.addin.xml.h:1
-#: ../Extras/PythonBinding/PythonBinding.addin.xml.h:1
 msgid "Compiler"
 msgstr "Compilador"
 
@@ -4688,7 +4627,7 @@ msgstr "Panel AWT"
 msgid "Creates a Java AWT panel."
 msgstr "Crea un panel Java AWT"
 
-#: ../Extras/MonoDevelop.Autotools/Commands.cs:67
+#: ../Extras/MonoDevelop.Autotools/Commands.cs:68
 msgid ""
 "Autotools files already exist for this solution.  Would you like to "
 "overwrite them?"
@@ -4696,7 +4635,7 @@ msgstr ""
 "Los archivos Autotools ya existen para esta solución. ¿Desea "
 "sobreescribirlos?"
 
-#: ../Extras/MonoDevelop.Autotools/Commands.cs:72
+#: ../Extras/MonoDevelop.Autotools/Commands.cs:73
 msgid "Autotools Output"
 msgstr "Salida de las Autotools"
 
@@ -4705,113 +4644,48 @@ msgstr "Salida de las Autotools"
 msgid "Makefile variable {0} not found in the file."
 msgstr "La variable {0} del Makefile no fue encontrada en el archivo."
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:169
-msgid "Enable makefile Integration in this project"
-msgstr "Activar integración con makefiles en este proyecto"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:337
-msgid "Assembly Name variable:"
-msgstr "Variable de nombre de ensamblado:"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:349
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:215
 msgid "Build target name:"
 msgstr "Nombre del objetivo de compilación:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:361
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:228
 msgid "Clean target name:"
 msgstr "Nombre del objetivo de limpiado:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:373
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:241
 msgid "Execute target name:"
 msgstr "Nombre del objetivo de ejecución:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:385
-msgid "Makefile path:"
-msgstr "Ruta del Makefile:"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:395
-msgid "Output directory variable:"
-msgstr "Variable para el directorio de salida:"
-
-#. FIXME: ResetAll  : use for new data, use for new makefile
-#. Load values
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:414
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:54
-msgid "Makefile"
-msgstr "Makefile"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:427
-msgid "Enable project file synchronization"
-msgstr "Activar sincronización del archivo de proyecto"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:455
-msgid "Deployment files"
-msgstr "Archivos del despliegue"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:468
-msgid "Source code files"
-msgstr "Archivos de código fuente"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:481
-msgid "Other Files"
-msgstr "Otros archivos"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:622
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:384
 msgid ""
-"Select the kind of files you want to synchronize with the makefile. For each "
-"file kind please specify the makefile variable that holds the list and "
-"optionally a prefix to be prepended to each file name."
-msgstr ""
-"Seleccione el tipo de archivos que desea sincronizar con el makefile. Para "
-"cada tipo especifique por favor la variable de makefile que contiene la "
-"lista y opcionalmente un prefijo a insertar en cada nombre de archivo."
+"Select the makefile targets that should be executed for the build and clean "
+"operations:"
+msgstr "Seleccione los objetivos del makefile que deberían ser ejecutados en las operaciones de construcción y limpieza:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:635
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:854
-msgid "Makefile variable name:"
-msgstr "Nombre de variable de makefile:"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:649
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:868
-msgid "Prefix:"
-msgstr "Prefijo:"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:684
-msgid "Enable references synchronization"
-msgstr "Activar sincronización de referencias"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:711
-msgid "Look for packages in configure.in"
-msgstr "Buscar paquetes en el configure.in"
-
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:829
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:916
 msgid ""
-"Select the kind of references you want to synchronize with the makefile. For "
-"each reference type please specify the makefile variable that holds the "
-"list, and optionally a prefix to be prepended to each reference name. You "
-"can specify the same variable name for several types of references."
-msgstr ""
-"Seleccione los tipos de referencias que desea sincronizar con el makefile. "
-"Para cada tipo, por favor, especifique una variable del makefile que "
-"contendrá la lista, y opcionalmente un prefijo para agregar a cada nombre de "
-"referencia. Puede usar el mismo nombre de variable para varios tipos de "
-"referencias."
+"Select the Compiler message format for parsing the compiler errors and "
+"warnings. You can either select one of the built-in options, or specify "
+"custom regular expressions for errors and warnings. The regex must be the ."
+"net style regex. The following named groups are relevant : file, line, "
+"column, number (error number) and message."
+msgstr "Seleccione el formato de mensaje del compilador para parsear los errores y las advertencias. Puede elegir una de las opciones ya incluidas o especificar expresiones regulares personalizadas. La expresión regular ha de ser compatible con el formato de .NET. Los siguientes nombres de grupos son relevantes: archivo, línea, columna, número (número de error) y mensaje."
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:842
-msgid "Assembly References"
-msgstr "Referencias a ensamblados"
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:982
+msgid "Error regex :"
+msgstr "Expresión regular para error : "
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:882
-msgid "Path for configure.in"
-msgstr "Ruta para el configure.in"
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:993
+msgid "Compiler :"
+msgstr "Compilador :"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:894
-msgid "Package References"
-msgstr "Referencias a paquetes"
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1002
+msgid "Warnings regex :"
+msgstr Expresión regular para advertencia :"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:906
-msgid "Project References"
-msgstr "Referencias a proyectos"
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1019
+msgid "Messages Regex"
+msgstr "Expresión regular para mensaje"
 
 #: ../Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs:21
 msgid "Makefile Project Import"
@@ -4833,20 +4707,20 @@ msgstr "Nombre del proyecto:"
 msgid "Please enter a valid project name"
 msgstr "Por favor, introduzca un nombre de proyecto válido"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:449
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:594
 msgid "Internal Error: ownerProject not set"
 msgstr "Error interno: ownerProject no establecido"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:457
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:602
 #, csharp-format
 msgid "Invalid makefile : {0}. Disabling Makefile integration."
 msgstr "Makefile inválido: {0}. Desactivando integración con Makefiles."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:466
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:611
 msgid "Enable Makefile integration"
 msgstr "Activar integración con Makefiles"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:467
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:612
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
 "the Makefile be used as the master copy. This is done only when enabling "
@@ -4856,24 +4730,24 @@ msgstr ""
 "el Makefile como copia maestra. Esta opción solamente se establece al "
 "activar esta característica."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:489
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:634
 #, csharp-format
 msgid "Error trying to read configure.in ({0}) for project {1} : {2} "
 msgstr "Error al leer el configure.in ({0}) para el proyecto {1} : {2} "
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:557
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:702
 #, csharp-format
 msgid "Error in loading references : {0}. Skipping syncing of references"
 msgstr ""
 "Error al cargar referencias : {0}. Omitiendo la sincronización de referencias"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:572
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:718
 #, csharp-format
 msgid "Error in loading files for {0}. Skipping."
 msgstr "Error cargando archivos para {0}. Omitiendo."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:588
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:592
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:734
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:738
 #, csharp-format
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of {1} File list for "
@@ -4882,8 +4756,8 @@ msgstr ""
 "La variable de Makefile '{0}' no se encontró. Omitiendo la sincronización de "
 "la lista de archivos {1} para el proyecto {2}."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:636
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:640
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:782
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:786
 #, csharp-format
 msgid ""
 "Files in variable '{0}' contain variables which cannot be parsed without "
@@ -4893,8 +4767,8 @@ msgstr ""
 "parseadas sin que se haya establecido la ruta al archivo configure.in. Se "
 "ignorarán dichos archivos."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:694
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:698
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:843
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:847
 #, csharp-format
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of {1} all references "
@@ -4903,13 +4777,13 @@ msgstr ""
 "La variable de Makefile '{0}' no se encontró. Omitiendo la sincronización de "
 "las referencias {1} para el proyecto {2}."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:717
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:866
 #, csharp-format
 msgid "Unable to parse reference '{0}', reason : {1}. Ignoring."
 msgstr "Imposible parsear referencia '{0}', razón : {1}. Se ignorará."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1124
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1126
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1273
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1275
 #, csharp-format
 msgid ""
 "Makefile variable '{0}' not found. Skipping writing of {1} Files to the "
@@ -4918,16 +4792,16 @@ msgstr ""
 "La variable de Makefile '{0}' no se ha encontrado. Omitiendo la escritura de "
 "los archivos {1} al archivo makefile."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1176
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1179
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1327
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1330
 #, csharp-format
 msgid "Makefile variable '{0}' not found. Skipping syncing of {1} references."
 msgstr ""
 "La variable de Makefile '{0}' no se ha encontrado. Omitiendo sincronización "
 "de referencias {1}."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1277
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1282
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1428
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1433
 #, csharp-format
 msgid ""
 "A reference to package '{0}' is being emitted, as atleast one assembly from "
@@ -4940,22 +4814,28 @@ msgstr ""
 "éxito en otro sistemas."
 
 #. FIXME: Exception type?
-#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1343
+#: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1494
 #, csharp-format
 msgid "Unable to find configure.in at {0}"
 msgstr "Imposible encontrar el configure.in en {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:179
+#. FIXME: ResetAll  : use for new data, use for new makefile
+#. Load values
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:58
+msgid "Makefile"
+msgstr "Makefile"
+
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:195
 #, csharp-format
 msgid "Specified makefile is invalid: {0}"
 msgstr "El makefile especificado es inválido: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:187
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:203
 #, csharp-format
 msgid "Path specified for configure.in is invalid: {0}"
 msgstr "La ruta especificada para el configure.in es inválida: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:198
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:214
 msgid ""
 "'Sync References' is enabled, but one of Reference variables is not set. "
 "Please correct this."
@@ -4963,11 +4843,21 @@ msgstr ""
 "La sincronización de referencias está activada, pero al menos una variable "
 "de referencias no se ha establecido. Corrija esto, por favor."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:221
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:236
+#, csharp-format
+msgid "Invalid regex for Error messages. : {0}"
+msgstr "Expresión regular inválida para los mensajes de error. : {0}"
+
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:245
+#, csharp-format
+msgid "Invalid regex for Warning messages. : {0}"
+msgstr "Expresión regular inválida para los mensajes de advertencia. : {0}"
+
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:254
 msgid "Updating project"
 msgstr "Actualizando proyecto"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:236
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:269
 #, csharp-format
 msgid ""
 "File variable ({0}) is set for sync'ing, but no valid variable is selected."
@@ -4977,80 +4867,80 @@ msgstr ""
 "no se ha seleccionado una variable válida. Desactive la sincronización o "
 "seleccione un nombre de variable."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:452
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:505
 msgid "Error while trying to read the specified Makefile"
 msgstr "Error al intentar leer el Makefile especificado"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:460
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:513
 msgid "No variables found in the selected Makefile"
 msgstr "No se han encontrado variables en el Makefile seleccionado"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:64
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:66
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:65
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:67
 #, csharp-format
 msgid "Error resolving Makefile based project references for solution {0}"
 msgstr ""
 "Error al resolver las referencias de proyecto basadas en Makefile para la "
 "solución {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:81
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:82
 msgid "Updating project from Makefile"
 msgstr "Actualizando proyecto desde el Makefile"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:89
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:90
 #, csharp-format
 msgid "Error loading Makefile for project {0}"
 msgstr "Error al cargar el Makefile para el proyecto {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:116
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:117
 #, csharp-format
 msgid "Error saving to Makefile ({0}) for project {1}"
 msgstr "Error guardando el Makefile ({0}) del proyecto {1}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:141
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:142
 #, csharp-format
 msgid "Building {0}"
 msgstr "Construyendo {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:167
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:168
 msgid "Project could not be built: "
 msgstr "El proyecto no se pudo construir: "
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:180
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:182
 msgid "Build failed. See Build Output panel."
 msgstr ""
 "La construcción ha fallado. Examine la salida del panel de construcción."
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:303
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:326
 msgid "Cleaning project"
 msgstr "Limpiando proyecto"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:317
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:340
 #: ../Extras/MonoDevelop.Autotools/SolutionDeployer.cs:150
 #: ../Extras/MonoDevelop.Autotools/SolutionDeployer.cs:168
 #, csharp-format
 msgid "An unspecified error occurred while running '{0}'"
 msgstr "Ocurrió un error no especificado mientras se ejecutaba '{0}'"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:323
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:346
 msgid "Project could not be cleaned: "
 msgstr "El proyecto no se pudo limpiar: "
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:330
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:353
 msgid "Project successfully cleaned"
 msgstr "El proyecto se limpió con éxito"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:348
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:371
 #, csharp-format
 msgid "Executing {0}"
 msgstr "Ejecutando {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:359
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:382
 #, csharp-format
 msgid "The application exited with code: {0}"
 msgstr "La aplicación terminó con el código: {0}"
 
-#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:362
+#: ../Extras/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:385
 msgid "Project could not be executed: "
 msgstr "El proyecto no se pudo ejecutar: "
 
@@ -5063,6 +4953,10 @@ msgid "Generate Autotools Files"
 msgstr "Generar archivos Autotools"
 
 #: ../Extras/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml.h:3
+msgid "Include in Synchronized Makefile"
+msgstr "Incluir en el Makefile sincronizado"
+
+#: ../Extras/MonoDevelop.Autotools/MonoDevelop.Autotools.addin.xml.h:4
 msgid "Makefile Integration"
 msgstr "Integración con Makefiles"
 
@@ -5313,7 +5207,7 @@ msgid "This assembly is a widget library"
 msgstr "Este ensamblado es una librería de componentes"
 
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:19
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:72
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:77
 msgid "User Interface"
 msgstr "Interfaz de usuario"
 
@@ -5353,6 +5247,10 @@ msgstr "Nueva ventana..."
 msgid "Widget Properties"
 msgstr "Propiedades del componente"
 
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:9
+msgid "Widget Tree"
+msgstr "Árbol de componentes"
+
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml.h:10
 msgid "Widgets Palette"
 msgstr "Paleta de componentes"
@@ -5377,9 +5275,9 @@ msgstr "¿Está seguro de que desea eliminar el grupo de acciones '{0}'?"
 msgid "Are you sure you want to delete '{0}'?"
 msgstr "¿Está seguro de que desea eliminar '{0}'?"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:64
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:104
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:191
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs:75
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:118
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:214
 msgid "Actions"
 msgstr "Acciones"
 
@@ -5392,11 +5290,15 @@ msgstr ""
 "No ha podido encontrarse la clase asociada al componente '{0}'. Esto puede "
 "ser causado por errores de sintaxis en el archivo de código fuente."
 
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:78
+msgid "Source Code"
+msgstr "Código fuente"
+
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs:61
 msgid "Signals"
 msgstr "Señales"
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:199
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:209
 msgid ""
 "ERROR: MonoDevelop could not find the Gtk# 2.0 development package. "
 "Compilation of projects depending on Gtk# libraries will fail. You may need "
@@ -5406,16 +5308,27 @@ msgstr ""
 "2.0. Por tanto, la compilación de proyectos dependientes de librerías Gtk# "
 "fallará. Deberá instalar los paquetes de desarrollo para gtk-sharp-2.0."
 
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:349
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:357
+#, csharp-format
+msgid ""
+"GUI code generation failed for project '{0}'. The file '{1}' could not be "
+"loaded."
+msgstr "La generación de código de interfaz ha fallado en el proyecto '{0}'. El archivo '{1}' no se pudo cargar."
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:365
 #, csharp-format
 msgid "Generating GUI code for project '{0}'..."
 msgstr "Generando código de IU para el proyecto '{0}'..."
 
 #. Something went wrong while creating the designer. Show it, but don't do aything else.
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:69
-#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:91
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:83
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:105
 msgid "Designer"
 msgstr "Diseñador"
+
+#: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:75
+msgid "User Interface (GUI project load failed)"
+msgstr "Interfaz de usuario (la carga del proyecto de interfaz ha fallado)"
 
 #: ../Extras/MonoDevelop.GtkCore/templates/ActionGroupPartial.xft.xml.h:1
 #: ../Extras/MonoDevelop.GtkCore/templates/ActionGroup.xft.xml.h:1
@@ -5432,6 +5345,11 @@ msgstr "Crear un Grupo de acciones global."
 msgid "Creates a Gtk dialog."
 msgstr "Crear un diálogo Gtk."
 
+#: ../Extras/MonoDevelop.GtkCore/templates/DialogPartial.xft.xml.h:2
+#: ../Extras/MonoDevelop.GtkCore/templates/Dialog.xft.xml.h:2
+msgid "Dialog"
+msgstr "Diálogo"
+
 #: ../Extras/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml.h:1
 #: ../Extras/MonoDevelop.GtkCore/templates/Widget.xft.xml.h:1
 msgid "Creates a custom Gtk Widget."
@@ -5446,6 +5364,11 @@ msgstr "Componente"
 #: ../Extras/MonoDevelop.GtkCore/templates/Window.xft.xml.h:1
 msgid "Creates a Gtk Window"
 msgstr "Crear una ventana Gtk"
+
+#: ../Extras/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml.h:2
+#: ../Extras/MonoDevelop.GtkCore/templates/Window.xft.xml.h:2
+msgid "Window"
+msgstr "Ventana"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:1
 msgid "\n"
@@ -5532,14 +5455,18 @@ msgid "Extension"
 msgstr "Extensión"
 
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:25
+msgid "File type:"
+msgstr "Tipo de archivo:"
+
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:26
 msgid "Highlight _matching bracket"
 msgstr "Resaltar llaves _coincidentes"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:26
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:27
 msgid "I_ndentation"
 msgstr "I_ndentación"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:29
 msgid ""
 "None\n"
 "Char\n"
@@ -5551,55 +5478,55 @@ msgstr ""
 "Palabra\n"
 "Palabra-Carácter"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:32
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:33
 msgid "Remove Group"
 msgstr "Eliminar grupo"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:33
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:34
 msgid "Restore default"
 msgstr "Restablecer valores por omisión"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:34
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:35
 msgid "Show _column ruler,"
 msgstr "Mostrar regla de _columna"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:35
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
 msgid "Show _line numbers"
 msgstr "Mostrar números de _línea"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:36
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
 msgid "Smart"
 msgstr "Inteligente"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:37
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:38
 msgid "Use default _monospace font"
 msgstr "Usar la tipografía _monospace predeterminada"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:38
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:39
 msgid "Use default _sans-serif font"
 msgstr "Usar la tipografía _sans-serif predeterminada"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:39
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:40
 msgid "_Automatic template insertion"
 msgstr "Inserción _automática de plantillas"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:40
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:41
 msgid "_Tab and indentation size"
 msgstr "_Tamaño de tabulación e indentación"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:41
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:42
 msgid "_Underline errors"
 msgstr "S_ubrayar errores"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:42
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:43
 msgid "_Use custom font:"
 msgstr "_Usar tipografía personalizada:"
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:43
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:44
 msgid "_wrap mode: "
 msgstr "modo envoltorio (wrap): "
 
-#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:44
+#: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:45
 msgid "at column:"
 msgstr "en columna:"
 
@@ -5743,27 +5670,27 @@ msgstr ""
 msgid "This file has been changed outside of MonoDevelop"
 msgstr "El archivo ha sido modificado fuera de MonoDevelop"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:367
-msgid "Reload"
-msgstr "Recargar"
-
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:371
 msgid "Ignore"
 msgstr "Ignorar"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:171
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:216
 msgid "File:"
 msgstr "Archivo:"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:173
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:218
 msgid "Page"
 msgstr "Página"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:185
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:230
 msgid "Print Source Code"
 msgstr "Imprimir el código fuente"
 
-#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:227
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:257
+msgid "Print operation failed."
+msgstr "La operación de impresión ha fallado."
+
+#: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs:273
 msgid "Print Preview - Source Code"
 msgstr "Vista previa - Código fuente"
 
@@ -5804,15 +5731,15 @@ msgstr "Retroceder a la página inicial"
 msgid "Add Web Reference"
 msgstr "Agregar referencia web"
 
-#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:90
+#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:92
 msgid "Web Service Url: "
 msgstr "URL del Servicio Web: "
 
-#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:135
+#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:137
 msgid "Namespace: "
 msgstr "Espacio de nombres: "
 
-#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:147
+#: ../Extras/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:149
 msgid "Reference: "
 msgstr "Referencia: "
 
@@ -6222,7 +6149,7 @@ msgstr "  <b>Ignoradas</b> "
 msgid "Test execution cancelled."
 msgstr "Ejecución de pruebas cancelada."
 
-#: ../Extras/NUnit/Gui/TestResultsPad.cs:511
+#: ../Extras/NUnit/Gui/TestResultsPad.cs:512
 msgid "Running "
 msgstr "Ejecutando "
 
@@ -6351,13 +6278,13 @@ msgstr "Crea un plan de pruebas."
 msgid "Test Fixture"
 msgstr "Plan de pruebas"
 
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:811
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:814
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:821
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:824
 #, csharp-format
 msgid "HintPath ({0}) for Reference '{1}' is invalid. Ignoring."
 msgstr "La ruta ({0}) para la referencia '{1}' es inválida. Se ignorará."
 
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:874
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:884
 #, csharp-format
 msgid ""
 "The specified path '{0}' for the EmbeddedResource is outside the project "
@@ -6366,13 +6293,13 @@ msgstr ""
 "La ruta '{0}' especificada para el recurso embebido se encuentre fuera del "
 "directorio de proyecto. Se ignorará."
 
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:921
-#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:922
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:931
+#: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:932
 #, csharp-format
 msgid "File name '{0}' is invalid. Ignoring."
 msgstr "El nombre de archivo '{0}' es inválido y se ignorará."
 
-#: ../Extras/prj2make-sharp-lib/MSBuildSolution.cs:84
+#: ../Extras/prj2make-sharp-lib/MSBuildSolution.cs:86
 #, csharp-format
 msgid ""
 "The project file {0} must be converted to msbuild format to be added to a "
@@ -6381,36 +6308,36 @@ msgstr ""
 "El archivo de proyecto {0} ha de ser convertido a formato msbuild para que "
 "pueda ser agregado a la solución msbuild. ¿Desea proceder?"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:457
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:463
 msgid "Importing project: "
 msgstr "Importando proyecto:"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:505
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:513
 msgid "Could not import project:"
 msgstr "No se pudo importar el proyecto:"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:520
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:534
 msgid "Importing solution"
 msgstr "Importando solución"
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:534
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:548
 msgid "Project file not found: "
 msgstr "Archivo de proyecto no encontrado: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:555
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:580
 msgid "The solution could not be imported."
 msgstr "La solución no se pudo importar."
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:620
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:656
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:645
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:681
 msgid "Assembly reference could not be imported: "
 msgstr "La referencia de ensamblado no se pudo importar: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:701
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:726
 msgid "Can't import file: "
 msgstr "No se pudo importar el archivo: "
 
-#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:747
+#: ../Extras/prj2make-sharp-lib/MsPrjHelper.cs:773
 #, csharp-format
 msgid ""
 "Output directory '{0}' can't be mapped to a local directory. The directory "
@@ -6420,16 +6347,12 @@ msgstr ""
 "usará el directorio '{1}' en su lugar"
 
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:1
-msgid "Visual Studio 2005 Project"
-msgstr "Proyecto de Visual Studio 2005"
+msgid "Visual Studio Project"
+msgstr "Proyecto de Visual Studio"
 
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:2
-msgid "Visual Studio 2005 Solution"
-msgstr "Solución de Visual Studio 2005"
-
-#: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib.addin.xml.h:3
-msgid "_Import Visual Studio .NET 2003 Project..."
-msgstr "_Importar proyecto de Visual Studio .NET 2003..."
+msgid "Visual Studio Solution"
+msgstr "Solución de Visual Studio"
 
 #: ../Extras/prj2make-sharp-lib/prj2make-sharp-lib-Commands.cs:52
 #, csharp-format
@@ -6459,28 +6382,22 @@ msgstr ""
 "Tipo de proyecto guid '{0}' desconocido en línea #{1}. Se intentará leer "
 "como un proyecto."
 
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:457
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:449
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:451
+#, csharp-format
+msgid "Invalid project path found in {0} : {1}"
+msgstr "Ruta de proyecto inválida encontrada en {0} : {1}"
+
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:473
 #, csharp-format
 msgid "Error while trying to load the project {0}. Exception : {1}"
 msgstr "Error al intentar cargar el proyecto {0}. Excepción : {1}"
 
-#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:466
+#: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:482
 #, csharp-format
 msgid "{0}({1}): Unsupported or unrecognized project : '{2}'. See logs."
 msgstr ""
 "{0}({1}): Proyecto no reconocido o no compatible : '{2}'. Examine los logs."
-
-#: ../Extras/PythonBinding/PythonBinding.addin.xml.h:2
-msgid "Python Files"
-msgstr "Archivos Python"
-
-#: ../Extras/PythonBinding/templates/PythonConsoleProject.xpt.xml.h:1
-msgid "Python Console Project"
-msgstr "Proyecto de consola en Python"
-
-#: ../Extras/PythonBinding/templates/PythonGtkProject.xpt.xml.h:1
-msgid "Python Gtk Project"
-msgstr "Proyecto Python Gtk"
 
 #: ../Extras/VBNetBinding/Gui/ChooseRuntimePanel.cs:37
 msgid "Compiler:"
@@ -6810,6 +6727,123 @@ msgstr[1] "{0} minutos"
 #: ../Extras/WelcomePage/WelcomePageView.cs:264
 msgid "Less than a minute"
 msgstr "Menos de un minuto"
+
+#~ msgid "Reference Name"
+#~ msgstr "Nombre de referencia"
+
+#~ msgid "Creates a secure C# Web Service, using SessionState"
+#~ msgstr "Crea un servicio web seguro en C#, usando SessionState"
+
+#~ msgid "Secure Web Service"
+#~ msgstr "Servicio web seguro"
+
+#~ msgid "Creates a C# Web Service."
+#~ msgstr "Crea un servicio web en C#."
+
+#~ msgid "Add New Dialog"
+#~ msgstr "Añadir nuevo diálogo"
+
+#~ msgid "Add New Window"
+#~ msgstr "Añadir nueva ventana"
+
+#~ msgid "Glade Properties"
+#~ msgstr "Propiedades Glade"
+
+#~ msgid "Glade Widgets"
+#~ msgstr "Componentes Glade"
+
+#~ msgid "Window Designer"
+#~ msgstr "Diseñador de ventanas"
+
+#~ msgid "Windows and Dialogs"
+#~ msgstr "Ventanas y diálogos"
+
+#~ msgid "Creates a Glade dialog."
+#~ msgstr "Crear un diálogo Glade."
+
+#~ msgid "Creates a Glade window."
+#~ msgstr "Crear una ventana Glade."
+
+#~ msgid "Enable makefile Integration in this project"
+#~ msgstr "Activar integración con makefiles en este proyecto"
+
+#~ msgid "Assembly Name variable:"
+#~ msgstr "Variable de nombre de ensamblado:"
+
+#~ msgid "Makefile path:"
+#~ msgstr "Ruta del Makefile:"
+
+#~ msgid "Output directory variable:"
+#~ msgstr "Variable para el directorio de salida:"
+
+#~ msgid "Enable project file synchronization"
+#~ msgstr "Activar sincronización del archivo de proyecto"
+
+#~ msgid "Deployment files"
+#~ msgstr "Archivos del despliegue"
+
+#~ msgid "Source code files"
+#~ msgstr "Archivos de código fuente"
+
+#~ msgid "Other Files"
+#~ msgstr "Otros archivos"
+
+#~ msgid ""
+#~ "Select the kind of files you want to synchronize with the makefile. For "
+#~ "each file kind please specify the makefile variable that holds the list "
+#~ "and optionally a prefix to be prepended to each file name."
+#~ msgstr ""
+#~ "Seleccione el tipo de archivos que desea sincronizar con el makefile. "
+#~ "Para cada tipo especifique por favor la variable de makefile que contiene "
+#~ "la lista y opcionalmente un prefijo a insertar en cada nombre de archivo."
+
+#~ msgid "Makefile variable name:"
+#~ msgstr "Nombre de variable de makefile:"
+
+#~ msgid "Prefix:"
+#~ msgstr "Prefijo:"
+
+#~ msgid "Enable references synchronization"
+#~ msgstr "Activar sincronización de referencias"
+
+#~ msgid "Look for packages in configure.in"
+#~ msgstr "Buscar paquetes en el configure.in"
+
+#~ msgid ""
+#~ "Select the kind of references you want to synchronize with the makefile. "
+#~ "For each reference type please specify the makefile variable that holds "
+#~ "the list, and optionally a prefix to be prepended to each reference name. "
+#~ "You can specify the same variable name for several types of references."
+#~ msgstr ""
+#~ "Seleccione los tipos de referencias que desea sincronizar con el "
+#~ "makefile. Para cada tipo, por favor, especifique una variable del "
+#~ "makefile que contendrá la lista, y opcionalmente un prefijo para agregar "
+#~ "a cada nombre de referencia. Puede usar el mismo nombre de variable para "
+#~ "varios tipos de referencias."
+
+#~ msgid "Assembly References"
+#~ msgstr "Referencias a ensamblados"
+
+#~ msgid "Path for configure.in"
+#~ msgstr "Ruta para el configure.in"
+
+#~ msgid "Package References"
+#~ msgstr "Referencias a paquetes"
+
+#~ msgid "Project References"
+#~ msgstr "Referencias a proyectos"
+
+#~ msgid "_Import Visual Studio .NET 2003 Project..."
+#~ msgstr "_Importar proyecto de Visual Studio .NET 2003..."
+
+#~ msgid "Python Files"
+#~ msgstr "Archivos Python"
+
+#~ msgid "Python Console Project"
+#~ msgstr "Proyecto de consola en Python"
+
+#~ msgid "Python Gtk Project"
+#~ msgstr "Proyecto Python Gtk"
 
 #~ msgid "Can't rename directory {0}"
 #~ msgstr "No se pudo renombrar el directorio {0}"
