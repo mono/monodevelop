@@ -63,6 +63,7 @@ namespace MonoDevelop.WelcomePage
 	{
 		protected Frame control;
 		protected MozillaControl htmlControl;
+		bool loadingProject;
 		
 		string datadir;
 		
@@ -157,9 +158,18 @@ namespace MonoDevelop.WelcomePage
 
 			if (URI.StartsWith("project://"))
 			{
+				if (loadingProject)
+					return;
+					
 				string projectUri = URI.Substring(10);			
 				Uri fileuri = new Uri ( projectUri );
-				IdeApp.ProjectOperations.OpenCombine ( fileuri.LocalPath );
+				try {
+					loadingProject = true;
+					IAsyncOperation oper = IdeApp.ProjectOperations.OpenCombine ( fileuri.LocalPath );
+					oper.WaitForCompleted ();
+				} finally {
+					loadingProject = false;
+				}
 			}
 			else if (URI.StartsWith("monodevelop://"))
 			{
