@@ -129,10 +129,11 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (ParameterInformationWindowManager.IsWindowVisible)
 				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
 
-			ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
-			IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, (char)(uint)key);
-			if (paramProvider != null) {
-				ParameterInformationWindowManager.ShowWindow (ctx, paramProvider);
+			if (completionWidget != null) {
+				ICodeCompletionContext ctx = completionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, (char)(uint)key);
+				if (paramProvider != null)
+					ParameterInformationWindowManager.ShowWindow (ctx, paramProvider);
 			}
 			
 			autoHideCompletionWindow = true;
