@@ -91,7 +91,14 @@ namespace MonoDevelop.Projects
 		}
 		
 		public string CompiledOutputName {
-			get { return Path.Combine (OutputDirectory, OutputAssembly) + (CompileTarget == CompileTarget.Library ? ".dll" : ".exe"); }
+			get {
+				string ext;
+				if (OutputAssembly.EndsWith (".dll") || OutputAssembly.EndsWith (".exe"))
+					ext = "";
+				else
+					ext = CompileTarget == CompileTarget.Library ? ".dll" : ".exe";
+				return Path.Combine (OutputDirectory, OutputAssembly) + ext;
+			}
 		}
 		
 		public string SourceDirectory {

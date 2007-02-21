@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects.Parser
 		string assemblyName;
 		bool loadError;
 		bool isPackageAssembly;
+		bool parsing;
 		
 		// This is the package version of the assembly. It is serialized.
 		string packageVersion;
@@ -105,6 +106,9 @@ namespace MonoDevelop.Projects.Parser
 		
 		protected override bool IsFileModified (FileEntry file)
 		{
+			if (parsing)
+				return false;
+				
 			if (!isPackageAssembly)
 				return base.IsFileModified (file);
 
@@ -158,6 +162,7 @@ namespace MonoDevelop.Projects.Parser
 				packageVersion = pkg.Name + " " + pkg.Version;
 				
 			try {
+				parsing = true;
 				monitor.BeginTask ("Parsing assembly: " + Path.GetFileName (fileName), 1);
 				if (useExternalProcess)
 				{
@@ -194,6 +199,7 @@ namespace MonoDevelop.Projects.Parser
 				monitor.ReportError ("Error parsing assembly: " + fileName, ex);
 				throw;
 			} finally {
+				parsing = false;
 				monitor.EndTask ();
 				if (parentMonitor == null) monitor.Dispose ();
 			}
