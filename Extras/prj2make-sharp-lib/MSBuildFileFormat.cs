@@ -80,20 +80,27 @@ namespace MonoDevelop.Prj2Make
 				return false;
 
 			//FIXME: Need a better way to check the rootelement
+			XmlReader xr = null;
 			try {
-				XmlReader xr = XmlReader.Create (file);
+				xr = XmlReader.Create (file);
 				xr.MoveToContent ();
 
 				if (xr.NodeType == XmlNodeType.Element && String.Compare (xr.LocalName, "Project") == 0 &&
 					String.Compare (xr.NamespaceURI, ns) == 0)
 					return true;
-			} catch (Exception e) {
-				Console.WriteLine (GettextCatalog.GetString ("Error reading file {0} : ", e.ToString ()));
+
+			} catch (FileNotFoundException fex) {
+				Console.WriteLine (GettextCatalog.GetString ("File not found {0} : ", file));
 				return false;
+			} catch (XmlException xe) {
+				Console.WriteLine (GettextCatalog.GetString ("Error reading file {0} : ", xe.ToString ()));
+				return false;
+			} finally {
+				if (xr != null)
+					((IDisposable)xr).Dispose ();
 			}
 
 			return false;
-
 		}
 
 		public bool CanWriteFile (object obj)
@@ -386,10 +393,8 @@ namespace MonoDevelop.Prj2Make
 		//FIXME: Use monitor to report warnings/errors
 		DotNetProject LoadProject (string fname, IProgressMonitor monitor)
 		{
-			FileStream fs = new FileStream (fname, FileMode.Open, FileAccess.Read);
 			XmlDocument doc = new XmlDocument ();
-			doc.Load (fs);
-			fs.Close ();
+			doc.Load (fname);
 
 			XPathNavigator nav = doc.CreateNavigator ();
 			nav.MoveToFirstChild ();
@@ -562,6 +567,7 @@ namespace MonoDevelop.Prj2Make
 			} catch (Exception ex) {
 				Runtime.LoggingService.ErrorFormat ("{0}", ex.Message);
 				Console.WriteLine ("{0}", ex.ToString ());
+				throw;
 			}
 		}
 
@@ -945,7 +951,7 @@ namespace MonoDevelop.Prj2Make
 			if (nav.MoveToChild ("OutputType", ns)) {
 				try {
 					config.CompileTarget = (CompileTarget) Enum.Parse (typeof (CompileTarget), nav.Value, true);
-				} catch (Exception) {
+				} catch (ArgumentException) {
 					//Ignore
 				}
 				nav.MoveToParent ();
