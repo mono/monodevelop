@@ -102,6 +102,12 @@ namespace MonoDevelop.Autotools
 			HandleComboMessageTypeChanged (comboMessageType);
 
 			this.fileEntryMakefilePath.FocusOutEvent += new FocusOutEventHandler (OnMakefilePathFocusOut);
+			
+			((Gtk.Container) comboAssemblyName.Parent).Remove (comboAssemblyName);
+			((Gtk.Container) lblAssemblyNameVar.Parent).Remove (lblAssemblyNameVar);
+
+			((Gtk.Container) comboOutputDir.Parent).Remove (comboOutputDir);
+			((Gtk.Container) lblOutputDirVar.Parent).Remove (lblOutputDirVar);
 		}
 		
 		public void SetImportMode ()
@@ -116,10 +122,10 @@ namespace MonoDevelop.Autotools
 		public MakefileOptionPanelWidget()
 		{
 			this.Build();
-			combos = new ComboBox [9] {
+			combos = new ComboBox [7] {
 				comboFilesVar, comboDeployFilesVar, comboResourcesVar, comboOthersVar, 
-				comboGacRefVar, comboAsmRefVar, comboProjectRefVar, 
-				comboAssemblyName, comboOutputDir};
+				comboGacRefVar, comboAsmRefVar, comboProjectRefVar}; 
+				//comboAssemblyName, comboOutputDir};
 		}
 		
 		public bool Store (Project project)
@@ -169,8 +175,8 @@ namespace MonoDevelop.Autotools
 			if (this.cbAutotoolsProject.Active)
 				data.RelativeConfigureInPath = this.fileEntryConfigureInPath.Path;
 			
-			data.AssemblyNameVar = GetActiveVar (comboAssemblyName);
-			data.OutputDirVar = GetActiveVar (comboOutputDir);
+			//data.AssemblyNameVar = GetActiveVar (comboAssemblyName);
+			//data.OutputDirVar = GetActiveVar (comboOutputDir);
 			data.BuildTargetName = this.BuildTargetName.Text.Trim ();
 			data.ExecuteTargetName = this.ExecuteTargetName.Text.Trim ();
 			data.CleanTargetName = this.CleanTargetName.Text.Trim ();
@@ -323,8 +329,8 @@ namespace MonoDevelop.Autotools
 			SetActiveVar (comboAsmRefVar, data.AsmRefVar.Name);
 			SetActiveVar (comboProjectRefVar, data.ProjectRefVar.Name);
 
-			SetActiveVar (comboAssemblyName, data.AssemblyNameVar);
-			SetActiveVar (comboOutputDir, data.OutputDirVar);
+			//SetActiveVar (comboAssemblyName, data.AssemblyNameVar);
+			//SetActiveVar (comboOutputDir, data.OutputDirVar);
 		}
 		
 		void FillCompilerMessageCombo ()
@@ -379,11 +385,11 @@ namespace MonoDevelop.Autotools
 			this.cbCleanTarget.Sensitive = active;
 			OnCbCleanTargetClicked (null, null);
 
-			this.lblAssemblyNameVar.Sensitive = active;
+			/*this.lblAssemblyNameVar.Sensitive = active;
 			this.comboAssemblyName.Sensitive = active;
 
 			this.lblOutputDirVar.Sensitive = active;
-			this.comboOutputDir.Sensitive = active;
+			this.comboOutputDir.Sensitive = active;*/
 
 			this.cbFileSync.Sensitive = active;
 			HandleFileSyncClicked (cbFileSync);

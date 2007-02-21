@@ -173,20 +173,22 @@ namespace MonoDevelop.Autotools {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Autotools.MakefileOptionPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Autotools.MakefileOptionPanelWidget";
             // Container child MonoDevelop.Autotools.MakefileOptionPanelWidget.Gtk.Container+ContainerChild
             this.notebook1 = new Gtk.Notebook();
             this.notebook1.CanFocus = true;
+            this.notebook1.Events = ((Gdk.EventMask)(0));
             this.notebook1.Name = "notebook1";
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox1 = new Gtk.VBox();
+            this.vbox1.Events = ((Gdk.EventMask)(0));
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             this.vbox1.BorderWidth = ((uint)(6));
             // Container child vbox1.Gtk.Box+BoxChild
             this.cbEnableMakefileIntegration = new Gtk.CheckButton();
             this.cbEnableMakefileIntegration.CanFocus = true;
+            this.cbEnableMakefileIntegration.Events = ((Gdk.EventMask)(0));
             this.cbEnableMakefileIntegration.Name = "cbEnableMakefileIntegration";
             this.cbEnableMakefileIntegration.Label = "Enable makefile Integration in this project";
             this.cbEnableMakefileIntegration.DrawIndicator = true;
@@ -197,6 +199,7 @@ namespace MonoDevelop.Autotools {
             w1.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.headerSep1 = new Gtk.HSeparator();
+            this.headerSep1.Events = ((Gdk.EventMask)(0));
             this.headerSep1.Name = "headerSep1";
             this.vbox1.Add(this.headerSep1);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox1[this.headerSep1]));
@@ -205,12 +208,14 @@ namespace MonoDevelop.Autotools {
             w2.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.table1 = new Gtk.Table(((uint)(8)), ((uint)(2)), false);
+            this.table1.Events = ((Gdk.EventMask)(0));
             this.table1.Name = "table1";
             this.table1.RowSpacing = ((uint)(6));
             this.table1.ColumnSpacing = ((uint)(6));
             // Container child table1.Gtk.Table+TableChild
             this.cbBuildTarget = new Gtk.CheckButton();
             this.cbBuildTarget.CanFocus = true;
+            this.cbBuildTarget.Events = ((Gdk.EventMask)(0));
             this.cbBuildTarget.Name = "cbBuildTarget";
             this.cbBuildTarget.Label = Mono.Unix.Catalog.GetString("Build target name:");
             this.cbBuildTarget.DrawIndicator = true;
@@ -224,6 +229,7 @@ namespace MonoDevelop.Autotools {
             // Container child table1.Gtk.Table+TableChild
             this.cbCleanTarget = new Gtk.CheckButton();
             this.cbCleanTarget.CanFocus = true;
+            this.cbCleanTarget.Events = ((Gdk.EventMask)(0));
             this.cbCleanTarget.Name = "cbCleanTarget";
             this.cbCleanTarget.Label = Mono.Unix.Catalog.GetString("Clean target name:");
             this.cbCleanTarget.DrawIndicator = true;
@@ -237,6 +243,7 @@ namespace MonoDevelop.Autotools {
             // Container child table1.Gtk.Table+TableChild
             this.cbRunTarget = new Gtk.CheckButton();
             this.cbRunTarget.CanFocus = true;
+            this.cbRunTarget.Events = ((Gdk.EventMask)(0));
             this.cbRunTarget.Name = "cbRunTarget";
             this.cbRunTarget.Label = Mono.Unix.Catalog.GetString("Execute target name:");
             this.cbRunTarget.DrawIndicator = true;
@@ -250,6 +257,7 @@ namespace MonoDevelop.Autotools {
             // Container child table1.Gtk.Table+TableChild
             this.fileEntryMakefilePath = new MonoDevelop.Components.FileEntry();
             this.fileEntryMakefilePath.CanFocus = true;
+            this.fileEntryMakefilePath.Events = ((Gdk.EventMask)(0));
             this.fileEntryMakefilePath.Name = "fileEntryMakefilePath";
             this.fileEntryMakefilePath.BrowserTitle = "";
             this.table1.Add(this.fileEntryMakefilePath);
@@ -259,10 +267,12 @@ namespace MonoDevelop.Autotools {
             w6.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hbox1 = new Gtk.HBox();
+            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             // Container child hbox1.Gtk.Box+BoxChild
             this.comboAssemblyName = Gtk.ComboBox.NewText();
             this.comboAssemblyName.WidthRequest = 300;
+            this.comboAssemblyName.Events = ((Gdk.EventMask)(0));
             this.comboAssemblyName.Name = "comboAssemblyName";
             this.hbox1.Add(this.comboAssemblyName);
             Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboAssemblyName]));
@@ -279,10 +289,12 @@ namespace MonoDevelop.Autotools {
             w8.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hbox2 = new Gtk.HBox();
+            this.hbox2.Events = ((Gdk.EventMask)(0));
             this.hbox2.Name = "hbox2";
             // Container child hbox2.Gtk.Box+BoxChild
             this.comboOutputDir = Gtk.ComboBox.NewText();
             this.comboOutputDir.WidthRequest = 300;
+            this.comboOutputDir.Events = ((Gdk.EventMask)(0));
             this.comboOutputDir.Name = "comboOutputDir";
             this.hbox2.Add(this.comboOutputDir);
             Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.comboOutputDir]));
@@ -299,11 +311,13 @@ namespace MonoDevelop.Autotools {
             w10.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hbox3 = new Gtk.HBox();
+            this.hbox3.Events = ((Gdk.EventMask)(0));
             this.hbox3.Name = "hbox3";
             // Container child hbox3.Gtk.Box+BoxChild
             this.BuildTargetName = new Gtk.Entry();
             this.BuildTargetName.WidthRequest = 200;
             this.BuildTargetName.CanFocus = true;
+            this.BuildTargetName.Events = ((Gdk.EventMask)(0));
             this.BuildTargetName.Name = "BuildTargetName";
             this.BuildTargetName.IsEditable = true;
             this.BuildTargetName.InvisibleChar = '●';
@@ -322,11 +336,13 @@ namespace MonoDevelop.Autotools {
             w12.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hbox4 = new Gtk.HBox();
+            this.hbox4.Events = ((Gdk.EventMask)(0));
             this.hbox4.Name = "hbox4";
             // Container child hbox4.Gtk.Box+BoxChild
             this.ExecuteTargetName = new Gtk.Entry();
             this.ExecuteTargetName.WidthRequest = 200;
             this.ExecuteTargetName.CanFocus = true;
+            this.ExecuteTargetName.Events = ((Gdk.EventMask)(0));
             this.ExecuteTargetName.Name = "ExecuteTargetName";
             this.ExecuteTargetName.IsEditable = true;
             this.ExecuteTargetName.InvisibleChar = '●';
@@ -345,11 +361,13 @@ namespace MonoDevelop.Autotools {
             w14.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.hbox5 = new Gtk.HBox();
+            this.hbox5.Events = ((Gdk.EventMask)(0));
             this.hbox5.Name = "hbox5";
             // Container child hbox5.Gtk.Box+BoxChild
             this.CleanTargetName = new Gtk.Entry();
             this.CleanTargetName.WidthRequest = 200;
             this.CleanTargetName.CanFocus = true;
+            this.CleanTargetName.Events = ((Gdk.EventMask)(0));
             this.CleanTargetName.Name = "CleanTargetName";
             this.CleanTargetName.IsEditable = true;
             this.CleanTargetName.InvisibleChar = '●';
@@ -368,6 +386,7 @@ namespace MonoDevelop.Autotools {
             w16.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.headerSep2 = new Gtk.HSeparator();
+            this.headerSep2.Events = ((Gdk.EventMask)(0));
             this.headerSep2.Name = "headerSep2";
             this.table1.Add(this.headerSep2);
             Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.table1[this.headerSep2]));
@@ -379,6 +398,7 @@ namespace MonoDevelop.Autotools {
             // Container child table1.Gtk.Table+TableChild
             this.label8 = new Gtk.Label();
             this.label8.WidthRequest = 500;
+            this.label8.Events = ((Gdk.EventMask)(0));
             this.label8.Name = "label8";
             this.label8.Xalign = 0F;
             this.label8.LabelProp = Mono.Unix.Catalog.GetString("Select the makefile targets that should be executed for the build and clean operations:");
@@ -392,6 +412,7 @@ namespace MonoDevelop.Autotools {
             w18.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.lblAssemblyNameVar = new Gtk.Label();
+            this.lblAssemblyNameVar.Events = ((Gdk.EventMask)(0));
             this.lblAssemblyNameVar.Name = "lblAssemblyNameVar";
             this.lblAssemblyNameVar.Xalign = 0F;
             this.lblAssemblyNameVar.LabelProp = "Assembly Name variable:";
@@ -403,6 +424,7 @@ namespace MonoDevelop.Autotools {
             w19.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.lblMakefileName = new Gtk.Label();
+            this.lblMakefileName.Events = ((Gdk.EventMask)(0));
             this.lblMakefileName.Name = "lblMakefileName";
             this.lblMakefileName.Xalign = 0F;
             this.lblMakefileName.LabelProp = "Makefile path:";
@@ -412,6 +434,7 @@ namespace MonoDevelop.Autotools {
             w20.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table1.Gtk.Table+TableChild
             this.lblOutputDirVar = new Gtk.Label();
+            this.lblOutputDirVar.Events = ((Gdk.EventMask)(0));
             this.lblOutputDirVar.Name = "lblOutputDirVar";
             this.lblOutputDirVar.Xalign = 0F;
             this.lblOutputDirVar.LabelProp = "Output directory variable:";
@@ -431,17 +454,20 @@ namespace MonoDevelop.Autotools {
             w23.TabExpand = false;
             // Notebook tab
             this.label1 = new Gtk.Label();
+            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.LabelProp = "Makefile";
             this.notebook1.SetTabLabel(this.vbox1, this.label1);
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox2 = new Gtk.VBox();
+            this.vbox2.Events = ((Gdk.EventMask)(0));
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
             this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
             this.cbFileSync = new Gtk.CheckButton();
             this.cbFileSync.CanFocus = true;
+            this.cbFileSync.Events = ((Gdk.EventMask)(0));
             this.cbFileSync.Name = "cbFileSync";
             this.cbFileSync.Label = "Enable project file synchronization";
             this.cbFileSync.DrawIndicator = true;
@@ -453,6 +479,7 @@ namespace MonoDevelop.Autotools {
             w24.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hseparator2 = new Gtk.HSeparator();
+            this.hseparator2.Events = ((Gdk.EventMask)(0));
             this.hseparator2.Name = "hseparator2";
             this.vbox2.Add(this.hseparator2);
             Gtk.Box.BoxChild w25 = ((Gtk.Box.BoxChild)(this.vbox2[this.hseparator2]));
@@ -461,12 +488,14 @@ namespace MonoDevelop.Autotools {
             w25.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.table3 = new Gtk.Table(((uint)(6)), ((uint)(3)), false);
+            this.table3.Events = ((Gdk.EventMask)(0));
             this.table3.Name = "table3";
             this.table3.RowSpacing = ((uint)(6));
             this.table3.ColumnSpacing = ((uint)(6));
             // Container child table3.Gtk.Table+TableChild
             this.cbKeepDeployFilesSync = new Gtk.CheckButton();
             this.cbKeepDeployFilesSync.CanFocus = true;
+            this.cbKeepDeployFilesSync.Events = ((Gdk.EventMask)(0));
             this.cbKeepDeployFilesSync.Name = "cbKeepDeployFilesSync";
             this.cbKeepDeployFilesSync.Label = "Deployment files";
             this.cbKeepDeployFilesSync.DrawIndicator = true;
@@ -479,6 +508,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.cbKeepFilesSync = new Gtk.CheckButton();
             this.cbKeepFilesSync.CanFocus = true;
+            this.cbKeepFilesSync.Events = ((Gdk.EventMask)(0));
             this.cbKeepFilesSync.Name = "cbKeepFilesSync";
             this.cbKeepFilesSync.Label = "Source code files";
             this.cbKeepFilesSync.DrawIndicator = true;
@@ -491,6 +521,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.cbKeepOthersSync = new Gtk.CheckButton();
             this.cbKeepOthersSync.CanFocus = true;
+            this.cbKeepOthersSync.Events = ((Gdk.EventMask)(0));
             this.cbKeepOthersSync.Name = "cbKeepOthersSync";
             this.cbKeepOthersSync.Label = "Other Files";
             this.cbKeepOthersSync.DrawIndicator = true;
@@ -503,6 +534,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.cbKeepResourcesSync = new Gtk.CheckButton();
             this.cbKeepResourcesSync.CanFocus = true;
+            this.cbKeepResourcesSync.Events = ((Gdk.EventMask)(0));
             this.cbKeepResourcesSync.Name = "cbKeepResourcesSync";
             this.cbKeepResourcesSync.Label = "Resources";
             this.cbKeepResourcesSync.DrawIndicator = true;
@@ -515,6 +547,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.comboDeployFilesVar = Gtk.ComboBox.NewText();
             this.comboDeployFilesVar.WidthRequest = 200;
+            this.comboDeployFilesVar.Events = ((Gdk.EventMask)(0));
             this.comboDeployFilesVar.Name = "comboDeployFilesVar";
             this.table3.Add(this.comboDeployFilesVar);
             Gtk.Table.TableChild w30 = ((Gtk.Table.TableChild)(this.table3[this.comboDeployFilesVar]));
@@ -526,6 +559,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.comboFilesVar = Gtk.ComboBox.NewText();
             this.comboFilesVar.WidthRequest = 200;
+            this.comboFilesVar.Events = ((Gdk.EventMask)(0));
             this.comboFilesVar.Name = "comboFilesVar";
             this.comboFilesVar.Active = 0;
             this.table3.Add(this.comboFilesVar);
@@ -538,6 +572,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.comboOthersVar = Gtk.ComboBox.NewText();
             this.comboOthersVar.WidthRequest = 200;
+            this.comboOthersVar.Events = ((Gdk.EventMask)(0));
             this.comboOthersVar.Name = "comboOthersVar";
             this.table3.Add(this.comboOthersVar);
             Gtk.Table.TableChild w32 = ((Gtk.Table.TableChild)(this.table3[this.comboOthersVar]));
@@ -549,6 +584,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.comboResourcesVar = Gtk.ComboBox.NewText();
             this.comboResourcesVar.WidthRequest = 200;
+            this.comboResourcesVar.Events = ((Gdk.EventMask)(0));
             this.comboResourcesVar.Name = "comboResourcesVar";
             this.table3.Add(this.comboResourcesVar);
             Gtk.Table.TableChild w33 = ((Gtk.Table.TableChild)(this.table3[this.comboResourcesVar]));
@@ -560,6 +596,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.entryDeployFilesPattern = new Gtk.Entry();
             this.entryDeployFilesPattern.CanFocus = true;
+            this.entryDeployFilesPattern.Events = ((Gdk.EventMask)(0));
             this.entryDeployFilesPattern.Name = "entryDeployFilesPattern";
             this.entryDeployFilesPattern.IsEditable = true;
             this.entryDeployFilesPattern.InvisibleChar = '●';
@@ -574,6 +611,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.entryFilesPattern = new Gtk.Entry();
             this.entryFilesPattern.CanFocus = true;
+            this.entryFilesPattern.Events = ((Gdk.EventMask)(0));
             this.entryFilesPattern.Name = "entryFilesPattern";
             this.entryFilesPattern.IsEditable = true;
             this.entryFilesPattern.InvisibleChar = '●';
@@ -588,6 +626,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.entryResourcesPattern = new Gtk.Entry();
             this.entryResourcesPattern.CanFocus = true;
+            this.entryResourcesPattern.Events = ((Gdk.EventMask)(0));
             this.entryResourcesPattern.Name = "entryResourcesPattern";
             this.entryResourcesPattern.IsEditable = true;
             this.entryResourcesPattern.InvisibleChar = '●';
@@ -601,10 +640,12 @@ namespace MonoDevelop.Autotools {
             w36.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table3.Gtk.Table+TableChild
             this.eventbox1 = new Gtk.EventBox();
+            this.eventbox1.Events = ((Gdk.EventMask)(0));
             this.eventbox1.Name = "eventbox1";
             // Container child eventbox1.Gtk.Container+ContainerChild
             this.entryOthersPattern = new Gtk.Entry();
             this.entryOthersPattern.CanFocus = true;
+            this.entryOthersPattern.Events = ((Gdk.EventMask)(0));
             this.entryOthersPattern.Name = "entryOthersPattern";
             this.entryOthersPattern.IsEditable = true;
             this.entryOthersPattern.InvisibleChar = '●';
@@ -620,6 +661,7 @@ namespace MonoDevelop.Autotools {
             // Container child table3.Gtk.Table+TableChild
             this.label5 = new Gtk.Label();
             this.label5.WidthRequest = 500;
+            this.label5.Events = ((Gdk.EventMask)(0));
             this.label5.Name = "label5";
             this.label5.Xalign = 0F;
             this.label5.LabelProp = "Select the kind of files you want to synchronize with the makefile. For each file kind please specify the makefile variable that holds the list and optionally a prefix to be prepended to each file name.";
@@ -632,6 +674,7 @@ namespace MonoDevelop.Autotools {
             w39.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table3.Gtk.Table+TableChild
             this.lblCol2 = new Gtk.Label();
+            this.lblCol2.Events = ((Gdk.EventMask)(0));
             this.lblCol2.Name = "lblCol2";
             this.lblCol2.Xalign = 0F;
             this.lblCol2.LabelProp = "Makefile variable name:";
@@ -645,6 +688,7 @@ namespace MonoDevelop.Autotools {
             w40.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table3.Gtk.Table+TableChild
             this.lblCol3 = new Gtk.Label();
+            this.lblCol3.Events = ((Gdk.EventMask)(0));
             this.lblCol3.Name = "lblCol3";
             this.lblCol3.Xalign = 0F;
             this.lblCol3.LabelProp = "Prefix:";
@@ -667,17 +711,20 @@ namespace MonoDevelop.Autotools {
             w43.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
+            this.label2.Events = ((Gdk.EventMask)(0));
             this.label2.Name = "label2";
             this.label2.LabelProp = "Files";
             this.notebook1.SetTabLabel(this.vbox2, this.label2);
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
+            this.vbox4.Events = ((Gdk.EventMask)(0));
             this.vbox4.Name = "vbox4";
             this.vbox4.Spacing = 6;
             this.vbox4.BorderWidth = ((uint)(6));
             // Container child vbox4.Gtk.Box+BoxChild
             this.cbKeepRefSync = new Gtk.CheckButton();
             this.cbKeepRefSync.CanFocus = true;
+            this.cbKeepRefSync.Events = ((Gdk.EventMask)(0));
             this.cbKeepRefSync.Name = "cbKeepRefSync";
             this.cbKeepRefSync.Label = "Enable references synchronization";
             this.cbKeepRefSync.DrawIndicator = true;
@@ -688,6 +735,7 @@ namespace MonoDevelop.Autotools {
             w44.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
             this.hseparator5 = new Gtk.HSeparator();
+            this.hseparator5.Events = ((Gdk.EventMask)(0));
             this.hseparator5.Name = "hseparator5";
             this.vbox4.Add(this.hseparator5);
             Gtk.Box.BoxChild w45 = ((Gtk.Box.BoxChild)(this.vbox4[this.hseparator5]));
@@ -696,12 +744,14 @@ namespace MonoDevelop.Autotools {
             w45.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
             this.table4 = new Gtk.Table(((uint)(8)), ((uint)(3)), false);
+            this.table4.Events = ((Gdk.EventMask)(0));
             this.table4.Name = "table4";
             this.table4.RowSpacing = ((uint)(6));
             this.table4.ColumnSpacing = ((uint)(6));
             // Container child table4.Gtk.Table+TableChild
             this.cbAutotoolsProject = new Gtk.CheckButton();
             this.cbAutotoolsProject.CanFocus = true;
+            this.cbAutotoolsProject.Events = ((Gdk.EventMask)(0));
             this.cbAutotoolsProject.Name = "cbAutotoolsProject";
             this.cbAutotoolsProject.Label = "Look for packages in configure.in";
             this.cbAutotoolsProject.DrawIndicator = true;
@@ -714,6 +764,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.comboAsmRefVar = Gtk.ComboBox.NewText();
             this.comboAsmRefVar.WidthRequest = 200;
+            this.comboAsmRefVar.Events = ((Gdk.EventMask)(0));
             this.comboAsmRefVar.Name = "comboAsmRefVar";
             this.table4.Add(this.comboAsmRefVar);
             Gtk.Table.TableChild w47 = ((Gtk.Table.TableChild)(this.table4[this.comboAsmRefVar]));
@@ -725,6 +776,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.comboGacRefVar = Gtk.ComboBox.NewText();
             this.comboGacRefVar.WidthRequest = 200;
+            this.comboGacRefVar.Events = ((Gdk.EventMask)(0));
             this.comboGacRefVar.Name = "comboGacRefVar";
             this.table4.Add(this.comboGacRefVar);
             Gtk.Table.TableChild w48 = ((Gtk.Table.TableChild)(this.table4[this.comboGacRefVar]));
@@ -736,6 +788,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.comboProjectRefVar = Gtk.ComboBox.NewText();
             this.comboProjectRefVar.WidthRequest = 200;
+            this.comboProjectRefVar.Events = ((Gdk.EventMask)(0));
             this.comboProjectRefVar.Name = "comboProjectRefVar";
             this.table4.Add(this.comboProjectRefVar);
             Gtk.Table.TableChild w49 = ((Gtk.Table.TableChild)(this.table4[this.comboProjectRefVar]));
@@ -747,6 +800,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.entryAsmRefPattern = new Gtk.Entry();
             this.entryAsmRefPattern.CanFocus = true;
+            this.entryAsmRefPattern.Events = ((Gdk.EventMask)(0));
             this.entryAsmRefPattern.Name = "entryAsmRefPattern";
             this.entryAsmRefPattern.IsEditable = true;
             this.entryAsmRefPattern.InvisibleChar = '●';
@@ -761,6 +815,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.entryGacRefPattern = new Gtk.Entry();
             this.entryGacRefPattern.CanFocus = true;
+            this.entryGacRefPattern.Events = ((Gdk.EventMask)(0));
             this.entryGacRefPattern.Name = "entryGacRefPattern";
             this.entryGacRefPattern.IsEditable = true;
             this.entryGacRefPattern.InvisibleChar = '●';
@@ -775,6 +830,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.entryProjectRefPattern = new Gtk.Entry();
             this.entryProjectRefPattern.CanFocus = true;
+            this.entryProjectRefPattern.Events = ((Gdk.EventMask)(0));
             this.entryProjectRefPattern.Name = "entryProjectRefPattern";
             this.entryProjectRefPattern.IsEditable = true;
             this.entryProjectRefPattern.InvisibleChar = '●';
@@ -788,6 +844,7 @@ namespace MonoDevelop.Autotools {
             w52.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.fileEntryConfigureInPath = new MonoDevelop.Components.FolderEntry();
+            this.fileEntryConfigureInPath.Events = ((Gdk.EventMask)(0));
             this.fileEntryConfigureInPath.Name = "fileEntryConfigureInPath";
             this.table4.Add(this.fileEntryConfigureInPath);
             Gtk.Table.TableChild w53 = ((Gtk.Table.TableChild)(this.table4[this.fileEntryConfigureInPath]));
@@ -799,6 +856,7 @@ namespace MonoDevelop.Autotools {
             w53.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.hseparator1 = new Gtk.HSeparator();
+            this.hseparator1.Events = ((Gdk.EventMask)(0));
             this.hseparator1.Name = "hseparator1";
             this.table4.Add(this.hseparator1);
             Gtk.Table.TableChild w54 = ((Gtk.Table.TableChild)(this.table4[this.hseparator1]));
@@ -810,6 +868,7 @@ namespace MonoDevelop.Autotools {
             // Container child table4.Gtk.Table+TableChild
             this.label6 = new Gtk.Label();
             this.label6.WidthRequest = 500;
+            this.label6.Events = ((Gdk.EventMask)(0));
             this.label6.Name = "label6";
             this.label6.Xalign = 0F;
             this.label6.LabelProp = "Select the kind of references you want to synchronize with the makefile. For each reference type please specify the makefile variable that holds the list, and optionally a prefix to be prepended to each reference name. You can specify the same variable name for several types of references.";
@@ -822,6 +881,7 @@ namespace MonoDevelop.Autotools {
             w55.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblAsmRef = new Gtk.Label();
+            this.lblAsmRef.Events = ((Gdk.EventMask)(0));
             this.lblAsmRef.Name = "lblAsmRef";
             this.lblAsmRef.Xalign = 0F;
             this.lblAsmRef.LabelProp = "Assembly References";
@@ -833,6 +893,7 @@ namespace MonoDevelop.Autotools {
             w56.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblCol5 = new Gtk.Label();
+            this.lblCol5.Events = ((Gdk.EventMask)(0));
             this.lblCol5.Name = "lblCol5";
             this.lblCol5.Xalign = 0F;
             this.lblCol5.LabelProp = "Makefile variable name:";
@@ -846,6 +907,7 @@ namespace MonoDevelop.Autotools {
             w57.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblCol6 = new Gtk.Label();
+            this.lblCol6.Events = ((Gdk.EventMask)(0));
             this.lblCol6.Name = "lblCol6";
             this.lblCol6.Xalign = 0F;
             this.lblCol6.LabelProp = "Prefix:";
@@ -859,6 +921,7 @@ namespace MonoDevelop.Autotools {
             w58.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblConfigureInPath = new Gtk.Label();
+            this.lblConfigureInPath.Events = ((Gdk.EventMask)(0));
             this.lblConfigureInPath.Name = "lblConfigureInPath";
             this.lblConfigureInPath.Xalign = 0F;
             this.lblConfigureInPath.LabelProp = "Path for configure.in";
@@ -870,6 +933,7 @@ namespace MonoDevelop.Autotools {
             w59.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblGacRef = new Gtk.Label();
+            this.lblGacRef.Events = ((Gdk.EventMask)(0));
             this.lblGacRef.Name = "lblGacRef";
             this.lblGacRef.Xalign = 0F;
             this.lblGacRef.LabelProp = "Package References";
@@ -881,6 +945,7 @@ namespace MonoDevelop.Autotools {
             w60.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table4.Gtk.Table+TableChild
             this.lblProjectRef = new Gtk.Label();
+            this.lblProjectRef.Events = ((Gdk.EventMask)(0));
             this.lblProjectRef.Name = "lblProjectRef";
             this.lblProjectRef.Xalign = 0F;
             this.lblProjectRef.LabelProp = "Project References";
@@ -901,16 +966,19 @@ namespace MonoDevelop.Autotools {
             w63.TabExpand = false;
             // Notebook tab
             this.label3 = new Gtk.Label();
+            this.label3.Events = ((Gdk.EventMask)(0));
             this.label3.Name = "label3";
             this.label3.LabelProp = "References";
             this.notebook1.SetTabLabel(this.vbox4, this.label3);
             // Container child notebook1.Gtk.Notebook+NotebookChild
             this.vbox3 = new Gtk.VBox();
+            this.vbox3.Events = ((Gdk.EventMask)(0));
             this.vbox3.Name = "vbox3";
             this.vbox3.BorderWidth = ((uint)(6));
             // Container child vbox3.Gtk.Box+BoxChild
             this.label7 = new Gtk.Label();
             this.label7.WidthRequest = 500;
+            this.label7.Events = ((Gdk.EventMask)(0));
             this.label7.Name = "label7";
             this.label7.Xalign = 0F;
             this.label7.LabelProp = Mono.Unix.Catalog.GetString("Select the Compiler message format for parsing the compiler errors and warnings. You can either select one of the built-in options, or specify custom regular expressions for errors and warnings. The regex must be the .net style regex. The following named groups are relevant : file, line, column, number (error number) and message.");
@@ -924,6 +992,7 @@ namespace MonoDevelop.Autotools {
             w64.Padding = ((uint)(6));
             // Container child vbox3.Gtk.Box+BoxChild
             this.table2 = new Gtk.Table(((uint)(3)), ((uint)(3)), false);
+            this.table2.Events = ((Gdk.EventMask)(0));
             this.table2.Name = "table2";
             this.table2.RowSpacing = ((uint)(6));
             this.table2.ColumnSpacing = ((uint)(6));
@@ -931,6 +1000,7 @@ namespace MonoDevelop.Autotools {
             this.entryErrorRegex = new Gtk.Entry();
             this.entryErrorRegex.WidthRequest = 350;
             this.entryErrorRegex.CanFocus = true;
+            this.entryErrorRegex.Events = ((Gdk.EventMask)(0));
             this.entryErrorRegex.Name = "entryErrorRegex";
             this.entryErrorRegex.IsEditable = true;
             this.entryErrorRegex.InvisibleChar = '●';
@@ -946,6 +1016,7 @@ namespace MonoDevelop.Autotools {
             this.entryWarningRegex = new Gtk.Entry();
             this.entryWarningRegex.WidthRequest = 350;
             this.entryWarningRegex.CanFocus = true;
+            this.entryWarningRegex.Events = ((Gdk.EventMask)(0));
             this.entryWarningRegex.Name = "entryWarningRegex";
             this.entryWarningRegex.IsEditable = true;
             this.entryWarningRegex.InvisibleChar = '●';
@@ -959,10 +1030,12 @@ namespace MonoDevelop.Autotools {
             w66.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.hbox6 = new Gtk.HBox();
+            this.hbox6.Events = ((Gdk.EventMask)(0));
             this.hbox6.Name = "hbox6";
             // Container child hbox6.Gtk.Box+BoxChild
             this.comboMessageType = Gtk.ComboBox.NewText();
             this.comboMessageType.WidthRequest = 150;
+            this.comboMessageType.Events = ((Gdk.EventMask)(0));
             this.comboMessageType.Name = "comboMessageType";
             this.hbox6.Add(this.comboMessageType);
             Gtk.Box.BoxChild w67 = ((Gtk.Box.BoxChild)(this.hbox6[this.comboMessageType]));
@@ -977,6 +1050,7 @@ namespace MonoDevelop.Autotools {
             w68.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.lblErrorRegex = new Gtk.Label();
+            this.lblErrorRegex.Events = ((Gdk.EventMask)(0));
             this.lblErrorRegex.Name = "lblErrorRegex";
             this.lblErrorRegex.Xalign = 0F;
             this.lblErrorRegex.LabelProp = Mono.Unix.Catalog.GetString("Error regex :");
@@ -988,6 +1062,7 @@ namespace MonoDevelop.Autotools {
             w69.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.lblMessageType = new Gtk.Label();
+            this.lblMessageType.Events = ((Gdk.EventMask)(0));
             this.lblMessageType.Name = "lblMessageType";
             this.lblMessageType.Xalign = 0F;
             this.lblMessageType.LabelProp = Mono.Unix.Catalog.GetString("Compiler :");
@@ -997,6 +1072,7 @@ namespace MonoDevelop.Autotools {
             w70.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table2.Gtk.Table+TableChild
             this.lblWarningRegex = new Gtk.Label();
+            this.lblWarningRegex.Events = ((Gdk.EventMask)(0));
             this.lblWarningRegex.Name = "lblWarningRegex";
             this.lblWarningRegex.Xalign = 0F;
             this.lblWarningRegex.LabelProp = Mono.Unix.Catalog.GetString("Warnings regex :");
@@ -1015,6 +1091,7 @@ namespace MonoDevelop.Autotools {
             w73.TabExpand = false;
             // Notebook tab
             this.label4 = new Gtk.Label();
+            this.label4.Events = ((Gdk.EventMask)(0));
             this.label4.Name = "label4";
             this.label4.LabelProp = Mono.Unix.Catalog.GetString("Messages Regex");
             this.notebook1.SetTabLabel(this.vbox3, this.label4);
@@ -1022,6 +1099,10 @@ namespace MonoDevelop.Autotools {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.comboAssemblyName.Hide();
+            this.comboOutputDir.Hide();
+            this.lblAssemblyNameVar.Hide();
+            this.lblOutputDirVar.Hide();
             this.Show();
             this.cbEnableMakefileIntegration.Clicked += new System.EventHandler(this.OnEnableMakefileIntegrationClicked);
             this.fileEntryMakefilePath.FocusOutEvent += new Gtk.FocusOutEventHandler(this.OnFileEntryMakefilePathFocusOutEvent);

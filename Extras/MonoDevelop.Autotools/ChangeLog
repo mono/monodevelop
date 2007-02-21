@@ -1,3 +1,9 @@
+2007-02-22  Ankit Jain  <jankit@novell.com>
+
+	* MakefileOptionPanelWidget.cs: Disable the AssemblyName and OutputDir
+	combos, as they are not being used right now.
+	* gtk-gui/*: Update.
+
 2007-02-21  Ankit Jain  <jankit@novell.com>
 
 	* CustomMakefile.cs: Avoid adding extra spaces for empty variables.
