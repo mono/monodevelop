@@ -1,3 +1,9 @@
+2007-02-22  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* Mono.Data.Sql/Providers/NpgsqlDbProvider.cs : pgsql somehow
+	  returns user ID as int64 while it should be int32, so using
+	  GetValue() here.
+
 2007-02-20  Ankit Jain  <jankit@novell.com>
 
 	* MonoQuery/Commands/Commands.cs (Run): Handle empty connection string.

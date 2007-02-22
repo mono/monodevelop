@@ -543,7 +543,7 @@ namespace Mono.Data.Sql
 				UserSchema user = new UserSchema ();
 				
 				user.Name = r.GetString (0);
-				user.UserId = String.Format ("{0}", r.GetInt32(1));
+				user.UserId = String.Format ("{0}", r.GetValue (1));
 				
 				try   { user.Expires = r.GetDateTime (6); }
 				catch { user.Expires = DateTime.MinValue; }
