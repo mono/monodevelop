@@ -7,6 +7,7 @@ using Pango;
 using GtkSourceView;
 
 using MonoDevelop.Core.Properties;
+using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
@@ -19,12 +20,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new SyntaxHighlightingPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new SyntaxHighlightingPanelWidget ());
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ();
 			return true;
 		}
 	
@@ -49,10 +50,10 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			SourceTagStyle currentStyle;
 			string styleid;
 			
-			public SyntaxHighlightingPanelWidget (IProperties CustomizationObject) :  base ("EditorBindings.glade", "SyntaxHighlightingPanel")
+			public SyntaxHighlightingPanelWidget () :  base ("EditorBindings.glade", "SyntaxHighlightingPanel")
 			{
- 				enableSyntaxHighlighting.Active = ((IProperties) CustomizationObject).GetProperty ("SyntaxHighlight", true);
-
+				enableSyntaxHighlighting.Active = TextEditorProperties.SyntaxHighlight;
+				
 				// add available sourceLanguages
 				ListStore store = new ListStore (typeof (string));
 				foreach (SourceLanguage sl in svs.AvailableLanguages)
@@ -69,9 +70,9 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				stylesTreeView.Selection.Changed += new EventHandler (OnStyleChanged);
 			}
 
-			public void Store (IProperties CustomizationObject)
+			public void Store ()
 			{
-				((IProperties) CustomizationObject).SetProperty ("SyntaxHighlight", enableSyntaxHighlighting.Active);
+				TextEditorProperties.SyntaxHighlight = enableSyntaxHighlighting.Active;
 			}
 
 			void SetCurrentLanguage (string name)

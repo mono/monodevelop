@@ -9,6 +9,7 @@ using System;
 using System.IO;
 
 using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core.Properties;
 
 using MonoDevelop.Core;
@@ -30,12 +31,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		public override void LoadPanelContents()
 		{
 			// set up the form controls instance
-			Add (widget = new MarkersTextEditorPanelWidget ((IProperties) CustomizationObject));	
+			Add (widget = new MarkersTextEditorPanelWidget ());	
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ();
 			return true;
 		}
 
@@ -48,40 +49,35 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] SpinButton  vRulerRowTextBox;
 			[Glade.Widget] ComboBox    wrapModeComboBox;
-
-			public MarkersTextEditorPanelWidget (IProperties CustomizationObject) :  
+			
+			public MarkersTextEditorPanelWidget () :  
 				base ("EditorBindings.glade", "MarkersTextEditorPanel")
 			{
-				showLineNumberCheckBox.Active         = ((IProperties)CustomizationObject).GetProperty(
-					"ShowLineNumbers", true);
-				showBracketHighlighterCheckBox.Active = ((IProperties)CustomizationObject).GetProperty(
-					"ShowBracketHighlight", true);
-				showErrorsCheckBox.Active             = ((IProperties)CustomizationObject).GetProperty(
-					"ShowErrors", true);
-				showVRulerCheckBox.Active             = ((IProperties)CustomizationObject).GetProperty(
-					"ShowVRuler", false);
-			
-				vRulerRowTextBox.Value = ((IProperties)CustomizationObject).GetProperty("VRulerRow", 80);
-
-				wrapModeComboBox.Active = (int) ((IProperties)CustomizationObject).GetProperty(
-					"WrapMode", WrapMode.None);
-
-				// disabled
+				showLineNumberCheckBox.Active = TextEditorProperties.ShowLineNumbers;
+				showBracketHighlighterCheckBox.Active = TextEditorProperties.ShowMatchingBracket;
+				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
+				
+				showVRulerCheckBox.Active = TextEditorProperties.ShowVerticalRuler;
+				vRulerRowTextBox.Value = TextEditorProperties.VerticalRulerRow;
+				
+				wrapModeComboBox.Active = (int) TextEditorProperties.WrapMode;
+				
+				// FIXME: re-enable when implemented
 				showErrorsCheckBox.Sensitive = false;
 			}
 
-			public void Store (IProperties CustomizationObject)
+			public void Store ()
 			{
-				((IProperties)CustomizationObject).SetProperty("ShowLineNumbers",      showLineNumberCheckBox.Active);
-				((IProperties)CustomizationObject).SetProperty("ShowBracketHighlight", showBracketHighlighterCheckBox.Active);
-				((IProperties)CustomizationObject).SetProperty("ShowErrors",           showErrorsCheckBox.Active);
-				((IProperties)CustomizationObject).SetProperty("ShowVRuler",           showVRulerCheckBox.Active);
+				TextEditorProperties.ShowLineNumbers = showLineNumberCheckBox.Active;
+				TextEditorProperties.ShowMatchingBracket = showBracketHighlighterCheckBox.Active;
+				TextEditorProperties.UnderlineErrors = showErrorsCheckBox.Active;
+				TextEditorProperties.ShowVerticalRuler = showVRulerCheckBox.Active;
 				try {
-					((IProperties)CustomizationObject).SetProperty("VRulerRow", vRulerRowTextBox.Value);
+					TextEditorProperties.VerticalRulerRow = (int) vRulerRowTextBox.Value;
 				} 
 				catch { }
 				try {
-					((IProperties)CustomizationObject).SetProperty("WrapMode", (WrapMode) wrapModeComboBox.Active);
+					TextEditorProperties.WrapMode = (WrapMode) wrapModeComboBox.Active;
 				} 
 				catch { }
 			}

@@ -38,6 +38,17 @@ namespace MonoDevelop.SourceEditor.Properties {
 		Additive
 	}
 	
+	public enum EditorFontType {
+		// Default Monospace font as set in the user's GNOME font properties
+		DefaultMonospace,
+		
+		// Default Sans font as set in the user's GNOME font properties
+		DefaultSans,
+		
+		// Custom font, will need to get the FontName property for more specifics
+		UserSpecified
+	}
+	
 	public class TextEditorProperties {
 		static PropertyService propertyService = (PropertyService)ServiceManager.GetService(typeof(PropertyService));
 		static IProperties properties = ((IProperties) propertyService.GetProperty (
@@ -74,8 +85,7 @@ namespace MonoDevelop.SourceEditor.Properties {
 		
 		public static IndentStyle IndentStyle {
 			get {
-				// FIXME: remember to change default to IndentStyle.Smart
-				return (IndentStyle)properties.GetProperty ("IndentStyle", IndentStyle.Auto);
+				return (IndentStyle)properties.GetProperty ("IndentStyle", IndentStyle.Smart);
 			}
 			set {
 				properties.SetProperty ("IndentStyle", value);
@@ -307,9 +317,46 @@ namespace MonoDevelop.SourceEditor.Properties {
 			}
 		}
 		
+		public static EditorFontType FontType {
+			get {
+				string name = FontName;
+				
+				switch (name) {
+				case "__default_monospace":
+					return EditorFontType.DefaultMonospace;
+				case "__default_sans":
+					return EditorFontType.DefaultSans;
+				default:
+					return EditorFontType.UserSpecified;
+				}
+			}
+			set {
+				switch (value) {
+				case EditorFontType.DefaultMonospace:
+					FontName = "__default_monospace";
+					break;
+				case EditorFontType.DefaultSans:
+					FontName = "__default_sans";
+					break;
+				default:
+					// no-op - caller must set FontName himself
+					break;
+				}
+			}
+		}
+		
+		public static string FontName {
+			get {
+				return properties.GetProperty ("DefaultFont", "__default_monospace");
+			}
+			set {
+				properties.SetProperty ("DefaultFont", value != null ? value : "__default_monospace");
+			}
+		}
+		
 		public static FontDescription Font {
 			get {
-				string s = properties.GetProperty ("DefaultFont", "__default_monospace");
+				string s = FontName;
 				
 				switch (s) {
 				case "__default_monospace":

@@ -13,6 +13,7 @@ using Gtk;
 using Pango;
 
 using MonoDevelop.Core.Properties;
+using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
@@ -28,12 +29,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			Add (widget = new GeneralTextEditorPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new GeneralTextEditorPanelWidget ());
 		}
 		
 		public override bool StorePanelContents()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ();
 			return true;
 		}
 	
@@ -47,29 +48,26 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] RadioButton use_sans;
 			[Glade.Widget] RadioButton use_cust;
 			
-			public GeneralTextEditorPanelWidget (IProperties CustomizationObject) :  base ("EditorBindings.glade", "GeneralTextEditorPanel")
+			public GeneralTextEditorPanelWidget () :  base ("EditorBindings.glade", "GeneralTextEditorPanel")
 			{
 				encodingBox.Destroy(); // this is a really dirty way of hiding encodingBox, but Hide() doesn't work
-				enableCodeCompletionCheckBox.Active = ((IProperties) CustomizationObject).GetProperty(
-					"EnableCodeCompletion", true);
+				enableCodeCompletionCheckBox.Active = TextEditorProperties.EnableCodeCompletion;
 				
- 				enableFoldingCheckBox.Active = ((IProperties) CustomizationObject).GetProperty("EnableFolding", true);
-
-				string font_name = ((IProperties) CustomizationObject).GetProperty("DefaultFont", "__default_monospace").ToString ();
+ 				enableFoldingCheckBox.Active = TextEditorProperties.EnableFolding;
 				
-				switch (font_name) {
-				case "__default_monospace":
+				switch (TextEditorProperties.FontType) {
+				case EditorFontType.DefaultMonospace:
 					use_monospace.Active = true;
 					fontNameDisplayTextBox.Sensitive = false;
 					break;
-				case "__default_sans":
+				case EditorFontType.DefaultSans:
 					use_sans.Active = true;
 					fontNameDisplayTextBox.Sensitive = false;
 					break;
 				default:
 					use_cust.Active = true;
+					fontNameDisplayTextBox.FontName = TextEditorProperties.FontName;
 					fontNameDisplayTextBox.Sensitive = true;
-					fontNameDisplayTextBox.FontName = font_name;
 					break;
 				}
 				
@@ -102,23 +100,19 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 // 				textEncodingComboBox.Changed += new EventHandler (OnOptionChanged);
 			}
 
-			public void Store (IProperties CustomizationObject)
+			public void Store ()
 			{
-				((IProperties) CustomizationObject).SetProperty (
-					"EnableCodeCompletion", enableCodeCompletionCheckBox.Active);
-				((IProperties) CustomizationObject).SetProperty (
-					"EnableFolding", enableFoldingCheckBox.Active);
+				TextEditorProperties.EnableCodeCompletion = enableCodeCompletionCheckBox.Active;
+				TextEditorProperties.EnableFolding = enableFoldingCheckBox.Active;
 				
-				string font_name;
-				if (use_monospace.Active)
-					font_name = "__default_monospace";
-				else if (use_sans.Active)
-					font_name = "__default_sans";
-				else
-					font_name = fontNameDisplayTextBox.FontName;
+				if (use_monospace.Active) {
+					TextEditorProperties.FontType = EditorFontType.DefaultMonospace;
+				} else if (use_sans.Active) {
+					TextEditorProperties.FontType = EditorFontType.DefaultSans;
+				} else {
+					TextEditorProperties.FontName = fontNameDisplayTextBox.FontName;
+				}
 				
-				((IProperties) CustomizationObject).SetProperty (
-					"DefaultFont", font_name);
 // 				Console.WriteLine (CharacterEncodings.GetEncodingByIndex (selectedIndex).CodePage);
 // 				((IProperties) CustomizationObject).SetProperty (
 // 					"Encoding",CharacterEncodings.GetEncodingByIndex (selectedIndex).CodePage);

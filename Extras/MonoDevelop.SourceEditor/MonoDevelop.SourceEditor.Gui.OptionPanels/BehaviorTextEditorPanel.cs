@@ -14,6 +14,7 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.Document;
+using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.FormattingStrategy;
@@ -31,12 +32,12 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		
 		public override void LoadPanelContents ()
 		{
-			Add (widget = new BehaviorTextEditorPanelWidget ((IProperties) CustomizationObject));
+			Add (widget = new BehaviorTextEditorPanelWidget ());
 		}
 		
 		public override bool StorePanelContents ()
 		{
-			widget.Store ((IProperties) CustomizationObject);
+			widget.Store ();
 			return true;
 		}
 		
@@ -51,25 +52,23 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] RadioButton smartIndentStyle;
 			[Glade.Widget] SpinButton indentAndTabSizeSpinButton;
 			
-			public BehaviorTextEditorPanelWidget (IProperties CustomizationObject) :  
+			public BehaviorTextEditorPanelWidget () :  
 				base ("EditorBindings.glade", "BehaviorTextEditorPanel")
 			{
 				// FIXME: enable when it is implemented
 				autoinsertCurlyBraceCheckBox.Sensitive = false;
-					
-				// Set up Value
-				autoinsertCurlyBraceCheckBox.Active = ((IProperties)CustomizationObject).GetProperty(
-					"AutoInsertCurlyBracket", true);
-				autoInsertTemplatesCheckBox.Active  = ((IProperties)CustomizationObject).GetProperty(
-					"AutoInsertTemplates", true);
-				convertTabsToSpacesCheckBox.Active  = ((IProperties)CustomizationObject).GetProperty(
-					"TabsToSpaces", false);
-
+				
+				// Set up Values
+				autoinsertCurlyBraceCheckBox.Active = TextEditorProperties.AutoInsertCurlyBracket;
+				
+				autoInsertTemplatesCheckBox.Active  = TextEditorProperties.AutoInsertTemplates;
+				
+				convertTabsToSpacesCheckBox.Active  = TextEditorProperties.ConvertTabsToSpaces;
+				
 				//FIXME: Only one of these should be selected to hold the value
-				indentAndTabSizeSpinButton.Value = ((IProperties)CustomizationObject).GetProperty(
-					"TabIndent", 4);
-
-				IndentStyle currentIndent = (IndentStyle)((IProperties) CustomizationObject).GetProperty ("IndentStyle", IndentStyle.Smart);
+				indentAndTabSizeSpinButton.Value = TextEditorProperties.TabIndent;
+				
+				IndentStyle currentIndent = TextEditorProperties.IndentStyle;
 				if (currentIndent == IndentStyle.None) 
 					noneIndentStyle.Active = true;
 				else if (currentIndent == IndentStyle.Auto) 
@@ -78,24 +77,22 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 					smartIndentStyle.Active = true;
 			}
 
-			public void Store (IProperties CustomizationObject)
+			public void Store ()
 			{
-				((IProperties)CustomizationObject).SetProperty(
-					"TabsToSpaces",           convertTabsToSpacesCheckBox.Active);
-				((IProperties)CustomizationObject).SetProperty(
-					"AutoInsertCurlyBracket", autoinsertCurlyBraceCheckBox.Active);
-				((IProperties)CustomizationObject).SetProperty(
-					"AutoInsertTemplates",    autoInsertTemplatesCheckBox.Active);
-
+				TextEditorProperties.ConvertTabsToSpaces = convertTabsToSpacesCheckBox.Active;
+				TextEditorProperties.AutoInsertCurlyBracket = autoinsertCurlyBraceCheckBox.Active;
+				TextEditorProperties.AutoInsertTemplates = autoInsertTemplatesCheckBox.Active;
+				
+				
 				if (noneIndentStyle.Active)
-					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.None);
+					TextEditorProperties.IndentStyle = IndentStyle.None;
 				else if (automaticIndentStyle.Active)
-					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.Auto);
+					TextEditorProperties.IndentStyle = IndentStyle.Auto;
 				else if (smartIndentStyle.Active)
-					((IProperties)CustomizationObject).SetProperty("IndentStyle", IndentStyle.Smart);
+					TextEditorProperties.IndentStyle = IndentStyle.Smart;
 				
 				//FIXME: Only one of these should be selected to save the value
-				((IProperties)CustomizationObject).SetProperty("TabIndent", indentAndTabSizeSpinButton.Value);
+				TextEditorProperties.TabIndent = (int) indentAndTabSizeSpinButton.Value;
 			}
 		}
 	}
