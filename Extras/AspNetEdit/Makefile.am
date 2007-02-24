@@ -5,25 +5,26 @@ endif
 ADDIN_BUILD = $(top_builddir)/build/AddIns/AspNetEdit
 ASSEMBLY = $(ADDIN_BUILD)/AspNetEdit.dll
 
-REFS = -r:System \
-       -r:System.Xml \
-       -r:System.Web \
-       -r:System.Design \
-       -r:System.Drawing \
-       -r:System.Drawing.Design \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll  \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	-r:$(top_builddir)/build/AddIns/AspNetAddIn/AspNetAddIn.dll \
-	$(GTK_SHARP_LIBS) \
-	$(GNOME_SHARP_LIBS) \
-	$(GLADE_SHARP_LIBS) \
+REFS =  \
 	$(GECKO_SHARP_LIBS) \
-	$(JSCALL_LIBS)
+	$(GLADE_SHARP_LIBS) \
+	$(GNOME_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	-pkg:jscall-sharp \
+	-r:$(top_builddir)/build/AddIns/AspNetAddIn/AspNetAddIn.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System \
+	-r:System.Design \
+	-r:System.Drawing \
+	-r:System.Drawing.Design \
+	-r:System.Web \
+	-r:System.Xml
 
 FILES =	\
 	AssemblyInfo.cs \
@@ -64,8 +65,7 @@ FILES =	\
 	AspNetEdit.Integration/EditorProcess.cs
 
 
-RES = \
-	#
+RES = #
 
 DATA_FILES = \
 	data/WebControlsToolbox.xml

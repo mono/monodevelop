@@ -40,7 +40,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
-using MonoDevelop.Ide.Gui.Content;
 using AspNetEdit.Editor;
 
 namespace AspNetEdit.Integration

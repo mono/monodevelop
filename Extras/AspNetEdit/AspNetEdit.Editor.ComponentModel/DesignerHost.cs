@@ -74,8 +74,15 @@ namespace AspNetEdit.Editor.ComponentModel
 		{
 			get { return container; }
 		}
-
+		
 		public IComponent CreateComponent (Type componentClass, string name)
+		{
+			//add to document, unless loading
+			bool addToDoc = (this.RootDocument != null);
+			return CreateComponent (componentClass, name, addToDoc);
+		}
+		
+		internal IComponent CreateComponent (Type componentClass, string name, bool addToDoc)
 		{
 			System.Diagnostics.Trace.WriteLine("Attempting to create component "+name);
 			//check arguments
@@ -92,18 +99,17 @@ namespace AspNetEdit.Editor.ComponentModel
 
 			//and add to container
 			container.Add (component, name);
-
-			//add to document, unless loading
-			if (RootDocument != null) {
+			
+			if (addToDoc) {
 				((Control)RootComponent).Controls.Add ((Control) component);
 				RootDocument.AddControl ((Control)component);
+			
+				//select it
+				ISelectionService sel = this.GetService (typeof (ISelectionService)) as ISelectionService;
+				if (sel != null)
+					sel.SetSelectedComponents (new IComponent[] {component});
 			}
 			
-			//select it
-			ISelectionService sel = this.GetService (typeof (ISelectionService)) as ISelectionService;
-			if (sel != null)
-				sel.SetSelectedComponents (new IComponent[] {component});
-
 			System.Diagnostics.Trace.WriteLine("Created component "+name);
 			return component;
 		}

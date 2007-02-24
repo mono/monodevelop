@@ -894,6 +894,7 @@ aspNetEditor.prototype =
 	insertFragment: function (aHtml)
 	{
 		if(aHtml) {
+			this.hideResizers ();
 			var insertionPoint =
 				{insertIn: null, destinationOffset: 0};
 			this.findInsertionPoint (insertionPoint);
@@ -1182,7 +1183,7 @@ function detectDoubleClick(aEvent)
 
 
 	host.click (DOUBLE_CLICK, controlId);
-	alert (editor.getPage ());
+	//alert (editor.getPage ());
 }
 
 function handleContextMenu(aEvent)

@@ -19,21 +19,12 @@
     <File name="./AspNetEdit.Integration" subtype="Directory" buildaction="Compile" />
     <File name="./AspNetEdit.Integration/AspNetEditDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.addin.xml" subtype="Code" buildaction="Nothing" />
-    <File name="./AspNetEdit.Editor.Persistence/AspParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/AspTokenizer.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ControlPersister.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/DesignTimeParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/Directive.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/HtmlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ILocation.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/Location.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/ParseException.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ParsingObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/RootParsingObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/StrUtils.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/TagAttributes.cs" subtype="Code" buildaction="Compile" />
-    <File name="./AspNetEdit.Editor.Persistence/TagType.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignContainer.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/DesignerHost.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.ComponentModel/Document.cs" subtype="Code" buildaction="Compile" />
@@ -52,8 +43,6 @@
     <File name="./AspNetEdit.Editor.ComponentModel/WebFormReferenceManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.UI/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
     <File name="./AspNetEdit.Editor.UI/RootDesignerView.cs" subtype="Code" buildaction="Compile" />
-    <File name="./chrome/ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="./chrome/chrome.manifest" subtype="Code" buildaction="Nothing" />
     <File name="./chrome/install.rdf" subtype="Code" buildaction="Nothing" />
     <File name="./chrome/Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./chrome/README" subtype="Code" buildaction="Nothing" />
@@ -75,31 +64,41 @@
     <File name="./AspNetEdit.Integration/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./data" subtype="Directory" buildaction="Compile" />
     <File name="./data/WebControlsToolbox.xml" subtype="Code" buildaction="Compile" />
+    <File name="./chrome/aspdesigner.manifest.in" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
     <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="AspNetAddIn" />
     <ProjectReference type="Gac" localcopy="True" refto="jscall, Version=0.0.2.0, Culture=neutral, PublicKeyToken=db10596f4718e9c9" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gnome-sharp, Version=2.16.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.SourceEditor" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
+    <BuildFilesVar Name="FILES" />
+    <DeployFilesVar />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

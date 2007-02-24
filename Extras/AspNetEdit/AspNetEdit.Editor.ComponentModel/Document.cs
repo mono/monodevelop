@@ -71,8 +71,9 @@ namespace AspNetEdit.Editor.ComponentModel
 		public Document (Control parent, DesignerHost host, string document, string fileName)
 		{
 			initDocument (parent, host);
-			this.document = DeserializeAndAdd (document);
-
+			
+			Control[] controls;
+			aspParser.ProcessFragment (document, out controls, out this.document);
 			GetView ();
 		}
 		
@@ -241,20 +242,15 @@ namespace AspNetEdit.Editor.ComponentModel
 			return serializedDoc;
 		}
 		
-		///<summary>Converts  a ASP.NET fragment to a a designer document fragment,
-		/// and adds the controls and directives etc to the host.</summary>
-		public string DeserializeAndAdd (string aspFragment)
+		public void InitialiseControls (IEnumerable controls)
 		{
-			string document;
-			Control[] controls;
-			
-			aspParser.ParseDocument (aspFragment, out controls, out document);
-			
-			foreach (Control c in controls) {
-				OnInitMethodInfo.Invoke (c, new object[] {EventArgs.Empty});
-			}
-			
-			return document;
+			foreach (Control c in controls)
+				InitialiseControl(c);
+		}
+		
+		public static void InitialiseControl (Control control)
+		{
+			OnInitMethodInfo.Invoke (control, new object[] {EventArgs.Empty});
 		}
 		
 		//modes for the Serializing parser
@@ -334,8 +330,13 @@ namespace AspNetEdit.Editor.ComponentModel
 		
 		#region add/remove/update controls
 		
+		bool suppressAddControl = false;
+		
 		public void AddControl (Control control)
 		{
+			if (suppressAddControl) return;
+			
+			System.Console.WriteLine("AddControl method called");
 			OnInitMethodInfo.Invoke (control, new object[] {EventArgs.Empty});
 			view.AddControl (control);
 		}
@@ -352,7 +353,15 @@ namespace AspNetEdit.Editor.ComponentModel
 				
 		public void InsertFragment (string fragment)
 		{
-			view.InsertFragment (fragment);
+			Control[] controls;
+			string doc;
+			aspParser.ProcessFragment (fragment, out controls, out doc);
+			view.InsertFragment (doc);
+			
+			//FIXME: when controls are inserted en masse using InsertFragment, the designer surface
+			//doesn't seem to display then properly till they've been updated
+			foreach (Control c in controls)
+				view.UpdateRender (c);
 		}
 
 		#endregion

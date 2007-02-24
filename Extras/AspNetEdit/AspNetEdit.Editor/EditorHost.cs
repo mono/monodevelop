@@ -115,13 +115,48 @@ namespace AspNetEdit.Editor
 		
 		public void UseToolboxNode (ItemToolboxNode node)
 		{
+			//invoke in GUI thread as it catches and displays exceptions nicely
+			Gtk.Application.Invoke ( delegate { handleToolboxNode (node); }); 
+		}
+		
+		private void handleToolboxNode (ItemToolboxNode node)
+		{
 			ToolboxItemToolboxNode tiNode = node as ToolboxItemToolboxNode;
-			
-			if (tiNode != null) {
-				//load the type into this process
-				tiNode.Type.Load ();
 				
+			if (tiNode != null) {
+				//load the type into this process and get the ToolboxItem 
+				tiNode.Type.Load ();
 				System.Drawing.Design.ToolboxItem ti = tiNode.GetToolboxItem ();
+				
+				//web controls have sample HTML that need to be deserialised, in a ToolboxDataAttribute
+				//TODO: Fix WebControlToolboxItem and (mono classlib's use of it) so we don't have to mess around with type lookups and attributes here
+				if (ti.AssemblyName != null && ti.TypeName != null) {
+					//look up and register the type
+					ITypeResolutionService typeRes = (ITypeResolutionService) host.GetService(typeof(ITypeResolutionService));					
+					typeRes.ReferenceAssembly (ti.AssemblyName);
+					Type controlType = typeRes.GetType (ti.TypeName, true);
+					
+					//read the WebControlToolboxItem data from the attribute
+					AttributeCollection atts = TypeDescriptor.GetAttributes (controlType);
+					
+					System.Web.UI.ToolboxDataAttribute tda = (System.Web.UI.ToolboxDataAttribute) atts[typeof(System.Web.UI.ToolboxDataAttribute)];
+						
+					//if it's present
+					if (tda != null && tda.Data.Length > 0) {
+						//look up the tag's prefix and insert it into the data						
+						System.Web.UI.Design.IWebFormReferenceManager webRef = host.GetService (typeof (System.Web.UI.Design.IWebFormReferenceManager)) as System.Web.UI.Design.IWebFormReferenceManager;
+						if (webRef == null)
+							throw new Exception("Host does not provide an IWebFormReferenceManager");
+						string aspText = String.Format (tda.Data, webRef.GetTagPrefix (controlType));
+						System.Diagnostics.Trace.WriteLine ("Toolbox processing ASP.NET item data: " + aspText);
+							
+						//and add it to the document
+						host.RootDocument.InsertFragment (aspText);
+						return;
+					}
+				}
+				
+				//No ToolboxDataAttribute? Get the ToolboxItem to create the components itself
 				ti.CreateComponents (host);
 			}
 		}
@@ -129,10 +164,13 @@ namespace AspNetEdit.Editor
 		public void LoadDocument (string document, string fileName)
 		{
 			System.Diagnostics.Trace.WriteLine ("Copying document to editor.");
-			host.Reset ();
 			
-			host.Load (document, fileName);
-			host.Activate ();
+			//invoke in GUI thread as it catches and displays exceptions nicely
+			Gtk.Application.Invoke ( delegate {
+				host.Reset ();
+				host.Load (document, fileName);
+				host.Activate ();
+			});
 		}
 		
 		public string GetDocument ()
@@ -140,7 +178,7 @@ namespace AspNetEdit.Editor
 			MonoDevelop.Core.Gui.Services.DispatchService.AssertGuiThread ();
 			string doc = "";
 			
-			System.Diagnostics.Trace.WriteLine ("persisting document");
+			System.Diagnostics.Trace.WriteLine ("Persisting document.");
 			doc = host.PersistDocument ();
 				
 			return doc;
@@ -151,7 +189,7 @@ namespace AspNetEdit.Editor
 		bool disposed = false;
 		public virtual void Dispose ()
 		{
-			System.Diagnostics.Trace.WriteLine ("disposing editor host");
+			System.Diagnostics.Trace.WriteLine ("Disposing editor host.");
 			
 			if (disposed)
 				return;
