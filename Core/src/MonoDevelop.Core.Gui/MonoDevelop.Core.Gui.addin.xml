@@ -6,7 +6,7 @@
        description = "Provides basic GUI services"
 	   category    = "MonoDevelop Core"
        version     = "0.13.0"
-       compatVersion = "0.10.0">
+       compatVersion = "0.13.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Components.dll"/>
