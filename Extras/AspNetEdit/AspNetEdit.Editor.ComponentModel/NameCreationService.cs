@@ -50,14 +50,10 @@ namespace AspNetEdit.Editor.ComponentModel
 			foreach (IComponent comp in container.Components) {
 				if (comp.Site.Name.StartsWith (dataType.Name)) {
 					string str = comp.Site.Name.Remove (0, dataType.Name.Length);
-					//TODO: Use int.TryParse in .NET 2.0
-					try {
-						int val = int.Parse (str);
-						if (val >= suffixNumber)
-							suffixNumber = val + 1;
+					int val;
+					if (int.TryParse(str, out val) && val >= suffixNumber)
+						suffixNumber = val + 1;
 					}
-					catch (Exception ex) {}
-				}
 			}
 
 			return dataType.Name + suffixNumber.ToString ();

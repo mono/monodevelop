@@ -1,3 +1,15 @@
+2007-02-24  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: Eliminate unnecessary copy during build.
+	
+	* chrome/content/aspdesigner/xpcom.js,
+	* chrome/content/aspdesigner/editor.js: Fixed some JS warnings.
+	Fixed aspdesigner initialisation bug with Mozilla/Gecko >= 1.8, such 
+	as Firefox >= 1.5.
+	
+	* AspNetEdit.Editor.ComponentModel/NameCreationService.cs: Use 
+	Int.TryParse now instead of catching exceptions.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Change add-in versions to 0.13.

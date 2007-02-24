@@ -70,7 +70,7 @@ RES = \
 DATA_FILES = \
 	data/WebControlsToolbox.xml
 
-DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD), $(DATA_FILES))
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
 ADDIN = AspNetEdit.addin.xml
 
