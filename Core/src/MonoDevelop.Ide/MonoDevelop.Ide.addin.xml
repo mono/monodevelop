@@ -6,7 +6,7 @@
        description = "The MonoDevelop IDE application."
 	   category    = "Applications"
        version     = "0.13.0"
-       compatVersion = "0.10.0">
+       compatVersion = "0.13.0">
 
 
 	<Runtime>
