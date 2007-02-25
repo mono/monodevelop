@@ -42,37 +42,69 @@ namespace CSharpBinding
 		
 		public override int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
-			int i = editor.CursorPosition;
-			if (i < ctx.TriggerOffset)
+			int i = ctx.TriggerOffset;
+			
+			if (i > editor.CursorPosition)
 				return -1;
 				
-			if (i == ctx.TriggerOffset)
+			if (i == editor.CursorPosition)
 				return 0;
+			
+			bool inString = false;
+			bool inVerbatimString = false;
+			bool inComment = false;
 			
 			int level = 0;
 			int index = 0;
-			int realLevel = -1;
+			char prevChar = '\0';
 			string s = editor.GetText (i-1, i);
-			while (i > ctx.TriggerOffset && s.Length > 0) {
-				if (s[0] == '(' || s[0] == '[') {
-					if (level > 0)
+			
+			while (i <= editor.CursorPosition && s.Length > 0) {
+				switch (s[0]) {
+				case '(':
+				case '[':
+					if (!inString && !inComment) {
+						level++;
+					}
+					break;
+				case ')':
+				case ']':
+					if (!inString && !inComment) {
 						level--;
-					else
-						index = 0;
-					realLevel--;
+					}
+					break;
+				case '*':
+					if (prevChar == '/' && !inString)
+						inComment = true;
+					break;
+				case '/':
+					if (prevChar == '*' && inComment)
+						inComment = false;
+					break;
+				case '"':
+					if ((inString && prevChar != '\\') ||
+					    inVerbatimString) {
+						inString = false;
+						inVerbatimString = false;
+					}
+					else if (!inString && !inComment) {
+						inString = true;
+						if (prevChar == '@')
+							inVerbatimString = true;
+					}
+					break;
+				case ',':
+					if (!inString && !inComment)
+						index++;
+					break;
 				}
-				else if (s[0] == ')' || s[0] == ']') {
-					level++;
-					realLevel++;
-				}
-				else if (s[0] == ',') {
-					index++;
-				}
-				i--;
+				
+				i++;
+				prevChar = s[0];
 				s = editor.GetText (i-1, i);
 			}
 			
-			if (realLevel == 0)
+			if (level == 0)
 				return -1;
 			else
 				return index + 1;

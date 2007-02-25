@@ -1,3 +1,11 @@
+
+
+2007-02-24  Zach Lute <zach.lute@gmail.com> 
+
+	* Gui/CSharpParameterDataProvider.cs: GetCurrentParameterIndex() now
+	  takes whether or not a comma is inside a string literal into account
+	  when determining the index.  Fixes bug #80883.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Don't show completion windo for
