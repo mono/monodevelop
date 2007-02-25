@@ -228,7 +228,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		DeployFileCollection GetReferenceDeployFiles (bool force)
+		public DeployFileCollection GetReferenceDeployFiles (bool force)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 
@@ -459,22 +459,6 @@ namespace MonoDevelop.Projects
 							GetReferencedProjects (referenced, rp);
 					}
 				}
-			}
-		}
-		
-		protected virtual void DoPreBuild (IProgressMonitor monitor)
-		{
-			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
-				
-			// create output directory, if not exists
-			string outputDir = conf.OutputDirectory;
-			try {
-				DirectoryInfo directoryInfo = new DirectoryInfo(outputDir);
-				if (!directoryInfo.Exists) {
-					directoryInfo.Create();
-				}
-			} catch (Exception e) {
-				throw new ApplicationException("Can't create project output directory " + outputDir + " original exception:\n" + e.ToString());
 			}
 		}
 		
