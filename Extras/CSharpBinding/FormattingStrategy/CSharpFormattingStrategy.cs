@@ -29,94 +29,100 @@ namespace CSharpBinding.FormattingStrategy {
 		/// </summary>
 		protected override int SmartIndentLine (IFormattableDocument d, int lineNr)
 		{
-			if (lineNr > 0) {
-				string  lineAboveText = d.GetLineAsString (lineNr - 1);
-				string  trimlineAboveText = lineAboveText.Trim ();
-				string  curLineText = d.GetLineAsString (lineNr);
-				string  trimcurLineText = curLineText.Trim ();
+			if (lineNr <= 0)
+				return AutoIndentLine (d, lineNr);
+			
+			string lineAboveText = d.GetLineAsString (lineNr - 1);
+			string trimlineAboveText = lineAboveText.Trim ();
+			string curLineText = d.GetLineAsString (lineNr);
+			string trimcurLineText = curLineText.Trim ();
+			
+			if ((trimlineAboveText.EndsWith (")") &&
+			     trimcurLineText.StartsWith ("{")) ||       // after for, while, etc.
+			    (trimlineAboveText.EndsWith ("else") &&
+			     trimcurLineText.StartsWith ("{")))         // after else
+			{
+				string indentation = GetIndentation (d, lineNr - 1);
+				d.ReplaceLine (lineNr, indentation + trimcurLineText);
+				return indentation.Length;
+			}
+			
+			// indent closing bracket.
+			if (trimcurLineText.StartsWith ("}")) {
+				int openLine;
+				int closingBracketOffset = d.GetClosingBraceForLine (lineNr, out openLine);
 				
-				if ((trimlineAboveText.EndsWith (")") && trimcurLineText.StartsWith ("{")) ||       // after for, while, etc.
-				    (trimlineAboveText.EndsWith ("else") && trimcurLineText.StartsWith ("{")))      // after else
-				{
+				// no closing bracket found -> autoindent
+				if (closingBracketOffset == -1)
+					return AutoIndentLine (d, lineNr);
+				
+				string indentation = GetIndentation (d, openLine);
+				
+				d.ReplaceLine (lineNr, indentation + trimcurLineText);
+				return indentation.Length;
+			}
+			
+			// expression ended, reset to valid indent.
+			if (lineAboveText.EndsWith (";")) {
+				int openLine;
+				int closingBracketOffset = d.GetClosingBraceForLine (lineNr, out openLine);
+				
+				// no closing bracket found -> autoindent
+				if (closingBracketOffset == -1)
+					return AutoIndentLine (d, lineNr);
+				
+				string closingBracketLineText = d.GetLineAsString (openLine).Trim ();
+				
+				string indentation = GetIndentation (d, openLine);
+				
+				// special handling for switch statement formatting.
+				if (closingBracketLineText.StartsWith ("switch")) {
+					if (!(trimlineAboveText.StartsWith ("break;") ||
+					      trimlineAboveText.StartsWith ("goto") ||
+					      trimlineAboveText.StartsWith ("return")))
+						indentation += d.IndentString;
+				}
+				indentation += d.IndentString;
+				
+				d.ReplaceLine (lineNr, indentation + trimcurLineText);
+				return indentation.Length;
+			}
+			
+			if (trimlineAboveText.EndsWith ("{") || // indent opening bracket.
+			    trimlineAboveText.EndsWith (":") || // indent case xyz:
+			    (trimlineAboveText.EndsWith (")") &&  // indent single line if, for ... etc
+			     (trimlineAboveText.StartsWith ("if") ||
+			      trimlineAboveText.StartsWith ("while") ||
+			      trimlineAboveText.StartsWith ("for"))) ||
+			    trimlineAboveText.EndsWith ("else")) {
+				string indentation = GetIndentation (d, lineNr - 1) + d.IndentString;
+				d.ReplaceLine (lineNr, indentation + trimcurLineText);
+				return indentation.Length;
+			} else {
+				// try to indent linewrap
+				ArrayList bracketPos = new ArrayList ();
+				
+				// search for a ( bracket that isn't closed
+				for (int i = 0; i < lineAboveText.Length; ++i) {
+					if (lineAboveText [i] == '(')
+						bracketPos.Add (i);
+					else if (lineAboveText [i] == ')' && bracketPos.Count > 0)
+						bracketPos.RemoveAt (bracketPos.Count - 1);
+				}
+				
+				if (bracketPos.Count > 0) {
+					int bracketIndex = (int)bracketPos [bracketPos.Count - 1];
 					string indentation = GetIndentation (d, lineNr - 1);
-					d.ReplaceLine (lineNr, indentation + trimcurLineText);
-					return indentation.Length;
-				}
-				
-				// indent closing bracket.
-				if (trimcurLineText.StartsWith ("}")) {
-					int openLine;
-					int closingBracketOffset = d.GetClosingBraceForLine (lineNr, out openLine);
 					
-					// no closing bracket found -> autoindent
-					if (closingBracketOffset == -1)
-						return AutoIndentLine (d, lineNr);
-					
-					string indentation = GetIndentation (d, openLine);
+					// insert enough spaces to match brace start in the next line
+					for (int i = 0; i <= bracketIndex; ++i)
+						indentation += " ";
 					
 					d.ReplaceLine (lineNr, indentation + trimcurLineText);
 					return indentation.Length;
-				}
-				
-				// expression ended, reset to valid indent.
-				if (lineAboveText.EndsWith (";")) {
-					int openLine;
-					int closingBracketOffset = d.GetClosingBraceForLine (lineNr, out openLine);
-					
-					// no closing bracket found -> autoindent
-					if (closingBracketOffset == -1)
-						return AutoIndentLine (d, lineNr);
-					
-					string closingBracketLineText = d.GetLineAsString (openLine).Trim ();
-					
-					string indentation = GetIndentation (d, openLine);
-					
-					// special handling for switch statement formatting.
-					if (closingBracketLineText.StartsWith ("switch")) {
-						if (! (trimlineAboveText.StartsWith ("break;") || trimlineAboveText.StartsWith ("goto") || trimlineAboveText.StartsWith ("return")))
-							indentation += d.IndentString;
-					}
-					indentation += d.IndentString;
-					
-					d.ReplaceLine (lineNr, indentation + trimcurLineText);
-					return indentation.Length;
-				}
-				
-				if (trimlineAboveText.EndsWith ("{") || // indent opening bracket.
-				    trimlineAboveText.EndsWith (":") || // indent case xyz:
-				    (trimlineAboveText.EndsWith (")") &&  // indent single line if, for ... etc
-				    (trimlineAboveText.StartsWith ("if") ||
-				     trimlineAboveText.StartsWith ("while") ||
-				     trimlineAboveText.StartsWith ("for"))) ||
-				     trimlineAboveText.EndsWith ("else")) {
-						string indentation = GetIndentation (d, lineNr - 1) + d.IndentString;
-						d.ReplaceLine (lineNr, indentation + trimcurLineText);
-						return indentation.Length;
-				} else {
-					// try to indent linewrap
-					ArrayList bracketPos = new ArrayList ();
-					
-					// search for a ( bracket that isn't closed
-					for (int i = 0; i < lineAboveText.Length; ++i) {
-						if (lineAboveText [i] == '(')
-							bracketPos.Add (i);
-						else if (lineAboveText [i] == ')' && bracketPos.Count > 0)
-							bracketPos.RemoveAt (bracketPos.Count - 1);
-					}
-					
-					if (bracketPos.Count > 0) {
-						int bracketIndex = (int)bracketPos [bracketPos.Count - 1];
-						string indentation = GetIndentation (d, lineNr - 1);
-						
-						// insert enough spaces to match brace start in the next line
-						for (int i = 0; i <= bracketIndex; ++i)
-							indentation += " ";
-						
-						d.ReplaceLine (lineNr, indentation + trimcurLineText);
-						return indentation.Length;
-					}
 				}
 			}
+			
 			return AutoIndentLine (d, lineNr);
 		}
 		
@@ -190,16 +196,57 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		bool IsInsideStringOrComment (IFormattableDocument d, int curLineOffset, int cursorOffset)
 		{
-			// scan cur line if it is inside a string or single line comment (//)
-			bool isInsideString  = false;
+			// scan cur line to see if it is inside a string or single line comment (//)
+			bool isInsideString = false;
+			bool isInsideChar = false;
+			bool isVerbatim = false;
+			bool isEscaped = false;
 			
 			for (int i = curLineOffset; i < cursorOffset; ++i) {
-				char ch = d.GetCharAt (i);
-				if (ch == '"')
-					isInsideString = !isInsideString;
-				
-				if (ch == '/' && i + 1 < cursorOffset && d.GetCharAt (i + 1) == '/')
-					return true;
+				char c = d.GetCharAt (i);
+				if (c == '"') {
+					if (isVerbatim) {
+						if (i + 1 < cursorOffset && d.GetCharAt (i + 1) == '"') {
+							// Still inside the verbatim-string-literal
+							i++;
+						} else {
+							isInsideString = false;
+							isVerbatim = false;
+						}
+					} else if (!isEscaped) {
+						isInsideString = !isInsideString;
+					}
+					isEscaped = false;
+				} else if (!isInsideString && c == '@') {
+					if (i + 1 < cursorOffset && d.GetCharAt (i + 1) == '"') {
+						// We are now inside a verbatim-string-literal
+						isInsideString = true;
+						isVerbatim = true;
+						i++;
+					}
+					isEscaped = false;
+				} else if (!isInsideString && c == '\'') {
+					if (!isEscaped)
+						isInsideChar = !isInsideChar;
+					isEscaped = false;
+				} else if (c == '\\') {
+					if (isInsideString) {
+						if (!isVerbatim)
+							isEscaped = !isEscaped;
+					} else if (isInsideChar) {
+						isEscaped = !isEscaped;
+					} else {
+						isEscaped = false;
+					}
+				} else if (!isInsideString && !isInsideChar && c == '/') {
+					if (i + 1 < cursorOffset && d.GetCharAt (i + 1) == '/') {
+						// Inside a single-line comment (//)
+						return true;
+					}
+					isEscaped = false;
+				} else {
+					isEscaped = false;
+				}
 			}
 			
 			return isInsideString;
@@ -207,17 +254,59 @@ namespace CSharpBinding.FormattingStrategy {
 
 		bool IsInsideDocumentationComment (IFormattableDocument d, int curLineOffset, int cursorOffset)
 		{
-			// scan cur line if it is inside a string or single line comment (//)
-			bool isInsideString  = false;
+			// scan cur line to see if it is inside a documentation comment (///)
+			bool isInsideString = false;
+			bool isInsideChar = false;
+			bool isVerbatim = false;
+			bool isEscaped = false;
 			
+			// TODO: share code with IsInsideStringOrComment?
 			for (int i = curLineOffset; i < cursorOffset; ++i) {
-				char ch = d.GetCharAt (i);
-				if (ch == '"')
-					isInsideString = !isInsideString;
-					
-				if (!isInsideString) {
-					if (ch == '/' && i + 2 < cursorOffset && d.GetCharAt (i + 1) == '/' && d.GetCharAt (i + 2) == '/')
+				char c = d.GetCharAt (i);
+				if (c == '"') {
+					if (isVerbatim) {
+						if (i + 1 < cursorOffset && d.GetCharAt (i + 1) == '"') {
+							// Still inside the verbatim-string-literal
+							i++;
+						} else {
+							isInsideString = false;
+							isVerbatim = false;
+						}
+					} else if (!isEscaped) {
+						isInsideString = !isInsideString;
+					}
+					isEscaped = false;
+				} else if (!isInsideString && c == '@') {
+					if (i + 1 < cursorOffset && d.GetCharAt (i + 1) == '"') {
+						// We are now inside a verbatim-string-literal
+						isInsideString = true;
+						isVerbatim = true;
+						i++;
+					}
+					isEscaped = false;
+				} else if (!isInsideString && c == '\'') {
+					if (!isEscaped)
+						isInsideChar = !isInsideChar;
+					isEscaped = false;
+				} else if (c == '\\') {
+					if (isInsideString) {
+						if (!isVerbatim)
+							isEscaped = !isEscaped;
+					} else if (isInsideChar) {
+						isEscaped = !isEscaped;
+					} else {
+						isEscaped = false;
+					}
+				} else if (!isInsideString && !isInsideChar && c == '/') {
+					if (i + 2 < cursorOffset &&
+					    d.GetCharAt (i + 1) == '/' &&
+					    d.GetCharAt (i + 2) == '/') {
+						// Inside a documentation comment (///)
 						return true;
+					}
+					isEscaped = false;
+				} else {
+					isEscaped = false;
 				}
 			}
 			

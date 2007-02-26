@@ -1,4 +1,14 @@
+2007-02-26  Jeffrey Stedfast  <fejj@gnome.org>
 
+	* FormattingStrategy/CSharpFormattingStrategy.cs
+	(SmartIndentLine): Instead of wrapping the entire body of the
+	function in an if-block, fix it so we swap the logic thus reducing
+	the indent level of the main body making it easier to read (more
+	likely to fit in the width of your editor window).
+	(IsInsideStringOrComment): Completely rewritten to take into
+	consideration verbatim string liters, char literals, and escaping
+	inside string literals.
+	(IsInsideDocumentationComment): Same.
 
 2007-02-24  Zach Lute <zach.lute@gmail.com> 
 
