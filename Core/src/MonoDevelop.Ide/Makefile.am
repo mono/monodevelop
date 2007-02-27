@@ -233,6 +233,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/SdStatusBar.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
+	MonoDevelop.Ide.Gui/TextEditor.cs \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/ViewContentCollection.cs \

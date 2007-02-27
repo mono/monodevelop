@@ -18,8 +18,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		internal void Initialize (Document document)
 		{
 			this.document = document;
-			IExtensibleTextEditor editor = document.GetContent <IExtensibleTextEditor> ();
-			completionWidget = editor.GetCompletionWidget ();
+			completionWidget = document.GetContent <ICompletionWidget> ();
 			if (completionWidget != null)
 				completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Initialize ();
@@ -29,8 +28,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			get { return document; }
 		}
 		
-		protected IEditableTextBuffer Editor {
-			get { return document.GetContent<IEditableTextBuffer> (); }
+		protected TextEditor Editor {
+			get { return document.TextEditor; }
 		}
 		
 		protected string FileName {

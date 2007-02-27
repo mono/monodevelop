@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IWorkbenchWindow window;
 		TextEditorExtension editorExtension;
+		bool editorChecked;
+		TextEditor textEditor;
 		
 		internal IWorkbenchWindow Window {
 			get { return window; }
@@ -114,6 +116,19 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				IViewContent view = Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
+			}
+		}
+		
+		public TextEditor TextEditor {
+			get {
+				if (!editorChecked) {
+					editorChecked = true;
+					if (GetContent<IEditableTextBuffer> () != null)
+						textEditor = new TextEditor (Window.ViewContent);
+					else
+						textEditor = null;
+				}
+				return textEditor;
 			}
 		}
 		

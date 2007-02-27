@@ -1,3 +1,14 @@
+2007-02-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs: Completion
+	  widget is now implemented as a view interface.
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Make the Editor
+	  property return a TextEditor, which is more functional than a
+	  IEditableTextBuffer.
+	* MonoDevelop.Ide.mdp, Makefile.am, MonoDevelop.Ide.Gui/TextEditor.cs:
+	  New TextEditor class which wraps several editor interfaces.
+	* MonoDevelop.Ide.Gui/Document.cs: Added a TextEditor property.
+
 2007-02-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.addin.xml: Fix compatible version number.

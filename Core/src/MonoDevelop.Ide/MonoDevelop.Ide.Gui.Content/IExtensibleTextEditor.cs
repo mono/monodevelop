@@ -8,6 +8,5 @@ namespace MonoDevelop.Ide.Gui.Content
 		// This method should return the terminator ITextEditorExtension that
 		// will execute the default behavior (if any)
 		ITextEditorExtension AttachExtension (ITextEditorExtension extension);
-		ICompletionWidget GetCompletionWidget ();
 	}
 }
