@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects
 					File.Delete (file);
 					File.Move (tmpfilename, file);
 				}
-			} catch (Exception ex) {
+			} catch {
 				if (tmpfilename != String.Empty)
 					File.Delete (tmpfilename);
 				throw;

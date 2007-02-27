@@ -1,3 +1,10 @@
+2007-02-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/MdpFileFormat.cs,
+	  MonoDevelop.Projects/MdsFileFormat.cs: Fix warning.
+	* MonoDevelop.Projects.Text/TextFile.cs: Implement GetCharAt and
+	  GetLineLength methods.
+
 2006-02-25  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:

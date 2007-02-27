@@ -157,6 +157,14 @@ namespace MonoDevelop.Projects.Text
 			return text.ToString (startPosition, endPosition - startPosition);
 		}
 		
+		public char GetCharAt (int position)
+		{
+			if (position < text.Length)
+				return text [position];
+			else
+				return (char)0;
+		}
+		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
 			int lin = 1;
@@ -184,6 +192,18 @@ namespace MonoDevelop.Projects.Text
 			}
 			line = lin;
 			column = col;
+		}
+		
+		public int GetLineLength (int line)
+		{
+			int pos = GetPositionFromLineColumn (line, 1);
+			if (pos == -1) return 0;
+			int len = 0;
+			while (pos < text.Length && text [pos] != '\n') {
+				pos++;
+				len++;
+			}
+			return len;
 		}
 		
 		public void InsertText (int position, string textIn)
