@@ -2,7 +2,7 @@
 using System;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Ambience;
 
@@ -10,15 +10,15 @@ namespace CSharpBinding
 {
 	public class CSharpParameterDataProvider: MethodParameterDataProvider
 	{
-		IEditableTextBuffer editor;
+		TextEditor editor;
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public CSharpParameterDataProvider (IEditableTextBuffer editor, IClass cls, string methodName): base (cls, methodName)
+		public CSharpParameterDataProvider (TextEditor editor, IClass cls, string methodName): base (cls, methodName)
 		{
 			this.editor = editor;
 		}
 		
-		public CSharpParameterDataProvider (IEditableTextBuffer editor, IClass cls): base (cls)
+		public CSharpParameterDataProvider (TextEditor editor, IClass cls): base (cls)
 		{
 			this.editor = editor;
 		}

@@ -14,13 +14,13 @@ namespace CSharpBinding
 	class OverrideCompletionData: CodeCompletionData, IActionCompletionData
 	{
 		ILanguageItem item;
-		IEditableTextBuffer editor;
+		TextEditor editor;
 		CSharpAmbience ambience;
 		string typedModifiers;
 		int insertOffset;
 		string indent;
 		
-		public OverrideCompletionData (IEditableTextBuffer editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb)
+		public OverrideCompletionData (TextEditor editor, ILanguageItem item, int insertOffset, string typedModifiers, CSharpAmbience amb)
 		{
 			this.typedModifiers = typedModifiers;
 			this.insertOffset = insertOffset;

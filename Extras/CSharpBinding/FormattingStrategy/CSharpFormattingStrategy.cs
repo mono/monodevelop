@@ -12,10 +12,10 @@ using System.Drawing;
 using System.Text;
 
 using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace CSharpBinding.FormattingStrategy {
 	/// <summary>
@@ -27,14 +27,14 @@ namespace CSharpBinding.FormattingStrategy {
 		/// <summary>
 		/// Define CSharp specific smart indenting for a line :)
 		/// </summary>
-		protected override int SmartIndentLine (IFormattableDocument d, int lineNr)
+		protected override int SmartIndentLine (TextEditor d, int lineNr, string indentString)
 		{
 			if (lineNr <= 0)
-				return AutoIndentLine (d, lineNr);
+				return AutoIndentLine (d, lineNr, indentString);
 			
-			string lineAboveText = d.GetLineAsString (lineNr - 1);
+			string lineAboveText = d.GetLineText (lineNr - 1);
 			string trimlineAboveText = lineAboveText.Trim ();
-			string curLineText = d.GetLineAsString (lineNr);
+			string curLineText = d.GetLineText (lineNr);
 			string trimcurLineText = curLineText.Trim ();
 			
 			if ((trimlineAboveText.EndsWith (")") &&
@@ -54,7 +54,7 @@ namespace CSharpBinding.FormattingStrategy {
 				
 				// no closing bracket found -> autoindent
 				if (closingBracketOffset == -1)
-					return AutoIndentLine (d, lineNr);
+					return AutoIndentLine (d, lineNr, indentString);
 				
 				string indentation = GetIndentation (d, openLine);
 				
@@ -69,9 +69,9 @@ namespace CSharpBinding.FormattingStrategy {
 				
 				// no closing bracket found -> autoindent
 				if (closingBracketOffset == -1)
-					return AutoIndentLine (d, lineNr);
+					return AutoIndentLine (d, lineNr, indentString);
 				
-				string closingBracketLineText = d.GetLineAsString (openLine).Trim ();
+				string closingBracketLineText = d.GetLineText (openLine).Trim ();
 				
 				string indentation = GetIndentation (d, openLine);
 				
@@ -80,9 +80,9 @@ namespace CSharpBinding.FormattingStrategy {
 					if (!(trimlineAboveText.StartsWith ("break;") ||
 					      trimlineAboveText.StartsWith ("goto") ||
 					      trimlineAboveText.StartsWith ("return")))
-						indentation += d.IndentString;
+						indentation += indentString;
 				}
-				indentation += d.IndentString;
+				indentation += indentString;
 				
 				d.ReplaceLine (lineNr, indentation + trimcurLineText);
 				return indentation.Length;
@@ -95,7 +95,7 @@ namespace CSharpBinding.FormattingStrategy {
 			      trimlineAboveText.StartsWith ("while") ||
 			      trimlineAboveText.StartsWith ("for"))) ||
 			    trimlineAboveText.EndsWith ("else")) {
-				string indentation = GetIndentation (d, lineNr - 1) + d.IndentString;
+				string indentation = GetIndentation (d, lineNr - 1) + indentString;
 				d.ReplaceLine (lineNr, indentation + trimcurLineText);
 				return indentation.Length;
 			} else {
@@ -123,7 +123,7 @@ namespace CSharpBinding.FormattingStrategy {
 				}
 			}
 			
-			return AutoIndentLine (d, lineNr);
+			return AutoIndentLine (d, lineNr, indentString);
 		}
 		
 		bool NeedCurlyBracket (string text)
@@ -194,7 +194,7 @@ namespace CSharpBinding.FormattingStrategy {
 			return curlyCounter > 0;
 		}
 		
-		bool IsInsideStringOrComment (IFormattableDocument d, int curLineOffset, int cursorOffset)
+		bool IsInsideStringOrComment (TextEditor d, int curLineOffset, int cursorOffset)
 		{
 			// scan cur line to see if it is inside a string or single line comment (//)
 			bool isInsideString = false;
@@ -252,7 +252,7 @@ namespace CSharpBinding.FormattingStrategy {
 			return isInsideString;
 		}
 
-		bool IsInsideDocumentationComment (IFormattableDocument d, int curLineOffset, int cursorOffset)
+		bool IsInsideDocumentationComment (TextEditor d, int curLineOffset, int cursorOffset)
 		{
 			// scan cur line to see if it is inside a documentation comment (///)
 			bool isInsideString = false;
@@ -314,10 +314,9 @@ namespace CSharpBinding.FormattingStrategy {
 		}
 		
 		// used for comment tag formater/inserter
-		public override int FormatLine (IFormattableDocument d, int lineNr, int cursorOffset, char ch)
+		public override int FormatLine (TextEditor d, int lineNr, int cursorOffset, char ch, string indentString, bool autoInsertCurlyBracket)
 		{
-			int curLineOffset, curLineLength;
-			d.GetLineLengthInfo (lineNr, out curLineOffset, out curLineLength);
+			int curLineOffset = d.GetPositionFromLineColumn (lineNr, 1);
 			
 			if (ch != '\n' && ch != '>' && IsInsideStringOrComment (d, curLineOffset, cursorOffset))
 				return 0;
@@ -325,7 +324,7 @@ namespace CSharpBinding.FormattingStrategy {
 			switch (ch) {
 				case '>':
 					if (IsInsideDocumentationComment (d, curLineOffset, cursorOffset)) {
-						string curLineText  = d.GetLineAsString (lineNr);
+						string curLineText  = d.GetLineText (lineNr);
 						int column = cursorOffset - curLineOffset;
 						int index = Math.Min (column - 1, curLineText.Length - 1);
 						if (curLineText [index] == '/')
@@ -356,18 +355,18 @@ namespace CSharpBinding.FormattingStrategy {
 								tag += ">";
 							
 							if (!tag.StartsWith ("/"))
-								d.Insert (cursorOffset, "</" + tag.Substring (1));
+								d.InsertText (cursorOffset, "</" + tag.Substring (1));
 						}
 					}
 					break;
 				case '}':
 				case '{':
-					return IndentLine (d, lineNr);
+					return IndentLine (d, lineNr, indentString);
 				case '\n':
 					if (lineNr <= 0)
-						return IndentLine (d, lineNr);
+						return IndentLine (d, lineNr, indentString);
 					
-					return IndentLine (d, lineNr - 1);
+					return IndentLine (d, lineNr - 1, indentString);
 			}
 			return 0;
 		}
