@@ -1,4 +1,8 @@
-namespace MonoDevelop.SourceEditor.FormattingStrategy {
+
+using MonoDevelop.Ide.Gui;
+
+namespace MonoDevelop.SourceEditor.FormattingStrategy
+{
 	/// <summary>
 	/// This interface handles the auto and smart indenting and formating
 	/// in the document while  you type. Language bindings could overwrite this 
@@ -14,7 +18,7 @@ namespace MonoDevelop.SourceEditor.FormattingStrategy {
 		/// of bytes (e.g. the number of bytes inserted before the caret, or
 		/// removed, if this number is negative)
 		/// </returns>
-		int FormatLine (IFormattableDocument d, int line, int caretOffset, char charTyped);
+		int FormatLine (TextEditor editor, int line, int caretOffset, char charTyped, string indentString, bool autoInsertCurlyBracket);
 		
 		/// <summary>
 		/// This function sets the indentation level in a specific line
@@ -22,11 +26,6 @@ namespace MonoDevelop.SourceEditor.FormattingStrategy {
 		/// <returns>
 		/// the number of inserted characters.
 		/// </returns>
-		int IndentLine (IFormattableDocument d, int line);
-		
-		/// <summary>
-		/// This function sets the indentlevel in a range of lines.
-		/// </summary>
-		void IndentLines (IFormattableDocument d, int begin, int end);
+		int IndentLine (TextEditor editor, int line, string indentString);
 	}	
 }

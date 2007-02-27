@@ -1,3 +1,24 @@
+2007-02-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs,
+	  MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs,
+	  MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	  Removed unused namespace.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Use TextEditor for
+	  formatting operations.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: The
+	  ICompletionWidget interface is now obtained through the GetContent
+	  method. Implemented some soon to be added ITextFile methods.
+	* MonoDevelop.SourceEditor.FormattingStrategy/DefaultFormattingStrategy.cs,
+	  MonoDevelop.SourceEditor.Document/DefaultFormattingStrategy.cs:
+	  Moved to FormattingStrategy dir.
+	* MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs:
+	  Use TextEditor instead of IFormattableDocument.
+	* MonoDevelop.SourceEditor.FormattingStrategy/IFormattableDocument.cs:
+	  Removed. Replaced by TextEditor.
+	* Makefile.am, MonoDevelop.SourceEditor.mdp: Updated.
+
 2007-02-22  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs:

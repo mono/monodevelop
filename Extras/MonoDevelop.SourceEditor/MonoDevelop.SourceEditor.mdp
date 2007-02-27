@@ -22,15 +22,9 @@
     <File name="./MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui/SourceEditorView.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/SyntaxHighlightingPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.Document/DefaultFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/IFormattableDocument.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor/EditorCommands.cs" subtype="Code" buildaction="Compile" />
@@ -45,6 +39,11 @@
     <File name="./bookmark.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.dll.config" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.SourceEditor.FormattingStrategy/DefaultFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

@@ -20,14 +20,13 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.SourceEditor.Actions;
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
 namespace MonoDevelop.SourceEditor.Gui
 {
-	public class SourceEditorView : SourceView, IFormattableDocument, ICompletionWidget, ITextEditorExtension
+	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
 	{	
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
@@ -37,6 +36,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		EditActionCollection editactions = new EditActionCollection ();
 		LanguageItemWindow languageItemWindow;
 		ITextEditorExtension extension;
+		TextEditor thisEditor;
 		event EventHandler completionContextChanged;
 		
 		const int LanguageItemTipTimer = 800;
@@ -88,6 +88,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			this.extension = extension;
 			return this;
+		}
+		
+		TextEditor ThisEditor {
+			get {
+				if (thisEditor == null)
+					thisEditor = new TextEditor (ParentEditor.DisplayBinding);
+				return thisEditor;
+			}
 		}
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
@@ -472,7 +480,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 
 		public string GetLeadingWhiteSpace (int line) {
-			string lineText = ((IFormattableDocument)this).GetLineAsString (line);
+			string lineText = ThisEditor.GetLineText (line + 1);
 			int index = 0;
 			while (index < lineText.Length && System.Char.IsWhiteSpace (lineText[index])) {
     				index++;
@@ -579,11 +587,16 @@ namespace MonoDevelop.SourceEditor.Gui
 			return true;
 		}
 
+		string IndentString
+		{
+			get { return !InsertSpacesInsteadOfTabs ? "\t" : new string (' ', (int) TabsWidth); }
+		}
+		
 		public void FormatLine ()
 		{
-			if (((IFormattableDocument)this).IndentStyle == IndentStyle.Smart) {
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				TextIter iter = buf.GetIterAtMark (buf.InsertMark);
-				fmtr.FormatLine (this, iter.Line, iter.Offset, '\n');
+				fmtr.FormatLine (ThisEditor, iter.Line + 1, iter.Offset, '\n', IndentString, TextEditorProperties.AutoInsertCurlyBracket);
 			}
 			IndentLine ();
 		}
@@ -594,7 +607,7 @@ namespace MonoDevelop.SourceEditor.Gui
 
 			// preserve offset in line
 			int offset = 0;
-			int chars = fmtr.IndentLine (this, iter.Line);
+			int chars = fmtr.IndentLine (ThisEditor, iter.Line + 1, IndentString);
 			offset += chars;
 
 			// FIXME: not quite right yet
@@ -662,86 +675,6 @@ namespace MonoDevelop.SourceEditor.Gui
 
 #endregion
 
-#region IFormattableDocument
-		string IFormattableDocument.GetLineAsString (int ln)
-		{
-			TextIter begin = Buffer.GetIterAtLine (ln);
-			TextIter end = begin;
-			if (!end.EndsLine ())
-				end.ForwardToLineEnd ();
-			
-			return begin.GetText (end);
-		}
-		
-		void IFormattableDocument.BeginAtomicUndo ()
-		{
-			Buffer.BeginUserAction ();
-		}
-		void IFormattableDocument.EndAtomicUndo ()
-		{
-			Buffer.EndUserAction ();
-		}
-		
-		void IFormattableDocument.ReplaceLine (int ln, string txt)
-		{
-			TextIter begin = Buffer.GetIterAtLine (ln);
-			TextIter end = begin;
-			if (!end.EndsLine ())
-				end.ForwardToLineEnd ();
-			
-			Buffer.Delete (ref begin, ref end);
-			Buffer.Insert (ref begin, txt);
-		}
-		
-		IndentStyle IFormattableDocument.IndentStyle
-		{
-			get { return TextEditorProperties.IndentStyle; }
-		}
-		
-		bool IFormattableDocument.AutoInsertCurlyBracket
-		{
-			get { return TextEditorProperties.AutoInsertCurlyBracket; }
-		}
-		
-		string IFormattableDocument.TextContent
-		{ get { return ParentEditor.DisplayBinding.Text; } }
-		
-		int IFormattableDocument.TextLength
-		{ get { return Buffer.EndIter.Offset; } }
-		
-		char IFormattableDocument.GetCharAt (int offset)
-		{
-			TextIter it = Buffer.GetIterAtOffset (offset);
-			return it.Char[0];
-		}
-		
-		void IFormattableDocument.Insert (int offset, string text)
-		{
-			TextIter insertIter = Buffer.GetIterAtOffset (offset);
-			Buffer.Insert (ref insertIter, text);
-		}
-		
-		string IFormattableDocument.IndentString
-		{
-			get { return !InsertSpacesInsteadOfTabs ? "\t" : new string (' ', (int) TabsWidth); }
-		}
-		
-		int IFormattableDocument.GetClosingBraceForLine (int ln, out int openingLine)
-		{
-			int offset = MonoDevelop.Projects.Gui.Completion.TextUtilities.SearchBracketBackward
-				(this, Buffer.GetIterAtLine (ln).Offset - 1, '{', '}');
-			
-			openingLine = offset == -1 ? -1 : Buffer.GetIterAtOffset (offset).Line;
-			return offset;
-		}
-		
-		void IFormattableDocument.GetLineLengthInfo (int ln, out int offset, out int len)
-		{
-			TextIter begin = Buffer.GetIterAtLine (ln);
-			offset = begin.Offset;
-			len = begin.CharsInLine;
-		}
-#endregion
 
 #region ICompletionWidget
 

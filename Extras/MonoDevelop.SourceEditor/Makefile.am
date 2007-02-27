@@ -7,8 +7,7 @@ FILES =  \
 	MonoDevelop.SourceEditor.Actions/EditActionCollection.cs \
 	MonoDevelop.SourceEditor.Actions/IEditAction.cs \
 	MonoDevelop.SourceEditor.Codons/EditActionCodon.cs \
-	MonoDevelop.SourceEditor.Document/DefaultFormattingStrategy.cs \
-	MonoDevelop.SourceEditor.FormattingStrategy/IFormattableDocument.cs \
+	MonoDevelop.SourceEditor.FormattingStrategy/DefaultFormattingStrategy.cs \
 	MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs \
 	MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs \
 	MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \

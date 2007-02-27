@@ -12,12 +12,11 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.SourceEditor.FormattingStrategy;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
 using Gtk;
 using GtkSourceView;
@@ -190,6 +189,17 @@ namespace MonoDevelop.SourceEditor.Gui
 				Services.DebuggingService.ExecutionLocationChanged += executionChangedHandler;
 			}
 			mainBox.ShowAll ();
+		}
+		
+		public override object GetContent (Type type)
+		{
+			if (type == typeof(ICompletionWidget)) {
+				if (se.View.EnableCodeCompletion)
+					return se.View;
+				else
+					return null;
+			} else
+				return base.GetContent (type);
 		}
 		
 		public void JumpTo (int line, int column)
@@ -449,14 +459,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			return se.View.AttachExtension (extension);
 		}
 		
-		ICompletionWidget IExtensibleTextEditor.GetCompletionWidget ()
-		{
-			if (se.View.EnableCodeCompletion)
-				return se.View;
-			else
-				return null;
-		}
-		
 #endregion
 
 #region IEditableTextBuffer
@@ -516,6 +518,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
+		public void BeginAtomicUndo ()
+		{
+			Editor.Buffer.BeginUserAction ();
+		}
+		
+		public void EndAtomicUndo ()
+		{
+			Editor.Buffer.EndUserAction ();
+		}
+		
+		
 		public string SelectedText {
 			get {
 				return se.Buffer.GetSelectedText ();
@@ -529,8 +542,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
+		public int GetLineLength (int line)
+		{
+			TextIter begin = Editor.Buffer.GetIterAtLine (line);
+			return begin.CharsInLine;
+		}
+
 		public int GetPositionFromLineColumn (int line, int column)
 		{
+			if (line > Editor.Buffer.LineCount)
+				return -1;
+
 			TextIter itr = se.Buffer.GetIterAtLine (line - 1);
 			if (column - 1 > itr.CharsInLine)
 				itr.LineOffset = itr.CharsInLine > 0 ? itr.CharsInLine - 1 : 0;
@@ -691,6 +713,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		int ITextFile.Length {
 			get { return se.Buffer.Length; }
 		}
+		
+		public char GetCharAt (int offset)
+		{
+			if (offset < se.Buffer.Length)
+				return se.Buffer.GetIterAtOffset (offset).Char[0];
+			else
+				return (char) 0;
+		}
 
 		public void SetBookmarked (int position, bool mark)
 		{
@@ -741,6 +771,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 #endregion
+
 
 		void SetInitialValues ()
 		{

@@ -13,7 +13,6 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;

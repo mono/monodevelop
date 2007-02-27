@@ -6,7 +6,6 @@ using Pango;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.FormattingStrategy;
 
 namespace MonoDevelop.SourceEditor.Properties {

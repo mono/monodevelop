@@ -8,9 +8,11 @@
 using System;
 using System.Collections;
 using System.Text;
-using MonoDevelop.SourceEditor.FormattingStrategy;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.SourceEditor.Properties;
 
-namespace MonoDevelop.SourceEditor.Document {
+namespace MonoDevelop.SourceEditor.FormattingStrategy
+{
 	/// <summary>
 	/// This class handles the auto and smart indenting in the textbuffer while
 	/// you type.
@@ -20,9 +22,9 @@ namespace MonoDevelop.SourceEditor.Document {
 		/// returns the whitespaces which are before a non white space character in the line line
 		/// as a string.
 		/// </summary>
-		protected string GetIndentation (IFormattableDocument d, int lineNumber)
+		protected string GetIndentation (TextEditor d, int lineNumber)
 		{
-			string lineText = d.GetLineAsString (lineNumber);
+			string lineText = d.GetLineText (lineNumber);
 			StringBuilder whitespaces = new StringBuilder ();
 			
 			foreach (char ch in lineText) {
@@ -37,12 +39,12 @@ namespace MonoDevelop.SourceEditor.Document {
 		/// <summary>
 		/// Could be overwritten to define more complex indenting.
 		/// </summary>
-		protected virtual int AutoIndentLine (IFormattableDocument d, int lineNumber)
+		protected virtual int AutoIndentLine (TextEditor d, int lineNumber, string indentString)
 		{
 			string indentation = lineNumber != 0 ? GetIndentation (d, lineNumber - 1) : "";
 			
 			if (indentation.Length > 0) {
-				string newLineText = indentation + d.GetLineAsString (lineNumber).Trim ();
+				string newLineText = indentation + d.GetLineText (lineNumber).Trim ();
 				d.ReplaceLine (lineNumber, newLineText);
 			}
 			
@@ -52,9 +54,9 @@ namespace MonoDevelop.SourceEditor.Document {
 		/// <summary>
 		/// Could be overwritten to define more complex indenting.
 		/// </summary>
-		protected virtual int SmartIndentLine (IFormattableDocument d, int line)
+		protected virtual int SmartIndentLine (TextEditor d, int line, string indentString)
 		{
-			return AutoIndentLine (d, line); // smart = autoindent in normal texts
+			return AutoIndentLine (d, line, indentString); // smart = autoindent in normal texts
 		}
 		
 		/// <summary>
@@ -65,10 +67,10 @@ namespace MonoDevelop.SourceEditor.Document {
 		/// of bytes (e.g. the number of bytes inserted before the caret, or
 		/// removed, if this number is negative)
 		/// </returns>
-		public virtual int FormatLine (IFormattableDocument d, int line, int cursorOffset, char ch)
+		public virtual int FormatLine (TextEditor d, int line, int cursorOffset, char ch, string indentString, bool autoInsertCurlyBracket)
 		{
 			if (ch == '\n')
-				return IndentLine (d, line);
+				return IndentLine (d, line, indentString);
 			
 			return 0;
 		}
@@ -79,27 +81,14 @@ namespace MonoDevelop.SourceEditor.Document {
 		/// <returns>
 		/// the number of inserted characters.
 		/// </returns>
-		public int IndentLine (IFormattableDocument d, int line)
+		public int IndentLine (TextEditor d, int line, string indentString)
 		{
-			switch (d.IndentStyle) {
-				case IndentStyle.Auto  : return AutoIndentLine (d, line);
-				case IndentStyle.Smart : return SmartIndentLine (d, line);
+			switch (TextEditorProperties.IndentStyle) {
+				case IndentStyle.Auto  : return AutoIndentLine (d, line, indentString);
+				case IndentStyle.Smart : return SmartIndentLine (d, line, indentString);
 				case IndentStyle.None  :
 				default                : return 0;
 			}
-		}
-		
-		/// <summary>
-		/// This function sets the indentlevel in a range of lines.
-		/// </summary>
-		public void IndentLines (IFormattableDocument d, int begin, int end)
-		{
-			d.BeginAtomicUndo ();
-			
-			for (int i = begin; i <= end; ++i)
-				IndentLine (d, i);
-			
-			d.EndAtomicUndo ();
 		}
 	}
 }

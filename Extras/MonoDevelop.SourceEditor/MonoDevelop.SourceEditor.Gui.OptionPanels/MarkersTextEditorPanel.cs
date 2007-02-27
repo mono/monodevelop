@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 
-using MonoDevelop.SourceEditor.Document;
 using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.Core.Properties;
 
