@@ -1,3 +1,7 @@
+2007-02-28  Ankit Jain <jankit@novell.com> 
+
+	* MakefileData.cs (WriteFiles): Ignore directory entries.
+
 2007-02-22  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs: Disable the AssemblyName and OutputDir

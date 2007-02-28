@@ -1285,6 +1285,8 @@ namespace MonoDevelop.Autotools
 
 			List<string> files = new List<string> ();
 			foreach (ProjectFile pf in OwnerProject.ProjectFiles) {
+				if (pf.Subtype != Subtype.Code)
+					continue;
 				if (IsFileExcluded (pf.FilePath))
 					continue;
 				if (pf.BuildAction == action) {
