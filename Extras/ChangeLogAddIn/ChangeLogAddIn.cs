@@ -30,107 +30,140 @@ namespace MonoDevelop.ChangeLogAddIn
 {
 	public enum ChangeLogCommands
 	{
-		InsertHeader,
 		InsertEntry
-	}
-
-	public class InsertHeaderHandler : CommandHandler
-	{
-		protected override void Run()
-		{
-			Document document = ChangeLogAddInHelperMethods.GetActiveChangeLogDocument();
-			
-			if (document == null)
-				return;
-			
-			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer> ();			
-			
-			if (textBuffer == null)
-				return;
-		
-			string name = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
-			string email = Runtime.Properties.GetProperty("ChangeLogAddIn.Email", "Email Address");
-			string date = DateTime.Now.ToString("yyyy-MM-dd");
-			string text = date + "  " + name + " <" + email + "> " + Environment.NewLine + Environment.NewLine;
-
-			textBuffer.InsertText(textBuffer.CursorPosition, text);			
-		}
-
-		protected override void Update(CommandInfo info)
-		{
-			info.Enabled = ChangeLogAddInHelperMethods.GetActiveChangeLogDocument() != null;
-		}
 	}
 
 	public class InsertEntryHandler : CommandHandler
 	{
 		protected override void Run()
 		{
-			Document document = ChangeLogAddInHelperMethods.GetActiveChangeLogDocument();
+			Document document = GetActiveChangeLogDocument(true);
+			if (document == null) return;
 			
-			if (document == null)
-				return;
-			
-			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer> ();			
-			
-			if (textBuffer == null)
-				return;
+			InsertHeader(document);
+			InsertEntry(document);					
+		}
+
+		protected override void Update(CommandInfo info)
+		{
+			info.Enabled = GetSelectedProjectFile() != null;
+		}
+
+        private ProjectFile GetSelectedProjectFile()
+		{
+			Pad pad = IdeApp.Workbench.Pads[typeof(SolutionPad)];
+			if (pad == null) return null;
+
+			SolutionPad solutionPad = pad.Content as SolutionPad;
+			if (solutionPad == null) return null;
+
+			ITreeNavigator navigator = solutionPad.GetSelectedNode();
+			if (navigator == null) return null;
+
+			return navigator.DataItem as ProjectFile;			
+		}
+		
+		private void InsertEntry(Document document)
+		{
+			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			if (textBuffer == null) return;
 
 			ProjectFile projectFile = GetSelectedProjectFile();
-
-			if (projectFile == null)
-				return;
+			if (projectFile == null) return;
 
 			string changeLogFileName = document.FileName;
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
 			string selectedFileName = projectFile.Name;
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
 	
-			if (selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory))
-				textBuffer.InsertText(textBuffer.CursorPosition,
-					"\t* " + selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ":" + Environment.NewLine); 				
+	        int pos = GetHeaderEndPosition(document);
+	        
+			if (selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory)) {
+				string text = "\t* " 
+				    + selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
+					+ Environment.NewLine + Environment.NewLine;
+				textBuffer.InsertText(pos+2, text);
+				
+				pos += text.Length;
+                textBuffer.Select(pos, pos);
+			    textBuffer.CursorPosition = pos;
+			    
+			    document.Select();	    
+	        }
 		}
-
-		protected override void Update(CommandInfo info)
+		
+		private void InsertHeader(Document document)
 		{
-			info.Enabled = (ChangeLogAddInHelperMethods.GetActiveChangeLogDocument() != null) && (GetSelectedProjectFile() != null);
-		}
+			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			if (textBuffer == null)	return;
+		
+			string name = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
+			string email = Runtime.Properties.GetProperty("ChangeLogAddIn.Email", "Email Address");
+			string date = DateTime.Now.ToString("yyyy-MM-dd");
+			string text = date + "  " + name + " <" + email + ">" 
+			    + Environment.NewLine + Environment.NewLine;
 
-		private ProjectFile GetSelectedProjectFile()
-		{
-			Pad pad = IdeApp.Workbench.Pads[typeof(SolutionPad)];
-
-			if (pad == null)
-				return null;
-
-			SolutionPad solutionPad = pad.Content as SolutionPad;
-
-			if (solutionPad == null)
-				return null;
-
-			ITreeNavigator navigator = solutionPad.GetSelectedNode();
-
-			if (navigator == null)
-				return null;
-
-			return navigator.DataItem as ProjectFile;			
-		}
-	}
-
-	internal class ChangeLogAddInHelperMethods
-	{
-		public static Document GetActiveChangeLogDocument()
-		{
-			Document document = IdeApp.Workbench.ActiveDocument;
-
-			if (document == null)
-				return null;
+            // Read the first line and compare it with the header: if they are
+            // the same don't insert a new header.
+            
+            int pos = GetHeaderEndPosition(document);
+            string line = textBuffer.GetText(0, pos+2);
+            
+            if (line != text)
+    			textBuffer.InsertText(0, text);			
+        }
+        
+        private int GetHeaderEndPosition(Document document)
+        {
+			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
+			if (textBuffer == null)	return 0;
 			
-			if (document.FileName.EndsWith("ChangeLog"))
-				return document;
+			// This is less than optimal, we simply read 1024 chars hoping to
+			// find a newline there: if we don't find it we just return 0.
+            string text = textBuffer.GetText(0, Math.Min(textBuffer.Length-1, 1023));
+            int pos = text.IndexOf(Environment.NewLine + Environment.NewLine);
+            return pos >= 0 ? pos : 0;
+        }
+        
+		private Document GetActiveChangeLogDocument(bool create)
+		{
+		    // We look for the ChangeLog file in different places: first of all
+		    // at the top-level directory of the current Project and then at
+		    // the top-level directory of the enclosing combine, going up to
+		    // the topmost one.
+		    
+            Document document = null;
+            
+            Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+		    if (project != null && project.BaseDirectory != null) {
+    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
+    		    if (File.Exists(changelog))
+    		        document = IdeApp.Workbench.OpenDocument(changelog, false);
+            }
+                        
+            if (document == null && project != null) {
+                Combine combine = project.ParentCombine;
+                while (combine != null && combine.BaseDirectory != null) {
+                    string changelog = Path.Combine(combine.BaseDirectory, "ChangeLog");
+        		    if (File.Exists(changelog)) {
+                        document = IdeApp.Workbench.OpenDocument(changelog, false);
+                        break;
+                    }
+                    combine = combine.ParentCombine;
+                }
+            }
+            
+            // If no ChangeLog has been found, we create one in the current
+            // project's base directory.
+            
+			if (document == null && create && project != null && project.BaseDirectory != null) {
+    		    string changelog = Path.Combine(project.BaseDirectory, "ChangeLog");
+                document = IdeApp.Workbench.NewDocument(changelog, "text/plain", "");
+                document.Save();
+			}
 			
-			return null;		
-		}		
+			return document;		
+		}			
 	}
 }
 	

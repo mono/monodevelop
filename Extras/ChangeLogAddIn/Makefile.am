@@ -15,10 +15,12 @@ FILES =  \
 	AddLogEntryDialog.cs \
 	AssemblyInfo.cs \
 	ChangeLogAddIn.cs \
+	ChangeLogAddInOptionPanelWidget.cs \
 	ChangeLogAddInOptionsPanel.cs \
 	CommitDialogExtensionWidget.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs
+	gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs \
+	gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs
 
 ADDIN = ChangeLogAddIn.addin.xml
 

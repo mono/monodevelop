@@ -23,19 +23,13 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Commands">
-		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"
-			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertHeaderHandler"
-			_label = "Insert Header" />
 		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"
 			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertEntryHandler"
-			_label = "Insert Entry" />
+			_label = "Insert ChangeLog Entry" />
 	</Extension>
 
 	<Extension path="/SharpDevelop/Workbench/MainMenu/Edit">
-		<ItemSet id="ChangeLogCommands" _label = "ChangeLog" insertafter="Separator5">
-			<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertHeader"/>
-			<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"/>
-		</ItemSet>
+		<CommandItem id="MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry" insertafter="Separator5"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">

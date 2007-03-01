@@ -14,6 +14,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		HBox box = new HBox ();
 		VBox vbox = new VBox ();
 		Button logButton;
+		Button optionsButton;
 		string message;
 		ChangeSet cset;
 		string tmpFile;
@@ -23,18 +24,36 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public CommitDialogExtensionWidget()
 		{
+			if (!IntegrationEnabled)
+				return;
+				
 			Add (box);
 			box.PackStart (vbox, true, true, 0);
 			
 			logButton = new Button (GettextCatalog.GetString ("View ChangeLog..."));
 			logButton.Clicked += OnClickButton;
+			
+			optionsButton = new Button (GettextCatalog.GetString ("Options..."));
+			optionsButton.Clicked += OnClickOptions;
+			
 			VBox aux = new VBox ();
-			aux.PackStart (logButton, false, false, 0);
 			box.PackStart (aux, false, false, 3);
+			HBox haux = new HBox ();
+			haux.Spacing = 6;
+			aux.PackStart (haux, false, false, 0);
+			haux.PackStart (logButton, false, false, 0);
+			haux.PackStart (optionsButton, false, false, 0);
+		}
+		
+		public static bool IntegrationEnabled {
+			get { return Runtime.Properties.GetProperty ("ChangeLogAddIn.VersionControlIntegration", true); }
 		}
 		
 		public override void Initialize (ChangeSet cset)
 		{
+			if (!IntegrationEnabled)
+				return;
+				
 			this.cset = cset;
 			msgLabel = new Label ();
 			pathLabel = new Label ();
@@ -48,6 +67,9 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		void UpdateStatus ()
 		{
+			if (!IntegrationEnabled)
+				Remove (box);
+
 			string name = Runtime.Properties.GetProperty ("ChangeLogAddIn.Name", "");
 			string email = Runtime.Properties.GetProperty ("ChangeLogAddIn.Email", "");
 			string logf = GetChangelogFile (cset.BaseLocalPath);
@@ -56,10 +78,12 @@ namespace MonoDevelop.ChangeLogAddIn
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				logButton.Label = GettextCatalog.GetString ("Configure user data");
+				optionsButton.Visible = false;
 				notConfigured = true;
 				return;
 			}
 			
+			optionsButton.Visible = true;
 			logButton.Label = GettextCatalog.GetString ("View ChangeLog...");
 			if (logf == null) {
 				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("There is no ChangeLog file in the path:") + "</span></b>";
@@ -77,6 +101,9 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override bool OnBeginCommit (ChangeSet changeSet)
 		{
+			if (!IntegrationEnabled)
+				return true;
+				
 			string logf = GetChangelogFile (changeSet.BaseLocalPath);
 			if (logf == null)
 				return true;
@@ -110,6 +137,9 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override void OnEndCommit (ChangeSet changeSet, bool success)
 		{
+			if (!IntegrationEnabled)
+				return;
+				
 			if (!success) {
 				if (tmpFile != null && File.Exists (tmpFile)) {
 					string logf = GetChangelogFile (changeSet.BaseLocalPath);
@@ -139,6 +169,12 @@ namespace MonoDevelop.ChangeLogAddIn
 						message = dlg.Message;
 				}
 			}
+		}
+		
+		void OnClickOptions (object s, EventArgs args)
+		{
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "ChangeLogAddInOptions");
+			UpdateStatus ();
 		}
 		
 		string GetChangelogFile (string basePath)

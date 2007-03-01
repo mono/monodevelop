@@ -1,3 +1,22 @@
+2007-03-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml, ChangeLogAddIn.cs: Simplified a little bit the
+	  ChangeLogAddin. Just one command "Insert ChageLog Entry", an header is
+	  automatically added if missing or if the top-most header is different
+	  from the one we're about to add. The command can be issued from anywhere
+	  and the add-in looks for the right ChangeLog file and even creates one
+	  if necessary. Patch by Federico Di Gregorio.
+
+	* AddLogEntryDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs,
+	  CommitDialogExtensionWidget.cs: Use new the partial class model.
+	* ChangeLogAddIn.mdp: Update.
+	* ChangeLogAddInOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs,
+	  gtk-gui/gui.stetic, ChangeLogAddInOptionPanelWidget.cs: Implemented the
+	  option panel using stetic.
+	* Makefile.am: Added new files.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml: Change add-in versions to 0.13.

@@ -25,43 +25,18 @@ namespace MonoDevelop.ChangeLogAddIn
 {
 	public class ChangeLogAddInOptionPanel : AbstractOptionPanel
 	{
-		Entry nameEntry = new Entry();
-		Entry emailEntry = new Entry();
+		ChangeLogAddInOptionPanelWidget widget;
 		
 		public override void LoadPanelContents()
 		{
-			VBox hBox = new VBox();
-			this.Add(hBox);
-						
-			Label descriptionLabel = new Label(GettextCatalog.GetString("Specify personal information used in ChangeLog entries"));
-			descriptionLabel.SetAlignment(0.0f, 0.5f);
-			hBox.PackStart(descriptionLabel, false, false, 10);
-			
-			Label nameLabel = new Label (GettextCatalog.GetString("Full Name:"));
-			nameLabel.SetAlignment(0.0f, 0.5f);
-			nameEntry.Text = Runtime.Properties.GetProperty("ChangeLogAddIn.Name", "Full Name");
-
-			Label emailLabel = new Label(GettextCatalog.GetString("Email Address:"));
-			emailLabel.SetAlignment(0.0f, 0.5f);
-			emailEntry.Text = Runtime.Properties.GetProperty("ChangeLogAddIn.Email", "Email Address");
-
-			Table table = new Table(2, 2, false);
-			table.RowSpacing = 6;
-			table.ColumnSpacing = 6;
-			table.Attach(nameLabel, 0, 1, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
-			table.Attach(nameEntry, 1, 2, 0, 1);
-			table.Attach(emailLabel, 0, 1, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
-			table.Attach(emailEntry, 1, 2, 1, 2);
-
-			hBox.PackStart(table, false, false, 0);
+			widget = new ChangeLogAddInOptionPanelWidget ();
+			Add (widget);
+			widget.LoadPanelContents ();
 		}
 		
 		public override bool StorePanelContents()
 		{
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Name", nameEntry.Text);
-			Runtime.Properties.SetProperty("ChangeLogAddIn.Email", emailEntry.Text);
-			Runtime.Properties.SaveProperties ();
-			return true;
+			return widget.StorePanelContents ();
 		}
 	}
 }

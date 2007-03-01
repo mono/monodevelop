@@ -3,14 +3,11 @@ using System;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
-	public class AddLogEntryDialog : Gtk.Dialog
+	public partial class AddLogEntryDialog : Gtk.Dialog
 	{
-		protected Gtk.TextView textview;
-
-		
 		public AddLogEntryDialog()
 		{
-			Stetic.Gui.Build(this, typeof(ChangeLogAddIn.AddLogEntryDialog));
+			Build ();
 		}
 		
 		public string Message {
