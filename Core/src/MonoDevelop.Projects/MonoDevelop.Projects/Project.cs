@@ -238,6 +238,8 @@ namespace MonoDevelop.Projects
 						deployFiles.Add (new DeployFile (referenceFileName, Path.GetFileName (referenceFileName), TargetDirectory.ProgramFiles));
 						if (File.Exists (referenceFileName + ".mdb"))
 							deployFiles.Add (new DeployFile (referenceFileName + ".mdb", Path.GetFileName (referenceFileName) + ".mdb", TargetDirectory.ProgramFiles));
+						if (File.Exists (referenceFileName + ".config"))
+							deployFiles.Add (new DeployFile (referenceFileName + ".config", Path.GetFileName (referenceFileName) + ".config", TargetDirectory.ProgramFiles));
 					}
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
