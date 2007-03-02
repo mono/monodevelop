@@ -32,6 +32,7 @@ using System.Collections;
 using System.Threading;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
@@ -169,8 +170,7 @@ namespace MonoDevelop.NUnit
 	class TestSession: IAsyncOperation, ITestProgressMonitor
 	{
 		UnitTest test;
-		ITestProgressMonitor monitor;
-		TestResultsPad resultsPad;
+		TestMonitor monitor;
 		Thread runThread;
 		bool success;
 		ManualResetEvent waitEvent;
@@ -178,8 +178,7 @@ namespace MonoDevelop.NUnit
 		public TestSession (UnitTest test, TestResultsPad resultsPad)
 		{
 			this.test = test;
-			this.monitor = resultsPad;
-			this.resultsPad = resultsPad;
+			this.monitor = new TestMonitor (resultsPad);
 		}
 		
 		public void Start ()
@@ -193,17 +192,17 @@ namespace MonoDevelop.NUnit
 		{
 			try {
 				ResetResult (test);
-				resultsPad.InitializeTestRun (test);
+				monitor.InitializeTestRun (test);
 				TestContext ctx = new TestContext (monitor, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
 				success = true;
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
-				resultsPad.ReportRuntimeError (null, ex);
+				monitor.ReportRuntimeError (null, ex);
 				success = false;
 			} finally {
-				resultsPad.FinishTestRun ();
+				monitor.FinishTestRun ();
 				runThread = null;
 			}
 			lock (this) {
@@ -244,7 +243,7 @@ namespace MonoDevelop.NUnit
 		
 		void IAsyncOperation.Cancel ()
 		{
-			resultsPad.Cancel ();
+			monitor.Cancel ();
 		}
 		
 		public void WaitForCompleted ()

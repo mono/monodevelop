@@ -1,3 +1,11 @@
+2007-03-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.NUnit.mdp: Don't local copy references.
+	* Services/NUnitService.cs, Gui/TestResultsPad.cs: Added button for
+	  running the tests. Fixed context menu. Don't make the TestResultPad
+	  a subclass of GuiSyncObject because there are some identity issue
+	  with GetHashCode and the proxy. Using TestMonitor instead.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelopNUnit.addin.xml: Change add-in versions to 0.13.

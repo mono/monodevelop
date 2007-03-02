@@ -41,7 +41,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.NUnit
 {
-	public class TestResultsPad: GuiSyncObject, IPadContent, ITestProgressMonitor
+	class TestResultsPad: IPadContent, ITestProgressMonitor
 	{
 		NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
 		
@@ -63,7 +63,9 @@ namespace MonoDevelop.NUnit
 		TextView outputView;
 		Widget outputViewScrolled;
 		VSeparator infoSep;
+		
 		ToolButton buttonStop;
+		ToolButton buttonRun;
 		
 		ToggleToolButton buttonSuccess;
 		ToggleToolButton buttonFailures;
@@ -138,7 +140,11 @@ namespace MonoDevelop.NUnit
 			
 			toolbar.Insert (new SeparatorToolItem (), -1);
 			
-			buttonStop = new ToolButton ("gtk-stop");
+			buttonRun = new ToolButton (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu), GettextCatalog.GetString ("Run Test"));
+			buttonRun.IsImportant = true;
+			toolbar.Insert (buttonRun, -1);
+			
+			buttonStop = new ToolButton (Gtk.Stock.Stop);
 			toolbar.Insert (buttonStop, -1);
 			
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
@@ -205,6 +211,7 @@ namespace MonoDevelop.NUnit
 			progressBar.HeightRequest = infoFailed.SizeRequest().Height;
 			
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
+			buttonRun.Clicked += new EventHandler (OnRunClicked);
 			failuresTreeView.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnPopupMenu);
 			
 			Control.ShowAll ();
@@ -292,6 +299,7 @@ namespace MonoDevelop.NUnit
 			resultLabel.Hide ();
 			labels.Show ();
 			buttonStop.Sensitive = true;
+			buttonRun.Sensitive = false;
 			
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
@@ -342,6 +350,7 @@ namespace MonoDevelop.NUnit
 			resultLabel.Show ();
 			labels.Hide ();
 			buttonStop.Sensitive = false;
+			buttonRun.Sensitive = true;
 			
 			resultLabel.Markup = GettextCatalog.GetString ("<b>Tests</b>: ") + testsRun + GettextCatalog.GetString ("  <b>Failed</b>: ") + testsFailed + GettextCatalog.GetString ("  <b>Ignored</b>: ") + testsIgnored;
 			
@@ -354,10 +363,16 @@ namespace MonoDevelop.NUnit
 			failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
 		}
 		
+		void OnRunClicked (object sender, EventArgs args)
+		{
+			NUnitService testService = (NUnitService) ServiceManager.GetService (typeof(NUnitService));
+			testService.RunTest (rootTest);
+		}
+		
 		void OnPopupMenu (object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			if (args.Event.Button == 3) {
-				IdeApp.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestChart/ContextMenu");
+				IdeApp.CommandService.ShowContextMenu ("/SharpDevelop/Views/TestResultsPad/ContextMenu");
 			}
 		}
 		
@@ -479,7 +494,7 @@ namespace MonoDevelop.NUnit
 		
 		string Escape (string s)
 		{
-			return s.Replace ("<","&lt;").Replace (">","&gt;");
+			return GLib.Markup.EscapeText (s);
 		}
 		
 		void ITestProgressMonitor.EndTest (UnitTest test, UnitTestResult result)
@@ -525,6 +540,46 @@ namespace MonoDevelop.NUnit
 		}
 		
 		public event TestHandler CancelRequested;
+	}
+	
+	class TestMonitor: GuiSyncObject, ITestProgressMonitor
+	{
+		// TestResultsPad can't be a GuiSyncObject because there are some
+		// object identity issues. If the pad is registered using the
+		// proxy, it will get different hash codes depending on the caller.
+		
+		ITestProgressMonitor monitor;
+		TestResultsPad pad;
+		
+		public TestMonitor (TestResultsPad pad) {
+			this.pad = pad;
+			this.monitor = pad;
+		}
+		public void InitializeTestRun (UnitTest test) {
+			pad.InitializeTestRun (test);
+		}
+		public void FinishTestRun () {
+			pad.FinishTestRun ();
+		}
+		public void Cancel () {
+			pad.Cancel ();
+		}
+		public void BeginTest (UnitTest test) {
+			monitor.BeginTest (test);
+		}
+		public void EndTest (UnitTest test, UnitTestResult result) {
+			monitor.EndTest (test, result);
+		}
+		public void ReportRuntimeError (string message, Exception exception) {
+			monitor.ReportRuntimeError (message, exception);
+		}
+		public bool IsCancelRequested {
+			get { return monitor.IsCancelRequested; }
+		}
+		public event TestHandler CancelRequested {
+			add { monitor.CancelRequested += value; }
+			remove { monitor.CancelRequested -= value; }
+		}
 	}
 }
 
