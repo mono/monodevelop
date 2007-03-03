@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
-			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
+			info.Enabled = (focus is Gtk.Editable || (focus is Gtk.TextView && ((Gtk.TextView)focus).Editable)); 
 		}
 	}	
 }
