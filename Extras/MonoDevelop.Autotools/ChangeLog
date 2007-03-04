@@ -1,5 +1,9 @@
 2007-03-04  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
+	* MonoDevelop.Autotools/Handler.cs: make strings translatable.
+
+2007-03-04  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
 	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
 	* gtk-gui/gui.stetic: make all strings in option panel translatable.
 

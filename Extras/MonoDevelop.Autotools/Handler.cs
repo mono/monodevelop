@@ -20,7 +20,7 @@ namespace MonoDevelop.Autotools
 		}
 		
 		public string Description {
-			get { return "Tarball"; }
+			get { return GettextCatalog.GetString ("Tarball"); }
 		}
 		
 		public string Icon {
