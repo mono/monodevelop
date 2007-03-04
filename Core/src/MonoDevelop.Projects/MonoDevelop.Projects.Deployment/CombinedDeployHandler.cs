@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Deployment
 		}
 		
 		public string Description {
-			get { return "Combined Deploy"; }
+			get { return GettextCatalog.GetString ("Combined Deploy"); }
 		}
 		
 		public string Icon {

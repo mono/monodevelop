@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects.Deployment
 		}
 		
 		public string Description {
-			get { return "Install"; } 
+			get { return GettextCatalog.GetString ("Install"); } 
 		}
 		
 		public string Icon {

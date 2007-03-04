@@ -1,3 +1,10 @@
+2007-03-04 David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,
+	* MonoDevelop.Projects.Deployment/InstallDeployHandler.cs,
+	* MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs,
+	* MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs: make strings translatable.
+
 2007-03-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/Project.cs: Copy .config files together with the

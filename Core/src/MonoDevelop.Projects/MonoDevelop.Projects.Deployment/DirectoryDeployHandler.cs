@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Deployment
 		}
 		
 		public string Description {
-			get { return "Directory"; } 
+			get { return GettextCatalog.GetString ("Directory"); } 
 		}
 		
 		public string Icon {

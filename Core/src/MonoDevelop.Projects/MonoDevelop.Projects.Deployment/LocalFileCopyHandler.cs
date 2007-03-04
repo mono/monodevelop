@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Deployment
 		}
 		
 		public virtual string Name {
-			get { return "Local Filesystem"; }
+			get { return GettextCatalog.GetString ("Local Filesystem"); }
 		}
 
 		public FileCopyConfiguration CreateConfiguration ()
