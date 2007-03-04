@@ -7,23 +7,21 @@
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Autotools.MakefileOptionPanelWidget" design-size="589 368">
     <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="Events">0</property>
         <child>
           <widget class="Gtk.VBox" id="vbox1">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.CheckButton" id="cbEnableMakefileIntegration">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
-                <property name="Label">Enable makefile Integration in this project</property>
+                <property name="Label" translatable="yes">Enable makefile Integration in this project</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <signal name="Clicked" handler="OnEnableMakefileIntegrationClicked" />
@@ -38,7 +36,6 @@
             <child>
               <widget class="Gtk.HSeparator" id="headerSep1">
                 <property name="MemberName" />
-                <property name="Events">0</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -50,7 +47,6 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="NRows">8</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
@@ -59,7 +55,6 @@
                   <widget class="Gtk.CheckButton" id="cbBuildTarget">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Build target name:</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -84,7 +79,6 @@
                   <widget class="Gtk.CheckButton" id="cbCleanTarget">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Clean target name:</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -109,7 +103,6 @@
                   <widget class="Gtk.CheckButton" id="cbRunTarget">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="Label" translatable="yes">Execute target name:</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
@@ -134,7 +127,6 @@
                   <widget class="MonoDevelop.Components.FileEntry" id="fileEntryMakefilePath">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="BrowserTitle" />
                     <signal name="FocusOutEvent" handler="OnFileEntryMakefilePathFocusOutEvent" />
                   </widget>
@@ -154,13 +146,11 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox1">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.ComboBox" id="comboAssemblyName">
                         <property name="MemberName" />
                         <property name="WidthRequest">300</property>
                         <property name="Visible">False</property>
-                        <property name="Events">0</property>
                         <property name="IsTextCombo">True</property>
                         <property name="Items" />
                       </widget>
@@ -194,13 +184,11 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox2">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.ComboBox" id="comboOutputDir">
                         <property name="MemberName" />
                         <property name="WidthRequest">300</property>
                         <property name="Visible">False</property>
-                        <property name="Events">0</property>
                         <property name="IsTextCombo">True</property>
                         <property name="Items" />
                       </widget>
@@ -234,13 +222,11 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox3">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.Entry" id="BuildTargetName">
                         <property name="MemberName" />
                         <property name="WidthRequest">200</property>
                         <property name="CanFocus">True</property>
-                        <property name="Events">0</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -274,13 +260,11 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox4">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.Entry" id="ExecuteTargetName">
                         <property name="MemberName" />
                         <property name="WidthRequest">200</property>
                         <property name="CanFocus">True</property>
-                        <property name="Events">0</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -314,13 +298,11 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox5">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.Entry" id="CleanTargetName">
                         <property name="MemberName" />
                         <property name="WidthRequest">200</property>
                         <property name="CanFocus">True</property>
-                        <property name="Events">0</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -354,7 +336,6 @@
                 <child>
                   <widget class="Gtk.HSeparator" id="headerSep2">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -375,7 +356,6 @@
                   <widget class="Gtk.Label" id="label8">
                     <property name="MemberName" />
                     <property name="WidthRequest">500</property>
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Select the makefile targets that should be executed for the build and clean operations:</property>
                     <property name="Wrap">True</property>
@@ -399,9 +379,8 @@
                   <widget class="Gtk.Label" id="lblAssemblyNameVar">
                     <property name="MemberName" />
                     <property name="Visible">False</property>
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Assembly Name variable:</property>
+                    <property name="LabelProp" translatable="yes">Assembly Name variable:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">6</property>
@@ -420,9 +399,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblMakefileName">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Makefile path:</property>
+                    <property name="LabelProp" translatable="yes">Makefile path:</property>
                   </widget>
                   <packing>
                     <property name="AutoSize">True</property>
@@ -440,9 +418,8 @@
                   <widget class="Gtk.Label" id="lblOutputDirVar">
                     <property name="MemberName" />
                     <property name="Visible">False</property>
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Output directory variable:</property>
+                    <property name="LabelProp" translatable="yes">Output directory variable:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">7</property>
@@ -474,8 +451,7 @@
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
-            <property name="Events">0</property>
-            <property name="LabelProp">Makefile</property>
+            <property name="LabelProp" translatable="yes">Makefile</property>
           </widget>
           <packing>
             <property name="type">tab</property>
@@ -484,15 +460,13 @@
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.CheckButton" id="cbFileSync">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
-                <property name="Label">Enable project file synchronization</property>
+                <property name="Label" translatable="yes">Enable project file synchronization</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -508,7 +482,6 @@
             <child>
               <widget class="Gtk.HSeparator" id="hseparator2">
                 <property name="MemberName" />
-                <property name="Events">0</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -520,7 +493,6 @@
             <child>
               <widget class="Gtk.Table" id="table3">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="NRows">6</property>
                 <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
@@ -532,8 +504,7 @@
                   <widget class="Gtk.CheckButton" id="cbKeepDeployFilesSync">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
-                    <property name="Label">Deployment files</property>
+                    <property name="Label" translatable="yes">Deployment files</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <signal name="Clicked" handler="OnCbKeepDeployFilesSyncClicked" />
@@ -556,8 +527,7 @@
                   <widget class="Gtk.CheckButton" id="cbKeepFilesSync">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
-                    <property name="Label">Source code files</property>
+                    <property name="Label" translatable="yes">Source code files</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <signal name="Clicked" handler="OnCbKeepFilesSyncClicked" />
@@ -580,8 +550,7 @@
                   <widget class="Gtk.CheckButton" id="cbKeepOthersSync">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
-                    <property name="Label">Other Files</property>
+                    <property name="Label" translatable="yes">Other Files</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <signal name="Clicked" handler="OnCbKeepOthersSyncClicked" />
@@ -604,8 +573,7 @@
                   <widget class="Gtk.CheckButton" id="cbKeepResourcesSync">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
-                    <property name="Label">Resources</property>
+                    <property name="Label" translatable="yes">Resources</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <signal name="Clicked" handler="OnCbKeepResourcesSyncClicked" />
@@ -628,7 +596,6 @@
                   <widget class="Gtk.ComboBox" id="comboDeployFilesVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -651,7 +618,6 @@
                   <widget class="Gtk.ComboBox" id="comboFilesVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                     <property name="Active">0</property>
@@ -675,7 +641,6 @@
                   <widget class="Gtk.ComboBox" id="comboOthersVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -698,7 +663,6 @@
                   <widget class="Gtk.ComboBox" id="comboResourcesVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -721,7 +685,6 @@
                   <widget class="Gtk.Entry" id="entryDeployFilesPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -745,7 +708,6 @@
                   <widget class="Gtk.Entry" id="entryFilesPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -769,7 +731,6 @@
                   <widget class="Gtk.Entry" id="entryResourcesPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -792,12 +753,10 @@
                 <child>
                   <widget class="Gtk.EventBox" id="eventbox1">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.Entry" id="entryOthersPattern">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Events">0</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                       </widget>
@@ -823,9 +782,8 @@
                   <widget class="Gtk.Label" id="label5">
                     <property name="MemberName" />
                     <property name="WidthRequest">500</property>
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Select the kind of files you want to synchronize with the makefile. For each file kind please specify the makefile variable that holds the list and optionally a prefix to be prepended to each file name.</property>
+                    <property name="LabelProp" translatable="yes">Select the kind of files you want to synchronize with the makefile. For each file kind please specify the makefile variable that holds the list and optionally a prefix to be prepended to each file name.</property>
                     <property name="Wrap">True</property>
                   </widget>
                   <packing>
@@ -845,9 +803,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblCol2">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Makefile variable name:</property>
+                    <property name="LabelProp" translatable="yes">Makefile variable name:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -868,9 +825,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblCol3">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Prefix:</property>
+                    <property name="LabelProp" translatable="yes">Prefix:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -905,8 +861,7 @@
         <child>
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
-            <property name="Events">0</property>
-            <property name="LabelProp">Files</property>
+            <property name="LabelProp" translatable="yes">Files</property>
           </widget>
           <packing>
             <property name="type">tab</property>
@@ -915,15 +870,13 @@
         <child>
           <widget class="Gtk.VBox" id="vbox4">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.CheckButton" id="cbKeepRefSync">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">0</property>
-                <property name="Label">Enable references synchronization</property>
+                <property name="Label" translatable="yes">Enable references synchronization</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <signal name="Clicked" handler="OnCbKeepRefSyncClicked" />
@@ -938,7 +891,6 @@
             <child>
               <widget class="Gtk.HSeparator" id="hseparator5">
                 <property name="MemberName" />
-                <property name="Events">0</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -950,7 +902,6 @@
             <child>
               <widget class="Gtk.Table" id="table4">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="NRows">8</property>
                 <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
@@ -962,8 +913,7 @@
                   <widget class="Gtk.CheckButton" id="cbAutotoolsProject">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
-                    <property name="Label">Look for packages in configure.in</property>
+                    <property name="Label" translatable="yes">Look for packages in configure.in</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <signal name="Clicked" handler="OnCbAutotoolsProjectClicked" />
@@ -986,7 +936,6 @@
                   <widget class="Gtk.ComboBox" id="comboAsmRefVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -1009,7 +958,6 @@
                   <widget class="Gtk.ComboBox" id="comboGacRefVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -1032,7 +980,6 @@
                   <widget class="Gtk.ComboBox" id="comboProjectRefVar">
                     <property name="MemberName" />
                     <property name="WidthRequest">200</property>
-                    <property name="Events">0</property>
                     <property name="IsTextCombo">True</property>
                     <property name="Items" />
                   </widget>
@@ -1055,7 +1002,6 @@
                   <widget class="Gtk.Entry" id="entryAsmRefPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1079,7 +1025,6 @@
                   <widget class="Gtk.Entry" id="entryGacRefPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1103,7 +1048,6 @@
                   <widget class="Gtk.Entry" id="entryProjectRefPattern">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1126,7 +1070,6 @@
                 <child>
                   <widget class="MonoDevelop.Components.FolderEntry" id="fileEntryConfigureInPath">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">7</property>
@@ -1147,7 +1090,6 @@
                 <child>
                   <widget class="Gtk.HSeparator" id="hseparator1">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">5</property>
@@ -1168,9 +1110,8 @@
                   <widget class="Gtk.Label" id="label6">
                     <property name="MemberName" />
                     <property name="WidthRequest">500</property>
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Select the kind of references you want to synchronize with the makefile. For each reference type please specify the makefile variable that holds the list, and optionally a prefix to be prepended to each reference name. You can specify the same variable name for several types of references.</property>
+                    <property name="LabelProp" translatable="yes">Select the kind of references you want to synchronize with the makefile. For each reference type please specify the makefile variable that holds the list, and optionally a prefix to be prepended to each reference name. You can specify the same variable name for several types of references.</property>
                     <property name="Wrap">True</property>
                   </widget>
                   <packing>
@@ -1190,9 +1131,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblAsmRef">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Assembly References</property>
+                    <property name="LabelProp" translatable="yes">Assembly References</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">3</property>
@@ -1211,9 +1151,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblCol5">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Makefile variable name:</property>
+                    <property name="LabelProp" translatable="yes">Makefile variable name:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -1234,9 +1173,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblCol6">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Prefix:</property>
+                    <property name="LabelProp" translatable="yes">Prefix:</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>
@@ -1257,9 +1195,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblConfigureInPath">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Path for configure.in</property>
+                    <property name="LabelProp" translatable="yes">Path for configure.in</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">7</property>
@@ -1278,9 +1215,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblGacRef">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Package References</property>
+                    <property name="LabelProp" translatable="yes">Package References</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -1299,9 +1235,8 @@
                 <child>
                   <widget class="Gtk.Label" id="lblProjectRef">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Project References</property>
+                    <property name="LabelProp" translatable="yes">Project References</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">4</property>
@@ -1334,8 +1269,7 @@
         <child>
           <widget class="Gtk.Label" id="label3">
             <property name="MemberName" />
-            <property name="Events">0</property>
-            <property name="LabelProp">References</property>
+            <property name="LabelProp" translatable="yes">References</property>
           </widget>
           <packing>
             <property name="type">tab</property>
@@ -1344,13 +1278,11 @@
         <child>
           <widget class="Gtk.VBox" id="vbox3">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.Label" id="label7">
                 <property name="MemberName" />
                 <property name="WidthRequest">500</property>
-                <property name="Events">0</property>
                 <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Select the Compiler message format for parsing the compiler errors and warnings. You can either select one of the built-in options, or specify custom regular expressions for errors and warnings. The regex must be the .net style regex. The following named groups are relevant : file, line, column, number (error number) and message.</property>
                 <property name="Wrap">True</property>
@@ -1367,7 +1299,6 @@
             <child>
               <widget class="Gtk.Table" id="table2">
                 <property name="MemberName" />
-                <property name="Events">0</property>
                 <property name="NRows">3</property>
                 <property name="NColumns">3</property>
                 <property name="RowSpacing">6</property>
@@ -1380,7 +1311,6 @@
                     <property name="MemberName" />
                     <property name="WidthRequest">350</property>
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1405,7 +1335,6 @@
                     <property name="MemberName" />
                     <property name="WidthRequest">350</property>
                     <property name="CanFocus">True</property>
-                    <property name="Events">0</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1428,12 +1357,10 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox6">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <child>
                       <widget class="Gtk.ComboBox" id="comboMessageType">
                         <property name="MemberName" />
                         <property name="WidthRequest">150</property>
-                        <property name="Events">0</property>
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />
                         <signal name="Changed" handler="OnComboMessageTypeChanged" />
@@ -1463,7 +1390,6 @@
                 <child>
                   <widget class="Gtk.Label" id="lblErrorRegex">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Error regex :</property>
                   </widget>
@@ -1484,7 +1410,6 @@
                 <child>
                   <widget class="Gtk.Label" id="lblMessageType">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Compiler :</property>
                   </widget>
@@ -1503,7 +1428,6 @@
                 <child>
                   <widget class="Gtk.Label" id="lblWarningRegex">
                     <property name="MemberName" />
-                    <property name="Events">0</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Warnings regex :</property>
                   </widget>
@@ -1536,7 +1460,6 @@
         <child>
           <widget class="Gtk.Label" id="label4">
             <property name="MemberName" />
-            <property name="Events">0</property>
             <property name="LabelProp" translatable="yes">Messages Regex</property>
           </widget>
           <packing>

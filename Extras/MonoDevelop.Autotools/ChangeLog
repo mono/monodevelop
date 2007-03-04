@@ -1,3 +1,8 @@
+2007-03-04  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	* gtk-gui/gui.stetic: make all strings in option panel translatable.
+
 2007-02-28  Ankit Jain <jankit@novell.com> 
 
 	* MakefileData.cs (WriteFiles): Ignore directory entries.
