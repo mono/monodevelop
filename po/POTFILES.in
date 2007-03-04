@@ -145,7 +145,9 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CustomCommand.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs
+Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs
@@ -182,6 +184,7 @@ Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml
 Extras/ChangeLogAddIn/ChangeLogAddInOptionsPanel.cs
 Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs
 Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs
+Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs
 Extras/CSharpBinding/CSharpBinding.addin.xml
 Extras/CSharpBinding/CSharpBindingCompilerManager.cs
 Extras/CSharpBinding/CSharp.glade
@@ -225,6 +228,7 @@ Extras/JavaBinding/templates/JavaPanel.xft.xml
 Extras/MonoDevelop.Autotools/Commands.cs
 Extras/MonoDevelop.Autotools/CustomMakefile.cs
 Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs
+Extras/MonoDevelop.Autotools/Handler.cs
 Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs
 Extras/MonoDevelop.Autotools/MakefileData.cs
 Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs

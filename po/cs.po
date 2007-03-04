@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: monodevelop 0.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-12-21 20:41+0100\n"
-"PO-Revision-Date: 2007-03-04 16:01+0100\n"
+"PO-Revision-Date: 2007-03-04 19:52+0100\n"
 "Last-Translator: David Makovský (Yakeen) <yakeen@sannyas-on.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1863,12 +1863,12 @@ msgstr "PŘE"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:35
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:1
 msgid "Assemblies"
-msgstr ".Net Asembly"
+msgstr ".Net Assembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:77
 #, csharp-format
 msgid "File '{0}' is not a valid .Net Assembly"
-msgstr "Soubor '{0}' není platnou .Net Asembly"
+msgstr "Soubor '{0}' není platnou .Net Assembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:78
 msgid "<b>Ported and developed by:</b>\n"
@@ -1950,7 +1950,7 @@ msgstr "Systém Sestav"
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:42
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:173
 msgid "Assembly"
-msgstr "Asembly"
+msgstr "Assembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs:54
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:172
@@ -2032,6 +2032,7 @@ msgid "Project"
 msgstr "Projekt"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:55
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs:45
 msgid "Directory"
 msgstr "Složka"
 
@@ -2120,7 +2121,7 @@ msgstr "Projekty"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:154
 msgid ".Net Assembly"
-msgstr ".Net Asembly"
+msgstr ".Net Assembly"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SharpDevelopAboutPanels.cs:33
 msgid "Released under the GNU General Public license."
@@ -2429,6 +2430,7 @@ msgstr[2] "{0} Zpráv"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:40
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileScout.cs:14
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:671
 msgid "Files"
 msgstr "Soubory"
 
@@ -2635,10 +2637,12 @@ msgid "Do you really want to remove project {0} from solution {1}"
 msgstr "Opravdu chcete odebrat projekt {0} ze sestavy {1}"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:80
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:905
 msgid "References"
 msgstr "Reference"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:65
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:507
 msgid "Resources"
 msgstr "Zdroje"
 
@@ -3144,7 +3148,7 @@ msgstr "Opravdu chcete smazat tuto konfiguraci?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
 msgid "Assembly _name:"
-msgstr "Název asembly:"
+msgstr "Název assembly:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
 msgid "Automatically _include found files"
@@ -3488,7 +3492,7 @@ msgstr "(výchozí cíl)"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:60
 msgid "Invalid assembly name specified"
-msgstr "Neplatný název asembly"
+msgstr "Neplatný název assembly"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:65
 msgid "Invalid output directory specified"
@@ -3574,6 +3578,10 @@ msgstr ""
 msgid "Executing: {0}"
 msgstr "Spouštím: {0}"
 
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs:43
+msgid "Combined Deploy"
+msgstr "Kombinované umístění"
+
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs:45
 msgid "Execute command"
 msgstr "Spustit příkaz"
@@ -3587,11 +3595,20 @@ msgstr "(v externím terminálu)"
 msgid "Executing: {0} {1} {2}"
 msgstr "Spouštím: {0} {1} {2}"
 
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs:48
+#: ../Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml.h:1
+msgid "Install"
+msgstr "Instalovat"
+
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs:95
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:93
 #, csharp-format
 msgid "Deploying file {0}."
 msgstr "Umísťuji soubor {0}."
+
+#: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:45
+msgid "Local Filesystem"
+msgstr "Lokální systém souborů"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:71
 #, csharp-format
@@ -4108,6 +4125,22 @@ msgstr "ChangeLog"
 msgid "ChangeLog entry:"
 msgstr "Položka ChangeLogu:"
 
+#: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:48
+msgid "Specify personal information used in ChangeLog entries"
+msgstr "Zadejte osobní informace pro použití v položkách ChangeLogu"
+
+#: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:76
+msgid "Full Name:"
+msgstr "Celé jméno:"
+
+#: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:85
+msgid "Email Address:"
+msgstr "Emailová adresa:"
+
+#: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:120
+msgid "Enable ChangeLog integration with Version Control"
+msgstr "Povolit integraci ChangeLogu se správou verzí"
+
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
 msgid "CSharp Files"
 msgstr "Soubory C# (*.cs)"
@@ -4374,7 +4407,7 @@ msgstr "Umístění výstupu"
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
 msgid "Assembly name"
-msgstr "Název asembly"
+msgstr "Název assembly"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
@@ -4570,41 +4603,126 @@ msgstr "Výstup autotools"
 msgid "Makefile variable {0} not found in the file."
 msgstr "Makefile proměnná {0} nebyla v souboru nalezena."
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:220
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:191
+msgid "Enable makefile Integration in this project"
+msgstr "Povolit integraci Makefile pro tento projekt"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:215
 msgid "Build target name:"
 msgstr "Název cíle pro sestavení:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:234
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:228
 msgid "Clean target name:"
 msgstr "Název cíle pro vyčištění:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:248
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:241
 msgid "Execute target name:"
 msgstr "Jméno spustitelného cíle:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:404
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:384
 msgid "Select the makefile targets that should be executed for the build and clean operations:"
 msgstr "Vyberte cíle Makefile, které se mají spouštět pro operace sestavení a vyčištění:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:984
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:397
+msgid "Assembly Name variable:"
+msgstr "Název proměnné jména assembly:"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:408
+msgid "Makefile path:"
+msgstr "Cesta k Makefile:"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:417
+msgid "Output directory variable:"
+msgstr "Proměnná složky výstupu:"
+
+#. FIXME: ResetAll  : use for new data, use for new makefile
+#. Load values
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
+#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:58
+msgid "Makefile"
+msgstr "Makefile"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:446
+msgid "Enable project file synchronization"
+msgstr "Povolit synchronizaci souboru projektu"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:471
+msgid "Deployment files"
+msgstr "Soubory k umístění"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:483
+msgid "Source code files"
+msgstr "Soubory se zdrojovým kódem"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:495
+msgid "Other Files"
+msgstr "Ostaní soubory"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:625
+msgid "Select the kind of files you want to synchronize with the makefile. For each file kind please specify the makefile variable that holds the list and optionally a prefix to be prepended to each file name."
+msgstr "Zvolte typ souborů, které chcete synchronizovat s Makefile. Pro každý typ specifikujte proměnnou Makefile, která drží seznam, a volitelně prefix, který použít pro všechny soubory."
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:637
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:838
+msgid "Makefile variable name:"
+msgstr "Jméno proměnné Makefile:"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:650
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:851
+msgid "Prefix:"
+msgstr "Prefix:"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:682
+msgid "Enable references synchronization"
+msgstr "Povolit synchronizaci referencí"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:706
+msgid "Look for packages in configure.in"
+msgstr "Hledat balíčky v configure.in"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:815
+msgid "Select the kind of references you want to synchronize with the makefile. For each reference type please specify the makefile variable that holds the list, and optionally a prefix to be prepended to each reference name. You can specify the same variable name for several types of references."
+msgstr "Zvolte typ referencí, které chcete synchronizovat s Makefile. Pro každý typ specifikujte proměnnou Makefile, která drží seznam, a volitelně prefix, který použít pro všechny reference. Můžete specifikovat stejnou proměnnou pro několik typů referencí."
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:827
+msgid "Assembly References"
+msgstr "Assembly reference"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:864
+msgid "Path for configure.in"
+msgstr "Cesta pro configure.in"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:875
+msgid "Package References"
+msgstr "Balíčkové reference"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:886
+msgid "Project References"
+msgstr "Projektové reference"
+
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:916
 msgid "Select the Compiler message format for parsing the compiler errors and warnings. You can either select one of the built-in options, or specify custom regular expressions for errors and warnings. The regex must be the .net style regex. The following named groups are relevant : file, line, column, number (error number) and message."
 msgstr "Zvolte formát zpráv kompilátoru pro parsování chyb a varování. Můžete zvolit jednu z předdefinovaných možností, nebo si nadefinovat vlastní pomocí regulárních výrazů. Regulární výrazy musí být ve stylu pro .Net. Tyto pojmenované skupiny jsou relevantní: file (soubor), line (řádek), column (sloupec), number (číslo chyby) a message (zpráva)."
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1056
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:982
 msgid "Error regex :"
 msgstr "Regulární výraz pro chyby:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1068
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:993
 msgid "Compiler :"
 msgstr "Kompilátor:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1078
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1002
 msgid "Warnings regex :"
 msgstr "Regulární výraz pro varování:"
 
-#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1096
+#: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1019
 msgid "Messages Regex"
 msgstr "Regulární výrazy zpráv"
+
+#: ../Extras/MonoDevelop.Autotools/Handler.cs:23
+msgid "Tarball"
+msgstr "Tarový archiv"
 
 #: ../Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs:21
 msgid "Makefile Project Import"
@@ -4693,19 +4811,13 @@ msgstr "Proměnná Makefile '{0}' nebyla nalezena. Vynechávám synchronizaci{1}
 #: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1445
 #, csharp-format
 msgid "A reference to package '{0}' is being emitted, as atleast one assembly from the package is used in the project. But it is not specified in the configure.in, you might need to add it for successfully building on other systems."
-msgstr "Reference balíčku '{0}' je zapsána, alespoň jedna asembly z balíčku je použita v projektu, ale není specifikována v configure.in. Mohla by být potřeba pro úspěšné sestavení na jiných systémech."
+msgstr "Reference balíčku '{0}' je zapsána, alespoň jedna assembly z balíčku je použita v projektu, ale není specifikována v configure.in. Mohla by být potřeba pro úspěšné sestavení na jiných systémech."
 
 #. FIXME: Exception type?
 #: ../Extras/MonoDevelop.Autotools/MakefileData.cs:1545
 #, csharp-format
 msgid "Unable to find configure.in at {0}"
 msgstr "Nepodařilo se najít 'configure.in' v {0}"
-
-#. FIXME: ResetAll  : use for new data, use for new makefile
-#. Load values
-#: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:58
-msgid "Makefile"
-msgstr "Makefile"
 
 #: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:201
 #, csharp-format
@@ -4985,10 +5097,6 @@ msgstr "Události"
 msgid "Add items to toolbox"
 msgstr "Přidat položky do nástrojů"
 
-#: ../Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml.h:1
-msgid "Install"
-msgstr "Instalovat"
-
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:1
 msgid "<b>Internationalization</b>"
 msgstr "<b>Zmezinárodnění</b>"
@@ -5053,7 +5161,7 @@ msgstr "Návrh widgetu {0} momentálně není svázán s žádnou třídou."
 
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:18
 msgid "This assembly is a widget library"
-msgstr "Tato asembly je knihovnou widgetů"
+msgstr "Tato assembly je knihovnou widgetů"
 
 #: ../Extras/MonoDevelop.GtkCore/gui.glade.h:19
 #: ../Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs:77
