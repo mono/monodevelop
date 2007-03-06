@@ -42,6 +42,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList toolbars = new ArrayList ();
 		ArrayList globalHandlers = new ArrayList ();
 		ArrayList commandUpdateErrors = new ArrayList ();
+		ArrayList visitors = new ArrayList ();
 		Hashtable overloadedAccelCommands = new Hashtable ();
 		Stack delegatorStack = new Stack ();
 		bool disposed;
@@ -102,7 +103,7 @@ namespace MonoDevelop.Components.Commands
 			set {
 				if (enableToolbarUpdate != value) {
 					if (value) {
-						if (toolbars.Count > 0) {
+						if (toolbars.Count > 0 || visitors.Count > 0) {
 							if (!toolbarUpdaterRunning) {
 								GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
 								toolbarUpdaterRunning = true;
@@ -152,6 +153,20 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterGlobalHandler (object handler)
 		{
 			globalHandlers.Remove (handler);
+		}
+		
+		public void RegisterCommandTargetVisitor (ICommandTargetVisitor visitor)
+		{
+			visitors.Add (visitor);
+			if (enableToolbarUpdate && !toolbarUpdaterRunning) {
+				GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
+				toolbarUpdaterRunning = true;
+			}
+		}
+		
+		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
+		{
+			visitors.Remove (visitor);
 		}
 		
 		public Command GetCommand (object cmdId)
@@ -379,6 +394,23 @@ namespace MonoDevelop.Components.Commands
 			return info;
 		}
 		
+		public object VisitCommandTargets (ICommandTargetVisitor visitor, object initialTarget)
+		{
+			int globalPos = -1;
+			object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
+			
+			while (cmdTarget != null)
+			{
+				if (visitor.Visit (cmdTarget))
+					return cmdTarget;
+
+				cmdTarget = GetNextCommandTarget (cmdTarget, ref globalPos);
+			}
+			
+			visitor.Visit (null);
+			return null;
+		}
+		
 		internal ArrayList FindAlternateAccelCommands (object commandId)
 		{
 			return (ArrayList) overloadedAccelCommands [commandId];
@@ -548,7 +580,7 @@ namespace MonoDevelop.Components.Commands
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
 			
 			foreach (Gtk.Window w in wins) {
-				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel) {
+				if (w.IsActive && w.Visible && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
 					win = w;
 					break;
 				}
@@ -596,6 +628,9 @@ namespace MonoDevelop.Components.Commands
 				if (toolbar.Visible)
 					toolbar.Update (activeWidget);
 			}
+			foreach (ICommandTargetVisitor v in visitors)
+				VisitCommandTargets (v, null);
+				
 		}
 		
 		public void ReportError (object commandId, string message, Exception ex)

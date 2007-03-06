@@ -1,3 +1,10 @@
+2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, MonoDevelop.Components.mdp: Updated.
+	* MonoDevelop.Components.Commands/CommandManager.cs,
+	  MonoDevelop.Components.Commands/ICommandTargetVisitor.cs: Added
+	  support for custom command target visitors.
+
 2007-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components.Commands/CommandToolbar.cs,

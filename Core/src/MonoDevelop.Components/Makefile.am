@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
 	MonoDevelop.Components.Commands/ICommandMenuItem.cs \
 	MonoDevelop.Components.Commands/ICommandRouter.cs \
+	MonoDevelop.Components.Commands/ICommandTargetVisitor.cs \
 	MonoDevelop.Components.Commands/ICommandUserItem.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
 	MonoDevelop.Components.Commands/LocalCommandEntry.cs \
