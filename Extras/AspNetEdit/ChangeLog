@@ -1,3 +1,10 @@
+2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AspNetEdit.mdp: Don't local-copy references.
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Implement
+	  ICustomPropertyPadProvider in the frame that contains the editor,
+	  and return the remote property grid when requested.
+
 2007-02-24  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 	
 	* AspNetEdit.Editor.UI/RootDesignerView.cs: New UpdateRender method.

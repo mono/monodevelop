@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 using AspNetEdit.Editor;
 
 namespace AspNetEdit.Integration
@@ -53,7 +54,7 @@ namespace AspNetEdit.Integration
 		Gtk.Socket designerSocket;
 		Gtk.Socket propGridSocket;
 		
-		Frame designerFrame;
+		DesignerFrame designerFrame;
 		
 		MonoDevelopProxy proxy;
 		
@@ -61,16 +62,12 @@ namespace AspNetEdit.Integration
 		{
 			this.viewContent = viewContent;
 			
-			designerFrame = new Gtk.Frame ();
+			designerFrame = new DesignerFrame (this);
+			designerFrame.CanFocus = true;
 			designerFrame.Shadow = ShadowType.None;
 			designerFrame.BorderWidth = 0;
 			
 			designerFrame.Show ();
-		}
-		
-		void UsePropGrid ()
-		{
-			MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.UseCustomWidget (propGridSocket);
 		}
 		
 		public override Gtk.Widget Control {
@@ -111,7 +108,6 @@ namespace AspNetEdit.Integration
 			
 			//designerSocket.FocusOutEvent += delegate {
 			//	MonoDevelop.DesignerSupport.DesignerSupport.Service.PropertyPad.BlankPad (); };
-			designerSocket.FocusInEvent += delegate { UsePropGrid (); };
 			
 			//hook up proxy for event binding
 			MonoDevelop.Projects.Parser.IClass codeBehind = null;
@@ -124,7 +120,6 @@ namespace AspNetEdit.Integration
 			
 			ITextBuffer textBuf = (ITextBuffer) viewContent.GetContent (typeof(ITextBuffer));			
 			editorProcess.Initialise (proxy, textBuf.Text, viewContent.ContentName);
-			UsePropGrid ();
 		}
 		
 		public override void Deselected ()
@@ -196,6 +191,33 @@ namespace AspNetEdit.Integration
 			return false;
 		}
 		
+		public void DragItem (ItemToolboxNode item, Widget source, Gdk.DragContext ctx)
+		{
+		}
+		
+		public TargetEntry[] DragTargets {
+			get { return null; }
+		}
+
 		#endregion IToolboxConsumer
+		
+		class DesignerFrame: Frame, ICustomPropertyPadProvider
+		{
+			AspNetEditViewContent view;
+			
+			public DesignerFrame (AspNetEditViewContent view)
+			{
+				this.view = view;
+			}
+			
+			Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+			{
+				return view.propGridSocket;
+			}
+			
+			void ICustomPropertyPadProvider.DisposeCustomPropertyWidget ()
+			{
+			}
+		}
 	}
 }
