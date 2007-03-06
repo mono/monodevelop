@@ -1,3 +1,8 @@
+2007-03-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs:
+	  Initialize override should call base, so display text gets set.
+
 2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
