@@ -1,3 +1,20 @@
+2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml: Register a new toolbox loader. Removed
+	  old properties pads.
+	* MonoDevelop.GtkCore.mdp, Makefile.am: Added reference to
+	  MonoDevelop.DesignerSupport.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from svn module.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs: Integrate Stetic
+	  widgets in the main toolbox.
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs: Implement
+	  ICustomPropertyPadProvider and return the Stetic property pad.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs: Renamed.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Fix warning.
+
 2007-02-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	Updated from Stetic module. Includes fix for bug #80864.

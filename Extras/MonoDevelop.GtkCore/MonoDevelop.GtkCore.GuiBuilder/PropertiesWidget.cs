@@ -37,7 +37,47 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderPropertiesPad: AbstractPadContent
+	class PropertiesWidget: Gtk.VBox
+	{
+		public static PropertiesWidget Instance;
+		
+		Stetic.SignalsEditor signalsEditor;
+		
+		static PropertiesWidget ()
+		{
+			Instance = new PropertiesWidget ();
+		}
+		
+		public PropertiesWidget ()
+		{
+			Stetic.WidgetPropertyTree grid = GuiBuilderService.SteticApp.PropertiesWidget;
+			
+			Notebook tabs = new Notebook ();
+			
+			tabs.AppendPage (grid, new Label (GettextCatalog.GetString ("Properties")));
+			
+			signalsEditor = GuiBuilderService.SteticApp.SignalsWidget;
+			signalsEditor.SignalActivated += new EventHandler (OnSignalActivated);
+			tabs.AppendPage (signalsEditor, new Label (GettextCatalog.GetString ("Signals")));
+			
+			Gtk.EventBox infoBox = new Gtk.EventBox ();
+			tabs.AppendPage (infoBox, new Gtk.Label (""));
+			
+			PackStart (tabs, true, true, 0);
+			
+			ShowAll ();
+			infoBox.Hide ();
+			
+			tabs.Page = 0;
+		}
+		
+		void OnSignalActivated (object s, EventArgs a)
+		{
+			GuiBuilderService.JumpToSignalHandler (signalsEditor.SelectedSignal);
+		}
+	}
+	
+/*	public class GuiBuilderPropertiesPad: AbstractPadContent
 	{
 		Stetic.WidgetPropertyTree grid;
 		Stetic.SignalsEditor signalsEditor;
@@ -80,7 +120,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GuiBuilderService.JumpToSignalHandler (signalsEditor.SelectedSignal);
 		}
 		
-/*		public object TargetObject { 
+		public object TargetObject { 
 			get {
 				return grid.TargetObject;
 			}
@@ -165,6 +205,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			return null;
 		}
-*/
+
 	}
+*/	
 }

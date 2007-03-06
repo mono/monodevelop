@@ -9,6 +9,7 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
@@ -35,10 +36,11 @@ FILES =  \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProjectPad.cs \
-	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPropertiesPad.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs \
 	MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs \
+	MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs \
+	MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs \

@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -208,13 +209,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 	}
 	
-	class ActionGroupPage: Gtk.VBox
+	class ActionGroupPage: Gtk.VBox, ICustomPropertyPadProvider
 	{
 		Stetic.ActionGroupDesigner actionsBox;
 		
 		public ActionGroupPage (Stetic.ActionGroupDesigner actionsBox)
 		{
 			this.actionsBox = actionsBox;
+		}
+		
+		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+		{
+			return PropertiesWidget.Instance;
+		}
+		
+		void ICustomPropertyPadProvider.DisposeCustomPropertyWidget ()
+		{
 		}
 		
 		[CommandHandler (EditCommands.Delete)]

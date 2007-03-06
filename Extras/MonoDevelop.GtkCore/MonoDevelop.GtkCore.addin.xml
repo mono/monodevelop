@@ -21,17 +21,16 @@
 	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
 	    <AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<AddIn id="MonoDevelop.DesignerSupport" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" _label="Widgets Palette" />
-		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" _label="Widget Properties"/>
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" _label="Widget Tree"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
 		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" />
-		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPropertiesPad" />
 		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" />
 	</Extension>
 	
@@ -155,6 +154,10 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
+		<Class class = "MonoDevelop.GtkCore.GuiBuilder.ToolboxProvider" />
 	</Extension>
 </AddIn>
 

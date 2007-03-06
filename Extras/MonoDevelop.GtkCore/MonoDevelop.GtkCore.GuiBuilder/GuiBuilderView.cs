@@ -28,6 +28,8 @@
 
 
 using System;
+using System.ComponentModel;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
@@ -38,13 +40,15 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
+using MonoDevelop.DesignerSupport.Toolbox; 
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
 using Gtk;
 using Gdk;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView
+	public class GuiBuilderView : CombinedDesignView, IToolboxConsumer
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
@@ -96,6 +100,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.SignalChanged += OnSignalChanged;
 			designer.ComponentNameChanged += OnComponentNameChanged;
 			designer.RootComponentChanged += OnRootComponentChanged;
+			designer.ComponentTypesChanged += OnComponentTypesChanged;
 			
 			// Designer page
 			designerPage = new DesignerPage (designer);
@@ -160,6 +165,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.SignalChanged -= OnSignalChanged;
 			designer.ComponentNameChanged -= OnComponentNameChanged;
 			designer.RootComponentChanged -= OnRootComponentChanged;
+			designer.ComponentTypesChanged -= OnComponentTypesChanged;
 			
 			if (designerPage != null)
 				designerPage = null;
@@ -205,6 +211,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
 		{
 			codeBinder.UpdateField (args.Component, args.OldName);
+		}
+		
+		void OnComponentTypesChanged (object s, EventArgs a)
+		{
+			ToolboxProvider.Instance.NotifyItemsChanged ();
 		}
 		
 		void OnActionshanged (object s, EventArgs args)
@@ -332,15 +343,69 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		bool ErrorMode {
 			get { return designer.RootComponent == null; }
 		}
+		
+		public Stetic.ComponentType[] GetComponentTypes ()
+		{
+			if (designer != null)
+				return designer.GetComponentTypes ();
+			else
+				return null;
+		}
+		
+		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
+		{
+		}
+		
+		//Toolbox service uses this to filter toolbox items.
+		ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
+			get {
+				return new ToolboxItemFilterAttribute [] {
+					new ToolboxItemFilterAttribute ("gtk-sharp")
+				};
+			}
+		}
+		
+		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
+		//If not expecting it, should just return false
+		bool IToolboxConsumer.CustomFilterSupports (ItemToolboxNode item)
+		{
+			return false;
+		}
+		
+		public void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
+		{
+			if (designer != null) {
+				ComponentToolboxNode node = item as ComponentToolboxNode;
+				if (node != null)
+					designer.BeginComponentDrag (node.ComponentType, source, ctx);
+			}
+		}
+
+		Gtk.TargetEntry[] targets = new Gtk.TargetEntry[] {
+			new Gtk.TargetEntry ("application/x-stetic-widget", 0, 0)
+		};
+			
+		public TargetEntry[] DragTargets {
+			get { return targets; }
+		}
 	}
 	
-	class DesignerPage: Gtk.EventBox
+	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider
 	{
 		Stetic.WidgetDesigner designer;
 		
 		public DesignerPage (Stetic.WidgetDesigner designer)
 		{
 			this.designer = designer;
+		}
+		
+		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+		{
+			return PropertiesWidget.Instance;
+		}
+		
+		void ICustomPropertyPadProvider.DisposeCustomPropertyWidget ()
+		{
 		}
 		
 		[CommandHandler (EditCommands.Delete)]

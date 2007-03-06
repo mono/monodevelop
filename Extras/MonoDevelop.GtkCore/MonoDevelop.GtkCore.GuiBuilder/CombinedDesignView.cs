@@ -154,7 +154,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
-			Gtk.Widget w = content.Control;
 			content.Dispose ();
 	
 			// Remove and destroy the contents of the Notebook, since the destroy event is

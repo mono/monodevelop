@@ -162,9 +162,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				defaultLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
 				if (!exists) {
-					Pad p = IdeApp.Workbench.Pads [typeof(GuiBuilderPalettePad)];
+					Pad p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.ToolboxPad)];
 					if (p != null) p.Visible = true;
-					p = IdeApp.Workbench.Pads [typeof(GuiBuilderPropertiesPad)];
+					p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.PropertyPad)];
 					if (p != null) p.Visible = true;
 				}
 			}
