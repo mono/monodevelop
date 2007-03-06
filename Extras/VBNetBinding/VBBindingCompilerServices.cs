@@ -44,7 +44,7 @@ namespace VBBinding {
 			//	runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			//}
 			//return String.Concat('"', Path.Combine(runtimeDirectory, "vbc.exe"), '"');
-			return "mbas";
+			return "vbnc";
 		}
 		
 		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, string outputFileName)
