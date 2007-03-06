@@ -1,3 +1,11 @@
+2007-03-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* AspNetEdit.Integration/AspNetEditViewContent.cs,
+	  AspNetEdit.Integration/MonoDevelopProxy.cs:
+	  Ensure that remoted MonoDevelopProxy object is kept available by 
+	  overriding InitializeLifetimeService, and make sure to disconnect 
+	  it afterwards.
+
 2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp: Don't local-copy references.

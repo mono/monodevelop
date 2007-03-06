@@ -138,13 +138,16 @@ namespace AspNetEdit.Integration
 					textBuf.Text = doc;
 			}
 			
-			proxy = null;
-			
 			DestroyEditorAndSockets ();
 		}
 		
 		void DestroyEditorAndSockets ()
 		{
+			if (proxy != null) {
+				proxy.Dispose ();
+				proxy = null;
+			}
+			
 			if (editorProcess != null) {
 				editorProcess.Dispose ();
 				editorProcess = null;

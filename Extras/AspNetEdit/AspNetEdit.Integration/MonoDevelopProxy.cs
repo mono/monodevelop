@@ -41,7 +41,7 @@ using MonoDevelop.DesignerSupport;
 namespace AspNetEdit.Integration
 {
 	
-	public class MonoDevelopProxy : MarshalByRefObject
+	public class MonoDevelopProxy : MarshalByRefObject, IDisposable
 	{
 		IClass codeBehindClass;
 		
@@ -57,6 +57,24 @@ namespace AspNetEdit.Integration
 			}
 		}		
 		#endregion
+		
+		//keep this object available through remoting
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
+		
+		bool disposed = false;
+		public void Dispose ()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			
+			//The proxy uses InitializeLifetimeService to make sure it stays connected
+			//So need to make sure we don't keep it around forever
+			System.Runtime.Remoting.RemotingServices.Disconnect (this);
+		}
 		
 		//TODO: make this work with inline code
 		#region event binding
