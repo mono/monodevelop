@@ -994,6 +994,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Workbench/TextEditorExtensions" extension-nodes="Class" description="Extensions to the text editor. Classes must be a subclass of TextEditorExtension.">
+		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">

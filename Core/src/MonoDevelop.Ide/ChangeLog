@@ -1,3 +1,11 @@
+2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs,
+	  MonoDevelop.Ide.addin.xml: Added some marker extensions to the
+	  TextEditorExtension chain, to allow relative positioning of
+	  extensions.
+	* MonoDevelop.Ide.mdp: Don't local-copy references.
+
 2007-03-03 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs: don't allow paste into readonly tet view

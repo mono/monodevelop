@@ -237,4 +237,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier);
 		void CursorPositionChanged ();
 	}
+	
+	class TextEditorExtensionMarker: TextEditorExtension
+	{
+		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
+		{
+			return false;
+		}
+	}
 }
