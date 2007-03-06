@@ -6,7 +6,11 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Properties;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 using CSharpBinding.Parser;
+using CSharpBinding.FormattingStrategy;
 using MonoDevelop.Projects.Ambience;
 using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
@@ -14,26 +18,155 @@ namespace CSharpBinding
 {
 	public class CSharpTextEditorExtension: TextEditorExtension
 	{
+		CSharpIndentEngine engine;
+		
+		public CSharpTextEditorExtension () : base ()
+		{
+			engine = new CSharpIndentEngine ();
+		}
+		
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
 			return System.IO.Path.GetExtension (doc.Title) == ".cs";
 		}
-
+		
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			if (key == Gdk.Key.numbersign) {
-				// Remove all indenting
-				int i = Editor.CursorPosition;
-				string s = Editor.GetText (i-1, i);
-				while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t')) {
-					i--;
-					s = Editor.GetText (i-1, i);
+			bool reindent = false, insert = true;
+			CSharpIndentEngine ctx;
+			string indent;
+			int cursor;
+			char c;
+			
+			// This code is for Smart Indent, if the user has chosen poorly... don't help him out ;-)
+			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
+				return base.KeyPress (key, modifier);
+			
+			cursor = Editor.CursorPosition;
+			
+			if (cursor < engine.Cursor) {
+				// FIXME: this may be faster if we use GetText() for the region
+				/* Note: however, it would be best to fix TextEditor.cs to make
+				 * GetCharAt() faster because the overhead of grabbing a
+				 * potentially huge string would suck. */
+				engine.Reset ();
+				for (int i = 0; i < cursor; i++) {
+					char ch = Editor.GetCharAt (i);
+					if (ch == 0)
+						break;
+					engine.Push (ch);
 				}
-				if (s.Length == 0 || s[0] == '\n') {
-					Editor.DeleteText (i, Editor.CursorPosition - i);
+			} else if (cursor > engine.Cursor) {
+				// FIXME: this may be faster if we use GetText() for the region
+				/* Note: however, it would be best to fix TextEditor.cs to make
+				 * GetCharAt() faster because the overhead of grabbing a
+				 * potentially huge string would suck. */
+				for (int i = engine.Cursor; i < cursor; i++) {
+					char ch = Editor.GetCharAt (i);
+					if (ch == 0)
+						break;
+					engine.Push (ch);
 				}
 			}
-			return base.KeyPress (key, modifier);
+			
+			switch (key) {
+			case Gdk.Key.Tab:
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
+					return base.KeyPress (key, modifier);
+				
+				if (!engine.IsInsideVerbatimString) {
+					reindent = true;
+					insert = false;
+				}
+				c = '\t';
+				break;
+			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
+				reindent = true;
+				c = '\n';
+				break;
+			default:
+				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0)
+					return base.KeyPress (key, modifier);
+				break;
+			}
+			
+			if (insert)
+				engine.Push (c);
+			
+			// engine.Debug ();
+			
+			if (!(reindent || engine.NeedsReindent)) {
+				if (insert)
+					return base.KeyPress (key, modifier);
+				
+				return true;
+			}
+			
+			if (c == '\n') {
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
+					return base.KeyPress (key, modifier);
+				
+				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
+				base.KeyPress (key, modifier);
+				insert = false;
+				cursor++;
+				
+				if (Editor.CursorPosition > cursor) {
+					// FIXME: gotta figure out what is doing this...
+				 	System.Console.WriteLine ("seems base.KeyPress() indented for us? delete that shiz");
+					Editor.DeleteText (cursor, Editor.CursorPosition - cursor);
+				}
+				
+				char ch = Editor.GetCharAt (cursor);
+				if (ch == 0 || ch == '\n') {
+					// the simple case
+					indent = engine.NewLineIndent;
+					Editor.InsertText (cursor, indent);
+					for (int i = 0; i < indent.Length; i++)
+						engine.Push (indent[i]);
+					cursor += indent.Length;
+					
+					if (engine.IsInsideMultiLineComment) {
+						Editor.InsertText (cursor, "* ");
+						engine.Push ('*');
+						engine.Push (' ');
+					}
+					
+					// we handled the Return
+					return true;
+				}
+				
+				// need more context... fall thru
+			}
+			
+			// Get more context but w/o changing our IndentEngine state
+			ctx = (CSharpIndentEngine) engine.Clone ();
+			string line = Editor.GetLineText (ctx.LineNumber);
+			for (int i = ctx.LineOffset; i < line.Length; i++) {
+				ctx.Push (line[i]);
+				if (ctx.NeedsReindent)
+					break;
+			}
+			
+			// ok, we should have enough context now
+			
+			// Delete leading LWSP
+			int nlwsp = 0;
+			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
+				nlwsp++;
+			
+			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
+			Editor.DeleteText (pos, nlwsp);
+			
+			// Insert our new indent text
+			indent = ctx.ThisLineIndent;
+			Editor.InsertText (pos, indent);
+			
+			if (insert)
+				return base.KeyPress (key, modifier);
+			
+			return true;
 		}
 		
 		public override IParameterDataProvider HandleParameterCompletion (ICodeCompletionContext completionContext, char completionChar)

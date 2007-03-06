@@ -44,6 +44,8 @@ CSharpAmbience.cs \
 Project/CSharpCompilerParameters.cs \
 CSharpLanguageBinding.cs \
 FormattingStrategy/CSharpFormattingStrategy.cs \
+FormattingStrategy/CSharpIndentEngineStack.cs \
+FormattingStrategy/CSharpIndentEngine.cs \
 CSharpBindingCompilerManager.cs \
 CSharpEnhancedCodeProvider.cs \
 gtk-gui/generated.cs \

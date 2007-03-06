@@ -73,6 +73,8 @@
     <File name="./gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/CSharpParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./Gui/OverrideCompletionData.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FormattingStrategy/CSharpIndentEngine.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FormattingStrategy/CSharpIndentEngineStack.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
