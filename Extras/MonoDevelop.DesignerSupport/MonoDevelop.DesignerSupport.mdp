@@ -14,25 +14,16 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/GridRow.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/BaseEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/BoolEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/NumberEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/StringEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/BaseToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/CategoryToolboxNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs" subtype="Code" buildaction="Compile" />
@@ -69,25 +60,45 @@
     <File name="./MonoDevelop.DesignerSupport.Toolbox/ToolboxList.cs" subtype="Code" buildaction="Compile" />
     <File name="./icons/group-by-category.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/ComponentNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <ProjectReference type="Gac" localcopy="False" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />

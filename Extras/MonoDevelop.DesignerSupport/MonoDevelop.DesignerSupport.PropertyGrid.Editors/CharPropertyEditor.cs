@@ -1,13 +1,10 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// CharPropertyEditor.cs
 //
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+// Author:
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,30 +27,51 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-	public interface IToolboxConsumer
+
+	[PropertyEditorType (typeof (char))]
+	public class CharPropertyEditor : Gtk.Entry, IPropertyEditor 
 	{
-		/*TODO: drag/drop stuff */
-		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		// The table of targets that the drag will support
-		Gtk.TargetEntry[] DragTargets { get; }
-		
-		// Called when an item is dragged
-		void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
+		public CharPropertyEditor ()
+		{
+			MaxLength = 1;
+			HasFrame = false;
+		}
+
+		public void Initialize (PropertyDescriptor descriptor)
+		{
+			if (descriptor.PropertyType != typeof(char))
+				throw new ApplicationException ("Char editor does not support editing values of type " + descriptor.PropertyType);
 		}
 		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
+		public void AttachObject (object obj)
+		{
+		}
+		
+		char last;
+
+		public object Value {
+			get {
+				if (Text.Length == 0)
+					return last;
+				else
+					return Text[0];
+			}
+			set {
+				Text = value.ToString ();
+				last = (char) value;
+			}
+		}
+
+		protected override void OnChanged ()
+		{
+			if (ValueChanged != null)
+				ValueChanged (this, EventArgs.Empty);
+		}
+
+		public event EventHandler ValueChanged;
 	}
 }

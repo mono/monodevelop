@@ -47,7 +47,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		//This method will be called each time the consumer changes. Return null if not
 		//returning any items for a specific consumer.
-		//TODO: an event to update the dynamic items in the toolbox at any other time
 		IList<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer);
+		
+		event EventHandler ItemsChanged;
 	}
 }

@@ -9,8 +9,6 @@ namespace MonoDevelop.DesignerSupport.CodeBehind
 	
 	public class CodeBehindViewContent : MonoDevelop.DesignerSupport.WrapperDesignView, ISecondaryViewContent
 	{
-		Gtk.Label nameLabel;
-		
 		public CodeBehindViewContent (IViewContent content)
 			: base (content)
 		{

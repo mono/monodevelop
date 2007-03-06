@@ -1,13 +1,10 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// TextEditorDialog.cs
 //
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+// Author:
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,30 +27,48 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-	public interface IToolboxConsumer
+	public class TextEditorDialog: IDisposable
 	{
-		/*TODO: drag/drop stuff */
+		Gtk.TextView textview;
+		Gtk.Dialog dialog;
 		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		// The table of targets that the drag will support
-		Gtk.TargetEntry[] DragTargets { get; }
-		
-		// Called when an item is dragged
-		void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
+		public TextEditorDialog ()
+		{
+			Gtk.ScrolledWindow sc = new Gtk.ScrolledWindow ();
+			sc.HscrollbarPolicy = Gtk.PolicyType.Automatic;
+			sc.VscrollbarPolicy = Gtk.PolicyType.Automatic;
+			sc.ShadowType = Gtk.ShadowType.In;
+			sc.BorderWidth = 6;
+			
+			textview = new Gtk.TextView ();
+			sc.Add (textview);
+			
+			dialog = new Gtk.Dialog ();
+			dialog.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
+			dialog.AddButton (Gtk.Stock.Ok, Gtk.ResponseType.Ok);
+			dialog.VBox.Add (sc);
 		}
 		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
+		public string Text {
+			get { return textview.Buffer.Text; }
+			set { textview.Buffer.Text = value; }
+		}
+		
+		public int Run ()
+		{
+			dialog.DefaultWidth = 500;
+			dialog.DefaultHeight = 400;
+			dialog.ShowAll ();
+			return dialog.Run ();
+		}
+		
+		public void Dispose ()
+		{
+			dialog.Destroy ();
+		}
 	}
 }

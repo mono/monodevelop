@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
@@ -22,22 +23,32 @@ FILES =  \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BaseEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BoolEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/NumberEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid.Editors/StringEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/GridRow.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorTypeAttribute.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs \
+	MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventHandler.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/SurrogateUITypeEditorAttribute.cs \

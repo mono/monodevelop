@@ -6,6 +6,7 @@
  * 
  * Authors: 
  *  Michael Hutchinson <m.j.hutchinson@gmail.com>
+ *  Lluis Sanchez Gual
  *  
  * Copyright (C) 2005 Michael Hutchinson
  *
@@ -45,6 +46,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		private Hashtable editors = new Hashtable ();
 		private Hashtable inheritingEditors = new Hashtable ();
 		private Hashtable surrogates = new Hashtable ();
+		static PropertyEditorCell Default = new PropertyEditorCell ();
+		static Hashtable cellCache = new Hashtable ();
 
 		internal EditorManager ()
 		{
@@ -58,7 +61,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 					if (currentAttribute.GetType() == typeof (PropertyEditorTypeAttribute)) {
 						PropertyEditorTypeAttribute peta = (PropertyEditorTypeAttribute)currentAttribute;
 						Type editsType = peta.Type;
-						if (t.IsSubclassOf (typeof (BaseEditor)))
+						if (t.IsSubclassOf (typeof (PropertyEditorCell)))
 							if (peta.Inherits)
 								inheritingEditors.Add (editsType, t);
 							else
@@ -72,7 +75,31 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 
-		public BaseEditor GetEditor(PropertyDescriptor pd, GridRow parentRow)
+		public PropertyEditorCell GetEditor (PropertyDescriptor pd)
+		{
+			Type editorType = GetEditorType (pd);
+			if (editorType == null)
+				return Default;
+			
+			if (typeof(IPropertyEditor).IsAssignableFrom (editorType)) {
+				if (!typeof(Gtk.Widget).IsAssignableFrom (editorType))
+					throw new Exception ("The property editor '" + editorType + "' must be a Gtk Widget");
+				return Default;
+			}
+
+			PropertyEditorCell cell = (PropertyEditorCell) cellCache [editorType];
+			if (cell != null)
+				return cell;
+
+			if (!typeof(PropertyEditorCell).IsAssignableFrom (editorType))
+				throw new Exception ("The property editor '" + editorType + "' must be a subclass of Stetic.PropertyEditorCell or implement Stetic.IPropertyEditor");
+
+			cell = (PropertyEditorCell) Activator.CreateInstance (editorType);
+			cellCache [editorType] = cell;
+			return cell;
+		}
+		
+		public Type GetEditorType (PropertyDescriptor pd)
 		{
 			//try to find a custom editor
 			//TODO: Find a way to provide a IWindowsFormsEditorService so this can work directly
@@ -87,24 +114,27 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			//does a registered GTK# editor support this natively?
 			Type editType = pd.PropertyType;
 			if (editors.Contains (editType))
-				return instantiateEditor ((Type) editors[editType], parentRow);
+				return (Type) editors [editType];
 			
 			//editors that edit derived types
 			foreach (DictionaryEntry de in inheritingEditors)
 				if (editType.IsSubclassOf((Type) de.Key))
-					return instantiateEditor ((Type) de.Value, parentRow);
-				
-			//special cases
-			if (editType.IsEnum)
-				return new EnumEditor (parentRow);
-
-			//collections with items of single type that aren't just objects
-			if(editType.GetInterface ("IList") != null) {
-				PropertyInfo member = editType.GetProperty ("Item");
-				if (member != null)
-					if (member.PropertyType != typeof (object))
-						return new CollectionEditor (parentRow, member.PropertyType);
+					return (Type) de.Value;
+			
+			if (pd.PropertyType.IsEnum) {
+				if (pd.PropertyType.IsDefined (typeof (FlagsAttribute), true))
+					return typeof (PropertyEditors.FlagsEditorCell);
+				else
+					return typeof (PropertyEditors.EnumerationEditorCell);
 			}
+			
+			//collections with items of single type that aren't just objects
+			if (typeof(IList).IsAssignableFrom (editType)) {
+				// Iterate through all properties since there may be more than one indexer.
+				if (GetCollectionItemType (editType) != null)
+					return typeof (CollectionEditor);
+			}
+			
 			//TODO: support simple SWF collection editor derivatives that just override Types available
 			// and reflect protected Type[] NewItemTypes {get;} to get types
 			//if (UITypeEd is System.ComponentModel.Design.CollectionEditor)
@@ -114,32 +144,36 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			TypeConverter tc = pd.Converter;
 			
 			//TODO: build this functionality into the grid 
-			if (tc.GetType () == typeof (ExpandableObjectConverter)) {
-				return new ExpandableObjectEditor (parentRow);
-			}
+			if (tc.GetType () == typeof (ExpandableObjectConverter))
+				return typeof(ExpandableObjectEditor);
 
 			//This is a temporary workaround *and* and optimisation
 			//First, most unknown types will be most likely to convert to/from strings
 			//Second, System.Web.UI.WebControls/UnitConverter.cs dies on non-strings
 			if (tc.CanConvertFrom (typeof (string)) && tc.CanConvertTo (typeof(string)))
-				return new StringEditor (parentRow);
+				return typeof(TextEditor);
 			
 			foreach (DictionaryEntry editor in editors)
 				if (tc.CanConvertFrom((Type) editor.Key) && tc.CanConvertTo((Type) editor.Key))
-					return instantiateEditor((Type) editor.Value, parentRow);
+					return (Type) editor.Value;
 					
 			foreach (DictionaryEntry de in inheritingEditors)
 				if (tc.CanConvertFrom((Type) de.Key) && tc.CanConvertTo((Type) de.Key))
-					return instantiateEditor((Type) de.Value, parentRow);
+					return (Type) de.Value;
 
 			//nothing found - just display type
-			return new DefaultEditor (parentRow);
+			return null;
 		}
-
-		private BaseEditor instantiateEditor(Type type, GridRow parentRow)
+		
+		public static Type GetCollectionItemType (Type colType)
 		{
-			ConstructorInfo ctor = type.GetConstructor( new Type[] { typeof (GridRow) });
-			return (BaseEditor) ctor.Invoke(new object[] { parentRow });
+			foreach (PropertyInfo member in colType.GetProperties ()) {
+				if (member.Name == "Item") {
+					if (member.PropertyType != typeof (object))
+						return member.PropertyType;
+				}
+			}
+			return null;
 		}
 	}
 }

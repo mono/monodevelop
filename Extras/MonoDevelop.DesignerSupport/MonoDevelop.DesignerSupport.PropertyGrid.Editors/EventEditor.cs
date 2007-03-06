@@ -6,6 +6,7 @@
  * 
  * Authors: 
  *  Michael Hutchinson <m.j.hutchinson@gmail.com>
+ *  Lluis Sanchez Gual
  *  
  * Copyright (C) 2005 Michael Hutchinson
  *
@@ -38,75 +39,100 @@ using Gtk;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-
 	[PropertyEditorType (typeof (Delegate), true)]
-	public class EventEditor : BaseEditor
+	public class EventEditorCell : PropertyEditorCell
 	{
 		IEventBindingService evtBind;
 
-		public EventEditor (GridRow parentRow)
-			: base (parentRow)
+		protected override void Initialize ()
 		{
-			IComponent comp = parentRow.ParentGrid.CurrentObject as IComponent;
+			IComponent comp = Instance as IComponent;
 			evtBind = (IEventBindingService) comp.Site.GetService (typeof (IEventBindingService));
 		}
-
-		public override bool InPlaceEdit {
-			get { return true; }
-		}
 		
-		public override Widget GetDisplayWidget ()
-		{
-			string str = (string) parentRow.PropertyValue;
-			return StringValue ((str == null)? String.Empty : str);
-		}
-
-		public override Widget GetEditWidget ()
+		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)
 		{
 			//get existing method names
-			ICollection IColl = evtBind.GetCompatibleMethods (evtBind.GetEvent (parentRow.PropertyDescriptor)) ;
+			ICollection IColl = evtBind.GetCompatibleMethods (evtBind.GetEvent (Property)) ;
 			string[] methods = new string [IColl.Count + 1];
 			IColl.CopyTo (methods, 1);
 			
 			//add a suggestion
-			methods [0] = evtBind.CreateUniqueMethodName ((IComponent) parentRow.ParentGrid.CurrentObject, evtBind.GetEvent (parentRow.PropertyDescriptor));
+			methods [0] = evtBind.CreateUniqueMethodName ((IComponent) Instance, evtBind.GetEvent (Property));
 			
-			ComboBoxEntry combo = new ComboBoxEntry (methods);
+			EventEditor combo = new EventEditor (evtBind, methods);
 
-			if (parentRow.PropertyValue != null)
-				combo.Entry.Text = (string) parentRow.PropertyValue;
+			if (Value != null)
+				combo.Entry.Text = (string) Value;
 			
 			combo.WidthRequest = 30; //Don't artificially inflate the width. It expands anyway.
-			//TODO: do we want events created even if not activated?
-			combo.Entry.Destroyed += new EventHandler (entry_Changed);
-			combo.Entry.Activated += new EventHandler (entry_Activated);
-			combo.Changed += new EventHandler (combo_Activated);
 
 			return combo;
 		}
 		
-		void combo_Activated (object sender, EventArgs e)
+	}
+	
+	class EventEditor: ComboBoxEntry, IPropertyEditor
+	{
+		bool isNull;
+		PropertyDescriptor prop;
+		IEventBindingService evtBind;
+		object component;
+		
+		public EventEditor (IEventBindingService evtBind, string[] ops): base (ops)
 		{
-			entry_Changed (((ComboBoxEntry) sender).Entry, e);
-			evtBind.ShowCode ((IComponent) parentRow.ParentGrid.CurrentObject, evtBind.GetEvent (parentRow.PropertyDescriptor));
+			this.evtBind = evtBind;
 		}
 		
+		public void Initialize (PropertyDescriptor descriptor)
+		{
+			this.prop = descriptor;
+			Entry.Destroyed += new EventHandler (entry_Changed);
+			Entry.Activated += new EventHandler (entry_Activated);
+		}
+
+		public void AttachObject (object obj)
+		{
+			component = obj;
+		}
+		
+		public object Value {
+			get {
+				//if value was null and new value is empty, leave as null
+				if (Entry.Text.Length == 0 && isNull)
+					return null;
+				else
+					return Entry.Text;
+			}
+			set {
+				isNull = value == null;
+				if (isNull)
+					Entry.Text = "";
+				else
+					Entry.Text = (string) value;
+			}
+		}
+
+		protected override void OnChanged ()
+		{
+			if (component == null)
+				return;
+			entry_Changed (this, null);
+			evtBind.ShowCode ((IComponent) component, evtBind.GetEvent (prop));
+		}
+
 		void entry_Activated (object sender, EventArgs e)
 		{
 			entry_Changed (sender, e);
-			evtBind.ShowCode ((IComponent) parentRow.ParentGrid.CurrentObject, evtBind.GetEvent (parentRow.PropertyDescriptor));
+			evtBind.ShowCode ((IComponent) component, evtBind.GetEvent (prop));
 		}
-
+		
 		void entry_Changed (object sender, EventArgs e)
 		{
-			string text = ((Entry) sender).Text;
-			//if value was null and new value is empty, leave as null
-			if (!(text == "" && parentRow.PropertyValue== null))
-				parentRow.PropertyValue = ((Entry) sender).Text;
+			if (ValueChanged != null)
+				ValueChanged (this, EventArgs.Empty);
 		}
-
-		public override bool DialogueEdit {
-			get { return false; }
-		}
+		
+		public event EventHandler ValueChanged;
 	}
 }

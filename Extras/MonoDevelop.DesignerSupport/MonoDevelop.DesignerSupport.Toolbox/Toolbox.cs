@@ -58,16 +58,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			#region Toolbar
 			toolbar = new Toolbar ();
 			toolbar.ToolbarStyle = ToolbarStyle.Icons;
-			toolbar.IconSize = IconSize.SmallToolbar;
+			toolbar.IconSize = IconSize.Menu;
 			base.PackStart (toolbar, false, false, 0);
 		
 			filterToggleButton = new ToggleToolButton ();
-			filterToggleButton.IconWidget = new Image (Stock.Find, IconSize.SmallToolbar);
+			filterToggleButton.IconWidget = new Image (Stock.Find, IconSize.Menu);
 			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
 			toolbar.Insert (filterToggleButton, 0);
 			
 			catToggleButton = new ToggleToolButton ();
-			catToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.SmallToolbar);
+			catToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.Menu);
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			toolbar.Insert (catToggleButton, 1);
 			
@@ -128,6 +128,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			//selection events
 			nodeView.NodeSelection.Changed += OnSelectionChanged;
 			nodeView.RowActivated  += OnRowActivated;
+			nodeView.DragBegin += OnDragBegin;
+
 			
 			//update view when toolbox service updated
 			toolboxService.ToolboxContentsChanged += delegate { Refresh (); };
@@ -184,9 +186,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region GUI population
 		
 		public void Refresh ()
-		{	
+		{
 			store.Clear ();
 			ICollection nodes = toolboxService.GetCurrentToolboxItems ();
+			Gtk.Drag.SourceUnset (nodeView);
+			Gtk.TargetEntry[] targetTable = toolboxService.GetCurrentDragTargetTable ();
+			if (targetTable != null)
+				Gtk.Drag.SourceSet (nodeView, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			store.SetNodes (nodes);
 			EnsureState ();
 		}
@@ -250,7 +256,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			selectedNode = store.GetNode(e.Path) as ItemToolboxNode;		
 			toolboxService.SelectItem (selectedNode);
 			toolboxService.UseSelectedItem ();
-		}	
+		}
+		
+		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
+		{
+			toolboxService.DragSelectedItem (nodeView, arg.Context);
+		}
+		
 		#endregion	
 	}
 }

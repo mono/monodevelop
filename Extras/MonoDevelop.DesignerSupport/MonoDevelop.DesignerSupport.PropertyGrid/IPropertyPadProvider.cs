@@ -1,13 +1,10 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// IPropertyPadProvider.cs
 //
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+// Author:
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,30 +27,17 @@
 //
 
 using System;
-using System.Collections.Generic;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
-	public interface IToolboxConsumer
+	public interface IPropertyPadProvider
 	{
-		/*TODO: drag/drop stuff */
-		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		// The table of targets that the drag will support
-		Gtk.TargetEntry[] DragTargets { get; }
-		
-		// Called when an item is dragged
-		void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
-		}
-		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
+		object GetActiveComponent ();
+	}
+	
+	public interface ICustomPropertyPadProvider
+	{
+		Gtk.Widget GetCustomPropertyWidget ();
+		void DisposeCustomPropertyWidget ();
 	}
 }

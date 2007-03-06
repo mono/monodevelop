@@ -3,8 +3,10 @@
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 //
 // This source code is licenced under The MIT License:
@@ -82,8 +84,10 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (action == ExtensionAction.Add) {
 				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
-				if (dyProv != null)
+				if (dyProv != null) {
 					dynamicProviders.Add ((IToolboxDynamicProvider) item);
+					dyProv.ItemsChanged += OnProviderItemsChanged;
+				}
 				
 				IToolboxDefaultProvider defProv = item as IToolboxDefaultProvider;
 				if (defProv!= null) {
@@ -92,9 +96,19 @@ namespace MonoDevelop.DesignerSupport
 						defaultItems.AddRange (newItems);
 				}	
 			}
-			else if (action == ExtensionAction.Remove)
-				dynamicProviders.Remove ((IToolboxDynamicProvider) item);
+			else if (action == ExtensionAction.Remove) {
+				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
+				if (dyProv != null) {
+					dyProv.ItemsChanged -= OnProviderItemsChanged;
+					dynamicProviders.Remove (dyProv);
+				}
+			}
 			
+			OnToolboxContentsChanged ();
+		}
+		
+		void OnProviderItemsChanged (object s, EventArgs args)
+		{
 			OnToolboxContentsChanged ();
 		}
 		
@@ -174,6 +188,15 @@ namespace MonoDevelop.DesignerSupport
 			return GetToolboxItems (CurrentConsumer);
 		}
 		
+		public Gtk.TargetEntry[] GetCurrentDragTargetTable ()
+		{
+			if (CurrentConsumer != null)
+				return CurrentConsumer.DragTargets;
+			else
+				return new Gtk.TargetEntry [0];
+		}
+		
+		
 		public IList GetToolboxItems (IToolboxConsumer consumer)
 		{
 			List<ItemToolboxNode> arr = new List<ItemToolboxNode> ();
@@ -226,6 +249,15 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			CurrentConsumer.ConsumeItem (selectedItem);
+			OnToolboxUsed (CurrentConsumer, selectedItem);
+		}
+		
+		public void DragSelectedItem (Gtk.Widget source, Gdk.DragContext ctx)
+		{
+			if ((CurrentConsumer == null) || (selectedItem == null))
+				return;
+			
+			CurrentConsumer.DragItem (selectedItem, source, ctx);
 			OnToolboxUsed (CurrentConsumer, selectedItem);
 		}
 		

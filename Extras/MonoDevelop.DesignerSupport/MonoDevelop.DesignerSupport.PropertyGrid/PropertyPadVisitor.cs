@@ -1,13 +1,10 @@
 //
-// IToolboxConsumer.cs: Interface for classes that can use toolbox items.
+// PropertyPadVisitor.cs
 //
-// Authors:
-//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+// Author:
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Michael Hutchinson
-//
-//
-// This source code is licenced under The MIT License:
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,30 +27,32 @@
 //
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.DesignerSupport.Toolbox
+namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
-	public interface IToolboxConsumer
+	class PropertyPadVisitor: ICommandTargetVisitor
 	{
-		/*TODO: drag/drop stuff */
-		
-		//This is run when an item is activated from the toolbox service.
-		void ConsumeItem (ItemToolboxNode item);
-		
-		// The table of targets that the drag will support
-		Gtk.TargetEntry[] DragTargets { get; }
-		
-		// Called when an item is dragged
-		void DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx);
-		
-		//Toolbox service uses this to filter toolbox items.
-		System.ComponentModel.ToolboxItemFilterAttribute[] ToolboxFilterAttributes {
-			get;
+		public bool Visit (object ob)
+		{
+			if (ob == null) {
+				DesignerSupport.Service.ResetPropertyPad ();
+				return true;
+			}
+			else if (ob is PropertyPad) {
+				// Don't change the property grid selection when the focus is inside the property grid itself
+				return true;
+			}
+			else if (ob is IPropertyPadProvider) {
+				DesignerSupport.Service.UpdatePropertyPad ((IPropertyPadProvider)ob);
+				return true;
+			}
+			else if (ob is ICustomPropertyPadProvider) {
+				DesignerSupport.Service.UpdatePropertyPad ((ICustomPropertyPadProvider)ob);
+				return true;
+			}
+			else
+				return false;
 		}
-		
-		//Used if ToolboxItemFilterAttribute demands ToolboxItemFilterType.Custom
-		//If not expecting it, should just return false
-		bool CustomFilterSupports (ItemToolboxNode item);
 	}
 }

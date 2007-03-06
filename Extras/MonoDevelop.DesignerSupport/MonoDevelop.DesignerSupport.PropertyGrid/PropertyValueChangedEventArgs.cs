@@ -32,16 +32,17 @@
  */
 
 using System;
+using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid
 {
 	public class PropertyValueChangedEventArgs
 	{
-		private GridRow changedItem;
+		private PropertyDescriptor changedItem;
 		private object oldValue;
 		private object newValue;
 
-		public PropertyValueChangedEventArgs (GridRow changedItem, object oldValue, object newValue)
+		public PropertyValueChangedEventArgs (PropertyDescriptor changedItem, object oldValue, object newValue)
 		{
 			this.changedItem = changedItem;
 			this.oldValue = oldValue;
@@ -57,7 +58,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			get { return newValue; }
 		}
 
-		public GridRow ChangedItem {
+		public PropertyDescriptor ChangedItem {
 			get { return changedItem; }
 		}
 	}

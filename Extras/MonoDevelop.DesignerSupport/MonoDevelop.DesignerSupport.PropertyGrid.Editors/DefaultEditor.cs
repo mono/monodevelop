@@ -7,6 +7,7 @@
  * 
  * Authors: 
  *  Michael Hutchinson <m.j.hutchinson@gmail.com>
+ *  Lluis Sanchez Gual
  *  
  * Copyright (C) 2005 Michael Hutchinson
  *
@@ -38,24 +39,11 @@ using System.ComponentModel;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-	public class DefaultEditor : BaseEditor
+	public class DefaultEditor : PropertyEditorCell
 	{
-		public DefaultEditor (GridRow parentRow)
-			: base (parentRow)
+		protected override string GetValueMarkup ()
 		{
+			return "<span foreground=\"grey\">&lt;" + Property.PropertyType.ToString() + "&gt;</span>";
 		}
-
-		public override bool InPlaceEdit {
-			get { return false; }
-		}
-
-		public override Gtk.Widget GetDisplayWidget ()
-		{
-			return base.StringValue ("<span foreground=\"grey\">&lt;" + parentRow.PropertyDescriptor.PropertyType.ToString() + "&gt;</span>", true);
-		}
-
-		public override bool DialogueEdit {
-			get { return false; }
-		}
-}
+	}
 }

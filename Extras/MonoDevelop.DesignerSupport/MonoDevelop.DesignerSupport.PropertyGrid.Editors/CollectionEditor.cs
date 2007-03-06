@@ -39,7 +39,7 @@ using System.Collections;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-	class CollectionEditor : BaseEditor
+	class CollectionEditor : PropertyEditorCell
 	{
 		//TODO: Support for multiple object types
 		private Type[] types;
@@ -49,26 +49,15 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		private PropertyGrid grid;
 		private TreeIter previousIter = TreeIter.Zero;
 
-		public CollectionEditor (GridRow parentRow, Type type)
-			: base (parentRow)
+		protected override void Initialize ()
 		{
-			this.types = new Type[] { type };
-		}
-
-		public CollectionEditor (GridRow parentRow, Type[] types)
-			: base (parentRow)
-		{
-			this.types = types;
+			base.Initialize ();
+			this.types = new Type[] { EditorManager.GetCollectionItemType (Property.PropertyType) };
 		}
 
 		protected virtual Type[] NewItemTypes ()
 		{
 			return types;
-		}
-
-		public override bool InPlaceEdit
-		{
-			get { return false; }
 		}
 
 		public override bool DialogueEdit
@@ -79,17 +68,19 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		public override bool EditsReadOnlyObject {
 			get { return true; }
 		}
-
-		public override Gtk.Widget GetDisplayWidget()
+		
+		protected override string GetValueText ()
 		{
-			return base.StringValue ("(Collection)", true);
+			return "(Collection)";
 		}
+
 
 		public override void LaunchDialogue ()
 		{
 			//the Type in the collection
-			IList collection = (IList) parentRow.PropertyValue;
-			string displayName = parentRow.PropertyDescriptor.DisplayName;
+			IList collection = (IList) Value;
+			Console.WriteLine ("COL: " + collection);
+			string displayName = Property.DisplayName;
 
 			//populate list with existing items
 			itemStore = new ListStore (typeof (object), typeof (int), typeof (string));
@@ -115,7 +106,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			dialog.VBox.PackStart (hBox, true, true, 5);
 
 			//propGrid at end
-			grid = new PropertyGrid (parentRow.ParentGrid.EditorManager);
+			grid = new PropertyGrid (base.EditorManager);
 			grid.CurrentObject = null;
 			grid.WidthRequest = 200;
 			grid.ShowHelp = false;
@@ -191,17 +182,17 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			//if 'OK' put items back in collection
 			if (response == ResponseType.Ok)
 			{
-				DesignerTransaction tran = CreateTransaction (parentRow.ParentGrid.CurrentObject);
+				DesignerTransaction tran = CreateTransaction (Instance);
 				object old = collection;
 			
 				try {
 					collection.Clear();
 					foreach (object[] o in itemStore)
 						collection.Add (o[0]);
-					EndTransaction (parentRow.ParentGrid.CurrentObject, tran, old, collection, true);
+					EndTransaction (Instance, tran, old, collection, true);
 				}
 				catch {
-					EndTransaction (parentRow.ParentGrid.CurrentObject, tran, old, collection, false);
+					EndTransaction (Instance, tran, old, collection, false);
 					throw;
 				}
 			}
@@ -227,7 +218,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			DesignerTransaction tran = dh.CreateTransaction ();
 			IComponentChangeService ccs = (IComponentChangeService) com.Site.GetService (typeof(IComponentChangeService));
 			if (ccs != null)
-				ccs.OnComponentChanging (com, parentRow.PropertyDescriptor);
+				ccs.OnComponentChanging (com, Property);
 			return tran;
 		}
 		
@@ -239,7 +230,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				IComponent com = obj as IComponent;
 				IComponentChangeService ccs = (IComponentChangeService) com.Site.GetService (typeof(IComponentChangeService));
 				if (ccs != null)
-					ccs.OnComponentChanged (com, parentRow.PropertyDescriptor, oldValue, newValue);
+					ccs.OnComponentChanged (com, Property, oldValue, newValue);
 				tran.Commit ();
 			}
 			else
@@ -254,7 +245,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				return;
 
 			//get next iter
-			next = iter.Copy();
+			next = iter;
 			if (!itemStore.IterNext (ref next))
 				return;
 			
@@ -276,7 +267,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				return;
 
 			//get previous iter
-			prev = iter.Copy ();
+			prev = iter;
 			if (!IterPrev (model, ref prev))
 				return;
 
@@ -298,9 +289,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			if (!itemTree.Selection.GetSelected (out model, out iter))
 				return;
 			
-			newSelection = iter.Copy ();
+			newSelection = iter;
 			if (!IterPrev (model, ref newSelection)) {
-				newSelection = iter.Copy ();
+				newSelection = iter;
 				if (!itemStore.IterNext (ref newSelection))
 					newSelection = TreeIter.Zero;
 			}
@@ -393,7 +384,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				return false;
 			
 			do {
-				next = prev.Copy ();
+				next = prev;
 
 				if (!itemStore.IterNext (ref next))
 					return false;

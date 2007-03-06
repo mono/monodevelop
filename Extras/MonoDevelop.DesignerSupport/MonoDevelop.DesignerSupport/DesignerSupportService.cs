@@ -4,8 +4,10 @@
 //
 // Authors:
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
 // Copyright (C) 2006 Michael Hutchinson
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 //
 // This source code is licenced under The MIT License:
@@ -34,6 +36,7 @@ using System;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.DesignerSupport.PropertyGrid;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -44,6 +47,8 @@ namespace MonoDevelop.DesignerSupport
 		PropertyPad propertyPad = null;
 		ToolboxService toolboxService = null;
 		CodeBehindService codeBehindService = new CodeBehindService ();
+		
+		ICustomPropertyPadProvider lastCustomProvider;
 		
 		#region PropertyPad
 		
@@ -56,6 +61,41 @@ namespace MonoDevelop.DesignerSupport
 		internal void SetPropertyPad (PropertyPad pad)
 		{
 			propertyPad = pad;
+		}
+		
+		internal void ResetPropertyPad ()
+		{
+			UpdatePropertyPad ((IPropertyPadProvider) null);
+		}
+		
+		internal void UpdatePropertyPad (IPropertyPadProvider provider)
+		{
+			if (provider != null)
+				propertyPad.PropertyGrid.CurrentObject = provider.GetActiveComponent ();
+			else
+				propertyPad.BlankPad ();
+
+			if (lastCustomProvider != null) {
+				lastCustomProvider.DisposeCustomPropertyWidget ();
+				lastCustomProvider = null;
+			}
+		}
+		
+		internal void UpdatePropertyPad (ICustomPropertyPadProvider provider)
+		{
+			if (lastCustomProvider == provider)
+				return;
+
+			if (lastCustomProvider != null)
+				lastCustomProvider.DisposeCustomPropertyWidget ();
+
+			lastCustomProvider = provider;
+			
+			if (provider != null)
+				propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
+			else
+				propertyPad.BlankPad ();
+				
 		}
 		
 		#endregion
@@ -93,6 +133,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			base.InitializeService ();
 			codeBehindService.Initialise ();
+			IdeApp.CommandService.CommandManager.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
 		}
 		
 		public override void UnloadService()

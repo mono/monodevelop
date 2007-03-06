@@ -6,6 +6,7 @@
  * 
  * Authors: 
  *  Michael Hutchinson <m.j.hutchinson@gmail.com>
+ *  Lluis Sanchez Gual
  *  
  * Copyright (C) 2005 Michael Hutchinson
  *
@@ -39,59 +40,26 @@ using System.Collections;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
-	class ExpandableObjectEditor : BaseEditor
+	class ExpandableObjectEditor : PropertyEditorCell
 	{
-		private PropertyGrid grid;
-
-		public ExpandableObjectEditor (GridRow parentRow)
-			: base (parentRow)
+		protected override string GetValueMarkup ()
 		{
-		}
-
-		public override bool InPlaceEdit
-		{
-			get { return false; }
-		}
-
-		public override bool DialogueEdit
-		{
-			get { return true; }
-		}
-
-		public override bool EditsReadOnlyObject {
-			get { return true; }
+			string val;
+			if (Property.Converter.CanConvertTo (typeof(string)))
+				val = Property.Converter.ConvertToString (Value);
+			else
+				val = Value != null ? Value.ToString () : "";
+			
+			return "<b>" + GLib.Markup.EscapeText (val) + "</b>";
 		}
 		
-		public override void LaunchDialogue ()
+		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, StateType state)
 		{
-			//dialogue and buttons
-			Dialog dialog = new Dialog ();
-			dialog.Title = "Expandable Object Editor ";
-			dialog.Modal = true;
-			dialog.AllowGrow = true;
-			dialog.AllowShrink = true;
-			dialog.Modal = true;
-			dialog.AddActionWidget (new Button (Stock.Cancel), ResponseType.Cancel);
-			dialog.AddActionWidget (new Button (Stock.Ok), ResponseType.Ok);
-			
-			//propGrid
-			grid = new PropertyGrid (parentRow.ParentGrid.EditorManager);
-			grid.CurrentObject = parentRow.PropertyValue;
-			grid.WidthRequest = 200;
-			grid.ShowHelp = false;
-			dialog.VBox.PackStart (grid, true, true, 5);
-
-			//show and get response
-			dialog.ShowAll ();
-			ResponseType response = (ResponseType) dialog.Run();
-			dialog.Destroy ();
-			
-			//if 'OK' put items back in collection
-			if (response == ResponseType.Ok)
-			{
-			}
-			
-			//clean up so we start fresh if launched again
+			if (Property.Converter.CanConvertTo (typeof(string)) && Property.Converter.CanConvertFrom (typeof(string)))
+				return new TextEditor ();
+			else
+				return null;
 		}
+
 	}
 }

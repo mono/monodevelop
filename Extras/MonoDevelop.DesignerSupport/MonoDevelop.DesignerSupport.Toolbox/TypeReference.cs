@@ -62,6 +62,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			    && (this.assemblyLocation == other.assemblyLocation);
 		}
 		
+		public override int GetHashCode ()
+		{
+			return (typeName + assemblyName + assemblyLocation).GetHashCode ();
+		}
+
+		
 		public bool Equals (TypeReference other)
 		{
 			return (other != null)

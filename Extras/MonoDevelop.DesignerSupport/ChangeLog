@@ -1,3 +1,65 @@
+2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Added methods
+	  for changing the content of the property pad.
+	* MonoDevelop.DesignerSupport/MemberExistsException.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindDisplayBinding.cs,
+	  MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs:
+	  Fix warnings.
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Implement support for
+	  drag&drop and track changes in dynamic item providers.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/StringEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/BaseEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/NumberEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/BoolEditor.cs:
+	  Removed old editors.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsSelectorDialog.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/DefaultEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/ExpandableObjectEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs:
+	  Implemented editors for the new TreeView based property grid.
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs: Added
+	  support for drag&drop.
+	* MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/ToolboxItemToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/TypeToolboxNode.cs,
+	  MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs: Implement
+	  GetHashCode().
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Add support for
+	  drag&drop. Use smaller icons for the toolbar.
+	* MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs: Added event
+	  to update the toolbox items of a dynamic provider.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs:
+	  Implemented TreeView based property grid.
+	* MonoDevelop.DesignerSupport.PropertyGrid/GridRow.cs: Removed, not
+	  needed anymore.
+	* MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs: New
+	  interfaces for providing custom property pad content.
+	* MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs: New
+	  manager for the TreeView based property grid.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs: New
+	  command target visitor for getting the currently selected
+	  component.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyValueChangedEventArgs.cs:
+	  Track api changes.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml: Change add-in versions to

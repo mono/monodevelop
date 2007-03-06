@@ -77,17 +77,17 @@ namespace MonoDevelop.DesignerSupport
 			set { className = value; }
 		}
 		
-		string MemberName {
+		public string MemberName {
 			get { return memberName; }
 			set { memberName = value; }
 		}
 		
-		MemberType ExistingMemberType {
+		public MemberType ExistingMemberType {
 			get { return existingMemberType; }
 			set { existingMemberType = value; }
 		}
 		
-		MemberType NewMemberType {
+		public MemberType NewMemberType {
 			get { return newMemberType; }
 			set { newMemberType = value; }
 		}
