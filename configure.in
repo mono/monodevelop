@@ -191,10 +191,8 @@ if test "x$enable_aspnet" = "xyes"; then
 	PKG_CHECK_MODULES(XSP, xsp >= $XSP_VERSION xsp-2 >= $XSP2_VERSION)
 fi
 
-AM_CONDITIONAL(ENABLE_ASPNET, test x$enable_aspnet = xyes)
-AM_CONDITIONAL(ENABLE_DESIGNERSUPP, test x$enable_aspnet = xyes)
- 
- 
+AM_CONDITIONAL(ENABLE_ASPNET, test x$enable_aspnet = xyes) 
+
 dnl ASP.NET visual designer addin
 JSCALL_REQUIRED_VERSION=0.0.2
 AC_ARG_ENABLE(aspnetedit,
@@ -239,6 +237,9 @@ if test "x$enable_aspnetedit" = "xyes"; then
 	
 	# get zip to create jar/xpi for chrome
 	AC_PATH_PROG(ZIP, zip)
+	if test "x$ZIP" = "x" ; then
+		AC_MSG_ERROR([Can't find "zip" in your PATH])
+	fi
 else
 	#We still need to know where Mozilla is for launch scripts, even though we're not using JSCall#
 	#Check pkg-config first

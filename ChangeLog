@@ -1,3 +1,8 @@
+2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* configure.in: Error out if check for "zip" fails.
+	  Remove ENABLE_DESIGNERSUPP check as it should always be built now.
+
 2007-02-16 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Changed version to 0.13. Removed NUnit dependency.
