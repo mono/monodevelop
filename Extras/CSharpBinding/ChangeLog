@@ -1,5 +1,9 @@
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): Added a
+	work-around for pushing a multi-line anonmymous method {} block
+	inside a ParenList (e.g. as a callback argument).
+
 	* FormattingStrategy/CSharpIndentEngine.cs (PushHash): Doh, how
 	did I overlook this method when integrating my IndentEngine into
 	MD?

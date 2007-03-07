@@ -82,21 +82,21 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			public void Push (Inside inside, string keyword, int lineNr, int nSpaces)
 			{
-				StringBuilder sb;
+				StringBuilder indentBuilder;
 				int sp = size - 1;
 				Node node;
 				int n = 0;
 				
-				sb = new StringBuilder ();
+				indentBuilder = new StringBuilder ();
 				if ((inside & (Inside.Attribute | Inside.ParenList)) != 0) {
 					if (size > 0 && stack[sp].inside == inside) {
-						sb.Append (stack[sp].indent);
+						indentBuilder.Append (stack[sp].indent);
 						if (stack[sp].lineNr == lineNr)
 							n = stack[sp].nSpaces;
 					} else {
 						while (sp >= 0) {
 							if ((stack[sp].inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
-								sb.Append (stack[sp].indent);
+								indentBuilder.Append (stack[sp].indent);
 								break;
 							}
 							
@@ -104,41 +104,45 @@ namespace CSharpBinding.FormattingStrategy {
 						}
 					}
 					
-					sb.Append (' ', nSpaces - n);
+					indentBuilder.Append (' ', nSpaces - n);
 				} else if (inside == Inside.MultiLineComment) {
 					if (size > 0) {
-						sb.Append (stack[sp].indent);
+						indentBuilder.Append (stack[sp].indent);
 						if (stack[sp].lineNr == lineNr)
 							n = stack[sp].nSpaces;
 					}
 					
-					sb.Append (' ', nSpaces - n);
+					indentBuilder.Append (' ', nSpaces - n);
 				} else if ((inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
 					while (sp >= 0) {
 						if ((stack[sp].inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
-							sb.Append (stack[sp].indent);
+							indentBuilder.Append (stack[sp].indent);
 							break;
 						}
 						
 						sp--;
 					}
 					
+					// This is a workaround to make anonymous methods indent nicely
+					if (size > 0 && (stack[size - 1].inside & Inside.ParenList) != 0)
+						stack[size - 1].indent = indentBuilder.ToString ();
+					
 					if (nSpaces != -1)
-						sb.Append ('\t');
+						indentBuilder.Append ('\t');
 					
 					nSpaces = 0;
 				} else if ((inside & (Inside.PreProcessor | Inside.StringOrChar)) != 0) {
 					// if these fold, do not indent
 					nSpaces = 0;
 				} else if (inside == Inside.LineComment) {
-					// can't actually fold, but we can still push it onto the stack
+					// can't actually fold, but we still want to push it onto the stack
 					nSpaces = 0;
 				} else {
 					// not a valid argument?
 					throw new ArgumentOutOfRangeException ();
 				}
 				
-				node.indent = sb.ToString ();
+				node.indent = indentBuilder.ToString ();
 				node.keyword = keyword;
 				node.nSpaces = nSpaces;
 				node.lineNr = lineNr;
