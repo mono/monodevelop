@@ -1,3 +1,9 @@
+2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.DesignerSupport/BindingService.cs: Clean up 
+	  CreateAndShowMember. Jump to selected member. Remove GUI 
+	  threadsafety code -- consumers should handle this.
+
 2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* Makefile.am: Remove ENABLE_DESIGNERSUPP check as it should always 

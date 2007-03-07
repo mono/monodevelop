@@ -238,15 +238,13 @@ namespace MonoDevelop.DesignerSupport
 			//only adds the method if it doesn't already exist
 			IMember mem = AddMemberToClass (cls, member, false);
 			
-			//FIXME: code refactorer returns a blank mem.Region.FileName and negative beginLine, so we can only jump to the class
-			if (string.IsNullOrEmpty (mem.Region.FileName))
-				Gtk.Application.Invoke ( delegate {
-					IdeApp.Workbench.OpenDocument (cls.Region.FileName, cls.Region.BeginLine, 1, true);
-				});
-			else
-				Gtk.Application.Invoke ( delegate {
-					IdeApp.Workbench.OpenDocument (mem.Region.FileName, mem.Region.BeginLine, 1, true);
-				});
+			//some tests in case code refactorer returns bad values
+			int beginline = cls.Region.BeginLine;			
+			if (mem.Region != null && mem.Region.BeginLine >= beginline && mem.Region.BeginLine <= cls.Region.EndLine)
+				beginline = mem.Region.BeginLine;
+			
+			//jump to the member or class
+			IdeApp.Workbench.OpenDocument (cls.Region.FileName, beginline, 1, true);
 		}
 		
 		public static System.CodeDom.CodeTypeMember ReflectionToCodeDomMember (MemberInfo memberInfo)
