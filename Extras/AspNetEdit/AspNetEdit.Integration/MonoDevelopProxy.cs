@@ -106,7 +106,10 @@ namespace AspNetEdit.Integration
 			if (codeBehindClass == null)
 				return false;
 			
-			BindingService.CreateAndShowMember (codeBehindClass, method);
+			Gtk.Application.Invoke ( delegate {
+				BindingService.CreateAndShowMember (codeBehindClass, method);
+			});
+			
 			return true;
 		}
 		
@@ -117,7 +120,8 @@ namespace AspNetEdit.Integration
 			
 			Gtk.Application.Invoke ( delegate {
 				IdeApp.Workbench.OpenDocument (codeBehindClass.Region.FileName, lineNumber, 1, true);
-			});	
+			});
+			
 			return true;
 		}
 		

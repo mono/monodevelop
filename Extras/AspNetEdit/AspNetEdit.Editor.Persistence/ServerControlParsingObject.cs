@@ -75,7 +75,7 @@ namespace AspNetEdit.Editor.Persistence
 				PropertyDescriptor pd = pdc.Find (str[0], true);
 
 				//if property not found, try events
-				if (str.Length == 1 && pd == null && CultureInfo.InvariantCulture.CompareInfo.IsPrefix (str[0], "On")) {
+				if (str.Length == 1 && pd == null && CultureInfo.InvariantCulture.CompareInfo.IsPrefix (str[0].ToLower(), "on")) {
 					IEventBindingService iebs = (IEventBindingService) DesignerHost.GetService (typeof (IEventBindingService));
 					if (iebs == null)
 						throw new Exception ("Could not obtain IEventBindingService from host");
