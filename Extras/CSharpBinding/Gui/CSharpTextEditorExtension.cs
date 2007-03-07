@@ -101,6 +101,7 @@ namespace CSharpBinding
 			case Gdk.Key.Return:
 			case Gdk.Key.KP_Enter:
 				reindent = true;
+				insert = false;
 				c = '\n';
 				break;
 			default:
@@ -126,8 +127,14 @@ namespace CSharpBinding
 					return base.KeyPress (key, modifier);
 				
 				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
-				base.KeyPress (key, modifier);
-				insert = false;
+				if (base.KeyPress (key, modifier)) {
+					// if the char inserted is not '\n', then it means the user used
+					// <Enter> to accept an auto-completion choice.
+					if (Editor.CursorPosition > cursor && Editor.GetCharAt (cursor) != '\n')
+						return true;
+				}
+				
+				engine.Push ('\n');
 				cursor++;
 				
 				if (Editor.CursorPosition > cursor) {

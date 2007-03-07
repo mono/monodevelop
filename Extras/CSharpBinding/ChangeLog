@@ -1,5 +1,11 @@
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Same sort of fix as
+	earlier wrt the user hitting Tab. If the user hits <Enter> and the
+	base class does not insert a '\n', then it means the user has just
+	accepted an auto-completed selection. In this case, return -
+	there's nothing left for us to do.
+
 	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): Added a
 	work-around for pushing a multi-line anonmymous method {} block
 	inside a ParenList (e.g. as a callback argument).
@@ -26,9 +32,9 @@
 
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
-	* Gui/CSharpTextEditorExtension.cs: Fixed a bug preventing
-	tab-completion from working by chaining the KeyPress() to the
-	parent.
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Fixed a bug
+	preventing tab-completion from working by chaining the KeyPress()
+	to the parent.
 
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
