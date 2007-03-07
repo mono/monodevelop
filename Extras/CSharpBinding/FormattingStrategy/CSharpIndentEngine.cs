@@ -3,7 +3,6 @@ using System.Text;
 
 using MonoDevelop.SourceEditor.Properties;
 
-
 namespace CSharpBinding.FormattingStrategy {
 	public partial class CSharpIndentEngine : ICloneable {
 		IndentStack stack;
@@ -124,7 +123,7 @@ namespace CSharpBinding.FormattingStrategy {
 			commentEndedAt = -1;
 			firstNonLwsp = -1;
 			lastNonLwsp = -1;
-			wordStart = 0;
+			wordStart = -1;
 			
 			pc = '\0';
 			lc = '\0';
@@ -181,7 +180,7 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
-		string IsKeyword ()
+		string WordIsKeyword ()
 		{
 			string str = linebuf.ToString (wordStart, linebuf.Length - wordStart);
 			string[] keywords = new string [] {
@@ -209,7 +208,7 @@ namespace CSharpBinding.FormattingStrategy {
 			return null;
 		}
 		
-		bool IsDefault ()
+		bool WordIsDefault ()
 		{
 			string str = linebuf.ToString (wordStart, linebuf.Length - wordStart).Trim ();
 			
@@ -227,6 +226,22 @@ namespace CSharpBinding.FormattingStrategy {
 		}
 		
 		// Handlers for specific characters
+		void PushHash (Inside inside)
+		{
+			// ignore if we are inside a string, char, or comment
+			if ((inside & (Inside.StringOrChar | Inside.Comment)) != 0)
+				return;
+			
+			// ignore if '#' is not the first significant char on the line
+			if (lc != '\0')
+				return;
+			
+			stack.Push (Inside.PreProcessor, keyword, curLineNr, 0);
+			
+			curIndent = String.Empty;
+			needsReindent = true;
+		}
+		
 		void PushSlash (Inside inside)
 		{
 			// ignore these
@@ -341,7 +356,7 @@ namespace CSharpBinding.FormattingStrategy {
 				return;
 			
 			// can't be a case/label if there's no preceeding text
-			if (firstNonLwsp == -1)
+			if (wordStart == -1)
 				return;
 			
 			// goto-label or case statement
@@ -424,6 +439,8 @@ namespace CSharpBinding.FormattingStrategy {
 				n += linebuf.Length - firstNonLwsp;
 			
 			stack.Push (Inside.ParenList, keyword, curLineNr, n);
+			
+			keyword = String.Empty;
 		}
 		
 		void PushCloseParen (Inside inside)
@@ -616,7 +633,7 @@ namespace CSharpBinding.FormattingStrategy {
 			commentEndedAt = -1;
 			firstNonLwsp = -1;
 			lastNonLwsp = -1;
-			wordStart = 0;
+			wordStart = -1;
 			
 			pc = '\0';
 			lc = '\0';
@@ -642,20 +659,23 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			needsReindent = false;
 			
-			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 
-			    && firstNonLwsp != -1 && linebuf.Length > wordStart) {
+			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 &&
+			    wordStart != -1 && (linebuf.Length - wordStart) > 1) {
 				if (Char.IsWhiteSpace (c) || c == '(' || c == '{') {
-					string tmp = IsKeyword ();
+					string tmp = WordIsKeyword ();
 					if (tmp != null)
 						keyword = tmp;
-				} else if (c == ':' && IsDefault ()) {
+				} else if (c == ':' && WordIsDefault ()) {
 					keyword = "default";
 				}
 			}
 			
-			// Console.WriteLine ("Pushing '{0}'; keyword = {1}", c, keyword);
+			//Console.WriteLine ("Pushing '{0}'; wordStart = {1}; keyword = {2}", c, wordStart, keyword);
 			
 			switch (c) {
+			case '#':
+				PushHash (inside);
+				break;
 			case '/':
 				PushSlash (inside);
 				break;
@@ -702,34 +722,37 @@ namespace CSharpBinding.FormattingStrategy {
 				break;
 			}
 			
-			pc = c;
-			if (!Char.IsWhiteSpace (c))
-				lc = c;
-			
 			inside = stack.PeekInside (0);
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0) {
 				if (!Char.IsWhiteSpace (c)) {
 					if (firstNonLwsp == -1)
 						firstNonLwsp = linebuf.Length;
 					
-					if (lastNonLwsp != -1 && c != ':' && lastNonLwsp != linebuf.Length - 1) {
+					if (wordStart != -1 && c != ':' && Char.IsWhiteSpace (pc)) {
 						// goto labels must be single word tokens
 						canBeLabel = false;
-					} else if (lastNonLwsp == -1 && Char.IsDigit (c)) {
+					} else if (wordStart == -1 && Char.IsDigit (c)) {
 						// labels cannot start with a digit
 						canBeLabel = false;
 					}
 					
 					lastNonLwsp = linebuf.Length;
 					
-					if (c == ':')
-						wordStart = linebuf.Length + 1;
-				} else {
-					wordStart = linebuf.Length + 1;
+					if (c != ':') {
+						if (Char.IsWhiteSpace (pc) || lc == ':')
+							wordStart = linebuf.Length;
+						else if (pc == '\0')
+							wordStart = 0;
+					}
 				}
-			} else if (c != '\\') {
+			} else if (c != '\\' && (inside & (Inside.StringLiteral | Inside.CharLiteral)) != 0) {
+				// Note: PushBackSlash() will handle untoggling isEscaped if c == '\\'
 				isEscaped = false;
 			}
+			
+			pc = c;
+			if (!Char.IsWhiteSpace (c))
+				lc = c;
 			
 			linebuf.Append (c);
 			

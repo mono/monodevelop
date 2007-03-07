@@ -1,5 +1,26 @@
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* FormattingStrategy/CSharpIndentEngine.cs (PushHash): Doh, how
+	did I overlook this method when integrating my IndentEngine into
+	MD?
+
+	Fix for making "default :" (as opposed to "default:") inside a
+	switch-statement work as it should, lwsp is not significant here.
+
+	* FormattingStrategy/CSharpIndentEngine.cs (PushOpenParen): Clear
+	the keyword after pushing a new ParenList onto the stack, when the
+	ParenList is popped, the keyword is restored.
+	(Reset): Changed the semantics of wordStart, this now initializes
+	to -1 instead of 0.
+	(PushNewLine): Reset wordStart back to -1.
+	(Push): When checking for a keyword, we don't need to use
+	lastNonLwsp anymore, just use wordStart.
+	(Push): wordStart should always be set to point to the beginning
+	of a word token (and never to word-delimiting chars like it was
+	before).
+
+2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Gui/CSharpTextEditorExtension.cs: Fixed a bug preventing
 	tab-completion from working by chaining the KeyPress() to the
 	parent.
