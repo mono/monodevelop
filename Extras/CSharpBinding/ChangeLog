@@ -3,6 +3,7 @@
 	* FormattingStrategy/CSharpIndentEngine.cs (PushHash): Doh, how
 	did I overlook this method when integrating my IndentEngine into
 	MD?
+	(PushNewLine): Properly handle multi-line array assignments.
 
 	Fix for making "default :" (as opposed to "default:") inside a
 	switch-statement work as it should, lwsp is not significant here.

@@ -198,6 +198,7 @@ namespace CSharpBinding.FormattingStrategy {
 				"if",
 				"base",
 				"this",
+				"="
 			};
 			
 			for (int i = 0; i < keywords.Length; i++) {
@@ -561,10 +562,6 @@ namespace CSharpBinding.FormattingStrategy {
 			default:
 				// Empty, FoldedStatement, and Block
 				
-				// if no text entered on this line, nothing to do
-				if (lastNonLwsp == -1)
-					break;
-				
 				switch (lc) {
 				case '\0':
 					// nothing entered on this line
@@ -611,7 +608,9 @@ namespace CSharpBinding.FormattingStrategy {
 							break;
 						}
 						
-						if (stack.PeekKeyword (0) == "struct" || stack.PeekKeyword (0) == "enum") {
+						if (stack.PeekKeyword (0) == "struct" ||
+						    stack.PeekKeyword (0) == "enum" ||
+						    stack.PeekKeyword (0) == "=") {
 							// just variable/value declarations
 							break;
 						}
@@ -660,7 +659,7 @@ namespace CSharpBinding.FormattingStrategy {
 			needsReindent = false;
 			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 &&
-			    wordStart != -1 && (linebuf.Length - wordStart) > 1) {
+			    wordStart != -1) {
 				if (Char.IsWhiteSpace (c) || c == '(' || c == '{') {
 					string tmp = WordIsKeyword ();
 					if (tmp != null)
