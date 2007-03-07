@@ -166,6 +166,7 @@ namespace AspNetEdit.Editor
 			
 			host.Dispose ();		
 			base.Dispose ();
+			System.Diagnostics.Trace.WriteLine ("AspNetEdit editor process disposed");
 		}
 	}
 }

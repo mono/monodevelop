@@ -48,16 +48,12 @@ namespace AspNetEdit.Editor.ComponentModel
 			//check existing components with name of same form
 			// and make suffixNumber bigger than the greatest of them
 			foreach (IComponent comp in container.Components) {
-				if (comp.Site.Name.StartsWith (dataType.Name)) {
-					string str = comp.Site.Name.Remove (0, dataType.Name.Length);
-					//TODO: Use int.TryParse in .NET 2.0
-					try {
-						int val = int.Parse (str);
-						if (val >= suffixNumber)
-							suffixNumber = val + 1;
+				if (comp.Site.Name.ToLowerInvariant().StartsWith (dataType.Name.ToLowerInvariant())) {
+					string str = comp.Site.Name.Substring(dataType.Name.Length);
+					int val;
+					if (int.TryParse(str, out val) && val >= suffixNumber)
+						suffixNumber = val + 1;
 					}
-					catch (Exception ex) {}
-				}
 			}
 
 			return dataType.Name + suffixNumber.ToString ();

@@ -31,6 +31,7 @@
 using System;
 using System.Text;
 using System.Web.UI.Design;
+using System.Web.UI;
 using System.Collections;
 using System.ComponentModel.Design;
 
@@ -62,9 +63,9 @@ namespace AspNetEdit.Editor.Persistence
 			controls.Add (control);
 		}
 
-		public void BuildObject (out object[] controls, out string documentText)
+		public void GetParsedContent (out Control[] controls, out string documentText)
 		{
-			controls = this.controls.ToArray ();
+			controls = (Control[]) this.controls.ToArray (typeof(System.Web.UI.Control));
 			documentText = stringBuilder.ToString ();
 		}
 		

@@ -31,6 +31,7 @@
 var editor                 = null;
 var host                   = null;
 var gDirectivePlaceholder  = '';
+var clip                   = null;
 
 
 
@@ -164,7 +165,7 @@ aspNetHost.prototype =
 	throwException: function (location, msg)
 	{
 		JSCallPlaceClrCall ('ThrowException', '', new Array(location, msg));
-	},
+	}
 }
 
 
@@ -306,6 +307,10 @@ var controlTable = {
 //_____________________________________________________________________________
 function aspNetEditor_initialize()
 {
+	//host XUL doc's onload event fires twice for some reason
+	if (editor != null)
+		return;
+	
 	dump ("Initialising...");
 	editor = new aspNetEditor ();
 	dump ("\tCreated editor, initialising...");
@@ -410,7 +415,9 @@ aspNetEditor.prototype =
 
 			editor instanceof Components.interfaces.nsIPlaintextEditor;
 			editor instanceof Components.interfaces.nsIHTMLEditor;
-		} catch (e) {}
+		} catch (e) {
+			dump("Could not obtain nsIHTMLEditor: " + e);
+		}
 
 		return editor;
 	},
@@ -887,6 +894,7 @@ aspNetEditor.prototype =
 	insertFragment: function (aHtml)
 	{
 		if(aHtml) {
+			this.hideResizers ();
 			var insertionPoint =
 				{insertIn: null, destinationOffset: 0};
 			this.findInsertionPoint (insertionPoint);
@@ -1073,7 +1081,7 @@ aspNetEditor.prototype =
 		while((table = aTables.nextNode ()) != null) {
 			table.setAttribute ('cancelUI', 'true');
 		}
-	},
+	}
 };
 
 //* ___________________________________________________________________________
@@ -1175,7 +1183,7 @@ function detectDoubleClick(aEvent)
 
 
 	host.click (DOUBLE_CLICK, controlId);
-	alert (editor.getPage ());
+	//alert (editor.getPage ());
 }
 
 function handleContextMenu(aEvent)

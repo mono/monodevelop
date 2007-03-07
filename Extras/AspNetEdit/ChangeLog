@@ -1,3 +1,57 @@
+2007-02-24  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+	
+	* AspNetEdit.Editor.UI/RootDesignerView.cs: New UpdateRender method.
+	Change behaviour of JSDeserializeAndAdd. It's a one-way function now;
+	JS can give just offload pasted ASP.NET code to host and forget about 
+	it. The C# host will take it from there.
+	
+	* AspNetEdit.Editor/EditorHost.cs:
+	Bump some code into GUI thread so it can handle exceptions. It's less 
+	fragile than remoting.
+	Use ToolboxDataAttribute attributes when handling toolbox items. Relies
+	on improvements to Document.InsertFragment.
+	
+	* AspNetEdit.Editor.ComponentModel/Document.cs,
+	* AspNetEdit.Editor.ComponentModel/DesignerHost.cs,
+	* AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs:
+	Change the places in which controls are created, initialised 
+	and added to document.
+	Document.InsertFragment now handles ASP.NET code.
+	
+	* AspNetEdit.Editor.Persistence/ServerControlParsingObject.cs:
+	Don't allow a tag's innerText to overwrite value from property if it's 
+	empty.
+	
+	* AspNetEdit.Editor.Persistence/DesignTimeParser.cs:
+	Rename ParseDocument to ProcessFragment.
+	
+	* AspNetEdit.Editor.Persistence/RootParsingObject.cs:
+	Rename BuildObject to GetParsedContent and change signature.
+	
+	* AspNetEdit.Editor.ComponentModel/NameCreationService.cs:
+	Make name generation case insensitive, becuase ASP.NET is.
+	
+	* AspNetEdit.Integration/EditorProcess.cs: Add a trace statement.
+	
+	* AspNetEdit.Integration/AspNetEditViewContent.cs: Remove extra "using"
+
+	* chrome/content/aspdesigner/editor.js: Remove debugging alert.
+	
+	* Makefile.am.
+	* AspNetEdit.mdp: Updated. Enable some autotools integration.
+
+2007-02-24  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: Eliminate unnecessary copy during build.
+	
+	* chrome/content/aspdesigner/xpcom.js,
+	* chrome/content/aspdesigner/editor.js: Fixed some JS warnings.
+	Fixed aspdesigner initialisation bug with Mozilla/Gecko >= 1.8, such 
+	as Firefox >= 1.5.
+	
+	* AspNetEdit.Editor.ComponentModel/NameCreationService.cs: Use 
+	Int.TryParse now instead of catching exceptions.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Change add-in versions to 0.13.

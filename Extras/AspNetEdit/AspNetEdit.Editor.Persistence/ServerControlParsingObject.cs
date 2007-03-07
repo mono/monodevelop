@@ -59,10 +59,10 @@ namespace AspNetEdit.Editor.Persistence
 				//note: this automatically adds to parent's container, as some controls
 				//need to be sited e.g. if they use site dictionaries
 				//TODO: should this action be passed up the tree so controls can intercept?
-				obj = base.DesignerHost.CreateComponent (type, attributes["ID"] as string);
+				obj = ((AspNetEdit.Editor.ComponentModel.DesignerHost) base.DesignerHost).CreateComponent (type, attributes["ID"] as string, false);
 			else
 				obj = Activator.CreateInstance (type);
-
+				
 			//and populate it from the attributes
 			pdc = TypeDescriptor.GetProperties (obj);
 			foreach (DictionaryEntry de in attributes) {
@@ -87,19 +87,19 @@ namespace AspNetEdit.Editor.Persistence
 					else
 						throw new Exception ("Could not find event " + str[0].Remove(0,2));
 				}
-
+				
 				object loopObj = obj;
 				
 				for (int i = 0; i < str.Length; i++ )
 				{
 					if (pd == null)
 						throw new Exception ("Could not find property " + (string)de.Key);
-					Console.WriteLine (pd.Converter.ToString() + " " + pd.Name);
+					
 					if (i == str.Length - 1) {
 						pd.SetValue (obj, pd.Converter.ConvertFromString ((string) de.Value));
 						break;
 					}
-
+					
 					loopObj = pd.GetValue (loopObj);
 					pd = TypeDescriptor.GetProperties (loopObj).Find (str[0], true);
 					
@@ -155,7 +155,8 @@ namespace AspNetEdit.Editor.Persistence
 							break;
 					}
 				}
-			}			
+			}
+		
 		}
 
 		public override void AddText (string text)
@@ -193,13 +194,16 @@ namespace AspNetEdit.Editor.Persistence
 		public override ParsingObject CloseObject (string closingTagText)
 		{
 			//we do this here in case we have tags inside
-			if (mode == ParseChildrenMode.DefaultProperty) {
+			if (mode == ParseChildrenMode.DefaultProperty && !string.IsNullOrEmpty(innerText)) {
 				PropertyDescriptor pd = pdc[parseAtt.DefaultProperty];
 				pd.SetValue(obj, pd.Converter.ConvertFromString(innerText));
 			}
 			//FIME: what if it isn't?
-			if (obj is Control)
-				base.AddText ( Document.RenderDesignerControl ((Control)obj));
+			if (obj is Control) {
+				Control c = (Control) obj;
+				Document.InitialiseControl (c);
+				base.AddText (Document.RenderDesignerControl (c)); // add initial rendered text representation 
+			}
 			base.AddControl (obj);
 			return base.CloseObject (closingTagText);
 		}

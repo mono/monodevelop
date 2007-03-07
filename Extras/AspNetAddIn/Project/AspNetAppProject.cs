@@ -39,6 +39,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Projects.Deployment;
 
 using AspNetAddIn.Parser.Tree;
 using AspNetAddIn.Parser;
@@ -88,17 +89,42 @@ namespace AspNetAddIn
 		
 		public AspNetAppProject ()
 		{
+			commonInit ();
 		}
 		
 		public AspNetAppProject (string languageName)
 			: base (languageName)
 		{
+			commonInit ();
 		}
 		
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			commonInit ();
 		}
+		
+		
+		private void commonInit ()
+		{
+			//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
+			Configurations.ConfigurationAdded += delegate (object ob, ConfigurationEventArgs args) {
+				AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) args.Configuration;
+				conf.SourceDirectory = BaseDirectory;
+			};
+		}
+		
+		//AspNetAppProjectConfiguration needs SourceDirectory set so it can append "bin" to determine the output path
+		public override string FileName {
+			get {
+				return base.FileName;
+			}
+			set {
+				base.FileName = value;
+				foreach (AspNetAppProjectConfiguration conf in Configurations)
+					conf.SourceDirectory = BaseDirectory;
+			}
+		}		
 		
 		public override IConfiguration CreateConfiguration (string name)
 		{
@@ -106,11 +132,36 @@ namespace AspNetAddIn
 			
 			conf.Name = name;
 			conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
+			conf.SourceDirectory = BaseDirectory;
 			
 			return conf;
 		}
 		
 		#endregion
+		
+		//custom version of GetDeployFiles which puts libraries in the bin directory
+		public override DeployFileCollection GetDeployFiles ()
+		{
+			DeployFileCollection files = new DeployFileCollection ();
+			
+			//add files that are marked to 'deploy'
+			foreach (ProjectFile pf in ProjectFiles)
+				if (pf.BuildAction == BuildAction.FileCopy)
+					files.Add (new DeployFile (pf.FilePath, pf.RelativePath));
+			
+			//add referenced libraries
+			DeployFileCollection dfc = GetReferenceDeployFiles (false);
+			foreach (DeployFile df in dfc)
+				df.RelativeTargetPath = Path.Combine ("bin", df.RelativeTargetPath);
+			files.AddRange (dfc);
+			
+			//add the compiled output file
+			string outputFile = this.GetOutputFileName ();
+			if ( !string.IsNullOrEmpty (outputFile))
+				files.Add (new DeployFile (outputFile, Path.Combine ("bin", Path.GetFileName (outputFile)), TargetDirectory.ProgramFiles));
+			
+			return files;
+		}
 		
 		#region build/prebuild/execute
 		
@@ -155,14 +206,6 @@ namespace AspNetAddIn
 				operationMonitor.Dispose ();
 				console.Dispose ();
 			}
-		}
-		
-		protected override void DoPreBuild (IProgressMonitor monitor)
-		{
-			AspNetAppProjectConfiguration conf = (AspNetAppProjectConfiguration) ActiveConfiguration;
-			conf.SourceDirectory = BaseDirectory;
-			
-			base.DoPreBuild (monitor);
 		}
 		
 		#endregion

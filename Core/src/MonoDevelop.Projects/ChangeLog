@@ -1,3 +1,11 @@
+2006-02-25  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:
+	  Remove OnPreBuild as it's no longer used or called. I was overriding 
+	  it and relying on it being called!
+	  Make GetReferenceDeployFiles public so I don't have to duplicate it
+	  for AspNetAddProject's GetDeployFiles.
+
 2007-02-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProjectConfiguration.cs: If the output

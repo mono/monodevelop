@@ -66,7 +66,7 @@ namespace AspNetEdit.Editor.Persistence
 		/// </summary>
 		/// <param name="fragment">The document fragment to parse</param>
 		/// <returns>The document with all controls, directives and script blocks replaced by placeholders</returns>
-		public void ParseDocument (string fragment, out Control[] controls, out string designDocument)
+		public void ProcessFragment (string fragment, out Control[] controls, out string substText)
 		{
 			
 			AspParser parser = InitialiseParser (fragment);
@@ -79,11 +79,8 @@ namespace AspNetEdit.Editor.Persistence
 			if (openObject != rootParsingObject) {
 				throw new Exception ("The tag " +  openObject.TagID + " was left unclosed");
 			}
-
-			object[] objects;
-			rootParsingObject.BuildObject(out objects, out designDocument);
-			controls = new Control[objects.Length];
-			objects.CopyTo (controls, 0);
+			
+			rootParsingObject.GetParsedContent (out controls, out substText);
 		}
 
 		private AspParser InitialiseParser (string parseText)

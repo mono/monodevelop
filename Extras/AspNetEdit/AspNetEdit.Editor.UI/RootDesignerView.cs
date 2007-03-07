@@ -147,10 +147,13 @@ namespace AspNetEdit.Editor.UI
 		void changeService_ComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
 			if (!active) return;
-			
-			Control control = e.Component as Control;
+			UpdateRender (e.Component as Control);			
+		}
+		
+		public void UpdateRender (Control control)
+		{
 			if (control == null)
-				throw new InvalidOperationException ("The changed component is not a System.UI.WebControl");
+				throw new InvalidOperationException ("The updated component is not a System.UI.WebControl");
 			
 			string ctext = Document.RenderDesignerControl (control);
 			comm.JSCall (GeckoFunctions.UpdateControl, null, control.UniqueID, ctext);
@@ -406,18 +409,18 @@ namespace AspNetEdit.Editor.UI
 		
 		///<summary>
 		/// Name:	DeserializeAndAdd
-		///			Deserialises a fragment of ASP.NET code into a Gecko designer document fragment
-		///			and adds the controls, directives etc to the host.
+		///			Handles any ASP.NET code that gets pasted into the designer.
 		/// Arguments:
 		///		string designerDocumentFragment:	the ASP.NET document fragment
-		/// Returns:	the deserialised document
+		/// Returns: none
 		///</summary>
 		private string JSDeserializeAndAdd (string[] args)
 		{
 			if (args.Length != 1)
 				throw new InvalidJSArgumentException ("DeserializeAndAdd", -1);
 						
-			return host.RootDocument.DeserializeAndAdd (args [0]);
+			host.RootDocument.InsertFragment (args [0]);
+			return string.Empty;
 		}
 
 		#endregion

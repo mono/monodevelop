@@ -63,7 +63,7 @@ var gNsISelectionListenerImplementation = {
 		// Make sure we can't focus a control
 		//TODO: make it account for md-can-drop="true" controls, which
 		// should be able to recieve focus
-		if(sel.isCollapsed) {
+		if(sel.isCollapsed && editor && editor.base) {
 			var focusNode = sel.focusNode;
 			var parentControl =
 				editor.base.getElementOrParentByTagName (CONTROL_TAG_NAME,
@@ -312,7 +312,7 @@ var gNsIEditActionListenerImplementation = {
 	WillSplitNode: function(existingRightNode, offset)
 	{
 		//alert ('Will split node');
-	},
+	}
 }
 
 // nsIHTMLObjectResizeListener implementation
