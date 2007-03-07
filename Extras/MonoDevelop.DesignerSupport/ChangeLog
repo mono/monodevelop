@@ -1,3 +1,10 @@
+2007-03-07  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:
+	  Only restart GUI thread if it was stopped by an exception. This 
+	  means that the GUI thread will now be able to stop, so there 
+	  won't be lots of orphaned mdhost processes left around.
+
 2007-03-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs:

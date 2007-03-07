@@ -76,15 +76,24 @@ namespace MonoDevelop.DesignerSupport
 		
 		void GuiThread ()
 		{
-			while (true) {
+			System.Diagnostics.Trace.WriteLine ("Designer GUI thread starting.");
+			
+			//want to restart application loop when it's killed by an exception,
+			//but let it die if Application.Quit() is called
+			bool keepRunning = true;
+			while (keepRunning) {
 				try {
+					keepRunning = false;
 					Application.Run ();
 				} catch (Exception e) {
+					keepRunning = true;
 					exceptionOccurred = true;
 					System.Console.WriteLine ("An exception occurred in the GUI thread");
 					HandleError (e);
 				}
 			}
+			
+			System.Diagnostics.Trace.WriteLine ("Designer GUI thread ending.");
 		}
 		
 		public bool ExecuteSuccessfully (EventHandler handler)
@@ -236,6 +245,7 @@ namespace MonoDevelop.DesignerSupport
 				propGridFrame.Dispose ();
 			
 			base.Dispose ();
+			System.Diagnostics.Trace.WriteLine ("Designer GUI thread cleaned up.");
 		}
 	}
 }
