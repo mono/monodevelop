@@ -19,7 +19,7 @@ namespace MonoDevelop.SourceEditor.FormattingStrategy
 	/// </summary>
 	public class DefaultFormattingStrategy : IFormattingStrategy {
 		/// <summary>
-		/// returns the whitespaces which are before a non white space character in the line line
+		/// returns the whitespaces which are before a non white space character in the line
 		/// as a string.
 		/// </summary>
 		protected string GetIndentation (TextEditor d, int lineNumber)
