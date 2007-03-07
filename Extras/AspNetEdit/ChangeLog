@@ -1,3 +1,8 @@
+2007-03-07  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* chrome/Makefile.am: The install tasks should depend on the files 
+	  they're installing.
+
 2007-03-06  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* AspNetEdit.Integration/AspNetEditViewContent.cs,

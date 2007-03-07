@@ -28,7 +28,7 @@ $(packagename).jar: $(jar_files)
 
 all: $(packagename).jar
 
-install-files:
+install-files: $(packagename).jar
 	mkdir -p $(packagedir); \
 	cp $(packagename).jar $(packagedir)/
 
@@ -49,7 +49,7 @@ endif
 
 ### Install manifest ###
 
-install-manifest:
+install-manifest: $(packagename).manifest
 	cp $(packagename).manifest $(chromedir)/
 
 uninstall-manifest:
@@ -62,7 +62,7 @@ uninstall-manifest:
 old_chrome_install_text = "content,install,url,jar:resource:/chrome/aspdesigner.jar!/content/aspdesigner/"		\
                           "locale,install,url,jar:resource:/chrome/aspdesigner.jar/locale/en-US/aspdesigner/"
 
-old-install-files:
+old-install-files: $(packagename).jar
 	cp $(packagename).jar $(chromedir)/
 
 old-uninstall-files:
