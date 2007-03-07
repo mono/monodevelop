@@ -1,3 +1,8 @@
+2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* Makefile.am: Remove ENABLE_DESIGNERSUPP check as it should always 
+	  be built now.
+
 2007-03-07  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs:

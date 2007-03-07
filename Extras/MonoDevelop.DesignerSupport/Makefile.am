@@ -86,11 +86,7 @@ RES =  \
 
 ADDIN = MonoDevelop.DesignerSupport.addin.xml
 
-if ENABLE_DESIGNERSUPP
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)
-else
-all:
-endif
 
 $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
@@ -101,10 +97,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
-if ENABLE_DESIGNERSUPP
-csharpbindinglibdir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport
-csharpbindinglib_DATA = $(ASSEMBLY) $(ADDIN)
-endif
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.DesignerSupport
+assembly_DATA = $(ASSEMBLY) $(ADDIN)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
