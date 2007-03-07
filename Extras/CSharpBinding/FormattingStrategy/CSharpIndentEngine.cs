@@ -152,19 +152,6 @@ namespace CSharpBinding.FormattingStrategy {
 			return engine;
 		}
 		
-		//int NumLeadingWhiteSpace ()
-		//{
-		//	string line = linebuf.ToString ();
-		//	int n;
-		//	
-		//	for (n = 0; n < line.Length; n++) {
-		//		if (!Char.IsWhiteSpace (line[n]))
-		//			break;
-		//	}
-		//	
-		//	return n;
-		//}
-		
 		void TrimIndent ()
 		{
 			switch (stack.PeekInside (0)) {
@@ -644,12 +631,12 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 
-				&& firstNonLwsp != -1) {
-				if (Char.IsWhiteSpace (c) || c == '(' || c == '{' && linebuf.Length > wordStart) {
+				&& firstNonLwsp != -1 && linebuf.Length > wordStart) {
+				if (Char.IsWhiteSpace (c) || c == '(' || c == '{') {
 					string tmp = IsKeyword ();
 					if (tmp != null)
 						keyword = tmp;
-				} else if (c == ':' && linebuf.Length > wordStart && IsDefault ()) {
+				} else if (c == ':' && IsDefault ()) {
 					keyword = "default";
 				}
 			}
