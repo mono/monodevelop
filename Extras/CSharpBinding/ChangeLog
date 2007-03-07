@@ -1,4 +1,11 @@
-2007-03-06  Jeffrey Stedfast  <fejj@gnome.org>
+2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngine.cs: Fixed bug #81065 by
+	looking at the last significant char on the line. Also now keeping
+	the last char typed as part of the state so as to avoid having to
+	linebuf.ToString() and then look.
+
+2007-03-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs: New class to aid in
 	smart indenting.
@@ -19,7 +26,7 @@
 	* Gui/OverrideCompletionData.cs, Gui/CSharpParameterDataProvider.cs,
 	  FormattingStrategy/CSharpFormattingStrategy.cs: Track api changes.
 
-2007-02-26  Jeffrey Stedfast  <fejj@gnome.org>
+2007-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpFormattingStrategy.cs
 	(SmartIndentLine): Instead of wrapping the entire body of the

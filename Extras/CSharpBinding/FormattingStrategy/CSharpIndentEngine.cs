@@ -24,6 +24,12 @@ namespace CSharpBinding.FormattingStrategy {
 		int lastNonLwsp;
 		int wordStart;
 		
+		// previous char in the line
+		char pc;
+		
+		// last significant char in the line (e.g. non-whitespace)
+		char lc;
+		
 		int curLineNr;
 		int cursor;
 		
@@ -120,6 +126,9 @@ namespace CSharpBinding.FormattingStrategy {
 			lastNonLwsp = -1;
 			wordStart = 0;
 			
+			pc = '\0';
+			lc = '\0';
+			
 			curLineNr = 1;
 			cursor = 0;
 		}
@@ -145,6 +154,9 @@ namespace CSharpBinding.FormattingStrategy {
 			engine.firstNonLwsp = firstNonLwsp;
 			engine.lastNonLwsp = lastNonLwsp;
 			engine.wordStart = wordStart;
+			
+			engine.pc = pc;
+			engine.lc = lc;
 			
 			engine.curLineNr = curLineNr;
 			engine.cursor = cursor;
@@ -186,7 +198,7 @@ namespace CSharpBinding.FormattingStrategy {
 				"else",
 				"if",
 				"base",
-				"this"
+				"this",
 			};
 			
 			for (int i = 0; i < keywords.Length; i++) {
@@ -208,14 +220,14 @@ namespace CSharpBinding.FormattingStrategy {
 		{
 			// don't let folded statements get too nested
 			if (stack.PeekInside (0) == Inside.FoldedStatement &&
-				stack.PeekInside (1) == Inside.FoldedStatement)
+			    stack.PeekInside (1) == Inside.FoldedStatement)
 				return;
 			
 			stack.Push (Inside.FoldedStatement, keyword, curLineNr, 0);
 		}
 		
 		// Handlers for specific characters
-		void PushSlash (Inside inside, char pc)
+		void PushSlash (Inside inside)
 		{
 			// ignore these
 			if ((inside & (Inside.PreProcessor | Inside.LineComment | Inside.StringOrChar)) != 0)
@@ -237,14 +249,14 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
-		void PushBackSlash (Inside inside, char pc)
+		void PushBackSlash (Inside inside)
 		{
 			// string and char literals can have \-escapes
 			if ((inside & (Inside.StringLiteral | Inside.CharLiteral)) != 0)
 				isEscaped = !isEscaped;
 		}
 		
-		void PushStar (Inside inside, char pc)
+		void PushStar (Inside inside)
 		{
 			int n;
 			
@@ -267,7 +279,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Push (Inside.MultiLineComment, keyword, curLineNr, n);
 		}
 		
-		void PushQuote (Inside inside, char pc)
+		void PushQuote (Inside inside)
 		{
 			Inside type;
 			
@@ -302,7 +314,7 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
-		void PushSQuote (Inside inside, char pc)
+		void PushSQuote (Inside inside)
 		{
 			if (inside == Inside.CharLiteral) {
 				// check that it's not escaped
@@ -323,7 +335,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Push (Inside.CharLiteral, keyword, curLineNr, 0);
 		}
 		
-		void PushColon (Inside inside, char pc)
+		void PushColon (Inside inside)
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
@@ -359,7 +371,7 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
-		void PushSemicolon (Inside inside, char pc)
+		void PushSemicolon (Inside inside)
 		{
 			if (inside != Inside.FoldedStatement)
 				return;
@@ -371,9 +383,10 @@ namespace CSharpBinding.FormattingStrategy {
 			keyword = String.Empty;
 		}
 		
-		void PushOpenSq (Inside inside, char pc)
+		void PushOpenSq (Inside inside)
 		{
 			int n = 1;
+			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
 			
@@ -384,7 +397,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Push (Inside.Attribute, keyword, curLineNr, n);
 		}
 		
-		void PushCloseSq (Inside inside, char pc)
+		void PushCloseSq (Inside inside)
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
@@ -399,7 +412,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Pop ();
 		}
 		
-		void PushOpenParen (Inside inside, char pc)
+		void PushOpenParen (Inside inside)
 		{
 			int n = 1;
 			
@@ -413,7 +426,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Push (Inside.ParenList, keyword, curLineNr, n);
 		}
 		
-		void PushCloseParen (Inside inside, char pc)
+		void PushCloseParen (Inside inside)
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
@@ -428,7 +441,7 @@ namespace CSharpBinding.FormattingStrategy {
 			stack.Pop ();
 		}
 		
-		void PushOpenBrace (Inside inside, char pc)
+		void PushOpenBrace (Inside inside)
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
@@ -462,7 +475,7 @@ namespace CSharpBinding.FormattingStrategy {
 				needsReindent = true;
 		}
 		
-		void PushCloseBrace (Inside inside, char pc)
+		void PushCloseBrace (Inside inside)
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
@@ -483,12 +496,12 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
-		void PushNewLine (Inside inside, char pc)
+		void PushNewLine (Inside inside)
 		{
 			switch (inside) {
 			case Inside.PreProcessor:
 				// pop the preprocesor state unless the eoln is escaped
-				if (pc != '\\') {
+				if (lc != '\\') {
 					keyword = stack.PeekKeyword (0);
 					stack.Pop ();
 				}
@@ -535,7 +548,10 @@ namespace CSharpBinding.FormattingStrategy {
 				if (lastNonLwsp == -1)
 					break;
 				
-				switch (pc) {
+				switch (lc) {
+				case '\0':
+					// nothing entered on this line
+					break;
 				case ':':
 					canBeLabel = canBeLabel && inside != Inside.FoldedStatement;
 					
@@ -602,6 +618,9 @@ namespace CSharpBinding.FormattingStrategy {
 			lastNonLwsp = -1;
 			wordStart = 0;
 			
+			pc = '\0';
+			lc = '\0';
+			
 			curLineNr++;
 			cursor++;
 		}
@@ -610,9 +629,10 @@ namespace CSharpBinding.FormattingStrategy {
 		public void Push (char c)
 		{
 			Inside inside;
-			char pc;
 			
 			inside = stack.PeekInside (0);
+			
+			// pop the verbatim-string-literal
 			if (inside == Inside.VerbatimString && popVerbatim && c != '"') {
 				keyword = stack.PeekKeyword (0);
 				stack.Pop ();
@@ -622,16 +642,8 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			needsReindent = false;
 			
-			// check the previous char
-			if (linebuf.Length > 0) {
-				string buf = linebuf.ToString ();
-				pc = buf[buf.Length - 1];
-			} else {
-				pc = '\0';
-			}
-			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 
-				&& firstNonLwsp != -1 && linebuf.Length > wordStart) {
+			    && firstNonLwsp != -1 && linebuf.Length > wordStart) {
 				if (Char.IsWhiteSpace (c) || c == '(' || c == '{') {
 					string tmp = IsKeyword ();
 					if (tmp != null)
@@ -644,51 +656,55 @@ namespace CSharpBinding.FormattingStrategy {
 			// Console.WriteLine ("Pushing '{0}'; keyword = {1}", c, keyword);
 			
 			switch (c) {
-				case '/':
-					PushSlash (inside, pc);
-					break;
-				case '\\':
-					PushBackSlash (inside, pc);
-					break;
-				case '*':
-					PushStar (inside, pc);
-					break;
-				case '"':
-					PushQuote (inside, pc);
-					break;
-				case '\'':
-					PushSQuote (inside, pc);
-					break;
-				case ':':
-					PushColon (inside, pc);
-					break;
-				case ';':
-					PushSemicolon (inside, pc);
-					break;
-				case '[':
-					PushOpenSq (inside, pc);
-					break;
-				case ']':
-					PushCloseSq (inside, pc);
-					break;
-				case '(':
-					PushOpenParen (inside, pc);
-					break;
-				case ')':
-					PushCloseParen (inside, pc);
-					break;
-				case '{':
-					PushOpenBrace (inside, pc);
-					break;
-				case '}':
-					PushCloseBrace (inside, pc);
-					break;
-				case '\n':
-					PushNewLine (inside, pc);
-					return;
-				default:
-					break;
+			case '/':
+				PushSlash (inside);
+				break;
+			case '\\':
+				PushBackSlash (inside);
+				break;
+			case '*':
+				PushStar (inside);
+				break;
+			case '"':
+				PushQuote (inside);
+				break;
+			case '\'':
+				PushSQuote (inside);
+				break;
+			case ':':
+				PushColon (inside);
+				break;
+			case ';':
+				PushSemicolon (inside);
+				break;
+			case '[':
+				PushOpenSq (inside);
+				break;
+			case ']':
+				PushCloseSq (inside);
+				break;
+			case '(':
+				PushOpenParen (inside);
+				break;
+			case ')':
+				PushCloseParen (inside);
+				break;
+			case '{':
+				PushOpenBrace (inside);
+				break;
+			case '}':
+				PushCloseBrace (inside);
+				break;
+			case '\n':
+				PushNewLine (inside);
+				return;
+			default:
+				break;
 			}
+			
+			pc = c;
+			if (!Char.IsWhiteSpace (c))
+				lc = c;
 			
 			inside = stack.PeekInside (0);
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0) {
@@ -723,7 +739,7 @@ namespace CSharpBinding.FormattingStrategy {
 		public void Debug ()
 		{
 			Console.WriteLine ("\ncurLineNr = {0}\ncursor = {1}\nneedsReindent = {2}",
-					   curLineNr, cursor, needsReindent);
+			                   curLineNr, cursor, needsReindent);
 			Console.WriteLine ("stack:");
 			for (int i = 0; i < stack.Count; i++) {
 				switch (stack.PeekInside (i)) {
