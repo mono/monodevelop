@@ -75,6 +75,24 @@ namespace CSharpBinding
 					return base.KeyPress (key, modifier);
 				
 				if (!engine.IsInsideVerbatimString) {
+					if (base.KeyPress (key, modifier)) {
+						// parent implementation handled this
+						
+						// if chars have been inserted but not
+						// LWSP, then the user probably just
+						// tab-completed something - we're done.
+						if (Editor.CursorPosition > cursor &&
+						    !Char.IsWhiteSpace (Editor.GetCharAt (cursor)))
+							return true;
+						
+						// parent implementation inserted a tab or indent, ugh.
+						
+						// Delete the tab/indent as it may have been inserted in
+						// the middle of a method name or something, which is
+						// totally bad.
+						Editor.DeleteText (cursor, Editor.CursorPosition - cursor);
+					}
+					
 					reindent = true;
 					insert = false;
 				}

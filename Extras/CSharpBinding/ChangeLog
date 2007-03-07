@@ -1,5 +1,11 @@
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Gui/CSharpTextEditorExtension.cs: Fixed a bug preventing
+	tab-completion from working by chaining the KeyPress() to the
+	parent.
+
+2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
+
 	* FormattingStrategy/CSharpIndentEngine.cs: Fixed bug #81065 by
 	looking at the last significant char on the line. Also now keeping
 	the last char typed as part of the state so as to avoid having to
