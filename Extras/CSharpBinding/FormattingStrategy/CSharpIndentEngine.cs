@@ -18,7 +18,6 @@ namespace CSharpBinding.FormattingStrategy {
 		bool canBeLabel;
 		bool isEscaped;
 		
-		int commentEndedAt;
 		int firstNonLwsp;
 		int lastNonLwsp;
 		int wordStart;
@@ -26,8 +25,11 @@ namespace CSharpBinding.FormattingStrategy {
 		// previous char in the line
 		char pc;
 		
-		// last significant char in the line (e.g. non-whitespace)
-		char lc;
+		// last significant (real) char in the line (e.g. non-whitespace)
+		char rc;
+		
+		// previous last significant (real) char in the line
+		char prc;
 		
 		int curLineNr;
 		int cursor;
@@ -120,13 +122,13 @@ namespace CSharpBinding.FormattingStrategy {
 			canBeLabel = true;
 			isEscaped = false;
 			
-			commentEndedAt = -1;
 			firstNonLwsp = -1;
 			lastNonLwsp = -1;
 			wordStart = -1;
 			
+			prc = '\0';
 			pc = '\0';
-			lc = '\0';
+			rc = '\0';
 			
 			curLineNr = 1;
 			cursor = 0;
@@ -149,13 +151,13 @@ namespace CSharpBinding.FormattingStrategy {
 			engine.canBeLabel = canBeLabel;
 			engine.isEscaped = isEscaped;
 			
-			engine.commentEndedAt = commentEndedAt;
 			engine.firstNonLwsp = firstNonLwsp;
 			engine.lastNonLwsp = lastNonLwsp;
 			engine.wordStart = wordStart;
 			
+			engine.prc = prc;
 			engine.pc = pc;
-			engine.lc = lc;
+			engine.rc = rc;
 			
 			engine.curLineNr = curLineNr;
 			engine.cursor = cursor;
@@ -234,7 +236,7 @@ namespace CSharpBinding.FormattingStrategy {
 				return;
 			
 			// ignore if '#' is not the first significant char on the line
-			if (lc != '\0')
+			if (rc != '\0')
 				return;
 			
 			stack.Push (Inside.PreProcessor, keyword, curLineNr, 0);
@@ -253,7 +255,6 @@ namespace CSharpBinding.FormattingStrategy {
 				// check for end of multi-line comment block
 				if (pc == '*') {
 					// restore the keyword and pop the multiline comment
-					commentEndedAt = linebuf.Length;
 					keyword = stack.PeekKeyword (0);
 					stack.Pop ();
 				}
@@ -293,6 +294,9 @@ namespace CSharpBinding.FormattingStrategy {
 				n = linebuf.Length;
 			
 			stack.Push (Inside.MultiLineComment, keyword, curLineNr, n);
+			
+			// drop '/' as the last significant char, it belongs to this comment block
+			rc = prc;
 		}
 		
 		void PushQuote (Inside inside)
@@ -343,7 +347,7 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 			
 			if ((inside & (Inside.PreProcessor | Inside.String | Inside.Comment)) != 0) {
-				// eat it
+				// won't be starting a CharLiteral, so ignore it
 				return;
 			}
 			
@@ -519,7 +523,7 @@ namespace CSharpBinding.FormattingStrategy {
 			switch (inside) {
 			case Inside.PreProcessor:
 				// pop the preprocesor state unless the eoln is escaped
-				if (lc != '\\') {
+				if (rc != '\\') {
 					keyword = stack.PeekKeyword (0);
 					stack.Pop ();
 				}
@@ -562,7 +566,7 @@ namespace CSharpBinding.FormattingStrategy {
 			default:
 				// Empty, FoldedStatement, and Block
 				
-				switch (lc) {
+				switch (rc) {
 				case '\0':
 					// nothing entered on this line
 					break;
@@ -593,10 +597,6 @@ namespace CSharpBinding.FormattingStrategy {
 					// handled elsewhere
 					break;
 				default:
-					// case '/':
-					if (commentEndedAt == lastNonLwsp)
-						break;
-					
 					if (stack.PeekLineNr (0) == curLineNr)
 						break;
 					
@@ -629,13 +629,13 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			canBeLabel = true;
 			
-			commentEndedAt = -1;
 			firstNonLwsp = -1;
 			lastNonLwsp = -1;
 			wordStart = -1;
 			
+			prc = '\0';
 			pc = '\0';
-			lc = '\0';
+			rc = '\0';
 			
 			curLineNr++;
 			cursor++;
@@ -644,7 +644,7 @@ namespace CSharpBinding.FormattingStrategy {
 		// This is the main logic of this class...
 		public void Push (char c)
 		{
-			Inside inside;
+			Inside inside, after;
 			
 			inside = stack.PeekInside (0);
 			
@@ -721,8 +721,8 @@ namespace CSharpBinding.FormattingStrategy {
 				break;
 			}
 			
-			inside = stack.PeekInside (0);
-			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0) {
+			after = stack.PeekInside (0);
+			if ((after & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0) {
 				if (!Char.IsWhiteSpace (c)) {
 					if (firstNonLwsp == -1)
 						firstNonLwsp = linebuf.Length;
@@ -738,20 +738,23 @@ namespace CSharpBinding.FormattingStrategy {
 					lastNonLwsp = linebuf.Length;
 					
 					if (c != ':') {
-						if (Char.IsWhiteSpace (pc) || lc == ':')
+						if (Char.IsWhiteSpace (pc) || rc == ':')
 							wordStart = linebuf.Length;
 						else if (pc == '\0')
 							wordStart = 0;
 					}
 				}
-			} else if (c != '\\' && (inside & (Inside.StringLiteral | Inside.CharLiteral)) != 0) {
+			} else if (c != '\\' && (after & (Inside.StringLiteral | Inside.CharLiteral)) != 0) {
 				// Note: PushBackSlash() will handle untoggling isEscaped if c == '\\'
 				isEscaped = false;
 			}
 			
 			pc = c;
-			if (!Char.IsWhiteSpace (c))
-				lc = c;
+			prc = rc;
+			if (inside != Inside.MultiLineComment &&
+			    after != Inside.MultiLineComment &&
+			    !Char.IsWhiteSpace (c))
+				rc = c;
 			
 			linebuf.Append (c);
 			

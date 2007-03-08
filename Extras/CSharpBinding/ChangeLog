@@ -1,3 +1,9 @@
+2007-03-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngine.cs: Got rid of the hack
+	that used this.commentEndedAt which was not only nasty, but didn't
+	even always work right to begin with.
+
 2007-03-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (KeyPress): Same sort of fix as
