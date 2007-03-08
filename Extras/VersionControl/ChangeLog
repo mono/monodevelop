@@ -1,5 +1,9 @@
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Subversion/Makefile.am: Fix build.
+
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.VersionControl.Subversion/UserPasswordDialog.cs,
 	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs,
 	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.SslServerTrustDialog.cs,

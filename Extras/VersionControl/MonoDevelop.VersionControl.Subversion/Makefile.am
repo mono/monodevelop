@@ -18,7 +18,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs \
-	MonoDevelop.VersionControl.Subversion.Gui \
 	MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs \
 	MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs \
 	MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs \
