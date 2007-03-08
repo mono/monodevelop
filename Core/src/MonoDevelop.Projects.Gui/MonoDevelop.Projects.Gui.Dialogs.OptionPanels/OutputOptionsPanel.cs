@@ -57,12 +57,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				}
 				
 				if (!Runtime.FileService.IsValidFileName(assemblyNameEntry.Text)) {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid assembly name specified"));
+					Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid assembly name specified"), (Gtk.Window) Toplevel, true);
 					return false;
 				}
 
 				if (!Runtime.FileService.IsValidFileName (outputPathButton.Filename)) {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory specified"));
+					Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid output directory specified"), (Gtk.Window) Toplevel, true);
 					return false;
 				}
 				

@@ -97,20 +97,20 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			{
 				if (selectTargetButton.Filename.Length > 0) {
 					if (!Runtime.FileService.IsValidFileName(selectTargetButton.Filename)) {
-						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy target specified"));
+						Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid deploy target specified"), (Gtk.Window) Toplevel, true);
 						return false;
 					}
 				}
 				
 				if (selectScriptButton.Filename.Length > 0) {
 					if (!Runtime.FileService.IsValidFileName(selectScriptButton.Filename)) {
-						Services.MessageService.ShowError (GettextCatalog.GetString ("Invalid deploy script specified"));
+						Services.MessageService.ShowError (null, GettextCatalog.GetString ("Invalid deploy script specified"), (Gtk.Window) Toplevel, true);
 						return false;				
 					}
 				}
 				
 				if (!System.IO.File.Exists(selectScriptButton.Filename)) {
-					Services.MessageService.ShowError (GettextCatalog.GetString ("Deploy script doesn't exist"));
+					Services.MessageService.ShowError (null, GettextCatalog.GetString ("Deploy script doesn't exist"), (Gtk.Window) Toplevel, true);
 					return false;
  				}
 			

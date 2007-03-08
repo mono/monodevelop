@@ -101,8 +101,10 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						store.AppendValues (edef.Entry.Name, action, edef);
 					}
 					
-					// tell the user we encountered and worked around an issue 
-					Services.MessageService.ShowError(GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."));
+					// tell the user we encountered and worked around an issue
+					Gtk.Application.Invoke (delegate {
+						Services.MessageService.ShowError (null, GettextCatalog.GetString ("The Solution Execute Definitions for this Solution were invalid. A new empty set of Execute Definitions has been created."), (Gtk.Window) Toplevel, true);
+					});
 				}
 					
  				entryTreeView.Selection.Changed += new EventHandler(SelectedEntryChanged);

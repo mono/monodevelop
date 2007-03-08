@@ -1,3 +1,12 @@
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Don't local-copy references.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	  Show errors in a modal dialog. Fixes bug #81085.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml: Change add-in versions to 0.13.
