@@ -1,27 +1,5 @@
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
-	2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
-	
-		* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:
-		* MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs: Merged with 
-		  OpenFileInSolutionDialog.
-		* MonoDevelop.Ide.mdp: Updated.
-	
-	2007-03-07  Zach Lute <zach.lute@gmail.com>
-	
-		* MonoDevelop.Ide.addin.xml,
-		* MonoDevelop.Ide.Commands/FileCommands.cs: Added OpenFileInSolution
-		  command and appropriate handler.
-		* MonoDevelop.Ide.mdp, Makefile.am, gtk-gui/gui.stetic,
-		  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
-		  MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs:
-		  Added OpenFileInSolutionDialog for rapid opening of files in the
-		  currently open solution.
-		* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs: Generated
-		  data from gui.stetic apparently changed slightly.
-
-2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
-
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:
 	* MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs: Merged with 
 	  OpenFileInSolutionDialog.
