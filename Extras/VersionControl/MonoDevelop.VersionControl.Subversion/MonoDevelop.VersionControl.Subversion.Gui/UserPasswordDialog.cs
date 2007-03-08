@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace MonoDevelop.VersionControl.Subversion.Gui
 {
 	public partial class UserPasswordDialog : Gtk.Dialog
 	{

@@ -1,5 +1,27 @@
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.VersionControl.Subversion/UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.SslServerTrustDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/SslServerTrustDialog.cs:
+	  Moved to .Gui namespace and directory.
+	* MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:
+	  Implemented dialogs for asking for client certificates.
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl.Subversion/Makefile.am: Updated.
+
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Diff/Diff.mdp, DiffWidget/DiffWidget.mdp,
 	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp: Don't
 	  local-copy references.

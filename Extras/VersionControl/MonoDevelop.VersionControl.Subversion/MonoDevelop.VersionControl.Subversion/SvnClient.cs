@@ -5,6 +5,7 @@ using System.Threading;
 
 using System.Runtime.InteropServices;
 using MonoDevelop.Core;
+using MonoDevelop.VersionControl.Subversion.Gui;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -163,26 +164,32 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			Console.WriteLine ("OnAuthSslClientCertPrompt: " + realm);
-			
-			svn_auth_cred_ssl_client_cert_t data = new svn_auth_cred_ssl_client_cert_t ();
-			data.cert_file = "";
-			data.may_save = 0;
-			
-			cred = apr.pcalloc (pool, data);
-			return IntPtr.Zero;
+			svn_auth_cred_ssl_client_cert_t data;
+			if (ClientCertificateDialog.Show (realm, may_save, out data)) {
+				cred = apr.pcalloc (pool, data);
+				return IntPtr.Zero;
+			}
+			else {
+				data.cert_file = "";
+				data.may_save = 0;
+				cred = apr.pcalloc (pool, data);
+				return GetCancelError (pool);
+			}
 		}
 		
 		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
 		{
-			Console.WriteLine ("OnAuthSslClientCertPwPrompt: " + realm);
-
-			svn_auth_cred_ssl_client_cert_pw_t data = new svn_auth_cred_ssl_client_cert_pw_t ();
-			data.password = "";
-			data.may_save = 0;
-
-			cred = apr.pcalloc (pool, data);
-			return IntPtr.Zero;
+			svn_auth_cred_ssl_client_cert_pw_t data;
+			if (ClientCertificatePasswordDialog.Show (realm, may_save, out data)) {
+				cred = apr.pcalloc (pool, data);
+				return IntPtr.Zero;
+			}
+			else {
+				data.password = "";
+				data.may_save = 0;
+				cred = apr.pcalloc (pool, data);
+				return GetCancelError (pool);
+			}
 		}
 		
 		// Wrappers for native interop

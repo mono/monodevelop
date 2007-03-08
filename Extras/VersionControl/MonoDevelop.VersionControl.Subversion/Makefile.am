@@ -6,6 +6,7 @@ ADDIN = MonoDevelop.VersionControl.Subversion.addin.xml
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -13,14 +14,19 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.VersionControl.Subversion.SslServerTrustDialog.cs \
-	gtk-gui/MonoDevelop.VersionControl.Subversion.UserPasswordDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs \
+	MonoDevelop.VersionControl.Subversion.Gui \
+	MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs \
+	MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs \
+	MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs \
+	MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs \
 	MonoDevelop.VersionControl.Subversion/LibApr.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionRepository.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs \
-	MonoDevelop.VersionControl.Subversion/SvnClient.cs \
-	SslServerTrustDialog.cs \
-	UserPasswordDialog.cs
+	MonoDevelop.VersionControl.Subversion/SvnClient.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

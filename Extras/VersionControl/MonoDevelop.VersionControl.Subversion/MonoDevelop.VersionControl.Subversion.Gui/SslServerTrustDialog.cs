@@ -2,7 +2,7 @@
 using System;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace MonoDevelop.VersionControl.Subversion.Gui
 {
 	public partial class SslServerTrustDialog : Gtk.Dialog
 	{
