@@ -50,14 +50,8 @@ namespace MonoDevelop.Ide.Commands
 	internal class GotoTypeHandler : CommandHandler
 	{
 	    protected override void Run()
-	    {	        
-	    	if (IdeApp.ProjectOperations.CurrentOpenCombine == null)
-	    	{
-	    		return;
-	    	}
-	    	
-	        GotoTypeDialog dialog = new GotoTypeDialog();
-	        dialog.Show();	               	        	        
+		{
+			OpenFileInSolutionDialog.Show (false);
 	    }
 	    
 	    protected override void Update(CommandInfo info)

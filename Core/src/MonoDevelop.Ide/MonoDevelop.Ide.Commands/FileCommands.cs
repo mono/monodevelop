@@ -42,7 +42,8 @@ namespace MonoDevelop.Ide.Commands
 		RecentProjectList,
 		ClearRecentProjects,
 		Exit,
-		ClearCombine
+		ClearCombine,
+		OpenFileInSolution
 	}
 	
 	internal class NewProjectHandler : CommandHandler
@@ -120,6 +121,14 @@ namespace MonoDevelop.Ide.Commands
 						IdeApp.Workbench.OpenDocument (name, fs.Encoding);
 				}	
 			}
+		}
+	}
+	
+	internal class OpenFileInSolutionHandler : CommandHandler
+	{
+		protected override void Run()
+		{
+			OpenFileInSolutionDialog.Show (true);
 		}
 	}
 	

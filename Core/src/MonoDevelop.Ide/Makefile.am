@@ -28,7 +28,7 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs \
@@ -89,11 +89,11 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
-	MonoDevelop.Ide.Gui.Dialogs/GotoTypeDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs \

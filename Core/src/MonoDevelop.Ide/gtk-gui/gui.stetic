@@ -4,33 +4,138 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog" design-size="400 300">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog" design-size="690 356">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
-    <property name="Title" translatable="yes">Go to Type</property>
-    <property name="WindowPosition">CenterOnParent</property>
+    <property name="Title" translatable="yes">Open File in Solution</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
+    <signal name="Shown" handler="HandleShown" />
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="BorderWidth">2</property>
         <child>
-          <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
+          <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="VscrollbarPolicy">Automatic</property>
-            <property name="HscrollbarPolicy">Automatic</property>
-            <property name="ShadowType">In</property>
-            <property name="BorderWidth">12</property>
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.TreeView" id="treeview1">
-                <property name="MemberName">treeview1</property>
-                <property name="CanFocus">True</property>
-                <signal name="RowActivated" handler="RowActivated" />
+              <widget class="Gtk.HBox" id="hbox1">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.ToggleButton" id="toggleFiles">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">Search _Files</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="IsDialogButton">False</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">Search _Files</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Active">True</property>
+                    <signal name="Clicked" handler="OnToggleFilesClicked" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ToggleButton" id="toggleTypes">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">Search _Types</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="IsDialogButton">False</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">Search _Types</property>
+                    <property name="UseUnderline">True</property>
+                    <signal name="Clicked" handler="OnToggleTypesClicked" />
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
               </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="VscrollbarPolicy">Automatic</property>
+                <property name="HscrollbarPolicy">Automatic</property>
+                <property name="ShadowType">EtchedIn</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="tree">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <signal name="RowActivated" handler="HandleRowActivate" />
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HBox" id="hbox2">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="label1">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">_Name:</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Entry" id="matchEntry">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="IsEditable">True</property>
+                    <property name="InvisibleChar">●</property>
+                    <signal name="KeyPressEvent" handler="HandleKeyPress" />
+                    <signal name="Changed" handler="HandleEntryChanged" />
+                    <signal name="Activated" handler="HandleEntryActivate" />
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -41,7 +146,7 @@
       </widget>
     </child>
     <child internal-child="ActionArea">
-      <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.GotoTypeDialog_ActionArea">
+      <widget class="Gtk.HButtonBox" id="MonoDevelop.Ide.OpenFileInSolutionDialog_ActionArea">
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="Spacing">10</property>
@@ -49,7 +154,7 @@
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
-          <widget class="Gtk.Button" id="button1">
+          <widget class="Gtk.Button" id="cancelButton">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
@@ -58,7 +163,6 @@
             <property name="StockId">gtk-cancel</property>
             <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
-            <signal name="Clicked" handler="CancelClicked" />
             <property name="label">gtk-cancel</property>
           </widget>
           <packing>
@@ -67,17 +171,17 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="button4">
+          <widget class="Gtk.Button" id="openButton">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
-            <property name="StockId">gtk-ok</property>
+            <property name="StockId">gtk-open</property>
             <property name="IsDialogButton">True</property>
-            <property name="ResponseId">-5</property>
-            <signal name="Clicked" handler="OkClicked" />
-            <property name="label">gtk-ok</property>
+            <property name="ResponseId">0</property>
+            <signal name="Clicked" handler="HandleOpen" />
+            <property name="label">gtk-open</property>
           </widget>
           <packing>
             <property name="Position">1</property>
