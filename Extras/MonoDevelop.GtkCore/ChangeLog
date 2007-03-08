@@ -1,5 +1,9 @@
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libstetic.dll: Updated from stetic module. Fixes NRE crash.
+
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Fix null ref.
 
