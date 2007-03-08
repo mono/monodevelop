@@ -33,7 +33,6 @@ Core/src/MonoDevelop.Dock/DockItemGrip.cs
 Core/src/MonoDevelop.Dock/layout.glade
 Core/src/MonoDevelop.Documentation/MonoDevelop.Documentation.addin.xml
 Core/src/MonoDevelop.Ide/Base.glade
-Core/src/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs
 Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Codons/PadCodon.cs
