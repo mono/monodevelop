@@ -1,3 +1,22 @@
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Diff/Diff.mdp, DiffWidget/DiffWidget.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp: Don't
+	  local-copy references.
+	* MonoDevelop.VersionControl.Subversion/UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/generated.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.SslServerTrustDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/gui.stetic,
+	  MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.UserPasswordDialog.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,
+	  MonoDevelop.VersionControl.Subversion/Makefile.am,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs,
+	  MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/LibApr.cs,
+	  MonoDevelop.VersionControl.Subversion/SslServerTrustDialog.cs:
+	  Implemented dialogs for entering user and password, and for
+	  accepting an invalid ssl certificate. Plugged those dialogs into
+	  the corresponding subversion callbacks.
+
 2007-02-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs:

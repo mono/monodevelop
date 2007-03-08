@@ -20,6 +20,13 @@ namespace MonoDevelop.VersionControl.Subversion
 			initialize ();
 		}
 		
+		public IntPtr pcalloc (IntPtr pool, object structure)
+		{
+			IntPtr ptr = pcalloc (pool, Marshal.SizeOf (structure.GetType ()));
+			Marshal.StructureToPtr (structure, ptr, false);
+			return ptr;
+		}
+		
 		public abstract void initialize();
 		public abstract IntPtr pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
 		public abstract void pool_destroy(IntPtr pool);
@@ -29,8 +36,15 @@ namespace MonoDevelop.VersionControl.Subversion
 		public abstract IntPtr array_make(IntPtr pool, int nelts, int elt_size);
 		public abstract IntPtr array_push(IntPtr arr);
 		public abstract IntPtr pstrdup(IntPtr pool, string s);
+		public abstract IntPtr pcalloc (IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size);
 		public abstract int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
 		public abstract int file_close (IntPtr file);
+		
+		public const int APR_OS_START_ERROR = 20000;
+		public const int APR_OS_ERRSPACE_SIZE = 50000;
+		public const int APR_OS_START_STATUS =(APR_OS_START_ERROR + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USERERR =(APR_OS_START_STATUS + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 	}
 
 	public class LibApr0: LibApr
@@ -46,6 +60,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override IntPtr array_make(IntPtr pool, int nelts, int elt_size) { return apr_array_make(pool, nelts, elt_size); }
 		public override IntPtr array_push(IntPtr arr) { return apr_array_push (arr); }
 		public override IntPtr pstrdup(IntPtr pool, string s) { return apr_pstrdup(pool, s); }
+		public override IntPtr pcalloc (IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size) { return apr_pcalloc (pool, size); }
 		public override int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool) { return apr_file_open(ref newf, fname, flag, perm, pool); } 
 		public override int file_close (IntPtr file) { return apr_file_close (file); } 	
 
@@ -58,6 +73,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		[DllImport(aprlib)] static extern IntPtr apr_array_make(IntPtr pool, int nelts, int elt_size);
 		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
 		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
+		[DllImport(aprlib)] static extern IntPtr apr_pcalloc(IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size);
 		[DllImport(aprlib)] static extern int apr_file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
 		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 	
 	}
@@ -75,6 +91,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override IntPtr array_make(IntPtr pool, int nelts, int elt_size) { return apr_array_make(pool, nelts, elt_size); }
 		public override IntPtr array_push(IntPtr arr) { return apr_array_push (arr); }
 		public override IntPtr pstrdup(IntPtr pool, string s) { return apr_pstrdup(pool, s); }
+		public override IntPtr pcalloc (IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size) { return apr_pcalloc (pool, size); }
 		public override int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool) { return apr_file_open(ref newf, fname, flag, perm, pool); } 
 		public override int file_close (IntPtr file) { return apr_file_close (file); } 	
 
@@ -87,6 +104,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		[DllImport(aprlib)] static extern IntPtr apr_array_make(IntPtr pool, int nelts, int elt_size);
 		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
 		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
+		[DllImport(aprlib)] static extern IntPtr apr_pcalloc(IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size);
 		[DllImport(aprlib)] static extern int apr_file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
 		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 	
 	}

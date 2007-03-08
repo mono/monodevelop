@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Threading;
 
 using System.Runtime.InteropServices;
 using MonoDevelop.Core;
@@ -61,12 +62,35 @@ namespace MonoDevelop.VersionControl.Subversion
 			ctxstruct.LogMsgFunc = new svn_client_get_commit_log_t(svn_client_get_commit_log_impl);
 
 			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
-			IntPtr item = apr.array_push (providers);
+			IntPtr item;
+			
+			item = apr.array_push (providers);
+			svn_client_get_simple_prompt_provider (item, new svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_username_prompt_provider (item, new svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_ssl_server_trust_prompt_provider (item, new svn_auth_ssl_server_trust_prompt_func_t (OnAuthSslServerTrustPrompt), IntPtr.Zero, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_ssl_client_cert_prompt_provider (item, new svn_auth_ssl_client_cert_prompt_func_t (OnAuthSslClientCertPrompt), IntPtr.Zero, 2, pool);
+
+			item = apr.array_push (providers);
+			svn_client_get_ssl_client_cert_pw_prompt_provider (item, new svn_auth_ssl_client_cert_pw_prompt_func_t (OnAuthSslClientCertPwPrompt), IntPtr.Zero, 2, pool);
+
+			item = apr.array_push (providers);
 			svn_client_get_simple_provider (item, pool);
 			
 			item = apr.array_push (providers);
 			svn_client_get_username_provider (item, pool);
 			
+			item = apr.array_push (providers);
+			svn_client_get_ssl_client_cert_file_provider (item, pool);
+			
+			item = apr.array_push (providers);
+			svn_client_get_ssl_client_cert_pw_file_provider (item, pool);
+
 			item = apr.array_push (providers);
 			svn_client_get_ssl_server_trust_file_provider (item, pool);
 			
@@ -88,7 +112,79 @@ namespace MonoDevelop.VersionControl.Subversion
 		~SvnClient() {
 			apr.pool_destroy(pool);
 		}
+		
+		static IntPtr GetCancelError (IntPtr pool)
+		{
+			svn_error_t error = new svn_error_t ();
+			error.apr_err = LibApr.APR_OS_START_USEERR;
+			error.message = "Operation cancelled.";
+			error.pool = pool;
+			return apr.pcalloc (pool, error);
+		}
+		
+		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+		{
+			svn_auth_cred_simple_t data; 
+			if (UserPasswordDialog.Show (user_name, realm, may_save != 0, out data)) {
+				cred = apr.pcalloc (pool, data);
+				return IntPtr.Zero;
+			}
+			else {
+				data.password = "";
+				data.username = "";
+				data.may_save = 0;
+				cred = apr.pcalloc (pool, data);
+				return GetCancelError (pool);
+			}
+		}
+		
+		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+		{
+			svn_auth_cred_username_t data;
+			if (UserPasswordDialog.Show (realm, may_save != 0, out data)) {
+				cred = apr.pcalloc (pool, data);
+				return IntPtr.Zero;
+			}
+			else {
+				data.username = "";
+				data.may_save = 0;
+				cred = apr.pcalloc (pool, data);
+				return GetCancelError (pool);
+			}
+		}
 
+		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+		{
+			svn_auth_cred_ssl_server_trust_t data;
+			SslServerTrustDialog.Show (realm, failures, may_save, cert_info, out data);
+			cred = apr.pcalloc (pool, data);
+			return IntPtr.Zero;
+		}
+		
+		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+		{
+			Console.WriteLine ("OnAuthSslClientCertPrompt: " + realm);
+			
+			svn_auth_cred_ssl_client_cert_t data = new svn_auth_cred_ssl_client_cert_t ();
+			data.cert_file = "";
+			data.may_save = 0;
+			
+			cred = apr.pcalloc (pool, data);
+			return IntPtr.Zero;
+		}
+		
+		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+		{
+			Console.WriteLine ("OnAuthSslClientCertPwPrompt: " + realm);
+
+			svn_auth_cred_ssl_client_cert_pw_t data = new svn_auth_cred_ssl_client_cert_pw_t ();
+			data.password = "";
+			data.may_save = 0;
+
+			cred = apr.pcalloc (pool, data);
+			return IntPtr.Zero;
+		}
+		
 		// Wrappers for native interop
 		
 		public string Version {
@@ -755,10 +851,12 @@ namespace MonoDevelop.VersionControl.Subversion
 		private const string svnclientlib = "libsvn_client-1.so.0";
 		
 		private struct svn_error_t {
-			public int apr_err;
-			public string message;
+			[MarshalAs (UnmanagedType.SysInt)] public int apr_err;
+			[MarshalAs (UnmanagedType.LPStr)] public string message;
 			public IntPtr svn_error_t_child;
 			public IntPtr pool;
+			[MarshalAs (UnmanagedType.LPStr)] public string file;
+			[MarshalAs (UnmanagedType.SysInt)] public int line;
 		}
 		
 		private struct svn_version_t {
@@ -883,6 +981,41 @@ namespace MonoDevelop.VersionControl.Subversion
 			public int copy_from_rev;
 		}
 		
+		internal struct svn_auth_cred_simple_t {
+			[MarshalAs (UnmanagedType.LPStr)] public string username;
+			[MarshalAs (UnmanagedType.LPStr)] public string password;
+			[MarshalAs (UnmanagedType.SysInt)] public int may_save;
+		}
+		
+		internal struct svn_auth_cred_username_t {
+			[MarshalAs (UnmanagedType.LPStr)] public string username;
+			[MarshalAs (UnmanagedType.SysInt)] public int may_save;
+		}
+		
+		internal struct svn_auth_cred_ssl_server_trust_t {
+			[MarshalAs (UnmanagedType.SysInt)] public int may_save;
+			public uint accepted_failures;
+		}
+		
+		internal struct svn_auth_cred_ssl_client_cert_t {
+			[MarshalAs (UnmanagedType.LPStr)] public string cert_file;
+			[MarshalAs (UnmanagedType.SysInt)] public int may_save;
+		}
+		
+		internal struct svn_auth_cred_ssl_client_cert_pw_t {
+			[MarshalAs (UnmanagedType.LPStr)] public string password;
+			[MarshalAs (UnmanagedType.SysInt)] public int may_save;
+		}
+		
+		internal struct svn_auth_ssl_server_cert_info_t {
+			[MarshalAs (UnmanagedType.LPStr)] public string hostname;
+			[MarshalAs (UnmanagedType.LPStr)] public string fingerprint;
+			[MarshalAs (UnmanagedType.LPStr)] public string valid_from;
+			[MarshalAs (UnmanagedType.LPStr)] public string valid_until;
+			[MarshalAs (UnmanagedType.LPStr)] public string issuer_dname;
+			[MarshalAs (UnmanagedType.LPStr)] public string ascii_cert;
+		}
+		
 		internal enum NotifyAction {
 			Add,
 			Copy,
@@ -921,6 +1054,23 @@ namespace MonoDevelop.VersionControl.Subversion
 		delegate void svn_wc_status_func_t(IntPtr baton, IntPtr path,
 			ref svn_wc_status_t status);
 		
+		// Certificate is not yet valid.
+		public const uint SVN_AUTH_SSL_NOTYETVALID = 0x00000001;
+		// Certificate has expired.
+		public const uint SVN_AUTH_SSL_EXPIRED = 0x00000002;
+		// Certificate's CN (hostname) does not match the remote hostname.
+		public const uint SVN_AUTH_SSL_CNMISMATCH = 0x00000004;
+		// Certificate authority is unknown (i.e. not trusted)
+		public const uint SVN_AUTH_SSL_UNKNOWNCA = 0x00000008;
+		// Other failure. This can happen if neon has introduced a new failure bit that we do not handle yet. */
+		public const uint SVN_AUTH_SSL_OTHER = 0x40000000;
+		
+		delegate IntPtr svn_auth_simple_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool);
+		delegate IntPtr svn_auth_username_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool);
+		delegate IntPtr svn_auth_ssl_server_trust_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool);
+		delegate IntPtr svn_auth_ssl_client_cert_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool);
+		delegate IntPtr svn_auth_ssl_client_cert_pw_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool);
+		
 		delegate IntPtr svn_log_message_receiver_t(IntPtr baton,
 			IntPtr apr_hash_changed_paths, int revision, IntPtr author,
 			IntPtr date, IntPtr message, IntPtr pool);
@@ -937,8 +1087,15 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_username_prompt_provider (IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_prompt_provider (IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, [MarshalAs (UnmanagedType.SysInt)] int retry_limit, IntPtr pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_version();
 		

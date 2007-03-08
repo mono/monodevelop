@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Subversion.dll
 ADDIN = MonoDevelop.VersionControl.Subversion.addin.xml
 
 REFS =  \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/VersionControlAddIn.dll \
@@ -12,10 +13,14 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.SslServerTrustDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Subversion.UserPasswordDialog.cs \
 	MonoDevelop.VersionControl.Subversion/LibApr.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionRepository.cs \
 	MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs \
-	MonoDevelop.VersionControl.Subversion/SvnClient.cs
+	MonoDevelop.VersionControl.Subversion/SvnClient.cs \
+	SslServerTrustDialog.cs \
+	UserPasswordDialog.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
