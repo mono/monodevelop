@@ -1,3 +1,8 @@
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Fix null ref.
+
 2007-03-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml: Register a new toolbox loader. Removed

@@ -75,9 +75,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set {
 				this.targetObject = value;
 				if (targetObject != null) {
-					IClass cls = gproject.FindClass (GetClassName (targetObject)); 
-					className = cls.FullyQualifiedName;
-					classFile = cls.Region.FileName;
+					IClass cls = gproject.FindClass (GetClassName (targetObject));
+					if (cls != null) {
+						className = cls.FullyQualifiedName;
+						classFile = cls.Region.FileName;
+					}
 				}
 			}
 		}
