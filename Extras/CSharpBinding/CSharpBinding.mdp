@@ -14,7 +14,6 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./CSharp.glade" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/ConsoleProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/EmptyCSharpFile.xft.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./templates/EmptyProject.xpt.xml" subtype="Code" buildaction="EmbedAsResource" />
@@ -75,6 +74,7 @@
     <File name="./Gui/OverrideCompletionData.cs" subtype="Code" buildaction="Compile" />
     <File name="./FormattingStrategy/CSharpIndentEngine.cs" subtype="Code" buildaction="Compile" />
     <File name="./FormattingStrategy/CSharpIndentEngineStack.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FormattingStrategy/CSharpFormattingProperties.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />

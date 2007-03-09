@@ -1,5 +1,13 @@
 2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* FormattingStrategy/CSharpIndentEngine.cs (PushColon): Respect
+	the style settings for indenting goto labels.
+
+	* FormattingStrategy/CSharpFormattingProperties.cs: New source
+	file for c#-specific formatting properties.
+
+2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
 	* FormattingStrategy/CSharpIndentEngine.cs (Push): Fixed a goof
 	from yesterday's commit.
 

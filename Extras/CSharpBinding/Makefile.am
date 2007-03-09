@@ -43,6 +43,7 @@ Parser/ExpressionFinder.cs \
 CSharpAmbience.cs \
 Project/CSharpCompilerParameters.cs \
 CSharpLanguageBinding.cs \
+FormattingStrategy/CSharpFormattingProperties.cs \
 FormattingStrategy/CSharpFormattingStrategy.cs \
 FormattingStrategy/CSharpIndentEngineStack.cs \
 FormattingStrategy/CSharpIndentEngine.cs \

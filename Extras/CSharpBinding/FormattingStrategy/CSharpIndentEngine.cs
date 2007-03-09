@@ -3,6 +3,8 @@ using System.Text;
 
 using MonoDevelop.SourceEditor.Properties;
 
+using CSharpBinding.FormattingStrategy.Properties;
+
 namespace CSharpBinding.FormattingStrategy {
 	public partial class CSharpIndentEngine : ICloneable {
 		IndentStack stack;
@@ -365,7 +367,7 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushColon (Inside inside)
 		{
-			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
+			if (inside != Inside.Block)
 				return;
 			
 			// can't be a case/label if there's no preceeding text
@@ -381,21 +383,22 @@ namespace CSharpBinding.FormattingStrategy {
 				TrimIndent ();
 				needsReindent = true;
 			} else if (canBeLabel) {
-				if (inside == Inside.FoldedStatement) {
-					// not a label, probably a multi-line ternary statement
-					return;
+				GotoLabelIndentStyle style = FormattingProperties.GotoLabelIndentStyle;
+				
+				// indent goto labels as specified
+				switch (style) {
+				case GotoLabelIndentStyle.LeftJustify:
+					needsReindent = true;
+					curIndent = " ";
+					break;
+				case GotoLabelIndentStyle.OneLess:
+					needsReindent = true;
+					TrimIndent ();
+					curIndent += " ";
+					break;
+				default:
+					break;
 				}
-				
-				// goto label
-				
-				/* FIXME: make this configurable...
-				 * options:
-				 * a) left-justified (+1 space)
-				 * b) up 1 level of indent
-				 * c) no change
-				 **/
-				curIndent = " ";
-				needsReindent = true;
 			}
 		}
 		
