@@ -21,6 +21,7 @@ REFS = -r:System \
 	$(GLADE_SHARP_LIBS)
 
 FILES = \
+Gui/FormattingPanel.cs \
 Gui/ChooseRuntimePanel.cs \
 Gui/CodeGenerationPanel.cs \
 Gui/CSharpTextEditorExtension.cs \
@@ -50,10 +51,10 @@ FormattingStrategy/CSharpIndentEngine.cs \
 CSharpBindingCompilerManager.cs \
 CSharpEnhancedCodeProvider.cs \
 gtk-gui/generated.cs \
+gtk-gui/CSharpBinding.FormattingPanelWidget.cs \
 gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
 
 RES = \
-CSharp.glade \
 templates/ConsoleProject.xpt.xml \
 templates/EmptyCSharpFile.xft.xml \
 templates/EmptyProject.xpt.xml \

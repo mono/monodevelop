@@ -96,6 +96,16 @@
 	<Extension path = "/AddIns/DefaultTextEditor/Formatter/C#">
 		<Class id ="CSharpFormattingStrategy" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />
 	</Extension>
+
+	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<Conditional activelanguage="C#">
+			<DialogPanel id = "Formatting"
+			             _label = "Formatting"
+			             insertafter = "Behavior"
+			             insertbefore = "SyntaxHighlighting"
+			             class = "CSharpBinding.FormattingPanel"/>
+		</Conditional>
+	</Extension>
 	
 	<Extension path = "/Workspace/Icons">
 		<!-- C# -->

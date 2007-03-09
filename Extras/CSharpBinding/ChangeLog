@@ -1,5 +1,17 @@
 2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* CSharp.glade: Removed, no longer in use.
+
+	* CSharpBinding.addin.xml: Add the c# Formatting options panel to
+	the options dialog under the Text Editor options.
+
+	* gtk-gui/gui.stetic: Added a new custom FormattingPanelWidget.
+
+	* Gui/FormattingPanel.cs: New source file implementing a
+	"Formatting" options panel specific to c#.
+
+2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
 	* FormattingStrategy/CSharpIndentEngine.cs (PushColon): Respect
 	the style settings for indenting goto labels.
 

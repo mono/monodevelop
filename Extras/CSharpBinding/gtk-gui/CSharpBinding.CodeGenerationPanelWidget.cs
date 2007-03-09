@@ -79,7 +79,7 @@ namespace CSharpBinding {
             Stetic.Gui.Initialize();
             // Widget CSharpBinding.CodeGenerationPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Events = ((Gdk.EventMask)(256));
+            this.Events = ((Gdk.EventMask)(0));
             this.Name = "CSharpBinding.CodeGenerationPanelWidget";
             // Container child CSharpBinding.CodeGenerationPanelWidget.Gtk.Container+ContainerChild
             this.vbox62 = new Gtk.VBox();

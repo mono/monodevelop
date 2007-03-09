@@ -6,6 +6,7 @@
   </import>
   <widget class="Gtk.Bin" id="CSharpBinding.CodeGenerationPanelWidget" design-size="356 416">
     <property name="MemberName" />
+    <property name="Events">0</property>
     <child>
       <widget class="Gtk.VBox" id="vbox62">
         <property name="MemberName" />
@@ -519,6 +520,197 @@
           <packing>
             <property name="Position">3</property>
             <property name="AutoSize">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="CSharpBinding.FormattingPanelWidget" design-size="320 240">
+    <property name="MemberName" />
+    <property name="Events">0</property>
+    <child>
+      <widget class="Gtk.VBox" id="container">
+        <property name="MemberName" />
+        <property name="Events">0</property>
+        <property name="Spacing">12</property>
+        <child>
+          <widget class="Gtk.Label" id="Indentation">
+            <property name="MemberName" />
+            <property name="Events">0</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">&lt;b&gt;Indentation&lt;/b&gt;</property>
+            <property name="UseMarkup">True</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hboxIndentation">
+            <property name="MemberName" />
+            <property name="Events">0</property>
+            <child>
+              <widget class="Gtk.Label" id="indentationSpacer">
+                <property name="MemberName" />
+                <property name="WidthRequest">18</property>
+                <property name="Events">0</property>
+                <property name="LabelProp" translatable="yes" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.VBox" id="vboxIndentation">
+                <property name="MemberName" />
+                <property name="Events">0</property>
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.CheckButton" id="indentCaseLabels">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
+                    <property name="Label" translatable="yes">Indent case labels</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">False</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="LabelIndentation">
+            <property name="MemberName" />
+            <property name="Events">0</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">&lt;b&gt;Label Indentation&lt;/b&gt;</property>
+            <property name="UseMarkup">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hboxLabelIndentation">
+            <property name="MemberName" />
+            <property name="Events">0</property>
+            <child>
+              <widget class="Gtk.Label" id="labelIndentationSpacer">
+                <property name="MemberName" />
+                <property name="WidthRequest">18</property>
+                <property name="Events">0</property>
+                <property name="LabelProp" translatable="yes" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.VBox" id="vboxLabelIndentation">
+                <property name="MemberName" />
+                <property name="Events">0</property>
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.RadioButton" id="indentGotoLabelsLeftJustify">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
+                    <property name="Label" translatable="yes">Place goto labels in leftmost column</property>
+                    <property name="Active">True</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Group">LabelIndentation</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.RadioButton" id="indentGotoLabelsUpOneLevel">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
+                    <property name="Label" translatable="yes">Place goto labels one indent less than current</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Group">LabelIndentation</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.RadioButton" id="indentGotoLabelsNormally">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Events">0</property>
+                    <property name="Label" translatable="yes">Indent goto labels normally</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Group">LabelIndentation</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
