@@ -1,3 +1,8 @@
+2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs: Rearranged some logic a bit to
+	optimize seeking in the text buffer using arrow keys.
+
 2007-03-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngine.cs: Got rid of the hack

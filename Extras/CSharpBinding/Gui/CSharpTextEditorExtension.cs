@@ -42,6 +42,22 @@ namespace CSharpBinding
 			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
 				return base.KeyPress (key, modifier);
 			
+			switch (key) {
+			case Gdk.Key.KP_Enter:
+			case Gdk.Key.Return:
+				reindent = true;
+				insert = false;
+				c = '\n';
+				break;
+			case Gdk.Key.Tab:
+				c = '\t';
+				break;
+			default:
+				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0)
+					return base.KeyPress (key, modifier);
+				break;
+			}
+			
 			cursor = Editor.CursorPosition;
 			
 			if (cursor < engine.Cursor) {
@@ -69,18 +85,23 @@ namespace CSharpBinding
 				}
 			}
 			
-			switch (key) {
-			case Gdk.Key.Tab:
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition)
+			if (c == '\t') {
+				// Tab is a special case... depending on the context, the user may be
+				// requesting a re-indent, tab-completing, or may just be wanting to
+				// insert a literal tab.
+				
+				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
+					// FIXME: replace with an appropriate indent for the line
+					// containing the cursor position Editor.SelectionStartPosition?
 					return base.KeyPress (key, modifier);
+				}
 				
 				if (!engine.IsInsideVerbatimString) {
 					if (base.KeyPress (key, modifier)) {
 						// parent implementation handled this
 						
-						// if chars have been inserted but not
-						// LWSP, then the user probably just
-						// tab-completed something - we're done.
+						// if chars have been inserted but not LWSP, then the user
+						// probably just tab-completed something - we're done.
 						if (Editor.CursorPosition > cursor &&
 						    !Char.IsWhiteSpace (Editor.GetCharAt (cursor)))
 							return true;
@@ -96,18 +117,6 @@ namespace CSharpBinding
 					reindent = true;
 					insert = false;
 				}
-				c = '\t';
-				break;
-			case Gdk.Key.Return:
-			case Gdk.Key.KP_Enter:
-				reindent = true;
-				insert = false;
-				c = '\n';
-				break;
-			default:
-				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0)
-					return base.KeyPress (key, modifier);
-				break;
 			}
 			
 			if (insert)
@@ -138,8 +147,7 @@ namespace CSharpBinding
 				cursor++;
 				
 				if (Editor.CursorPosition > cursor) {
-					// FIXME: gotta figure out what is doing this...
-				 	System.Console.WriteLine ("seems base.KeyPress() indented for us? delete that shiz");
+					// TODO: figure out a way to prevent our base class from auto-indenting for us?
 					Editor.DeleteText (cursor, Editor.CursorPosition - cursor);
 				}
 				
