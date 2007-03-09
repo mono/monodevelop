@@ -1,7 +1,11 @@
 2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
-	* Gui/CSharpTextEditorExtension.cs: Rearranged some logic a bit to
-	optimize seeking in the text buffer using arrow keys.
+	* FormattingStrategy/CSharpIndentEngine.cs (Push): Fixed a goof
+	from yesterday's commit.
+
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Rearranged some
+	logic a bit to optimize seeking in the text buffer using arrow
+	keys.
 
 2007-03-08  Jeffrey Stedfast  <fejj@novell.com>
 

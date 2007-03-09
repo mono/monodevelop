@@ -7,6 +7,9 @@ namespace CSharpBinding.FormattingStrategy {
 	public partial class CSharpIndentEngine : ICloneable {
 		IndentStack stack;
 		
+		// Ponder: should linebuf be dropped in favor of a
+		// 'wordbuf' and a 'int curLineLen'? No real need to
+		// keep a full line buffer.
 		StringBuilder linebuf;
 		
 		string keyword;
@@ -25,7 +28,8 @@ namespace CSharpBinding.FormattingStrategy {
 		// previous char in the line
 		char pc;
 		
-		// last significant (real) char in the line (e.g. non-whitespace)
+		// last significant (real) char in the line
+		// (e.g. non-whitespace, not in a comment, etc)
 		char rc;
 		
 		// previous last significant (real) char in the line
@@ -261,8 +265,12 @@ namespace CSharpBinding.FormattingStrategy {
 			} else {
 				// FoldedStatement, Block, Attribute or ParenList
 				// check for the start of a single-line comment
-				if (pc == '/')
+				if (pc == '/') {
 					stack.Push (Inside.LineComment, keyword, curLineNr, 0);
+					
+					// drop the previous '/': it belongs to this comment
+					rc = prc;
+				}
 			}
 		}
 		
@@ -295,7 +303,7 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			stack.Push (Inside.MultiLineComment, keyword, curLineNr, n);
 			
-			// drop '/' as the last significant char, it belongs to this comment block
+			// drop the previous '/': it belongs to this comment block
 			rc = prc;
 		}
 		
@@ -565,7 +573,6 @@ namespace CSharpBinding.FormattingStrategy {
 				break;
 			default:
 				// Empty, FoldedStatement, and Block
-				
 				switch (rc) {
 				case '\0':
 					// nothing entered on this line
@@ -597,8 +604,10 @@ namespace CSharpBinding.FormattingStrategy {
 					// handled elsewhere
 					break;
 				default:
-					if (stack.PeekLineNr (0) == curLineNr)
+					if (stack.PeekLineNr (0) == curLineNr) {
+						// is this right? I don't rememebr why I did this...
 						break;
+					}
 					
 					if (inside == Inside.Block) {
 						if (pc == ',') {
@@ -751,8 +760,10 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			pc = c;
 			prc = rc;
-			if (inside != Inside.MultiLineComment &&
-			    after != Inside.MultiLineComment &&
+			// Note: even though PreProcessor directive chars are insignificant, we do need to
+			//       check for rc != '\\' at the end of a line.
+			if ((inside & Inside.Comment) == 0 &&
+			    (after & Inside.Comment) == 0 &&
 			    !Char.IsWhiteSpace (c))
 				rc = c;
 			
