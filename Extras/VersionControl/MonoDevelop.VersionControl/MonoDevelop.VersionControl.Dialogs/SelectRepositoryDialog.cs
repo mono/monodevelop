@@ -146,17 +146,20 @@ namespace MonoDevelop.VersionControl.Dialogs
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
-					LoadRepositories ();
+					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
 				}
 			}
 		}
 
 		protected virtual void OnButtonRemoveClicked(object sender, System.EventArgs e)
 		{
-			Repository rep = GetSelectedRepository ();
-			if (rep != null) {
-				VersionControlService.RemoveRepository (rep);
-				LoadRepositories ();
+			TreeIter iter;
+			TreeModel model;
+			if (repoTree.Selection.GetSelected (out model, out iter)) {
+				VersionControlService.RemoveRepository (
+					(Repository) store.GetValue (iter, RepositoryCol));
+				VersionControlService.SaveConfiguration ();
+				store.Remove (ref iter);
 			}
 		}
 
@@ -166,10 +169,22 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Repository rep = GetSelectedRepository ();
 			if (rep != null) {
 				using (EditRepositoryDialog dlg = new EditRepositoryDialog (rep)) {
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok)
-						VersionControlService.SaveConfiguration ();
-					else
+					if (dlg.Run () != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
+						return;
+					}
+
+					VersionControlService.SaveConfiguration ();
+
+					TreeIter iter;
+					TreeModel model;
+					if (repoTree.Selection.GetSelected (out model, out iter)) {
+						// Update values
+						store.SetValue (iter, RepoNameCol, rep.Name);
+						store.SetValue (iter, VcsName, rep.VersionControlSystem.Name);
+						store.SetValue (iter, FilledCol, false);
+					}
+					UpdateRepoDescription ();
 				}
 			}
 			} catch (Exception ex) {

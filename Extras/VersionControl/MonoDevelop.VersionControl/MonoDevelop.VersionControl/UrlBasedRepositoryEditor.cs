@@ -21,7 +21,6 @@ namespace MonoDevelop.VersionControl
 			updating = true;
 			repositoryUrlEntry.Text = repo.Url;
 			Fill ();
-			comboProtocol.Active = 0;
 			UpdateControls ();
 			updating = false;
 		}
