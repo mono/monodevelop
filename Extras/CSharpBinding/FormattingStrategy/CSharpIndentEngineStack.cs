@@ -23,7 +23,7 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			FoldedStatement    = (1 << 8),
 			Block              = (1 << 9),
-		};
+		}
 		
 		private class IndentStack : ICloneable {
 			readonly static int INITIAL_CAPACITY = 16;
