@@ -26,6 +26,15 @@ namespace CSharpBinding.FormattingStrategy.Properties {
 			                                                         new DefaultProperties ()));
 		}
 		
+		public static bool IndentCaseLabels {
+			get {
+				return (bool) properties.GetProperty ("IndentCaseLabels", false);
+			}
+			set {
+				properties.SetProperty ("IndentCaseLabels", value);
+			}
+		}
+		
 		public static GotoLabelIndentStyle GotoLabelIndentStyle {
 			get {
 				return (GotoLabelIndentStyle)

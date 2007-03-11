@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 
+using CSharpBinding.FormattingStrategy.Properties;
+
 namespace CSharpBinding.FormattingStrategy {
 	public partial class CSharpIndentEngine : ICloneable {
 		public enum Inside {
@@ -23,6 +25,10 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			FoldedStatement    = (1 << 8),
 			Block              = (1 << 9),
+			Case               = (1 << 10),
+			
+			FoldedOrBlock      = (FoldedStatement | Block),
+			FoldedBlockOrCase  = (FoldedStatement | Block | Case)
 		}
 		
 		private class IndentStack : ICloneable {
@@ -95,7 +101,7 @@ namespace CSharpBinding.FormattingStrategy {
 							n = stack[sp].nSpaces;
 					} else {
 						while (sp >= 0) {
-							if ((stack[sp].inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
+							if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
 								indentBuilder.Append (stack[sp].indent);
 								break;
 							}
@@ -113,9 +119,9 @@ namespace CSharpBinding.FormattingStrategy {
 					}
 					
 					indentBuilder.Append (' ', nSpaces - n);
-				} else if ((inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
+				} else if (inside == Inside.Case) {
 					while (sp >= 0) {
-						if ((stack[sp].inside & (Inside.FoldedStatement | Inside.Block)) != 0) {
+						if ((stack[sp].inside & Inside.FoldedOrBlock) != 0) {
 							indentBuilder.Append (stack[sp].indent);
 							break;
 						}
@@ -123,11 +129,27 @@ namespace CSharpBinding.FormattingStrategy {
 						sp--;
 					}
 					
+					if (FormattingProperties.IndentCaseLabels)
+						indentBuilder.Append ('\t');
+					
+					nSpaces = 0;
+				} else if ((inside & (Inside.FoldedOrBlock)) != 0) {
+					while (sp >= 0) {
+						if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
+							indentBuilder.Append (stack[sp].indent);
+							break;
+						}
+						
+						sp--;
+					}
+					
+					Inside parent = size > 0 ? stack[size - 1].inside : Inside.Empty;
+					
 					// This is a workaround to make anonymous methods indent nicely
-					if (size > 0 && (stack[size - 1].inside & Inside.ParenList) != 0)
+					if (parent == Inside.ParenList)
 						stack[size - 1].indent = indentBuilder.ToString ();
 					
-					if (nSpaces != -1)
+					if (parent != Inside.Case || (inside == Inside.Block && nSpaces != -1))
 						indentBuilder.Append ('\t');
 					
 					nSpaces = 0;

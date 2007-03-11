@@ -17,8 +17,7 @@ namespace CSharpBinding {
 		{
 			Build ();
 			
-			// disable until implemented
-			indentCaseLabels.Sensitive = false;
+			indentCaseLabels.Active = FormattingProperties.IndentCaseLabels;
 			
 			// set checkbox/radiobutton values
 			switch (FormattingProperties.GotoLabelIndentStyle) {
@@ -36,6 +35,8 @@ namespace CSharpBinding {
 		
 		public bool Store ()
 		{
+			FormattingProperties.IndentCaseLabels = indentCaseLabels.Active;
+			
 			if (indentGotoLabelsLeftJustify.Active)
 				FormattingProperties.GotoLabelIndentStyle = GotoLabelIndentStyle.LeftJustify;
 			else if (indentGotoLabelsUpOneLevel.Active)

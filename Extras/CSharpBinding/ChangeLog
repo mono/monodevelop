@@ -1,3 +1,22 @@
+2007-03-10  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): We now
+	have an Inside.Case type to implement.
+
+	* FormattingStrategy/CSharpIndentEngine.cs (PushColon): Push a
+	Inside.Case onto the stack if appropriate and check
+	FormattingProperties.IndentCaseLabels to see how we should handle
+	indenting for case labels.
+	(PushSemicolon): Always set keyword to String.Empty
+	(PushOpenBrace): Changed the way we handle psuing a new block onto
+	the stack if we our parent is Inside.Case (the logic is the same,
+	but the check is a bit different now).
+	(PushCloseBrace): If our parent is Inside.Case, then we can pop
+	that along with the switch block.
+
+	* FormattingStrategy/CSharpFormattingProperties.cs
+	(IndentCaseLabels): Implemented.
+
 2007-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* CSharp.glade: Removed, no longer in use.

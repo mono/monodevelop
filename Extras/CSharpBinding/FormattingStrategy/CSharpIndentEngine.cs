@@ -176,6 +176,7 @@ namespace CSharpBinding.FormattingStrategy {
 			switch (stack.PeekInside (0)) {
 			case Inside.FoldedStatement:
 			case Inside.Block:
+			case Inside.Case:
 				if (curIndent == String.Empty)
 					return;
 				
@@ -367,7 +368,7 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushColon (Inside inside)
 		{
-			if (inside != Inside.Block)
+			if (inside != Inside.Block && inside != Inside.Case)
 				return;
 			
 			// can't be a case/label if there's no preceeding text
@@ -380,8 +381,22 @@ namespace CSharpBinding.FormattingStrategy {
 				if (stack.PeekKeyword (0) != "switch")
 					return;
 				
-				TrimIndent ();
-				needsReindent = true;
+				if (inside == Inside.Case) {
+					stack.Pop ();
+					
+					string newIndent = stack.PeekIndent (0);
+					if (curIndent != newIndent) {
+						curIndent = newIndent;
+						needsReindent = true;
+					}
+				}
+				
+				if (!FormattingProperties.IndentCaseLabels) {
+					needsReindent = true;
+					TrimIndent ();
+				}
+				
+				stack.Push (Inside.Case, "switch", curLineNr, 0);
 			} else if (canBeLabel) {
 				GotoLabelIndentStyle style = FormattingProperties.GotoLabelIndentStyle;
 				
@@ -404,12 +419,14 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushSemicolon (Inside inside)
 		{
-			if (inside != Inside.FoldedStatement)
+			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
 			
-			// chain-pop folded statements
-			while (stack.PeekInside (0) == Inside.FoldedStatement)
-				stack.Pop ();
+			if (inside == Inside.FoldedStatement) {
+				// chain-pop folded statements
+				while (stack.PeekInside (0) == Inside.FoldedStatement)
+					stack.Pop ();
+			}
 			
 			keyword = String.Empty;
 		}
@@ -496,9 +513,12 @@ namespace CSharpBinding.FormattingStrategy {
 					curIndent = stack.PeekIndent (0);
 				
 				stack.Push (Inside.Block, pKeyword, curLineNr, 0);
-			} else if (stack.PeekKeyword (0) == "switch" && (keyword == "default" || keyword == "case")) {
-				// this is the Emacs-Way(tm) but we could make it configurable
+			} else if (inside == Inside.Case && (keyword == "default" || keyword == "case")) {
+				// e.g. "case 0: {" or "case 0:\n{"
 				stack.Push (Inside.Block, keyword, curLineNr, -1);
+				
+				if (firstNonLwsp == -1)
+					TrimIndent ();
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
 			}
@@ -513,19 +533,29 @@ namespace CSharpBinding.FormattingStrategy {
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
 			
-			keyword = String.Empty;
-			
-			if (inside != Inside.Block) {
+			if (inside != Inside.Block && inside != Inside.Case) {
 				Console.WriteLine ("can't pop a '{' if we ain't got one?");
 				return;
 			}
 			
+			if (inside == Inside.Case) {
+				Console.WriteLine ("popping case statement");
+				curIndent = stack.PeekIndent (1);
+				keyword = stack.PeekKeyword (0);
+				inside = stack.PeekInside (1);
+				stack.Pop ();
+			}
+			
 			// pop this block off the stack
-			// Note: do not restore the keyword
+			keyword = stack.PeekKeyword (0);
+			if (keyword != "case" && keyword != "default")
+				keyword = String.Empty;
+			
 			stack.Pop ();
+			
 			if (firstNonLwsp == -1) {
-				TrimIndent ();
 				needsReindent = true;
+				TrimIndent ();
 			}
 		}
 		
@@ -811,6 +841,9 @@ namespace CSharpBinding.FormattingStrategy {
 						Console.WriteLine ("\t{0}-statement", stack.PeekKeyword (i));
 					else
 						Console.WriteLine ("\tfolded statement?");
+					break;
+				case Inside.Case:
+					Console.WriteLine ("\tcase statement");
 					break;
 				case Inside.Block:
 					if (stack.PeekKeyword (i) != String.Empty)
