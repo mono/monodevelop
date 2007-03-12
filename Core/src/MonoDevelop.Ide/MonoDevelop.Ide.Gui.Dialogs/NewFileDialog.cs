@@ -467,6 +467,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
+		void NameActivated (object o, EventArgs e)
+		{
+			okButton.Click ();
+		}
+		
 		void InitializeComponents()
 		{
 			catStore = new Gtk.TreeStore (typeof(string), typeof(ArrayList), typeof(ArrayList), typeof(Gdk.Pixbuf));
@@ -516,6 +521,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameEntry = new Entry ();
 			nameBox.PackStart (nameEntry, true, true, 6);
 			nameEntry.Changed += new EventHandler (NameChanged);
+			nameEntry.Activated += new EventHandler (NameActivated);
 			this.VBox.PackStart (nameBox, false, false, 6);
 			
 			CombineEntryCollection projects = null;

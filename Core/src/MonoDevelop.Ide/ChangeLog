@@ -6,6 +6,9 @@
 	(InitializeComponents): If the parentProject is null, add UI
 	elements to enable the user to choose which project (and what
 	path) he'd like to add the new source file to (or not).
+	(InitializeComponents): Add a Activated signal handler to the
+	nameEntry widget which will emit the Clicked event on the
+	okButton.
 
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
