@@ -1,3 +1,14 @@
+2007-03-11  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Simplified a bit.
+	(KeyPress): Changed the logic for the tab-completion check, if
+	more than a single char has been inserted then it should be
+	considered to be tab-completion.
+	(KeyPress): Don't reindent multi-line comment lines unless they
+	begin with a '*', in which case the user probably wants to realign
+	them (if the first char on the line isn't a '*' then it might be a
+	commented-out block of code, we don't want to reindent that).
+
 2007-03-10  Jeffrey Stedfast  <fejj@gnome.org>
 
 	* FormattingStrategy/CSharpIndentEngineStack.cs (Push): We now

@@ -33,12 +33,11 @@ namespace CSharpBinding
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool reindent = false, insert = true;
-			CSharpIndentEngine ctx;
-			string indent;
-			int cursor;
-			char c;
+			int nInserted, cursor;
+			string newIndent;
+			char ch, c;
 			
-			// This code is for Smart Indent, if the user has chosen poorly... don't help him out ;-)
+			// This code is for Smart Indent, no-op for any other indent style
 			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
 				return base.KeyPress (key, modifier);
 			
@@ -60,29 +59,15 @@ namespace CSharpBinding
 			
 			cursor = Editor.CursorPosition;
 			
-			if (cursor < engine.Cursor) {
-				// FIXME: this may be faster if we use GetText() for the region
-				/* Note: however, it would be best to fix TextEditor.cs to make
-				 * GetCharAt() faster because the overhead of grabbing a
-				 * potentially huge string would suck. */
+			if (cursor < engine.Cursor)
 				engine.Reset ();
-				for (int i = 0; i < cursor; i++) {
-					char ch = Editor.GetCharAt (i);
-					if (ch == 0)
-						break;
-					engine.Push (ch);
-				}
-			} else if (cursor > engine.Cursor) {
-				// FIXME: this may be faster if we use GetText() for the region
-				/* Note: however, it would be best to fix TextEditor.cs to make
-				 * GetCharAt() faster because the overhead of grabbing a
-				 * potentially huge string would suck. */
-				for (int i = engine.Cursor; i < cursor; i++) {
-					char ch = Editor.GetCharAt (i);
-					if (ch == 0)
-						break;
-					engine.Push (ch);
-				}
+			
+			// get the engine caught up
+			for (int i = engine.Cursor; i < cursor; i++) {
+				if ((ch = Editor.GetCharAt (i)) == 0)
+					break;
+				
+				engine.Push (ch);
 			}
 			
 			if (c == '\t') {
@@ -97,21 +82,25 @@ namespace CSharpBinding
 				}
 				
 				if (!engine.IsInsideVerbatimString) {
+					int bufLen = Editor.TextLength;
+					
 					if (base.KeyPress (key, modifier)) {
-						// parent implementation handled this
+						nInserted = Editor.TextLength - bufLen;
 						
-						// if chars have been inserted but not LWSP, then the user
-						// probably just tab-completed something - we're done.
-						if (Editor.CursorPosition > cursor &&
-						    !Char.IsWhiteSpace (Editor.GetCharAt (cursor)))
+						if (nInserted >= 1)
+							ch = Editor.GetCharAt (cursor);
+						else
+							ch = '\0';
+						
+						if (nInserted > 1 || (ch != '\0' && ch != '\t')) {
+							// tab-completion
 							return true;
+						}
 						
-						// parent implementation inserted a tab or indent, ugh.
-						
-						// Delete the tab/indent as it may have been inserted in
-						// the middle of a method name or something, which is
-						// totally bad.
-						Editor.DeleteText (cursor, Editor.CursorPosition - cursor);
+						if (nInserted == 1 && ch == '\t') {
+							// base class inserted a tab, delete it
+							Editor.DeleteText (cursor, nInserted);
+						}
 					}
 					
 					reindent = true;
@@ -139,26 +128,27 @@ namespace CSharpBinding
 				if (base.KeyPress (key, modifier)) {
 					// if the char inserted is not '\n', then it means the user used
 					// <Enter> to accept an auto-completion choice.
-					if (Editor.CursorPosition > cursor && Editor.GetCharAt (cursor) != '\n')
+					if (Editor.CursorPosition > cursor &&
+					    Editor.GetCharAt (cursor) != '\n')
 						return true;
 				}
 				
 				engine.Push ('\n');
 				cursor++;
 				
-				if (Editor.CursorPosition > cursor) {
-					// TODO: figure out a way to prevent our base class from auto-indenting for us?
-					Editor.DeleteText (cursor, Editor.CursorPosition - cursor);
+				if ((nInserted = Editor.CursorPosition - cursor) > 0) {
+					// TODO: prevent our base class from auto-indenting(?) for us
+					Editor.DeleteText (cursor, nInserted);
 				}
 				
-				char ch = Editor.GetCharAt (cursor);
+				ch = Editor.GetCharAt (cursor);
 				if (ch == 0 || ch == '\n') {
 					// the simple case
-					indent = engine.NewLineIndent;
-					Editor.InsertText (cursor, indent);
-					for (int i = 0; i < indent.Length; i++)
-						engine.Push (indent[i]);
-					cursor += indent.Length;
+					newIndent = engine.NewLineIndent;
+					Editor.InsertText (cursor, newIndent);
+					for (int i = 0; i < newIndent.Length; i++)
+						engine.Push (newIndent[i]);
+					cursor += newIndent.Length;
 					
 					if (engine.IsInsideMultiLineComment) {
 						Editor.InsertText (cursor, "* ");
@@ -174,7 +164,7 @@ namespace CSharpBinding
 			}
 			
 			// Get more context but w/o changing our IndentEngine state
-			ctx = (CSharpIndentEngine) engine.Clone ();
+			CSharpIndentEngine ctx = (CSharpIndentEngine) engine.Clone ();
 			string line = Editor.GetLineText (ctx.LineNumber);
 			for (int i = ctx.LineOffset; i < line.Length; i++) {
 				ctx.Push (line[i]);
@@ -184,17 +174,35 @@ namespace CSharpBinding
 			
 			// ok, we should have enough context now
 			
-			// Delete leading LWSP
+			// measure the current indent
 			int nlwsp = 0;
 			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
 				nlwsp++;
 			
 			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
+			string curIndent = line.Substring (0, nlwsp);
+			
+			// Note: We always replace the leading white space.
+			//       If the cursor is within the leading white
+			//       space, then it will be pushed to the end,
+			//       otherwise nothing will change (in the end).
+			
 			Editor.DeleteText (pos, nlwsp);
 			
-			// Insert our new indent text
-			indent = ctx.ThisLineIndent;
-			Editor.InsertText (pos, indent);
+			if (!engine.IsInsideMultiLineComment ||
+			    (nlwsp < line.Length && line[nlwsp] == '*')) {
+				// Replace the indent
+				newIndent = ctx.ThisLineIndent;
+				Editor.InsertText (pos, newIndent);
+				
+				if (newIndent != curIndent) {
+					// engine state is now invalid
+					engine.Reset ();
+				}
+			} else {
+				// Reinsert current indent
+				Editor.InsertText (pos, curIndent);
+			}
 			
 			if (insert)
 				return base.KeyPress (key, modifier);
