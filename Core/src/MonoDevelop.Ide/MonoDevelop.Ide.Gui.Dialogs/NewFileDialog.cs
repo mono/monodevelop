@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		// Add To Project widgets
 		Combine solution;
+		string[] projectNames;
 		CheckButton projectAddCheckbox;
 		ComboBox projectAddCombo;
 		FolderEntry projectFolderEntry;
@@ -457,14 +458,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void AddToProjectComboChanged (object o, EventArgs e)
 		{
-			string projectName = projectAddCombo.ActiveText;
+			int which = projectAddCombo.Active;
+			string projectName = projectNames[which];
 			Project project = solution.FindProject (projectName);
 			
-			if (project != null) {
+			if (project != null && basePath == parentProject.BaseDirectory) {
 				basePath = project.BaseDirectory;
 				projectFolderEntry.Path = basePath;
 				parentProject = project;
 			}
+		}
+		
+		void AddToProjectPathChanged (object o, EventArgs e)
+		{
+			basePath = projectFolderEntry.Path;
 		}
 		
 		void NameActivated (object o, EventArgs e)
@@ -540,7 +547,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				hbox.PackStart (projectAddCheckbox, false, false, 6);
 				
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				string[] projectNames = new string [projects.Count];
+				projectNames = new string [projects.Count];
 				int i = 0;
 				
 				foreach (Project project in projects)
@@ -566,6 +573,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				projectFolderEntry = new FolderEntry ();
 				projectFolderEntry.Path = curProject.BaseDirectory;
+				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
 				hbox.PackStart (projectFolderEntry, true, true, 6);
 				
 				this.VBox.PackStart (hbox, true, true, 6);

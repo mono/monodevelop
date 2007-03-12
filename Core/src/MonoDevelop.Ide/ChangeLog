@@ -9,6 +9,11 @@
 	(InitializeComponents): Add a Activated signal handler to the
 	nameEntry widget which will emit the Clicked event on the
 	okButton.
+	(AddToProjectComboChanged): ComboBox.ActiveText does not exist in
+	Gtk-2.4. Also, don't change basePath if the user has manually
+	changed it.
+	(InitializeComponents): Connect to the PathChanged signal on the
+	Add-to-Project FolderEntry to listen for changes typed manually.
 
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
