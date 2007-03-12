@@ -1,3 +1,12 @@
+2007-03-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs (OpenEvent): If the
+	user has chosen to add the file to a project, use the chosen
+	project and path variables.
+	(InitializeComponents): If the parentProject is null, add UI
+	elements to enable the user to choose which project (and what
+	path) he'd like to add the new source file to (or not).
+
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GotoTypeDialog.cs:

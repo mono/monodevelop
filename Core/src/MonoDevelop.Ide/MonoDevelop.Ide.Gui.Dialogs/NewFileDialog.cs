@@ -45,11 +45,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Label infoLabel;
 		Entry nameEntry;
 		
+		// Add To Project widgets
+		Combine solution;
+		CheckButton projectAddCheckbox;
+		ComboBox projectAddCombo;
+		FolderEntry projectFolderEntry;
+		
 		Project parentProject;
 		string basePath;
 		
 		string currentProjectType = string.Empty;
-
+		
 		public NewFileDialog (Project parentProject, string basePath) : base ()
 		{
 			this.parentProject = parentProject;
@@ -226,7 +232,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
 					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
 						list.Add (dnlang.Language);
-				list.Remove ("*");
+					list.Remove ("*");
 				}
 			}
 		}
@@ -268,13 +274,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			alltemplates.Add(titem);		
 		}
 
-                //tree view event handler for double-click
-                //toggle the expand collapse methods.
+		//tree view event handler for double-click
+		//toggle the expand collapse methods.
 		void CategoryActivated(object sender,RowActivatedArgs args)
 		{
 					
 			if (!catView.GetRowExpanded(args.Path)) {
-                            catView.ExpandRow(args.Path,false);
+				catView.ExpandRow(args.Path,false);
 			} else {
 				catView.CollapseRow(args.Path);
 			}
@@ -350,9 +356,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (iconView.CurrentlySelected != null && nameEntry.Text.Length > 0) {
 				TemplateItem titem = (TemplateItem) iconView.CurrentlySelected;
 				FileTemplate item = titem.Template;
+				Project project = null;
+				string path = null;
+				
+				if (projectAddCheckbox == null || projectAddCheckbox.Active) {
+					project = parentProject;
+					path = basePath;
+				}
 				
 				try {
-					if (!item.Create (parentProject, basePath, titem.Language, nameEntry.Text))
+					if (!item.Create (project, path, titem.Language, nameEntry.Text))
 						return;
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex);
@@ -435,7 +448,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void cancelClicked (object o, EventArgs e) {
 			Destroy ();
 		}
-
+		
+		void AddToProjectToggled (object o, EventArgs e)
+		{
+			projectAddCombo.Sensitive = projectAddCheckbox.Active;
+			projectFolderEntry.Sensitive = projectAddCheckbox.Active;
+		}
+		
+		void AddToProjectComboChanged (object o, EventArgs e)
+		{
+			string projectName = projectAddCombo.ActiveText;
+			Project project = solution.FindProject (projectName);
+			
+			if (project != null) {
+				basePath = project.BaseDirectory;
+				projectFolderEntry.Path = basePath;
+				parentProject = project;
+			}
+		}
+		
 		void InitializeComponents()
 		{
 			catStore = new Gtk.TreeStore (typeof(string), typeof(ArrayList), typeof(ArrayList), typeof(Gdk.Pixbuf));
@@ -486,7 +517,57 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameBox.PackStart (nameEntry, true, true, 6);
 			nameEntry.Changed += new EventHandler (NameChanged);
 			this.VBox.PackStart (nameBox, false, false, 6);
-
+			
+			CombineEntryCollection projects = null;
+			if (parentProject == null) {
+				solution = IdeApp.ProjectOperations.CurrentOpenCombine;
+				if (solution != null)
+					projects = solution.GetAllProjects ();
+			}
+			
+			if (projects != null) {
+				HBox hbox = new HBox (false, 0);
+				
+				projectAddCheckbox = new CheckButton ("_Add to project:");
+				projectAddCheckbox.Active = true;
+				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
+				hbox.PackStart (projectAddCheckbox, false, false, 6);
+				
+				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
+				string[] projectNames = new string [projects.Count];
+				int i = 0;
+				
+				foreach (Project project in projects)
+					projectNames[i++] = project.Name;
+				
+				Array.Sort (projectNames);
+				for (i = 0; i < projectNames.Length; i++) {
+					if (projectNames[i] == curProject.Name)
+						break;
+				}
+				
+				projectAddCombo = new ComboBox (projectNames);
+				projectAddCombo.Active = i;
+				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
+				hbox.PackStart (projectAddCombo, false, false, 6);
+				
+				this.VBox.PackStart (hbox, false, false, 6);
+				
+				hbox = new HBox (false, 0);
+				
+				Label pathLabel = new Label ("Path:");
+				hbox.PackStart (pathLabel, false, false, 6);
+				
+				projectFolderEntry = new FolderEntry ();
+				projectFolderEntry.Path = curProject.BaseDirectory;
+				hbox.PackStart (projectFolderEntry, true, true, 6);
+				
+				this.VBox.PackStart (hbox, true, true, 6);
+				
+				basePath = curProject.BaseDirectory;
+				parentProject = curProject;
+			}
+			
 			cat_imglist = new PixbufList();
 			cat_imglist.Add(Services.Resources.GetBitmap("md-open-folder"));
 			cat_imglist.Add(Services.Resources.GetBitmap("md-closed-folder"));
