@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		CheckButton projectAddCheckbox;
 		ComboBox projectAddCombo;
 		FolderEntry projectFolderEntry;
+		Label projectPathLabel;
 		
 		Project parentProject;
 		string basePath;
@@ -487,6 +488,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void AddToProjectToggled (object o, EventArgs e)
 		{
 			projectAddCombo.Sensitive = projectAddCheckbox.Active;
+			projectPathLabel.Sensitive = projectAddCheckbox.Active;
 			projectFolderEntry.Sensitive = projectAddCheckbox.Active;
 			
 			InitializeDialog (true);
@@ -601,6 +603,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				projectAddCombo = new ComboBox (projectNames);
 				projectAddCombo.Active = i;
+				projectAddCombo.Sensitive = false;
 				projectAddCombo.Changed += new EventHandler (AddToProjectComboChanged);
 				hbox.PackStart (projectAddCombo, false, false, 6);
 				
@@ -608,10 +611,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				hbox = new HBox (false, 0);
 				
-				Label pathLabel = new Label ("Path:");
-				hbox.PackStart (pathLabel, false, false, 6);
+				projectPathLabel = new Label ("Path:");
+				projectPathLabel.Sensitive = false;
+				hbox.PackStart (projectPathLabel, false, false, 6);
 				
 				projectFolderEntry = new FolderEntry ();
+				projectFolderEntry.Sensitive = false;
 				projectFolderEntry.Path = curProject.BaseDirectory;
 				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
 				hbox.PackStart (projectFolderEntry, true, true, 6);
