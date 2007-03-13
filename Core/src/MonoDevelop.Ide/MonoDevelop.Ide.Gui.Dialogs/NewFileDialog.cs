@@ -66,18 +66,41 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
 			
-			//if there's a parent project, check whether it wants to filter languages, else use defaults
-			if ((parentProject != null) && (parentProject.SupportedLanguages != null) && (parentProject.SupportedLanguages.Length > 0)) {
-				projectLangs.AddRange (parentProject.SupportedLanguages);
-			} else {
-				projectLangs.Add ("");	//match all non-filtered templates
-				projectLangs.Add ("*");	//match all .NET langs with CodeDom
+			InitializeDialog (false);
+			InitializeComponents ();
+			ShowAll ();
+			
+			nameEntry.GrabFocus ();
+		}
+		
+		void InitializeDialog (bool update)
+		{
+			if (update) {
+				alltemplates.Clear ();
+				projectLangs.Clear ();
+				categories.Clear ();
+				catStore.Clear ();
 			}
+			
+			Project project = null;
+			
+			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+			    project = parentProject;
+			
+			// if there's a parent project, check whether it wants to filter languages, else use defaults
+			if ((project != null) && (project.SupportedLanguages != null) && (project.SupportedLanguages.Length > 0)) {
+				projectLangs.AddRange (project.SupportedLanguages);
+			} else {
+				projectLangs.Add ("");  // match all non-filtered templates
+				projectLangs.Add ("*");	// match all .NET langs with CodeDom
+			}
+			
 			ExpandLanguageWildcards (projectLangs);
 			
 			InitializeTemplates ();
-			InitializeComponents ();
-			nameEntry.GrabFocus ();
+			
+			if (update)
+				InitializeView ();
 		}
 		
 		public override void Dispose ()
@@ -117,7 +140,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				}
 			}*/
-			ShowAll ();
 		}
 		
 		void InsertCategories(TreeIter node, ArrayList catarray)
@@ -183,8 +205,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void InitializeTemplates()
 		{
-			foreach (FileTemplate template in FileTemplate.GetFileTemplates (parentProject)) {
+			Project project = null;
 			
+			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+				project = parentProject;
+			
+			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project)) {
 				if (template.Icon != null) {
 					icons[template.Icon] = 0; // "create template icon"
 				}
@@ -240,9 +266,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void AddTemplate (TemplateItem titem, string templateLanguage)
 		{
+			Project project = null;
 			Category cat = null;
 			
-			if (parentProject != null) {
+			if (projectAddCheckbox == null || projectAddCheckbox.Active)
+				project = parentProject;
+			
+			if (project != null) {
 				if ((templateLanguage != "") && (projectLangs.Count != 2) ) {
 					// The template requires a language, but the project does not have a single fixed
 					// language type (plus empty match), so create a language category
@@ -253,7 +283,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			} else {
 				if (templateLanguage != "") {
-					// The template requires a language, but there is no current language set, so create a category for it
+					// The template requires a language, but there is no current language set, so
+					// create a category for it
 					cat = GetCategory (templateLanguage);
 					cat = GetCategory (cat.Categories, titem.Template.Category);
 				} else {
@@ -279,7 +310,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		//toggle the expand collapse methods.
 		void CategoryActivated(object sender,RowActivatedArgs args)
 		{
-					
 			if (!catView.GetRowExpanded(args.Path)) {
 				catView.ExpandRow(args.Path,false);
 			} else {
@@ -291,7 +321,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void CategoryChange(object sender, EventArgs e)
 		{
 			TreeModel mdl;
-			TreeIter  iter;
+			TreeIter iter;
+			
 			if (catView.Selection.GetSelected (out mdl, out iter)) {
 				FillCategoryTemplates (iter);
 				okButton.Sensitive = false;
@@ -325,7 +356,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return;
 				
 				FileTemplate item = sel.Template;
-				
 
 				if (item != null) {
 					infoLabel.Text = item.Description;
@@ -388,8 +418,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ArrayList categories = new ArrayList();
 			ArrayList templates  = new ArrayList();
 			string name;
+			
 			public bool Selected = false;
 			public bool HasSelectedTemplate = false;
+			
 			public Category(string name)
 			{
 				this.name = name;
@@ -401,11 +433,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return name;
 				}
 			}
+			
 			public ArrayList Categories {
 				get {
 					return categories;
 				}
 			}
+			
 			public ArrayList Templates {
 				get {
 					return templates;
@@ -454,6 +488,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			projectAddCombo.Sensitive = projectAddCheckbox.Active;
 			projectFolderEntry.Sensitive = projectAddCheckbox.Active;
+			
+			InitializeDialog (true);
 		}
 		
 		void AddToProjectComboChanged (object o, EventArgs e)
@@ -462,10 +498,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			string projectName = projectNames[which];
 			Project project = solution.FindProject (projectName);
 			
-			if (project != null && basePath == parentProject.BaseDirectory) {
-				basePath = project.BaseDirectory;
-				projectFolderEntry.Path = basePath;
+			if (project != null) {
+				if (basePath == parentProject.BaseDirectory) {
+					basePath = project.BaseDirectory;
+					projectFolderEntry.Path = basePath;
+				}
+				
 				parentProject = project;
+				
+				InitializeDialog (true);
 			}
 		}
 		
@@ -542,7 +583,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				HBox hbox = new HBox (false, 0);
 				
 				projectAddCheckbox = new CheckButton ("_Add to project:");
-				projectAddCheckbox.Active = true;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 				hbox.PackStart (projectAddCheckbox, false, false, 6);
 				

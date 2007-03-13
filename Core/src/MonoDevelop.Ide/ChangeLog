@@ -1,3 +1,15 @@
+2007-03-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs (InitializeDialog):
+	New method to init projectLangs, categories, etc and to
+	InitializeView if updating (e.g. after the user picks a project to
+	add it to).
+	(InitializeTemplates): Only use parentProject if it is the project
+	the user has chosen to add his/her new file to.
+	(AddTemplate): Same.
+	(AddToProjectToggled): Update the view by calling InitializeDialog().
+	(AddToProjectComboChanged): Same.
+
 2007-03-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs (OpenEvent): If the
