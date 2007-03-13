@@ -186,7 +186,6 @@ Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs
 Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs
 Extras/CSharpBinding/CSharpBinding.addin.xml
 Extras/CSharpBinding/CSharpBindingCompilerManager.cs
-Extras/CSharpBinding/CSharp.glade
 Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs
 Extras/CSharpBinding/Gui/CodeGenerationPanel.cs
 Extras/CSharpBinding/templates/ConsoleProject.xpt.xml
