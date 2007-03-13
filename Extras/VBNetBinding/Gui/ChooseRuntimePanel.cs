@@ -105,7 +105,7 @@ namespace VBBinding
 			mintRadioButton = new RadioButton (monoRadioButton,"Mint");
 			msnetRadioButton = new RadioButton (monoRadioButton,"Msnet");
 		
-			mbasRadioButton = new RadioButton ("MBAS");
+			mbasRadioButton = new RadioButton ("vbnc");
 			vbcRadioButton = new RadioButton (mbasRadioButton,"VBC");
 		}
 		
