@@ -189,6 +189,27 @@ namespace CSharpBinding.FormattingStrategy {
 			}
 		}
 		
+		// Check to see if @keyword is a "special" keyword - e.g. loop/if/else
+		// constructs that we always want to indent if folded
+		bool KeywordIsSpecial (string keyword)
+		{
+			string[] specials = new string [] {
+				"foreach",
+				"while",
+				"for",
+				"else",
+				"if"
+			};
+			
+			for (int i = 0; i < specials.Length; i++) {
+				if (keyword == specials[i])
+					return true;
+			}
+			
+			return false;
+		}
+		
+		// Check to see if linebuf contains a keyword we're interested in (not all keywords)
 		string WordIsKeyword ()
 		{
 			string str = linebuf.ToString (wordStart, linebuf.Length - wordStart);
@@ -227,12 +248,19 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		void PushFoldedStatement ()
 		{
-			// don't let folded statements get too nested
+			// nesting of folded statements stops after 2 unless a "special" folded
+			// statement is introduced, in which case the cycle restarts
 			if (stack.PeekInside (0) == Inside.FoldedStatement &&
-			    stack.PeekInside (1) == Inside.FoldedStatement)
+			    stack.PeekInside (1) == Inside.FoldedStatement &&
+			    !KeywordIsSpecial (stack.PeekKeyword (0)) &&
+			    !KeywordIsSpecial (keyword)) {
+				keyword = String.Empty;
 				return;
+			}
 			
 			stack.Push (Inside.FoldedStatement, keyword, curLineNr, 0);
+			
+			keyword = String.Empty;
 		}
 		
 		// Handlers for specific characters
