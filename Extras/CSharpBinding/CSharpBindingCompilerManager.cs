@@ -120,7 +120,7 @@ namespace CSharpBinding
 			
 			switch (configuration.CompileTarget) {
 				case CompileTarget.Exe:
-					writer.WriteLine("/t:exe");
+					writer.WriteLine("/t:winexe");
 					break;
 				case CompileTarget.WinExe:
 					writer.WriteLine("/t:winexe");
@@ -151,7 +151,8 @@ namespace CSharpBinding
 						if (resourceId == null)
 							continue;
 
-						writer.WriteLine(@"""/res:{0},{1}""", finfo.Name, resourceId);
+						writer.WriteLine(@"""/res:{0},{1}""",
+								 Path.ChangeExtension (finfo.Name, ".resources"), resourceId);
 						break;
 					default:
 						continue;
