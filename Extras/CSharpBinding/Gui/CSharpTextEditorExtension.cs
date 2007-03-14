@@ -125,18 +125,20 @@ namespace CSharpBinding
 					return base.KeyPress (key, modifier);
 				
 				// Pass off to base.KeyPress() so the '\n' gets added to the Undo stack, etc
+				nInserted = 0;
 				if (base.KeyPress (key, modifier)) {
 					// if the char inserted is not '\n', then it means the user used
 					// <Enter> to accept an auto-completion choice.
-					if (Editor.CursorPosition > cursor &&
-					    Editor.GetCharAt (cursor) != '\n')
+					nInserted = Editor.CursorPosition - cursor;
+					if (nInserted <= 0 || Editor.GetCharAt (cursor) != '\n')
 						return true;
 				}
 				
 				engine.Push ('\n');
+				nInserted--;
 				cursor++;
 				
-				if ((nInserted = Editor.CursorPosition - cursor) > 0) {
+				if (nInserted > 0) {
 					// TODO: prevent our base class from auto-indenting(?) for us
 					Editor.DeleteText (cursor, nInserted);
 				}
