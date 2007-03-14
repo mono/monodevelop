@@ -120,7 +120,7 @@ namespace CSharpBinding
 			
 			switch (configuration.CompileTarget) {
 				case CompileTarget.Exe:
-					writer.WriteLine("/t:winexe");
+					writer.WriteLine("/t:exe");
 					break;
 				case CompileTarget.WinExe:
 					writer.WriteLine("/t:winexe");
