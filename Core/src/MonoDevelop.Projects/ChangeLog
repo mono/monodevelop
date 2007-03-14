@@ -1,3 +1,11 @@
+2007-03-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs (WriteFile): Modified to
+	save to a temporary file first (using mode Create), and then
+	rename() it over the original file, this way if the system is out
+	of disk space we aren't clobbering the original file. Opening with
+	mode Create should fix bug #80973.
+
 2007-03-04 David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,

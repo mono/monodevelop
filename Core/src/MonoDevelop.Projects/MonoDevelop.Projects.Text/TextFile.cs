@@ -30,6 +30,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
+using Mono.Unix;
+using Mono.Unix.Native;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -226,28 +228,31 @@ namespace MonoDevelop.Projects.Text
 		
 		public static void WriteFile (string fileName, string content, string encoding)
 		{
-			if (encoding == null || encoding == "UTF-8") {
-				using (StreamWriter sw = new StreamWriter (fileName)) {
-					sw.Write (content.ToString ());
-				}
-			}
-			else {
-				byte[] bytes = Encoding.UTF8.GetBytes (content);
+			byte[] buf = Encoding.UTF8.GetBytes (content);
+			
+			if (encoding != null && encoding != "UTF-8") {
+				int nr = 0, nw = 0;
+				IntPtr converted = g_convert (buf, buf.Length, encoding, "UTF-8", 
+				                              ref nr, ref nw, IntPtr.Zero);
 				
-				int nr=0, nw=0;
-				IntPtr cc = g_convert (bytes, bytes.Length, encoding, "UTF-8", ref nr, ref nw, IntPtr.Zero);
-				bytes = null;
+				buf = null;
 				
-				if (cc != IntPtr.Zero) {
-					byte[] data = new byte [nw];
-					System.Runtime.InteropServices.Marshal.Copy (cc, data, 0, nw);
-					g_free (cc);
-					using (FileStream fs = File.OpenWrite (fileName)) {
-						fs.Write (data, 0, data.Length);
-					}
-				} else
+				if (converted == IntPtr.Zero)
 					throw new Exception ("Invalid encoding: " + encoding);
+				
+				buf = new byte [nw];
+				System.Runtime.InteropServices.Marshal.Copy (converted, buf, 0, nw);
+				g_free (converted);
 			}
+			
+			string tempName = Path.GetDirectoryName (fileName) + 
+				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
+			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
+			fs.Write (buf, 0, buf.Length);
+			fs.Flush ();
+			fs.Close ();
+			
+			Syscall.rename (tempName, fileName);
 		}
 	}
 }
