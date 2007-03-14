@@ -81,6 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				projectLangs.Clear ();
 				categories.Clear ();
 				catStore.Clear ();
+				icons.Clear ();
 			}
 			
 			Project project = null;
@@ -100,8 +101,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			InitializeTemplates ();
 			
-			if (update)
+			if (update) {
+				iconView.Clear ();
 				InitializeView ();
+			}
 		}
 		
 		public override void Dispose ()
@@ -298,13 +301,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (cat.Selected == false && titem.Template.WizardPath == null) {
 				cat.Selected = true;
 			}
+			
 			if (!cat.HasSelectedTemplate && titem.Template.Files.Count == 1) {
 				if (((FileDescriptionTemplate)titem.Template.Files[0]).Name.StartsWith("Empty")) {
 					//titem.Selected = true;
 					cat.HasSelectedTemplate = true;
 				}
 			}
-			alltemplates.Add(titem);		
+			
+			alltemplates.Add(titem);
 		}
 
 		//tree view event handler for double-click
@@ -501,7 +506,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Project project = solution.FindProject (projectName);
 			
 			if (project != null) {
-				if (basePath == parentProject.BaseDirectory) {
+				if (basePath == null || basePath == String.Empty ||
+				    (parentProject != null && basePath == parentProject.BaseDirectory)) {
 					basePath = project.BaseDirectory;
 					projectFolderEntry.Path = basePath;
 				}
@@ -515,11 +521,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void AddToProjectPathChanged (object o, EventArgs e)
 		{
 			basePath = projectFolderEntry.Path;
-		}
-		
-		void NameActivated (object o, EventArgs e)
-		{
-			okButton.Click ();
 		}
 		
 		void InitializeComponents()
@@ -571,7 +572,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			nameEntry = new Entry ();
 			nameBox.PackStart (nameEntry, true, true, 6);
 			nameEntry.Changed += new EventHandler (NameChanged);
-			nameEntry.Activated += new EventHandler (NameActivated);
+			nameEntry.Activated += new EventHandler (OpenEvent);
 			this.VBox.PackStart (nameBox, false, false, 6);
 			
 			CombineEntryCollection projects = null;
@@ -596,9 +597,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					projectNames[i++] = project.Name;
 				
 				Array.Sort (projectNames);
-				for (i = 0; i < projectNames.Length; i++) {
-					if (projectNames[i] == curProject.Name)
-						break;
+				if (curProject != null) {
+					for (i = 0; i < projectNames.Length; i++) {
+						if (projectNames[i] == curProject.Name)
+							break;
+					}
 				}
 				
 				projectAddCombo = new ComboBox (projectNames);
@@ -617,14 +620,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				projectFolderEntry = new FolderEntry ();
 				projectFolderEntry.Sensitive = false;
-				projectFolderEntry.Path = curProject.BaseDirectory;
+				if (curProject != null)
+					projectFolderEntry.Path = curProject.BaseDirectory;
 				projectFolderEntry.PathChanged += new EventHandler (AddToProjectPathChanged);
 				hbox.PackStart (projectFolderEntry, true, true, 6);
 				
 				this.VBox.PackStart (hbox, true, true, 6);
 				
-				basePath = curProject.BaseDirectory;
-				parentProject = curProject;
+				if (curProject != null) {
+					basePath = curProject.BaseDirectory;
+					parentProject = curProject;
+				}
 			}
 			
 			cat_imglist = new PixbufList();
