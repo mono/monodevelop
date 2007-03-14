@@ -151,8 +151,7 @@ namespace CSharpBinding
 						if (resourceId == null)
 							continue;
 
-						writer.WriteLine(@"""/res:{0},{1}""",
-								 Path.ChangeExtension (finfo.Name, ".resources"), resourceId);
+						writer.WriteLine(@"""/res:{0},{1}""", fname, resourceId);
 						break;
 					default:
 						continue;

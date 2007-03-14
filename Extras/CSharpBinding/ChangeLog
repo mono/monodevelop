@@ -1,3 +1,8 @@
+2007-03-14  Ankit Jain  <jankit@novell.com>
+
+	* CSharpBindingCompilerManager.cs (Compile): Use 'fname' as the filename
+	to embed. It is updated appropriately by GetResourceId().
+
 2007-03-13  Miguel de Icaza  <miguel@novell.com>
 
 	* CSharpBindingCompilerManager.cs (Compile): an old patch that I
