@@ -5,6 +5,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.SourceEditor.Properties;
 using CSharpBinding.Parser;
 using MonoDevelop.Projects.Ambience;
 using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
@@ -84,11 +85,26 @@ namespace CSharpBinding
 		void InsertMethod (IMethod method, string modifiers)
 		{
 			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-				
-			string text = modifiers + ambience.Convert (method, flags);
-			text += "\n" + indent + "{\n" + indent + "\t";
-			int cpos = insertOffset + text.Length;
-			text += "\n" + indent + "}\n";
+			StringBuilder textBuilder = new StringBuilder ();
+			
+			textBuilder.Append (modifiers);
+			textBuilder.Append (ambience.Convert (method, flags));
+			textBuilder.Append ('\n');
+			textBuilder.Append (indent);
+			textBuilder.Append ("{\n");
+			textBuilder.Append (indent);
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				textBuilder.Append (' ', TextEditorProperties.TabIndent);
+			else
+				textBuilder.Append ('\t');
+			
+			int cpos = insertOffset + textBuilder.Length;
+			
+			textBuilder.Append ('\n');
+			textBuilder.Append (indent);
+			textBuilder.Append ("}\n");
+			
+			string text = textBuilder.ToString ();
 			
 			editor.InsertText (insertOffset, text);
 			editor.CursorPosition = cpos;
@@ -98,22 +114,48 @@ namespace CSharpBinding
 		void InsertProperty (IProperty prop, string modifiers)
 		{
 			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			StringBuilder textBuilder = new StringBuilder ();
 			int cpos = -1;
-			string text = modifiers + ambience.Convert (prop.ReturnType, flags) + " " + prop.Name + " {\n";
+			
+			textBuilder.Append (modifiers);
+			textBuilder.Append (ambience.Convert (prop.ReturnType, flags));
+			textBuilder.Append (' ');
+			textBuilder.Append (prop.Name);
+			textBuilder.Append (" {\n");
 			
 			if (prop.CanGet) {
-				text += indent + "\tget { ";
-				cpos = insertOffset + text.Length;
-				text += " }\n";
-			}
-			if (prop.CanSet) {
-				text += indent + "\tset { ";
-				if (!prop.CanGet)
-					cpos = insertOffset + text.Length;
-				text += " }\n";
+				textBuilder.Append (indent);
+				if (TextEditorProperties.ConvertTabsToSpaces)
+					textBuilder.Append (' ', TextEditorProperties.TabIndent);
+				else
+					textBuilder.Append ('\t');
+				
+				textBuilder.Append ("get { ");
+				
+				cpos = insertOffset + textBuilder.Length;
+				
+				textBuilder.Append (" }\n");
 			}
 			
-			text += indent + "}\n";
+			if (prop.CanSet) {
+				textBuilder.Append (indent);
+				if (TextEditorProperties.ConvertTabsToSpaces)
+					textBuilder.Append (' ', TextEditorProperties.TabIndent);
+				else
+					textBuilder.Append ('\t');
+				
+				textBuilder.Append ("set { ");
+				
+				if (!prop.CanGet)
+					cpos = insertOffset + textBuilder.Length;
+				
+				textBuilder.Append (" }\n");
+			}
+			
+			textBuilder.Append (indent);
+			textBuilder.Append ("}\n");
+			
+			string text = textBuilder.ToString ();
 			
 			editor.InsertText (insertOffset, text);
 			editor.CursorPosition = cpos;
@@ -123,16 +165,37 @@ namespace CSharpBinding
 		void InsertEvent (IEvent ev, string modifiers)
 		{
 			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
-			string text = modifiers + "event " + ambience.Convert (ev.ReturnType, flags) + " " + ev.Name + " {\n";
+			StringBuilder textBuilder = new StringBuilder ();
 			
-			int cpos;
-			text += indent + "\tadd { ";
-			cpos = insertOffset + text.Length;
-			text += " }\n";
-			text += indent + "\tremove { ";
-			text += " }\n";
+			textBuilder.Append (modifiers);
+			textBuilder.Append ("event ");
+			textBuilder.Append (ambience.Convert (ev.ReturnType, flags));
+			textBuilder.Append (' ');
+			textBuilder.Append (ev.Name);
+			textBuilder.Append (" {\n");
 			
-			text += indent + "}\n";
+			textBuilder.Append (indent);
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				textBuilder.Append (' ', TextEditorProperties.TabIndent);
+			else
+				textBuilder.Append ('\t');
+			
+			textBuilder.Append ("add { ");
+			
+			int cpos = insertOffset + textBuilder.Length;
+			
+			textBuilder.Append (" }\n");
+			textBuilder.Append (indent);
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				textBuilder.Append (' ', TextEditorProperties.TabIndent);
+			else
+				textBuilder.Append ('\t');
+			
+			textBuilder.Append ("remove { }\n");
+			textBuilder.Append (indent);
+			textBuilder.Append ("}\n");
+			
+			string text = textBuilder.ToString ();
 			
 			editor.InsertText (insertOffset, text);
 			editor.CursorPosition = cpos;
@@ -142,20 +205,41 @@ namespace CSharpBinding
 		void InsertIndexer (IIndexer indexer, string modifiers)
 		{
 			ConversionFlags flags = ConversionFlags.ShowParameterNames | ConversionFlags.ShowGenericParameters;
+			StringBuilder textBuilder = new StringBuilder ();
 			
-			int cpos;
+			textBuilder.Append (modifiers);
+			textBuilder.Append (ambience.Convert (indexer.ReturnType));
+			textBuilder.Append (" this [");
 			
-			StringBuilder sb = new StringBuilder ();
-			sb.Append (modifiers).Append (ambience.Convert (indexer.ReturnType)).Append (" this [");
-			ambience.Convert (indexer.Parameters, sb, flags);
-			sb.Append ("] {\n");
-			sb.Append (indent).Append ("\tget { ");
-			cpos = insertOffset + sb.Length;
-			sb.Append (" }\n");
-			sb.Append (indent).Append ("\tset { ");
-			sb.Append (" }\n").Append (indent).Append ("}");
+			ambience.Convert (indexer.Parameters, textBuilder, flags);
 			
-			editor.InsertText (insertOffset, sb.ToString ());
+			textBuilder.Append ("] {\n");
+			
+			textBuilder.Append (indent);
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				textBuilder.Append (' ', TextEditorProperties.TabIndent);
+			else
+				textBuilder.Append ('\t');
+			
+			textBuilder.Append ("get { ");
+			
+			int cpos = insertOffset + textBuilder.Length;
+			
+			textBuilder.Append (" }\n");
+			
+			textBuilder.Append (indent);
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				textBuilder.Append (' ', TextEditorProperties.TabIndent);
+			else
+				textBuilder.Append ('\t');
+			
+			textBuilder.Append ("set { }\n");
+			textBuilder.Append (indent);
+			textBuilder.Append ("}");
+			
+			string text = textBuilder.ToString ();
+			
+			editor.InsertText (insertOffset, text);
 			editor.CursorPosition = cpos;
 			editor.Select (cpos, cpos);
 		}

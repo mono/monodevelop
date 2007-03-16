@@ -1,5 +1,9 @@
 2007-03-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Gui/OverrideCompletionData.cs (InsertMethod, InsertProperty):
+	(InsertEvent, InsertIndexer): Use spaces rather than tabs for
+	indenting when appropriate. Fixes bug #81168.
+
 	* Gui/CSharpTextEditorExtension.cs (GetDirectiveCompletionData):
 	Add #pragma to the directives. Fixes bug #81131.
 
