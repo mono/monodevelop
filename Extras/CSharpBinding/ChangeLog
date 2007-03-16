@@ -1,3 +1,8 @@
+2007-03-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (GetDirectiveCompletionData):
+	Add #pragma to the directives. Fixes bug #81131.
+
 2007-03-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (KeyPress): Fixed a bug where

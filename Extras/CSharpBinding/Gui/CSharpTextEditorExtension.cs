@@ -481,6 +481,7 @@ namespace CSharpBinding
 			cp.AddCompletionData (new CodeCompletionData ("undef", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("warning", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("error", "md-literal"));
+			cp.AddCompletionData (new CodeCompletionData ("pragma", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("line", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("line hidden", "md-literal"));
 			cp.AddCompletionData (new CodeCompletionData ("line default", "md-literal"));
