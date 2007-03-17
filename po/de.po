@@ -1114,7 +1114,7 @@ msgstr "Erzeuge ein neues C#-Projekt"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:31
 msgid "Default _Solution location"
-msgstr "Standartverzeichnis der Solution"
+msgstr "Standardverzeichnis der Solution"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:32
 msgid "DeployFileOptionsPanel"
@@ -1122,7 +1122,7 @@ msgstr ""
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:33
 msgid "Did you know that you can design lots of cool things with glade?"
-msgstr "Wussten Sie, dass Sie mit glade eine Menge an coolen Dingen entwerfen können?"
+msgstr "Wussten Sie, dass Sie mit glade eine Menge cooler Dinge entwerfen können?"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:34
 msgid "Did you know?"
@@ -1202,7 +1202,7 @@ msgstr "Paramet_er"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:53
 msgid "Pause _console output"
-msgstr "Konsoleausgabe pausieren"
+msgstr "Konsolenausgabe pausieren"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:54
 msgid "Project _Subdirectory:"
@@ -1226,7 +1226,7 @@ msgstr "Befehl auswählen"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:60
 msgid "Select default location"
-msgstr "Standart-Verzeichnis auswählen"
+msgstr "Standardverzeichnis auswählen"
 
 #: ../Core/src/MonoDevelop.Base/Base.glade.h:61
 msgid "Select deploy script"
@@ -1454,7 +1454,7 @@ msgstr "Gruppe bearbeiten"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:19
 msgid "Enable code _completion"
-msgstr "Code-Vervollständigung aktivierien"
+msgstr "Code-Vervollständigung aktivieren"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/EditorBindings.glade.h:20
 msgid "Enable code _folding"
@@ -1594,7 +1594,7 @@ msgstr "Benutze spezielle Suchstrategie:"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:15
 msgid "Whole word only"
-msgstr "Nur ganzes Wörter"
+msgstr "Nur ganzes Wort"
 
 #: ../Core/src/AddIns/DisplayBindings/SourceEditor/texteditoraddin.glade.h:16
 msgid "Whole words only"
@@ -1641,7 +1641,7 @@ msgstr "Konsole-Projekt"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
 msgid "Creates a new C# console project."
-msgstr "Erzeug ein neues C# Konsole-Projekt"
+msgstr "Erzeuge ein neues C# Konsole-Projekt"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/CSharpSessionStateWebService.xft.xml.h:1
 msgid "Creates a secure C# Web Service, using SessionState"
@@ -1675,7 +1675,7 @@ msgstr "Erzeugt eine leere HTML Datei"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyHTMLFile.xft.xml.h:2
 msgid "Empty HTML File"
-msgstr "Leere Html Datei"
+msgstr "Leere HTML Datei"
 
 #: ../Core/src/AddIns/BackendBindings/NemerleBinding/EmptyNemerleFile.xft.xml.h:1
 msgid "Creates an empty Nemerle file"
@@ -1714,11 +1714,11 @@ msgstr "Leere Textdatei"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyXMLFile.xft.xml.h:1
 msgid "Creates an empty XML file."
-msgstr "Erzeugt eine leere XML-Datei"
+msgstr "Erzeugt eine leere XML Datei"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/EmptyXMLFile.xft.xml.h:2
 msgid "Empty XML File"
-msgstr "Leere XML-Datei"
+msgstr "Leere XML Datei"
 
 #: ../Core/src/AddIns/BackendBindings/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
 msgid "Glade# Project"
@@ -1864,11 +1864,11 @@ msgstr "Boolean constant matching Optimierung"
 
 #: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:7
 msgid "Do not load standard library"
-msgstr "Die Standartbibliothek nicht laden"
+msgstr "Die Standardbibliothek nicht laden"
 
 #: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:8
 msgid "Do not load standard macros"
-msgstr "Die Standartmakros nicht laden"
+msgstr "Die Standardmakros nicht laden"
 
 #: ../Core/src/AddIns/BackendBindings/NemerleBinding/Nemerle.glade.h:9
 msgid ""
