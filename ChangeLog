@@ -1,3 +1,7 @@
+2007-03-17 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: Added galician translation.
+
 2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* configure.in: Error out if check for "zip" fails.
