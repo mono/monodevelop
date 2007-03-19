@@ -1,3 +1,9 @@
+2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngine.cs (Push): Fix bug #81189
+	by resetting popVerbarim when we pop the verbatim string literal
+	off the stack
+
 2007-03-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/OverrideCompletionData.cs (InsertMethod, InsertProperty):

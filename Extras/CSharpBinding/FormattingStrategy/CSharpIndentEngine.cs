@@ -479,7 +479,7 @@ namespace CSharpBinding.FormattingStrategy {
 				return;
 			
 			if (inside != Inside.Attribute) {
-				Console.WriteLine ("can't pop a '[' if we ain't got one?");
+				//Console.WriteLine ("can't pop a '[' if we ain't got one?");
 				return;
 			}
 			
@@ -510,7 +510,7 @@ namespace CSharpBinding.FormattingStrategy {
 				return;
 			
 			if (inside != Inside.ParenList) {
-				Console.WriteLine ("can't pop a '(' if we ain't got one?");
+				//Console.WriteLine ("can't pop a '(' if we ain't got one?");
 				return;
 			}
 			
@@ -562,12 +562,11 @@ namespace CSharpBinding.FormattingStrategy {
 				return;
 			
 			if (inside != Inside.Block && inside != Inside.Case) {
-				Console.WriteLine ("can't pop a '{' if we ain't got one?");
+				//Console.WriteLine ("can't pop a '{' if we ain't got one?");
 				return;
 			}
 			
 			if (inside == Inside.Case) {
-				Console.WriteLine ("popping case statement");
 				curIndent = stack.PeekIndent (1);
 				keyword = stack.PeekKeyword (0);
 				inside = stack.PeekInside (1);
@@ -721,6 +720,7 @@ namespace CSharpBinding.FormattingStrategy {
 			// pop the verbatim-string-literal
 			if (inside == Inside.VerbatimString && popVerbatim && c != '"') {
 				keyword = stack.PeekKeyword (0);
+				popVerbatim = false;
 				stack.Pop ();
 				
 				inside = stack.PeekInside (0);
