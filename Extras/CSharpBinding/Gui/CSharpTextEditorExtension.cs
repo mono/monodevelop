@@ -183,28 +183,34 @@ namespace CSharpBinding
 			
 			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
 			string curIndent = line.Substring (0, nlwsp);
+			int offset;
 			
-			// Note: We always replace the leading white space.
-			//       If the cursor is within the leading white
-			//       space, then it will be pushed to the end,
-			//       otherwise nothing will change (in the end).
-			
-			Editor.DeleteText (pos, nlwsp);
+			if (cursor > pos + curIndent.Length)
+				offset = cursor - (pos + curIndent.Length);
+			else
+				offset = 0;
 			
 			if (!engine.IsInsideMultiLineComment ||
 			    (nlwsp < line.Length && line[nlwsp] == '*')) {
-				// Replace the indent
+				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
-				Editor.InsertText (pos, newIndent);
 				
 				if (newIndent != curIndent) {
+					Editor.DeleteText (pos, nlwsp);
+					Editor.InsertText (pos, newIndent);
+					
 					// engine state is now invalid
 					engine.Reset ();
 				}
+				
+				pos += newIndent.Length;
 			} else {
-				// Reinsert current indent
-				Editor.InsertText (pos, curIndent);
+				pos += curIndent.Length;
 			}
+			
+			pos += offset;
+			Editor.CursorPosition = pos;
+			Editor.Select (pos, pos);
 			
 			if (insert)
 				return base.KeyPress (key, modifier);

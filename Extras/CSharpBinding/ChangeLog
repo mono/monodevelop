@@ -1,5 +1,11 @@
 2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): If the before/after
+	indent text is identical, then don't replace the text - instead
+	calculate what the cursor position would be and set it. (found a
+	way to avoid the text selection that occurs when you set
+	CursorPosition).
+
 	* FormattingStrategy/CSharpIndentEngine.cs (Push): Fix bug #81189
 	by resetting popVerbarim when we pop the verbatim string literal
 	off the stack
