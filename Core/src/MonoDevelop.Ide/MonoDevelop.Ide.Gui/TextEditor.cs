@@ -130,12 +130,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public char GetCharAt (int position)
 		{
-			// TODO: Implement in ITextFile
-			string s = GetText (position, position + 1);
-			if (s.Length > 0)
-				return s[0];
-			else
-				return (char) 0;
+			return textBuffer.GetCharAt (position);
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
