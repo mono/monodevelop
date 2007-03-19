@@ -18,6 +18,11 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public abstract string Name { get; }
+		
+		public virtual bool IsInstalled {
+			get { return false; }
+		}
+		
 		protected abstract Repository OnCreateRepositoryInstance ();
 		public abstract Gtk.Widget CreateRepositoryEditor (Repository repo);
 		

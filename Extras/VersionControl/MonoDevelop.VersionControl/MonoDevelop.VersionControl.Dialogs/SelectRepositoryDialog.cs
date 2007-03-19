@@ -30,8 +30,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 			Build ();
 			
 			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
-				repCombo.AppendText (vcs.Name);
-				systems.Add (vcs);
+				if (vcs.IsInstalled) {
+					repCombo.AppendText (vcs.Name);
+					systems.Add (vcs);
+				}
 			}
 			repCombo.Active = 0;
 			this.mode = mode;

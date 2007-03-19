@@ -24,8 +24,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			else {
 				foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
-					systems.Add (vcs);
-					versionControlType.AppendText (vcs.Name);
+					if (vcs.IsInstalled) {
+						versionControlType.AppendText (vcs.Name);
+						systems.Add (vcs);
+					}
 				}
 				versionControlType.Active = -1;
 				entryName.Sensitive = false;

@@ -1,3 +1,27 @@
+2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes bug #81185 and then delves a bit deeper.
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs
+	(IsInstalled): Implemented.
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Checkout.cs
+	(Update): Added. Disable the menu item if no version control
+	systems are installed.
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlSystem.cs:
+	Add a virtual IsInstalled property.
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs
+	(SelectionRepositoryDialog): Only add VCS's that are installed.
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs
+	(EditRepositoryDialog): Only add VCS's that are installed.
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs
+	(RunCommand): Test that the vcs.IsInstalled, if not - then return
+	TestResult.Disable
+
 2007-03-09  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:

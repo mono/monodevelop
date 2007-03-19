@@ -16,6 +16,23 @@ namespace MonoDevelop.VersionControl.Subversion
 			get { return "Subversion"; }
 		}
 		
+		public override bool IsInstalled {
+			get {
+				// If we can instantiate an SvnClient object then
+				// we can assume that Subversion is installed.
+				
+				if (client != null)
+					return true;
+				
+				try {
+					client = new SvnClient ();
+					return true;
+				} catch {
+					return false;
+				}
+			}
+		}
+		
 		protected override Repository OnCreateRepositoryInstance ()
 		{
 			return new SubversionRepository ();

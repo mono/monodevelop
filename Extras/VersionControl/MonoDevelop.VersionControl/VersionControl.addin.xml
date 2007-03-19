@@ -85,7 +85,7 @@
 			description = "Updates the local copy with remote changes."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Publish" 
 			_label = "Publish..."
-			description = "Publish atual project into repository."/>
+			description = "Publish actual project into repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Checkout" 
 			defaultHandler = "MonoDevelop.VersionControl.CheckoutCommand"
 			_label = "Checkout..."

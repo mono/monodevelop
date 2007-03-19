@@ -318,8 +318,12 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			Repository repo = VersionControlProjectService.GetRepository (pentry, path);
-			if (repo == null && cmd != Commands.Publish)
-				return TestResult.NoVersionControl;
+			if (repo == null) {
+				if (cmd != Commands.Publish)
+					return TestResult.NoVersionControl;
+			} else if (!repo.VersionControlSystem.IsInstalled) {
+				return TestResult.Disable;
+			}
 			
 			bool res = false;
 			

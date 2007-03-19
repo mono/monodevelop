@@ -20,6 +20,21 @@ namespace MonoDevelop.VersionControl
 				}
 			}
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			bool enabled = false;
+			
+			foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
+				if (vcs.IsInstalled) {
+					enabled = true;
+					break;
+				}
+			}
+			
+			info.Enabled = enabled;
+			info.Visible = enabled;
+		}
 	}
 	
 	class CheckoutWorker : Task
