@@ -714,7 +714,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			get { return se.Buffer.Length; }
 		}
 		
-		public char GetCharAt (int offset)
+		char ITextFile.GetCharAt (int offset)
 		{
 			if (offset < se.Buffer.Length)
 				return se.Buffer.GetIterAtOffset (offset).Char[0];

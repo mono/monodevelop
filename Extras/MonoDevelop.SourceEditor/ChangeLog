@@ -1,3 +1,9 @@
+2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
+	(GetCharAt): Changed since we are now implementing
+	ITextFile.GetCharAt
+
 2007-03-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs (DeleteLine):
