@@ -1,3 +1,12 @@
+2007-03-20  Ankit Jain  <jankit@novell.com>
+
+	* templates/VBGtkSharp2Project.xpt.xml: Rename AssemblyInfo.cs to .vb
+	Fix Main.vb . Patch by Yasser Mekled (yassermekled@gmail.com), fixes
+	bug#81114.
+	* templates/VBGtkSharpProject.xpt.xml: Likewise.
+	* templates/VBConsoleApplicationProject.xpt.xml: Make comments
+	consistent.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.addin.xml: Change add-in versions to 0.13.

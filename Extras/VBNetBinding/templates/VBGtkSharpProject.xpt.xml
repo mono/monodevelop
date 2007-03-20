@@ -43,7 +43,8 @@ Public Class MainClass
 
 	Public Shared Sub Main ()
 		Application.Init ()
-		new MyWindow ()
+		Dim win as new MyWindow ()
+		win.Show ()
 		Application.Run ()
 	End Sub
 	
@@ -68,7 +69,7 @@ Public Class MyWindow
 	End Sub
 	
 End Class]]></File>
-			<File name="AssemblyInfo.cs"><![CDATA[Imports System.Reflection
+			<File name="AssemblyInfo.vb"><![CDATA[Imports System.Reflection
 Imports System.Runtime.InteropServices
 
 ' Information about this assembly is defined by the following
