@@ -190,7 +190,7 @@ namespace CSharpBinding
 			else
 				offset = 0;
 			
-			if (!engine.IsInsideMultiLineComment ||
+			if (!engine.LineBeganInsideMultiLineComment ||
 			    (nlwsp < line.Length && line[nlwsp] == '*')) {
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;

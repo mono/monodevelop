@@ -1,3 +1,14 @@
+2007-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): Instead of using
+	engine.IsInsideMultiLineComment when deciding whether or not to
+	reindent the line, use engine.LineBeganInsideMultiLineComment
+	since that's what we really wanted to know.
+
+	* FormattingStrategy/CSharpIndentEngine.cs: Added more convenience
+	state properties (such as StackDepth and
+	LineBeaganInside[VerbatimString,MultiLineComment].
+
 2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (KeyPress): If the before/after

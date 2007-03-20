@@ -18,6 +18,8 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		string curIndent;
 		
+		Inside beganInside;
+		
 		bool needsReindent;
 		bool popVerbatim;
 		bool canBeLabel;
@@ -65,12 +67,24 @@ namespace CSharpBinding.FormattingStrategy {
 			get { return needsReindent; }
 		}
 		
+		public int StackDepth {
+			get { return stack.Count; }
+		}
+		
 		public bool IsInsideVerbatimString {
 			get { return stack.PeekInside (0) == Inside.VerbatimString; }
 		}
 		
 		public bool IsInsideMultiLineComment {
 			get { return stack.PeekInside (0) == Inside.MultiLineComment; }
+		}
+		
+		public bool LineBeganInsideVerbatimString {
+			get { return beganInside == Inside.VerbatimString; }
+		}
+		
+		public bool LineBeganInsideMultiLineComment {
+			get { return beganInside == Inside.MultiLineComment; }
 		}
 		
 		string TabsToSpaces (string indent)
@@ -694,6 +708,7 @@ namespace CSharpBinding.FormattingStrategy {
 			
 			linebuf.Length = 0;
 			
+			beganInside = stack.PeekInside (0);
 			curIndent = stack.PeekIndent (0);
 			
 			canBeLabel = true;
