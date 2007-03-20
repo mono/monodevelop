@@ -1,10 +1,13 @@
 
 using System;
+
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Ambience;
+
+using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding
 {
@@ -42,72 +45,32 @@ namespace CSharpBinding
 		
 		public override int GetCurrentParameterIndex (ICodeCompletionContext ctx)
 		{
+			int cursor = editor.CursorPosition;
 			int i = ctx.TriggerOffset;
 			
-			if (i > editor.CursorPosition)
+			if (i > cursor)
 				return -1;
-				
-			if (i == editor.CursorPosition)
+			else if (i == cursor)
 				return 0;
 			
-			bool inString = false;
-			bool inVerbatimString = false;
-			bool inComment = false;
+			CSharpIndentEngine engine = new CSharpIndentEngine ();
+			int index = 1;
 			
-			int level = 0;
-			int index = 0;
-			char prevChar = '\0';
-			string s = editor.GetText (i-1, i);
-			
-			while (i <= editor.CursorPosition && s.Length > 0) {
-				switch (s[0]) {
-				case '(':
-				case '[':
-					if (!inString && !inComment) {
-						level++;
-					}
-					break;
-				case ')':
-				case ']':
-					if (!inString && !inComment) {
-						level--;
-					}
-					break;
-				case '*':
-					if (prevChar == '/' && !inString)
-						inComment = true;
-					break;
-				case '/':
-					if (prevChar == '*' && inComment)
-						inComment = false;
-					break;
-				case '"':
-					if ((inString && prevChar != '\\') ||
-					    inVerbatimString) {
-						inString = false;
-						inVerbatimString = false;
-					}
-					else if (!inString && !inComment) {
-						inString = true;
-						if (prevChar == '@')
-							inVerbatimString = true;
-					}
-					break;
-				case ',':
-					if (!inString && !inComment)
-						index++;
-					break;
-				}
+			do {
+				char c = editor.GetCharAt (i - 1);
+				
+				engine.Push (c);
+				
+				if (c == ',' && engine.StackDepth == 1)
+					index++;
 				
 				i++;
-				prevChar = s[0];
-				s = editor.GetText (i-1, i);
-			}
+			} while (i <= cursor && engine.StackDepth > 0);
 			
-			if (level == 0)
+			if (engine.StackDepth == 0)
 				return -1;
 			else
-				return index + 1;
+				return index;
 		}
 	}
 }
