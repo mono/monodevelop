@@ -1,3 +1,11 @@
+2007-03-21  Ankit Jain  <jankit@novell.com>
+
+       * Gui/CSharpTextEditorExtension.cs (HandleCodeCompletion): Handle code
+       completion for sub namespaces.
+       (IsInUsing): New.
+       (GetPreviousToken): Handle the case when token starts at the first
+       position in the file. 
+
 2007-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpParameterDataProvider.cs (GetCurrentParameterIndex):

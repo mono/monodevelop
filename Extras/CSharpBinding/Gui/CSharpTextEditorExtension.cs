@@ -359,23 +359,29 @@ namespace CSharpBinding
 
 			IParserContext parserContext = GetParserContext ();
 			CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (parserContext, GetAmbience ());
-			
-			if (charTyped == ' ') {
+
+			string ns;
+			if (IsInUsing (expression, ctx.TriggerOffset, out ns)) {
+				if (charTyped == ' ' && ns != String.Empty)
+					// 'using System' and charTyped == ' '
+					// subnamespaces show up only on '.'
+					return null;
+				
+				Resolver res = new Resolver (parserContext);
+				// Don't show namespaces when "using" is not a namespace directive
+				IClass cls = res.GetCallingClass (caretLineNumber, caretColumn, FileName, false);
+				if (cls != null)
+					return null;
+				string[] namespaces = parserContext.GetNamespaceList (ns, true, true);
+				completionProvider.AddResolveResults (new ResolveResult(namespaces));
+			} else if (charTyped == ' ') {
 				if (expression == "is" || expression == "as") {
 					string expr = expressionFinder.FindExpression (Editor.GetText (0, ctx.TriggerOffset), ctx.TriggerOffset - 5).Expression;
 					Resolver res = new Resolver (parserContext);
 					completionProvider.AddResolveResults (res.IsAsResolve (expr, caretLineNumber, caretColumn, FileName, Editor.Text, false));
 				}
-				else if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing")) {
-					Resolver res = new Resolver (parserContext);
-					// Don't show namespaces when "using" is not a namespace directive
-					IClass cls = res.GetCallingClass (caretLineNumber, caretColumn, FileName, false);
-					if (cls != null)
-						return null;
-					string[] namespaces = parserContext.GetNamespaceList ("", true, true);
-					completionProvider.AddResolveResults (new ResolveResult(namespaces));
-				}
 			} else {
+				/* '.' */
 				ResolveResult results = parserContext.Resolve (expression, caretLineNumber, caretColumn, FileName, Editor.Text);
 				completionProvider.AddResolveResults (results);
 			}
@@ -384,6 +390,23 @@ namespace CSharpBinding
 				return null;
 			
 			return completionProvider;
+		}
+
+		/* returns true in case
+		 *	using  : ns - ""
+		 *	using System. : ns - "System"
+		 *	using System.Collections. : ns - "System.Collections"
+		 */
+		bool IsInUsing (string expression, int triggerOffset, out string ns)
+		{
+			ns = "";
+			if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")||
+				expression.EndsWith("\nusing")|| expression.EndsWith("\rusing"))
+				return true;
+
+			ns = expression;
+			int i = triggerOffset - expression.Length - 1;
+			return (GetPreviousToken (ref i, true) == "using");
 		}
 		
 		bool GetPreviousToken (string token, ref int i, bool allowLineChange)
@@ -413,7 +436,7 @@ namespace CSharpBinding
 				return s;
 
 			int endp = i;
-			while (s.Length > 0 && (char.IsLetterOrDigit (s[0]) || s[0] == '_')) {
+			while (i > 0 && s.Length > 0 && (char.IsLetterOrDigit (s[0]) || s[0] == '_')) {
 				i--;
 				s = Editor.GetText (i-1, i);
 			}
