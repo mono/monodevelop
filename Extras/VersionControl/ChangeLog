@@ -1,5 +1,12 @@
 2007-03-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs
+	(OnEntryAdded): Instead of calling repo.Add() with the recursive
+	arg set to true, do our own "recursive" adding requesting the list
+	of files from the CombineEntry and sub-CombineEntry nodes. This 
+	would prevent addition of files/folders that are not part of the 
+	project but existed in the project directory at the time ti was added.
+
 	Fix for bug #81184
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs:

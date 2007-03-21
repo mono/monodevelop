@@ -322,6 +322,21 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
+		static void CombineEntryAddFiles (CombineEntry entry, ArrayList files)
+		{
+			files.Add (entry.FileName);
+			
+			if (entry is Project) {
+				foreach (ProjectFile file in ((Project) entry).ProjectFiles) {
+					if (file.Subtype != Subtype.Directory)
+						files.Add (file.FilePath);
+				}
+			} else if (entry is Combine) {
+				foreach (CombineEntry ent in ((Combine) entry).Entries)
+					CombineEntryAddFiles (ent, files);
+			}
+		}
+		
 		static void OnEntryAdded (object o, CombineEntryEventArgs args)
 		{
 			// handles addition of solutions and projects
@@ -335,13 +350,26 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 			
-			string path = args.CombineEntry.BaseDirectory;
+			CombineEntry entry = args.CombineEntry;
+			string path = entry.BaseDirectory;
 			
 			if (!repo.CanAdd (path))
 				return;
 			
+			// While we /could/ call repo.Add with `recursive = true', we don't
+			// necessarily want to add files under the project/solution directory
+			// that may not be a part of this project/solution.
+			
+			ArrayList files = new ArrayList ();
+			
+			files.Add (path);
+			CombineEntryAddFiles (entry, files);
+			
 			using (IProgressMonitor monitor = GetStatusMonitor ()) {
-				repo.Add (path, true, monitor);
+				string[] paths = (string[]) files.ToArray (typeof (string));
+				
+				for (int i = 0; i < paths.Length; i++)
+					repo.Add (paths[i], false, monitor);
 			}
 			
 			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
