@@ -170,7 +170,8 @@ namespace MonoDevelop.Ide.Templates
 				for (int i = 1; i < templateLangs.Count; i++) {
 					try {
 						language = (string) templateLangs [i];
-						ProjectTemplates.Add (new ProjectTemplate (addin, id, doc, language, language+"/"+category));
+						// per-language template instances should not share the XmlDocument
+						ProjectTemplates.Add (new ProjectTemplate (addin, id, (XmlDocument) doc.Clone (), language, language+"/"+category));
 					} catch (Exception e) {
 						Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", fileName));
 					}
