@@ -1,3 +1,9 @@
+2007-03-21  Ankit Jain  <jankit@novell.com>
+
+	* MakefileData.cs (PkgCheckModulesRegex): Fix regex to correctly handle
+	strings like 'PKG_CHECK_MODULES(FOO,foo0 >= 2.4 foo1 foo2)', this should
+	give 3 packages : foo0, foo1 and foo2.
+
 2007-03-04  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.Autotools/Handler.cs: make strings translatable.

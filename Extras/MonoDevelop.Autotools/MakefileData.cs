@@ -1630,7 +1630,7 @@ namespace MonoDevelop.Autotools
 			get {
 				if (pkgCheckModulesRegex == null)
 					pkgCheckModulesRegex = new Regex (
-						@".*PKG_CHECK_MODULES\(\s*(?<pkgId>[^,\) \t]*)\s*,(\s*(?<content>[^,\) \t]*)\s*[><=]*\s*[^,\) \t]*)*");
+						@".*PKG_CHECK_MODULES\(\s*(?<pkgId>[^,\) \t]*)\s*,(\s*(?<content>[^,\) \t]*)\s*([><=]+\s*[^,\) \t]+|))*");
 				return pkgCheckModulesRegex;
 			}
 		}
