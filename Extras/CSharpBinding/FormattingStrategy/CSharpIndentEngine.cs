@@ -205,7 +205,7 @@ namespace CSharpBinding.FormattingStrategy {
 		
 		// Check to see if @keyword is a "special" keyword - e.g. loop/if/else
 		// constructs that we always want to indent if folded
-		bool KeywordIsSpecial (string keyword)
+		static bool KeywordIsSpecial (string keyword)
 		{
 			string[] specials = new string [] {
 				"foreach",
