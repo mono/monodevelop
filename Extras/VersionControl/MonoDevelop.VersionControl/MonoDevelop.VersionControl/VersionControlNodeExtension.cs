@@ -45,13 +45,13 @@ namespace MonoDevelop.VersionControl
 			
 			if (dataObject is CombineEntry) {
 				CombineEntry ce = (CombineEntry) dataObject;
-				Repository rep = VersionControlProjectService.GetRepository (ce, ce.FileName);
+				Repository rep = VersionControlProjectService.GetRepository (ce);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
-				Repository rep = VersionControlProjectService.GetRepository (ce.Project, ce.Path);
+				Repository rep = VersionControlProjectService.GetRepository (ce.Project);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
 				return;
@@ -73,10 +73,10 @@ namespace MonoDevelop.VersionControl
 			if (prj == null)
 				return;
 			
-			Repository repo = VersionControlProjectService.GetRepository (prj, file);
+			Repository repo = VersionControlProjectService.GetRepository (prj);
 			if (repo == null)
 				return;
-
+			
 			VersionStatus status = GetVersionInfo (repo, file);
 			Gdk.Pixbuf overlay = VersionControlProjectService.LoadOverlayIconForStatus (status);
 			if (overlay != null)
@@ -317,7 +317,7 @@ namespace MonoDevelop.VersionControl
 				return TestResult.NoVersionControl;
 			}
 			
-			Repository repo = VersionControlProjectService.GetRepository (pentry, path);
+			Repository repo = VersionControlProjectService.GetRepository (pentry);
 			if (repo == null) {
 				if (cmd != Commands.Publish)
 					return TestResult.NoVersionControl;

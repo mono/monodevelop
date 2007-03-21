@@ -1,3 +1,19 @@
+2007-03-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #81184
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs:
+	Updated to not pass a path argument to GetRepository().
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	Updated to not pass a path argument to GetRepository().
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs
+	(GetRepository): No longer takes a path argument as it never uses
+	it anyway.
+	(OnEntryAdded): New callback to handle when a project or combine gets added.
+	(VersionControlProjectService): Bind OnEntryAdded.
+
 2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes bug #81185 and then delves a bit deeper.

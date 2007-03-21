@@ -24,7 +24,7 @@ namespace MonoDevelop.VersionControl
 			// FIXME: Optimize
 			foreach (Project prj in IdeApp.ProjectOperations.CurrentOpenCombine.GetAllProjects ()) {
 				if (path.StartsWith (prj.BaseDirectory)) {
-					return VersionControlProjectService.GetRepository (prj, path);
+					return VersionControlProjectService.GetRepository (prj);
 				}
 			}
 			return null;

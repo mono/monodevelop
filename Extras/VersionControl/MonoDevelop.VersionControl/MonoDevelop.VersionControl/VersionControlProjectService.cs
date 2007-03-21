@@ -51,11 +51,12 @@ namespace MonoDevelop.VersionControl
 			icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
 			
 			IdeApp.ProjectOperations.FileAddedToProject += OnFileAdded;
+			//IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
+			//IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
+			//IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
 			
-/*			IdeApp.ProjectOperations.FileChangedInProject += OnFileChanged;
-			IdeApp.ProjectOperations.FileRemovedFromProject += OnFileRemoved;
-			IdeApp.ProjectOperations.FileRenamedInProject += OnFileRenamed;
-*/		}
+			IdeApp.ProjectOperations.EntryAddedToCombine += OnEntryAdded;
+		}
 		
 		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
 		{
@@ -121,7 +122,7 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Unversioned");
 		}
 		
-		public static Repository GetRepository (CombineEntry entry, string path)
+		public static Repository GetRepository (CombineEntry entry)
 		{
 			Repository repo = (Repository) entry.ExtendedProperties [typeof(Repository)];
 			if (repo != null)
@@ -282,7 +283,7 @@ namespace MonoDevelop.VersionControl
 		
 /*		static void OnFileChanged (object s, ProjectFileEventArgs args)
 		{
-			Repository repo = GetRepository (args.Project, args.ProjectFile.FilePath);
+			Repository repo = GetRepository (args.Project);
 			if (repo != null)
 				NotifyFileStatusChanged (repo, args.ProjectFile.FilePath, false);
 		}
@@ -290,7 +291,7 @@ namespace MonoDevelop.VersionControl
 		static void OnFileAdded (object s, ProjectFileEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project, path);
+			Repository repo = GetRepository (args.Project);
 			if (repo != null && repo.CanAdd (path)) {
 				using (IProgressMonitor monitor = GetStatusMonitor ()) {
 					repo.Add (path, false, monitor);
@@ -302,7 +303,7 @@ namespace MonoDevelop.VersionControl
 /*		static void OnFileRemoved (object s, ProjectFileEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project, path);
+			Repository repo = GetRepository (args.Project);
 			if (repo != null && repo.IsVersioned (path) && repo.CanRemove (path)) {
 				using (IProgressMonitor monitor = GetStatusMonitor ()) {
 					repo.DeleteFile (path, true, monitor);
@@ -314,13 +315,38 @@ namespace MonoDevelop.VersionControl
 		static void OnFileRenamed (object s, ProjectFileRenamedEventArgs args)
 		{
 			string path = args.ProjectFile.FilePath;
-			Repository repo = GetRepository (args.Project, path);
+			Repository repo = GetRepository (args.Project);
 			if (repo.IsVersioned (path) && repo.CanRemove (path)) {
 				repo.Remove (path);
 				NotifyFileStatusChanged (repo, path, args.ProjectFile.Subtype == Subtype.Directory);
 			}
 		}
 */
+		static void OnEntryAdded (object o, CombineEntryEventArgs args)
+		{
+			// handles addition of solutions and projects
+			CombineEntry parent = (CombineEntry) args.CombineEntry.ParentCombine;
+			
+			if (parent == null)
+				return;
+			
+			Repository repo = GetRepository (parent);
+			
+			if (repo == null)
+				return;
+			
+			string path = args.CombineEntry.BaseDirectory;
+			
+			if (!repo.CanAdd (path))
+				return;
+			
+			using (IProgressMonitor monitor = GetStatusMonitor ()) {
+				repo.Add (path, true, monitor);
+			}
+			
+			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
+		}
+		
 		static IProgressMonitor GetStatusMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Updating version control repository"), "vc-remote-status", true);
