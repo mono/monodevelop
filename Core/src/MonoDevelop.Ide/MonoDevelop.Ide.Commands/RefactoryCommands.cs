@@ -61,7 +61,9 @@ namespace MonoDevelop.Ide.Commands
 			if (doc != null) {
 				ITextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <ITextBuffer>();
 				if (editor != null) {
+					bool added = false;
 					int line, column;
+					
 					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
 					IParserContext ctx;
 					if (doc.Project != null)
@@ -83,17 +85,24 @@ namespace MonoDevelop.Ide.Commands
 					ILanguageItem item = ctx.ResolveIdentifier (id, line, column, editor.Name, null);
 					if (item != null) {
 						CommandInfo ci = BuildRefactoryMenuForItem (ctx, item);
-						if (ci != null)
+						if (ci != null) {
 							ainfo.Add (ci, null);
+							added = true;
+						}
 					}
 					
 					// Look for the enclosing language item
 					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
 					if (eitem != null && !eitem.Equals (item)) {
 						CommandInfo ci = BuildRefactoryMenuForItem (ctx, eitem);
-						if (ci != null)
+						if (ci != null) {
 							ainfo.Add (ci, null);
+							added = true;
+						}
 					}
+					
+					if (added)
+						ainfo.AddSeparator ();
 				}
 			}
 		}
@@ -105,28 +114,32 @@ namespace MonoDevelop.Ide.Commands
 			string txt;
 			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			}
 			
-			if (item is IMember || item is IClass) {
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find references"), new RefactoryOperation (refactorer.FindReferences));
-			}
+			if ((item is IMember) && !(item is IClass))
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 			
 			if (item is IClass) {
-				txt = GettextCatalog.GetString ("Class {0}", item.Name);
 				IClass cls = (IClass) item;
+				
+				if (cls.ClassType == ClassType.Interface)
+					txt = GettextCatalog.GetString ("Interface {0}", item.Name);
+				else
+					txt = GettextCatalog.GetString ("Class {0}", item.Name);
+				
 				if (cls.BaseTypes.Count > 0) {
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IClass bc = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
 						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
-							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to base"), new RefactoryOperation (refactorer.GoToBase));
-							break;
+							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
 						}
 					}
 				}
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
-			}
-			else if (item is IField) {
+				
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
+			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field {0} : {1}", item.Name, ((IField)item).ReturnType.Name);
 				AddRefactoryMenuForClass (ctx, ciset, ((IField)item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
