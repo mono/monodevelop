@@ -1,10 +1,17 @@
+2007-03-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (GetPreviousToken):
+	Reimplemented to use GetCharAt().
+	(KeyPress): Invalidate engine state if some key-code we don't
+	handle changes the buffer before our cursor position.
+
 2007-03-21  Ankit Jain  <jankit@novell.com>
 
-       * Gui/CSharpTextEditorExtension.cs (HandleCodeCompletion): Handle code
-       completion for sub namespaces.
-       (IsInUsing): New.
-       (GetPreviousToken): Handle the case when token starts at the first
-       position in the file. 
+	* Gui/CSharpTextEditorExtension.cs (HandleCodeCompletion): Handle
+	code completion for sub namespaces.
+	(IsInUsing): New.
+	(GetPreviousToken): Handle the case when token starts at the first
+	position in the file.
 
 2007-03-20  Jeffrey Stedfast  <fejj@novell.com>
 

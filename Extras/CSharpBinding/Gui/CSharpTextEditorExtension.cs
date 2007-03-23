@@ -33,7 +33,7 @@ namespace CSharpBinding
 		public override bool KeyPress (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool reindent = false, insert = true;
-			int nInserted, cursor;
+			int nInserted, bufLen, cursor;
 			string newIndent;
 			char ch, c;
 			
@@ -52,8 +52,21 @@ namespace CSharpBinding
 				c = '\t';
 				break;
 			default:
-				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0)
-					return base.KeyPress (key, modifier);
+				if ((c = (char) Gdk.Keyval.ToUnicode ((uint) key)) == 0) {
+					cursor = Editor.SelectionStartPosition;
+					bufLen = Editor.TextLength;
+					
+					if (base.KeyPress (key, modifier)) {
+						if (bufLen != Editor.TextLength && cursor < engine.Cursor) {
+							// text buffer changed somewhere before our cursor
+							engine.Reset ();
+						}
+						
+						return true;
+					}
+					
+					return false;
+				}
 				break;
 			}
 			
@@ -82,7 +95,7 @@ namespace CSharpBinding
 				}
 				
 				if (!engine.IsInsideVerbatimString) {
-					int bufLen = Editor.TextLength;
+					bufLen = Editor.TextLength;
 					
 					if (base.KeyPress (key, modifier)) {
 						nInserted = Editor.TextLength - bufLen;
@@ -411,37 +424,33 @@ namespace CSharpBinding
 		
 		bool GetPreviousToken (string token, ref int i, bool allowLineChange)
 		{
-			string s = Editor.GetText (i-1, i);
-			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t' || (allowLineChange && s[0] == '\n'))) {
-				i--;
-				s = Editor.GetText (i-1, i);
-			}
-			if (s.Length == 0)
-				return false;
-			
-			i -= token.Length;
-			return Editor.GetText (i, i + token.Length) == token;
+			return GetPreviousToken (ref i, allowLineChange) == token;
 		}
 		
 		string GetPreviousToken (ref int i, bool allowLineChange)
 		{
-			string s = Editor.GetText (i-1, i);
-			while (s.Length > 0 && (s[0] == ' ' || s[0] == '\t' || (allowLineChange && s[0] == '\n'))) {
-				i--;
-				s = Editor.GetText (i-1, i);
-			}
-			if (s.Length == 0)
-				return null;
-			if (!char.IsLetterOrDigit (s[0]))
-				return s;
-
-			int endp = i;
-			while (i > 0 && s.Length > 0 && (char.IsLetterOrDigit (s[0]) || s[0] == '_')) {
-				i--;
-				s = Editor.GetText (i-1, i);
-			}
+			char c;
 			
-			return Editor.GetText (i, endp);
+			if (i <= 0)
+				return null;
+			
+			do {
+				c = Editor.GetCharAt (--i);
+			} while (i > 0 && char.IsWhiteSpace (c) && (allowLineChange ? true : c != '\n'));
+			
+			if (i == 0 || !char.IsLetterOrDigit (c))
+				return null;
+			
+			int endOffset = i + 1;
+			
+			do {
+				c = Editor.GetCharAt (--i);
+			} while (i > 0 && (char.IsLetterOrDigit (c) || c == '_'));
+			
+			if (char.IsWhiteSpace (c))
+				i++;
+			
+			return Editor.GetText (i, endOffset);
 		}
 		
 		ICompletionDataProvider GetOverridablesCompletionData (IParserContext pctx, ICodeCompletionContext ctx, IClass cls, int insertPos, string typedModifiers)
