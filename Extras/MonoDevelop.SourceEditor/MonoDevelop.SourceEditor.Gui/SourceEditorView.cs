@@ -27,7 +27,7 @@ using MonoDevelop.SourceEditor.FormattingStrategy;
 namespace MonoDevelop.SourceEditor.Gui
 {
 	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
-	{	
+	{
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
 		public SourceEditorBuffer buf;

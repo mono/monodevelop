@@ -1,3 +1,9 @@
+2007-03-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
+	(GetCharAt): Need to check that offset < (len - 1) because the
+	last iter won't have a char. Fixes bug #81216.
+
 2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
