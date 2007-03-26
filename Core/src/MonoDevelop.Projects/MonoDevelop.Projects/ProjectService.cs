@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects
 		DataContext dataContext = new DataContext ();
 		ArrayList projectBindings = new ArrayList ();
 		ProjectServiceExtension defaultExtension = new DefaultProjectServiceExtension ();
-		ProjectServiceExtension extensionChain;
+		ProjectServiceExtension extensionChain = new CustomCommandExtension ();
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		IFileFormat defaultProjectFormat = new MdpFileFormat ();
@@ -203,9 +203,10 @@ namespace MonoDevelop.Projects
 
 			if (extensions.Length > 0) {
 				extensions [extensions.Length - 1].Next = defaultExtension;
-				extensionChain = extensions [0];
-			} else
-				extensionChain = defaultExtension;
+				extensionChain.Next = extensions [0];
+			} else {
+				extensionChain.Next = defaultExtension;
+			}
 		}
 	}
 	
@@ -230,16 +231,32 @@ namespace MonoDevelop.Projects
 		
 		public override void Clean (IProgressMonitor monitor, CombineEntry entry)
 		{
+			AbstractConfiguration config = entry.ActiveConfiguration as AbstractConfiguration;
+			if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+				config.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Clean);
+				return;
+			}
+			
 			entry.OnClean (monitor);
 		}
 		
 		public override ICompilerResult Build (IProgressMonitor monitor, CombineEntry entry)
 		{
+			AbstractConfiguration conf = entry.ActiveConfiguration as AbstractConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
+				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Build);
+				return new DefaultCompilerResult (new CompilerResults (null), "");
+			}
 			return entry.OnBuild (monitor);
 		}
 		
 		public override void Execute (IProgressMonitor monitor, CombineEntry entry, ExecutionContext context)
 		{
+			AbstractConfiguration configuration = entry.ActiveConfiguration as AbstractConfiguration;
+			if (configuration != null && configuration.CustomCommands.HasCommands (CustomCommandType.Execute)) {
+				configuration.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Execute, context);
+				return;
+			}
 			entry.OnExecute (monitor, context);
 		}
 		

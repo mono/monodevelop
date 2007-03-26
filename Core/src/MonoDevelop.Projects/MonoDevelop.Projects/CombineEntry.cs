@@ -394,49 +394,17 @@ namespace MonoDevelop.Projects
 		
 		public void Clean (IProgressMonitor monitor)
 		{
-			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
-			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeClean);
-				if (monitor.IsCancelRequested)
-					return;
-			}
-			
 			Services.ProjectService.ExtensionChain.Clean (monitor, this);
-			
-			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterClean);
 		}
 		
 		public ICompilerResult Build (IProgressMonitor monitor)
 		{
-			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
-			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeBuild);
-				if (monitor.IsCancelRequested)
-					return new DefaultCompilerResult (new CompilerResults (null), "");
-			}
-			
-			ICompilerResult res = InternalBuild (monitor);
-			
-			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterBuild);
-				
-			return res;
+			return InternalBuild (monitor);
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context)
 		{
-			AbstractConfiguration conf = ActiveConfiguration as AbstractConfiguration;
-			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.BeforeExecute, context);
-				if (monitor.IsCancelRequested)
-					return;
-			}
-			
 			Services.ProjectService.ExtensionChain.Execute (monitor, this, context);
-			
-			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.AfterExecute, context);
 		}
 		
 		public bool NeedsBuilding {

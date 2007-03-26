@@ -386,13 +386,10 @@ namespace MonoDevelop.Projects
 		
 		protected internal override ICompilerResult OnBuild (IProgressMonitor monitor)
 		{
-			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
-			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
-				conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build);
-				return new DefaultCompilerResult (new CompilerResults (null), "");
-			}
-
 			// create output directory, if not exists
+			AbstractProjectConfiguration conf = ActiveConfiguration as AbstractProjectConfiguration;
+			if (conf == null)
+				return null;
 			string outputDir = conf.OutputDirectory;
 			try {
 				DirectoryInfo directoryInfo = new DirectoryInfo(outputDir);
@@ -424,12 +421,6 @@ namespace MonoDevelop.Projects
 		{
 			isDirty = true;
 			
-			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
-			if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
-				config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean);
-				return;
-			}
-			
 			// Delete the generated assembly
 			string file = GetOutputFileName ();
 			if (file != null) {
@@ -440,6 +431,7 @@ namespace MonoDevelop.Projects
 			}
 
 			// Delete referenced assemblies
+			AbstractProjectConfiguration config = ActiveConfiguration as AbstractProjectConfiguration;
 			if (config != null)
 				CleanReferencesInOutputPath (config.OutputDirectory);
 		}
@@ -471,12 +463,7 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context)
 		{
-			AbstractProjectConfiguration configuration = (AbstractProjectConfiguration) ActiveConfiguration;
-			
-			if (configuration != null && configuration.CustomCommands.HasCommands (CustomCommandType.Execute)) {
-				configuration.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Execute, context);
-			} else
-				DoExecute (monitor, context);
+			DoExecute (monitor, context);
 		}
 		
 		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context)

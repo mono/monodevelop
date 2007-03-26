@@ -1,3 +1,12 @@
+2007-03-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/CombineEntry.cs,
+	  MonoDevelop.Projects/CustomCommandExtension.cs,
+	  MonoDevelop.Projects/Combine.cs, MonoDevelop.Projects/Project.cs:
+	  Moved custom command execution to a project service extension.
+	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
+
 2007-03-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.Text/ITextFile.cs: Added GetCharAt()
