@@ -1,3 +1,8 @@
+2007-03-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Avoid
+	  crash when no entry is selected in the class combo.
+
 
 
 2007-03-26 James Fitzsimons <james.fitzsimons@gmail.com>

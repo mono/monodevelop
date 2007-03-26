@@ -425,10 +425,13 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			int index = 0;
 			Gtk.TreeIter iter;
+			IClass currentClass = null;
+			
 			// check we are in the right class
-			classCombo.GetActiveIter (out iter);
-			IClass currentClass = classCombo.Model.GetValue (iter, 2) as IClass;
-			if (currentClass.BodyRegion != null && currentClass.BodyRegion.BeginLine <= line && line <= currentClass.BodyRegion.EndLine) {
+			if (classCombo.GetActiveIter (out iter))
+				currentClass = classCombo.Model.GetValue (iter, 2) as IClass;
+			
+			if (currentClass != null && currentClass.BodyRegion != null && currentClass.BodyRegion.BeginLine <= line && line <= currentClass.BodyRegion.EndLine) {
 				// we are still in the active class, just need to check method now
 				memberStore.GetIterFirst (out iter);
 			    do {	    
