@@ -374,5 +374,14 @@ namespace MonoDevelop.SourceEditor.Properties {
 				properties.SetProperty ("DefaultFont", value.ToString ());
 			}
 		}
+		
+		public static bool ShowClassBrowser {
+			get {
+				return properties.GetProperty("ShowClassBrowser", true);
+			}
+			set {
+				properties.SetProperty("ShowClassBrowser", value);
+			}
+		}
 	}
 }

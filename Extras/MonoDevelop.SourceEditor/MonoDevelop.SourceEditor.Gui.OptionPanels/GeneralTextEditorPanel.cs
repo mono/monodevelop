@@ -42,6 +42,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 		{	
 			[Glade.Widget] CheckButton enableCodeCompletionCheckBox;
 			[Glade.Widget] CheckButton enableFoldingCheckBox;
+			[Glade.Widget] CheckButton showClassMethodCheckBox;
 			[Glade.Widget] FontButton fontNameDisplayTextBox;
 			[Glade.Widget] VBox encodingBox;
 			[Glade.Widget] RadioButton use_monospace;
@@ -54,7 +55,9 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				enableCodeCompletionCheckBox.Active = TextEditorProperties.EnableCodeCompletion;
 				
  				enableFoldingCheckBox.Active = TextEditorProperties.EnableFolding;
-				
+ 				
+ 				showClassMethodCheckBox.Active = TextEditorProperties.ShowClassBrowser;
+ 				
 				switch (TextEditorProperties.FontType) {
 				case EditorFontType.DefaultMonospace:
 					use_monospace.Active = true;
@@ -104,6 +107,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			{
 				TextEditorProperties.EnableCodeCompletion = enableCodeCompletionCheckBox.Active;
 				TextEditorProperties.EnableFolding = enableFoldingCheckBox.Active;
+				TextEditorProperties.ShowClassBrowser = showClassMethodCheckBox.Active;
 				
 				if (use_monospace.Active) {
 					TextEditorProperties.FontType = EditorFontType.DefaultMonospace;
