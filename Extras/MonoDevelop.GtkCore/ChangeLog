@@ -1,3 +1,19 @@
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml,
+	  MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.mdp, Makefile.am, icons/image-x-generic.png:
+	  Show a "Stock Icons" node in the User Interface folder. It's easier
+	  to discover than the context menu option.
+	* MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs,
+	  MonoDevelop.GtkCore.Commands/GladeCommands.cs: Added menu option
+	  for opening the gtk# settings.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Don't crash if
+	  the gtk-gui folder doesn't exist. Fixes bug #81152.
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: Hide the border
+	  of the combined view notebook.
+
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libstetic.dll: Updated from stetic module. Fixes NRE crash.

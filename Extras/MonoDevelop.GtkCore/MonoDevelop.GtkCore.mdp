@@ -62,6 +62,8 @@
     <File name="./icons/widget.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/actiongroup.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./icons/image-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

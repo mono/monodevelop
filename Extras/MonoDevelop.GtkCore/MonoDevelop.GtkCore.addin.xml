@@ -40,6 +40,7 @@
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.WidgetNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.WindowsFolderNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.ActionGroupNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.GtkCore.NodeBuilders.StockIconsNodeBuilder"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/FileTemplates">
@@ -85,6 +86,8 @@
 				_label = "Import Glade file..." />
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.EditIcons"
 				_label = "Edit Project Icons..." />
+		<Command id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings"
+				_label = "GTK# support settings..." />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode/Add">
@@ -111,6 +114,8 @@
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.ImportGladeFile" />
+		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetNode">
@@ -121,6 +126,10 @@
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ActionGroupNode">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/StockIconsNode">
+		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">

@@ -85,6 +85,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			Project p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
 			if (info != null && !info.GuiBuilderProject.HasError) {
+				builder.AddChild (new StockIconsNode (p));
 				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
 					builder.AddChild (fi);
 				foreach (Stetic.ActionGroupComponent group in info.GuiBuilderProject.SteticProject.GetActionGroups ())
@@ -94,9 +95,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project p = ((WindowsFolder)dataObject).Project;
-			GtkDesignInfo info = GtkCoreService.GetGtkInfo (p);
-			return (info != null && !info.GuiBuilderProject.IsEmpty);
+			return true;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

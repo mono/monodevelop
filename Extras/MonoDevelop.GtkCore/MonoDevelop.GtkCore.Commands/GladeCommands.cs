@@ -36,5 +36,6 @@ namespace MonoDevelop.GtkCore
 		AddNewActionGroup,
 		ImportGladeFile,
 		EditIcons,
+		GtkSettings
 	}
 }

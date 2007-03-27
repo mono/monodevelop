@@ -77,11 +77,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			gproject = GuiBuilderService.SteticApp.CreateProject ();
 			formInfos = new ArrayList ();
+			
+			if (!System.IO.File.Exists (fileName)) {
+				// Regenerate the gtk-gui folder if the stetic project
+				// doesn't exist.
+				GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
+				info.UpdateGtkFolder ();
+			}
 
 			try {
 				gproject.Load (fileName);
 			} catch (Exception ex) {
-				IdeApp.Services.MessageService.ShowError (ex, "The GUI designer project file '" + fileName + "' could not be loaded.");
+				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
 				hasError = true;
 			}
 			
@@ -102,12 +109,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Monitor changes in the file
 			lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
 			watcher = new FileSystemWatcher ();
-			watcher.Path = Path.GetDirectoryName (fileName);
-			watcher.Filter = Path.GetFileName (fileName);
-			watcher.Changed += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
-			watcher.EnableRaisingEvents = true;
-		}
-		
+			if (System.IO.File.Exists (fileName)) {
+				watcher.Path = Path.GetDirectoryName (fileName);
+				watcher.Filter = Path.GetFileName (fileName);
+				watcher.Changed += (FileSystemEventHandler) IdeApp.Services.DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
+				watcher.EnableRaisingEvents = true;
+			}
+		}	
+	
 		void Unload ()
 		{
 			if (gproject == null)

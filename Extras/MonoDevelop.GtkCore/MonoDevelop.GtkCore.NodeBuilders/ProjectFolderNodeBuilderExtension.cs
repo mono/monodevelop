@@ -143,6 +143,19 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			cinfo.Visible = CanAddWindow ();
 		}
 		
+		[CommandHandler (GtkCommands.GtkSettings)]
+		protected void OnGtkSettings ()
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			IdeApp.ProjectOperations.ShowOptions (project, "SteticOptionsPanel");
+		}
+		
+		[CommandUpdateHandler (GtkCommands.EditIcons)]
+		protected void UpdateGtkSettings (CommandInfo cinfo)
+		{
+			cinfo.Visible = CanAddWindow ();
+		}
+		
 		bool CanAddWindow ()
 		{
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;

@@ -65,6 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			notebook.TabPos = Gtk.PositionType.Bottom;
 			notebook.ShowTabs = false;
+			notebook.ShowBorder = false;
 			notebook.Show ();
 			box = new VBox ();
 			
