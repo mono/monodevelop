@@ -433,8 +433,9 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			if (currentClass != null && currentClass.BodyRegion != null && currentClass.BodyRegion.BeginLine <= line && line <= currentClass.BodyRegion.EndLine) {
 				// we are still in the active class, just need to check method now
-				memberStore.GetIterFirst (out iter);
-			    do {	    
+				bool more = memberStore.GetIterFirst (out iter);
+			    while (more)
+				{
 			    	object member = memberStore.GetValue (iter, 2);
 			    	if (member is IField) {
 			    		if (((IField) member).Region.BeginLine <= line && line <= ((IField) member).Region.EndLine) {
@@ -458,8 +459,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			    		}
 			    	}
 			    	index++;
-			    	
-				} while (memberStore.IterNext (ref iter));
+					more = memberStore.IterNext (ref iter);
+				}
 			} else {
 				// Changed class, so rebind
 				BindClassCombo();

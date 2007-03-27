@@ -1,3 +1,8 @@
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Don't
+	  crash if the method combo is empty.
+
 2007-03-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Avoid
