@@ -1,3 +1,11 @@
+2007-03-28  Ankit Jain  <jankit@novell.com>
+
+	* CustomMakefile.cs (InitVarToValuesDict): Skip blank entries.
+	* MakefileData.cs: Replace StartsWith with direct comparisons for small
+	strings. For references, ignore empty entries.
+	(ParseReference):
+	(GacRefToString): Catch specific exceptions for AssemblyName.GetAssemblyName
+
 2007-03-21  Ankit Jain  <jankit@novell.com>
 
 	* MakefileData.cs (PkgCheckModulesRegex): Fix regex to correctly handle

@@ -155,8 +155,10 @@ namespace MonoDevelop.Autotools
 					if (val.Length == 0)
 						continue;
 
-					foreach (string s in val.Split (new char [] {' ', '\t'}))
-						list.Add (s);
+					foreach (string s in val.Split (new char [] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries)) {
+						if (s.Length > 0)
+							list.Add (s);
+					}
 				}
 
 				varToValuesDict [varname] = list;

@@ -861,9 +861,9 @@ namespace MonoDevelop.Autotools
 			foreach (string r in references) {
 				//Handle -r:System,System.Data also
 				try { 
-					ParseReference (r.Trim (), usePrefix, refVar, len, refType, project);
+					ParseReference (r, usePrefix, refVar, len, refType, project);
 				} catch (Exception e) {
-					Console.WriteLine ("Unable to parse reference '{0}'. Ignoring.", r);
+					Console.WriteLine ("For project {0} Unable to parse reference '{1}'. Ignoring. {2}", project.Name, r, e.ToString ());
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"Unable to parse reference '{0}', reason : {1}. Ignoring.", r, e.Message));
 					refVar.Extra.Add (r);
@@ -887,6 +887,7 @@ namespace MonoDevelop.Autotools
 				DotNetProject project)
 		{
 			string rname = reference;
+			// .StartsWith "$("
 			if (rname.Length > 3 && rname [0] == '$' && rname [1] == '(' && rname [rname.Length - 1] == ')') {
 				if (!UseAutotools) {
 					refVar.Extra.Add (reference);
@@ -931,10 +932,11 @@ namespace MonoDevelop.Autotools
 				return;
 			}
 
-			if (rname.StartsWith ("-pkg:")) {
-				string pkgName = rname.Substring (5).Trim ();
+			// .StartsWith "-pkg:"
+			if (rname.Length >= 5 && rname [0] == '-' && rname [1] == 'p' && rname [2] == 'k' && rname [3] == 'g' && rname [4] == ':') {
+				string pkgName = rname.Substring (5);
 				//-pkg:foo,bar
-				foreach (string s in pkgName.Split (new char [] {','})) {
+				foreach (string s in pkgName.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
 					if (ReferencedPackages.Contains (s))
 						continue;
 
@@ -952,9 +954,9 @@ namespace MonoDevelop.Autotools
 
 			//FIXME: try/catch around the split refs ?
 			bool varFound = false;
-			foreach (string r in rname.Split (new char [] {','})) {
+			foreach (string r in rname.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
 				string refname = r;
-				if (refname.StartsWith ("$(") && !UseAutotools) {
+				if (refname.Length >= 2 && refname [0] == '$' && refname [1] == '(' && !UseAutotools) {
 					//Eg. -r:$(top_builddir)/foo.dll
 					refVar.Extra.Add (reference);
 					continue;
@@ -977,7 +979,8 @@ namespace MonoDevelop.Autotools
 				string fullname = null;
 				try {
 					fullname = AssemblyName.GetAssemblyName (fullpath).FullName;
-				} catch {
+				} catch (FileNotFoundException) {
+				} catch (BadImageFormatException) {
 				}
 
 				// Valid assembly, From a package, add as Gac
@@ -1200,13 +1203,13 @@ namespace MonoDevelop.Autotools
 		{
 			// Cosmetic fix: remove the "./" prefix
 			
-			if (!fileName.StartsWith ("./"))
+			if (! (fileName [0] == '.' && fileName [1] == '/'))
 				return fileName;
 				
 			do {
-				if (fileName.StartsWith ("./"))
+				if (fileName [0] == '.' && fileName [1] == '/')
 					fileName = fileName.Substring (2);
-				else if (fileName.StartsWith ("/"))
+				else if (fileName [0] == '/')
 					fileName = fileName.Substring (1);
 				else
 					return fileName;
@@ -1405,9 +1408,11 @@ namespace MonoDevelop.Autotools
 					//Path
 					try {
 						fullname = AssemblyName.GetAssemblyName (pr.Reference).FullName;
-					} catch {
-						//Invalid assembly!
+						//If this throws : Invalid assembly!
 						//let it fall through and be emitted as a asm ref
+					} catch (FileNotFoundException) {
+						pkg = null;
+					} catch (BadImageFormatException) {
 						pkg = null;
 					}
 				}
