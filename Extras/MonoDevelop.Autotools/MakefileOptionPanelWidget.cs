@@ -16,11 +16,13 @@ namespace MonoDevelop.Autotools
 	{
 		MakefileData data;
 		ComboBox [] combos = null;
+		bool isDotNetProject;
 		
 		public MakefileOptionPanelWidget (Project project, MakefileData tmpData)
 			: this ()
 		{
 			this.data = tmpData;
+			isDotNetProject = (project is DotNetProject);
 			
 			if (data == null) {
 				//Use defaults
@@ -44,6 +46,12 @@ namespace MonoDevelop.Autotools
 				this.fileEntryMakefilePath.Path = data.AbsoluteMakefileName;
 				this.fileEntryMakefilePath.DefaultPath = data.AbsoluteMakefileName;
 				this.cbEnableMakefileIntegration.Active = data.IntegrationEnabled;
+				
+				if (!isDotNetProject) {
+					// Disable all References combos etc for non-dotnet projects
+					cbKeepRefSync.Sensitive = false;
+					HandleKeepRefSyncClicked (cbKeepRefSync);
+				}
 
 				FillCompilerMessageCombo ();
 				SetActiveVar (comboMessageType, data.MessageRegexName);
@@ -406,8 +414,10 @@ namespace MonoDevelop.Autotools
 			this.cbKeepOthersSync.Sensitive = active;
 			HandleKeepOthersSyncClicked (cbKeepOthersSync);
 
-			this.cbKeepRefSync.Sensitive = active;
-			HandleKeepRefSyncClicked (cbKeepRefSync);
+			if (isDotNetProject) {
+				this.cbKeepRefSync.Sensitive = active;
+				HandleKeepRefSyncClicked (cbKeepRefSync);
+			}
 
 			this.cbAutotoolsProject.Sensitive = active;
 			HandleCbAutotoolsProjectClicked (cbAutotoolsProject);

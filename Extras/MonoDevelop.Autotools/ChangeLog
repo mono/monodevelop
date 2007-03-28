@@ -1,5 +1,10 @@
 2007-03-28  Ankit Jain  <jankit@novell.com>
 
+	* MakefileOptionPanelWidget.cs: Disable References combos etc for
+	non-dotnet projects.
+
+2007-03-28  Ankit Jain  <jankit@novell.com>
+
 	* MakefileOptionPanelWidget.cs (FillCombos): Sort list of variables.
 
 2007-03-28  Ankit Jain  <jankit@novell.com>
