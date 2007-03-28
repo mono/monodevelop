@@ -495,10 +495,13 @@ namespace MonoDevelop.Autotools
 				for (int i = 0; i < combos.Length; i ++)
 					((ListStore) combos [i].Model).Clear ();
 				
-				comboFilesVar.AppendText ("(None)");
-				foreach (string item in vars)
-					combos [0].AppendText (item);
+				List<string> list = new List<string> (vars);
+				list.Sort ();
 				
+				comboFilesVar.AppendText ("(None)");
+				foreach (string item in list)
+					combos [0].AppendText (item);
+
 				combos [0].Active = 0;
 				for (int i = 1; i < combos.Length; i ++) {
 					combos [i].Model = combos [0].Model;

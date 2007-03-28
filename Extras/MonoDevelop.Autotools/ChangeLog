@@ -1,5 +1,9 @@
 2007-03-28  Ankit Jain  <jankit@novell.com>
 
+	* MakefileOptionPanelWidget.cs (FillCombos): Sort list of variables.
+
+2007-03-28  Ankit Jain  <jankit@novell.com>
+
 	* CustomMakefile.cs (InitVarToValuesDict): Skip blank entries.
 	* MakefileData.cs: Replace StartsWith with direct comparisons for small
 	strings. For references, ignore empty entries.
