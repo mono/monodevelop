@@ -1,5 +1,13 @@
 2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	  Includes fixes for bugs 81033, 81086, 81239, 81143, 81014 and
+	  81015.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: Allow pasting when
+	  a placeholder is selected. Fixes bug #81246.
+
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.addin.xml,
 	  MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs,
 	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,

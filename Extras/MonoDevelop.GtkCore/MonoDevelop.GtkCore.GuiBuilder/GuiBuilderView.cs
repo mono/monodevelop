@@ -465,7 +465,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[CommandUpdateHandler (EditCommands.Paste)]
 		protected void OnUpdatePaste (CommandInfo cinfo)
 		{
-			cinfo.Enabled = designer.Selection != null && designer.Selection.CanPaste;
+			cinfo.Enabled = designer.Selection == null || designer.Selection.CanPaste;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Undo)]
