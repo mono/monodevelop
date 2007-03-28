@@ -1,3 +1,8 @@
+2007-03-29  Ankit Jain  <jankit@novell.com>
+
+	* MakefileOptionPanelWidget.cs: Ensure reference combos are disabled for
+	non-dotnet projects even when enabling for the first time.
+
 2007-03-28  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs: Disable References combos etc for
