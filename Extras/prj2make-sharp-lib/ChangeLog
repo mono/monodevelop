@@ -1,3 +1,9 @@
+2007-03-29  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs: Write out list of files and references in
+	WriteFile instead of in SaveProject.
+	* MSBuildSolution.cs: Cannot convert a non-dotnet project.
+
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VS2003SlnFileFormat.cs, VS2003ProjectFileFormat.cs: VS2003 file

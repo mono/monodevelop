@@ -165,9 +165,12 @@ namespace MonoDevelop.Prj2Make
 			CombineEntry ret = ce;
 
 			if (newCombine == null) {
+				DotNetProject project = ce as DotNetProject;
+				if (project == null)
+					return ce;
+
 				//FIXME: Use MSBuildFileFormat.CanReadFile instead
 				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
-					DotNetProject project = (DotNetProject) ce;
 					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
 					project.FileFormat = fileFormat;
 

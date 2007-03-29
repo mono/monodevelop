@@ -277,10 +277,26 @@ namespace MonoDevelop.Prj2Make
 			CleanUpEmptyItemGroups (doc);
 			
 			if (newdoc) {
+				foreach (ProjectFile pfile in project.ProjectFiles)
+					data.ProjectFileElements [pfile] = FileToXmlElement (data, project, pfile);
+
+				foreach (ProjectReference pref in project.ProjectReferences)
+					data.ProjectReferenceElements [pref] = ReferenceToXmlElement (data, project, pref);
+
+				XmlElement elem = doc.CreateElement ("Configuration", ns);
+				data.GlobalConfigElement.AppendChild (elem);
+				elem.InnerText = "Debug";
+				elem.SetAttribute ("Condition", " '$(Configuration)' == '' ");
+
+				elem = doc.CreateElement ("Platform", ns);
+				data.GlobalConfigElement.AppendChild (elem);
+				elem.InnerText = "AnyCPU";
+				elem.SetAttribute ("Condition", " '$(Platform)' == '' ");
+
 				//MUST go at the end.. 
-				XmlElement el = doc.CreateElement ("Import", ns);
-				doc.DocumentElement.InsertAfter (el, doc.DocumentElement.LastChild);
-				el.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+				elem = doc.CreateElement ("Import", ns);
+				doc.DocumentElement.InsertAfter (elem, doc.DocumentElement.LastChild);
+				elem.SetAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
 			}
 
 			doc.Save (file);
@@ -344,29 +360,7 @@ namespace MonoDevelop.Prj2Make
 		public void SaveProject (DotNetProject project, IProgressMonitor monitor)
 		{
 			WriteFile (project.FileName, project, monitor);
-
-			MSBuildData d = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
-			if (d == null)
-				throw new Exception (String.Format ("INTERNAL ERROR: 'data' object not found for {0}", project.Name));
-
-			foreach (ProjectFile pfile in project.ProjectFiles)
-				d.ProjectFileElements [pfile] = FileToXmlElement (d, project, pfile);
-
-			foreach (ProjectReference pref in project.ProjectReferences)
-				d.ProjectReferenceElements [pref] = ReferenceToXmlElement (d, project, pref);
-
-			XmlElement elem = d.Document.CreateElement ("Configuration", ns);
-			d.GlobalConfigElement.AppendChild (elem);
-			elem.InnerText = "Debug";
-			elem.SetAttribute ("Condition", " '$(Configuration)' == '' ");
-
-			elem = d.Document.CreateElement ("Platform", ns);
-			d.GlobalConfigElement.AppendChild (elem);
-			elem.InnerText = "AnyCPU";
-			elem.SetAttribute ("Condition", " '$(Platform)' == '' ");
-
 			SetupHandlers (project);
-			d.Document.Save (project.FileName);
 		}
 
 		//Reader
