@@ -1,3 +1,9 @@
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoMakefileFormat.cs: Save MonoProject and MonoCombine objects only.
+	* MonoDeveloperExtensions.mdp, NUnit/NUnit.mdp: Disable local-copy
+	  references.
+
 2007-03-08  Marek Sieradzki  <marek.sieradzki@gmail.com>
 
 	* MonoTestProvider.cs: Removing as it was already moved to separate

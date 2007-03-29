@@ -64,7 +64,7 @@ namespace MonoDeveloper
 		
 		public bool CanWriteFile (object obj)
 		{
-			return (obj is Project) || (obj is Combine);
+			return (obj is MonoProject) || (obj is MonoCombine);
 		}
 		
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
