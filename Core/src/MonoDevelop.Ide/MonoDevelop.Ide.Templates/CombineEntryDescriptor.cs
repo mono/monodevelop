@@ -78,11 +78,11 @@ namespace MonoDevelop.Ide.Templates
 			
 			entry.Name = newProjectName;
 			
-			IFileFormat fileFormat = Services.ProjectService.FileFormats.GetFileFormatForObject (entry);
-			if (fileFormat == null)
+			IFileFormat[] fileFormats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			if (fileFormats.Length == 0)
 				throw new InvalidOperationException ("Can't find a file format for the type: " + type);
 
-			string fileName = fileFormat.GetValidFormatName (Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
+			string fileName = fileFormats[0].GetValidFormatName (Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
 			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (fileName)) {
