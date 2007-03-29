@@ -64,17 +64,17 @@ namespace MonoDevelop.Projects
 		
 		internal CombineEntry ReadFile (string file, IProgressMonitor monitor)
 		{
-			IFileFormat format = formatManager.GetFileFormat (file);
+			IFileFormat[] formats = formatManager.GetFileFormats (file);
 
-			if (format == null)
+			if (formats.Length == 0)
 				throw new InvalidOperationException ("Unknown file format: " + file);
 			
-			CombineEntry obj = format.ReadFile (file, monitor) as CombineEntry;
+			CombineEntry obj = formats[0].ReadFile (file, monitor) as CombineEntry;
 			if (obj == null)
 				throw new InvalidOperationException ("Invalid file format: " + file);
 			
 			if (obj.FileFormat == null)	
-				obj.FileFormat = format;
+				obj.FileFormat = formats[0];
 
 			return obj;
 		}
@@ -83,9 +83,14 @@ namespace MonoDevelop.Projects
 		{
 			IFileFormat format = entry.FileFormat;
 			if (format == null) {
-				if (entry is Project) format = defaultProjectFormat;
-				else if (entry is Combine) format = defaultCombineFormat;
-				else format = formatManager.GetFileFormatForObject (entry);
+				if (entry is Project)
+					format = defaultProjectFormat;
+				else if (entry is Combine)
+					format = defaultCombineFormat;
+				else {
+					IFileFormat[] formats = formatManager.GetFileFormatsForObject (entry);
+					format = formats.Length > 0 ? formats [0] : null;
+				}
 				
 				if (format == null)
 					throw new InvalidOperationException ("FileFormat not provided for combine entry '" + entry.Name + "'");
@@ -135,8 +140,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 				
-			IFileFormat format = formatManager.GetFileFormat (filename);
-			return format != null;
+			return formatManager.GetFileFormats (filename).Length > 0;
 		}
 
 		public override void InitializeService()

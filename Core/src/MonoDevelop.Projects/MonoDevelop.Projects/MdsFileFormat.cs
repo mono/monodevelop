@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 	internal class MdsFileFormat: IFileFormat
 	{
 		public string Name {
-			get { return "MonoDevelop Combine"; }
+			get { return "MonoDevelop Solution"; }
 		}
 		
 		public string GetValidFormatName (string fileName)

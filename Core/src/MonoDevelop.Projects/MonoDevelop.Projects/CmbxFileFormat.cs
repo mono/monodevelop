@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 	internal class CmbxFileFormat: IFileFormat
 	{
 		public string Name {
-			get { return "MonoDevelop Combine"; }
+			get { return "SharpDevelop 1.0 Combine"; }
 		}
 		
 		public string GetValidFormatName (string fileName)

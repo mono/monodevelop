@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 	internal class PrjxFileFormat: IFileFormat
 	{
 		public string Name {
-			get { return "SharpDevelop Project"; }
+			get { return "SharpDevelop 1.0 Project"; }
 		}
 		
 		public string GetValidFormatName (string fileName)

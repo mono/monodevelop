@@ -41,20 +41,22 @@ namespace MonoDevelop.Projects
 			fileFormats.Add (format);
 		}
 		
-		public IFileFormat GetFileFormat (string fileName)
+		public IFileFormat[] GetFileFormats (string fileName)
 		{
+			ArrayList list = new ArrayList ();
 			foreach (IFileFormat format in fileFormats)
 				if (format.CanReadFile (fileName))
-					return format;
-			return null;
+					list.Add (format);
+			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
 		}
 		
-		public IFileFormat GetFileFormatForObject (object obj)
+		public IFileFormat[] GetFileFormatsForObject (object obj)
 		{
+			ArrayList list = new ArrayList ();
 			foreach (IFileFormat format in fileFormats)
 				if (format.CanWriteFile (obj))
-					return format;
-			return null;
+					list.Add (format);
+			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
 		}
 	}
 }

@@ -230,6 +230,7 @@ FILES =  \
 	MonoDevelop.Projects/NoStartupCombineDefinedException.cs \
 	MonoDevelop.Projects/PrjxFileFormat.cs \
 	MonoDevelop.Projects/Project.cs \
+	MonoDevelop.Projects/ProjectConvertTool.cs \
 	MonoDevelop.Projects/ProjectCreateInformation.cs \
 	MonoDevelop.Projects/ProjectEventArgs.cs \
 	MonoDevelop.Projects/ProjectFile.cs \

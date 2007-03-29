@@ -1,3 +1,16 @@
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Track api changes.
+	* MonoDevelop.Projects/FileFormatManager.cs: Allow getting all file
+	  formats supported by a file or object.
+	* MonoDevelop.Projects/PrjxFileFormat.cs,
+	  MonoDevelop.Projects/MdsFileFormat.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs: Set correct file format
+	  name.
+	* MonoDevelop.Projects/ProjectConvertTool.cs,
+	  MonoDevelop.Projects.addin.xml, MonoDevelop.Projects.mdp,
+	  Makefile.am: Added new project conversion tool.
+
 2007-03-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,
