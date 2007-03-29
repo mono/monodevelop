@@ -1,3 +1,9 @@
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VS2003SlnFileFormat.cs, VS2003ProjectFileFormat.cs: VS2003 file
+	  format can't write files.
+	* prj2make-sharp-lib.mdp: Disable local-copy references.
+
 2007-02-21  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs: Don't swallow exceptions. Catch specific

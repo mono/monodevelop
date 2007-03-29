@@ -74,7 +74,7 @@ namespace MonoDevelop.Prj2Make
 
 		public bool CanWriteFile (object obj)
 		{
-			return obj is DotNetProject;
+			return false;
 		}
 
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
