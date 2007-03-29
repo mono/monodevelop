@@ -59,7 +59,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DeployHandlers">
-		<Class class="MonoDevelop.Autotools.Handler" />
+		<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors">

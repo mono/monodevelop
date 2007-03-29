@@ -13,44 +13,6 @@ using MonoDevelop.Projects.Gui.Deployment;
 
 namespace MonoDevelop.Autotools
 {
-	public class Handler: IDeployHandler
-	{
-		public string Id { 
-			get { return "MonoDevelop.Autotools.Deployer"; }
-		}
-		
-		public string Description {
-			get { return GettextCatalog.GetString ("Tarball"); }
-		}
-		
-		public string Icon {
-			get { return null; }
-		}
-		
-		public bool CanDeploy (CombineEntry entry)
-		{
-			Combine combine = entry as Combine;
-			if ( combine == null ) return false;
-			SolutionDeployer deployer = new SolutionDeployer ();
-			return deployer.CanDeploy ( combine );
-		}
-		
-		public DeployTarget CreateTarget (CombineEntry entry)
-		{
-			return new TarballDeployTarget ();
-		}
-		
-		public void Deploy (IProgressMonitor monitor, DeployTarget target)
-		{
-			TarballDeployTarget tar = (TarballDeployTarget) target;
-			Combine combine = target.CombineEntry as Combine;
-			SolutionDeployer deployer = new SolutionDeployer ();
-			if ( tar.DefaultConfiguration == null || tar.DefaultConfiguration == "" )
-				deployer.Deploy ( combine, tar.TargetDir, monitor );
-			else deployer.Deploy ( combine, tar.DefaultConfiguration, tar.TargetDir, monitor );
-		}
-	}
-	
 	public class TarballDeployTarget: DeployTarget
 	{
 		[ItemProperty ("TargetDirectory")]
@@ -58,6 +20,10 @@ namespace MonoDevelop.Autotools
 		
 		[ItemProperty ("DefaultConfiguration")]
 		string defaultConfig;
+		
+		public override string Description {
+			get { return GettextCatalog.GetString ("Tarball"); }
+		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
@@ -80,6 +46,37 @@ namespace MonoDevelop.Autotools
 		public Combine TargetCombine {
 			get { return base.CombineEntry as Combine; }
 		}
+		
+		public override bool CanDeploy (CombineEntry entry)
+		{
+			Combine combine = entry as Combine;
+			if ( combine == null ) return false;
+			SolutionDeployer deployer = new SolutionDeployer ();
+			return deployer.CanDeploy ( combine );
+		}
+		
+		protected override void OnInitialize (CombineEntry entry)
+		{
+			if (string.IsNullOrEmpty (targetDir))
+				targetDir = entry.BaseDirectory;
+			if (string.IsNullOrEmpty (defaultConfig)) {
+				if (entry.ActiveConfiguration != null)
+					defaultConfig = entry.ActiveConfiguration.Name;
+			}
+		}
+
+		
+		protected override void OnDeploy (IProgressMonitor monitor)
+		{
+			Combine combine = CombineEntry as Combine;
+			SolutionDeployer deployer = new SolutionDeployer ();
+			
+			if (DefaultConfiguration == null || DefaultConfiguration == "")
+				deployer.Deploy ( combine, TargetDir, monitor );
+			else
+				deployer.Deploy ( combine, DefaultConfiguration, TargetDir, monitor );
+		}
+
 	}
 	
 	public class TarballTargetEditor: IDeployTargetEditor

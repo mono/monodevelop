@@ -1,3 +1,8 @@
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Handler.cs, MonoDevelop.Autotools.addin.xml: Track API changes.
+	* MonoDevelop.Autotools.mdp: Don't local-copy references.
+
 2007-03-29  Ankit Jain  <jankit@novell.com>
 
 	* MakefileOptionPanelWidget.cs: Ensure reference combos are disabled for
