@@ -1,5 +1,11 @@
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Track api changes.
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  Makefile.am: Flush.
+
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs: Track api
 	  changes.
 

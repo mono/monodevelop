@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Commands
 						cinfo.Text = dt.Name;
 						if (ce.DefaultDeployTarget == dt)
 							cinfo.Text += " " + GettextCatalog.GetString ("(default)");
-						cinfo.Icon = dt.DeployHandler.Icon;
+						cinfo.Icon = dt.Icon;
 						info.Add (cinfo, dt);
 					}
 				} else {
