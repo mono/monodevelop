@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -35,6 +36,14 @@ namespace MonoDevelop.Projects.Deployment
 	{
 		[ItemProperty ("Copier")]
 		FileCopyConfiguration copierConfiguration;
+		
+		public override string Description {
+			get { return GettextCatalog.GetString ("Directory"); } 
+		}
+		
+		public override string Icon {
+			get { return "md-closed-folder"; }
+		}
 		
 		public override void CopyFrom (DeployTarget other)
 		{
@@ -50,6 +59,17 @@ namespace MonoDevelop.Projects.Deployment
 		public FileCopyConfiguration CopierConfiguration {
 			get { return copierConfiguration; }
 			set { copierConfiguration = value; }
+		}
+		
+		public override bool CanDeploy (CombineEntry entry) 
+		{
+			return entry is Project || entry is Combine;
+		}
+		
+		protected override void OnDeployProject (IProgressMonitor monitor, Project project)
+		{
+			DeployFileCollection deployFiles = project.GetDeployFiles ();
+			CopierConfiguration.CopyFiles (monitor, new SimpleFileReplacePolicy (FileReplaceMode.Replace), deployFiles);
 		}
 	}
 }

@@ -24,22 +24,16 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
-	MonoDevelop.Projects.Deployment.Extensions/IDeployHandler.cs \
-	MonoDevelop.Projects.Deployment.Extensions/IFileCopyHandler.cs \
-	MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs \
 	MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/CommandDeployHandler.cs \
 	MonoDevelop.Projects.Deployment/CommandDeployTarget.cs \
 	MonoDevelop.Projects.Deployment/DeployFile.cs \
-	MonoDevelop.Projects.Deployment/DeployHandler.cs \
 	MonoDevelop.Projects.Deployment/DeployService.cs \
 	MonoDevelop.Projects.Deployment/DeployTarget.cs \
-	MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs \
 	MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs \
 	MonoDevelop.Projects.Deployment/FileCopyConfiguration.cs \
 	MonoDevelop.Projects.Deployment/FileCopyHandler.cs \
+	MonoDevelop.Projects.Deployment/IFileCopyHandler.cs \
 	MonoDevelop.Projects.Deployment/IFileReplacePolicy.cs \
-	MonoDevelop.Projects.Deployment/InstallDeployHandler.cs \
 	MonoDevelop.Projects.Deployment/InstallDeployTarget.cs \
 	MonoDevelop.Projects.Deployment/LocalFileCopyConfiguration.cs \
 	MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs \

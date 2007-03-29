@@ -31,6 +31,8 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
+using System.Collections.Specialized;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -43,11 +45,19 @@ namespace MonoDevelop.Projects.Deployment
 			targets = new List<DeployTarget> ();
 		}
 		
+		public override string Description {
+			get { return GettextCatalog.GetString ("Combined Deploy"); }
+		}
+		
+		public override string Icon {
+			get { return "gtk-execute"; }
+		}
+		
 		[ItemProperty]
 		public List<DeployTarget> DeployTargets {
 			get {
 				foreach (DeployTarget t in targets)
-					t.SetCombineEntry (base.CombineEntry);
+					t.CombineEntry = base.CombineEntry;
 				return targets;
 			}
 		}
@@ -61,6 +71,24 @@ namespace MonoDevelop.Projects.Deployment
 				foreach (DeployTarget dt in t.DeployTargets)
 					targets.Add (dt.Clone ());
 			}
+		}
+		
+		protected override void OnDeploy (IProgressMonitor monitor)
+		{
+			monitor.BeginTask ("", DeployTargets.Count);
+			foreach (DeployTarget dt in DeployTargets) {
+				try {
+					dt.Deploy (monitor);
+					if (monitor.IsCancelRequested)
+						break;
+				}
+				catch (Exception ex) {
+					monitor.ReportError ("Deploy operation failed", ex);
+					break;
+				}
+				monitor.Step (1);
+			}
+			monitor.EndTask ();
 		}
 	}
 }

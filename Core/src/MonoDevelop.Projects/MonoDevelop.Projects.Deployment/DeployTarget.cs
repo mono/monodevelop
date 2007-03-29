@@ -28,7 +28,7 @@
 
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 
@@ -37,11 +37,6 @@ namespace MonoDevelop.Projects.Deployment
 	[DataItem (FallbackType=typeof(UnknownDeployTarget))]
 	public class DeployTarget
 	{
-		DeployHandler handler;
-		
-		[ItemProperty ("Handler")]
-		string handlerId;
-		
 		[ItemProperty ("Name")]
 		string name;
 		
@@ -51,22 +46,19 @@ namespace MonoDevelop.Projects.Deployment
 		{
 		}
 		
-		internal void Bind (DeployHandler handler)
-		{
-			this.handler = handler;
-			this.handlerId = handler.Id;
+		public virtual string Description {
+			get { return GettextCatalog.GetString ("Deploy Target"); } 
 		}
 		
-		internal void SetCombineEntry (CombineEntry entry)
-		{
-			this.entry = entry;
+		public virtual string Icon {
+			get { return "md-package"; }
 		}
 		
 		public void Deploy (IProgressMonitor monitor)
 		{
 			monitor.BeginTask ("Deploy operation: " + Name, 1);
 			try {
-				this.DeployHandler.Deploy (monitor, this);
+				OnDeploy (monitor);
 			} catch (Exception ex) {
 				monitor.ReportError ("Deploy operation failed", ex);
 				monitor.AsyncOperation.Cancel ();
@@ -75,18 +67,32 @@ namespace MonoDevelop.Projects.Deployment
 			}
 		}
 		
+		public virtual bool CanDeploy (CombineEntry entry)
+		{
+			return true;
+		}
+		
 		public string Name {
 			get { return name; }
 			set { name = value; }
 		}
 		
 		public CombineEntry CombineEntry {
-			get { return entry; }
+			get {
+				return entry; 
+			}
+			internal set {
+				if (entry != value) {
+					entry = value;
+					if (entry != null)
+						OnInitialize (entry);
+				}
+			}
 		}
 		
 		public DeployTarget Clone ()
 		{
-			DeployTarget d = DeployHandler.CreateTarget (entry);
+			DeployTarget d = (DeployTarget) Activator.CreateInstance (GetType());
 			d.CopyFrom (this);
 			return d;
 		}
@@ -94,27 +100,12 @@ namespace MonoDevelop.Projects.Deployment
 		public virtual void CopyFrom (DeployTarget other)
 		{
 			name = other.name;
-			handlerId = other.handlerId;
-			handler = other.handler;
 			entry = other.entry;
-		}
-		
-		public DeployHandler DeployHandler {
-			get {
-				if (handler == null) {
-					if (handlerId == null)
-						throw new InvalidOperationException ("Deploy target not bound to a handler");
-					handler = Services.DeployService.GetDeployHandler (handlerId);
-					if (handler == null)
-						throw new InvalidOperationException ("Deploy handler not found: " + handlerId);
-				}
-				return handler;
-			}
 		}
 		
 		public virtual string GetDefaultName (CombineEntry entry)
 		{
-			string bname = DeployHandler.Description;
+			string bname = Description;
 			string name = bname;
 			
 			int n = 2;
@@ -135,9 +126,71 @@ namespace MonoDevelop.Projects.Deployment
 
 			return name;
 		}
+		
+		protected virtual void OnInitialize (CombineEntry entry)
+		{
+		}
+		
+		protected virtual void OnDeploy (IProgressMonitor monitor)
+		{
+			OnDeployCombineEntry (monitor, entry);
+		}
+		
+		protected virtual void OnDeployCombineEntry (IProgressMonitor monitor, CombineEntry entry)
+		{
+			if (entry is Combine)
+				OnDeployCombine (monitor, (Combine) entry);
+			else if (entry is Project)
+				OnDeployProject (monitor, (Project) entry);
+		}
+		
+		protected virtual void OnDeployCombine (IProgressMonitor monitor, Combine combine)
+		{
+			foreach (CombineEntry e in combine.Entries)
+				OnDeployCombineEntry (monitor, e);
+		}
+		
+		protected virtual void OnDeployProject (IProgressMonitor monitor, Project project)
+		{
+		}
 	}
 	
-	public class DeployTargetCollection: List<DeployTarget>
+	public class DeployTargetCollection: CollectionBase
 	{
+		CombineEntry owner;
+		
+		internal DeployTargetCollection (CombineEntry e)
+		{
+			owner = e;
+		}
+		
+		public DeployTargetCollection ()
+		{
+		}
+		
+		public void Add (DeployTarget target)
+		{
+			List.Add (target);
+		}
+		
+		public void AddRange (ICollection col)
+		{
+			foreach (DeployTarget tar in col)
+				Add (tar);
+		}
+		
+		public DeployTarget this [int n] {
+			get { return (DeployTarget) List [n]; }
+		}
+		
+		protected override void OnInsert (int index, object value)
+		{
+			((DeployTarget)value).CombineEntry = owner;
+		}
+
+		protected override void OnSet (int index, object oldValue, object newValue)
+		{
+			((DeployTarget)newValue).CombineEntry = owner;
+		}
 	}
 }

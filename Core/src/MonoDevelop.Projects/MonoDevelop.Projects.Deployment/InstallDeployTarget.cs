@@ -28,7 +28,10 @@
 
 
 using System;
+using System.IO;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
+using System.Collections.Specialized;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -36,6 +39,14 @@ namespace MonoDevelop.Projects.Deployment
 	{
 		string prefix = "";
 		string appName = "";
+		
+		public override string Description {
+			get { return GettextCatalog.GetString ("Install"); } 
+		}
+		
+		public override string Icon {
+			get { return "md-closed-folder"; }
+		}
 		
 		[ItemProperty]
 		public string InstallPrefix {
@@ -57,6 +68,55 @@ namespace MonoDevelop.Projects.Deployment
 				prefix = t.prefix;
 				appName = t.appName;
 			}
+		}
+		
+		public override bool CanDeploy (CombineEntry entry) 
+		{
+			return entry is Project || entry is Combine;
+		}
+		
+		protected override void OnInitialize (CombineEntry entry)
+		{
+			if (string.IsNullOrEmpty (appName))
+				appName = entry.Name;
+		}
+		
+		protected override void OnDeployProject (IProgressMonitor monitor, Project project)
+		{
+			DeployFileCollection deployFiles = project.GetDeployFiles ();
+			StringDictionary dirs = GetDeployDirectories (InstallPrefix, ApplicationName);
+			
+			foreach (DeployFile df in deployFiles) {
+				string targetPath = dirs [df.TargetDirectoryID];
+				if (targetPath == null) {
+					monitor.ReportWarning ("Could not copy file '" + df.RelativeTargetPath + "': Unknown target directory.");
+					continue;
+				}
+				CopyFile (monitor, df.SourcePath, Path.Combine (targetPath, df.RelativeTargetPath));
+			}
+		}
+		
+		void CopyFile (IProgressMonitor monitor, string src, string dest)
+		{
+			dest = Runtime.FileService.GetFullPath (dest);
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Deploying file {0}.", dest));
+			
+			string targetDir = Path.GetDirectoryName (dest);
+			if (!Directory.Exists (targetDir))
+				Directory.CreateDirectory (targetDir);
+			Runtime.FileService.CopyFile (src, dest);
+		}
+		
+		StringDictionary GetDeployDirectories (string prefix, string appName)
+		{
+			if (appName == null) appName = "";
+			StringDictionary directories = new StringDictionary ();
+			directories [TargetDirectory.ProgramFiles] = Path.Combine (Path.Combine (prefix, "lib"), appName);
+			directories [TargetDirectory.Binaries] =  Path.Combine (prefix, "bin");
+			directories [TargetDirectory.Personal] =  Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), appName);
+			directories [TargetDirectory.CommonApplicationData] =  Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.CommonApplicationData), appName);
+			directories [TargetDirectory.ApplicationData] =  Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), appName);
+			return directories;
 		}
 	}
 }

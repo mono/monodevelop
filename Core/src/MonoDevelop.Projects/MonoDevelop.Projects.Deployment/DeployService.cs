@@ -32,13 +32,11 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
 	public class DeployService: AbstractService
 	{
-		List<DeployHandler> handlers = new List<DeployHandler> ();
 		List<FileCopyHandler> copiers = new List<FileCopyHandler> ();
 		
 		public DeployService()
@@ -48,15 +46,7 @@ namespace MonoDevelop.Projects.Deployment
 		public override void InitializeService()
 		{
 			base.InitializeService ();
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployHandlers", OnHandlerExtensionChanged);
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployFileCopiers", OnCopierExtensionChanged);
-		}
-		
-		void OnHandlerExtensionChanged (ExtensionAction action, object item)
-		{
-			if (action == ExtensionAction.Add) {
-				handlers.Add (new DeployHandler ((IDeployHandler)item));
-			}
 		}
 		
 		void OnCopierExtensionChanged (ExtensionAction action, object item)
@@ -66,23 +56,18 @@ namespace MonoDevelop.Projects.Deployment
 			}
 		}
 		
-		public DeployHandler[] GetDeployHandlers (CombineEntry entry)
+		public DeployTarget[] GetSupportedDeployTargets (CombineEntry entry)
 		{
-			List<DeployHandler> list = new List<DeployHandler> ();
-			foreach (DeployHandler handler in handlers)
-				if (handler.CanDeploy (entry))
-					list.Add (handler);
+			object[] targets = Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/DeployHandlers");
+			List<DeployTarget> list = new List<DeployTarget> ();
+			foreach (DeployTarget target in targets) {
+				if (target.CanDeploy (entry)) {
+					target.CombineEntry = entry;
+					list.Add (target);
+				}
+			}
 
 			return list.ToArray ();
-		}
-		
-		internal DeployHandler GetDeployHandler (string id)
-		{
-			foreach (DeployHandler handler in handlers)
-				if (handler.Id == id)
-					return handler;
-
-			return null;
 		}
 		
 		public FileCopyHandler[] GetFileCopyHandlers ()

@@ -1,10 +1,11 @@
 //
-// DeployHandler.cs
+// IFileCopyHandler.cs
 //
 // Author:
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //   Lluis Sanchez Gual
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2006 Michael Hutchinson
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,50 +27,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
+using System.IO;
+
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
-	public sealed class DeployHandler
+	public interface IFileCopyHandler
 	{
-		IDeployHandler handler;
-		
-		internal DeployHandler (IDeployHandler handler)
-		{
-			this.handler = handler;
-		}
-		
-		public string Id {
-			get { return handler.Id; }
-		}
-		
-		public string Icon {
-			get { return handler.Icon != null ? handler.Icon : "md-package"; }
-		}
-		
-		public string Description { 
-			get { return handler.Description; } 
-		}
-		
-		public DeployTarget CreateTarget (CombineEntry entry)
-		{
-			DeployTarget dt = handler.CreateTarget (entry);
-			dt.Bind (this);
-			dt.SetCombineEntry (entry);
-			return dt;
-		}
-		
-		internal bool CanDeploy (CombineEntry entry)
-		{
-			return handler.CanDeploy (entry);
-		}
-		
-		internal void Deploy (IProgressMonitor monitor, DeployTarget target)
-		{
-			handler.Deploy (monitor, target);
-		}
+		string Id { get; }
+		string Name { get; }
+		FileCopyConfiguration CreateConfiguration ();
+		void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files);
 	}
 }

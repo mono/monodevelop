@@ -28,7 +28,10 @@
 
 
 using System;
+using System.IO;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.Deployment
 {
@@ -38,6 +41,14 @@ namespace MonoDevelop.Projects.Deployment
 		string args;
 		bool externalConsole;
 		bool closeConsoleWhenDone;
+		
+		public override string Description {
+			get { return GettextCatalog.GetString ("Execute command"); }
+		}
+		
+		public override string Icon {
+			get { return "gtk-execute"; }
+		}
 		
 		[ItemProperty]
 		public string Command {
@@ -74,5 +85,75 @@ namespace MonoDevelop.Projects.Deployment
 				closeConsoleWhenDone = t.closeConsoleWhenDone;
 			}
 		}
+		
+		protected override void OnDeploy (IProgressMonitor monitor)
+		{
+			string consMsg;
+			IConsole cons;
+			if (ExternalConsole) {
+				cons = ExternalConsoleFactory.Instance.CreateConsole (CloseConsoleWhenDone);
+				consMsg = GettextCatalog.GetString ("(in external terminal)");
+			} else {
+				cons = new MonitorConsole (monitor);
+				consMsg = "";
+			}
+			
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
+			ProcessWrapper process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, CombineEntry.BaseDirectory, cons, null);
+			
+			if (ExternalConsole)
+				process.WaitForExit ();
+			else
+				process.WaitForOutput ();
+			
+			if (cons is MonitorConsole) {
+				((MonitorConsole)cons).Dispose ();
+			}
+		}
 	}
+	
+	class MonitorConsole: IConsole
+	{
+		StringReader nullReader;
+		IProgressMonitor monitor;
+		
+		public MonitorConsole (IProgressMonitor monitor)
+		{
+			this.monitor = monitor;
+			monitor.CancelRequested += OnCancel;
+		}
+		
+		public void Dispose ()
+		{
+			monitor.CancelRequested -= OnCancel;
+		}
+		
+		void OnCancel (IProgressMonitor monitor)
+		{
+			if (CancelRequested != null)
+				CancelRequested (this, EventArgs.Empty);
+		}
+		
+		public TextReader In {
+			get {
+				if (nullReader == null)
+					nullReader = new StringReader ("");
+				return nullReader;
+			}
+		}
+		
+		public TextWriter Out {
+			get { return monitor.Log; }
+		}
+		
+		public TextWriter Error {
+			get { return monitor.Log; }
+		}
+		
+		public bool CloseOnDispose {
+			get { return false; }
+		}
+		
+		public event EventHandler CancelRequested;
+	}	
 }

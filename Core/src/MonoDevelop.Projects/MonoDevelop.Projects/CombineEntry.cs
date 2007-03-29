@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects
 		public DeployTargetCollection DeployTargets {
 			get { 
 				if (deployTargets == null)
-					deployTargets = new DeployTargetCollection ();
+					deployTargets = new DeployTargetCollection (this);
 				return deployTargets;
 			}
 		}
@@ -275,10 +275,6 @@ namespace MonoDevelop.Projects
 			handler.Deserialize (this, data);
 			if (ac != null)
 				activeConfiguration = GetConfiguration (ac.Value);
-				
-			if (deployTargets != null)
-				foreach (DeployTarget target in deployTargets)
-					target.SetCombineEntry (this);
 		}
 		
 		public abstract IConfiguration CreateConfiguration (string name);

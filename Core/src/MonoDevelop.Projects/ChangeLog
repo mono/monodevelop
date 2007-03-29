@@ -1,5 +1,27 @@
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/CombineEntry.cs, MonoDevelop.Projects.addin.xml,
+	  MonoDevelop.Projects.Deployment/DeployService.cs,
+	  MonoDevelop.Projects.Deployment/InstallDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs,
+	  MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/InstallDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/CommandDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/DeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/FileCopyHandler.cs: Simplified a
+	  bit the deployment api. IDeployHandler is not needed anymore.
+	* MonoDevelop.Projects.Deployment.Extensions/IFileCopyHandler.cs: Moved
+	  to Deployment dir.
+	* MonoDevelop.Projects.Deployment.Extensions/IDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/CommandDeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/DeployHandler.cs,
+	  MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs: Removed.
+	* MonoDevelop.Projects.mdp, Makefile.am: Updated.
+
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/ProjectService.cs: Track api changes.
 	* MonoDevelop.Projects/FileFormatManager.cs: Allow getting all file
 	  formats supported by a file or object.

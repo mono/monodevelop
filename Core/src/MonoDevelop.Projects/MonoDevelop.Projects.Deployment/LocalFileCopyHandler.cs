@@ -31,7 +31,6 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Deployment.Extensions;
 
 namespace MonoDevelop.Projects.Deployment
 {
