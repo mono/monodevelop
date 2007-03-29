@@ -29,13 +29,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             this.Name = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget";
             // Container child MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.Gtk.Container+ContainerChild
             this.vbox = new Gtk.VBox();
-            this.vbox.Events = ((Gdk.EventMask)(0));
             this.vbox.Name = "vbox";
             this.vbox.Spacing = 6;
             // Container child vbox.Gtk.Box+BoxChild
             this.label3 = new Gtk.Label();
             this.label3.WidthRequest = 470;
-            this.label3.Events = ((Gdk.EventMask)(0));
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
             this.label3.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu.");
@@ -48,19 +46,16 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels {
             // Container child vbox.Gtk.Box+BoxChild
             this.scrolledwindow1 = new Gtk.ScrolledWindow();
             this.scrolledwindow1.CanFocus = true;
-            this.scrolledwindow1.Events = ((Gdk.EventMask)(0));
             this.scrolledwindow1.Name = "scrolledwindow1";
             this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(2));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w2 = new Gtk.Viewport();
-            w2.Events = ((Gdk.EventMask)(0));
             w2.Name = "GtkViewport";
             w2.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.vboxCommands = new Gtk.VBox();
             this.vboxCommands.CanFocus = true;
-            this.vboxCommands.Events = ((Gdk.EventMask)(0));
             this.vboxCommands.Name = "vboxCommands";
             w2.Add(this.vboxCommands);
             this.scrolledwindow1.Add(w2);

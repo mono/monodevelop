@@ -62,12 +62,6 @@
     <File name="./MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs" subtype="Code" buildaction="Compile" />
@@ -75,10 +69,16 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -33,12 +33,10 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.Name = "MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget";
             // Container child MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
-            this.vbox1.Events = ((Gdk.EventMask)(0));
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
-            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Directory prefix:");
@@ -49,7 +47,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w1.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.folderEntry = new MonoDevelop.Components.FolderEntry();
-            this.folderEntry.Events = ((Gdk.EventMask)(0));
             this.folderEntry.Name = "folderEntry";
             this.folderEntry.BrowserTitle = "Select Directory";
             this.vbox1.Add(this.folderEntry);
@@ -59,7 +56,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w2.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
-            this.label2.Events = ((Gdk.EventMask)(0));
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
             this.label2.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Application name (to use as subdirectory name in the installation prefix):");
@@ -70,13 +66,11 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w3.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
-            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             // Container child hbox1.Gtk.Box+BoxChild
             this.nameEntry = new Gtk.Entry();
             this.nameEntry.WidthRequest = 275;
             this.nameEntry.CanFocus = true;
-            this.nameEntry.Events = ((Gdk.EventMask)(0));
             this.nameEntry.Name = "nameEntry";
             this.nameEntry.IsEditable = true;
             this.nameEntry.InvisibleChar = '●';

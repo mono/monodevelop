@@ -1,3 +1,21 @@
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+	* MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Track api changes.
+	* gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	  Flush.
+
 2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.mdp: Don't local-copy references.

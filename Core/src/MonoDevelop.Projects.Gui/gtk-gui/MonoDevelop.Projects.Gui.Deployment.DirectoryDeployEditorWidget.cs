@@ -25,6 +25,7 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.selector = new MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector();
             this.selector.Events = ((Gdk.EventMask)(256));
             this.selector.Name = "selector";
+            this.selector.BorderWidth = ((uint)(0));
             this.Add(this.selector);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

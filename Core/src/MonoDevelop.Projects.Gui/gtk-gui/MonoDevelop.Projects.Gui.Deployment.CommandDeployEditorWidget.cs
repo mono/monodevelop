@@ -35,12 +35,10 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.Name = "MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget";
             // Container child MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
-            this.vbox1.Events = ((Gdk.EventMask)(0));
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
-            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Command:");
@@ -52,7 +50,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox1.Gtk.Box+BoxChild
             this.cmdEntry = new Gtk.Entry();
             this.cmdEntry.CanFocus = true;
-            this.cmdEntry.Events = ((Gdk.EventMask)(0));
             this.cmdEntry.Name = "cmdEntry";
             this.cmdEntry.IsEditable = true;
             this.cmdEntry.InvisibleChar = '●';
@@ -63,7 +60,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w2.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.label2 = new Gtk.Label();
-            this.label2.Events = ((Gdk.EventMask)(0));
             this.label2.Name = "label2";
             this.label2.Xalign = 0F;
             this.label2.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Arguments:");
@@ -75,7 +71,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox1.Gtk.Box+BoxChild
             this.argsEntry = new Gtk.Entry();
             this.argsEntry.CanFocus = true;
-            this.argsEntry.Events = ((Gdk.EventMask)(0));
             this.argsEntry.Name = "argsEntry";
             this.argsEntry.IsEditable = true;
             this.argsEntry.InvisibleChar = '●';
@@ -87,7 +82,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox1.Gtk.Box+BoxChild
             this.checkExternal = new Gtk.CheckButton();
             this.checkExternal.CanFocus = true;
-            this.checkExternal.Events = ((Gdk.EventMask)(0));
             this.checkExternal.Name = "checkExternal";
             this.checkExternal.Label = MonoDevelop.Core.GettextCatalog.GetString("Run in external console");
             this.checkExternal.DrawIndicator = true;
@@ -99,7 +93,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             // Container child vbox1.Gtk.Box+BoxChild
             this.checkDisposeExternal = new Gtk.CheckButton();
             this.checkDisposeExternal.CanFocus = true;
-            this.checkDisposeExternal.Events = ((Gdk.EventMask)(0));
             this.checkDisposeExternal.Name = "checkDisposeExternal";
             this.checkDisposeExternal.Label = MonoDevelop.Core.GettextCatalog.GetString("Dispose console after running");
             this.checkDisposeExternal.DrawIndicator = true;

@@ -33,17 +33,14 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             this.Name = "MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector";
             // Container child MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.Gtk.Container+ContainerChild
             this.vbox1 = new Gtk.VBox();
-            this.vbox1.Events = ((Gdk.EventMask)(0));
             this.vbox1.Name = "vbox1";
             this.vbox1.Spacing = 6;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
-            this.hbox1.Events = ((Gdk.EventMask)(0));
             this.hbox1.Name = "hbox1";
             this.hbox1.Spacing = 6;
             // Container child hbox1.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
-            this.label1.Events = ((Gdk.EventMask)(0));
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = MonoDevelop.Core.GettextCatalog.GetString("Target:");
@@ -54,7 +51,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w1.Fill = false;
             // Container child hbox1.Gtk.Box+BoxChild
             this.comboHandlers = Gtk.ComboBox.NewText();
-            this.comboHandlers.Events = ((Gdk.EventMask)(0));
             this.comboHandlers.Name = "comboHandlers";
             this.hbox1.Add(this.comboHandlers);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboHandlers]));
@@ -66,7 +62,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w3.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.hseparator1 = new Gtk.HSeparator();
-            this.hseparator1.Events = ((Gdk.EventMask)(0));
             this.hseparator1.Name = "hseparator1";
             this.vbox1.Add(this.hseparator1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox1[this.hseparator1]));
@@ -75,7 +70,6 @@ namespace MonoDevelop.Projects.Gui.Deployment {
             w4.Fill = false;
             // Container child vbox1.Gtk.Box+BoxChild
             this.editorBox = new Gtk.EventBox();
-            this.editorBox.Events = ((Gdk.EventMask)(0));
             this.editorBox.Name = "editorBox";
             this.vbox1.Add(this.editorBox);
             Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox1[this.editorBox]));

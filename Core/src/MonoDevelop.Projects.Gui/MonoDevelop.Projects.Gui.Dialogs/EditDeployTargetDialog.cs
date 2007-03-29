@@ -48,8 +48,8 @@ namespace MonoDevelop.Projects.Gui
 			glade.Autoconnect (this);
 			this.target = target;
 			
-			labelHandler.Markup = "<b>" + target.DeployHandler.Description + "</b>";
-			iconHandler.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.Menu);
+			labelHandler.Markup = "<b>" + target.Description + "</b>";
+			iconHandler.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.Menu);
 			entryName.Text = target.Name;
 			
 			targetBox.PackStart (new DeployTargetEditor (target), true, true, 0);

@@ -48,9 +48,9 @@ namespace MonoDevelop.Projects.Gui.Deployment
 					string desc = "<b>" + target.Name + "</b>\n<small>Unknown target</small>";
 					store.AppendValues (pix, desc, target);
 				} else {
-					Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.LargeToolbar);
+					Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.LargeToolbar);
 					string desc = "<b>" + target.Name + "</b>";
-					desc += "\n<small>" + target.DeployHandler.Description + "</small>";
+					desc += "\n<small>" + target.Description + "</small>";
 					store.AppendValues (pix, desc, target);
 				}
 			}

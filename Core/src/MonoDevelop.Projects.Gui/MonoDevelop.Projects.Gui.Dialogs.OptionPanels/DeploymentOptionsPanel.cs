@@ -66,7 +66,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				if (entry == null)
 					return;
 				
-				if (MonoDevelop.Projects.Services.DeployService.GetDeployHandlers (entry).Length == 0) {
+				if (MonoDevelop.Projects.Services.DeployService.GetSupportedDeployTargets (entry).Length == 0) {
 					foreach (Gtk.Widget w in targetsBox.Children)
 						targetsBox.Remove (w);
 					Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("There are no deployment handlers available for this solution item."));
@@ -88,8 +88,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 					if (target is UnknownDeployTarget)
 						targets.Add (target);
 					else {
-						DeployTarget ct = target.DeployHandler.CreateTarget (entry);
-						ct.CopyFrom (target);
+						DeployTarget ct = (DeployTarget) target.Clone ();
 						targets.Add (ct);
 						if (target == entry.DefaultDeployTarget)
 							defaultTarget = ct;
@@ -117,11 +116,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						string desc = "<b>" + target.Name + "</b>\n<small>Unknown target</small>";
 						store.AppendValues (pix, desc, target);
 					} else {
-						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.DeployHandler.Icon, Gtk.IconSize.LargeToolbar);
+						Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.LargeToolbar);
 						string desc = "<b>" + target.Name + "</b>";
 						if (target == defaultTarget)
 							desc += " " + GettextCatalog.GetString ("(default target)");
-						desc += "\n<small>" + target.DeployHandler.Description + "</small>";
+						desc += "\n<small>" + target.Description + "</small>";
 						store.AppendValues (pix, desc, target);
 					}
 				}

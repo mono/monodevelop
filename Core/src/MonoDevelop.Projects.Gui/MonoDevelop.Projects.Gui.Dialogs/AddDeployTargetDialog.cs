@@ -41,11 +41,10 @@ namespace MonoDevelop.Projects.Gui
 		[Glade.Widget] Gtk.VBox targetOptionsBox;
 		[Glade.Widget ("AddDeployTargetDialog")] Gtk.Dialog dialog;
 		
-		DeployHandler[] handlers;
-		DeployHandler currentHandler;
+		DeployTarget[] targets;
 		Gtk.Widget currentEditor;
-		DeployTarget target;
 		CombineEntry entry;
+		DeployTarget currentTarget;
 		
 		public AddDeployTargetDialog (CombineEntry entry)
 		{
@@ -65,10 +64,10 @@ namespace MonoDevelop.Projects.Gui
 			comboHandlers.PackStart (cr, true);
 			comboHandlers.SetAttributes (cr, "text", 1);
 			
-			handlers = MonoDevelop.Projects.Services.DeployService.GetDeployHandlers (entry);
-			foreach (DeployHandler handler in handlers) {
-				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (handler.Icon, Gtk.IconSize.Menu);
-				store.AppendValues (pix, handler.Description);
+			targets = MonoDevelop.Projects.Services.DeployService.GetSupportedDeployTargets (entry);
+			foreach (DeployTarget target in targets) {
+				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.Menu);
+				store.AppendValues (pix, target.Description);
 			}
 			
 			comboHandlers.Changed += OnSelectionChanged;
@@ -104,22 +103,21 @@ namespace MonoDevelop.Projects.Gui
 			if (comboHandlers.Active == -1)
 				return;
 
-			bool hasDefaultName = target == null || entryName.Text == target.GetDefaultName (entry) || entryName.Text.Length == 0;
+			bool hasDefaultName = currentTarget == null || entryName.Text == currentTarget.GetDefaultName (entry) || entryName.Text.Length == 0;
 			
-			currentHandler = handlers [comboHandlers.Active];
-			target = currentHandler.CreateTarget (entry);
-			currentEditor = new DeployTargetEditor (target);
+			currentTarget = targets [comboHandlers.Active];
+			currentEditor = new DeployTargetEditor (currentTarget);
 			targetOptionsBox.PackStart (currentEditor, false, false, 0);
 			targetOptionsBox.ShowAll ();
 			
 			if (hasDefaultName)
-				entryName.Text = target.GetDefaultName (entry);
+				entryName.Text = currentTarget.GetDefaultName (entry);
 		}
 		
 		public DeployTarget NewTarget {
 			get {
-				target.Name = entryName.Text;
-				return target; 
+				currentTarget.Name = entryName.Text;
+				return currentTarget; 
 			}
 		}
 	}
