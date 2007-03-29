@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
@@ -83,6 +84,8 @@ namespace MonoDevelop.Ide.Gui
 		/// Loads the content from the location <code>fileName</code>
 		/// </summary>
 		void Load(string fileName);
+		
+		INavigationPoint BuildNavPoint ();
 		
 		/// <summary>
 		/// The name of the project the content is attached to

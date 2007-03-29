@@ -317,15 +317,18 @@ namespace MonoDevelop.Ide.Gui
 						doc.Select ();
 						doc.Window.SwitchView (vcIndex);
 					}
+					
 					IPositionable ipos = (IPositionable) vcFound.GetContent (typeof(IPositionable));
 					if (line != -1 && ipos != null) {
 						ipos.JumpTo (line, column != -1 ? column : 0);
 					}
 					
+					NavigationService.Log (doc.Window.ViewContent.BuildNavPoint ());
+					
 					return doc;
 				}
 			}
-
+			
 			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
 			FileInformation openFileInfo = new FileInformation();
 			openFileInfo.ProgressMonitor = pm;

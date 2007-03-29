@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			foreach (DesktopApplication app in DesktopApplication.GetApplications (mimetype))
 				if (app.Command == "gedit")
 					return true;
-				
+			
 			return false;
 		}
 		
@@ -183,7 +183,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 		public SourceEditorDisplayBindingWrapper ()
-		{			
+		{
 			mainBox = new VBox ();
 			mainBox.Spacing = 3;
 			editorBar = new VBox ();
@@ -220,7 +220,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			classCombo.Model = classStore;	
 			memberStore = new ListStore(typeof(Gdk.Pixbuf), typeof(string), typeof(IMember));
 			membersCombo.Model = memberStore;
- 
+			
 			se = new SourceEditor (this);
 			se.Buffer.ModifiedChanged += new EventHandler (OnModifiedChanged);
 			se.Buffer.MarkSet += new MarkSetHandler (OnMarkSet);
@@ -394,6 +394,17 @@ namespace MonoDevelop.SourceEditor.Gui
 			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
 		  	Editor.View.MoveCursor += new MoveCursorHandler(UpdateMethodBrowser);
+		}
+		
+		public override INavigationPoint BuildNavPoint ()
+		{
+			int line, column;
+			string content;
+			
+			GetLineColumnFromPosition (CursorPosition, out line, out column);
+			content = GetLineTextAtOffset (CursorPosition);
+			
+			return new TextNavigationPoint (ContentName, line, column, content);
 		}
 		
 		private void UpdateClassBrowser(object sender, ParseInformationEventArgs args)
@@ -613,28 +624,26 @@ namespace MonoDevelop.SourceEditor.Gui
 			membersCombo.Changed += new EventHandler (MemberChanged);
 		}
 		
-		
 		private void MemberChanged(object sender, EventArgs e)
 		{
 			Gtk.TreeIter iter;
-		    if (membersCombo.GetActiveIter (out iter)) {	    
-		    	// Find the IMember object in our list store by name from the member combo
-		    	IMember member = (IMember) memberStore.GetValue (iter, 2);
+			if (membersCombo.GetActiveIter (out iter)) {	    
+				// Find the IMember object in our list store by name from the member combo
+				IMember member = (IMember) memberStore.GetValue (iter, 2);
 				int line = member.Region.BeginLine;
 				
 				// Get a handle to the current document
 				if (IdeApp.Workbench.ActiveDocument == null) {
 					return;
 				}
-			
+				
 				// If we can we navigate to the line location of the IMember.
 				IViewContent content = (IViewContent) IdeApp.Workbench.ActiveDocument.GetContent(typeof(IViewContent));
 				if (content is IPositionable) {
 					((IPositionable)content).JumpTo (Math.Max (1, line), 1);
 				}
-		    }
+			}
 		}
-
 		
 		private void ClassChanged(object sender, EventArgs e)
 		{
@@ -789,12 +798,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 #region IExtensibleTextEditor
-		
 		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
 		{
 			return se.View.AttachExtension (extension);
 		}
-		
 #endregion
 
 #region IEditableTextBuffer
@@ -864,7 +871,6 @@ namespace MonoDevelop.SourceEditor.Gui
 			Editor.Buffer.EndUserAction ();
 		}
 		
-		
 		public string SelectedText {
 			get {
 				return se.Buffer.GetSelectedText ();
@@ -917,7 +923,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		}
 		
 #endregion
-
+		
 #region Status Bar Handling
 		IStatusBarService statusBarService = (IStatusBarService) ServiceManager.GetService (typeof (IStatusBarService));
 		
@@ -1033,7 +1039,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			TextIter it = se.Buffer.GetIterAtOffset (position);
 			line = it.Line + 1;
-			column = it.LineOffset;
+			column = it.LineOffset + 1;
 		}
 		
 		public void ShowPosition (int position)
@@ -1085,7 +1091,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			se.ClearBookmarks ();
 		}
-
+		
 #region IDocumentInformation
 		string IDocumentInformation.FileName {
 			get { return ContentName != null ? ContentName : UntitledName; }
@@ -1104,10 +1110,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			start_line.LineOffset = 0;
 			end_line.ForwardToLineEnd ();
 			return se.Buffer.GetText (start_line.Offset, end_line.Offset - start_line.Offset);
-		}
-		
+		}		
 #endregion
-
 
 		void SetInitialValues ()
 		{

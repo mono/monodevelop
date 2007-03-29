@@ -1,3 +1,18 @@
+2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs: New source 
+	file implementing the INavigationPoint interface for the SourceEditor.
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs
+	(CursorPositionChanged): Log the new NavigationPoint.
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs
+	(BuildNavPoint): Implemented.
+	(GetLineColumnFromPosition): Make column 1-based like the line
+	already is (hopefully this doesn't break anything).
+
 2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Don't
@@ -7,8 +22,6 @@
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Avoid
 	  crash when no entry is selected in the class combo.
-
-
 
 2007-03-26 James Fitzsimons <james.fitzsimons@gmail.com>
 

@@ -34,6 +34,8 @@
 		       class = "MonoDevelop.Ide.Gui.DefaultStatusBarService"/>
 		<Class id    = "DisplayBindingService"
 		       class = "MonoDevelop.Ide.Gui.DisplayBindingService"/>
+		<!--<Class id    = "NavigationService"
+		       class = "MonoDevelop.Ide.Gui.NavigationService"/>-->
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings" extension-nodes="DisplayBinding" description="Display bindings.">
@@ -129,7 +131,20 @@
 				_label = "Pre_ferences..."
 				icon = "gtk-preferences"
 				description = "Show MonoDevelop preferences window" />
-				
+
+		<!-- NavigationCommands -->
+
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
+				defaultHandler = "MonoDevelop.Ide.Commands.NavigateBack"
+				_label = "_Back" 
+				icon = "gtk-go-back" 
+				_description = "Go back in time"/>
+		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
+				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
+				_label = "_Forward" 
+				icon = "gtk-go-forward" 
+				_description = "Go back to the future"/>
+
 		<!-- ProjectCommands -->
 				
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
@@ -812,6 +827,10 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
+		</ItemSet>
+		<ItemSet id = "Navigation" _label = "Navigation">
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
 		</ItemSet>
 	</Extension>
 

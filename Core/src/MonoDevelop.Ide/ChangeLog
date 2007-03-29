@@ -1,3 +1,25 @@
+2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs (OpenDocument): Log the NavigationPoint.
+
+	* MonoDevelop.Ide.Gui/ViewContentEventHandler.cs: New source file.
+
+	* MonoDevelop.Ide.Gui/NavigationService.cs: New Navigation Service.
+
+	* MonoDevelop.Ide.Gui/IViewContent.cs: Added a BuildNavPoint() method.
+
+	* MonoDevelop.Ide.Gui/INavigationPoint.cs: New source file describing
+	the NavigationPoint interface.
+
+	* MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs: New source file
+	implementing the default NavigationPoint interface.
+
+	* MonoDevelop.Ide.Gui/AbstractViewContent.cs: Added a BuildNavPoint()
+	virtual method.
+
+	* MonoDevelop.Ide.Commands/NavigationCommands.cs: New source file 
+	implementing the code navigation commands.
+
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Track api changes.

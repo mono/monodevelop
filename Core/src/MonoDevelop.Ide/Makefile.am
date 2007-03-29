@@ -58,6 +58,7 @@ FILES =  \
 	MonoDevelop.Ide.Commands/EditCommands.cs \
 	MonoDevelop.Ide.Commands/FileCommands.cs \
 	MonoDevelop.Ide.Commands/HelpCommands.cs \
+	MonoDevelop.Ide.Commands/NavigationCommands.cs \
 	MonoDevelop.Ide.Commands/ProjectCommands.cs \
 	MonoDevelop.Ide.Commands/RefactoryCommands.cs \
 	MonoDevelop.Ide.Commands/SearchCommands.cs \
@@ -200,6 +201,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
+	MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DefaultStatusBarService.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
@@ -212,6 +214,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/Ide.cs \
 	MonoDevelop.Ide.Gui/IdeStartup.cs \
+	MonoDevelop.Ide.Gui/INavigationPoint.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
 	MonoDevelop.Ide.Gui/ISecondaryViewContent.cs \
@@ -222,6 +225,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
+	MonoDevelop.Ide.Gui/NavigationService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadCollection.cs \
@@ -237,6 +241,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/TipOfTheDayStartupHandler.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/ViewContentCollection.cs \
+	MonoDevelop.Ide.Gui/ViewContentEventHandler.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \

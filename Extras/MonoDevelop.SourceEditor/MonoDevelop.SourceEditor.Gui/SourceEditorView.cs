@@ -444,6 +444,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		void ITextEditorExtension.CursorPositionChanged ()
 		{
+			NavigationService.Log (ParentEditor.DisplayBinding.BuildNavPoint ());
 		}
 
 		internal bool GotoSelectionEnd ()

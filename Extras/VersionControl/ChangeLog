@@ -1,3 +1,8 @@
+2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/BaseView.cs: Implement
+	BuildNavPoint().
+
 2007-03-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs

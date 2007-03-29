@@ -22,6 +22,7 @@ FILES =  \
 	MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs \
 	MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
 	MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs \
+	MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs \
 	MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs \
 	MonoDevelop.SourceEditor/EditorCommands.cs \
 	MonoDevelop.SourceEditor/Services.cs \
