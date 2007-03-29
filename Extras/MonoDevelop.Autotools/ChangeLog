@@ -1,5 +1,9 @@
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Handler.cs: Remove unused namespace.
+
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Handler.cs, MonoDevelop.Autotools.addin.xml: Track API changes.
 	* MonoDevelop.Autotools.mdp: Don't local-copy references.
 
