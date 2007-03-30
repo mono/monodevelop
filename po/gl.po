@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Ignacio Casal Quinteiro <icq@cvs.gnome.org>, 2007.
+# Ignacio Casal Quinteiro <nacho.resa@gmail.com>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: gl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-16 20:46+0100\n"
-"PO-Revision-Date: 2007-03-16 21:03+0100\n"
+"POT-Creation-Date: 2007-03-26 12:57+0200\n"
+"PO-Revision-Date: 2007-03-28 16:22+0200\n"
 "Last-Translator: Ignacio Casal Quinteiro <icq@cvs.gnome.org>\n"
 "Language-Team: Galego <trasno@ceu.fi.udc.es>\n"
 "MIME-Version: 1.0\n"
@@ -230,7 +231,7 @@ msgstr "Renomear"
 
 #: ../Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Components/FileBrowser.cs:251
 #: ../Extras/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml.h:2
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:115
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:116
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:207
 msgid "Delete"
 msgstr "Borrar"
@@ -988,7 +989,7 @@ msgstr "Distribución activa"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml.h:6
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:310
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:113
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:114
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:203
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:1
 msgid "Add"
@@ -1756,58 +1757,68 @@ msgstr "(por defecto)"
 msgid "No deploy targets available"
 msgstr "Non hai obxectivos de despliegue dispoñibles"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:108
-msgid "Go to declaration"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:117
+#, fuzzy
+msgid "_Go to declaration"
 msgstr "Ir a declaración"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:112
-msgid "Find references"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:121
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:141
+#, fuzzy
+msgid "_Find references"
 msgstr "Procurar referencias"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:116
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
+#, fuzzy, csharp-format
+msgid "Interface {0}"
+msgstr "Indexador {0}"
+
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:129
 #, csharp-format
 msgid "Class {0}"
 msgstr "Clase {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:122
-msgid "Go to base"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:135
+#, fuzzy
+msgid "Go to _base"
 msgstr "Ir a base"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:127
-msgid "Find derived classes"
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:140
+#, fuzzy
+msgid "Find _derived classes"
 msgstr "Procurar clases derivadas"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:130
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:143
 #, csharp-format
 msgid "Field {0} : {1}"
 msgstr "Campo {0} : {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:133
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:146
 #, csharp-format
 msgid "Property {0} : {1}"
 msgstr "Propiedade {0} : {1}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:136
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:149
 #, csharp-format
 msgid "Event {0}"
 msgstr "Evento {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:138
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:151
 #, csharp-format
 msgid "Method {0}"
 msgstr "Método {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:140
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:153
 #, csharp-format
 msgid "Indexer {0}"
 msgstr "Indexador {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:142
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:155
 #, csharp-format
 msgid "Parameter {0}"
 msgstr "Parámetro {0}"
 
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:147
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Commands/RefactoryCommands.cs:160
 #, csharp-format
 msgid "Variable {0}"
 msgstr "Variable {0}"
@@ -1940,7 +1951,7 @@ msgstr "_Gardar e saír"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs:60
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:178
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:208
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:209
 msgid "_Description"
 msgstr "_Descrición"
 
@@ -2268,6 +2279,11 @@ msgid ""
 "possible\n"
 "causes of this error."
 msgstr ""
+"MonoDevelop fallou ao iniciar.\n"
+"Se instalou MonoDevelop usando un instalador binario, consulte\n"
+"http://www.mono-project.com/InstallerInstructions para máis información "
+"sobre as\n"
+"posibles causas deste erro. "
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:116
 msgid "MonoDevelop failed to start. Local hostname cannot be resolved."
@@ -3053,13 +3069,13 @@ msgid "File already exists"
 msgstr "O ficheiro xa existe"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:162
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:203
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:204
 msgid "_Name"
 msgstr "_Nome"
 
 #: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/FileTemplate.cs:218
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:175
-#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:289
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:176
+#: ../Core/src/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectTemplate.cs:290
 #, csharp-format
 msgid "Error loading template from resource {0}"
 msgstr "Erro ao cargar o ficheiro de modelo desde o recurso {0}"
@@ -3186,125 +3202,125 @@ msgstr "Acción"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:8
 msgid "Add New Deploy Target"
-msgstr ""
+msgstr "Engadir novo obxectivo de despliegue"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:9
 msgid "Are you sure you want to delete this configuration?"
-msgstr ""
+msgstr "Está seguro de que quere eliminar esta configuración?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:10
 msgid "Assembly _name:"
-msgstr ""
+msgstr "_Nome do ensamblado:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:11
 msgid "Automatically _include found files"
-msgstr ""
+msgstr "_Incluir automaticamente ficheiros atopados"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:12
 msgid "Compilation _target"
-msgstr ""
+msgstr "Ob_xectivo da compilación"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:13
 msgid "Create configurations for all solution items"
-msgstr ""
+msgstr "Crear configuracións para tódolos elementos da solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:14
 msgid "Delete Configuration"
-msgstr ""
+msgstr "Borrar configuración"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:15
 msgid "Delete also configurations in solution items"
-msgstr ""
+msgstr "Borrar tamén configuracións dos elementos de solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:16
 msgid "Deployment Targets"
-msgstr ""
+msgstr "Obxectivos de despliegue"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:17
 msgid "Edit Deploy Target"
-msgstr ""
+msgstr "Editar obxectivo de despliegue"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:18
 msgid "Enable _viewstate"
-msgstr ""
+msgstr "Activar estado de _vista"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:20
 msgid "New Configuration"
-msgstr ""
+msgstr "Nova configuración"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:21
 msgid "New name:"
-msgstr ""
+msgstr "Novo nome:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:22
 msgid "Output _path:"
-msgstr ""
+msgstr "_Ruta de destino:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:23
 msgid "Paramet_ers:"
-msgstr ""
+msgstr "Parám_etros:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:24
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:209
 msgid "Pause _console output"
-msgstr ""
+msgstr "Pausar a traza de saída de _consola"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:26
 msgid "Rename Configuration"
-msgstr ""
+msgstr "Renomear configuración"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:27
 msgid "Rename configurations in all solution items"
-msgstr ""
+msgstr "Renomear configuracións en todolos elementos de solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:28
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:196
 msgid "Run on e_xternal console"
-msgstr ""
+msgstr "Executar nunca consola e_xterna"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:29
 msgid "Runtime _version:"
-msgstr ""
+msgstr "_Versión do tempo de execución:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:30
 msgid "Search for new _files on load"
-msgstr ""
+msgstr "Procurar novos _ficheiros ao cargar"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:31
 msgid "Select a target configuration for each solution item:"
-msgstr ""
+msgstr "Seleccione unha configuración do obxectivo para cada elemento de solución:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:32
 msgid "Select deploy script"
-msgstr ""
+msgstr "Seleccionar script de despliegue"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:33
 msgid "Select output directory"
-msgstr ""
+msgstr "Seleccionar directorio de destino"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:34
 msgid "Select output path"
-msgstr ""
+msgstr "Seleccionar a ruta de destino"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:35
 msgid "Select target location"
-msgstr ""
+msgstr "Seleccionar a ubicación do obxectivo"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:36
 msgid "Set as Default"
-msgstr ""
+msgstr "Establecer como predeterminado"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:37
 msgid "Target type:"
-msgstr ""
+msgstr "Tipo de obxectivo:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:38
 msgid "With _scriptfile"
-msgstr ""
+msgstr "Con ficheiro de _script"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:39
 msgid "_Deploy target:"
-msgstr ""
+msgstr "_Despliegue do obxectivo:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:40
 msgid "_Description:"
@@ -3312,57 +3328,59 @@ msgstr "_Descrición:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:41
 msgid "_Include files in compile run"
-msgstr ""
+msgstr "_Incluir ficheiro en compilación"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:42
 msgid "_Multiple Startup Project"
-msgstr ""
+msgstr "Proxecto de inicio _múltiple"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:44
 msgid "_Project Files"
-msgstr ""
+msgstr "Ficheiros do _proxecto"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:45
 msgid "_Single Startup Project"
-msgstr ""
+msgstr "Proxecto de inicio _individual"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/Base.glade.h:46
 msgid "_Version:"
-msgstr ""
+msgstr "_Versión:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:46
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:164
 msgid "Command:"
-msgstr ""
+msgstr "Comando:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:69
 msgid "Arguments:"
-msgstr ""
+msgstr "Argumentos:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:92
 msgid "Run in external console"
-msgstr ""
+msgstr "Executar en consola externa"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs:104
 msgid "Dispose console after running"
-msgstr ""
+msgstr "Pechar consola despois da execución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs:49
 msgid "Target:"
-msgstr ""
+msgstr "Obxectivo:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:44
 msgid "Directory prefix:"
-msgstr ""
+msgstr "Directorio prefixado:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs:65
 msgid "Application name (to use as subdirectory name in the installation prefix):"
 msgstr ""
+"Nome da aplicación (para o seu uso como nome de subdirectorio no prefixo de "
+"instalación):"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs:38
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:359
 msgid "Target directory:"
-msgstr ""
+msgstr "Directorio do obxectivo:"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:41
 msgid ""
@@ -3374,29 +3392,29 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:124
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:253
 msgid "Browse..."
-msgstr ""
+msgstr "Examinar..."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:1
 msgid "Build Properties"
-msgstr ""
+msgstr "Propiedades de construción"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:2
 msgid "Common"
-msgstr ""
+msgstr "Común"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:3
 msgid "Compile"
-msgstr ""
+msgstr "Compilar"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:4
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:65
 #: ../Extras/NUnit/MonoDevelopNUnit.addin.xml.h:2
 msgid "Configurations"
-msgstr ""
+msgstr "Configuracións"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:5
 msgid "Custom Commands"
-msgstr ""
+msgstr "Comandos personalizados"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:7
 #: ../Extras/BooBinding/BooBinding.addin.xml.h:4
@@ -3405,23 +3423,23 @@ msgstr ""
 #: ../Extras/MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.addin.xml.h:6
 #: ../Extras/WelcomePage/WelcomePage.addin.xml.h:1
 msgid "General"
-msgstr ""
+msgstr "Xeral"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:8
 msgid "Project options"
-msgstr ""
+msgstr "Opcións do proxecto"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:9
 msgid "Solution Information"
-msgstr ""
+msgstr "Información da solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml.h:10
 msgid "Startup Properties"
-msgstr ""
+msgstr "Propiedades de inicio"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:336
 msgid "Gathering class information..."
-msgstr ""
+msgstr "Obtendo información da clase..."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:59
 #, csharp-format
@@ -3434,58 +3452,58 @@ msgstr "_Reemprazar ficheiro"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:65
 msgid "Replace all files"
-msgstr ""
+msgstr "Reemprazar tódolos ficheiros"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:66
 msgid "Replace all _older files"
-msgstr ""
+msgstr "Reemprazar tód_olos ficheiros antigos"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:67
 msgid "_Skip file"
-msgstr ""
+msgstr "_Saltar ficheiro"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:68
 msgid "Skip all files"
-msgstr ""
+msgstr "Saltar tódolos ficheiros"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:69
 msgid "_Abort deployment"
-msgstr ""
+msgstr "_Abortar despliegue"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:72
 #, csharp-format
 msgid ""
 "The target file {0} already exists, and was last modified at {1}. The "
 "replacement file, {2}, was modified on {3}. What would you like to do?"
-msgstr ""
+msgstr "O ficheiro obxectivo {0} xa existe, e a súa última modificación foi en {1}. O ficheiro de reemprazamento, {2}, foi modificado en {3}. Quere quere facer?"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:53
 msgid "Solution Options"
-msgstr ""
+msgstr "Opcións da solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:39
 msgid "Solution Item"
-msgstr ""
+msgstr "Elemento de solución"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:49
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:72
 msgid "Configuration"
-msgstr ""
+msgstr "Configuración"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:108
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:165
 msgid "Please enter a valid configuration name."
-msgstr ""
+msgstr "Introduza un nome de configuración válido."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:110
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:167
 #, csharp-format
 msgid "A configuration with the name '{0}' already exists."
-msgstr ""
+msgstr "Xa existe unha configuración co nome '{0}'."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:132
 msgid "There must be at least one configuration."
-msgstr ""
+msgstr "Debe haber alomenos unha configuración."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:71
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
@@ -3494,29 +3512,31 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:202
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:28
 msgid "None"
-msgstr ""
+msgstr "Ningún"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:72
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:93
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:100
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:188
 msgid "Execute"
-msgstr ""
+msgstr "Executar"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:83
 msgid "Entry"
-msgstr ""
+msgstr "Entrada"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:106
 msgid ""
 "The Solution Execute Definitions for this Solution were invalid. A new empty "
 "set of Execute Definitions has been created."
 msgstr ""
+"As definicións de execución desta solución non eran válidas. Creouse un novo "
+"conxunto de definicións de execución."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs:87
 #, csharp-format
 msgid "File {0} not found in {1}."
-msgstr ""
+msgstr "O ficheiro {0} non se atopou en {1}."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:59
 msgid "Select File"
@@ -3524,65 +3544,65 @@ msgstr "Seleccionar ficheiro"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:100
 msgid "Invalid deploy target specified"
-msgstr ""
+msgstr "Despliegue do obxectivo especificado inválido"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:107
 msgid "Invalid deploy script specified"
-msgstr ""
+msgstr "O script de despliegue especificado é inválido"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:113
 msgid "Deploy script doesn't exist"
-msgstr ""
+msgstr "O script de despliegue non existe"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:72
 msgid "There are no deployment handlers available for this solution item."
-msgstr ""
+msgstr "Non hai manexadores de despliegue dispoñibles para este elemento de solución."
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:123
 msgid "(default target)"
-msgstr ""
+msgstr "(obxectivo predefinido)"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:60
 msgid "Invalid assembly name specified"
-msgstr ""
+msgstr "O nome de ensamblado especificado é inválido"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:65
 msgid "Invalid output directory specified"
-msgstr ""
+msgstr "O directorio de destino especificado é inválido"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:45
 msgid "Project Options"
-msgstr ""
+msgstr "Opcións do proxecto"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:71
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:186
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:221
 msgid "(Active)"
-msgstr ""
+msgstr "(Activo)"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:316
 #: ../Extras/MonoQuery/MonoQuery/MonoQuery.addin.xml.h:7
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml.h:7
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #: ../Core/src/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:318
 msgid "Set as active"
-msgstr ""
+msgstr "Establecer como activo"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:67
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:91
 #: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:87
 #, csharp-format
 msgid "Saving solution: {0}"
-msgstr ""
+msgstr "Gardando a solución: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:74
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:98
 #: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:102
 #, csharp-format
 msgid "Could not save solution: {0}"
-msgstr ""
+msgstr "Non se puido gardar a solución: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:94
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:119
@@ -3591,39 +3611,43 @@ msgid ""
 "The file '{0}' is using an old solution file format. It will be "
 "automatically converted to the current format."
 msgstr ""
+"O ficheiro '{0}' está usando un formato de solución antigo. Converterase "
+"automaticamente ao formato actual."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:153
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs:224
 #: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:331
 #, csharp-format
 msgid "Loading solution: {0}"
-msgstr ""
+msgstr "Cargando solución: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:211
 #, csharp-format
 msgid "Refactoring project {0}"
-msgstr ""
+msgstr "Refactorizando o proxecto {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:276
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:301
 #, csharp-format
 msgid "Could not look for references in file '{0}': {1}"
-msgstr ""
+msgstr "Non se puideron procurar referencias no ficheiro '{0}': {1}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:701
 msgid "The solution does not have an active configuration."
-msgstr ""
+msgstr "A solución non ten unha configuración activa."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:713
 #, csharp-format
 msgid "Building Solution {0}"
-msgstr ""
+msgstr "Construíndo solución {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs:720
 msgid ""
 "Cyclic dependencies can not be built with this version.\n"
 "But we are working on it."
 msgstr ""
+"Non se poden compilar dependencias cíclicas con esta versión.\n"
+"Pero estamos traballando niso."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CustomCommand.cs:70
 #, csharp-format
@@ -3632,60 +3656,60 @@ msgstr "Executando: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs:43
 msgid "Combined Deploy"
-msgstr ""
+msgstr "Despliegue combinado"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs:45
 msgid "Execute command"
-msgstr ""
+msgstr "Executar comando"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs:69
 msgid "(in external terminal)"
-msgstr ""
+msgstr "(en terminal externo)"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs:75
 #, csharp-format
 msgid "Executing: {0} {1} {2}"
-msgstr ""
+msgstr "Executando: {0} {1} {2}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs:48
 #: ../Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml.h:1
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs:95
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:93
 #, csharp-format
 msgid "Deploying file {0}."
-msgstr ""
+msgstr "Desplegando ficheiro {0}."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:45
 msgid "Local Filesystem"
-msgstr ""
+msgstr "Sistema de ficheiros local"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:71
 #, csharp-format
 msgid "Skipping existing file {0}."
-msgstr ""
+msgstr "Saltando o ficheiro existente {0}."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:75
 #, csharp-format
 msgid "Replacing existing file {0}."
-msgstr ""
+msgstr "Reemprazando o ficheiro existente {0}."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:80
 #, csharp-format
 msgid "Replacing older existing file {0}."
-msgstr ""
+msgstr "Reemprazando o ficheiro antigo {0}."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:82
 #, csharp-format
 msgid "Skipping newer existing file {0}."
-msgstr ""
+msgstr "Saltando o ficheiro existente máis recente {0}."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs:88
 #, csharp-format
 msgid "Deployment aborted: file {0} already exists."
-msgstr ""
+msgstr "Despliegue abortado: o ficheiro {0} xa existe."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:148
 #, csharp-format
@@ -3693,11 +3717,13 @@ msgid ""
 "Unknown language '{0}'. You may need to install an additional add-in to "
 "support this language."
 msgstr ""
+"Lingua '{0}' descoñecida. Pode ser que necesite instalar un complemento "
+"adicional para soportar esta lingua."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:165
 #, csharp-format
 msgid "Referenced project '{0}' not found in the solution."
-msgstr ""
+msgstr "O proxecto referenciado '{0}' non se atopou na solución."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:90
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:66
@@ -3705,7 +3731,7 @@ msgstr ""
 #: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:133
 #, csharp-format
 msgid "Saving project: {0}"
-msgstr ""
+msgstr "Gardando o proxecto: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:95
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:71
@@ -3713,7 +3739,7 @@ msgstr ""
 #: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:148
 #, csharp-format
 msgid "Could not save project: {0}"
-msgstr ""
+msgstr "Non se puido gardar o proxecto: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:140
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:113
@@ -3722,6 +3748,8 @@ msgid ""
 "The file '{0}' is using an old project file format. It will be automatically "
 "converted to the current format."
 msgstr ""
+"O ficheiro '{0}' está usando un formato de ficheiro de proxecto antigo. "
+"Converterase automaticamente ao formato actual."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:142
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:116
@@ -3729,7 +3757,7 @@ msgstr ""
 #: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:381
 #, csharp-format
 msgid "Loading project: {0}"
-msgstr ""
+msgstr "Cargando proxecto: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs:148
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/PrjxFileFormat.cs:122
@@ -3737,54 +3765,54 @@ msgstr ""
 #: ../Extras/prj2make-sharp-lib/MSBuildFileFormat.cs:384
 #, csharp-format
 msgid "Could not load project: {0}"
-msgstr ""
+msgstr "Non se puido cargar o proxecto: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdsFileFormat.cs:130
 #: ../Extras/prj2make-sharp-lib/SlnFileFormat.cs:335
 #, csharp-format
 msgid "Could not load solution: {0}"
-msgstr ""
+msgstr "Non se puido cargar a solución: {0}"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Parser/DefaultParserService.cs:641
 msgid "Generating database"
-msgstr ""
+msgstr "Xerando base de datos"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:345
 #, csharp-format
 msgid "Building Project: {0} ({1})"
-msgstr ""
+msgstr "Construíndo proxecto: {0} ({1})"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:408
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:688
 msgid "Performing main compilation..."
-msgstr ""
+msgstr "Realizando a compilación principal..."
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:417
 msgid "Build complete -- "
-msgstr ""
+msgstr "Construción completa -- "
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:138
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:151
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:178
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:201
 msgid "Western"
-msgstr ""
+msgstr "Occidental"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:139
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:179
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:199
 msgid "Central European"
-msgstr ""
+msgstr "Europeo central"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:140
 msgid "South European"
-msgstr ""
+msgstr "Europeo do sur"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:141
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:149
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:206
 msgid "Baltic"
-msgstr ""
+msgstr "Báltico"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:142
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:180
@@ -3793,46 +3821,46 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:190
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:200
 msgid "Cyrillic"
-msgstr ""
+msgstr "Cirílico"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:143
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:183
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:205
 msgid "Arabic"
-msgstr ""
+msgstr "Arábico"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:144
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:202
 msgid "Greek"
-msgstr ""
+msgstr "Grego"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:145
 msgid "Hebrew Visual"
-msgstr ""
+msgstr "Hebreo visual"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:146
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:182
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:204
 msgid "Hebrew"
-msgstr ""
+msgstr "Hebreo"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:147
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:181
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:203
 msgid "Turkish"
-msgstr ""
+msgstr "Turco"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:148
 msgid "Nordic"
-msgstr ""
+msgstr "Nórdico"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:150
 msgid "Celtic"
-msgstr ""
+msgstr "Céltico"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:152
 msgid "Romanian"
-msgstr ""
+msgstr "Rumán"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:154
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:155
@@ -3840,21 +3868,21 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:157
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:158
 msgid "Unicode"
-msgstr ""
+msgstr "Unicode"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:160
 msgid "Armenian"
-msgstr ""
+msgstr "Armenio"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:161
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:162
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:170
 msgid "Chinese Traditional"
-msgstr ""
+msgstr "Chinés tradicional"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:163
 msgid "Cyrillic/Russian"
-msgstr ""
+msgstr "Cirílico/Ruso"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:165
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:166
@@ -3862,70 +3890,72 @@ msgstr ""
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:185
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:193
 msgid "Japanese"
-msgstr ""
+msgstr "Xaponés"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:169
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:186
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:188
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:196
 msgid "Korean"
-msgstr ""
+msgstr "Coreán"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:172
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:173
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:174
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:176
 msgid "Chinese Simplified"
-msgstr ""
+msgstr "Chinés simplificado"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:175
 msgid "Georgian"
-msgstr ""
+msgstr "Xeorxiano"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:191
 msgid "Cyrillic/Ukrainian"
-msgstr ""
+msgstr "Cirílico/Ucranián"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:194
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:197
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:207
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamita"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Text/TextEncoding.cs:195
 msgid "Thai"
-msgstr ""
+msgstr "Tailandés"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownCombineEntry.cs:65
 msgid "Unknown entry"
-msgstr ""
+msgstr "Entrada descoñecida"
 
 #: ../Core/src/MonoDevelop.Projects/MonoDevelop.Projects/UnknownProjectVersionException.cs:16
 #, csharp-format
 msgid "The file '{0}' has an unknown format version (version '{1}')'."
-msgstr ""
+msgstr "O ficheiro '{0}' ten un formato de versión descoñecido (versión '{1}')."
 
 #: ../Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade.h:3
 msgid "The following addins could not be started:"
-msgstr ""
+msgstr "Non se puideron iniciar os seguintes complementos:"
 
 #: ../Core/src/MonoDevelop.Startup/MonoDevelop.Startup.glade.h:4
 msgid ""
 "You can start MonoDevelop without these addins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
 msgstr ""
+"Pode iniciar MonoDevelop sen estes complementos, pero a funcionalidade que "
+"proporcionan non estará dispoñible. Desexa continuar?"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.addin.xml.h:1
 msgid "ASP.NET Files"
-msgstr ""
+msgstr "Ficheiro ASP.NET"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.addin.xml.h:2
 msgid "ASP.NET Options"
-msgstr ""
+msgstr "Opcións ASP.NET"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.addin.xml.h:3
 msgid "XSP Web Server"
-msgstr ""
+msgstr "Servidor Web XSP"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:1
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:94
@@ -3933,201 +3963,201 @@ msgstr ""
 #: ../Extras/NemerleBinding/Nemerle.glade.h:2
 #: ../Extras/VBNetBinding/VB.glade.h:2
 msgid "<b>Code Generation</b>"
-msgstr ""
+msgstr "<b>Xeración de código</b>"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:2
 #: ../Extras/MonoDevelop.SourceEditor/EditorBindings.glade.h:8
 msgid "<b>General Options</b>"
-msgstr ""
+msgstr "<b>Opcións xerais</b>"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:3
 msgid "<b>Private Key</b>"
-msgstr ""
+msgstr "<b>Clave privada</b>"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:4
 msgid "<b>Security</b>"
-msgstr ""
+msgstr "<b>Seguridade</b>"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:5
 msgid "Autogenerate CodeBehind members before compilation"
-msgstr ""
+msgstr "Autoxerar membros CodeBehind antes da compilación"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:6
 msgid "Certificate location:"
-msgstr ""
+msgstr "Ubicación do certificado:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:7
 msgid "IP address:"
-msgstr ""
+msgstr "Enderezo IP:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:8
 msgid "Key location:"
-msgstr ""
+msgstr "Ubicación da clave:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:9
 msgid "Key type:"
-msgstr ""
+msgstr "Tipo de clave:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:10
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:201
 msgid "Password:"
-msgstr ""
+msgstr "Contrasinal:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:11
 msgid "Port number:"
-msgstr ""
+msgstr "Número de porto:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:12
 msgid "SSL mode:"
-msgstr ""
+msgstr "Modo SSL:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:13
 msgid "SSL protocol:"
-msgstr ""
+msgstr "Protocolo SSL:"
 
 #: ../Extras/AspNetAddIn/AspNetAddIn.glade.h:14
 msgid "Verbose console output"
-msgstr ""
+msgstr "Saída de consola explícita"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebControl.xft.xml.h:1
 msgid "Creates an ASP.NET user control with a CodeBehind class."
-msgstr ""
+msgstr "Crea un control de usuario ASP.NET cunha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebControl.xft.xml.h:2
 msgid "User Control with CodeBehind"
-msgstr ""
+msgstr "Control de usuario con CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebForm.xft.xml.h:1
 msgid "Creates an ASP.NET Web Form with a CodeBehind class."
-msgstr ""
+msgstr "Crea un formulario web ASP.NET cunha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebForm.xft.xml.h:2
 msgid "Web Form with CodeBehind"
-msgstr ""
+msgstr "Formulario web con CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebHandler.xft.xml.h:1
 msgid "Creates an ASP.NET Web Handler with a CodeBehind class."
-msgstr ""
+msgstr "Crea un manexador web ASP.NET cunha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebHandler.xft.xml.h:2
 msgid "Web Handler with CodeBehind"
-msgstr ""
+msgstr "Manexador web con CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebService.xft.xml.h:1
 msgid "Creates an ASP.NET web service with a CodeBehind class."
-msgstr ""
+msgstr "Crea un servizo web ASP.NET cunha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/CodeBehindWebService.xft.xml.h:2
 msgid "Web Service with CodeBehind"
-msgstr ""
+msgstr "Servizo web con CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebControl.xft.xml.h:1
 msgid "Creates an empty ASP.NET user control."
-msgstr ""
+msgstr "Crear un control de usuario ASP.NET baleiro."
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebControl.xft.xml.h:2
 msgid "User Control"
-msgstr ""
+msgstr "Control de usuario"
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebForm.xft.xml.h:1
 msgid "Creates an ASP.NET Web Form."
-msgstr ""
+msgstr "Crear un formulario web ASP.NET."
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebForm.xft.xml.h:2
 msgid "Web Form"
-msgstr ""
+msgstr "Formulario web"
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebHandler.xft.xml.h:1
 msgid "Creates an ASP.NET Web Handler."
-msgstr ""
+msgstr "Crea un manexador web ASP.NET."
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebHandler.xft.xml.h:2
 msgid "Web Handler"
-msgstr ""
+msgstr "Manexador web"
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebService.xft.xml.h:1
 msgid "Creates an ASP.NET web service."
-msgstr ""
+msgstr "Crear un servizo web ASP.NET."
 
 #: ../Extras/AspNetAddIn/Templates/EmptyWebService.xft.xml.h:2
 msgid "Web Service"
-msgstr ""
+msgstr "Servizo web"
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithCodeBehind.xft.xml.h:1
 msgid "Creates an ASP.NET MasterPage with a CodeBehind class."
-msgstr ""
+msgstr "Crear unha MaterPage ASP.NET cunha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithCodeBehind.xft.xml.h:2
 msgid "MasterPage with CodeBehind"
-msgstr ""
+msgstr "MasterPage con CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithNoCodeBehind.xft.xml.h:1
 msgid "Creates an ASP.NET MasterPage without a CodeBehind class."
-msgstr ""
+msgstr "Crear unha MasterPage ASP.NET sen unha clase CodeBehind."
 
 #: ../Extras/AspNetAddIn/Templates/MasterPageWithNoCodeBehind.xft.xml.h:2
 msgid "MasterPage without CodeBehind"
-msgstr ""
+msgstr "MasterPage sen CodeBehind"
 
 #: ../Extras/AspNetAddIn/Templates/WebApplication.xpt.xml.h:1
 msgid "Creates a new ASP.NET Web Application project."
-msgstr ""
+msgstr "Crear un novo proxecto de aplicación web ASP.NET."
 
 #: ../Extras/AspNetAddIn/Templates/WebApplication.xpt.xml.h:2
 msgid "Web Application"
-msgstr ""
+msgstr "Aplicación web"
 
 #: ../Extras/BooBinding/BooBinding.addin.xml.h:1
 msgid "Boo Files"
-msgstr ""
+msgstr "Ficheiros Boo"
 
 #: ../Extras/BooBinding/BooBinding.addin.xml.h:2
 msgid "Boo Shell"
-msgstr ""
+msgstr "Shell de Boo"
 
 #: ../Extras/BooBinding/templates/BooGtkSharpProject.xpt.xml.h:1
 msgid "Creates a Boo/Gtk# project"
-msgstr ""
+msgstr "Crear un proxecto Boo/Gtk#"
 
 #: ../Extras/BooBinding/templates/BooGtkSharpProject.xpt.xml.h:2
 #: ../Extras/NemerleBinding/NemerleGtkSharpProject.xpt.xml.h:2
 #: ../Extras/VBNetBinding/templates/VBGtkSharpProject.xpt.xml.h:2
 msgid "Gtk# Project"
-msgstr ""
+msgstr "Proxecto Gtk#"
 
 #: ../Extras/BooBinding/templates/BooGtkSharpWindow.xft.xml.h:1
 #: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:1
 msgid "Creates a top-level Gtk# window"
-msgstr ""
+msgstr "Crea unha fiestra Gtk# principal"
 
 #: ../Extras/BooBinding/templates/BooGtkSharpWindow.xft.xml.h:2
 #: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:2
 #: ../Extras/NemerleBinding/NemerleGtkSharpWindow.xft.xml.h:2
 msgid "Gtk# Window"
-msgstr ""
+msgstr "Fiestra Gtk#"
 
 #: ../Extras/BooBinding/templates/BooLibraryProject.xpt.xml.h:1
 msgid "Boo Library"
-msgstr ""
+msgstr "Biblioteca Boo"
 
 #: ../Extras/BooBinding/templates/BooLibraryProject.xpt.xml.h:2
 msgid "Creates a Boo library"
-msgstr ""
+msgstr "Crea unha biblioteca Boo"
 
 #: ../Extras/BooBinding/templates/EmptyBooFile.xft.xml.h:1
 msgid "Creates an empty Boo file."
-msgstr ""
+msgstr "Crea un ficheiro Boo baleiro."
 
 #: ../Extras/BooBinding/templates/EmptyBooFile.xft.xml.h:2
 #: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:2
 #: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:2
 #: ../Extras/VBNetBinding/templates/EmptyVBFile.xft.xml.h:2
 msgid "Empty File"
-msgstr ""
+msgstr "Ficheiro baleiro"
 
 #: ../Extras/BooBinding/templates/EmptyBooProject.xpt.xml.h:1
 msgid "Creates an empty Boo solution."
-msgstr ""
+msgstr "Crea unha solución Boo baleira."
 
 #: ../Extras/BooBinding/templates/EmptyBooProject.xpt.xml.h:2
 #: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:2
@@ -4135,36 +4165,36 @@ msgstr ""
 #: ../Extras/NemerleBinding/NemerleEmptyProject.xpt.xml.h:2
 #: ../Extras/VBNetBinding/templates/EmptyVBProject.xpt.xml.h:2
 msgid "Empty Project"
-msgstr ""
+msgstr "Proxecto baleiro"
 
 #: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:1
 msgid "ChangeLog Add-in"
-msgstr ""
+msgstr "Complemento ChangeLog"
 
 #: ../Extras/ChangeLogAddIn/ChangeLogAddIn.addin.xml.h:3
 msgid "Insert ChangeLog Entry"
-msgstr ""
+msgstr "Inserir entrada de ChangeLog"
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:33
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:87
 msgid "View ChangeLog..."
-msgstr ""
+msgstr "Ver ChangeLog..."
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:78
 msgid "ChangeLog entries can't be generated."
-msgstr ""
+msgstr "Non se poden xerar as entradas de ChangeLog."
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:79
 msgid "The name or e-mail of the user has not been configured."
-msgstr ""
+msgstr "O nome ou correo-e do usuario non foi configurado."
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:80
 msgid "Configure user data"
-msgstr ""
+msgstr "Configurar datos de usuario"
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:89
 msgid "There is no ChangeLog file in the path:"
-msgstr ""
+msgstr "Non hai ningún ficheiro ChangeLog na ruta:"
 
 #: ../Extras/ChangeLogAddIn/CommitDialogExtensionWidget.cs:93
 msgid ""
@@ -4178,11 +4208,11 @@ msgstr ""
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:33
 msgid "ChangeLog"
-msgstr ""
+msgstr "ChangeLog"
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:48
 msgid "ChangeLog entry:"
-msgstr ""
+msgstr "Entrada de ChangeLog:"
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:48
 msgid "Specify personal information used in ChangeLog entries"
@@ -4190,23 +4220,23 @@ msgstr ""
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:76
 msgid "Full Name:"
-msgstr ""
+msgstr "Nome completo:"
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:85
 msgid "Email Address:"
-msgstr ""
+msgstr "Enderezo de correo:"
 
 #: ../Extras/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ChangeLogAddInOptionPanelWidget.cs:120
 msgid "Enable ChangeLog integration with Version Control"
-msgstr ""
+msgstr "Activar integración de ChangeLog co control de versións"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:2
 msgid "CSharp Files"
-msgstr ""
+msgstr "Ficheiros C#"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:4
 msgid "Formatting"
-msgstr ""
+msgstr "Formatando"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:5
 #: ../Extras/JavaBinding/JavaBinding.addin.xml.h:5
@@ -4215,34 +4245,34 @@ msgstr ""
 #: ../Extras/NUnit/Gui/TestPad.cs:289
 #: ../Extras/NUnit/Gui/TestResultsPad.cs:133
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:6
 msgid "Resource Files"
-msgstr ""
+msgstr "Ficheiros de recursos"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:7
 msgid "Runtime Options"
-msgstr ""
+msgstr "Opcións do Tempo de execución"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:8
 msgid "Web Files"
-msgstr ""
+msgstr "Ficheiros web"
 
 #: ../Extras/CSharpBinding/CSharpBinding.addin.xml.h:9
 msgid "Xml Files"
-msgstr ""
+msgstr "Ficheiros xml"
 
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:54
 #, csharp-format
 msgid "{0} could not be found or is invalid."
-msgstr ""
+msgstr "Non se puido atopar {0} ou é inválido."
 
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:206
 #: ../Extras/VBNetBinding/VBBindingCompilerServices.cs:212
 #, csharp-format
 msgid "Compiling resource {0} with {1}"
-msgstr ""
+msgstr "Compilando recurso {0} con {1}"
 
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:215
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:217
@@ -4253,6 +4283,8 @@ msgid ""
 "Error while trying to invoke '{0}' to compile resource '{1}' :\n"
 " {2}"
 msgstr ""
+"Erro ao tentar invocar '{0}' para compilar o recurso '{1}' :\n"
+" {2}"
 
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:229
 #: ../Extras/CSharpBinding/CSharpBindingCompilerManager.cs:232
@@ -4264,235 +4296,238 @@ msgid ""
 "Reason: \n"
 "{2}\n"
 msgstr ""
+"Imposible compilar ({0}) {1} en .resources. Ignorarase.\n"
+"Razón: \n"
+"{2}\n"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:184
 msgid "Compiler Code Page:"
-msgstr ""
+msgstr "Código de páxina do compilador:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:196
 msgid "Win32 Icon:"
-msgstr ""
+msgstr "Icona Win32:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:208
 #: ../Extras/JavaBinding/Java.glade.h:6
 msgid "Compile _Target:"
-msgstr ""
+msgstr "Ob_xectivo da compilación:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:219
 #: ../Extras/JavaBinding/Java.glade.h:8
 msgid "Define S_ymbols:"
-msgstr ""
+msgstr "Definir _símbolos:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:232
 #: ../Extras/JavaBinding/Java.glade.h:16
 msgid "_Main Class:"
-msgstr ""
+msgstr "Clase _principal:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:282
 #: ../Extras/JavaBinding/Java.glade.h:4 ../Extras/VBNetBinding/VB.glade.h:3
 msgid "<b>Warnings</b>"
-msgstr ""
+msgstr "<b>Avisos</b>"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:319
 msgid "_Warning Level:"
-msgstr ""
+msgstr "Nivel de a_dvertencia:"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:351
 #: ../Extras/VBNetBinding/VB.glade.h:10
 msgid "_Generate overflow checks"
-msgstr ""
+msgstr "_Xerar comprobación de desbordamento"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:364
 #: ../Extras/VBNetBinding/VB.glade.h:4
 msgid "Allow '_unsafe' code"
-msgstr ""
+msgstr "Permitir código 'inseg_uro'"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:377
 #: ../Extras/JavaBinding/Java.glade.h:10 ../Extras/VBNetBinding/VB.glade.h:7
 msgid "Enable _optimizations"
-msgstr ""
+msgstr "Activar _optimizacións"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:390
 #: ../Extras/JavaBinding/Java.glade.h:15 ../Extras/VBNetBinding/VB.glade.h:9
 msgid "Treat warnings as _errors"
-msgstr ""
+msgstr "Tratar advertencias como _erros"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:403
 #: ../Extras/JavaBinding/Java.glade.h:9
 msgid "Emit _debugging information"
-msgstr ""
+msgstr "Emitir información de _depuración"
 
 #: ../Extras/CSharpBinding/gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs:416
 #: ../Extras/VBNetBinding/VB.glade.h:8
 msgid "Generate _xml documentation"
-msgstr ""
+msgstr "Xerar documentación _xml"
 
 #: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:45
 #: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:50
 #: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:145
 msgid "Executable"
-msgstr ""
+msgstr "Executable"
 
 #: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:46
 #: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:2
 #: ../Extras/JavaBinding/Gui/ProjectConfigurationPropertyPanel.cs:51
 #: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:146
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:47
 #: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:147
 msgid "Executable with GUI"
-msgstr ""
+msgstr "Executable con GUI"
 
 #: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:48
 #: ../Extras/VBNetBinding/Gui/CodeGenerationPanel.cs:148
 msgid "Module"
-msgstr ""
+msgstr "Módulo"
 
 #: ../Extras/CSharpBinding/Gui/CodeGenerationPanel.cs:157
 msgid "Invalid code page number."
-msgstr ""
+msgstr "Número inválido de código de páxina."
 
 #: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:1
 #: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:1
 #: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:1
 #: ../Extras/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml.h:1
 msgid "Console Project"
-msgstr ""
+msgstr "Proxecto de consola"
 
 #: ../Extras/CSharpBinding/templates/ConsoleProject.xpt.xml.h:2
 msgid "Creates a new C# console project."
-msgstr ""
+msgstr "Crea un novo proxecto C# de consola."
 
 #: ../Extras/CSharpBinding/templates/EmptyCSharpFile.xft.xml.h:1
 msgid "Creates an empty C# file."
-msgstr ""
+msgstr "Crea un ficheiro C# baleiro."
 
 #: ../Extras/CSharpBinding/templates/EmptyProject.xpt.xml.h:1
 msgid "Creates an empty C# project."
-msgstr ""
+msgstr "Crea un proxecto C# baleiro."
 
 #: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:1
 msgid "Glade# 2.0 Project"
-msgstr ""
+msgstr "Proxecto Glade# 2.0"
 
 #: ../Extras/CSharpBinding/templates/GladeSharp2Project.xpt.xml.h:2
 msgid "a Glade# 2.0 project with one window and button"
-msgstr ""
+msgstr "un proxecto Glade# 2.0 cunha fiestra e un botón"
 
 #: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:1
 msgid "Glade# 1.0 Project"
-msgstr ""
+msgstr "Proxecto Glade# 1.0"
 
 #: ../Extras/CSharpBinding/templates/GladeSharpProject.xpt.xml.h:2
 msgid "a Glade# project with one window and button"
-msgstr ""
+msgstr "un proxecto Glade# cunha fiestra e un botón"
 
 #: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:1
 msgid "Creates a Gnome# 2.0 project"
-msgstr ""
+msgstr "Crea un proxecto Gnome# 2.0"
 
 #: ../Extras/CSharpBinding/templates/GnomeSharp2Project.xpt.xml.h:2
 msgid "Gnome# 2.0 Project"
-msgstr ""
+msgstr "Proxecto Gnome# 2.0"
 
 #: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:1
 msgid "Creates a Gnome# program."
-msgstr ""
+msgstr "Crea un programa Gnome#."
 
 #: ../Extras/CSharpBinding/templates/GnomeSharpProgram.xft.xml.h:2
 msgid "Gnome# Program"
-msgstr ""
+msgstr "Programa Gnome#"
 
 #: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:1
 msgid "Creates a Gnome# project"
-msgstr ""
+msgstr "Crea un proxecto Gnome#"
 
 #: ../Extras/CSharpBinding/templates/GnomeSharpProject.xpt.xml.h:2
 msgid "Gnome# 1.0 Project"
-msgstr ""
+msgstr "Proxecto Gnome# 1.0"
 
 #: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:1
 msgid "Creates a Gtk# 2.0 project."
-msgstr ""
+msgstr "Crea un proxecto Gtk# 2.0"
 
 #: ../Extras/CSharpBinding/templates/GtkSharp2Project.xpt.xml.h:2
 #: ../Extras/VBNetBinding/templates/VBGtkSharp2Project.xpt.xml.h:2
 msgid "Gtk# 2.0 Project"
-msgstr ""
+msgstr "Proxecto Gtk# 2.0"
 
 #: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:1
 msgid "Creates a Gtk# project."
-msgstr ""
+msgstr "Crea un proxecto Gtk#"
 
 #: ../Extras/CSharpBinding/templates/GtkSharpProject.xpt.xml.h:2
 msgid "Gtk# 1.0 Project"
-msgstr ""
+msgstr "Proxecto Gtk# 1.0"
 
 #: ../Extras/CSharpBinding/templates/GtkSharpWindow.xft.xml.h:1
 msgid "Creates a top-level Gtk# window."
-msgstr ""
+msgstr "Crea unha fiestra Gtk# principal."
 
 #: ../Extras/CSharpBinding/templates/Library.xpt.xml.h:1
 msgid "Creates an empty C# class library"
-msgstr ""
+msgstr "Crea unha biblioteca de clases C# baleira"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:29
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:21
 msgid "Include debug information"
-msgstr ""
+msgstr "Incluir información de depuración"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:59
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:51
 msgid "Output path"
-msgstr ""
+msgstr "Ruta de destino"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:63
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:56
 msgid "Assembly name"
-msgstr ""
+msgstr "Nome do ensamblado"
 
 #: ../Extras/ILAsmBinding/Gui/CompilerParametersPanel.cs:67
 #: ../Extras/PythonBinding/Gui/CompilerParametersPanel.cs:61
 msgid "Target options"
-msgstr ""
+msgstr "Opcións do obxectivo"
 
 #: ../Extras/ILAsmBinding/ILAsmBinding.addin.xml.h:1
 msgid "Compiler"
-msgstr ""
+msgstr "Compilador"
 
 #: ../Extras/ILAsmBinding/ILAsmBinding.addin.xml.h:2
 msgid "ILAsm Files"
-msgstr ""
+msgstr "Ficheiro ILAsm"
 
 #: ../Extras/ILAsmBinding/ILAsmConsoleProject.xpt.xml.h:2
 msgid "ILAsm Console Project"
-msgstr ""
+msgstr "Proxecto de consola ILAsm"
 
 #: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:30
 msgid "Javac"
-msgstr ""
+msgstr "Javac"
 
 #: ../Extras/JavaBinding/Gui/GlobalOptionsPanel.cs:31
 msgid "Gcj"
-msgstr ""
+msgstr "Gcj"
 
 #: ../Extras/JavaBinding/JavaBinding.addin.xml.h:3
 msgid "Java"
-msgstr ""
+msgstr "Java"
 
 #: ../Extras/JavaBinding/JavaBinding.addin.xml.h:4
 msgid "Java Files"
-msgstr ""
+msgstr "Ficheiro Java"
 
 #: ../Extras/JavaBinding/Java.glade.h:2
 msgid "<b>Compiler</b>"
-msgstr ""
+msgstr "<b>Compilador</b>"
 
 #: ../Extras/JavaBinding/Java.glade.h:3
 msgid "<b>Options</b>"
-msgstr ""
+msgstr "<b>Opcións</b>"
 
 #: ../Extras/JavaBinding/Java.glade.h:5
 msgid "Classpath:"
@@ -4500,115 +4535,115 @@ msgstr ""
 
 #: ../Extras/JavaBinding/Java.glade.h:7
 msgid "Compiler command:"
-msgstr ""
+msgstr "Comando do compilador:"
 
 #: ../Extras/JavaBinding/Java.glade.h:11
 msgid "Enable deprecation warnings"
-msgstr ""
+msgstr "Activar avisos de obsoletos"
 
 #: ../Extras/JavaBinding/Java.glade.h:12
 msgid "Generate warnings"
-msgstr ""
+msgstr "Xerar avisos"
 
 #: ../Extras/JavaBinding/Java.glade.h:13
 msgid "IKVM path:"
-msgstr ""
+msgstr "Ruta de IKVM:"
 
 #: ../Extras/JavaBinding/Java.glade.h:14
 msgid "Java compiler:"
-msgstr ""
+msgstr "Compilador de Java:"
 
 #: ../Extras/JavaBinding/Java.glade.h:17
 msgid "gcj"
-msgstr ""
+msgstr "gcj"
 
 #: ../Extras/JavaBinding/Java.glade.h:18
 msgid "javac"
-msgstr ""
+msgstr "javac"
 
 #: ../Extras/JavaBinding/templates/EmptyJavaFile.xft.xml.h:1
 msgid "Creates an empty Java file."
-msgstr ""
+msgstr "Crea un ficheiro de Java baleiro."
 
 #: ../Extras/JavaBinding/templates/EmptyJavaProject.xpt.xml.h:1
 msgid "Creates an empty Java solution."
-msgstr ""
+msgstr "Crea unha solución de Java baleira."
 
 #: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:1
 msgid "Create a console Java project with IKVM"
-msgstr ""
+msgstr "Crea un proxecto de consola de Java con IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmConsoleApplicationProject.xpt.xml.h:2
 msgid "IKVM Console Project"
-msgstr ""
+msgstr "Proxecto de consola IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:1
 msgid "Create a Glade# Java project with IKVM"
-msgstr ""
+msgstr "Crea un proxecto Java Glade# con IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGladeApplicationProject.xpt.xml.h:2
 msgid "IKVM Glade# Project"
-msgstr ""
+msgstr "Proxecto Glade# IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:1
 msgid "Create a Gnome# Java project with IKVM"
-msgstr ""
+msgstr "Crea un proxecto Java Gnome# con IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGnomeApplicationProject.xpt.xml.h:2
 msgid "IKVM Gnome# Project"
-msgstr ""
+msgstr "Proxecto Gnome# IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:1
 msgid "Create a Gtk# Java project with IKVM"
-msgstr ""
+msgstr "Crea un proxecto Java Gtk# con IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmGtkApplicationProject.xpt.xml.h:2
 msgid "IKVM Gtk# Project"
-msgstr ""
+msgstr "Proxecto Gtk# IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmLibraryProject.xpt.xml.h:1
 msgid "Create a Java library with IKVM"
-msgstr ""
+msgstr "Crear unha biblioteca Java con IKVM"
 
 #: ../Extras/JavaBinding/templates/IkvmLibraryProject.xpt.xml.h:2
 msgid "IKVM Library"
-msgstr ""
+msgstr "Biblioteca IKVM"
 
 #: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:1
 msgid "AWT Applet"
-msgstr ""
+msgstr "Applet AWT"
 
 #: ../Extras/JavaBinding/templates/JavaApplet.xft.xml.h:2
 msgid "Creates a Java AWT Applet"
-msgstr ""
+msgstr "Crea un applet Java AWT"
 
 #: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:1
 msgid "AWT Project"
-msgstr ""
+msgstr "Proxecto AWT"
 
 #: ../Extras/JavaBinding/templates/JavaApplicationProject.xpt.xml.h:2
 msgid "Creates a Java AWT project."
-msgstr ""
+msgstr "Crea un proxecto Java AWT"
 
 #: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:1
 msgid "AWT Application"
-msgstr ""
+msgstr "Aplicación AWT"
 
 #: ../Extras/JavaBinding/templates/JavaApplication.xft.xml.h:2
 msgid "Creates a Java AWT application."
-msgstr ""
+msgstr "Crea unha aplicación Java AWT."
 
 #: ../Extras/JavaBinding/templates/JavaConsoleApplicationProject.xpt.xml.h:2
 msgid "Create a console Java project"
-msgstr ""
+msgstr "Crea un proxecto Java de consola"
 
 #: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:1
 msgid "Creates an AWT dialog."
-msgstr ""
+msgstr "Crea un diálogo AWT."
 
 #: ../Extras/JavaBinding/templates/JavaDialog.xft.xml.h:2
 msgid "Java AWT Dialog"
-msgstr ""
+msgstr "Diálogo Java AWT"
 
 #: ../Extras/JavaBinding/templates/JavaFrame.xft.xml.h:1
 msgid "AWT Frame"
@@ -4628,71 +4663,71 @@ msgstr ""
 
 #: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:1
 msgid "AWT Panel"
-msgstr ""
+msgstr "Panel AWT"
 
 #: ../Extras/JavaBinding/templates/JavaPanel.xft.xml.h:2
 msgid "Creates a Java AWT panel."
-msgstr ""
+msgstr "Crea un panel Java AWT."
 
 #: ../Extras/MonoDevelop.Autotools/Commands.cs:68
 msgid ""
 "Autotools files already exist for this solution.  Would you like to "
 "overwrite them?"
-msgstr ""
+msgstr "Os ficheiros Autotools xa existen nesta solución.  Quere sobreescribilos?"
 
 #: ../Extras/MonoDevelop.Autotools/Commands.cs:73
 msgid "Autotools Output"
-msgstr ""
+msgstr "Saída de Autotools"
 
 #: ../Extras/MonoDevelop.Autotools/CustomMakefile.cs:252
 #, csharp-format
 msgid "Makefile variable {0} not found in the file."
-msgstr ""
+msgstr "A variable {0} do Makefile non se atopou no ficheiro."
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:191
 msgid "Enable makefile Integration in this project"
-msgstr ""
+msgstr "Activar integración makefile neste proxecto"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:215
 msgid "Build target name:"
-msgstr ""
+msgstr "Nome do obxectivo de compilación:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:228
 msgid "Clean target name:"
-msgstr ""
+msgstr "Nome do obxectivo de limpado:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:241
 msgid "Execute target name:"
-msgstr ""
+msgstr "Nome do obxectivo de execución:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:384
 msgid ""
 "Select the makefile targets that should be executed for the build and clean "
 "operations:"
-msgstr ""
+msgstr "Seleccione os obxectivos do makefile que deberían ser executados nas operacións de compilación e limpeza:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:397
 msgid "Assembly Name variable:"
-msgstr ""
+msgstr "Variable de nome de ensamblado:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:408
 msgid "Makefile path:"
-msgstr ""
+msgstr "Ruta do Makefile:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:417
 msgid "Output directory variable:"
-msgstr ""
+msgstr "Variable do directorio destino:"
 
 #. FIXME: ResetAll  : use for new data, use for new makefile
 #. Load values
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:435
 #: ../Extras/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:58
 msgid "Makefile"
-msgstr ""
+msgstr "Makefile"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:446
 msgid "Enable project file synchronization"
-msgstr ""
+msgstr "Activar sincronización do ficheiro de proxecto"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:471
 msgid "Deployment files"
@@ -4716,20 +4751,20 @@ msgstr ""
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:637
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:838
 msgid "Makefile variable name:"
-msgstr ""
+msgstr "Nome da variable Makefile:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:650
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:851
 msgid "Prefix:"
-msgstr ""
+msgstr "Prefixo:"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:682
 msgid "Enable references synchronization"
-msgstr ""
+msgstr "Activar sincronización de referencias"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:706
 msgid "Look for packages in configure.in"
-msgstr ""
+msgstr "Procurar paquetes en configure.in"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:815
 msgid ""
@@ -4740,23 +4775,20 @@ msgid ""
 msgstr ""
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:827
-#, fuzzy
 msgid "Assembly References"
-msgstr "Ensamblados"
+msgstr "Referencias de ensamblado"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:864
 msgid "Path for configure.in"
-msgstr ""
+msgstr "Ruta ao configure.in"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:875
-#, fuzzy
 msgid "Package References"
-msgstr "Referencias seleccionadas:"
+msgstr "Referencias a paquetes"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:886
-#, fuzzy
 msgid "Project References"
-msgstr "Referencias seleccionadas:"
+msgstr "Referencias a proxectos"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:916
 msgid ""
@@ -4769,27 +4801,27 @@ msgstr ""
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:982
 msgid "Error regex :"
-msgstr ""
+msgstr "Expr. regular para erro :"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:993
 msgid "Compiler :"
-msgstr ""
+msgstr "Compilador :"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1002
 msgid "Warnings regex :"
-msgstr ""
+msgstr "Expr. regular para avisos :"
 
 #: ../Extras/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1019
 msgid "Messages Regex"
-msgstr ""
+msgstr "Expr. regular para mensaxes"
 
 #: ../Extras/MonoDevelop.Autotools/Handler.cs:23
 msgid "Tarball"
-msgstr ""
+msgstr "Tarball"
 
 #: ../Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs:21
 msgid "Makefile Project Import"
-msgstr ""
+msgstr "Importación de Makefile do proxecto"
 
 #: ../Extras/MonoDevelop.Autotools/ImportMakefileDialog.cs:31
 msgid ""
@@ -6569,7 +6601,7 @@ msgstr ""
 
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:51
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:45
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:362
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlNodeExtension.cs:366
 #: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Logs.cs:75
 msgid "Version control command failed."
 msgstr ""
@@ -6597,19 +6629,19 @@ msgstr ""
 msgid "This project or folder is not under version control"
 msgstr ""
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:109
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:110
 msgid "Modified"
 msgstr ""
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:111
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:112
 msgid "Conflict"
 msgstr ""
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:121
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:122
 msgid "Unversioned"
 msgstr ""
 
-#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:326
+#: ../Extras/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlProjectService.cs:380
 msgid "Updating version control repository"
 msgstr ""
 
