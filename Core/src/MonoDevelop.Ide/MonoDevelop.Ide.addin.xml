@@ -135,15 +135,15 @@
 		<!-- NavigationCommands -->
 
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
-				defaultHandler = "MonoDevelop.Ide.Commands.NavigateBack"
-				_label = "_Back" 
-				icon = "gtk-go-back" 
-				_description = "Go back in time"/>
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.NavigationHistoryBack"
+				_label = "_Back"
+				_description = "Navigate Back"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
 				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
 				_label = "_Forward" 
 				icon = "gtk-go-forward" 
-				_description = "Go back to the future"/>
+				_description = "Navigate Forward"/>
 
 		<!-- ProjectCommands -->
 				

@@ -313,7 +313,7 @@ namespace MonoDevelop.Ide.Gui {
 #endregion
 		
 #region Public Events
-		public static event System.EventHandler HistoryChanged;
+		public static event EventHandler HistoryChanged;
 		
 		static void OnHistoryChanged ()
 		{

@@ -68,8 +68,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -225,6 +225,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
+	MonoDevelop.Ide.Gui/NavigationHistory.cs \
 	MonoDevelop.Ide.Gui/NavigationService.cs \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \

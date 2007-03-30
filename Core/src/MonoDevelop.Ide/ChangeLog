@@ -1,6 +1,16 @@
+2007-03-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/NavigationHistory.cs: New widget
+	implementing the Back
+	(and someday Forward?) custom history navigation widget.
+
+	* MonoDevelop.Ide.addin.xml: Changed the info for the NavigateBack
+	button, it is now a custom widget.
+
 2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Gui/Workbench.cs (OpenDocument): Log the NavigationPoint.
+	* MonoDevelop.Ide.Gui/Workbench.cs (OpenDocument): Log the
+	NavigationPoint.
 
 	* MonoDevelop.Ide.Gui/ViewContentEventHandler.cs: New source file.
 
