@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor.Gui {
 		
 		public override string Description {
 			get {
-				return String.Format ("{0},{1}: {2}", LineNumber, Column, content);
+				return String.Format ("{0}: {1}", LineNumber, content);
 			}
 		}
 		
