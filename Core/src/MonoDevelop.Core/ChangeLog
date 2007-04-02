@@ -1,3 +1,11 @@
+2007-04-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp, Makefile.am,
+	  MonoDevelop.Core/SystemAssemblyService.cs: Added new extension
+	  point for registering packages.
+
 2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.addin.xml: Change add-in versions to 0.13.

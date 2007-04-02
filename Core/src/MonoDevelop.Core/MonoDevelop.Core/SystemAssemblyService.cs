@@ -5,6 +5,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core
 {
@@ -297,6 +298,11 @@ namespace MonoDevelop.Core
 							}
 					}
 				}
+			}
+			
+			// Get assemblies registered using the extension point
+			foreach (PackageExtensionNode node in Runtime.AddInService.GetTreeItems ("/MonoDevelop/Core/SupportPackages")) {
+				RegisterPackage (node.ID, node.Version, node.ID, node.TargetClrVersion, node.Assemblies);
 			}
 		}
 	

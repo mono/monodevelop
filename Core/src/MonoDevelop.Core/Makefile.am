@@ -38,6 +38,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/AddInSignatureException.cs \
 	MonoDevelop.Core.AddIns/AddInTreeFormatException.cs \
 	MonoDevelop.Core.AddIns/AddInTreeSingleton.cs \
+	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyLoader.cs \
 	MonoDevelop.Core.AddIns/ChildCodonsAttribute.cs \
 	MonoDevelop.Core.AddIns/ClassCodon.cs \
@@ -68,6 +69,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/ICommand.cs \
 	MonoDevelop.Core.AddIns/ICondition.cs \
 	MonoDevelop.Core.AddIns/OwnerStateCondition.cs \
+	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PathAttribute.cs \
 	MonoDevelop.Core.AddIns/TreePathNotFoundException.cs \
 	MonoDevelop.Core.AddIns/TypeNotFoundException.cs \
