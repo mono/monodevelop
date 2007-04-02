@@ -321,6 +321,11 @@ namespace MonoDevelop.Core
 		
 		private void ParsePCFile (string pcfile)
 		{
+			// Don't register the package twice
+			string pname = Path.GetFileNameWithoutExtension (pcfile);
+			if (packagesHash.Contains (pname))
+				return;
+
 			ArrayList fullassemblies = null;
 			string version = "";
 			string desc = "";
@@ -350,12 +355,7 @@ namespace MonoDevelop.Core
 	
 			if (fullassemblies == null)
 				return;
-	
-			// Don't register the package twice
-			string pname = Path.GetFileNameWithoutExtension (pcfile);
-			if (packagesHash.Contains (pname))
-				return;
-			
+
 			foreach (string assembly in fullassemblies) {
 				AddAssembly (assembly, package);
 			}

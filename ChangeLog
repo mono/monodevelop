@@ -1,3 +1,9 @@
+2007-03-02T10:26	C.J. Adams-Collier <cjac@colliertech.org>
+
+	* Core/src/MonoDevelop.Core/MonoDevelop.Core/SystemAssemblyService.cs:
+	! ParsePCFile (string pcfile)
+	- moved check whether pc file has been processed to top of method
+
 2007-03-17 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: Added galician translation.
