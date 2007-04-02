@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui {
 			get { return currentNode != history.First && currentNode != null; }
 		}
 		
-		public static bool CanNavigateForwards {
+		public static bool CanNavigateForward {
 			get { return currentNode != history.Last && currentNode != null; }
 		}
 		
@@ -196,6 +196,8 @@ namespace MonoDevelop.Ide.Gui {
 			}
 			
 			SyncViewWithModel ();
+			
+			OnHistoryChanged ();
 		}
 		
 		public static void Go (INavigationPoint target)
@@ -215,6 +217,8 @@ namespace MonoDevelop.Ide.Gui {
 			}
 			
 			SyncViewWithModel ();
+			
+			OnHistoryChanged ();
 		}
 		
 		private static void SyncViewWithModel ()

@@ -148,4 +148,57 @@ namespace MonoDevelop.Ide.Gui {
 			base.UpdateHistory ();
 		}
 	}
+	
+	public class NavigationHistoryForward : NavigationHistory {
+		public NavigationHistoryForward () : base ("gtk-go-forward")
+		{
+			UpdateHistory ();
+		}
+		
+		protected override void Go ()
+		{
+			NavigationService.Go (1);
+		}
+		
+		protected override void UpdateHistory ()
+		{
+			Menu menu = new Menu ();
+			
+			navpoints.Clear ();
+			
+			if (NavigationService.CanNavigateForward) {
+				List<INavigationPoint> points;
+				INavigationPoint point;
+				MenuItem item;
+				int i;
+				
+				points = new List<INavigationPoint> (NavigationService.Points);
+				
+				for (i = 0; i < points.Count; i++) {
+					point = points[i];
+					if (point == NavigationService.CurrentPosition) {
+						i++;
+						break;
+					}
+				}
+				
+				while (i < points.Count) {
+					point = points[i++];
+					item = new MenuItem (point.FullDescription);
+					item.Activated += new EventHandler (GoTo);
+					navpoints.Add (item, point);
+					item.Show ();
+					
+					((MenuShell) menu).Append (item);
+				}
+				
+				this.Sensitive = true;
+			} else {
+				this.Sensitive = false;
+			}
+			
+			menu.Show ();
+			button.Menu = menu;
+		}
+	}
 }

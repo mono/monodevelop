@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Commands {
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = NavigationService.CanNavigateForwards;
+			info.Enabled = NavigationService.CanNavigateForward;
 		}
 	}
 }

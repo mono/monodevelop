@@ -140,9 +140,9 @@
 				_label = "_Back"
 				_description = "Navigate Back"/>
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward"
-				defaultHandler = "MonoDevelop.Ide.Commands.NavigateForward"
-				_label = "_Forward" 
-				icon = "gtk-go-forward" 
+				type = "custom"
+				widget = "MonoDevelop.Ide.Gui.NavigationHistoryForward"
+				_label = "_Forward"
 				_description = "Navigate Forward"/>
 
 		<!-- ProjectCommands -->
