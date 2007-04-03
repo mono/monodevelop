@@ -354,7 +354,7 @@ namespace MonoDevelop.Core
 						version = line.Substring (8).Trim ();
 					}
 					else if (lowerLine.StartsWith ("description:")) {
-						version = line.Substring (12).Trim ();
+						desc = line.Substring (12).Trim ();
 					}
 				}
 			}
