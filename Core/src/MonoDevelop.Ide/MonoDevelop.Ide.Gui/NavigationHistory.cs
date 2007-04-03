@@ -176,11 +176,11 @@ namespace MonoDevelop.Ide.Gui {
 				
 				for (i = 0; i < points.Count; i++) {
 					point = points[i];
-					if (point == NavigationService.CurrentPosition) {
-						i++;
+					if (point == NavigationService.CurrentPosition)
 						break;
-					}
 				}
+				
+				i++;
 				
 				while (i < points.Count) {
 					point = points[i++];

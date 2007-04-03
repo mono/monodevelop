@@ -235,9 +235,9 @@ FILES =  \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \
 	MonoDevelop.Projects/ProjectReferenceEventArgs.cs \
 	MonoDevelop.Projects/ProjectRenameEventArgs.cs \
-	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
+	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs

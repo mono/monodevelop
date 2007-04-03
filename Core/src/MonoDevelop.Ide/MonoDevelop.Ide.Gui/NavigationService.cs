@@ -43,7 +43,9 @@ namespace MonoDevelop.Ide.Gui {
 #region Private members
 		static LinkedList<INavigationPoint> history = new LinkedList<INavigationPoint> ();
 		static LinkedListNode<INavigationPoint> currentNode; // autoinitialized to null (FxCop)
+		static LinkedListNode<INavigationPoint> lastLogged;
 		static bool loggingSuspended; // autoinitialized to false (FxCop)
+		static int stamp;
 #endregion
 		
 		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)
@@ -126,13 +128,27 @@ namespace MonoDevelop.Ide.Gui {
 			if (p == null || p.FileName == null || p.FileName == String.Empty)
 				return;
 			
+			INavigationPoint o = lastLogged != null ? lastLogged.Value : null;
+			int now = Environment.TickCount;
+			
 			if (currentNode == null) {
 				currentNode = history.AddFirst (p);
+				lastLogged = currentNode;
+				stamp = now;
 			} else if (p.Equals (currentNode.Value)) {
 				// replace it
 				currentNode.Value = p;
-			} else {
+				lastLogged = currentNode;
+				stamp = now;
+			} else if ((now - stamp) > 1000 || o.FileName != p.FileName) {
+				// enough time elapsed to log a new point or the file changed
 				currentNode = history.AddAfter (currentNode, p);
+				lastLogged = currentNode;
+				stamp = now;
+			} else {
+				// not enough time has elapsed, overwrite last logged navpoint
+				//lastLogged.Value = p;
+				//stamp = now;
 			}
 			
 			OnHistoryChanged ();
@@ -168,7 +184,9 @@ namespace MonoDevelop.Ide.Gui {
 		public static void ClearHistory (bool clearCurrentPosition)
 		{
 			INavigationPoint currentPosition = CurrentPosition;
+			
 			history.Clear ();
+			lastLogged = null;
 			currentNode = null;
 			
 			if (!clearCurrentPosition)

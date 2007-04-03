@@ -64,9 +64,9 @@ FILES =  \
 	MonoDevelop.Core.AddIns/IAddInTree.cs \
 	MonoDevelop.Core.AddIns/IAddInTreeNode.cs \
 	MonoDevelop.Core.AddIns/IApplication.cs \
-	MonoDevelop.Core.AddIns/IconCodon.cs \
 	MonoDevelop.Core.AddIns/ICodon.cs \
 	MonoDevelop.Core.AddIns/ICommand.cs \
+	MonoDevelop.Core.AddIns/IconCodon.cs \
 	MonoDevelop.Core.AddIns/ICondition.cs \
 	MonoDevelop.Core.AddIns/OwnerStateCondition.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
