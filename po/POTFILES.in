@@ -144,10 +144,6 @@ Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CmbxFileFormat.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/Combine.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/CustomCommand.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CombinedDeployHandler.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/CommandDeployHandler.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/DirectoryDeployHandler.cs
-Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/InstallDeployHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs
 Core/src/MonoDevelop.Projects/MonoDevelop.Projects/MdpFileFormat.cs

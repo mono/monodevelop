@@ -1,3 +1,9 @@
+2007-04-03  Wade Berrier  <wberrier@novell.com> 
+
+	* POTFILES.in: removed CombinedDeployHandler.cs, 
+	CommandDeployHandler.cs, DirectoryDeployHandler.cs, 
+	InstallDeployHandler.cs to fix 'make dist'
+
 2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gl.po: Updated galician translation by Ignacio Casal.
