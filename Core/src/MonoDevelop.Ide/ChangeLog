@@ -1,3 +1,8 @@
+2007-04-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/NavigationService.cs: Defer logging until the
+	timeout has expired unless there has been a file change.
+
 2007-04-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/NavigationService.cs: Only log new points if the

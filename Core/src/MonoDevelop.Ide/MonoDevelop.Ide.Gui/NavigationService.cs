@@ -43,9 +43,9 @@ namespace MonoDevelop.Ide.Gui {
 #region Private members
 		static LinkedList<INavigationPoint> history = new LinkedList<INavigationPoint> ();
 		static LinkedListNode<INavigationPoint> currentNode; // autoinitialized to null (FxCop)
-		static LinkedListNode<INavigationPoint> lastLogged;
+		static INavigationPoint navPoint;
 		static bool loggingSuspended; // autoinitialized to false (FxCop)
-		static int stamp;
+		static uint timeout;
 #endregion
 		
 		// TODO: FxCop says "find another way to do this" (ReviewVisibleEventHandlers)
@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Gui {
 			
 			IdeApp.ProjectOperations.FileRenamedInProject += FileRenamed;
 			IdeApp.ProjectOperations.CombineClosed += SolutionClosed;
+			
+			timeout = GLib.Timeout.Add (1000, LogNavPoint);
 		}
 		
 #region Public Properties
@@ -119,7 +121,7 @@ namespace MonoDevelop.Ide.Gui {
 			
 			LogInternal (pointToLog);
 		}
-
+		
 		// refactoring this out of Log() allows the NavigationService
 		// to call this and ensure it will work regardless of the
 		// requested state of loggingSuspended
@@ -128,30 +130,34 @@ namespace MonoDevelop.Ide.Gui {
 			if (p == null || p.FileName == null || p.FileName == String.Empty)
 				return;
 			
-			INavigationPoint o = lastLogged != null ? lastLogged.Value : null;
-			int now = Environment.TickCount;
-			
-			if (currentNode == null) {
-				currentNode = history.AddFirst (p);
-				lastLogged = currentNode;
-				stamp = now;
-			} else if (p.Equals (currentNode.Value)) {
-				// replace it
-				currentNode.Value = p;
-				lastLogged = currentNode;
-				stamp = now;
-			} else if ((now - stamp) > 1000 || o.FileName != p.FileName) {
-				// enough time elapsed to log a new point or the file changed
-				currentNode = history.AddAfter (currentNode, p);
-				lastLogged = currentNode;
-				stamp = now;
-			} else {
-				// not enough time has elapsed, overwrite last logged navpoint
-				//lastLogged.Value = p;
-				//stamp = now;
+			if (navPoint != null && navPoint.FileName != p.FileName) {
+				// always log last navpoint before switching files
+				LogNavPoint ();
 			}
 			
+			// defer logging
+			navPoint = p;
+		}
+		
+		static bool LogNavPoint ()
+		{
+			if (navPoint == null || loggingSuspended)
+				return true;
+			
+			if (currentNode == null) {
+				currentNode = history.AddFirst (navPoint);
+			} else if (navPoint.Equals (currentNode.Value)) {
+				// replace it
+				currentNode.Value = navPoint;
+			} else {
+				currentNode = history.AddAfter (currentNode, navPoint);
+			}
+			
+			navPoint = null;
+			
 			OnHistoryChanged ();
+			
+			return true;
 		}
 		
 		// untested
@@ -186,7 +192,6 @@ namespace MonoDevelop.Ide.Gui {
 			INavigationPoint currentPosition = CurrentPosition;
 			
 			history.Clear ();
-			lastLogged = null;
 			currentNode = null;
 			
 			if (!clearCurrentPosition)
