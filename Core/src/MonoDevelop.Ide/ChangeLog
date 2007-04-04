@@ -1,23 +1,23 @@
 2007-04-04  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Gui/NavigationService.cs: Defer logging until the
-	timeout has expired unless there has been a file change.
+	* MonoDevelop.Ide.Gui/NavigationService.cs: Defer logging until
+	the timeout has expired unless there has been a file change.
 
 2007-04-03  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Gui/NavigationService.cs: Only log new points if the
-	time interval has been >= 1 second.
+	* MonoDevelop.Ide.Gui/NavigationService.cs: Only log new points if
+	the time interval has been >= 1 second.
 
-	* MonoDevelop.Ide.Gui/NavigationHistory.cs: Don't include the current
-	navpoint in the menus.
+	* MonoDevelop.Ide.Gui/NavigationHistory.cs: Don't include the
+	current navpoint in the menus.
 
 2007-04-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/NavigationHistory.cs: Implement
 	NavigationHistoryForward class.
 
-	* MonoDevelop.Ide.Gui/NavigationService.cs: After jumping to the new
-	point, emit the HistoryChanged event.
+	* MonoDevelop.Ide.Gui/NavigationService.cs: After jumping to the
+	new point, emit the HistoryChanged event.
 
 	* MonoDevelop.Ide.addin.xml: The Forward button now uses the same
 	custom widget.

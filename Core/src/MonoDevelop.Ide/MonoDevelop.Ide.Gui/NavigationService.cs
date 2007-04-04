@@ -55,8 +55,6 @@ namespace MonoDevelop.Ide.Gui {
 			
 			IdeApp.ProjectOperations.FileRenamedInProject += FileRenamed;
 			IdeApp.ProjectOperations.CombineClosed += SolutionClosed;
-			
-			timeout = GLib.Timeout.Add (1000, LogNavPoint);
 		}
 		
 #region Public Properties
@@ -130,20 +128,21 @@ namespace MonoDevelop.Ide.Gui {
 			if (p == null || p.FileName == null || p.FileName == String.Empty)
 				return;
 			
+			if (timeout != 0)
+					GLib.Source.Remove (timeout);
+			
 			if (navPoint != null && navPoint.FileName != p.FileName) {
-				// always log last navpoint before switching files
+				// user switched files: always log most recent navpoint before file switch
 				LogNavPoint ();
 			}
 			
 			// defer logging
+			timeout = GLib.Timeout.Add (1000, LogNavPoint);
 			navPoint = p;
 		}
 		
 		static bool LogNavPoint ()
 		{
-			if (navPoint == null || loggingSuspended)
-				return true;
-			
 			if (currentNode == null) {
 				currentNode = history.AddFirst (navPoint);
 			} else if (navPoint.Equals (currentNode.Value)) {
@@ -154,10 +153,11 @@ namespace MonoDevelop.Ide.Gui {
 			}
 			
 			navPoint = null;
+			timeout = 0;
 			
 			OnHistoryChanged ();
 			
-			return true;
+			return false;
 		}
 		
 		// untested
@@ -268,7 +268,7 @@ namespace MonoDevelop.Ide.Gui {
 			loggingSuspended = false;
 		}
 #endregion
-
+		
 		// the following code is not covered by Unit tests as i wasn't sure
 		// how to test code triggered by the user interacting with the workbench
 #region event trapping
