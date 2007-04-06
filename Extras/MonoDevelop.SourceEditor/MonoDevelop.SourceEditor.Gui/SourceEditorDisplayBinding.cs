@@ -103,6 +103,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		IProperties properties;
 		IParseInformation memberParseInfo;
 		bool handlingParseEvent = false;
+		bool disposed;
 		
 		BreakpointEventHandler breakpointAddedHandler;
 		BreakpointEventHandler breakpointRemovedHandler;
@@ -282,6 +283,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		// http://bugzilla.gnome.org/show_bug.cgi?id=138458
 		bool changeFocus ()
 		{
+			if (disposed)
+				return false;
 			se.View.GrabFocus ();
 			se.View.ScrollToMark (se.Buffer.InsertMark, 0.3, false, 0, 0);
 			return false;
@@ -293,6 +296,8 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public override void Dispose()
 		{
+			disposed = true;
+			
 			if (Services.DebuggingService != null) {
 				Services.DebuggingService.BreakpointAdded -= breakpointAddedHandler;
 				Services.DebuggingService.BreakpointRemoved -= breakpointRemovedHandler;
@@ -480,7 +485,10 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		
 		private bool BindClassCombo()
-		{	
+		{
+			if (disposed)
+				return false;
+			
 			classCombo.Changed -= new EventHandler (ClassChanged);
 			// Clear down all our local stores.
 			classStore.Clear();				

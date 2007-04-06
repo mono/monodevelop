@@ -44,6 +44,7 @@
     <File name="./MonoDevelop.SourceEditor.FormattingStrategy/DefaultFormattingStrategy.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.SourceEditor.Gui.OptionPanels/GeneralTextEditorPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
