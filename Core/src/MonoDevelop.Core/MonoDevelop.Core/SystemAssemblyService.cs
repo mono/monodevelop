@@ -285,9 +285,11 @@ namespace MonoDevelop.Core
 			if (search_dirs != null && search_dirs.Length > 0) {
 				ArrayList scanDirs = new ArrayList ();
 				foreach (string potentialDir in search_dirs.Split (Path.PathSeparator)) {
-					string absPotentialDir = Path.GetFullPath (potentialDir);
-					if (!scanDirs.Contains (absPotentialDir))
-						scanDirs.Add (absPotentialDir);
+					try {
+						string absPotentialDir = Path.GetFullPath (potentialDir);
+						if (!scanDirs.Contains (absPotentialDir))
+							scanDirs.Add (absPotentialDir);
+					} catch {}
 				}
 				foreach (string pcdir in scanDirs) {
 					if (pcdir == null)
