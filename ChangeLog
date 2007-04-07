@@ -1,3 +1,7 @@
+2007-04-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* monodevelop.in: Add some more typical directories to PKG_CONFIG_PATH.
+
 2007-03-02T10:26	C.J. Adams-Collier <cjac@colliertech.org>
 
 	* Core/src/MonoDevelop.Core/MonoDevelop.Core/SystemAssemblyService.cs:
