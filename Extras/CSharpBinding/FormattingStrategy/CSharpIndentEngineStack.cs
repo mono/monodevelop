@@ -149,8 +149,12 @@ namespace CSharpBinding.FormattingStrategy {
 					if (parent == Inside.ParenList)
 						stack[size - 1].indent = indentBuilder.ToString ();
 					
-					if (parent != Inside.Case || (inside == Inside.Block && nSpaces != -1))
+					if (inside == Inside.FoldedStatement) {
 						indentBuilder.Append ('\t');
+					} else if (inside == Inside.Block) {
+						if (parent != Inside.Case && nSpaces != -1)
+							indentBuilder.Append ('\t');
+					}
 					
 					nSpaces = 0;
 				} else if ((inside & (Inside.PreProcessor | Inside.StringOrChar)) != 0) {

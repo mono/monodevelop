@@ -1,3 +1,9 @@
+2007-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FormattingStrategy/CSharpIndentEngineStack.cs: If we are pushing
+	a new FoldedStatement, we want to indent another level even if our
+	parent is a case-statement (unlike what we do for new Blocks).
+
 2007-03-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (GetPreviousToken):
