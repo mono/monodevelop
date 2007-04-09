@@ -141,6 +141,31 @@ namespace MonoDevelop.Ide.Gui.Pads
 			this.window = window;
 		}
 		
+		void PropertyChanged (object sender, PropertyEventArgs prop)
+		{
+			string name;
+			
+			switch (prop.Key) {
+			case "MonoDevelop.Core.Gui.Pads.UseCustomFont":
+				name = tree.Style.FontDescription.ToString ();
+				
+				if ((bool) prop.NewValue)
+					name = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+				
+				text_render.FontDesc = Pango.FontDescription.FromString (name);
+				tree.ColumnsAutosize ();
+				break;
+			case "MonoDevelop.Core.Gui.Pads.CustomFont":
+				if (!((bool) Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont")))
+					break;
+				
+				name = (string) prop.NewValue;
+				text_render.FontDesc = Pango.FontDescription.FromString (name);
+				tree.ColumnsAutosize ();
+				break;
+			}
+		}
+		
 		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			builderContext = new TreeBuilderContext (this);
@@ -161,7 +186,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			Gtk.Drag.SourceSet (tree, Gdk.ModifierType.Button1Mask, target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-
+			
 			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			store.SetSortColumnId (/* GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID */ -1, Gtk.SortType.Ascending);
 			
@@ -176,14 +201,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			complete_column.AddAttribute (pix_render, "pixbuf", OpenIconColumn);
 			complete_column.AddAttribute (pix_render, "pixbuf-expander-open", OpenIconColumn);
 			complete_column.AddAttribute (pix_render, "pixbuf-expander-closed", ClosedIconColumn);
-
+			
 			text_render = new Gtk.CellRendererText ();
+			if (Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
+				string name = tree.Style.FontDescription.ToString ();
+				name = Runtime.Properties.GetProperty ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+				text_render.FontDesc = Pango.FontDescription.FromString (name);
+			}
+			Runtime.Properties.PropertyChanged += new PropertyEventHandler (PropertyChanged);
 			text_render.Edited += new Gtk.EditedHandler (HandleOnEdit);
 			text_render.EditingCanceled += new EventHandler (HandleOnEditCancelled);
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "markup", TextColumn);
-	
+			
 			tree.AppendColumn (complete_column);
 			
 			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();

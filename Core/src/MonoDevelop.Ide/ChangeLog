@@ -1,3 +1,11 @@
+2007-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs: Provide
+	a UI for setting a custom font for the treeview pads.
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Allow using a custom
+	font for the Pads.
+
 2007-04-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/NavigationService.cs: Defer logging until
