@@ -1,3 +1,9 @@
+2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:
+	Implement IViewHistory
+	(BuildNavPoint() is no longer part of IViewHistory).
+
 2007-04-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Don't try
@@ -6,9 +12,9 @@
 
 2007-04-02  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs (Description): Don't 
-	include the column number, it's not worth the extra space taken to display
-	that info in the menu.
+	* MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs (Description): 
+	Don't include the column number, it's not worth the extra space taken
+	to display that info in the menu.
 
 2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
 

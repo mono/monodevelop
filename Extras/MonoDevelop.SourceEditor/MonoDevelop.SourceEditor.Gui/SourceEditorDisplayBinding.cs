@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	
 	public class SourceEditorDisplayBindingWrapper : AbstractViewContent,
 		IExtensibleTextEditor, IPositionable, IBookmarkBuffer, IDebuggableEditor, ICodeStyleOperations,
-		IDocumentInformation, IEncodedTextContent
+		IDocumentInformation, IEncodedTextContent, IViewHistory
 	{
 		VBox mainBox;
 		VBox editorBar;
@@ -401,7 +401,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		  	Editor.View.MoveCursor += new MoveCursorHandler(UpdateMethodBrowser);
 		}
 		
-		public override INavigationPoint BuildNavPoint ()
+		public INavigationPoint BuildNavPoint ()
 		{
 			int line, column;
 			string content;
