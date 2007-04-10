@@ -93,25 +93,6 @@ namespace MonoDevelop.Ide.Gui {
 			}
 		}
 		
-#region private helpers
-		static void Log (IWorkbenchWindow window)
-		{
-			if (window == null)
-				return;
-			
-			// TODO: Navigation - enable logging of subpanes via window.ActiveViewContent
-			Log (window.ViewContent);
-		}
-		
-		static void Log (IViewContent vc)
-		{
-			if (vc == null)
-				return;
-			
-			Log (vc.BuildNavPoint ());
-		}
-#endregion
-		
 		public static void Log (INavigationPoint pointToLog)
 		{
 			if (loggingSuspended)
@@ -158,23 +139,6 @@ namespace MonoDevelop.Ide.Gui {
 			OnHistoryChanged ();
 			
 			return false;
-		}
-		
-		// untested
-		public static INavigationPoint Log ()
-		{
-//			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-//			if (window == null) {
-//				return null;
-//			}
-//
-//			IViewContent view = window.ViewContent;
-//			if (view == null) {
-//				return null;
-//			}
-//
-//			return view.BuildNavPoint();
-			return null;
 		}
 		
 		public static ICollection<INavigationPoint> Points

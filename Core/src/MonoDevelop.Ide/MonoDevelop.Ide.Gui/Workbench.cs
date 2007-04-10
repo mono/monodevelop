@@ -323,8 +323,6 @@ namespace MonoDevelop.Ide.Gui
 						ipos.JumpTo (line, column != -1 ? column : 0);
 					}
 					
-					NavigationService.Log (doc.Window.ViewContent.BuildNavPoint ());
-					
 					return doc;
 				}
 			}

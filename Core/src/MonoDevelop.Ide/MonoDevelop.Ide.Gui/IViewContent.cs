@@ -85,8 +85,6 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		void Load(string fileName);
 		
-		INavigationPoint BuildNavPoint ();
-		
 		/// <summary>
 		/// The name of the project the content is attached to
 		/// </summary>

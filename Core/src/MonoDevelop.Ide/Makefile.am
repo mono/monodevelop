@@ -221,6 +221,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IStatusBarService.cs \
 	MonoDevelop.Ide.Gui/IStatusIcon.cs \
 	MonoDevelop.Ide.Gui/IViewContent.cs \
+	MonoDevelop.Ide.Gui/IViewHistory.cs \
 	MonoDevelop.Ide.Gui/IWorkbench.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \

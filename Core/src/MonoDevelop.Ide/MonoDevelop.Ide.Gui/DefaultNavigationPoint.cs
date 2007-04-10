@@ -17,23 +17,16 @@ namespace MonoDevelop.Ide.Gui {
 	/// </summary>
 	public class DefaultNavigationPoint : INavigationPoint {
 		string fileName;
-		object data;
 		
 #region constructor
-		public DefaultNavigationPoint () : this (String.Empty, null)
+		public DefaultNavigationPoint () : this (String.Empty)
 		{
 			
 		}
 		
-		public DefaultNavigationPoint (string fileName) : this (fileName, null)
-		{
-			
-		}
-		
-		public DefaultNavigationPoint (string fileName, object data)
+		public DefaultNavigationPoint (string fileName)
 		{
 			this.fileName = fileName == null ? String.Empty : fileName;
-			this.data = data;
 		}
 #endregion
 		
@@ -53,10 +46,7 @@ namespace MonoDevelop.Ide.Gui {
 		}
 		
 		public virtual string Description {
-			get {
-				return String.Format (CultureInfo.CurrentCulture,
-				                      "{0}: {1}", fileName, data);
-			}
+			get { return fileName; }
 		}
 		
 		public virtual string FullDescription {
@@ -65,19 +55,6 @@ namespace MonoDevelop.Ide.Gui {
 		
 		public virtual string ToolTip {
 			get { return Description; }
-		}
-		
-//		public string TabName {
-//			get { return tabName; }
-//		}
-		
-		public virtual int Index {
-			get { return 0; }
-		}
-		
-		public object NavigationData {
-			get { return data; }
-			set { data = value; }
 		}
 		
 		public virtual void JumpTo ()

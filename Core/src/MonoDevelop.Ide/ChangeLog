@@ -1,3 +1,32 @@
+2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs (OpenDocument): Don't log the
+	NavPoint here, it's unnecessary afaict (and no longer easily done
+	anyway, since IViewContent no longer contains BuildNavPoint()).
+
+	* MonoDevelop.Ide.Gui/NavigationService.cs: Removed unused helper
+	methods.
+
+	* MonoDevelop.Ide.Gui/AbstractViewContent.cs: Removed
+	BuildNavPoint()
+
+	* MonoDevelop.Ide.Gui/IViewHistory.cs: New interface for
+	BuildNavPoint()
+	
+	* MonoDevelop.Ide.Gui/IViewContent.cs: Removed BuildNavPoint()
+
+	* MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs: Removed unused
+	methods and properties (and the generic object navigation data).
+
+	* MonoDevelop.Ide.Gui/INavigationPoint.cs: Removed unused
+	methods/properties.
+
+	* MonoDevelop.Ide.Gui/NavigationHistory.cs: Add a "Clear History"
+	menu item in the Forward navigation menu too.
+	(UpdateHistory): (Forward/Back) As we progress thru history, group
+	/sequential/ points sharing the same filename into submenus (as
+	opposed to /all/ points sharing the same filename).
+
 2007-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/SelectStylePanel.cs: Provide

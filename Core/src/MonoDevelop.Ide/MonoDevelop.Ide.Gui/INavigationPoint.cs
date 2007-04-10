@@ -32,19 +32,6 @@ namespace MonoDevelop.Ide.Gui {
 		
 		string ToolTip { get; }
 		
-//		/// <summary>
-//		/// 
-//		/// </summary>
-//		string TabName { get; }
-		
-		/// <summary>
-		/// Gets the specific data, if any, needed to 
-		/// navigate to this <see cref="INavigationPoint"/>.
-		/// </summary>
-		object NavigationData { get; }
-		
-		int Index { get; }
-		
 		/// <summary>
 		/// Navigates to this <see cref="INavigationPoint"/>.
 		/// </summary>

@@ -115,7 +115,9 @@ namespace MonoDevelop.Ide.Gui {
 			if (NavigationService.CanNavigateBack) {
 				List<INavigationPoint> points;
 				INavigationPoint point;
-				MenuItem item;
+				MenuItem item, file;
+				Menu submenu = null;
+				string path = null;
 				int i;
 				
 				points = new List<INavigationPoint> (NavigationService.Points);
@@ -130,12 +132,27 @@ namespace MonoDevelop.Ide.Gui {
 				
 				while (i >= 0) {
 					point = points[i--];
-					item = new MenuItem (point.FullDescription);
+					item = new MenuItem (point.Description);
 					item.Activated += new EventHandler (GoTo);
 					navpoints.Add (item, point);
 					item.Show ();
 					
-					((MenuShell) menu).Append (item);
+					if (point.FileName != path || submenu == null) {
+						string name = System.IO.Path.GetFileName (point.FileName);
+						path = point.FileName;
+						
+						file = new MenuItem (name);
+						file.Show ();
+						
+						((MenuShell) menu).Append (file);
+						
+						submenu = new Menu ();
+						submenu.Show ();
+						
+						file.Submenu = submenu;
+					}
+					
+					((MenuShell) submenu).Append (item);
 				}
 				
 				this.Sensitive = true;
@@ -169,7 +186,9 @@ namespace MonoDevelop.Ide.Gui {
 			if (NavigationService.CanNavigateForward) {
 				List<INavigationPoint> points;
 				INavigationPoint point;
-				MenuItem item;
+				MenuItem item, file;
+				Menu submenu = null;
+				string path = null;
 				int i;
 				
 				points = new List<INavigationPoint> (NavigationService.Points);
@@ -189,7 +208,22 @@ namespace MonoDevelop.Ide.Gui {
 					navpoints.Add (item, point);
 					item.Show ();
 					
-					((MenuShell) menu).Append (item);
+					if (point.FileName != path || submenu == null) {
+						string name = System.IO.Path.GetFileName (point.FileName);
+						path = point.FileName;
+						
+						file = new MenuItem (name);
+						file.Show ();
+						
+						((MenuShell) menu).Append (file);
+						
+						submenu = new Menu ();
+						submenu.Show ();
+						
+						file.Submenu = submenu;
+					}
+					
+					((MenuShell) submenu).Append (item);
 				}
 				
 				this.Sensitive = true;
@@ -199,6 +233,7 @@ namespace MonoDevelop.Ide.Gui {
 			
 			menu.Show ();
 			button.Menu = menu;
+			base.UpdateHistory ();
 		}
 	}
 }

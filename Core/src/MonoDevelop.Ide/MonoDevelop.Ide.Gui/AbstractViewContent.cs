@@ -96,11 +96,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public abstract void Load(string fileName);
 		
-		public virtual INavigationPoint BuildNavPoint ()
-		{
-			return new DefaultNavigationPoint (contentName);
-		}
-		
 		public virtual Project Project
 		{
 			get
