@@ -1,3 +1,7 @@
+2007-04-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gl.po: Updated galician translation by Ignacio Casal Quinteiro.
+
 2007-04-03  Wade Berrier  <wberrier@novell.com> 
 
 	* POTFILES.in: removed CombinedDeployHandler.cs, 
