@@ -1,3 +1,8 @@
+2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/BaseView.cs:
+	Removed BuildNavPoint().
+
 2007-03-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/BaseView.cs: Implement

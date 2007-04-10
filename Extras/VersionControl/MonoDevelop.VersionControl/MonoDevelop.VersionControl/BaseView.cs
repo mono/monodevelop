@@ -31,10 +31,6 @@ namespace MonoDevelop.VersionControl
 			SaveAs(fileName);
 		}
 		
-		INavigationPoint IViewContent.BuildNavPoint () {
-			return new DefaultNavigationPoint (name);
-		}
-		
 		string IViewContent.ContentName {
 			get { return name; }
 			set { }
