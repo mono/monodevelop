@@ -1,6 +1,6 @@
 using System;
 
-namespace MonoDevelop.Ide.Gui {
+namespace MonoDevelop.Ide.Gui.Content {
 	public interface IViewHistory {
 		/// <summary>
 		/// Builds an INavigationPoint containing the necessary information

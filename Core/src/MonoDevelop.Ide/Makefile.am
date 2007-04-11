@@ -81,6 +81,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
+	MonoDevelop.Ide.Gui.Content/IViewHistory.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
@@ -221,7 +222,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IStatusBarService.cs \
 	MonoDevelop.Ide.Gui/IStatusIcon.cs \
 	MonoDevelop.Ide.Gui/IViewContent.cs \
-	MonoDevelop.Ide.Gui/IViewHistory.cs \
 	MonoDevelop.Ide.Gui/IWorkbench.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \

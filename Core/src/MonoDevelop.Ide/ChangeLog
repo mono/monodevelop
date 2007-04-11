@@ -1,3 +1,8 @@
+2007-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/IViewHistory.cs: Moved to
+	MonoDevelop.Ide.Gui.Content
+
 2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs (OpenDocument): Don't log the
