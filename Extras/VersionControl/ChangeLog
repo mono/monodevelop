@@ -1,3 +1,9 @@
+2007-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	Use svn_client_add3() so that we can pass 'force' as true. (We
+	already required 1.3+ as mkdir2() is only 1.3+)
+
 2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/BaseView.cs:

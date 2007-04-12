@@ -396,7 +396,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			updatemonitor = monitor;
 			IntPtr localpool = newpool(pool);
 			try {
-				CheckError(svn_client_add(path, (recurse ? 1 :0), ctx, localpool));
+				CheckError (svn_client_add3 (path, (recurse ? 1 : 0), 1, 0, ctx, localpool));
 			} finally {
 				apr.pool_destroy(localpool);
 				updatemonitor = null;
@@ -1157,8 +1157,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
 			int force, IntPtr ctx, IntPtr pool);
 			
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_add (
-			string path, int recurse, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_add3 (
+			string path, int recurse, int force, int no_ignore, IntPtr ctx, IntPtr pool);
 			
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_commit (
 			ref IntPtr svn_client_commit_info_t_commit_info,
