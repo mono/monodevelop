@@ -1,5 +1,7 @@
 using System;
 
+using MonoDevelop.Ide.Gui;
+
 namespace MonoDevelop.Ide.Gui.Content {
 	public interface IViewHistory {
 		/// <summary>
