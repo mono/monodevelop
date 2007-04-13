@@ -114,6 +114,10 @@ namespace MonoDevelop.Ide.Commands
 			string txt;
 			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
+				// if we can jump to the declaration, we can rename it
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+				
+				// ...and of course, we can jump to it :)
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			}
 			
@@ -134,6 +138,36 @@ namespace MonoDevelop.Ide.Commands
 						if (bc != null && bc.ClassType != ClassType.Interface && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)) {
 							ciset.CommandInfos.Add (GettextCatalog.GetString ("Go to _base"), new RefactoryOperation (refactorer.GoToBase));
 						}
+					}
+				}
+				
+				if (cls.ClassType == ClassType.Interface) {
+					// An interface is selected, so just need to provide these 2 submenu items
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
+				} else if (cls.BaseTypes.Count > 0) {
+					// Class might have interfaces... offer to implement them
+					CommandInfoSet impset = new CommandInfoSet ();
+					CommandInfoSet expset = new CommandInfoSet ();
+					bool added = false;
+					
+					foreach (IReturnType rt in cls.BaseTypes) {
+						IClass iface = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
+						if (iface != null && iface.ClassType == ClassType.Interface) {
+							Refactorer ifaceRefactorer = new Refactorer (ctx, iface);
+							
+							impset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
+							expset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
+							added = true;
+						}
+					}
+					
+					if (added) {
+						impset.Text = GettextCatalog.GetString ("Implement Interface (implicit)");
+						ciset.CommandInfos.Add (impset, null);
+						
+						expset.Text = GettextCatalog.GetString ("Implement Interface (explicit)");
+						ciset.CommandInfos.Add (expset, null);
 					}
 				}
 				
@@ -158,10 +192,9 @@ namespace MonoDevelop.Ide.Commands
 				LocalVariable var = (LocalVariable) item;
 				AddRefactoryMenuForClass (ctx, ciset, var.ReturnType.FullyQualifiedName);
 				txt = GettextCatalog.GetString ("Variable {0}", item.Name);
-			}
-			else
+			} else
 				return null;
-				
+			
 			if (item is IMember) {
 				IClass cls = ((IMember)item).DeclaringType;
 				if (cls != null) {
@@ -269,6 +302,27 @@ namespace MonoDevelop.Ide.Commands
 						monitor.ReportResult (sub.Region.FileName, sub.Region.BeginLine, sub.Region.BeginColumn, sub.FullyQualifiedName);
 				}
 			}
+		}
+		
+		void ImplementInterface (bool explicitly)
+		{
+			// FIXME: implement me
+		}
+		
+		public void ImplementImplicitInterface ()
+		{
+			ImplementInterface (false);
+		}
+		
+		public void ImplementExplicitInterface ()
+		{
+			ImplementInterface (true);
+		}
+		
+		public void Rename ()
+		{
+			// FIXME: Rename the class/member/whatever - will need to prompt the user.
+			// Need to find derived classes/references and fix those as well, or at least offer to.
 		}
 	}
 }

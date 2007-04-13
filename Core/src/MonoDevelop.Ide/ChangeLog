@@ -1,3 +1,14 @@
+2007-04-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(BuildRefactoryMenuForItem): If we can jump to the definition of
+	any member, we can also rename it - so add a Rename menu item. If
+	an interface is selected, add 2 menu items: "Implement Interface
+	(implicit)" and "Implement Interface (explicit)".  If a class is
+	selected, add the same 2 menu items as we do for interfaces, but
+	attach submenus to those items listing the possible interfaces to
+	implement.
+
 2007-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/IViewHistory.cs: Moved to
