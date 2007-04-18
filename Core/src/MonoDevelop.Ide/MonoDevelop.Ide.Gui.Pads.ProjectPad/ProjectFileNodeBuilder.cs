@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
@@ -140,22 +141,31 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile file = CurrentNode.DataItem as ProjectFile;
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
 			
-			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name));
-			if (!yes) return;
+			DeleteFileDialog deleteDialog = new DeleteFileDialog (GettextCatalog.GetString (
+				"Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (file.Name), project.Name));
+			try {
+				bool yes = deleteDialog.Run ();
+				if (!yes) return;
 
-			if (!file.IsExternalToProject) {
-				ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
-				if (inFolder.Length == 1 && inFolder [0] == file) {
-					// This is the last project file in the folder. Make sure we keep
-					// a reference to the folder, so it is not deleted from the tree.
-					ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
-					folderFile.Subtype = Subtype.Directory;
-					project.ProjectFiles.Add (folderFile);
+				if (!file.IsExternalToProject) {
+					ProjectFile[] inFolder = project.ProjectFiles.GetFilesInPath (Path.GetDirectoryName (file.Name));
+					if (inFolder.Length == 1 && inFolder [0] == file) {
+						// This is the last project file in the folder. Make sure we keep
+						// a reference to the folder, so it is not deleted from the tree.
+						ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
+						folderFile.Subtype = Subtype.Directory;
+						project.ProjectFiles.Add (folderFile);
+					}
 				}
-			}
+				
+				project.ProjectFiles.Remove (file);
+				if (deleteDialog.DeleteFromDisk)
+					Runtime.FileService.DeleteFile (file.Name);
 			
-			project.ProjectFiles.Remove (file);
-			IdeApp.ProjectOperations.SaveProject (project);
+				IdeApp.ProjectOperations.SaveProject (project);				
+			} finally {
+				deleteDialog.Destroy ();
+			}
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]

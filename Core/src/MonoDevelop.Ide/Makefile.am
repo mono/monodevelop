@@ -28,6 +28,7 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
@@ -87,6 +88,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \

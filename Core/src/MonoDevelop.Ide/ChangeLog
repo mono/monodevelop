@@ -1,3 +1,13 @@
+2007-04-18  Ankit Jain <jankit@novell.com> 
+
+	Add new DeleteFileDialog.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs (RemoveItem): Use the new
+	  DeleteFileDialog.
+	* MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs: New.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+	* gtk-gui/gui.stetic: Updated to add the new dialog.
+
 2007-04-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
