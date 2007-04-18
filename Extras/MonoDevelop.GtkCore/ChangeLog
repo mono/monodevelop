@@ -1,3 +1,13 @@
+2007-04-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs: Show a
+	  relative path in the window delete confirm dialog, since the
+	  absolute path may take too much space.
+	* MonoDevelop.GtkCore.mdp: Updated.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	* templates/DialogPartial.xft.xml, templates/Dialog.xft.xml: Add
+	  Ok/Cancel buttons by default in new dialogs.
+
 2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
