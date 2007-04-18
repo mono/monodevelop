@@ -168,6 +168,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		public void UpdateRemoveItem (CommandInfo info)
+		{
+			info.Text = GettextCatalog.GetString ("Remove");
+		}
+		
 		[CommandUpdateHandler (ProjectCommands.IncludeInBuild)]
 		public void OnUpdateIncludeInBuild (CommandInfo info)
 		{
