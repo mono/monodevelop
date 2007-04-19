@@ -104,7 +104,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			if (warnings == null)
 				warnings = new ArrayList ();
-			messages.Add (message);
+			warnings.Add (message);
 		}
 		
 		public virtual void ReportError (string message, Exception ex)

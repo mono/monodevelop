@@ -368,6 +368,28 @@ namespace MonoDevelop.Core
 			return root + string.Join (new string (Path.DirectorySeparatorChar, 1), newParts, 0, i);
 		}
 		
+		public string CreateTempDirectory ()
+		{
+			string tmpFolder;
+			
+			Random rand = new Random ();
+			do {
+				tmpFolder = Path.Combine (Path.GetTempPath (), "d" + rand.Next (0, int.MaxValue));
+				try {
+					if (Directory.Exists (tmpFolder))
+						tmpFolder = null;
+					else
+						Directory.CreateDirectory (tmpFolder);
+				}
+				catch {
+					tmpFolder = null;
+				}
+			}
+			while (tmpFolder == null);
+			
+			return tmpFolder;
+		}
+		
 		
 		bool HandleError (string message, Exception ex)
 		{

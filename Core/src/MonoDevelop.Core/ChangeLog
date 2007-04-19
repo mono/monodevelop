@@ -1,3 +1,10 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs: Fix bug
+	  in ReportWarning.
+	* MonoDevelop.Core/FileService.cs: Added method for creating temporary
+	  directories.
+
 2007-04-07 Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.Core/SystemAssemblyService.cs: Avoid duplicating 
