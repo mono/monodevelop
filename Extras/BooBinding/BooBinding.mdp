@@ -53,31 +53,31 @@
     <File name="./Gui/BooTextEditorExtension.boo" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
+    <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="gconf-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="False" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Project" localcopy="False" refto="BooShell" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.SourceEditor" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.CodeDom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Useful, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <ProjectReference type="Gac" localcopy="False" refto="gconf-sharp-peditors, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="BooShell" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.SourceEditor" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.CodeDom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Useful, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gconf-sharp-peditors, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />
