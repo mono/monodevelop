@@ -379,6 +379,9 @@ Extras/AspNetEdit/Makefile
 Extras/AspNetEdit/chrome/Makefile
 Extras/AspNetEdit/chrome/aspdesigner.manifest
 Extras/MonoDevelop.WebReferences/Makefile
+Extras/Deployment/Makefile
+Extras/Deployment/MonoDevelop.Deployment/Makefile
+Extras/Deployment/MonoDevelop.Deployment.Linux/Makefile
 Makefile
 monodevelop
 mdtool
