@@ -24,17 +24,25 @@ using System.Text;
 using System.Collections;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Autotools
 {
 	public class AutotoolsContext
 	{
+		DeployContext deployContext;
+		Hashtable deployDirs = new Hashtable ();
+		
 		string template_dir = Path.GetDirectoryName ( typeof ( AutotoolsContext ).Assembly.Location ) + "/";
 		
 		Set autoconfConfigFiles = new Set ();
 		Set referencedPackages = new Set();
 		Set globalDllReferences = new Set();
 		Set compilers = new Set ();
+		
+		public DeployContext DeployContext {
+			get { return deployContext; }
+		}
 		
 		string base_dir;
 		public string BaseDirectory {
@@ -57,8 +65,9 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public AutotoolsContext ( string base_directory, string[] configs )
+		public AutotoolsContext ( DeployContext deployContext, string base_directory, string[] configs )
 		{
+			this.deployContext = deployContext;
 			base_dir = base_directory;
 			configurations = configs;
 		}
@@ -70,6 +79,16 @@ namespace MonoDevelop.Autotools
 				if ( s == name ) return true;
 			}
 			return false;
+		}
+		
+		public string GetDeployDirectoryVar (string folderId)
+		{
+			string dir = (string) deployDirs [folderId];
+			if (dir != null)
+				return dir;
+			dir = folderId.ToUpper ().Replace (".","_").Replace ("/", "_");
+			deployDirs [folderId] = dir;
+			return dir;
 		}
 		
 		public void AddRequiredPackage ( string pkg_name )
@@ -115,6 +134,11 @@ namespace MonoDevelop.Autotools
 			return globalDllReferences;
 		}
 		
+		public IDictionary GetReferencedTargetDirectories ()
+		{
+			return deployDirs;
+		}
+		
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.
 		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry )
@@ -124,7 +148,7 @@ namespace MonoDevelop.Autotools
 			else if ( entry is Project )
 				return new SimpleProjectMakefileHandler ();
 			else
-				throw new Exception ( "No known IMakefileHandler for type.");
+				return null;
 		}
 	
 		public static string EscapeStringForAutomake (string str) 

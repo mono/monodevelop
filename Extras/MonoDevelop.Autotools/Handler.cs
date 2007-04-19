@@ -5,14 +5,15 @@ using System.Collections;
 using System.IO;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Projects.Deployment;
-using MonoDevelop.Projects.Gui.Deployment;
+using MonoDevelop.Deployment;
+using MonoDevelop.Deployment.Gui;
 
 namespace MonoDevelop.Autotools
 {
-	public class TarballDeployTarget: DeployTarget
+	public class TarballDeployTarget: PackageBuilder
 	{
 		[ItemProperty ("TargetDirectory")]
 		string targetDir;
@@ -24,7 +25,7 @@ namespace MonoDevelop.Autotools
 			get { return GettextCatalog.GetString ("Tarball"); }
 		}
 		
-		public override void CopyFrom (DeployTarget other)
+		public override void CopyFrom (PackageBuilder other)
 		{
 			base.CopyFrom (other);
 			TarballDeployTarget target = other as TarballDeployTarget;
@@ -42,11 +43,7 @@ namespace MonoDevelop.Autotools
 			set { defaultConfig = value; }
 		}
 
-		public Combine TargetCombine {
-			get { return base.CombineEntry as Combine; }
-		}
-		
-		public override bool CanDeploy (CombineEntry entry)
+		public override bool CanBuild (CombineEntry entry)
 		{
 			Combine combine = entry as Combine;
 			if ( combine == null ) return false;
@@ -54,7 +51,7 @@ namespace MonoDevelop.Autotools
 			return deployer.CanDeploy ( combine );
 		}
 		
-		protected override void OnInitialize (CombineEntry entry)
+		public override void InitializeSettings (CombineEntry entry)
 		{
 			if (string.IsNullOrEmpty (targetDir))
 				targetDir = entry.BaseDirectory;
@@ -65,29 +62,62 @@ namespace MonoDevelop.Autotools
 		}
 
 		
-		protected override void OnDeploy (IProgressMonitor monitor)
+		protected override void OnBuild (IProgressMonitor monitor, CombineEntry entry)
 		{
-			Combine combine = CombineEntry as Combine;
-			SolutionDeployer deployer = new SolutionDeployer ();
+			string tmpFolder = Runtime.FileService.CreateTempDirectory ();
+			Combine combine = null;
 			
-			if (DefaultConfiguration == null || DefaultConfiguration == "")
-				deployer.Deploy ( combine, TargetDir, monitor );
-			else
-				deployer.Deploy ( combine, DefaultConfiguration, TargetDir, monitor );
+			try {
+				string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, tmpFolder, null, true);
+				combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
+				combine.Build (monitor);
+			
+				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
+					return;
+			
+				SolutionDeployer deployer = new SolutionDeployer ();
+				
+				using (DeployContext ctx = new DeployContext (this, "Linux", null)) {
+					if (DefaultConfiguration == null || DefaultConfiguration == "")
+						deployer.Deploy ( ctx, combine, TargetDir, monitor );
+					else
+						deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, monitor );
+				}
+			} finally {
+				if (combine != null)
+					combine.Dispose ();
+				Directory.Delete (tmpFolder, true);
+			}
 		}
 
+		protected override string OnResolveDirectory (DeployContext ctx, string folderId)
+		{
+			switch (folderId) {
+			case TargetDirectory.ProgramFilesRoot:
+				return "@prefix@/lib";
+			case TargetDirectory.ProgramFiles:
+				return "@prefix@/lib/@PACKAGE@";
+			case TargetDirectory.Binaries:
+				return "@prefix@/bin";
+			case TargetDirectory.CommonApplicationDataRoot:
+				return "@prefix@/share";
+			case TargetDirectory.CommonApplicationData:
+				return "@prefix@/share/@PACKAGE@";
+			}
+			return null;
+		}
 	}
 	
-	public class TarballTargetEditor: IDeployTargetEditor
+	public class TarballTargetEditor: IPackageBuilderEditor
 	{
-		public bool CanEdit (DeployTarget target)
+		public bool CanEdit (PackageBuilder target, CombineEntry entry)
 		{
 			return target is TarballDeployTarget;
 		}
 		
-		public Gtk.Widget CreateEditor (DeployTarget target)
+		public Gtk.Widget CreateEditor (PackageBuilder target, CombineEntry entry)
 		{
-			return new TarballTargetEditorWidget ((TarballDeployTarget) target);
+			return new TarballTargetEditorWidget ((TarballDeployTarget) target, (Combine) entry);
 		}
 	}
 }

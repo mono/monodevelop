@@ -9,7 +9,7 @@ namespace MonoDevelop.Autotools
 {
 	public class TarballTargetEditorWidget : VBox
 	{
-		public TarballTargetEditorWidget (TarballDeployTarget target)
+		public TarballTargetEditorWidget (TarballDeployTarget target, Combine targetCombine)
 		{
 			HBox dir_entry = new HBox ();
 			
@@ -34,29 +34,23 @@ namespace MonoDevelop.Autotools
 			Label conlab = new Label ( GettextCatalog.GetString ("Default configuration:") );
 			config_box.PackStart (conlab, false, false, 0);
 			
-			if ((target.DefaultConfiguration == null || target.DefaultConfiguration == "") && target.TargetCombine.ActiveConfiguration != null)
-				target.DefaultConfiguration = target.TargetCombine.ActiveConfiguration.Name;
+			if ((target.DefaultConfiguration == null || target.DefaultConfiguration == "") && targetCombine.ActiveConfiguration != null)
+				target.DefaultConfiguration = targetCombine.ActiveConfiguration.Name;
 			
 			ComboBox configs = ComboBox.NewText ();
-			for ( int ii=0; ii < target.TargetCombine.Configurations.Count; ii++ )
+			for ( int ii=0; ii < targetCombine.Configurations.Count; ii++ )
 			{
-				string cc = target.TargetCombine.Configurations [ii].Name;
+				string cc = targetCombine.Configurations [ii].Name;
 				configs.AppendText ( cc );
 				if ( cc == target.DefaultConfiguration ) configs.Active = ii;
 			}
 			configs.Changed += delegate (object s, EventArgs args) {
-				target.DefaultConfiguration = target.TargetCombine.Configurations [configs.Active].Name;
+				target.DefaultConfiguration = targetCombine.Configurations [configs.Active].Name;
 			};
 			config_box.PackStart ( configs, true, true, 6 );
 
 			PackStart ( config_box, false, false, 6 );
 
-			Label warning = new Label ();
-			warning.LineWrap = true;
-			string msg = GettextCatalog.GetString ( "Note: Deploying to a tarball will create a set of autotools files in the solution directory.  It will also overwrite any existing autotools files." );
-			warning.Markup = "<i>" + msg + "</i>" ;
-			PackStart ( warning, false, false, 6 );
-			
 			ShowAll ();
 		}
 	}

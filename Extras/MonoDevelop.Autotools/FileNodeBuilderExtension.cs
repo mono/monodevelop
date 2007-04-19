@@ -42,20 +42,9 @@ namespace MonoDevelop.Autotools
 			Project project = file.Project;
 			if (project != null) {
 				MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
-				if (data != null && data.IntegrationEnabled) {
-					bool sync;
-					if (file.BuildAction == BuildAction.Compile)
-						sync = data.BuildFilesVar.Sync;
-					else if (file.BuildAction == BuildAction.EmbedAsResource)
-						sync = data.ResourcesVar.Sync;
-					else if (file.BuildAction == BuildAction.FileCopy)
-						sync = data.DeployFilesVar.Sync;
-					else
-						sync = data.OthersVar.Sync;
-					if (sync) {
-						cinfo.Checked = !data.IsFileExcluded (file.FilePath);
-						return;
-					}
+				if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
+					cinfo.Checked = !data.IsFileExcluded (file.FilePath);
+					return;
 				}
 			}
 			cinfo.Visible = false;

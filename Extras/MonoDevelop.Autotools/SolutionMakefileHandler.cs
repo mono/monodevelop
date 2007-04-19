@@ -32,16 +32,7 @@ namespace MonoDevelop.Autotools
 		// Recurses into children and tests if they are deployable.
 		public bool CanDeploy ( CombineEntry entry )
 		{
-			Combine combine = entry as Combine;
-			
-			if ( combine == null ) return false;
-			foreach ( CombineEntry ce in combine.Entries )
-			{
-				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
-				if ( handler == null ) return false;
-				if ( !handler.CanDeploy ( ce ) )  return false;
-			}
-			return true;
+			return entry is Combine;
 		}
 
 		public Makefile Deploy ( AutotoolsContext ctx, CombineEntry entry, IProgressMonitor monitor )
@@ -93,7 +84,7 @@ namespace MonoDevelop.Autotools
 				{
 					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
 					Makefile makefile;
-					if ( handler.CanDeploy ( ce ) )
+					if ( handler != null && handler.CanDeploy ( ce ) )
 					{
 						makefile = handler.Deploy ( ctx, ce, monitor );
 						string outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
@@ -101,6 +92,9 @@ namespace MonoDevelop.Autotools
 						makefile.Write ( writer );
 						writer.Close ();
 						ctx.AddAutoconfFile ( outpath );
+					}
+					else {
+						monitor.Log .WriteLine("Project '{0}' skipped.", ce.Name); 
 					}
 				}
 

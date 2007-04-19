@@ -1,3 +1,22 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml, Commands.cs,
+	  TarballTargetEditorWidget.cs: Track api changes in deployment api.
+	* MonoDevelop.Autotools.mdp, gtk-gui/gui.stetic, Makefile.am: Added
+	  dependency to MonoDevelop.Deployment.
+	* SolutionMakefileHandler.cs: Allow generating makefiles a combine even
+	  if it contains unsupported projects. Those will be ignored.
+	* SimpleProjectMakefileHandler.cs, Handler.cs, SolutionDeployer.cs,
+	  templates/Makefile.include: Use the new deployment api to get the
+	  list of files to deploy.
+	* FileNodeBuilderExtension.cs, MakefileData.cs: Moved makefile
+	  integration check to MakefileData.
+	* AutotoolsContext.cs: Keep a list of directories to deploy. Store the
+	  DeployContext in a field.
+	* PropertyProvider.cs: New property provider which allows setting the
+	  makefile integration flag for each file.
+	* gtk-gui/objects.xml: Updated.
+
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Handler.cs: Remove unused namespace.

@@ -20,6 +20,8 @@
 		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
 		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
 		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Deployment" version="0.13.0"/>
+		<AddIn id="MonoDevelop.DesignerSupport" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
@@ -39,12 +41,8 @@
 			_label = "Include in Synchronized Makefile" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode">
-		<ItemSet id = "CombineAutotoolsMenu" _label = "Autotools" 
-			insertafter= "CombineBuildGroupSeparator">
-			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles"/>
-		</ItemSet>
-		<SeparatorItem id = "Separator1" />
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode/Tools">
+		<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="ExportListSeparator"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode/Include">
@@ -58,11 +56,11 @@
 	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DeployHandlers">
+	<Extension path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors">
+	<Extension path = "/MonoDevelop/DeployService/PackageBuilderEditors">
 		<Class class="MonoDevelop.Autotools.TarballTargetEditor" />
 	</Extension>
 	
@@ -89,4 +87,7 @@
 			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
+		<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
+	</Extension>
 </AddIn>

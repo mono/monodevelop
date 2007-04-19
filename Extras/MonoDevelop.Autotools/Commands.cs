@@ -32,6 +32,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Deployment;
 
 using Gtk;
 
@@ -70,9 +71,14 @@ namespace MonoDevelop.Autotools
 					return;
 			}
 
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Autotools Output"), "md-package", true, true))	
-			{
-				deployer.GenerateFiles (combine, monitor);
+			DeployContext ctx = new DeployContext (new TarballDeployTarget (), "Linux", null);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Autotools Output"), "md-package", true, true);
+			try {
+				deployer.GenerateFiles (ctx, combine, monitor);
+			}
+			finally {
+				ctx.Dispose ();
+				monitor.Dispose ();
 			}
 		}
 	}

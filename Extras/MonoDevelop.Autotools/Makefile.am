@@ -10,6 +10,7 @@ REFS = -r:Mono.Posix \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll  \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll  \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) 
 

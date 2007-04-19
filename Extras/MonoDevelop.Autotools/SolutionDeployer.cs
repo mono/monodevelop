@@ -19,6 +19,7 @@
    */
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 
@@ -27,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Serialization;
+using MonoDevelop.Deployment;
 
 using Mono.Unix.Native;
 
@@ -54,20 +56,20 @@ namespace MonoDevelop.Autotools
 		public bool CanDeploy ( Combine combine )
 		{
 			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
-			if ( !handler.CanDeploy (combine) )	return false;
+			if ( handler == null || !handler.CanDeploy (combine) ) return false;
 			return true;
 		}
 		
-		public bool GenerateFiles (Combine combine, IProgressMonitor monitor )
+		public bool GenerateFiles (DeployContext ctx, Combine combine, IProgressMonitor monitor )
 		{
 			if (combine.ActiveConfiguration != null)
-				return GenerateFiles ( combine, combine.ActiveConfiguration.Name, monitor );
+				return GenerateFiles ( ctx, combine, combine.ActiveConfiguration.Name, monitor );
 			else
 				// Indicate with a null argument that there is no active configuration
-				return GenerateFiles ( combine, null, monitor );
+				return GenerateFiles ( ctx, combine, null, monitor );
 		}
 		
-		public bool GenerateFiles (Combine combine, string defaultConf, IProgressMonitor monitor )
+		public bool GenerateFiles (DeployContext ctx, Combine combine, string defaultConf, IProgressMonitor monitor )
 		{
 			monitor.BeginTask ( GettextCatalog.GetString ("Generating Autotools files for Solution {0}", combine.Name), 1 );
 
@@ -79,10 +81,10 @@ namespace MonoDevelop.Autotools
 				for (int ii=0; ii < configs.Length; ii++ )
 					configs [ii] = combine.Configurations[ii].Name;
 					
-				context = new AutotoolsContext ( solution_dir, configs );
+				context = new AutotoolsContext ( ctx, solution_dir, configs );
 				
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
-				if ( !handler.CanDeploy (combine) )
+				if ( handler == null || !handler.CanDeploy (combine) )
 					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating autotools files for one (or more) child projects.") );
 
 				solution_name = combine.Name;
@@ -124,14 +126,14 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		public void Deploy ( Combine combine, string targetDir, IProgressMonitor monitor  )
+		public void Deploy ( DeployContext ctx, Combine combine, string targetDir, IProgressMonitor monitor  )
 		{
-			Deploy ( combine, combine.ActiveConfiguration.Name, targetDir, monitor  );
+			Deploy ( ctx, combine, combine.ActiveConfiguration.Name, targetDir, monitor  );
 		}
 		
-		public void Deploy ( Combine combine, string defaultConf, string targetDir, IProgressMonitor monitor  )
+		public void Deploy ( DeployContext ctx, Combine combine, string defaultConf, string targetDir, IProgressMonitor monitor  )
 		{
-			if ( !GenerateFiles ( combine, defaultConf, monitor ) )  return;
+			if ( !GenerateFiles ( ctx, combine, defaultConf, monitor ) )  return;
 			
 			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 3 );
 			try
@@ -391,6 +393,31 @@ namespace MonoDevelop.Autotools
 		void CreateMakefileInclude (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
+			
+			TemplateEngine templateEngine = new TemplateEngine();
+			
+			StringBuilder deployDirs = new StringBuilder ();
+			IDictionary dirs = context.GetReferencedTargetDirectories ();
+			foreach (DictionaryEntry e in dirs) {
+				// It may be a sub-path
+				string dir = (string) e.Key;
+				int i = dir.IndexOf ('/');
+				if (i != -1)
+					dir = dir.Substring (0, i);
+				string resolved = context.DeployContext.GetDirectory (dir);
+				if (resolved == null)
+					throw new InvalidOperationException ("Unknown directory: " + e.Key);
+				
+				if (i != -1)
+					resolved += ((string)e.Key).Substring (i);
+				
+				string var = (string) e.Value;
+				string dname = var.ToLower ().Replace ("_","");
+				deployDirs.AppendFormat ("{0}dir = {1}\n", dname, resolved);
+				deployDirs.AppendFormat ("{0}_DATA = $({1})\n", dname, var);
+			}
+			
+			templateEngine.Variables["DEPLOY_DIRS"] = deployDirs.ToString();
 
 			string fileName = solution_dir + "/Makefile.include";
 
@@ -399,7 +426,7 @@ namespace MonoDevelop.Autotools
 			StreamReader reader = new StreamReader(stream);
 			StreamWriter writer = new StreamWriter(fileName);
 
-			writer.Write(reader.ReadToEnd());
+			templateEngine.Process(reader, writer);
 
 			reader.Close();
 			writer.Close();

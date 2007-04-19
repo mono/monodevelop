@@ -417,6 +417,21 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
+		public bool IsFileIntegrationEnabled (BuildAction fileType)
+		{
+			if (IntegrationEnabled) {
+				if (fileType == BuildAction.Compile)
+					return BuildFilesVar.Sync;
+				else if (fileType == BuildAction.EmbedAsResource)
+					return ResourcesVar.Sync;
+				else if (fileType == BuildAction.FileCopy)
+					return DeployFilesVar.Sync;
+				else
+					return OthersVar.Sync;
+			}
+			return false;
+		}
+		
 		public bool IsFileExcluded (string fileName)
 		{
 			return excludedFiles.Contains (fileName);

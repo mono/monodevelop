@@ -27,6 +27,7 @@ using System.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Autotools
 {
@@ -66,8 +67,6 @@ namespace MonoDevelop.Autotools
 				TemplateEngine templateEngine = new TemplateEngine();			
 				ISimpleAutotoolsSetup setup = FindSetupForProject ( project );
 		
-				bool pkgconfig = NeedsPCFile ( project );
-				
 				// store all refs for easy access
 				Set pkgs = new Set();
 				Set dlls = new Set();
@@ -127,7 +126,7 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["COPY_DLLS"] = copy_dlls.ToString();
 				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
 				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
-
+				
 				// grab all project files
 				StringBuilder files = new StringBuilder ();
 				StringBuilder res_files = new StringBuilder ();
@@ -164,20 +163,81 @@ namespace MonoDevelop.Autotools
 							}
 							else res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							break;
-							
-						case BuildAction.FileCopy:
-						
-							datafiles.AppendFormat ("\\\n\t{0} ", pfpath );
-							break;
 					}
 				}
+				
+				// Handle files to be deployed
+				StringBuilder deployBinaries = new StringBuilder ();
+				Hashtable deployDirs = new Hashtable ();
+				
+				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx.DeployContext, project);
+				foreach (DeployFile dfile in deployFiles) {
+					if (dfile.SourcePath == project.GetOutputFileName ())
+						continue;
+					string fname = null;
+					if (dfile.ContainsPathReferences) {
+						// If the file is a template, create a .in file for it.
+						fname = Path.Combine (project.BaseDirectory, Path.GetFileName (dfile.RelativeTargetPath));
+						string infname = fname + ".in";
+						if (File.Exists (infname)) {
+							string datadir = Path.Combine (project.BaseDirectory, "data");
+							if (!Directory.Exists (datadir))
+								Directory.CreateDirectory (datadir);
+							infname = Path.Combine (datadir, Path.GetFileName (dfile.RelativeTargetPath) + ".in");
+						}
+						File.Copy (dfile.SourcePath, infname);
+						extras.AppendFormat ( "\\\n\t{0} ", Path.GetFileName (infname));
+						ctx.AddAutoconfFile (fname);
+						fname = Path.GetFileName (fname);
+					} else {
+						// If the file is not in the project directory, copy it there.
+						if (!Path.GetFullPath (dfile.SourcePath).StartsWith (Path.GetFullPath (project.BaseDirectory))) {
+							fname = Path.Combine (project.BaseDirectory, Path.GetFileName (dfile.RelativeTargetPath));
+							File.Copy (dfile.SourcePath, fname);
+							fname = Path.GetFileName (fname);
+						}
+						else {
+							// If the target file name is different, rename it now
+							if (Path.GetFileName (dfile.RelativeTargetPath) != Path.GetFileName (dfile.SourcePath)) {
+								fname = Path.Combine (Path.GetDirectoryName (dfile.SourcePath), Path.GetFileName (dfile.RelativeTargetPath));
+								File.Copy (dfile.SourcePath, fname, true);
+							}
+							else
+								fname = dfile.SourcePath;
+							
+							fname = Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, fname);
+						}
+						
+						extras.AppendFormat ("\\\n\t{0} ", fname);
+					}
+					
+					switch (dfile.TargetDirectoryID) {
+					case TargetDirectory.Binaries:
+						deployBinaries.AppendFormat ("\\\n\t{0} ", fname);
+						break;
+					case TargetDirectory.Gac:
+						break;
+					default:
+						string ddir = NormalizeRelPath (Path.GetDirectoryName (dfile.RelativeTargetPath).Trim ('/',' '));
+						if (ddir.Length > 0)
+							ddir = "/" + ddir;
+						string var = ctx.GetDeployDirectoryVar (dfile.TargetDirectoryID + ddir);
+						StringBuilder sb = (StringBuilder) deployDirs [var];
+						if (sb == null) {
+							sb = new StringBuilder ();
+							deployDirs [var] = sb;
+						}
+						sb.AppendFormat ("\\\n\t{0} ", fname);
+						break;
+					}
+				}
+				
 				templateEngine.Variables["FILES"] = files.ToString();
 				templateEngine.Variables["RESOURCES"] = res_files.ToString();
 				templateEngine.Variables["EXTRAS"] = extras.ToString();
 				templateEngine.Variables["DATA_FILES"] = datafiles.ToString();
 				
 				// handle configuration specific variables
-				Set wrapped_exes = new Set ();
 				StringBuilder conf_vars = new StringBuilder ();
 				foreach ( DotNetProjectConfiguration config in project.Configurations )
 				{
@@ -217,30 +277,6 @@ namespace MonoDevelop.Autotools
 					}
 					conf_vars.AppendFormat ( "COMPILE_TARGET = {0}\n", target );
 
-					if ( config.CompileTarget == CompileTarget.Exe || 
-								config.CompileTarget == CompileTarget.WinExe  )
-					{
-						string assembly_name = Path.GetFileName ( assembly );
-						string wrapper;
-						if ( !wrapped_exes.Contains ( assembly_name ) )
-						{
-							wrapper = CreateExeWrapper ( ctx, 
-									assembly,  
-									Path.GetDirectoryName (project.FileName), 
-									config.CommandLineParameters,
-									monitor );
-							wrapped_exes.Add ( assembly_name );
-						}
-						else wrapper = GetExeWrapperFromAssembly ( assembly );
-
-						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER = {0}\n", wrapper );
-						conf_vars.AppendFormat ( "ASSEMBLY_WRAPPER_IN = {0}.in\n", wrapper );
-					}
-					else if ( pkgconfig && config.CompileTarget == CompileTarget.Library )
-					{
-						conf_vars.AppendFormat ( "PC_FILES_IN = {0}.pc.in\n", GetUniqueName ( project ) );
-					}
-
 					// for project references, we need a ref to the dll for the current configuration
 					StringWriter projectReferences = new StringWriter();
 					string pref = null;
@@ -266,9 +302,20 @@ namespace MonoDevelop.Autotools
 					conf_vars.AppendFormat ( "BUILD_DIR = {0}\n", pref);
 					conf_vars.Append ( "endif\n" );
 				}
+				
+				conf_vars.Append ('\n');
+				
+				foreach (DictionaryEntry e in deployDirs) {
+					conf_vars.AppendFormat ("{0} = {1} \n", e.Key, e.Value);
+				}
+				
+				if (deployBinaries.Length > 0) {
+					conf_vars.AppendFormat ("BINARIES = {0} \n", deployBinaries);
+				}
+			
 				templateEngine.Variables["CONFIG_VARS"] = conf_vars.ToString ();
 
-				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
+//				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
 				
 				// Create makefile
 				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");
@@ -281,6 +328,19 @@ namespace MonoDevelop.Autotools
 			}
 			finally	{ monitor.EndTask (); }
 			return makefile;
+		}
+		
+		string NormalizeRelPath (string path)
+		{
+			path = path.Trim (Path.DirectorySeparatorChar,' ');
+			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
+				path = path.Substring (2);
+				path = path.Trim (Path.DirectorySeparatorChar,' ');
+			}
+			if (path == ".")
+				return string.Empty;
+			else
+				return path;
 		}
 
 		static string GetExeWrapperFromAssembly ( string assembly )
