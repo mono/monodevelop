@@ -22,6 +22,7 @@
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
+      <Entry build="True" name="Deployment" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -45,6 +46,7 @@
       <Entry build="True" name="MonoDevelop.DesignerSupport" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
+      <Entry build="True" name="Deployment" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="BooBinding" single="True">
@@ -69,6 +71,7 @@
     <Execute type="None" entry="MonoDevelop.DesignerSupport" />
     <Execute type="None" entry="MonoDevelop.Autotools" />
     <Execute type="None" entry="MonoDevelop.WebReferences" />
+    <Execute type="None" entry="Deployment" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -92,5 +95,6 @@
     <Entry filename="./MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.mdp" />
     <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
     <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
+    <Entry filename="./Deployment/Deployment.mds" />
   </Entries>
 </Combine>
