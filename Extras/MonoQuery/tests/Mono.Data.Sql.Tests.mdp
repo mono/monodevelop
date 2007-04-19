@@ -18,7 +18,7 @@
     <File name="./NpgsqlTablesTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
-    <ProjectReference type="Project" localcopy="True" refto="Mono.Data.Sql" />
-    <ProjectReference type="Gac" localcopy="True" refto="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <ProjectReference type="Project" localcopy="False" refto="Mono.Data.Sql" />
+    <ProjectReference type="Gac" localcopy="False" refto="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
   </References>
 </Project>

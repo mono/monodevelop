@@ -1,3 +1,8 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* tests/Mono.Data.Sql.Tests.mdp, Mono.Data.Sql/Mono.Data.Sql.mdp,
+	  MonoQuery/MonoQuery.mdp: Don't copy referenced assemblies.
+
 2007-02-22  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* Mono.Data.Sql/Providers/NpgsqlDbProvider.cs : pgsql somehow
