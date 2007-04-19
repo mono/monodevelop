@@ -39,7 +39,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Projects.Deployment;
+using MonoDevelop.Deployment;
 
 using AspNetAddIn.Parser.Tree;
 using AspNetAddIn.Parser;
@@ -47,7 +47,7 @@ using AspNetAddIn.Parser;
 namespace AspNetAddIn
 {
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
-	public class AspNetAppProject : DotNetProject
+	public class AspNetAppProject : DotNetProject, IDeployable
 	{
 		//caching to avoid too much reparsing
 		//may have to drop at some point to avoid memory issues
@@ -140,24 +140,22 @@ namespace AspNetAddIn
 		#endregion
 		
 		//custom version of GetDeployFiles which puts libraries in the bin directory
-		public override DeployFileCollection GetDeployFiles ()
+		public DeployFileCollection GetDeployFiles ()
 		{
 			DeployFileCollection files = new DeployFileCollection ();
 			
 			//add files that are marked to 'deploy'
 			foreach (ProjectFile pf in ProjectFiles)
 				if (pf.BuildAction == BuildAction.FileCopy)
-					files.Add (new DeployFile (pf.FilePath, pf.RelativePath));
+					files.Add (new DeployFile (pf));
 			
 			//add referenced libraries
-			DeployFileCollection dfc = GetReferenceDeployFiles (false);
-			foreach (DeployFile df in dfc)
-				df.RelativeTargetPath = Path.Combine ("bin", df.RelativeTargetPath);
-			files.AddRange (dfc);
+			foreach (string refFile in GetReferenceDeployFiles (false))
+				files.Add (new DeployFile (refFile, Path.Combine ("bin", Path.GetFileName (refFile)), TargetDirectory.ProgramFiles));
 			
 			//add the compiled output file
 			string outputFile = this.GetOutputFileName ();
-			if ( !string.IsNullOrEmpty (outputFile))
+			if (!string.IsNullOrEmpty (outputFile))
 				files.Add (new DeployFile (outputFile, Path.Combine ("bin", Path.GetFileName (outputFile)), TargetDirectory.ProgramFiles));
 			
 			return files;

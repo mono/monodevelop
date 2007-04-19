@@ -19,6 +19,7 @@
 		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
 		<AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
 		<AddIn id="MonoDevelop.DesignerSupport" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Deployment" version="0.13.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/FileTemplates">
