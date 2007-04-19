@@ -1,3 +1,7 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Documentation.mdp: Don't copy referenced assemblies.
+
 2007-02-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Documentation.addin.xml: Fix compatible version number.
