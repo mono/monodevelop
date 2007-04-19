@@ -1,3 +1,8 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp: Don't copy referenced assemblies.
+	* VBNetBinding.mds: Updated.
+
 2007-03-20  Ankit Jain  <jankit@novell.com>
 
 	* templates/VBGtkSharp2Project.xpt.xml: Rename AssemblyInfo.cs to .vb

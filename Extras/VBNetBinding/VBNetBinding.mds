@@ -1,5 +1,5 @@
 <Combine name="VBNetBinding" fileversion="2.0">
-  <Configurations>
+  <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="VBNetBinding" configuration="Debug" />
     </Configuration>
