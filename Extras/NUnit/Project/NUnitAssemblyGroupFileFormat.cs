@@ -42,7 +42,7 @@ namespace MonoDevelop.NUnit
 			get { return "NUnit assembly group"; }
 		}
 		
-		public string GetValidFormatName (string fileName)
+		public string GetValidFormatName (object obj, string fileName)
 		{
 			return Path.ChangeExtension (fileName, ".md-nunit");
 		}
@@ -59,11 +59,26 @@ namespace MonoDevelop.NUnit
 		
 		public void WriteFile (string file, object obj, IProgressMonitor monitor)
 		{
+			WriteFile (file, file, obj, monitor);
+		}
+		
+		public void ExportFile (string file, object obj, IProgressMonitor monitor)
+		{
+			WriteFile (((NUnitAssemblyGroupProject)obj).FileName, file, obj, monitor);
+		}
+		
+		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		{
+			return null;
+		}
+		
+		void WriteFile (string file, string outFile, object obj, IProgressMonitor monitor)
+		{
 			NUnitAssemblyGroupProject project = obj as NUnitAssemblyGroupProject;
 			if (project == null)
 				throw new InvalidOperationException ("The provided object is not a valid Project");
 
-			StreamWriter sw = new StreamWriter (file);
+			StreamWriter sw = new StreamWriter (outFile);
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving project: {0}"), file), 1);
 				XmlDataSerializer ser = new XmlDataSerializer (Services.ProjectService.DataContext);
