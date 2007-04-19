@@ -1,3 +1,8 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp: Don't copy referenced assemblies.
+	* CSharpBindingCompilerManager.cs: Avoid compiler warning.
+
 2007-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FormattingStrategy/CSharpIndentEngineStack.cs: If we are pushing

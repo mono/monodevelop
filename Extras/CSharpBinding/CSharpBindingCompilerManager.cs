@@ -107,7 +107,7 @@ namespace CSharpBinding
 			}
 			
 			if (compilerparameters.UnsafeCode) {
-				writer.WriteLine("/unsafe");
+				writer.WriteLine("-unsafe");
 			}
 			
 			if (compilerparameters.DefineSymbols.Length > 0) {
