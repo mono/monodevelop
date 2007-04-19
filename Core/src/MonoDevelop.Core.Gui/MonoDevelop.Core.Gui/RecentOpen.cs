@@ -69,6 +69,8 @@ namespace MonoDevelop.Core.Gui
 		public RecentOpen()
 		{
 			recentFiles = RecentFiles.GetInstance ();
+			recentFiles.Purge ("MonoDevelop Files");
+			recentFiles.Purge ("MonoDevelop Projects");
 			UpdateLastFile ();
 			UpdateLastProject ();
 		}

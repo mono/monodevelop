@@ -201,6 +201,29 @@ namespace Freedesktop.RecentFiles
 			list.CopyTo (items, 0);
 			return items;
 		}
+		
+		public void Purge (string group)
+		{
+			// Removes entries for files which don't exist anymore
+			if (RecentItems == null)
+				return;
+
+			ArrayList list = new ArrayList ();
+			foreach (RecentItem ri in RecentItems)
+			{
+				if (ri.Groups == null)
+					continue;
+
+				if (Array.IndexOf (ri.Groups, group) != -1) {
+					if (ri.Uri.StartsWith ("file:") && !File.Exists (new Uri (ri.Uri).LocalPath))
+						list.Add (ri);
+				}
+			}
+			
+			foreach (RecentItem ri in list) {
+				RemoveItem (ri);
+			}
+		}
 
 		public RecentItem[] GetMostRecentInGroup (int count, string group)
 		{
