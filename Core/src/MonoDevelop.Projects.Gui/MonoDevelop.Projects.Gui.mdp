@@ -38,30 +38,12 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui/ProjectsGuiServices.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Projects.Gui.addin.xml" subtype="Code" buildaction="FileCopy" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/InstallDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/IFileCopyConfigurationEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/InstallDeployEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/FileCopyConfigurationSelector.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs" subtype="Code" buildaction="Compile" />
@@ -71,12 +53,6 @@
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
@@ -85,15 +61,15 @@
     <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="False" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="False" refto="gnome-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="False" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="False" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Gac" localcopy="False" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="False" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="False" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>

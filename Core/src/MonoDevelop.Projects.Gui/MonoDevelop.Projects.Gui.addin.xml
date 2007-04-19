@@ -26,9 +26,6 @@
 			<DialogPanel id = "Compile"
 			             _label = "Compile"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileProjectOptions"/>
-			<DialogPanel id = "Deployment"
-			             _label = "Deployment"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeploymentOptionsPanel"/>
 		</DialogPanel>
 	</Extension>
 	
@@ -50,9 +47,6 @@
 			<DialogPanel id = "Build"
 						_label = "Build Properties"
 						class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptions"/>
-			<DialogPanel id = "Deployment"
-			             _label = "Deployment"
-			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.DeploymentOptionsPanel"/>
 		</DialogPanel>
 
 		<DialogPanel id = "Configurations"
@@ -67,16 +61,5 @@
 		<DialogPanel id = "CustomCommands"
 		             _label = "Custom Commands"
 		             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/DeployTargetEditors" extension-nodes="Class" description="Editors for deployment targets. Specified classes must implement IDeployTargetEditor.">
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditor" />
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.InstallDeployEditor" />
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.CommandDeployEditor" />
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditor" />
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/FileCopyConfigurationEditors" extension-nodes="Class" description="Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.">
-		<Class class = "MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditor" />
 	</Extension>
 </AddIn>

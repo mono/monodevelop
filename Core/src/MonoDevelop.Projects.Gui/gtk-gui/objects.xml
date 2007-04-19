@@ -1,54 +1,37 @@
 <objects>
-  <object type="MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget" palette-category="widget" allow-children="false">
+  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
-      <itemgroup ref="Gtk.Widget" />
+      <itemgroup label="Container Properties">
+        <property name="BorderWidth" />
+        <property name="FocusHadjustment" />
+        <property name="FocusVadjustment" />
+      </itemgroup>
     </itemgroups>
     <signals>
-      <itemgroup ref="Gtk.Widget" />
-    </signals>
-  </object>
-  <object type="MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget" palette-category="widget" allow-children="false">
-    <itemgroups>
-      <itemgroup ref="Gtk.Widget" />
-    </itemgroups>
-    <signals>
-      <itemgroup ref="Gtk.Widget" />
-    </signals>
-  </object>
-  <object type="MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup ref="Gtk.Widget" />
-    </itemgroups>
-    <signals>
-      <itemgroup ref="Gtk.Widget" />
-    </signals>
-  </object>
-  <object type="MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="FileCopyConfigurationSelector Signals">
-        <signal name="ConfigurationChanged" />
+      <itemgroup label="Container Signals">
+        <signal name="ResizeChecked" />
+        <signal name="Removed" />
+        <signal name="FocusChildSet" />
+        <signal name="Added" />
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-  <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
+    <itemgroups>
+      <itemgroup label="Container Properties">
+        <property name="BorderWidth" />
+        <property name="FocusHadjustment" />
+        <property name="FocusVadjustment" />
+      </itemgroup>
+    </itemgroups>
     <signals>
       <itemgroup label="CustomCommandWidget Signals">
         <signal name="CommandCreated" />
         <signal name="CommandRemoved" />
+        <signal name="ResizeChecked" />
+        <signal name="Removed" />
+        <signal name="FocusChildSet" />
+        <signal name="Added" />
       </itemgroup>
     </signals>
   </object>
