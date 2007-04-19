@@ -1,3 +1,12 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VS2003SlnFileFormat.cs, VS2003ProjectFileFormat.cs: Track api
+	  changes.
+	* MSBuildSolution.cs, prj2make-sharp-lib.addin.xml, SlnFileFormat.cs,
+	  MSBuildFileFormat.cs: Merge the proj and sln file formats in a
+	  single msbuild file format which can handle both types of files.
+	* Makefile.am, prj2make-sharp-lib.mdp: Updated.
+
 2007-03-29  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs: Write out list of files and references in

@@ -50,6 +50,7 @@ namespace MonoDevelop.Prj2Make
 		internal const string ns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
 		static XmlNamespaceManager manager;
+		SlnFileFormat solutionFormat = new SlnFileFormat ();
 
 		public MSBuildFileFormat ()
 		{
@@ -61,21 +62,30 @@ namespace MonoDevelop.Prj2Make
 		}
 
 		public string Name {
-			get { return "MSBuild project"; }
+			get { return "Visual Studio .NET 2005"; }
 		}
 
-		public string GetValidFormatName (string fileName)
+		public string GetValidFormatName (object obj, string fileName)
 		{
-			if (language == null || language == "C#")
-				//default
-				return Path.ChangeExtension (fileName, ".csproj");
-			if (language == "VBNet")
-				return Path.ChangeExtension (fileName, ".vbproj");
+			if (solutionFormat.CanWriteFile (obj))
+				return solutionFormat.GetValidFormatName (obj, fileName);
+			
+			if (obj is DotNetProject) {
+				string lang = ((DotNetProject)obj).LanguageName;
+				if (lang == null || lang == "C#")
+					//default
+					return Path.ChangeExtension (fileName, ".csproj");
+				if (lang == "VBNet")
+					return Path.ChangeExtension (fileName, ".vbproj");
+			}
 			return fileName;
 		}
 
 		public bool CanReadFile (string file)
 		{
+			if (solutionFormat.CanReadFile (file))
+				return true;
+			
 			if (GetLanguage (file) == null)
 				return false;
 
@@ -105,9 +115,14 @@ namespace MonoDevelop.Prj2Make
 
 		public bool CanWriteFile (object obj)
 		{
-			return obj is DotNetProject;
+			return (obj is DotNetProject) || solutionFormat.CanWriteFile (obj);
 		}
 
+		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		{
+			return null;
+		}
+		
 		static XmlNamespaceManager NamespaceManager {
 			get {
 				if (manager == null) {
@@ -121,6 +136,11 @@ namespace MonoDevelop.Prj2Make
 
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
 		{
+			if (solutionFormat.CanWriteFile (node)) {
+				solutionFormat.WriteFile (file, node, monitor);
+				return;
+			}
+			
 			if (node == null)
 				return;
 
@@ -366,6 +386,11 @@ namespace MonoDevelop.Prj2Make
 		//Reader
 		public object ReadFile (string fileName, IProgressMonitor monitor)
 		{
+			// If it is a solution, use the solution reader
+			if (solutionFormat.CanReadFile (fileName)) {
+				return solutionFormat.ReadFile (fileName, monitor);
+			}
+			
 			Project project = null;
 			if (monitor == null || fileName == null)
 				//FIXME: Use NullProgressMonitor for monitor?

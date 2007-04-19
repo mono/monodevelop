@@ -44,7 +44,7 @@ namespace MonoDevelop.Prj2Make
 
 		public MSBuildSolution () : base ()
 		{
-			FileFormat = new SlnFileFormat ();
+			FileFormat = new MSBuildFileFormat ();
 		}
 
 		static MSBuildSolution ()
@@ -78,10 +78,9 @@ namespace MonoDevelop.Prj2Make
 
 			string extn = Path.GetExtension (args.FileName);
 
-			IFileFormat slnff = new SlnFileFormat ();
-			IFileFormat prjff = new MSBuildFileFormat ();
+			IFileFormat msformat = new MSBuildFileFormat ();
 
-			if (!slnff.CanReadFile (args.FileName) && !prjff.CanReadFile (args.FileName)) {
+			if (!msformat.CanReadFile (args.FileName)) {
 				if (!IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString (
 					"The project file {0} must be converted to msbuild format to be added " + 
 					"to a msbuild solution. Convert?", args.FileName), "Conversion required")) {
@@ -94,8 +93,8 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			IProgressMonitor monitor = new NullProgressMonitor ();
-			slnff = new VS2003SlnFileFormat ();
-			prjff = new VS2003ProjectFileFormat ();
+			IFileFormat slnff = new VS2003SlnFileFormat ();
+			IFileFormat prjff = new VS2003ProjectFileFormat ();
 
 			if (slnff.CanReadFile (args.FileName)) {
 				// VS2003 solution
@@ -174,7 +173,7 @@ namespace MonoDevelop.Prj2Make
 					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
 					project.FileFormat = fileFormat;
 
-					string newname = fileFormat.GetValidFormatName (project.FileName);
+					string newname = fileFormat.GetValidFormatName (project, project.FileName);
 					project.FileName = newname;
 					fileFormat.SaveProject (project, new NullProgressMonitor ());
 				}
@@ -191,8 +190,8 @@ namespace MonoDevelop.Prj2Make
 					foreach (CombineEntry e in newCombine.Entries)
 						ConvertToMSBuild (e, false);
 
-					newCombine.FileFormat = new SlnFileFormat ();
-					newCombine.FileName = newCombine.FileFormat.GetValidFormatName (newCombine.FileName);
+					newCombine.FileFormat = new MSBuildFileFormat ();
+					newCombine.FileName = newCombine.FileFormat.GetValidFormatName (newCombine, newCombine.FileName);
 					SetHandlers (newCombine, false);
 				}
 

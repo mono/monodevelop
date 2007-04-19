@@ -44,16 +44,12 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Prj2Make
 {
-	internal class SlnFileFormat: IFileFormat
+	internal class SlnFileFormat
 	{
 		static string folderTypeGuid = "2150E333-8FDC-42A3-9474-1A3956D46DE8";
 		static Dictionary<string, string> projectTypeGuids = null;
 
-		public string Name {
-			get { return "Visual Studio .NET 2005 Solution"; }
-		}
-		
-		public string GetValidFormatName (string fileName)
+		public string GetValidFormatName (object obj, string fileName)
 		{
 			return Path.ChangeExtension (fileName, ".sln");
 		}
@@ -67,6 +63,11 @@ namespace MonoDevelop.Prj2Make
 		public bool CanWriteFile (object obj)
 		{
 			return obj is Combine;
+		}
+		
+		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		{
+			return null;
 		}
 		
 		public void WriteFile (string file, object obj, IProgressMonitor monitor)
@@ -364,7 +365,7 @@ namespace MonoDevelop.Prj2Make
 				combine.Name = Path.GetFileNameWithoutExtension (fileName);
 				combine.FileName = fileName;
 				combine.Version = "0.1"; //FIXME:
-				combine.FileFormat = new SlnFileFormat ();
+				combine.FileFormat = new MSBuildFileFormat ();
 				data = new SlnData ();
 				combine.ExtendedProperties [typeof (SlnFileFormat)] = data;
 
@@ -430,7 +431,7 @@ namespace MonoDevelop.Prj2Make
 					folder.Name = projectName;
 					folder.FileName = projectPath;
 					folder.Version = "0.1"; //FIXME:
-					folder.FileFormat = new SlnFileFormat ();
+					folder.FileFormat = new MSBuildFileFormat ();
 
 					SlnData slnData = new SlnData ();
 					folder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;

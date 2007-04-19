@@ -21,8 +21,6 @@
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats" extension-nodes="FileFormat" description="File format handlers for projects and solutions.">
-		<FileFormat id="SlnFileFormat"
-		            class="MonoDevelop.Prj2Make.SlnFileFormat"/>
 		<FileFormat id="MSBuildFileFormat"
 		            class="MonoDevelop.Prj2Make.MSBuildFileFormat"/>
 		<FileFormat id="VS2003SlnFileFormat"

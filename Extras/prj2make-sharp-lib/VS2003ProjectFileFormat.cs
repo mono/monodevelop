@@ -47,7 +47,7 @@ namespace MonoDevelop.Prj2Make
 			get { return "VS2003 project"; }
 		}
 
-		public string GetValidFormatName (string fileName)
+		public string GetValidFormatName (object obj, string fileName)
 		{
 			return fileName;
 		}
@@ -81,6 +81,11 @@ namespace MonoDevelop.Prj2Make
 		{
 		}
 
+		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		{
+			return null;
+		}
+		
 		//Reader
 		public object ReadFile (string fileName, IProgressMonitor monitor)
 		{
