@@ -33,6 +33,7 @@
 //
 
 using System;
+using System.Collections;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
@@ -47,7 +48,10 @@ namespace MonoDevelop.DesignerSupport
 		PropertyPad propertyPad = null;
 		ToolboxService toolboxService = null;
 		CodeBehindService codeBehindService = new CodeBehindService ();
+		IPropertyProvider[] providers;
 		
+		IPropertyPadProvider lastPadProvider;
+		object lastComponent;
 		ICustomPropertyPadProvider lastCustomProvider;
 		
 		#region PropertyPad
@@ -63,39 +67,98 @@ namespace MonoDevelop.DesignerSupport
 			propertyPad = pad;
 		}
 		
-		internal void ResetPropertyPad ()
+		void DisposePropertyPadProvider ()
 		{
-			UpdatePropertyPad ((IPropertyPadProvider) null);
+			if (lastPadProvider != null) {
+				if (propertyPad.PropertyGrid != null)
+					propertyPad.PropertyGrid.Changed -= OnPropertyGridChanged;
+				lastPadProvider.OnEndEditing (lastComponent);
+				lastPadProvider = null;
+				lastComponent = null;
+			}
 		}
 		
-		internal void UpdatePropertyPad (IPropertyPadProvider provider)
+		void DisposeCustomPropertyPadProvider ()
 		{
-			if (provider != null)
-				propertyPad.PropertyGrid.CurrentObject = provider.GetActiveComponent ();
-			else
-				propertyPad.BlankPad ();
-
 			if (lastCustomProvider != null) {
 				lastCustomProvider.DisposeCustomPropertyWidget ();
 				lastCustomProvider = null;
 			}
 		}
 		
-		internal void UpdatePropertyPad (ICustomPropertyPadProvider provider)
+		internal void ResetPropertyPad ()
 		{
-			if (lastCustomProvider == provider)
-				return;
-
-			if (lastCustomProvider != null)
-				lastCustomProvider.DisposeCustomPropertyWidget ();
-
-			lastCustomProvider = provider;
-			
-			if (provider != null)
-				propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
-			else
-				propertyPad.BlankPad ();
+			DisposePropertyPadProvider ();
+			DisposeCustomPropertyPadProvider ();
+			propertyPad.BlankPad ();
+		}
+		
+		public void SetPropertyPadContent (IPropertyPadProvider provider)
+		{
+			if (provider != null) {
+				// If there was a custom provider, reset it now
+				DisposeCustomPropertyPadProvider ();
 				
+				object comp = provider.GetActiveComponent ();
+				if (lastPadProvider != null && comp == lastComponent)
+					return;
+
+				DisposePropertyPadProvider ();
+				
+				lastPadProvider = provider;
+				lastComponent = comp;
+				
+				object[] provs = GetPropertyProvidersForObject (comp, provider.GetPropertyProvider ());
+				if (provs.Length > 0)
+					propertyPad.PropertyGrid.SetCurrentObject (comp, provs);
+				else
+					propertyPad.BlankPad ();
+				
+				propertyPad.PropertyGrid.Changed += OnPropertyGridChanged;
+			}
+			else {
+				ResetPropertyPad ();
+			}
+		}
+		
+		public void SetPropertyPadContent (ICustomPropertyPadProvider provider)
+		{
+			if (provider != null) {
+				
+				if (lastCustomProvider == provider)
+					return;
+
+				// If there was a pad provider reset it now.
+				DisposePropertyPadProvider ();
+				DisposeCustomPropertyPadProvider ();
+
+				lastCustomProvider = provider;
+				
+				propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
+			}
+			else {
+				ResetPropertyPad ();
+			}
+		}
+		
+		internal object[] GetPropertyProvidersForObject (object obj, object firstProvider)
+		{
+			if (providers == null)
+				providers = (IPropertyProvider[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/DesignerSupport/PropertyProviders", typeof(IPropertyProvider));
+			
+			ArrayList list = new ArrayList ();
+			if (firstProvider != null)
+				list.Add (firstProvider);
+			foreach (IPropertyProvider prov in providers)
+				if (prov.SupportsObject (obj))
+					list.Add (prov.CreateProvider (obj));
+			return list.ToArray ();
+		}
+			
+		void OnPropertyGridChanged (object s, EventArgs a)
+		{
+			if (lastPadProvider != null)
+				lastPadProvider.OnChanged (lastComponent);
 		}
 		
 		#endregion
@@ -134,12 +197,21 @@ namespace MonoDevelop.DesignerSupport
 			base.InitializeService ();
 			codeBehindService.Initialise ();
 			IdeApp.CommandService.CommandManager.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
+			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		public override void UnloadService()
 		{
 			if (toolboxService != null)
 				toolboxService.SaveUserToolbox (System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml"));
+		}
+		
+		void OnExtensionChanged (string path)
+		{
+			if (path.StartsWith ("MonoDevelop/DesignerSupport/PropertyProviders")) {
+				providers = null;
+				ResetPropertyPad ();
+			}
 		}
 		
 		#endregion

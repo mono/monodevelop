@@ -1,3 +1,45 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs,
+	  MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs:
+	  Implemented property providers for the Project and Class pad.
+	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Updated.
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs,
+	  MonoDevelop.DesignerSupport/IPropertyProvider.cs,
+	  MonoDevelop.DesignerSupport/PropertyPad.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs:
+	  Implemented support for multiple property providers for a
+	  component. Property providers can add properties to be shown in the
+	  property pad for a specific type of object. Add-ins can register
+	  new property providers in a new extension point.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/FloatRange.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/ColorEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/EventEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/FlagsEditorCell.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/DateTimeEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/IntRange.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyPadVisitor.cs:
+	  Track api changes.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyEditorCell.cs: When
+	  initializing a cell, provide the EditSession instead of the
+	  PropertyDescriptor. In this way the cell can have more control over
+	  the property editing session.
+	* MonoDevelop.DesignerSupport.PropertyGrid/IPropertyPadProvider.cs:
+	  Added method which allows providing the object from which to get
+	  and set properties, which can now be different from the real
+	  component (it can be for example a wrapper). Also added methods
+	  which are called when the edit session ends.
+	* MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs: Allow
+	  specifying cell editors using the EditorAttribute.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: Fire
+	  Changed and EndEditing events.
+
 2007-03-07 Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* MonoDevelop.DesignerSupport/BindingService.cs: Clean up 

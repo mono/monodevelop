@@ -54,14 +54,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 	
 	public class BooleanEditor : Gtk.CheckButton, IPropertyEditor 
 	{
-		public void Initialize (PropertyDescriptor descriptor)
+		public void Initialize (EditSession session)
 		{
-			if (descriptor.PropertyType != typeof(bool))
-				throw new ApplicationException ("Boolean editor does not support editing values of type " + descriptor.PropertyType);
-		}
-		
-		public void AttachObject (object obj)
-		{
+			if (session.Property.PropertyType != typeof(bool))
+				throw new ApplicationException ("Boolean editor does not support editing values of type " + session.Property.PropertyType);
 		}
 		
 		public object Value { 

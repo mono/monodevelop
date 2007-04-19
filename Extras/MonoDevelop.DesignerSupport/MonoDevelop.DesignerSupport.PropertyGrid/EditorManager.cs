@@ -77,6 +77,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 
 		public PropertyEditorCell GetEditor (PropertyDescriptor pd)
 		{
+			PropertyEditorCell cell = (PropertyEditorCell) pd.GetEditor (typeof(PropertyEditorCell));
+			if (cell != null)
+				return cell;
+			
 			Type editorType = GetEditorType (pd);
 			if (editorType == null)
 				return Default;
@@ -87,7 +91,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				return Default;
 			}
 
-			PropertyEditorCell cell = (PropertyEditorCell) cellCache [editorType];
+			cell = (PropertyEditorCell) cellCache [editorType];
 			if (cell != null)
 				return cell;
 

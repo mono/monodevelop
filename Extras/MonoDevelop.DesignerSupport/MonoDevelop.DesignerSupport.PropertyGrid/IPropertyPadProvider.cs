@@ -33,6 +33,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	public interface IPropertyPadProvider
 	{
 		object GetActiveComponent ();
+		object GetPropertyProvider ();
+		void OnEndEditing (object obj);
+		void OnChanged (object obj);
 	}
 	
 	public interface ICustomPropertyPadProvider

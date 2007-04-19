@@ -41,9 +41,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		{
 		}
 		
-		public void Initialize (PropertyDescriptor prop)
+		public void Initialize (EditSession session)
 		{
-			propType = prop.PropertyType;
+			propType = session.Property.PropertyType;
 			
 			double min, max;
 			
@@ -59,10 +59,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			SetRange (min, max);
 			
 			Digits = 2;
-		}
-		
-		public void AttachObject (object ob)
-		{
 		}
 		
 		object IPropertyEditor.Value {

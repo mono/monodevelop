@@ -40,6 +40,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		protected Gtk.Entry entry;
 		protected Gtk.Button button;
 		PropertyDescriptor property;
+		bool disposed;
+		string initialText;
+		EditSession session;
 		
 		public TextEditor()
 		{
@@ -67,9 +70,13 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		
 		void TextChanged (object s, EventArgs a)
 		{
+			if (initialText == entry.Text)
+				return;
+			
 			try {
 				property.Converter.ConvertFromString (entry.Text);
 				entry.ModifyFg (Gtk.StateType.Normal);
+				initialText = entry.Text;
 				if (ValueChanged != null)
 					ValueChanged (this, a);
 			} catch {
@@ -78,15 +85,12 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			}
 		}
 		
-		public void Initialize (PropertyDescriptor descriptor)
+		public void Initialize (EditSession session)
 		{
-			property = descriptor;
-			LocalizableAttribute at = (LocalizableAttribute) descriptor.Attributes [typeof(LocalizableAttribute)];
+			this.session = session;
+			property = session.Property;
+			LocalizableAttribute at = (LocalizableAttribute) property.Attributes [typeof(LocalizableAttribute)];
 			button.Visible = (at != null && at.IsLocalizable);
-		}
-		
-		public void AttachObject (object obj)
-		{
 		}
 		
 		// Gets/Sets the value of the editor. If the editor supports
@@ -99,7 +103,18 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			set {
 				string val = property.Converter.ConvertToString (value);
 				entry.Text = val != null ? val : "";
+				initialText = entry.Text;
 			}
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (!disposed && initialText != entry.Text) {
+				Console.WriteLine ("pp1: ");
+				TextChanged (null, null);
+			}
+			disposed = true;
 		}
 
 		// To be fired when the edited value changes.

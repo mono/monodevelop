@@ -71,8 +71,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors {
 		{
 		}
 		
-		public void Initialize (PropertyDescriptor prop)
+		public void Initialize (EditSession session)
 		{
+			PropertyDescriptor prop = session.Property;
+			
 			if (!prop.PropertyType.IsEnum)
 				throw new ApplicationException ("Flags editor does not support editing values of type " + prop.PropertyType);
 			
@@ -126,10 +128,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors {
 			}
 		}
 		
-		public void AttachObject (object ob)
-		{
-		}
-
 		public override void Dispose ()
 		{
 			tips.Destroy ();

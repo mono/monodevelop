@@ -81,11 +81,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			IPropertyEditor ed = CreateEditor (cell_area, state);
 			if (ed == null)
 				return null;
-			ed.Initialize (property);
-			if (obj != null) {
-				ed.AttachObject (obj);
-				ed.Value = property.GetValue (obj);
-			}
 			return new EditSession (container, obj, property, ed);
 		}
 		
@@ -191,15 +186,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	{
 		PropertyDescriptor property;
 		
-		public void Initialize (PropertyDescriptor property)
+		public void Initialize (EditSession session)
 		{
-			this.property = property;
+			this.property = session.Property;
 		}
 		
-		public void AttachObject (object obj)
-		{
-		}
-
 		public object Value {
 			get { 
 				return Convert.ChangeType (Text, property.PropertyType); 
@@ -230,13 +221,25 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		IPropertyEditor currentEditor;
 		bool syncing;
 		
+		public event EventHandler Changed;
+		
 		public EditSession (Gtk.Widget container, object instance, PropertyDescriptor property, IPropertyEditor currentEditor)
 		{
 			this.property = property;
 			this.obj = instance;
 			this.container = container;
 			this.currentEditor = currentEditor;
+			
+			currentEditor.Initialize (this);
+			if (instance != null)
+				currentEditor.Value = property.GetValue (instance);
+			
 			currentEditor.ValueChanged += OnValueChanged;
+		}
+		
+		public void Dispose ()
+		{
+			currentEditor.Dispose ();
 		}
 		
 		public object Instance {
@@ -259,13 +262,16 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		{
 			if (!syncing) {
 				syncing = true;
-				if (!property.IsReadOnly)
+				if (!property.IsReadOnly) {
 					property.SetValue (obj, currentEditor.Value);
+					if (Changed != null)
+						Changed (s, a);
+				}
 				syncing = false;
 			}
 		}
 		
-		public void AttachObject (object ob)
+/*		public void AttachObject (object ob)
 		{
 			if (ob == null)
 				throw new ArgumentNullException ("ob");
@@ -280,7 +286,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			
 			syncing = false;
 		}
-		
+*/		
 		public void UpdateEditor ()
 		{
 			if (!syncing) {
@@ -347,11 +353,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				ValueChanged (this, args);
 		}
 		
-		public void Initialize (PropertyDescriptor descriptor)
-		{
-		}
-		
-		public void AttachObject (object obj)
+		public void Initialize (EditSession session)
 		{
 		}
 
@@ -367,10 +369,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	public interface IPropertyEditor: IDisposable
 	{
 		// Called once to initialize the editor.
-		void Initialize (PropertyDescriptor descriptor);
-		
-		// Called when the object to be edited changes.
-		void AttachObject (object obj);
+		void Initialize (EditSession session);
 		
 		// Gets/Sets the value of the editor. If the editor supports
 		// several value types, it is the responsibility of the editor 

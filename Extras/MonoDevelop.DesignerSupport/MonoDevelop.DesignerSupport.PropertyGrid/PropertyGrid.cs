@@ -49,6 +49,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	public class PropertyGrid: Gtk.VBox
 	{
 		object currentObject;
+		object[] propertyProviders;
 		
 		private bool showHelp = true;
 
@@ -146,6 +147,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			base.PackEnd (vpaned);
 			Populate ();
 		}
+		
+		public event EventHandler Changed {
+			add { tree.Changed += value; }
+			remove { tree.Changed -= value; }
+		}
 			
 		internal EditorManager EditorManager {
 			get { return editorManager; }
@@ -216,13 +222,17 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		
 		public object CurrentObject {
 			get { return currentObject; }
-			set {
-				if (this.currentObject == value)
-					return;
-				this.currentObject = value;
-				UpdateTabs ();
-				Populate();
-			}
+			set { SetCurrentObject (value, new object[] {value}); }
+		}
+		
+		public void SetCurrentObject (object obj, object[] propertyProviders)
+		{
+			if (this.currentObject == obj)
+				return;
+			this.currentObject = obj;
+			this.propertyProviders = propertyProviders;
+			UpdateTabs ();
+			Populate();
 		}
 		
 		void UpdateTabs ()
@@ -244,14 +254,20 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		{
 			PropertyDescriptorCollection properties;
 			
-			if (currentObject != null)
-				properties = selectedTab.GetProperties (currentObject);
-			else
-				properties = new PropertyDescriptorCollection (new PropertyDescriptor[0] {});
 			tree.SaveStatus ();
 			tree.Clear ();
 			tree.PropertySort = propertySort;
-			tree.Populate (properties, currentObject);
+			
+			if (currentObject == null) {
+				properties = new PropertyDescriptorCollection (new PropertyDescriptor[0] {});
+				tree.Populate (properties, currentObject);
+			}
+			else {
+				foreach (object prov in propertyProviders) {
+					properties = selectedTab.GetProperties (prov);
+					tree.Populate (properties, prov);
+				}
+			}
 			tree.RestoreStatus ();
 		}
 		

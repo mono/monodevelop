@@ -23,6 +23,8 @@ FILES =  \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindProjectFileExtension.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/CodeBehindViewContent.cs \
 	MonoDevelop.DesignerSupport.CodeBehind/ICodeBehindProvider.cs \
+	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
+	MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs \
@@ -39,7 +41,6 @@ FILES =  \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditorDialog.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid.Editors/TimeSpanEditor.cs \
-	MonoDevelop.DesignerSupport.PropertyGrid/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/DefaultPropertyTab.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs \
 	MonoDevelop.DesignerSupport.PropertyGrid/EventPropertyTab.cs \
@@ -70,6 +71,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/CodeBehindService.cs \
 	MonoDevelop.DesignerSupport/DesignerSupportService.cs \
+	MonoDevelop.DesignerSupport/IPropertyProvider.cs \
 	MonoDevelop.DesignerSupport/MemberExistsException.cs \
 	MonoDevelop.DesignerSupport/PropertyPad.cs \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \

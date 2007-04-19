@@ -47,6 +47,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		EditorManager editorManager;
 		PropertyGrid parentGrid;
 		
+		public event EventHandler Changed;
+		
 		private System.Windows.Forms.PropertySort propertySort = System.Windows.Forms.PropertySort.Categorized;
 
 		
@@ -218,6 +220,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		
 		protected virtual void OnObjectChanged ()
 		{
+			if (Changed != null)
+				Changed (this, EventArgs.Empty);
 		}
 		
 		void OnSelectionChanged (object s, EventArgs a)
@@ -308,7 +312,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		
 		public bool Editing {
 			get { return editing; }
-			set { editing = value; Update (); tree.NotifyChanged (); }
+			set { editing = value; }
+		}
+		
+		public PropertyGridTree PropertyTree {
+			get { return tree; }
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
@@ -466,8 +474,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				return null;
 			Gtk.Widget propEditor = (Gtk.Widget) session.Editor;
 			propEditor.Show ();
-			HackEntry e = new HackEntry (propEditor);
+			HackEntry e = new HackEntry (session, propEditor);
 			e.Show ();
+			session.Changed += delegate {
+				((InternalTree)widget).PropertyTree.NotifyChanged ();
+			};
 			return e;
 		}
 		
@@ -571,9 +582,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 	class HackEntry: Entry
 	{
 		EventBox box;
+		EditSession session;
 		
-		public HackEntry (Gtk.Widget child)
+		public HackEntry (EditSession session, Gtk.Widget child)
 		{
+			this.session = session;
 			box = new EventBox ();
 			box.ButtonPressEvent += new ButtonPressEventHandler (OnClickBox);
 			box.ModifyBg (StateType.Normal, Style.White);
@@ -600,6 +613,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				((InternalTree)Parent).Editing = true;
 			}
 			else {
+				session.Dispose ();
 				((InternalTree)parent).Editing = false;
 				box.Unparent ();
 			}

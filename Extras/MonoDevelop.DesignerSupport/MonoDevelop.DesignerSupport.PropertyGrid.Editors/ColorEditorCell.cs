@@ -84,14 +84,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 	
 	public class ColorEditor : Gtk.ColorButton, IPropertyEditor
 	{
-		public void Initialize (PropertyDescriptor descriptor)
+		public void Initialize (EditSession session)
 		{
-			if (descriptor.PropertyType != typeof(System.Drawing.Color))
-				throw new ApplicationException ("Color editor does not support editing values of type " + descriptor.PropertyType);
-		}
-		
-		public void AttachObject (object obj)
-		{
+			if (session.Property.PropertyType != typeof(System.Drawing.Color))
+				throw new ApplicationException ("Color editor does not support editing values of type " + session.Property.PropertyType);
 		}
 		
 		public object Value { 

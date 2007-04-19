@@ -62,11 +62,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			ShowAll ();
 		}
 		
-		public void Initialize (PropertyDescriptor descriptor)
-		{
-		}
-		
-		public void AttachObject (object ob)
+		public void Initialize (EditSession session)
 		{
 		}
 		

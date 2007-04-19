@@ -85,18 +85,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			this.evtBind = evtBind;
 		}
 		
-		public void Initialize (PropertyDescriptor descriptor)
+		public void Initialize (EditSession session)
 		{
-			this.prop = descriptor;
+			this.prop = session.Property;
+			component = session.Instance;
 			Entry.Destroyed += new EventHandler (entry_Changed);
 			Entry.Activated += new EventHandler (entry_Activated);
 		}
 
-		public void AttachObject (object obj)
-		{
-			component = obj;
-		}
-		
 		public object Value {
 			get {
 				//if value was null and new value is empty, leave as null

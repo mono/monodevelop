@@ -44,11 +44,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				return true;
 			}
 			else if (ob is IPropertyPadProvider) {
-				DesignerSupport.Service.UpdatePropertyPad ((IPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPropertyPadContent ((IPropertyPadProvider)ob);
 				return true;
 			}
 			else if (ob is ICustomPropertyPadProvider) {
-				DesignerSupport.Service.UpdatePropertyPad ((ICustomPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPropertyPadContent ((ICustomPropertyPadProvider)ob);
 				return true;
 			}
 			else

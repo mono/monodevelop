@@ -49,9 +49,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			this.HasFrame = false;
 		}
 		
-		public void Initialize (PropertyDescriptor prop)
+		public void Initialize (EditSession session)
 		{
-			propType = prop.PropertyType;
+			propType = session.Property.PropertyType;
 			
 			double min, max;
 			
@@ -89,14 +89,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 					max = (double) SByte.MaxValue;
 					break;
 				default:
-					throw new ApplicationException ("IntRange editor does not support editing values of type " + prop.PropertyType);
+					throw new ApplicationException ("IntRange editor does not support editing values of type " + session.Property.PropertyType);
 			}
 			
 			SetRange (min, max);
-		}
-		
-		public void AttachObject (object ob)
-		{
 		}
 		
 		object IPropertyEditor.Value {

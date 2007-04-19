@@ -78,7 +78,7 @@ namespace MonoDevelop.DesignerSupport
 			PropertyGrid.CurrentObject = null;
 		}
 		
-		public pg.PropertyGrid PropertyGrid {
+		internal pg.PropertyGrid PropertyGrid {
 			get {
 				if (customWidget) {
 					customWidget = false;
@@ -90,7 +90,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public void UseCustomWidget (Gtk.Widget widget)
+		internal void UseCustomWidget (Gtk.Widget widget)
 		{
 			customWidget = true;
 			frame.Remove (frame.Child);

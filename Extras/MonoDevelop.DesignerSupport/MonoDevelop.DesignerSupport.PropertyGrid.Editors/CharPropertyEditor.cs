@@ -41,14 +41,10 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			HasFrame = false;
 		}
 
-		public void Initialize (PropertyDescriptor descriptor)
+		public void Initialize (EditSession session)
 		{
-			if (descriptor.PropertyType != typeof(char))
-				throw new ApplicationException ("Char editor does not support editing values of type " + descriptor.PropertyType);
-		}
-		
-		public void AttachObject (object obj)
-		{
+			if (session.Property.PropertyType != typeof(char))
+				throw new ApplicationException ("Char editor does not support editing values of type " + session.Property.PropertyType);
 		}
 		
 		char last;

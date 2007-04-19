@@ -35,6 +35,10 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders" extension-nodes="Class" description="Provides items to the toolbox. Must implement MonoDevelop.DesignerSupport.Toolbox.IToolboxDefaultProvider and/or IToolboxDynamicProvider.">
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
+		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectsPropertyProvider"/>
+	</Extension>
+	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "CodeBehindView"
 		                supportedformats = "Source Code"
@@ -68,4 +72,13 @@
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" />
 	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ClassPad">
+		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
+	</Extension>
+	
 </AddIn>
