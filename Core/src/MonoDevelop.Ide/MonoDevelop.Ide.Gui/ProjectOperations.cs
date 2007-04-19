@@ -39,7 +39,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Deployment;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
@@ -66,9 +65,11 @@ namespace MonoDevelop.Ide.Gui
 		GuiHelper guiHelper = new GuiHelper ();
 		SelectReferenceDialog selDialog = null;
 		
+		CombineEntry currentEntry = null;
 		Project currentProject = null;
-		Combine  currentCombine = null;
-		Combine  openCombine    = null;
+		Combine currentCombine = null;
+		Combine openCombine = null;
+		
 		IParserDatabase parserDatabase;
 		CodeRefactorer refactorer;
 		Hashtable combineEntryLock = new Hashtable ();
@@ -155,7 +156,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				return currentProject;
 			}
-			set {
+			internal set {
 				if (value != currentProject) {
 					System.Diagnostics.Debug.Assert(openCombine != null);
 					currentProject = value;
@@ -168,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				return currentCombine;
 			}
-			set {
+			internal set {
 				if (value != currentCombine) {
 					System.Diagnostics.Debug.Assert(openCombine != null);
 					currentCombine = value;
@@ -179,10 +180,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public CombineEntry CurrentSelectedCombineEntry {
 			get {
-				if (currentProject != null)
-					return currentProject;
-				else
-					return currentCombine;
+				return currentEntry;
+			}
+			internal set {
+				currentEntry = value;
 			}
 		}
 		
@@ -277,6 +278,7 @@ namespace MonoDevelop.Ide.Gui
 				Combine closedCombine = CurrentOpenCombine;
 				CurrentSelectedProject = null;
 				CurrentOpenCombine = CurrentSelectedCombine = null;
+				CurrentSelectedCombineEntry = null;
 				refactorer = null;
 				
 				Document[] docs = new Document [IdeApp.Workbench.Documents.Count];
@@ -502,7 +504,27 @@ namespace MonoDevelop.Ide.Gui
 					Services.DispatchService.GuiDispatch (new MessageHandler (new IncludeFilesDialog (project, newFiles).ShowDialog));
 				}
 			}
-		}				
+		}
+		
+		public void Export (CombineEntry entry)
+		{
+			Export (entry, null);
+		}
+		
+		public void Export (CombineEntry entry, IFileFormat format)
+		{
+			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
+			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				
+				using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
+					string folder = dlg.TargetFolder;
+					string tmpFolder = null;
+					
+					Services.ProjectService.Export (mon, entry.FileName, folder, format, true);
+				}
+			}
+			dlg.Destroy ();
+		}
 		
 		public void SaveCombine()
 		{
@@ -510,6 +532,19 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				openCombine.Save (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution saved."));
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
+		}
+		
+		public void SaveCombineEntry (CombineEntry entry)
+		{
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true);
+			try {
+				entry.Save (monitor);
+				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {
@@ -827,26 +862,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IAsyncOperation Deploy (CombineEntry entry, DeployTarget target)
-		{
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Deploy Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
-
-			// Run the deploy command in a background thread to avoid
-			// deadlocks with the gui thread
-			
-			System.Threading.Thread t = new System.Threading.Thread (
-				delegate () {
-					using (mon) {
-						target.Deploy (mon);
-					}
-				}
-			);
-			t.IsBackground = true;
-			t.Start ();
-
-			return mon.AsyncOperation;
-		}
-
 		public IAsyncOperation Execute (CombineEntry entry)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;

@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Templates
 			if (fileFormats.Length == 0)
 				throw new InvalidOperationException ("Can't find a file format for the type: " + type);
 
-			string fileName = fileFormats[0].GetValidFormatName (Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
+			string fileName = fileFormats[0].GetValidFormatName (entry, Path.Combine (projectCreateInformation.ProjectBasePath, newProjectName));
 			
 			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
 				if (File.Exists (fileName)) {

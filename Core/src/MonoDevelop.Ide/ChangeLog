@@ -1,3 +1,23 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/CombineEntryDescriptor.cs: Track api
+	  changes.
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs,
+	  MonoDevelop.Ide.addin.xml: Moved deploy commands definition to the
+	  deploy add-in. Registered new export command.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectSolutionPad.cs: Properly
+	  update the currently selected combine entry.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs: Allow
+	  removing unknown combine entries.
+	* MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs,
+	  MonoDevelop.Ide.mdp,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Added project export dialog.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Keep track of the currently
+	  selected combine entry. Implemented project export command. Added
+	  method for saving generic combine entries. Removed old deploy code.
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Added null check.
+
 2007-04-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:

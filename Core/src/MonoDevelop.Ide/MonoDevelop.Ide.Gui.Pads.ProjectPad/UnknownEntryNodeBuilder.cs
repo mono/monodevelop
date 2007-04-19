@@ -78,5 +78,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
 			info.Enabled = entry.ParentCombine != null;
 		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		public void RemoveItem ()
+		{
+			UnknownCombineEntry entry = (UnknownCombineEntry) CurrentNode.DataItem;
+			Combine cmb = entry.ParentCombine;
+			if (cmb == null)
+				return;
+			
+			bool yes = Services.MessageService.AskQuestion (GettextCatalog.GetString (
+				"Do you really want to remove project '{0}' from solution '{1}'", entry.FileName, cmb.Name));
+
+			if (yes) {
+				cmb.RemoveEntry (entry);
+				entry.Dispose ();
+				IdeApp.ProjectOperations.SaveCombineEntry (cmb);
+			}
+		}
 	}
 }

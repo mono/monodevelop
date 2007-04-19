@@ -256,23 +256,15 @@
 				type = "custom"
 				widget = "MonoDevelop.Ide.Gui.ConfigurationComboBox"
 				_label = "Active Configuration" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy"
-				defaultHandler = "MonoDevelop.Ide.Commands.DeployHandler"
-				shortcut = "Shift|F7"
-				_label = "Deploy" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList"
-				defaultHandler = "MonoDevelop.Ide.Commands.DeployTargetListHandler"
-				type="array"
-				_label = "Deploy target list" />
-		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets"
-				defaultHandler = "MonoDevelop.Ide.Commands.ConfigureDeployTargetsHandler"
-				_label = "Configure deploy targets..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList"
 				defaultHandler = "MonoDevelop.Ide.Commands.CustomCommandListHandler"
 				type="array"
 				_label = "Custom command list" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload"
 				_label = "Reload" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"
+				defaultHandler = "MonoDevelop.Ide.Commands.ExportProjectHandler"
+				_label = "Export..." />
 
 
 		<!-- FileCommands -->
@@ -534,12 +526,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-		<SeparatorItem id = "DeploySeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
-		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
-			<SeparatorItem id = "DeploySeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
+		<ItemSet id = "Tools" _label = "Tools" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<SeparatorItem id = "ExportSeparator" />
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
@@ -633,12 +622,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-		<SeparatorItem id = "DeploySeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
-		<ItemSet id = "CombineDeployMenu" _label = "Deploy to" >
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
-			<SeparatorItem id = "DeploySeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
+		<ItemSet id = "Tools" _label = "Tools" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<SeparatorItem id="ExportSeparator"/>
 		</ItemSet>
 		<SeparatorItem id = "RunSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
@@ -669,6 +655,7 @@
 	
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a project in the solution pad.">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
 	<!--<Extension path = "/SharpDevelop/Workbench/FileFilter" extension-nodes="FileFilter" description="File filters for the Open File dialog.">
@@ -926,13 +913,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-			<SeparatorItem id = "DeploySeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Deploy" />
-			<ItemSet id = "DeployTargets" _label = "Deploy to">
-				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.DeployTargetList" />
-			</ItemSet>
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigureDeployTargets" />
-			<SeparatorItem id = "Separator1" />
+			<SeparatorItem id = "ExportSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<SeparatorItem id = "RunSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
 <!--			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Debug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.DebugCommands.DebugApplication" />

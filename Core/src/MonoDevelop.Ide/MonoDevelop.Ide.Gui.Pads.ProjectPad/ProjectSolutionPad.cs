@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.CurrentSelectedProject = p;
 				Combine c = (Combine) nav.GetParentDataItem (typeof(Combine), true);
 				IdeApp.ProjectOperations.CurrentSelectedCombine = c;
+				CombineEntry ce = (CombineEntry) nav.GetParentDataItem (typeof(CombineEntry), true);
+				IdeApp.ProjectOperations.CurrentSelectedCombineEntry = ce;
 			}
 		}
 		
@@ -61,6 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnCloseCombine (sender, e);
 			IdeApp.ProjectOperations.CurrentSelectedProject = null;
 			IdeApp.ProjectOperations.CurrentSelectedCombine = null;
+			IdeApp.ProjectOperations.CurrentSelectedCombineEntry = null;
 		}
 		
 		void OnWindowChanged (object ob, EventArgs args)

@@ -16,7 +16,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Deployment;
 using CustomCommand = MonoDevelop.Projects.CustomCommand;
 
 namespace MonoDevelop.Ide.Commands
@@ -57,7 +56,8 @@ namespace MonoDevelop.Ide.Commands
 		DeployTargetList,
 		ConfigureDeployTargets,
 		CustomCommandList,
-		Reload
+		Reload,
+		ExportProject
 	}
 	
 	internal class RunHandler: CommandHandler
@@ -366,81 +366,7 @@ namespace MonoDevelop.Ide.Commands
 							!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 	}
-	
-	internal class DeployHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			CombineEntry e = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (e);
-			op.Completed += delegate {
-				if (op.Success)
-					IdeApp.ProjectOperations.Deploy (e, e.DefaultDeployTarget);
-			};
-		}
 		
-		protected override void Update (CommandInfo info)
-		{
-			CombineEntry e = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			if (e != null && e.DefaultDeployTarget != null) {
-				info.Enabled = true;
-			} else
-				info.Enabled = false;
-		}
-	}
-	
-	internal class DeployTargetListHandler: CommandHandler
-	{
-		protected override void Run (object dt)
-		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (ce);
-			op.Completed += delegate {
-				if (op.Success)
-					IdeApp.ProjectOperations.Deploy (ce, (DeployTarget)dt);
-			};
-		}
-		
-		protected override void Update (CommandArrayInfo info)
-		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			if (ce != null) {
-				if (ce.DeployTargets.Count > 0) {
-					foreach (DeployTarget dt in ce.DeployTargets) {
-						if (dt is UnknownDeployTarget)
-							continue;
-						CommandInfo cinfo = new CommandInfo ();
-						cinfo.Text = dt.Name;
-						if (ce.DefaultDeployTarget == dt)
-							cinfo.Text += " " + GettextCatalog.GetString ("(default)");
-						cinfo.Icon = dt.Icon;
-						info.Add (cinfo, dt);
-					}
-				} else {
-					CommandInfo cinfo = new CommandInfo ();
-					cinfo.Text = GettextCatalog.GetString ("No deploy targets available");
-					cinfo.Enabled = false;
-					info.Add (cinfo, null);
-				}
-			}
-		}
-	}
-	
-	internal class ConfigureDeployTargetsHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			if (ce != null)
-				IdeApp.ProjectOperations.ShowOptions (ce, "Deployment");
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
-		}
-	}
-	
 	internal class CombineEntryOptionsHandler: CommandHandler
 	{
 		protected override void Run ()
@@ -486,6 +412,15 @@ namespace MonoDevelop.Ide.Commands
 							info.Add (cmd.Name, cmd);
 				}
 			}
+		}
+	}
+	
+	internal class ExportProjectHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
+			IdeApp.ProjectOperations.Export (ce, null);
 		}
 	}
 	

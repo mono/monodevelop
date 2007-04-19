@@ -97,6 +97,8 @@ namespace MonoDevelop.Ide.Gui
 		public IProgressMonitor GetOutputProgressMonitor (string title, string icon, bool bringToFront, bool allowMonitorReuse)
 		{
 			Pad pad = null;
+			if (icon == null)
+				icon = MonoDevelop.Core.Gui.Stock.OutputIcon;
 
 			if (allowMonitorReuse) {
 				lock (outputMonitors) {
