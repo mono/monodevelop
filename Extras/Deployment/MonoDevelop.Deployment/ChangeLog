@@ -1,0 +1,4 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com>
+
+	New deployment add-in. Some classes have been moved from MonoDevelop.Projects.
+

@@ -1,0 +1,75 @@
+<AddIn id          = "MonoDevelop.Deployment.Linux"
+       name        = "MonoDevelop Deployment Services for Linux"
+       author      = "Lluis Sanchez, Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com"
+       description = "Provides basic deployment services for Linux"
+	   category    = "Deployment"
+       version     = "0.13.0"
+       compatVersion = "0.13.0">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.Deployment.Linux.dll"/>
+	</Runtime>
+
+	<Dependencies>
+		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
+		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	</Dependencies>
+
+	<Extension path = "/SharpDevelop/Commands">
+	</Extension>	
+
+	<Extension path = "/SharpDevelop/Workbench/SerializableClasses">
+	</Extension>
+
+	<Extension path = "/MonoDevelop/DeployService/DeployDirectoryResolvers">
+	</Extension>
+
+	<Extension path = "/MonoDevelop/DeployService/DeployServiceExtensions">
+		<Class id="Deployment.Linux" insertbefore="PrepareDeploy" class = "MonoDevelop.Deployment.Linux.LinuxDeployExtension" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+<!--		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
+			name = "DeployService.TargetDirectoryId" type = "System.String" />
+-->	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
+<!--		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
+-->	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/StockIcons" extension-nodes="StockIcon" description="Stock icons|Available from MonoDevelop.Core.Gui.Services.Resources.">
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "Desktop Entry"
+		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions/Deployment">
+		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Deployment">
+		<DialogPanel id = "LinuxDeployment" _label = "Linux Deployment Settings" class="MonoDevelop.Deployment.Linux.BasicOptionPanel"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/DeployService/DeployDirectoryResolvers">
+		<Class class = "MonoDevelop.Deployment.Linux.LinuxDirectoryResolver" />
+	</Extension>
+
+	<Extension path = "/SharpDevelop/Workbench/Serialization/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.CombineEntry"
+			name = "Deployment.LinuxDeployData" type = "MonoDevelop.Deployment.Linux.LinuxDeployData" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
+		<DeployDirectory id="Linux.PkgConfig" _label="pkg-config folder" />
+		<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
+	</Extension>
+</AddIn>

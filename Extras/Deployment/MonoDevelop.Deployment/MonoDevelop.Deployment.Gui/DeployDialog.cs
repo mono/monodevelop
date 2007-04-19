@@ -1,0 +1,295 @@
+
+using System;
+using System.Collections.Generic;
+using Gtk;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+
+namespace MonoDevelop.Deployment.Gui
+{
+	public partial class DeployDialog : Gtk.Dialog
+	{
+		ListStore store;
+		List<PackageBuilder> builders = new List<PackageBuilder> ();
+		PackageBuilder currentBuilder;
+		Gtk.Widget currentEditor;
+		CombineEntry entry;
+		CombineEntryCollection combineList;
+		CombineEntryCollection projectsList;
+		
+		public DeployDialog (CombineEntry entry, CombineEntry defaultEntry, bool createBuilderOnly)
+		{
+			this.Build();
+			notebook.ShowTabs = false;
+			this.entry = entry;
+			
+			if (createBuilderOnly) {
+				vboxSaveProject.Hide ();
+				checkSave.Active = true;
+				checkSave.Hide ();
+				saveSeparator.Hide ();
+			}
+			else {
+				pageSave.Hide ();
+				FillProjectSelectors ();
+			}
+			
+			if (entry != null) {
+				pageSelectProject.Hide ();
+				notebook.Page = 1;
+			} else {
+				entryTree.Fill (defaultEntry);
+			}
+			
+			store = new ListStore (typeof(Gdk.Pixbuf), typeof(string), typeof(object));
+			targetsTree.Model = store;
+			
+			targetsTree.HeadersVisible = false;
+			Gtk.CellRendererPixbuf cr = new Gtk.CellRendererPixbuf();
+			cr.Yalign = 0;
+			targetsTree.AppendColumn ("", cr, "pixbuf", 0);
+			targetsTree.AppendColumn ("", new Gtk.CellRendererText(), "markup", 1);
+			
+			targetsTree.Selection.Changed += delegate (object s, EventArgs a) {
+				UpdateButtons ();
+			};
+			
+			if (entry != null)
+				FillBuilders ();
+			
+			UpdateButtons ();
+		}
+		
+		public PackageBuilder PackageBuilder {
+			get { return currentBuilder; }
+		}
+		
+		public CombineEntry Entry {
+			get { return entry; }
+		}
+		
+		public bool SaveToProject {
+			get { return checkSave.Active; }
+		}
+		
+		public bool CreateNewProject {
+			get { return radioCreateProject.Active; }
+		}
+		
+		public Combine NewProjectSolution {
+			get { return CreateNewProject ? combineList [comboCreateProject.Active] as Combine : null; }
+		}
+		
+		public string NewProjectName {
+			get { return entryProjectName.Text; }
+		}
+		
+		public PackagingProject ExistingPackagingProject {
+			get { return CreateNewProject ? null : projectsList [comboSelProject.Active] as PackagingProject; }
+		}
+		
+		public string NewPackageName {
+			get { return entrySaveName.Text; }
+		}
+		
+		void FillBuilders ()
+		{
+			builders.Clear ();
+			foreach (PackageBuilder builder in DeployService.GetSupportedPackageBuilders (entry)) {
+				builders.Add (builder);
+			}
+			
+			store.Clear ();
+			foreach (PackageBuilder builder in builders) {
+				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.Services.Resources.GetIcon (builder.Icon, Gtk.IconSize.LargeToolbar);
+				store.AppendValues (pix, builder.Description, builder);
+			}
+			
+			if (builders.Count > 0)
+				SelectBuilder (builders[0]);
+		}
+
+		void FillProjectSelectors ()
+		{
+			// Fill the combine list
+			int n=0, sel=-1;
+			combineList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(Combine));
+			foreach (Combine c in combineList) {
+				if (c == entry.ParentCombine)
+					sel = n;
+				string name = c.Name;
+				Combine co = c.ParentCombine;
+				while (co != null) {
+					name = co.Name + " / " + name;
+					co = co.ParentCombine;
+				}
+				comboCreateProject.AppendText (name);
+				n++;
+			}
+			if (sel != -1)
+				comboCreateProject.Active = sel;
+			else
+				comboCreateProject.Active = 0;
+			
+			// Fill the packaging project list
+			projectsList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(PackagingProject));
+			if (projectsList.Count == 0) {
+				radioAddProject.Sensitive = false;
+			}
+			else {
+				foreach (PackagingProject p in projectsList) {
+					string name = p.Name;
+					Combine c = p.ParentCombine;
+					while (c != null) {
+						name = c.Name + " / " + name;
+						c = c.ParentCombine;
+					}
+					comboSelProject.AppendText (name);
+				}
+				comboSelProject.Active = 0;
+			}
+		}
+		
+		void SelectBuilder (PackageBuilder builder)
+		{
+			if (builder == null)
+				return;
+			Gtk.TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				do {
+					PackageBuilder t = (PackageBuilder) store.GetValue (iter, 2);
+					if (t == builder) {
+						targetsTree.Selection.SelectIter (iter);
+						return;
+					}
+				} while (store.IterNext (ref iter));
+			}
+		}
+		
+		PackageBuilder GetBuilderSelection ()
+		{
+			Gtk.TreeModel model;
+			Gtk.TreeIter iter;
+			
+			if (targetsTree.Selection.GetSelected (out model, out iter)) {
+				return (PackageBuilder) store.GetValue (iter, 2);
+			} else
+				return null;
+		}
+		
+		void UpdateBuilderEditor ()
+		{
+			if (currentEditor != null) {
+				editorBox.Remove (currentEditor);
+				currentEditor.Destroy ();
+			}
+			
+			currentBuilder = GetBuilderSelection ();
+			currentEditor = new PackageBuilderEditor (currentBuilder, entry);
+			editorBox.Child = currentEditor;
+			editorBox.ShowAll ();
+		}
+		
+		bool ValidatePage ()
+		{
+			string msg = null;
+			switch (notebook.Page) {
+			case 0:
+				if (entryTree.Selection == null)
+					msg = GettextCatalog.GetString ("Please select a project or solution.");
+				entry = entryTree.Selection;
+				FillBuilders ();
+				break;
+			case 1:
+				if (GetBuilderSelection () == null)
+					msg = GettextCatalog.GetString ("Please select a package type.");
+				else if (radioCreateProject.Active && entryProjectName.Text.Length == 0)
+					msg = GettextCatalog.GetString ("Project name not provided.");
+				else
+					UpdateBuilderEditor ();
+				break;
+			case 2:
+				msg = currentBuilder.Validate ();
+				break;
+			case 3:
+				if (entrySaveName.Text.Length == 0)
+					msg = GettextCatalog.GetString ("Package name not provided.");
+				if (vboxSaveProject.Visible) {
+					if (radioCreateProject.Active) {
+						if (entryProjectName.Text.Length == 0)
+							msg = GettextCatalog.GetString ("Project name not provided.");
+						else if (comboCreateProject.Active == -1)
+							msg = GettextCatalog.GetString ("Solution where to create the project not selected.");
+					}
+					else if (comboSelProject.Active == -1) {
+						msg = GettextCatalog.GetString ("Packaging project not selected.");
+					}
+				}
+				break;
+			}
+			if (msg != null) {
+				IdeApp.Services.MessageService.ShowError (null, msg, this, true);
+				return false;
+			}
+			else
+				return true;
+		}
+
+		protected virtual void OnButtonBackClicked(object sender, System.EventArgs e)
+		{
+			if (notebook.Page > 0)
+				notebook.Page--;
+			UpdateButtons ();
+		}
+
+		protected virtual void OnButtonNextClicked(object sender, System.EventArgs e)
+		{
+			if (!ValidatePage ())
+				return;
+			if (notebook.Page < notebook.NPages - 1)
+				notebook.Page++;
+			UpdateButtons ();
+		}
+
+		protected virtual void OnNotebookSelectPage(object o, Gtk.SelectPageArgs args)
+		{
+			UpdateButtons ();
+		}
+		
+		void UpdateButtons ()
+		{
+			buttonBack.Sensitive = notebook.Page > 0 && notebook.GetNthPage (notebook.Page - 1).Visible;
+			buttonNext.Sensitive = notebook.Page < notebook.NPages - 1 && 
+				notebook.GetNthPage (notebook.Page + 1).Visible;
+			buttonPublish.Sensitive = !buttonNext.Sensitive;
+			
+			if (vboxSaveProject.Visible) {
+				tableNewProject.Sensitive = radioCreateProject.Active;
+				boxAddProject.Sensitive = radioAddProject.Active;
+			}
+		}
+
+		protected virtual void OnCheckSaveClicked(object sender, System.EventArgs e)
+		{
+			pageSave.Visible = checkSave.Active;
+			UpdateButtons ();
+		}
+
+		protected virtual void OnButtonPublishClicked(object sender, System.EventArgs e)
+		{
+			if (ValidatePage ())
+				this.Respond (ResponseType.Ok);
+		}
+
+		protected virtual void OnRadioCreateProjectClicked(object sender, System.EventArgs e)
+		{
+			UpdateButtons ();
+		}
+
+		protected virtual void OnRadioAddProjectClicked(object sender, System.EventArgs e)
+		{
+			UpdateButtons ();
+		}
+	}
+}
