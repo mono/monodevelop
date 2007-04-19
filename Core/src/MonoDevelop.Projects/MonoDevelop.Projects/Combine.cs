@@ -559,26 +559,47 @@ namespace MonoDevelop.Projects
 			return GetAllProjects (false);
 		}
 		
+		/// <remarks>
+		/// Returns a collection containing all entries in this combine and 
+		/// undercombines
+		/// </remarks>
+		public CombineEntryCollection GetAllEntries ()
+		{
+			return GetAllEntries (null);
+		}
+		
+		/// <remarks>
+		/// Returns a collection containing all entries of the given type in this combine and 
+		/// undercombines
+		/// </remarks>
+		public CombineEntryCollection GetAllEntries (Type type)
+		{
+			CombineEntryCollection list = new CombineEntryCollection();
+			GetAllEntries (list, type, this);
+			return list;
+		}
+		
 		// When topologicalSort=true, the projects are returned in the order
 		// they should be compiled, acording to their references.
 		public CombineEntryCollection GetAllProjects (bool topologicalSort)
 		{
 			CombineEntryCollection list = new CombineEntryCollection();
-			GetAllProjects (list);
+			GetAllEntries (list, typeof(Project), this);
 			if (topologicalSort)
 				return TopologicalSort (list);
 			else
 				return list;
 		}
 		
-		void GetAllProjects (CombineEntryCollection list)
+		void GetAllEntries (CombineEntryCollection list, Type type, CombineEntry entry)
 		{
-			foreach (CombineEntry entry in Entries) {
-				if (entry is Project) {
-					list.Add (entry);
-				} else if (entry is Combine) {
-					((Combine)entry).GetAllProjects (list);
-				}
+			if (type == null || type.IsInstanceOfType (entry)) {
+				list.Add (entry);
+			}
+		
+			if (entry is Combine) {
+				foreach (CombineEntry ce in ((Combine)entry).Entries)
+					GetAllEntries (list, type, ce);
 			}
 		}
 		

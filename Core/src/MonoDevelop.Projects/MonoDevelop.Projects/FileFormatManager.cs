@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects
 	public class FileFormatManager
 	{
 		ArrayList fileFormats = new ArrayList ();
+		static DefaultFileFormat defaultFormat = new DefaultFileFormat ();
 		
 		public void RegisterFileFormat (IFileFormat format)
 		{
@@ -47,6 +48,8 @@ namespace MonoDevelop.Projects
 			foreach (IFileFormat format in fileFormats)
 				if (format.CanReadFile (fileName))
 					list.Add (format);
+			if (defaultFormat.CanReadFile (fileName))
+				list.Add (defaultFormat);
 			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
 		}
 		
@@ -56,6 +59,16 @@ namespace MonoDevelop.Projects
 			foreach (IFileFormat format in fileFormats)
 				if (format.CanWriteFile (obj))
 					list.Add (format);
+			if (list.Count == 0 && defaultFormat.CanWriteFile (obj))
+				list.Add (defaultFormat);
+			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
+		}
+		
+		public IFileFormat[] GetAllFileFormats ()
+		{
+			ArrayList list = new ArrayList ();
+			list.AddRange (fileFormats);
+			list.Add (defaultFormat);
 			return (IFileFormat[]) list.ToArray (typeof(IFileFormat));
 		}
 	}

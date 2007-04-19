@@ -1,3 +1,57 @@
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectServiceExtension.cs: Added method for getting
+	  all files that should be copied when exporting a combine entry.
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/IProjectService.cs: Implemented Export method.
+	  Track changes in file format api.
+	* MonoDevelop.Projects/MdpFileFormat.cs,
+	  MonoDevelop.Projects/MonoDevelopFileFormat.cs,
+	  MonoDevelop.Projects/MdsFileFormat.cs: Merge the MDS and MDP file
+	  formats in a single file format class that can handle both.
+
+	* MonoDevelop.Projects/ProjectsServices.cs, MonoDevelop.Projects.addin.xml,
+	  MonoDevelop.Projects.Deployment.Extensions, MonoDevelop.Projects.mdp,
+	  MonoDevelop.Projects.Deployment,
+	  MonoDevelop.Projects.Deployment/DeployService.cs,
+	  MonoDevelop.Projects.Deployment/LocalFileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/IFileCopyHandler.cs,
+	  MonoDevelop.Projects.Deployment/UnknownFileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs,
+	  MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/InstallDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/DeployFile.cs,
+	  MonoDevelop.Projects.Deployment/CommandDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/FileCopyConfiguration.cs,
+	  MonoDevelop.Projects.Deployment/DeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/IFileReplacePolicy.cs,
+	  MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs,
+	  MonoDevelop.Projects.Deployment/FileCopyHandler.cs: Moved all deployment
+	  code to the new MonoDevelop.Deployment add-in.
+
+	* MonoDevelop.Projects/SharpDevelopFileFormat.cs,
+	  MonoDevelop.Projects/PrjxFileFormat.cs,
+	  MonoDevelop.Projects/CmbxFileFormat.cs: Merge the Cmbx and Prjx file
+	  formats in a single file format class that can handle both.
+	* MonoDevelop.Projects/DefaultFileFormat.cs: New file format which can
+	  serialize any kind of CombineEntry.
+	* MonoDevelop.Projects/ProjectConvertTool.cs: Use the new export method to
+	  do the conversion. Some other improvements.
+	* MonoDevelop.Projects/CombineEntry.cs: Removed deployment properties. Added
+	  method for getting all files that should be copied when exporting a
+	  combine entry.
+	* MonoDevelop.Projects/Combine.cs: Added method for recursivelly getting all
+	  entries of a combine.
+	* MonoDevelop.Projects/FileFormatManager.cs: If there isn't a specific file
+	  format for a CombineEntry, use the new default file format.
+	* MonoDevelop.Projects/IFileFormat.cs: Added method for getting the list of
+	  files where the object is stored.
+	* MonoDevelop.Projects/ProjectFile.cs: Made it extensible.
+	* MonoDevelop.Projects/Project.cs: Removed all deployment code. Implemented
+	  OnGetExportFiles.
+	* Makefile.am: Updated.
+
 2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/CombineEntry.cs, MonoDevelop.Projects.addin.xml,

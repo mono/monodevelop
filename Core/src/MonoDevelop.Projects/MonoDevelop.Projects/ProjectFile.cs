@@ -11,6 +11,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
+using System.Collections;
 using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
@@ -31,8 +32,10 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a file information in an IProject object.
 	/// </summary>
-	public class ProjectFile : ICloneable
+	public class ProjectFile : ICloneable, IExtendedDataItem
 	{
+		Hashtable extendedProperties;
+		
 		[ProjectPathItemProperty("name")]
 		string filename;
 		
@@ -74,6 +77,14 @@ namespace MonoDevelop.Projects
 		internal void SetProject (Project prj)
 		{
 			project = prj;
+		}
+		
+		public IDictionary ExtendedProperties {
+			get {
+				if (extendedProperties == null)
+					extendedProperties = new Hashtable ();
+				return extendedProperties;
+			}
 		}
 						
 		[ReadOnly(true)]

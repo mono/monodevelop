@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.Xml;
 using System.CodeDom.Compiler;
@@ -21,7 +22,6 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects.Ambience;
 using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Projects
 {
@@ -210,36 +210,36 @@ namespace MonoDevelop.Projects
 		
 		void CopyReferencesToOutputPath (string destPath, bool force)
 		{
-			DeployFileCollection deployFiles = GetReferenceDeployFiles (force);
+			string[] deployFiles = GetReferenceDeployFiles (force);
 			
-			foreach (DeployFile df in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, df.RelativeTargetPath);
+			foreach (string sourcePath in deployFiles) {
+				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
 				try {
-					if (destinationFileName != df.SourcePath) {
+					if (destinationFileName != sourcePath) {
 						// Make sure the target directory exists
 						if (!Directory.Exists (Path.GetDirectoryName (destinationFileName)))
 							Directory.CreateDirectory (Path.GetDirectoryName (destinationFileName));
 						// Copy the file
-						Runtime.FileService.CopyFile (df.SourcePath, destinationFileName);
+						Runtime.FileService.CopyFile (sourcePath, destinationFileName);
 					}
 				} catch (Exception e) {
-					Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)df.SourcePath, (object)destinationFileName, (object)e);
+					Runtime.LoggingService.ErrorFormat ("Can't copy reference file from {0} to {1}: {2}", (object)sourcePath, (object)destinationFileName, (object)e);
 				}
 			}
 		}
 		
-		public DeployFileCollection GetReferenceDeployFiles (bool force)
+		public string[] GetReferenceDeployFiles (bool force)
 		{
-			DeployFileCollection deployFiles = new DeployFileCollection ();
+			ArrayList deployFiles = new ArrayList ();
 
 			foreach (ProjectReference projectReference in ProjectReferences) {
 				if ((projectReference.LocalCopy || force) && projectReference.ReferenceType != ReferenceType.Gac) {
 					foreach (string referenceFileName in projectReference.GetReferencedFileNames ()) {
-						deployFiles.Add (new DeployFile (referenceFileName, Path.GetFileName (referenceFileName), TargetDirectory.ProgramFiles));
+						deployFiles.Add (referenceFileName);
 						if (File.Exists (referenceFileName + ".mdb"))
-							deployFiles.Add (new DeployFile (referenceFileName + ".mdb", Path.GetFileName (referenceFileName) + ".mdb", TargetDirectory.ProgramFiles));
+							deployFiles.Add (referenceFileName + ".mdb");
 						if (File.Exists (referenceFileName + ".config"))
-							deployFiles.Add (new DeployFile (referenceFileName + ".config", Path.GetFileName (referenceFileName) + ".config", TargetDirectory.ProgramFiles));
+							deployFiles.Add (referenceFileName + ".config");
 					}
 				}
 				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
@@ -248,17 +248,17 @@ namespace MonoDevelop.Projects
 						deployFiles.AddRange (p.GetReferenceDeployFiles (force));
 				}
 			}
-			return deployFiles;
+			return (string[]) deployFiles.ToArray (typeof(string));
 		}
 		
 		void CleanReferencesInOutputPath (string destPath)
 		{
-			DeployFileCollection deployFiles = GetReferenceDeployFiles (true);
+			string[] deployFiles = GetReferenceDeployFiles (true);
 			
-			foreach (DeployFile df in deployFiles) {
-				string destinationFileName = Path.Combine (destPath, df.RelativeTargetPath);
+			foreach (string sourcePath in deployFiles) {
+				string destinationFileName = Path.Combine (destPath, Path.GetFileName (sourcePath));
 				try {
-					if (destinationFileName != df.SourcePath) {
+					if (destinationFileName != sourcePath) {
 						if (File.Exists (destinationFileName))
 							Runtime.FileService.DeleteFile (destinationFileName);
 					}
@@ -275,26 +275,6 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile file in ProjectFiles) {
 				file.Dispose ();
 			}
-		}
-		
-		public virtual DeployFileCollection GetDeployFiles ()
-		{
-			DeployFileCollection files = new DeployFileCollection ();
-			
-			//add files that are marked to 'deploy'
-			foreach (ProjectFile pf in ProjectFiles)
-				if (pf.BuildAction == BuildAction.FileCopy)
-					files.Add (new DeployFile (pf.FilePath, pf.RelativePath));
-			
-			//add referenced libraries
-			files.AddRange (GetReferenceDeployFiles (false));
-			
-			//add the compiled output file
-			string outputFile = this.GetOutputFileName ();
-			if ( !string.IsNullOrEmpty (outputFile))
-				files.Add (new DeployFile (outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
-			
-			return files;
 		}
 		
 		public ProjectReference AddReference (string filename)
@@ -563,6 +543,16 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+		}
+		
+		internal protected override StringCollection OnGetExportFiles ()
+		{
+			StringCollection col = base.OnGetExportFiles ();
+			foreach (ProjectFile pf in ProjectFiles) {
+				if (pf.Subtype != Subtype.Directory)
+					col.Add (pf.FilePath);
+			}
+			return col;
 		}
 
  		internal void NotifyFileChangedInProject (ProjectFile file)

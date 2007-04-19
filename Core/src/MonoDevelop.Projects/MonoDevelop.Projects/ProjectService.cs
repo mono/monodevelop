@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,6 +20,8 @@ using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects.Extensions;
 
@@ -39,8 +42,7 @@ namespace MonoDevelop.Projects
 		ProjectServiceExtension extensionChain = new CustomCommandExtension ();
 		
 		FileFormatManager formatManager = new FileFormatManager ();
-		IFileFormat defaultProjectFormat = new MdpFileFormat ();
-		IFileFormat defaultCombineFormat = new MdsFileFormat ();
+		IFileFormat defaultFormat = new MonoDevelopFileFormat ();
 		
 		public DataContext DataContext {
 			get { return dataContext; }
@@ -83,10 +85,8 @@ namespace MonoDevelop.Projects
 		{
 			IFileFormat format = entry.FileFormat;
 			if (format == null) {
-				if (entry is Project)
-					format = defaultProjectFormat;
-				else if (entry is Combine)
-					format = defaultCombineFormat;
+				if (defaultFormat.CanWriteFile (entry))
+					format = defaultFormat;
 				else {
 					IFileFormat[] formats = formatManager.GetFileFormatsForObject (entry);
 					format = formats.Length > 0 ? formats [0] : null;
@@ -94,10 +94,98 @@ namespace MonoDevelop.Projects
 				
 				if (format == null)
 					throw new InvalidOperationException ("FileFormat not provided for combine entry '" + entry.Name + "'");
-				entry.FileName = format.GetValidFormatName (file);
+				entry.FileName = format.GetValidFormatName (entry, file);
 			}
 			entry.FileName = file;
 			format.WriteFile (entry.FileName, entry, monitor);
+		}
+		
+		public string Export (IProgressMonitor monitor, string sourceFile, string targetPath, IFileFormat format, bool recursive)
+		{
+			string newFile;
+			CombineEntry entry;
+			
+			if (Path.GetDirectoryName (Path.GetFullPath (sourceFile)) != Runtime.FileService.GetFullPath (targetPath)) {
+				using (CombineEntry sourceEntry = ReadCombineEntry (sourceFile, monitor)) {
+					Export (monitor, sourceEntry, sourceEntry.BaseDirectory, targetPath, recursive);
+				}
+				
+				newFile = Path.Combine (targetPath, Path.GetFileName (sourceFile));
+				entry = ReadCombineEntry (newFile, monitor);
+			}
+			else {
+				newFile = sourceFile;
+				entry = ReadCombineEntry (newFile, monitor);
+			}
+			
+			using (entry)
+			{
+				if (format == null || format == entry.FileFormat)
+					return newFile;
+				
+				// The project needs to be converted
+				
+				ArrayList oldFiles = new ArrayList ();
+				ChangeFormat (monitor, entry, format, oldFiles, recursive);
+				entry.Save (monitor);
+				
+				if (newFile != sourceFile) {
+					foreach (string file in oldFiles)
+						File.Delete (file);
+				}
+				return entry.FileName;
+			}
+		}
+		
+		void Export (IProgressMonitor monitor, CombineEntry entry, string baseCombinePath, string targetBasePath, bool recursive)
+		{
+			StringCollection files = entry.GetExportFiles ();
+			
+			foreach (string file in files) {
+				string fname = Runtime.FileService.GetFullPath (file);
+				
+				// Can't export files from outside the root solution directory
+				if (!fname.StartsWith (baseCombinePath + Path.DirectorySeparatorChar))
+					throw new InvalidOperationException ("The project or solution references a file located outside the root solution directory.", null);
+				
+				string rpath = Runtime.FileService.AbsoluteToRelativePath (baseCombinePath, fname);
+				rpath = Path.Combine (targetBasePath, rpath);
+				
+				if (!Directory.Exists (Path.GetDirectoryName (rpath)))
+					Directory.CreateDirectory (Runtime.FileService.GetFullPath (Path.GetDirectoryName (rpath)));
+				
+				File.Copy (file, rpath);
+			}
+			
+			if (recursive && entry is Combine) {
+				foreach (CombineEntry e in ((Combine)entry).Entries)
+					Export (monitor, e, baseCombinePath, targetBasePath, true);
+			}
+		}
+		
+		void ChangeFormat (IProgressMonitor monitor, CombineEntry entry, IFileFormat format, ArrayList oldFiles, bool recursive)
+		{
+			if (entry is Combine) {
+				foreach (CombineEntry e in ((Combine)entry).Entries)
+					ChangeFormat (monitor, e, format, oldFiles, true);
+			}
+			if (!format.CanWriteFile (entry)) {
+				monitor.ReportWarning (GettextCatalog.GetString ("The project or solution '{0}' can't be converted to format '{1}'", entry.Name, format.Name));
+				return;
+			}
+			
+			StringCollection prevFiles = entry.GetExportFiles ();
+			
+			entry.FileFormat = format;
+			entry.FileName = format.GetValidFormatName (entry, entry.FileName);
+			
+			// Add to oldFiles the files which are not included in the new format
+			
+			StringCollection newFiles = entry.GetExportFiles ();
+			foreach (string file in prevFiles) {
+				if (!newFiles.Contains (file))
+					oldFiles.Add (file);
+			}
 		}
 		
 		public bool CanCreateSingleFileProject (string file)
@@ -147,9 +235,6 @@ namespace MonoDevelop.Projects
 		{
 			base.InitializeService();
 
-			formatManager.RegisterFileFormat (defaultProjectFormat);
-			formatManager.RegisterFileFormat (defaultCombineFormat);
-			
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
 			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
@@ -221,6 +306,11 @@ namespace MonoDevelop.Projects
 		public override void Save (IProgressMonitor monitor, CombineEntry entry)
 		{
 			entry.OnSave (monitor);
+		}
+		
+		public override System.Collections.Specialized.StringCollection GetExportFiles (CombineEntry entry)
+		{
+			return entry.OnGetExportFiles ();
 		}
 		
 		public override bool IsCombineEntryFile (string filename)

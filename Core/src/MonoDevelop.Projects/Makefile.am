@@ -24,21 +24,6 @@ FILES =  \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \
-	MonoDevelop.Projects.Deployment/CombinedDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/CommandDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/DeployFile.cs \
-	MonoDevelop.Projects.Deployment/DeployService.cs \
-	MonoDevelop.Projects.Deployment/DeployTarget.cs \
-	MonoDevelop.Projects.Deployment/DirectoryDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/FileCopyConfiguration.cs \
-	MonoDevelop.Projects.Deployment/FileCopyHandler.cs \
-	MonoDevelop.Projects.Deployment/IFileCopyHandler.cs \
-	MonoDevelop.Projects.Deployment/IFileReplacePolicy.cs \
-	MonoDevelop.Projects.Deployment/InstallDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/LocalFileCopyConfiguration.cs \
-	MonoDevelop.Projects.Deployment/LocalFileCopyHandler.cs \
-	MonoDevelop.Projects.Deployment/UnknownDeployTarget.cs \
-	MonoDevelop.Projects.Deployment/UnknownFileCopyConfiguration.cs \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/FileFilterCodon.cs \
@@ -201,6 +186,7 @@ FILES =  \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicBuildOrderException.cs \
 	MonoDevelop.Projects/DefaultCompilerResult.cs \
+	MonoDevelop.Projects/DefaultFileFormat.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
 	MonoDevelop.Projects/DotNetProjectConfiguration.cs \
@@ -219,8 +205,7 @@ FILES =  \
 	MonoDevelop.Projects/Language.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
 	MonoDevelop.Projects/LanguageService.cs \
-	MonoDevelop.Projects/MdpFileFormat.cs \
-	MonoDevelop.Projects/MdsFileFormat.cs \
+	MonoDevelop.Projects/MonoDevelopFileFormat.cs \
 	MonoDevelop.Projects/NoStartupCombineDefinedException.cs \
 	MonoDevelop.Projects/PrjxFileFormat.cs \
 	MonoDevelop.Projects/Project.cs \
@@ -238,6 +223,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
 	MonoDevelop.Projects/ProjectsServices.cs \
+	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
 	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
 	MonoDevelop.Projects/UnknownProjectVersionException.cs

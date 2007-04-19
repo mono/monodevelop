@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Specialized;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
@@ -12,6 +13,11 @@ namespace MonoDevelop.Projects
 		public virtual void Save (IProgressMonitor monitor, CombineEntry entry)
 		{
 			Next.Save (monitor, entry);
+		}
+		
+		public virtual StringCollection GetExportFiles (CombineEntry entry)
+		{
+			return Next.GetExportFiles (entry);
 		}
 		
 		public virtual bool IsCombineEntryFile (string fileName)

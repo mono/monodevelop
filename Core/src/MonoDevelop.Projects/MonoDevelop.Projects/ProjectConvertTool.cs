@@ -11,28 +11,59 @@ namespace MonoDevelop.Projects
 	{
 		public int Run (string[] arguments)
 		{
-			if (arguments.Length == 0 || arguments.Length > 2 || arguments [0] == "--help") {
-				Console.WriteLine ("Project Conversion Tool");
-				Console.WriteLine ("Usage: mdtool project-convert <source-project-file> [format name]");
+			if (arguments.Length == 0 || arguments [0] == "--help") {
+				Console.WriteLine ("");
+				Console.WriteLine ("Project Export Tool");
+				Console.WriteLine ("Usage: mdtool project-export <source-project-file> [-d:dest-path] [-f:format-name]");
+				Console.WriteLine ("");
+				Console.WriteLine ("Options");
+				Console.WriteLine (" -d:<dest-path>    Directory where the project will be exported.");
+				Console.WriteLine (" -f:<format-name>  Format to which export the project or solution.");
+				Console.WriteLine ("");
 				return 0;
 			}
-			if (!File.Exists (arguments[0])) {
-				Console.WriteLine ("File {0} not found.", arguments [0]);
+			
+			string projectFile = null;
+			string destPath = null;
+			string formatName = null;
+			
+			foreach (string s in arguments)
+			{
+				if (s.StartsWith ("-d:"))
+					destPath = s.Substring (3);
+				else if (s.StartsWith ("-f:"))
+					formatName = s.Substring (3);
+				else if (projectFile != null) {
+					Console.WriteLine ("Only one project can be converted at a time");
+					return 1;
+				}
+				else
+					projectFile = s;
+			}
+			
+			if (projectFile == null) {
+				Console.WriteLine ("Project or solution file name not provided");
+				return 1;
+			}
+			
+			projectFile = Runtime.FileService.GetFullPath (projectFile);
+			if (!File.Exists (projectFile)) {
+				Console.WriteLine ("File {0} not found.", projectFile);
 				return 1;
 			}
 			
 			IProgressMonitor monitor = new ConsoleProgressMonitor ();
-			CombineEntry entry = Services.ProjectService.ReadCombineEntry (arguments [0], monitor);
+			CombineEntry entry = Services.ProjectService.ReadCombineEntry (projectFile, monitor);
 			IFileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
 			
 			if (formats.Length == 0) {
-				Console.WriteLine ("Can't convert file to any format: " + arguments [0]);
+				Console.WriteLine ("Can't convert file to any format: " + projectFile);
 				return 1;
 			}
 			
 			IFileFormat format = null;
 			
-			if (arguments.Length == 1) {
+			if (formatName == null) {
 				Console.WriteLine ();
 				Console.WriteLine ("Target formats:");
 				for (int n=0; n<formats.Length; n++)
@@ -55,24 +86,21 @@ namespace MonoDevelop.Projects
 			}
 			else {
 				foreach (IFileFormat f in formats) {
-					if (f.Name == arguments[1])
+					if (f.Name == formatName)
 						format = f;
 				}
 				if (format == null) {
-					Console.WriteLine ("Invalid file format: " + arguments [1]);
+					Console.WriteLine ("Unknown file format: " + formatName);
 					return 1;
 				}
 			}
 			
-			entry.FileFormat = format;
-			string file = format.GetValidFormatName (arguments [0]);
-			if (file == arguments [0]) {
-				string ext = Path.GetExtension (arguments [0]);
-				file = file.Substring (0, file.Length - ext.Length);
-				file += ".converted" + ext;
-			}
-			entry.Save (file, monitor);
-			Console.WriteLine ("Saved file: " + file);
+			if (destPath == null)
+				destPath = Path.GetDirectoryName (projectFile);
+			destPath = Runtime.FileService.GetFullPath (destPath);
+			
+			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format, true);
+			Console.WriteLine ("Saved file: " + ofile);
 			return 0;
 		}
 	}

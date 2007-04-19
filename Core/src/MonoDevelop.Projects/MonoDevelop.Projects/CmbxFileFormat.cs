@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
 using System.Xml;
 using MonoDevelop.Core;
@@ -35,28 +36,9 @@ using MonoDevelop.Projects.Serialization;
 
 namespace MonoDevelop.Projects
 {
-	internal class CmbxFileFormat: IFileFormat
+	internal class CmbxFileFormat
 	{
-		public string Name {
-			get { return "SharpDevelop 1.0 Combine"; }
-		}
-		
-		public string GetValidFormatName (string fileName)
-		{
-			return Path.ChangeExtension (fileName, ".cmbx");
-		}
-		
-		public bool CanReadFile (string file)
-		{
-			return string.Compare (Path.GetExtension (file), ".cmbx", true) == 0;
-		}
-		
-		public bool CanWriteFile (object obj)
-		{
-			return obj is Combine;
-		}
-		
-		public void WriteFile (string file, object node, IProgressMonitor monitor)
+		public static void WriteFile (string file, object node, IProgressMonitor monitor)
 		{
 			Combine combine = node as Combine;
 			if (combine == null)
@@ -78,7 +60,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public object ReadFile (string file, IProgressMonitor monitor)
+		public static object ReadFile (string file, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
 			reader.MoveToContent ();
@@ -202,7 +184,6 @@ namespace MonoDevelop.Projects
 				combine.Entries.Add (ce);
 			
 			serializer.Deserialize (combine, data);
-			combine.FileFormat = new MdsFileFormat ();
 			return combine;
 		}
 		

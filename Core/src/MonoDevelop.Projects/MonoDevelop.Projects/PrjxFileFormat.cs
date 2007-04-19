@@ -34,28 +34,9 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	internal class PrjxFileFormat: IFileFormat
+	internal class PrjxFileFormat
 	{
-		public string Name {
-			get { return "SharpDevelop 1.0 Project"; }
-		}
-		
-		public string GetValidFormatName (string fileName)
-		{
-			return Path.ChangeExtension (fileName, ".prjx");
-		}
-		
-		public bool CanReadFile (string file)
-		{
-			return string.Compare (Path.GetExtension (file), ".prjx", true) == 0;
-		}
-		
-		public bool CanWriteFile (object obj)
-		{
-			return obj is Project;
-		}
-		
-		public void WriteFile (string file, object node, IProgressMonitor monitor)
+		public static void WriteFile (string file, object node, IProgressMonitor monitor)
 		{
 			Project project = node as Project;
 			if (project == null)
@@ -75,7 +56,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public object ReadFile (string fileName, IProgressMonitor monitor)
+		public static object ReadFile (string fileName, IProgressMonitor monitor)
 		{
 			XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
 			reader.MoveToContent ();
@@ -163,7 +144,7 @@ namespace MonoDevelop.Projects
 			project.FileName = file;
 			DataItem data = (DataItem) Read (reader);
 			serializer.Deserialize (project, data);
-			project.FileFormat = new MdpFileFormat ();
+			project.FileFormat = new MonoDevelopFileFormat ();
 			return project;
 		}
 		
@@ -221,7 +202,6 @@ namespace MonoDevelop.Projects
 			DataNode data = Read (reader);
 			Project project = (Project) serializer.Deserialize (typeof(Project), data);
 			project.FileName = serializer.SerializationContext.BaseFile;
-			project.FileFormat = new MdpFileFormat ();
 			return project;
 		}
 	}

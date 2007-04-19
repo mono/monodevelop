@@ -29,18 +29,22 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Collections.Specialized;
 
 namespace MonoDevelop.Projects
 {
 	public interface IFileFormat
 	{
 		string Name { get; }
-		string GetValidFormatName (string fileName);
+		string GetValidFormatName (object obj, string fileName);
 		
 		bool CanReadFile (string file);
 		bool CanWriteFile (object obj);
 		
 		void WriteFile (string file, object obj, IProgressMonitor monitor);
 		object ReadFile (string file, IProgressMonitor monitor);
+		
+		// Returns the list of files where the object is stored
+		StringCollection GetExportFiles (object obj);
 	}
 }

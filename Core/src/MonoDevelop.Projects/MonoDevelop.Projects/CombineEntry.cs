@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
@@ -17,7 +18,6 @@ using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
-using MonoDevelop.Projects.Deployment;
 
 namespace MonoDevelop.Projects
 {
@@ -37,11 +37,6 @@ namespace MonoDevelop.Projects
 		string path;
 		
 		IFileFormat fileFormat;
-		
-		[ItemProperty]
-		string defaultDeployTarget;
-		
-		DeployTargetCollection deployTargets;
 		
 		public CombineEntry ()
 		{
@@ -103,7 +98,7 @@ namespace MonoDevelop.Projects
 				else
 					path = value;
 				if (fileFormat != null)
-					path = fileFormat.GetValidFormatName (FileName);
+					path = fileFormat.GetValidFormatName (this, FileName);
 				NotifyModified ();
 			}
 		}
@@ -112,7 +107,7 @@ namespace MonoDevelop.Projects
 			get { return fileFormat; }
 			set {
 				fileFormat = value;
-				FileName = fileFormat.GetValidFormatName (FileName);
+				FileName = fileFormat.GetValidFormatName (this, FileName);
 				NotifyModified ();
 			}
 		}
@@ -225,34 +220,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public DeployTarget DefaultDeployTarget {
-			get {
-				if (defaultDeployTarget == null)
-					return null;
-				if (deployTargets == null)
-					return null;
-				foreach (DeployTarget dt in deployTargets)
-					if (dt.Name == defaultDeployTarget)
-						return dt;
-				return null;
-			}
-			set {
-				if (value != null)
-					defaultDeployTarget = value.Name;
-				else
-					defaultDeployTarget = null;
-			}
-		}
-		
-		[ItemProperty]
-		public DeployTargetCollection DeployTargets {
-			get { 
-				if (deployTargets == null)
-					deployTargets = new DeployTargetCollection (this);
-				return deployTargets;
-			}
-		}
-		
 		public virtual DataCollection Serialize (ITypeSerializer handler)
 		{
 			DataCollection data = handler.Serialize (this);
@@ -297,6 +264,24 @@ namespace MonoDevelop.Projects
 		public string GetRelativeChildPath (string absPath)
 		{
 			return Runtime.FileService.AbsoluteToRelativePath (BaseDirectory, absPath);
+		}
+		
+		public StringCollection GetExportFiles ()
+		{
+			return Services.ProjectService.ExtensionChain.GetExportFiles (this);
+		}
+		
+		internal protected virtual StringCollection OnGetExportFiles ()
+		{
+			StringCollection col;
+			if (fileFormat != null) {
+				col = fileFormat.GetExportFiles (this);
+				if (col != null)
+					return col;
+			}
+			col = new StringCollection ();
+			col.Add (FileName);
+			return col;
 		}
 		
 		public virtual void Dispose()
