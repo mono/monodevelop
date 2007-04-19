@@ -42,7 +42,7 @@ namespace MonoDeveloper
 			get { return "Mono Makefile"; }
 		}
 		
-		public string GetValidFormatName (string fileName)
+		public string GetValidFormatName (object obj, string fileName)
 		{
 			return Path.Combine (Path.GetDirectoryName (fileName), "Makefile");
 		}
@@ -69,6 +69,11 @@ namespace MonoDeveloper
 		
 		public void WriteFile (string file, object node, IProgressMonitor monitor)
 		{
+		}
+		
+		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
+		{
+			return null;
 		}
 		
 		public object ReadFile (string fileName, IProgressMonitor monitor)
