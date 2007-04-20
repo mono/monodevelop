@@ -86,6 +86,11 @@ namespace MonoDevelop.Deployment
 			return (PackageBuilder[]) list.ToArray (typeof(PackageBuilder));
 		}
 		
+		public static PackageBuilder[] GetPackageBuilders ()
+		{
+			return (PackageBuilder[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/PackageBuilders", typeof(PackageBuilder));
+		}
+		
 		public static void Install (IProgressMonitor monitor, CombineEntry entry, string prefix, string appName)
 		{
 			InstallResolver res = new InstallResolver ();
@@ -134,26 +139,33 @@ namespace MonoDevelop.Deployment
 		
 		public static void BuildPackage (IProgressMonitor mon, Package package)
 		{
-			CombineEntry e = package.GetEntry ();
-			if (e != null)
-				BuildPackage (mon, e, package.PackageBuilder);
-			else
-				mon.ReportError (GettextCatalog.GetString ("Project or solution not found: '{0}'", package.PackagedEntryPath), null);
+			BuildPackage (mon, package.PackageBuilder);
 		}
 		
-		internal static void BuildPackage (IProgressMonitor mon, CombineEntry entry, PackageBuilder builder)
+		internal static void BuildPackage (IProgressMonitor mon, PackageBuilder builder)
 		{
 			DeployServiceExtension extensionChain = GetExtensionChain ();
-			extensionChain.BuildPackage (mon, entry, builder);
+			extensionChain.BuildPackage (mon, builder);
 		}
 		
-		public static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry[] entries)
+		{
+			DeployFileCollection col = new DeployFileCollection ();
+			foreach (CombineEntry e in entries) {
+				col.AddRange (GetDeployFiles (ctx, e));
+			}
+			return col;
+		}
+		
+		static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
 		{
 			DeployFileCollection col = GetExtensionChain ().GetDeployFiles (ctx, entry);
 			foreach (DeployFile df in col) {
 				df.SetContext (ctx);
 				if (df.ContainsPathReferences) {
+					string name = df.DisplayName;
 					df.SourcePath = ProcessFileTemplate (ctx, df.SourcePath);
+					df.DisplayName = name;
 				}
 			}
 			return col;

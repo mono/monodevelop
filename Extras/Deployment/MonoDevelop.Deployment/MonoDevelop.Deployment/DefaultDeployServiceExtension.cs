@@ -24,7 +24,7 @@ namespace MonoDevelop.Deployment
 			
 			string outputFile = project.GetOutputFileName ();
 			if (!string.IsNullOrEmpty (outputFile))
-				deployFiles.Add (new DeployFile (outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
+				deployFiles.Add (new DeployFile (project, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
 			
 			// Collect deployable files
 			
@@ -36,7 +36,7 @@ namespace MonoDevelop.Deployment
 			// Collect referenced assemblies
 			
 			foreach (string refFile in project.GetReferenceDeployFiles (false)) {
-				deployFiles.Add (new DeployFile (refFile, Path.GetFileName (refFile), TargetDirectory.ProgramFiles));
+				deployFiles.Add (new DeployFile (project, refFile, Path.GetFileName (refFile), TargetDirectory.ProgramFiles));
 			}
 			
 			return deployFiles;

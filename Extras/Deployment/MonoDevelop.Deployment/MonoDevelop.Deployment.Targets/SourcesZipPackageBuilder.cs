@@ -51,8 +51,9 @@ namespace MonoDevelop.Deployment
 			set { targetFile = value; }
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, CombineEntry entry)
+		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
+			CombineEntry entry = RootCombineEntry;
 			string sourceFile = entry.FileName;
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
@@ -68,7 +69,8 @@ namespace MonoDevelop.Deployment
 				Directory.CreateDirectory (folder);
 				
 				// Export the project
-				Services.ProjectService.Export (mon, sourceFile, folder, FileFormat, true);
+				
+				Services.ProjectService.Export (mon, sourceFile, folder, FileFormat);
 				
 				// Create the archive
 				string td = Path.GetDirectoryName (targetFile);

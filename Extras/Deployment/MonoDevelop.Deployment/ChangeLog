@@ -1,3 +1,49 @@
+2007-04-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.mdp, Makefile.am: Updated.
+	* MonoDevelop.Deployment/PackagingProject.cs,
+	  MonoDevelop.Deployment/Package.cs,
+	  MonoDevelop.Deployment/PackageBuilder.cs: Store the path to the
+	  entry to package in the package builder. Allow specifying a list of
+	  child entries to be included in the package, in this way it is
+	  possible to create packages which include only some of the
+	  projects.
+	* MonoDevelop.Deployment/DeployService.cs,
+	  MonoDevelop.Deployment/DeployServiceExtension.cs,
+	  MonoDevelop.Deployment.Commands/Commands.cs,
+	  MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs,
+	  MonoDevelop.Deployment.Gui/IPackageBuilderEditor.cs,
+	  MonoDevelop.Deployment.Gui/PackageBuilderEditor.cs,
+	  MonoDevelop.Deployment.Targets/CommandPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs: The
+	  combine entry to package (and the child entries to include) are now
+	  part of the package builder configuration.
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Provide the
+	  source project in the deploy file constructor.
+	* MonoDevelop.Deployment/UnknownPackageBuilder.cs,
+	  MonoDevelop.Deployment/InstallResolver.cs,
+	  BinariesZipEditorWidget.cs: Track api changes.
+	* MonoDevelop.Deployment/DeployFile.cs: Added SourceCombineEntry, which
+	  returns the combine entry which generated this file, and
+	  DisplayName, which is a descriptive name of the file.
+	* gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs,
+	  gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic: Implemented new deploy file list widget.
+	  Changed order of steps in the package creation wizard.
+	* MonoDevelop.Deployment.Gui/DeployDialog.cs: Changed the order of some
+	  steps. The first step is now selecting the package type, and the
+	  second step is selecting the projects/solutions to include in the
+	  package.
+	* MonoDevelop.Deployment.Gui/EditPackageDialog.cs,
+	  MonoDevelop.Deployment.Gui/DeployFileListWidget.cs: Added a new
+	  view which shows the list of files to be deployed.
+	* MonoDevelop.Deployment.Gui/EntrySelectionTree.cs: Allow selecting
+	  multiple projects/solutions.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com>
 
 	New deployment add-in. Some classes have been moved from MonoDevelop.Projects.

@@ -19,10 +19,9 @@ namespace MonoDevelop.Deployment
 			packages = new PackageCollection (this);
 		}
 		
-		public Package AddPackage (CombineEntry entry, PackageBuilder builder)
+		public Package AddPackage (PackageBuilder builder)
 		{
 			Package p = new Package ();
-			p.PackagedEntryPath = entry.FileName;
 			p.PackageBuilder = builder;
 			packages.Add (p);
 			return p;

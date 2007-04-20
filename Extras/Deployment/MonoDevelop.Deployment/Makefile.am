@@ -21,6 +21,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	BinariesZipEditorWidget.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs \
@@ -34,6 +35,7 @@ FILES =  \
 	MonoDevelop.Deployment.Gui/CommandDeployEditorWidget.cs \
 	MonoDevelop.Deployment.Gui/DeployDialog.cs \
 	MonoDevelop.Deployment.Gui/DeployDirectoryInfoEditor.cs \
+	MonoDevelop.Deployment.Gui/DeployFileListWidget.cs \
 	MonoDevelop.Deployment.Gui/DeployOperations.cs \
 	MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs \
 	MonoDevelop.Deployment.Gui/EditPackageDialog.cs \

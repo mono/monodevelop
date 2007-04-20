@@ -51,7 +51,7 @@ namespace MonoDevelop.Deployment
 		
 		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, CombineEntry entry)
 		{
-			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, entry)) {
+			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new CombineEntry[] { entry } )) {
 				string targetPath = df.ResolvedTargetFile;
 				if (targetPath == null) {
 					monitor.ReportWarning ("Could not copy file '" + df.RelativeTargetPath + "': Unknown target directory.");

@@ -23,7 +23,9 @@ namespace MonoDevelop.Deployment.Gui
 			iconHandler.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.Menu);
 			entryName.Text = package.Name;
 			
-			targetBox.PackStart (new PackageBuilderEditor (target, package.GetEntry ()), true, true, 0);
+			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);
+			
+			fileListView.Fill (target);
 		}
 
 		protected virtual void OnEntryNameChanged(object sender, System.EventArgs e)

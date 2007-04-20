@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.IO;
 using MonoDevelop.Projects;
 
@@ -11,13 +12,15 @@ namespace MonoDevelop.Deployment.Gui
 		SourcesZipPackageBuilder target;
 		bool loading;
 		
-		public SourcesZipEditorWidget (PackageBuilder target, CombineEntry entry, IFileFormat selectedFormat)
+		public SourcesZipEditorWidget (PackageBuilder target, IFileFormat selectedFormat)
 		{
 			this.Build();
 			this.target = (SourcesZipPackageBuilder) target;
 			loading = true;
 			
+			CombineEntry entry = target.RootCombineEntry;
 			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			
 			foreach (IFileFormat format in formats)
 				comboFormat.AppendText (format.Name);
 
@@ -92,14 +95,14 @@ namespace MonoDevelop.Deployment.Gui
 	
 	class SourcesZipDeployEditor: IPackageBuilderEditor
 	{
-		public bool CanEdit (PackageBuilder target, CombineEntry entry)
+		public bool CanEdit (PackageBuilder target)
 		{
 			return target is SourcesZipPackageBuilder;
 		}
 		
-		public Gtk.Widget CreateEditor (PackageBuilder target, CombineEntry entry)
+		public Gtk.Widget CreateEditor (PackageBuilder target)
 		{
-			return new SourcesZipEditorWidget (target, entry, null);
+			return new SourcesZipEditorWidget (target, null);
 		}
 	}
 }

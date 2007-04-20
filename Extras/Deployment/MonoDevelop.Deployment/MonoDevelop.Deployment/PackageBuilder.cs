@@ -29,8 +29,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment
@@ -38,6 +40,16 @@ namespace MonoDevelop.Deployment
 	[DataItem (FallbackType=typeof(UnknownPackageBuilder))]
 	public class PackageBuilder: IDirectoryResolver
 	{
+		[ItemProperty ("ChildEntries")]
+		[ProjectPathItemProperty ("Entry", Scope=1)]
+		List<string> childEntries = new List<string> ();
+		
+		[ProjectPathItemProperty]
+		string rootEntry;
+		
+		List<CombineEntry> childCombineEntries;
+		CombineEntry rootCombineEntry;
+		
 		public PackageBuilder ()
 		{
 		}
@@ -55,16 +67,20 @@ namespace MonoDevelop.Deployment
 			return null;
 		}
 		
-		internal void Build (IProgressMonitor monitor, CombineEntry entry)
+		internal void Build (IProgressMonitor monitor)
 		{
 			monitor.BeginTask ("Package: " + Description, 1);
+			DeployContext ctx = null;
 			try {
-				OnBuild (monitor, entry);
+				ctx = CreateDeployContext ();
+				OnBuild (monitor, ctx);
 			} catch (Exception ex) {
 				monitor.ReportError ("Package creation failed", ex);
 				monitor.AsyncOperation.Cancel ();
 			} finally {
 				monitor.EndTask ();
+				if (ctx != null)
+					ctx.Dispose ();
 			}
 		}
 		
@@ -86,23 +102,16 @@ namespace MonoDevelop.Deployment
 		
 		public virtual void CopyFrom (PackageBuilder other)
 		{
+			childEntries = new List<string> (other.childEntries);
+			rootEntry = other.rootEntry;
+			if (other.childCombineEntries != null)
+				childCombineEntries = new List<CombineEntry> (other.childCombineEntries);
+			else
+				childCombineEntries = null;
+			rootCombineEntry = other.rootCombineEntry;
 		}
 		
-		protected virtual void OnBuild (IProgressMonitor monitor, CombineEntry entry)
-		{
-			if (entry is Combine)
-				OnBuildCombine (monitor, (Combine) entry);
-			else if (entry is Project)
-				OnBuildProject (monitor, (Project) entry);
-		}
-		
-		protected virtual void OnBuildCombine (IProgressMonitor monitor, Combine combine)
-		{
-			foreach (CombineEntry e in combine.Entries)
-				DeployService.BuildPackage (monitor, e, this);
-		}
-		
-		protected virtual void OnBuildProject (IProgressMonitor monitor, Project project)
+		protected virtual void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 		}
 		
@@ -114,6 +123,58 @@ namespace MonoDevelop.Deployment
 		protected virtual string OnResolveDirectory (DeployContext ctx, string folderId)
 		{
 			return null;
+		}
+		
+		public virtual DeployContext CreateDeployContext ()
+		{
+			return new DeployContext (this, "Linux", null);
+		}
+		
+		public void SetCombineEntry (CombineEntry rootCombineEntry, CombineEntry[] childEntries)
+		{
+			this.rootCombineEntry = rootCombineEntry;
+			this.rootEntry = rootCombineEntry.FileName;
+		
+			this.childEntries.Clear ();
+			childCombineEntries = new List<CombineEntry> ();
+			foreach (CombineEntry e in childEntries) {
+				this.childEntries.Add (e.FileName);
+				this.childCombineEntries.Add (e);
+			}
+		
+			InitializeSettings (rootCombineEntry);
+		}
+		
+		public CombineEntry RootCombineEntry {
+			get {
+				if (rootCombineEntry == null && rootEntry != null) {
+					rootCombineEntry = Services.ProjectService.ReadCombineEntry (rootEntry, new NullProgressMonitor ());
+				}
+				return rootCombineEntry; 
+			}
+		}
+		
+		public CombineEntry[] GetChildEntries ()
+		{
+			if (childCombineEntries != null)
+				return childCombineEntries.ToArray ();
+			
+			childCombineEntries = new List<CombineEntry> ();
+			foreach (string en in childEntries) {
+				CombineEntry re = Services.ProjectService.ReadCombineEntry (en, new NullProgressMonitor ());
+				if (re != null && !(re is UnknownCombineEntry))
+					childCombineEntries.Add (re);
+			}
+			return childCombineEntries.ToArray ();
+		}
+		
+		public CombineEntry[] GetAllEntries ()
+		{
+			List<CombineEntry> list = new List<CombineEntry> ();
+			if (RootCombineEntry != null)
+				list.Add (RootCombineEntry);
+			list.AddRange (GetChildEntries ());
+			return list.ToArray ();
 		}
 	}
 }

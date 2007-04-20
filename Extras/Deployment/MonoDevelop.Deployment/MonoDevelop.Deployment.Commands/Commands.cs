@@ -21,13 +21,12 @@ namespace MonoDevelop.Deployment
 		protected override void Run ()
 		{
 			CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			DeployDialog dlg = new DeployDialog (entry, null, false);
+			DeployDialog dlg = new DeployDialog (entry, false);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					if (dlg.SaveToProject) {
 						Package p = new Package ();
 						p.Name = dlg.NewPackageName;
-						p.PackagedEntryPath = dlg.Entry.FileName;
 						p.PackageBuilder = dlg.PackageBuilder;
 						
 						if (dlg.CreateNewProject) {
@@ -43,7 +42,7 @@ namespace MonoDevelop.Deployment
 							IdeApp.ProjectOperations.SaveCombineEntry (dlg.ExistingPackagingProject);
 						}
 					}
-					Package pkg = new Package (dlg.Entry, dlg.PackageBuilder);
+					Package pkg = new Package (dlg.PackageBuilder);
 					DeployOperations.BuildPackage (pkg);
 				}
 			} finally {
@@ -62,10 +61,10 @@ namespace MonoDevelop.Deployment
 		protected override void Run ()
 		{
 			PackagingProject project = IdeApp.ProjectOperations.CurrentSelectedCombineEntry as PackagingProject;
-			DeployDialog dlg = new DeployDialog (null, project.ParentCombine, true);
+			DeployDialog dlg = new DeployDialog (project.ParentCombine, true);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					project.AddPackage (dlg.Entry, dlg.PackageBuilder);
+					project.AddPackage (dlg.PackageBuilder);
 					IdeApp.ProjectOperations.SaveCombineEntry (project);
 				}
 			} finally {

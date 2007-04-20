@@ -37,12 +37,12 @@ namespace MonoDevelop.Deployment.Gui
 {
 	public class PackageBuilderEditor: HBox
 	{
-		public PackageBuilderEditor (PackageBuilder target, CombineEntry entry)
+		public PackageBuilderEditor (PackageBuilder target)
 		{
 			try {
-				IPackageBuilderEditor editor = GetEditor (target, entry);
+				IPackageBuilderEditor editor = GetEditor (target);
 				if (editor != null)
-					PackStart (editor.CreateEditor (target, entry), true, true, 0);
+					PackStart (editor.CreateEditor (target), true, true, 0);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				PackStart (new Gtk.Label ("Could not create editor for deploy target of type " + target));
@@ -50,15 +50,15 @@ namespace MonoDevelop.Deployment.Gui
 			ShowAll ();
 		}
 		
-		public static bool HasEditor (PackageBuilder target, CombineEntry entry)
+		public static bool HasEditor (PackageBuilder target)
 		{
-			return GetEditor (target, entry) != null;
+			return GetEditor (target) != null;
 		}
 		
-		static IPackageBuilderEditor GetEditor (PackageBuilder builder, CombineEntry entry)
+		static IPackageBuilderEditor GetEditor (PackageBuilder builder)
 		{
 			foreach (IPackageBuilderEditor editor in Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/PackageBuilderEditors")) {
-				if (editor.CanEdit (builder, entry))
+				if (editor.CanEdit (builder))
 					return editor;
 			}
 			return null;

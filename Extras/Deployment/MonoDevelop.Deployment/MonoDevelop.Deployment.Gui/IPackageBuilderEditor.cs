@@ -33,7 +33,7 @@ namespace MonoDevelop.Deployment.Gui
 {
 	public interface IPackageBuilderEditor
 	{
-		bool CanEdit (PackageBuilder target, CombineEntry entry);
-		Gtk.Widget CreateEditor (PackageBuilder builder, CombineEntry entry);
+		bool CanEdit (PackageBuilder target);
+		Gtk.Widget CreateEditor (PackageBuilder builder);
 	}
 }

@@ -11,9 +11,6 @@ namespace MonoDevelop.Deployment
 {
 	public class Package
 	{
-		[ProjectPathItemProperty]
-		string packagedEntryPath;
-		
 		[ItemProperty ("Builder")]
 		PackageBuilder builder;
 		
@@ -30,9 +27,8 @@ namespace MonoDevelop.Deployment
 		{
 		}
 		
-		public Package (CombineEntry entry, PackageBuilder builder)
+		public Package (PackageBuilder builder)
 		{
-			packagedEntryPath = entry.FileName;
 			this.builder = builder;
 		}
 		
@@ -50,63 +46,20 @@ namespace MonoDevelop.Deployment
 			set { builder = value; NotifyChanged (); }
 		}
 		
-		public string PackagedEntryPath {
-			get { return packagedEntryPath; }
-			set { packagedEntryPath = value; NotifyChanged (); }
-		}
-		
 		public bool Build (IProgressMonitor monitor)
 		{
-			CombineEntry entry = GetEntry ();
-			if (entry == null || entry is UnknownCombineEntry)
-				return false;
-			
 			DeployService.BuildPackage (monitor, this);
-			if (entry.RootCombine != project.RootCombine)
-				entry.Dispose ();
-			
 			needsBuilding = false;
 			return true;
 		}
 		
 		public bool NeedsBuilding {
 			get {
-				if (needsBuilding || project == null)
-					return true;
-				CombineEntry e = GetEntry (project.RootCombine, Runtime.FileService.GetFullPath (packagedEntryPath));
-				if (e != null)
-					return e.NeedsBuilding;
-				else
-					return true;
+				return needsBuilding;
 			}
 			set {
 				needsBuilding = value;
 			}
-		}
-		
-		public CombineEntry GetEntry ()
-		{
-			if (project != null) {
-				CombineEntry entry = GetEntry (project.RootCombine, Runtime.FileService.GetFullPath (packagedEntryPath));
-				if (entry != null)
-					return entry;
-			}
-			return Services.ProjectService.ReadCombineEntry (packagedEntryPath, new NullProgressMonitor ());
-		}
-		
-		CombineEntry GetEntry (CombineEntry entry, string path)
-		{
-			if (Runtime.FileService.GetFullPath (entry.FileName) == path)
-				return entry;
-			
-			if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries) {
-					CombineEntry fe = GetEntry (e, path);
-					if (fe != null)
-						return fe;
-				}
-			}
-			return null;
 		}
 		
 		public void Clean (IProgressMonitor monitor)

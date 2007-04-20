@@ -42,6 +42,7 @@ namespace MonoDevelop.Deployment
 		string args;
 		bool externalConsole;
 		bool closeConsoleWhenDone;
+		string workingDirectory = ".";
 		
 		public override string Description {
 			get { return GettextCatalog.GetString ("Execute command"); }
@@ -87,7 +88,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, CombineEntry entry)
+		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string consMsg;
 			IConsole cons;
@@ -100,7 +101,7 @@ namespace MonoDevelop.Deployment
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
-			ProcessWrapper process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, entry.BaseDirectory, cons, null);
+			ProcessWrapper process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
 			
 			if (ExternalConsole)
 				process.WaitForExit ();

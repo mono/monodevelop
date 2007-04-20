@@ -9,12 +9,12 @@ namespace MonoDevelop.Deployment
 	{
 		internal DeployServiceExtension Next;
 		
-		public virtual void BuildPackage (IProgressMonitor monitor, CombineEntry entry, PackageBuilder builder)
+		public virtual void BuildPackage (IProgressMonitor monitor, PackageBuilder builder)
 		{
 			if (Next != null)
-				Next.BuildPackage (monitor, entry, builder);
+				Next.BuildPackage (monitor, builder);
 			else
-				builder.Build (monitor, entry);
+				builder.Build (monitor);
 		}
 		
 		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)

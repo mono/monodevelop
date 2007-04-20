@@ -35,11 +35,14 @@ namespace MonoDevelop.Deployment
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
 		}
 
+		public override DeployContext CreateDeployContext ()
+		{
+			return new DeployContext (this, platform, null);
+		}
 		
-		protected override void OnBuild (IProgressMonitor monitor, CombineEntry entry)
+		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = null;
-			DeployContext ctx = new DeployContext (this, platform, null);
 				
 			try {
 				tmpFolder = Runtime.FileService.CreateTempDirectory ();
@@ -48,7 +51,15 @@ namespace MonoDevelop.Deployment
 				if (tf.EndsWith (".tar")) tf = Path.GetFileNameWithoutExtension (tf);
 				string folder = Runtime.FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				
-				CopyFiles (ctx, entry, folder);
+				// Export the binary files
+				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx, GetAllEntries ());
+				foreach (DeployFile file in deployFiles) {
+					string tfile = Path.Combine (folder, file.ResolvedTargetFile);
+					string tdir = Runtime.FileService.GetFullPath (Path.GetDirectoryName (tfile));
+					if (!Directory.Exists (tdir))
+						Directory.CreateDirectory (tdir);
+					File.Copy (file.SourcePath, tfile, true);
+				}
 				
 				// Create the archive
 				string td = Path.GetDirectoryName (targetFile);
@@ -58,32 +69,11 @@ namespace MonoDevelop.Deployment
 				
 			}
 			finally {
-				ctx.Dispose ();
 				if (tmpFolder != null)
 					Directory.Delete (tmpFolder, true);
 			}
 		}
 		
-		void CopyFiles (DeployContext ctx, CombineEntry entry, string folder)
-		{
-			// Export the binary files
-			DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx, entry);
-			foreach (DeployFile file in deployFiles) {
-				string tfile = Path.Combine (folder, file.ResolvedTargetFile);
-				string tdir = Runtime.FileService.GetFullPath (Path.GetDirectoryName (tfile));
-				if (!Directory.Exists (tdir))
-					Directory.CreateDirectory (tdir);
-				File.Copy (file.SourcePath, tfile, true);
-			}
-			
-			Combine c = entry as Combine;
-			if (c != null) {
-				foreach (CombineEntry ce in c.Entries) {
-					CopyFiles (ctx, ce, folder);
-				}
-			}
-		}
-
 		protected override string OnResolveDirectory (DeployContext ctx, string folderId)
 		{
 			return ".";

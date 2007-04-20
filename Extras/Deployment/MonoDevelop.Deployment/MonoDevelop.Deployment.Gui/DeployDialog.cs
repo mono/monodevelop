@@ -14,15 +14,15 @@ namespace MonoDevelop.Deployment.Gui
 		List<PackageBuilder> builders = new List<PackageBuilder> ();
 		PackageBuilder currentBuilder;
 		Gtk.Widget currentEditor;
-		CombineEntry entry;
 		CombineEntryCollection combineList;
 		CombineEntryCollection projectsList;
+		CombineEntry defaultEntry;
 		
-		public DeployDialog (CombineEntry entry, CombineEntry defaultEntry, bool createBuilderOnly)
+		public DeployDialog (CombineEntry defaultEntry, bool createBuilderOnly)
 		{
 			this.Build();
 			notebook.ShowTabs = false;
-			this.entry = entry;
+			this.defaultEntry = defaultEntry;
 			
 			if (createBuilderOnly) {
 				vboxSaveProject.Hide ();
@@ -33,13 +33,6 @@ namespace MonoDevelop.Deployment.Gui
 			else {
 				pageSave.Hide ();
 				FillProjectSelectors ();
-			}
-			
-			if (entry != null) {
-				pageSelectProject.Hide ();
-				notebook.Page = 1;
-			} else {
-				entryTree.Fill (defaultEntry);
 			}
 			
 			store = new ListStore (typeof(Gdk.Pixbuf), typeof(string), typeof(object));
@@ -55,18 +48,13 @@ namespace MonoDevelop.Deployment.Gui
 				UpdateButtons ();
 			};
 			
-			if (entry != null)
-				FillBuilders ();
+			FillBuilders ();
 			
 			UpdateButtons ();
 		}
 		
 		public PackageBuilder PackageBuilder {
 			get { return currentBuilder; }
-		}
-		
-		public CombineEntry Entry {
-			get { return entry; }
 		}
 		
 		public bool SaveToProject {
@@ -96,7 +84,7 @@ namespace MonoDevelop.Deployment.Gui
 		void FillBuilders ()
 		{
 			builders.Clear ();
-			foreach (PackageBuilder builder in DeployService.GetSupportedPackageBuilders (entry)) {
+			foreach (PackageBuilder builder in DeployService.GetPackageBuilders ()) {
 				builders.Add (builder);
 			}
 			
@@ -116,8 +104,6 @@ namespace MonoDevelop.Deployment.Gui
 			int n=0, sel=-1;
 			combineList = IdeApp.ProjectOperations.CurrentOpenCombine.GetAllEntries (typeof(Combine));
 			foreach (Combine c in combineList) {
-				if (c == entry.ParentCombine)
-					sel = n;
 				string name = c.Name;
 				Combine co = c.ParentCombine;
 				while (co != null) {
@@ -185,8 +171,7 @@ namespace MonoDevelop.Deployment.Gui
 				currentEditor.Destroy ();
 			}
 			
-			currentBuilder = GetBuilderSelection ();
-			currentEditor = new PackageBuilderEditor (currentBuilder, entry);
+			currentEditor = new PackageBuilderEditor (currentBuilder);
 			editorBox.Child = currentEditor;
 			editorBox.ShowAll ();
 		}
@@ -196,18 +181,23 @@ namespace MonoDevelop.Deployment.Gui
 			string msg = null;
 			switch (notebook.Page) {
 			case 0:
-				if (entryTree.Selection == null)
-					msg = GettextCatalog.GetString ("Please select a project or solution.");
-				entry = entryTree.Selection;
-				FillBuilders ();
-				break;
-			case 1:
 				if (GetBuilderSelection () == null)
 					msg = GettextCatalog.GetString ("Please select a package type.");
 				else if (radioCreateProject.Active && entryProjectName.Text.Length == 0)
 					msg = GettextCatalog.GetString ("Project name not provided.");
-				else
+				else {
+					currentBuilder = GetBuilderSelection ();
+					entryTree.Fill (currentBuilder, defaultEntry);
+					defaultEntry = null;
+				}
+				break;
+			case 1:
+				if (entryTree.GetSelectedEntry () == null)
+					msg = GettextCatalog.GetString ("Please select a project or solution.");
+				else {
+					currentBuilder.SetCombineEntry (entryTree.GetSelectedEntry (), entryTree.GetSelectedChildren ());
 					UpdateBuilderEditor ();
+				}
 				break;
 			case 2:
 				msg = currentBuilder.Validate ();
@@ -245,11 +235,16 @@ namespace MonoDevelop.Deployment.Gui
 
 		protected virtual void OnButtonNextClicked(object sender, System.EventArgs e)
 		{
+			try {
 			if (!ValidatePage ())
 				return;
 			if (notebook.Page < notebook.NPages - 1)
 				notebook.Page++;
 			UpdateButtons ();
+			}
+			catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
 		}
 
 		protected virtual void OnNotebookSelectPage(object o, Gtk.SelectPageArgs args)

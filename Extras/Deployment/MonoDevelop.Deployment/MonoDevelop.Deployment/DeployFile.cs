@@ -33,6 +33,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Deployment
 {
@@ -43,6 +44,8 @@ namespace MonoDevelop.Deployment
 		string targetDirectoryID;
 		DeployContext deployContext;
 		bool isTemplate;
+		CombineEntry sourceCombineEntry;
+		string displayName;
 		
 		public DeployFile (ProjectFile pfile)
 		{
@@ -52,23 +55,40 @@ namespace MonoDevelop.Deployment
 			this.relativeTargetPath = props.RelativeDeployPath;
 			if (props.HasPathReferences)
 				isTemplate = true;
+			sourceCombineEntry = pfile.Project;
 		}
 		
-		public DeployFile (string sourcePath, string relativeTargetPath)
-		 : this (sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
+		public DeployFile (CombineEntry sourceCombineEntry, string sourcePath, string relativeTargetPath)
+		 : this (sourceCombineEntry, sourcePath, relativeTargetPath, TargetDirectory.ProgramFiles)
 		{
 		}
 		
-		public DeployFile (string sourcePath, string relativeTargetPath, string targetDirectoryID)
+		public DeployFile (CombineEntry sourceCombineEntry, string sourcePath, string relativeTargetPath, string targetDirectoryID)
 		{
 			this.targetDirectoryID = targetDirectoryID;
 			this.sourcePath = sourcePath;
 			this.relativeTargetPath = relativeTargetPath;
+			this.sourceCombineEntry = sourceCombineEntry;
 		}
 		
 		internal void SetContext (DeployContext deployContext)
 		{
 			this.deployContext = deployContext;
+		}
+		
+		public CombineEntry SourceCombineEntry {
+			get { return sourceCombineEntry; }
+		}
+		
+		public string DisplayName {
+			get { 
+				if (displayName != null)
+					return displayName;
+				else {
+					return Runtime.FileService.AbsoluteToRelativePath (sourceCombineEntry.BaseDirectory, SourcePath);
+				}
+			}
+			set { displayName = value; }
 		}
 		
 		public string SourcePath {

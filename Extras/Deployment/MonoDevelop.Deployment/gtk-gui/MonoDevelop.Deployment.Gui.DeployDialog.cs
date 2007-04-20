@@ -21,18 +21,6 @@ namespace MonoDevelop.Deployment.Gui {
         
         private Gtk.Notebook notebook;
         
-        private Gtk.VBox pageSelectProject;
-        
-        private Gtk.Label labelTitle1;
-        
-        private Gtk.HSeparator hseparator4;
-        
-        private Gtk.Label label4;
-        
-        private MonoDevelop.Deployment.Gui.EntrySelectionTree entryTree;
-        
-        private Gtk.Label label3;
-        
         private Gtk.VBox vbox3;
         
         private Gtk.Label labelTitle;
@@ -46,6 +34,18 @@ namespace MonoDevelop.Deployment.Gui {
         private Gtk.TreeView targetsTree;
         
         private Gtk.Label label2;
+        
+        private Gtk.VBox pageSelectProject;
+        
+        private Gtk.Label labelTitle1;
+        
+        private Gtk.HSeparator hseparator4;
+        
+        private Gtk.Label label4;
+        
+        private MonoDevelop.Deployment.Gui.EntrySelectionTree entryTree;
+        
+        private Gtk.Label label3;
         
         private Gtk.VBox vbox4;
         
@@ -127,8 +127,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Deployment.Gui.DeployDialog";
             this.Title = Mono.Unix.Catalog.GetString("Create Package");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.Gui.DeployDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
@@ -163,55 +161,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.notebook.ShowBorder = false;
             this.notebook.BorderWidth = ((uint)(6));
             // Container child notebook.Gtk.Notebook+NotebookChild
-            this.pageSelectProject = new Gtk.VBox();
-            this.pageSelectProject.Name = "pageSelectProject";
-            this.pageSelectProject.Spacing = 6;
-            // Container child pageSelectProject.Gtk.Box+BoxChild
-            this.labelTitle1 = new Gtk.Label();
-            this.labelTitle1.Name = "labelTitle1";
-            this.labelTitle1.Xalign = 0F;
-            this.labelTitle1.LabelProp = Mono.Unix.Catalog.GetString("<big><b>Select Project</b></big>");
-            this.labelTitle1.UseMarkup = true;
-            this.pageSelectProject.Add(this.labelTitle1);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.labelTitle1]));
-            w4.Position = 0;
-            w4.Expand = false;
-            w4.Fill = false;
-            // Container child pageSelectProject.Gtk.Box+BoxChild
-            this.hseparator4 = new Gtk.HSeparator();
-            this.hseparator4.Name = "hseparator4";
-            this.pageSelectProject.Add(this.hseparator4);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.hseparator4]));
-            w5.Position = 1;
-            w5.Expand = false;
-            w5.Fill = false;
-            // Container child pageSelectProject.Gtk.Box+BoxChild
-            this.label4 = new Gtk.Label();
-            this.label4.Name = "label4";
-            this.label4.Xalign = 0F;
-            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Select the project or solution for which you want to create a package:");
-            this.pageSelectProject.Add(this.label4);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.label4]));
-            w6.Position = 2;
-            w6.Expand = false;
-            w6.Fill = false;
-            // Container child pageSelectProject.Gtk.Box+BoxChild
-            this.entryTree = new MonoDevelop.Deployment.Gui.EntrySelectionTree();
-            this.entryTree.Events = ((Gdk.EventMask)(256));
-            this.entryTree.Name = "entryTree";
-            this.entryTree.BorderWidth = ((uint)(0));
-            this.pageSelectProject.Add(this.entryTree);
-            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.entryTree]));
-            w7.Position = 3;
-            this.notebook.Add(this.pageSelectProject);
-            Gtk.Notebook.NotebookChild w8 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.pageSelectProject]));
-            w8.TabExpand = false;
-            // Notebook tab
-            this.label3 = new Gtk.Label();
-            this.label3.Name = "label3";
-            this.label3.LabelProp = Mono.Unix.Catalog.GetString("page3");
-            this.notebook.SetTabLabel(this.pageSelectProject, this.label3);
-            // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox3 = new Gtk.VBox();
             this.vbox3.Name = "vbox3";
             this.vbox3.Spacing = 6;
@@ -222,28 +171,28 @@ namespace MonoDevelop.Deployment.Gui {
             this.labelTitle.LabelProp = Mono.Unix.Catalog.GetString("<big><b>Package Type</b></big>");
             this.labelTitle.UseMarkup = true;
             this.vbox3.Add(this.labelTitle);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox3[this.labelTitle]));
-            w9.Position = 0;
-            w9.Expand = false;
-            w9.Fill = false;
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.labelTitle]));
+            w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.hseparator2 = new Gtk.HSeparator();
             this.hseparator2.Name = "hseparator2";
             this.vbox3.Add(this.hseparator2);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox3[this.hseparator2]));
-            w10.Position = 1;
-            w10.Expand = false;
-            w10.Fill = false;
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.hseparator2]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
             this.label1.LabelProp = Mono.Unix.Catalog.GetString("Select the type of package to create:");
             this.vbox3.Add(this.label1);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox3[this.label1]));
-            w11.Position = 2;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.label1]));
+            w6.Position = 2;
+            w6.Expand = false;
+            w6.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
             this.scrolledwindow2 = new Gtk.ScrolledWindow();
             this.scrolledwindow2.CanFocus = true;
@@ -257,17 +206,66 @@ namespace MonoDevelop.Deployment.Gui {
             this.targetsTree.Name = "targetsTree";
             this.scrolledwindow2.Add(this.targetsTree);
             this.vbox3.Add(this.scrolledwindow2);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow2]));
-            w13.Position = 3;
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow2]));
+            w8.Position = 3;
             this.notebook.Add(this.vbox3);
-            Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox3]));
-            w14.Position = 1;
-            w14.TabExpand = false;
+            Gtk.Notebook.NotebookChild w9 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.vbox3]));
+            w9.TabExpand = false;
             // Notebook tab
             this.label2 = new Gtk.Label();
             this.label2.Name = "label2";
-            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page1");
+            this.label2.LabelProp = Mono.Unix.Catalog.GetString("page5");
             this.notebook.SetTabLabel(this.vbox3, this.label2);
+            // Container child notebook.Gtk.Notebook+NotebookChild
+            this.pageSelectProject = new Gtk.VBox();
+            this.pageSelectProject.Name = "pageSelectProject";
+            this.pageSelectProject.Spacing = 6;
+            // Container child pageSelectProject.Gtk.Box+BoxChild
+            this.labelTitle1 = new Gtk.Label();
+            this.labelTitle1.Name = "labelTitle1";
+            this.labelTitle1.Xalign = 0F;
+            this.labelTitle1.LabelProp = Mono.Unix.Catalog.GetString("<big><b>Select Project</b></big>");
+            this.labelTitle1.UseMarkup = true;
+            this.pageSelectProject.Add(this.labelTitle1);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.labelTitle1]));
+            w10.Position = 0;
+            w10.Expand = false;
+            w10.Fill = false;
+            // Container child pageSelectProject.Gtk.Box+BoxChild
+            this.hseparator4 = new Gtk.HSeparator();
+            this.hseparator4.Name = "hseparator4";
+            this.pageSelectProject.Add(this.hseparator4);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.hseparator4]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
+            // Container child pageSelectProject.Gtk.Box+BoxChild
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = Mono.Unix.Catalog.GetString("Select the project or solution for which you want to create a package:");
+            this.pageSelectProject.Add(this.label4);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.label4]));
+            w12.Position = 2;
+            w12.Expand = false;
+            w12.Fill = false;
+            // Container child pageSelectProject.Gtk.Box+BoxChild
+            this.entryTree = new MonoDevelop.Deployment.Gui.EntrySelectionTree();
+            this.entryTree.Events = ((Gdk.EventMask)(256));
+            this.entryTree.Name = "entryTree";
+            this.entryTree.BorderWidth = ((uint)(0));
+            this.pageSelectProject.Add(this.entryTree);
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.pageSelectProject[this.entryTree]));
+            w13.Position = 3;
+            this.notebook.Add(this.pageSelectProject);
+            Gtk.Notebook.NotebookChild w14 = ((Gtk.Notebook.NotebookChild)(this.notebook[this.pageSelectProject]));
+            w14.Position = 1;
+            w14.TabExpand = false;
+            // Notebook tab
+            this.label3 = new Gtk.Label();
+            this.label3.Name = "label3";
+            this.label3.LabelProp = Mono.Unix.Catalog.GetString("page3");
+            this.notebook.SetTabLabel(this.pageSelectProject, this.label3);
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";

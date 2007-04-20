@@ -10,7 +10,7 @@ namespace MonoDevelop.Deployment.Gui
 		bool loading;
 		DeployPlatformInfo[] platforms;
 		
-		public BinariesZipEditorWidget (BinariesZipPackageBuilder builder, CombineEntry entry)
+		public BinariesZipEditorWidget (BinariesZipPackageBuilder builder)
 		{
 			this.Build();
 			
@@ -90,14 +90,14 @@ namespace MonoDevelop.Deployment.Gui
 	
 	class BinariesZipDeployEditor: IPackageBuilderEditor
 	{
-		public bool CanEdit (PackageBuilder target, CombineEntry entry)
+		public bool CanEdit (PackageBuilder target)
 		{
 			return target is BinariesZipPackageBuilder;
 		}
 		
-		public Gtk.Widget CreateEditor (PackageBuilder target, CombineEntry entry)
+		public Gtk.Widget CreateEditor (PackageBuilder target)
 		{
-			return new BinariesZipEditorWidget ((BinariesZipPackageBuilder)target, entry);
+			return new BinariesZipEditorWidget ((BinariesZipPackageBuilder)target);
 		}
 	}
 }
