@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Tasks
 		Project project;
 		int      line;
 		int      column;
-		
+		string errorNumber;
 
 		public override string ToString ()
 		{
@@ -91,6 +91,12 @@ namespace MonoDevelop.Ide.Tasks
 				return type;
 			}
 		}
+
+		public string ErrorNumber {
+			get {
+				return errorNumber;
+			}
+		}
 		
 //		public Task (string fileName, string description, int column, int line)
 //		{
@@ -141,6 +147,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (error.ErrorNumber != String.Empty && error.ErrorNumber != null)
 				description += "(" + error.ErrorNumber + ")";
 			FileName    = error.FileName;
+			errorNumber = error.ErrorNumber;
 		}
 		
 		public void JumpToPosition()

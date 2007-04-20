@@ -173,9 +173,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Menu menu = new Menu ();
 			menu.AccelGroup = new AccelGroup ();
+
                         ImageMenuItem copy = new ImageMenuItem (Gtk.Stock.Copy, menu.AccelGroup);
                         copy.Activated += new EventHandler (OnTaskCopied);
 			menu.Append (copy);
+
+			ImageMenuItem help = new ImageMenuItem (GettextCatalog.GetString ("Show Error Reference"));
+			help.AddAccelerator ("activate", menu.AccelGroup, new AccelKey (Gdk.Key.F1, Gdk.ModifierType.None, AccelFlags.Visible));
+			help.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
+			help.Activated += new EventHandler (OnShowReference);
+			menu.Append (help);
+
+			TreeIter dummy;
+			copy.Sensitive = help.Sensitive = view.Selection.GetSelected (out dummy);
+
 			menu.Popup (null, null, null, 3, Global.CurrentEventTime);
 			menu.ShowAll ();
 		}
@@ -200,6 +211,31 @@ namespace MonoDevelop.Ide.Gui.Pads
 			clipboard.Text = task.ToString();
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = task.ToString();
+		}
+
+		void OnShowReference (object o, EventArgs args)
+		{
+			string reference = null;
+			if (GetSelectedErrorReference (out reference)) {
+				IdeApp.HelpOperations.ShowHelp ("error:" + reference);
+				return;
+			}
+		}
+
+		bool GetSelectedErrorReference (out string reference)
+		{
+			TreeIter iter;
+			TreeModel model;
+
+			if (view.Selection.GetSelected (out model, out iter)) {
+				Task task = (Task) model.GetValue (iter, COL_TASK);
+				if (task != null && !String.IsNullOrEmpty (task.ErrorNumber)) {
+					reference = task.ErrorNumber;
+					return true;
+				}
+			}
+			reference = null;
+			return false;
 		}
 		
 		void AddColumns ()
