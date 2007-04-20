@@ -33,7 +33,8 @@ namespace MonoDevelop.Projects
 		
 		CombineEntry ReadCombineEntry (string file, IProgressMonitor monitor);
 
-		string Export (IProgressMonitor monitor, string sourceFile, string targetPath, IFileFormat format, bool recursive);
+		string Export (IProgressMonitor monitor, string rootSourceFile, string targetPath, IFileFormat format);
+		string Export (IProgressMonitor monitor, string rootSourceFile, string[] childEnryFiles, string targetPath, IFileFormat format);
 
 		bool CanCreateSingleFileProject (string file);
 		Project CreateSingleFileProject (string file);

@@ -109,5 +109,15 @@ namespace MonoDevelop.Projects
 		{
 			list.Clear ();
 		}
+		
+		public void CopyTo (Array array)
+		{
+			list.CopyTo (array);
+		}
+		
+		public void CopyTo (Array array, int index)
+		{
+			list.CopyTo (array, index);
+		}
 	}
 }

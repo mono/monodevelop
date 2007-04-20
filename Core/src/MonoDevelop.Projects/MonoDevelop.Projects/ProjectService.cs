@@ -100,36 +100,62 @@ namespace MonoDevelop.Projects
 			format.WriteFile (entry.FileName, entry, monitor);
 		}
 		
-		public string Export (IProgressMonitor monitor, string sourceFile, string targetPath, IFileFormat format, bool recursive)
+		public string Export (IProgressMonitor monitor, string rootSourceFile, string targetPath, IFileFormat format)
+		{
+			return Export (monitor, rootSourceFile, null, targetPath, format);
+		}
+		
+		public string Export (IProgressMonitor monitor, string rootSourceFile, string[] childEnryFiles, string targetPath, IFileFormat format)
 		{
 			string newFile;
 			CombineEntry entry;
 			
-			if (Path.GetDirectoryName (Path.GetFullPath (sourceFile)) != Runtime.FileService.GetFullPath (targetPath)) {
-				using (CombineEntry sourceEntry = ReadCombineEntry (sourceFile, monitor)) {
-					Export (monitor, sourceEntry, sourceEntry.BaseDirectory, targetPath, recursive);
+			string sourcePath = Path.GetFullPath (Path.GetDirectoryName (rootSourceFile));
+			targetPath = Path.GetFullPath (targetPath);
+			
+			if (sourcePath != targetPath) {
+				using (CombineEntry sourceEntry = ReadCombineEntry (rootSourceFile, monitor)) {
+					Export (monitor, sourceEntry, sourceEntry.BaseDirectory, targetPath, true);
 				}
 				
-				newFile = Path.Combine (targetPath, Path.GetFileName (sourceFile));
+				newFile = Path.Combine (targetPath, Path.GetFileName (rootSourceFile));
 				entry = ReadCombineEntry (newFile, monitor);
 			}
 			else {
-				newFile = sourceFile;
+				newFile = rootSourceFile;
 				entry = ReadCombineEntry (newFile, monitor);
 			}
 			
 			using (entry)
 			{
-				if (format == null || format == entry.FileFormat)
-					return newFile;
+				ArrayList entriesToExport = new ArrayList ();
+				if (childEnryFiles != null) {
+					entriesToExport.Add (Path.GetFullPath (rootSourceFile));
+					foreach (string file in childEnryFiles)
+						entriesToExport.Add (Path.GetFullPath (file));
+				} else if (entry is Combine) {
+					foreach (CombineEntry e in ((Combine)entry).GetAllEntries ())
+						entriesToExport.Add (e.FileName);
+				}
+				
+				if (sourcePath != targetPath) {
+					// The file location has changed
+					for (int n=0; n<entriesToExport.Count; n++) {
+						string file = (string) entriesToExport [n];
+						file = Runtime.FileService.AbsoluteToRelativePath (sourcePath, file);
+						file = Runtime.FileService.RelativeToAbsolutePath (targetPath, file);
+						file = Path.GetFullPath (file);
+						entriesToExport [n] = file;
+					}
+				}
 				
 				// The project needs to be converted
 				
 				ArrayList oldFiles = new ArrayList ();
-				ChangeFormat (monitor, entry, format, oldFiles, recursive);
+				ChangeFormat (monitor, entry, entriesToExport, format, oldFiles);
 				entry.Save (monitor);
 				
-				if (newFile != sourceFile) {
+				if (newFile != rootSourceFile) {
 					foreach (string file in oldFiles)
 						File.Delete (file);
 				}
@@ -163,21 +189,37 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		void ChangeFormat (IProgressMonitor monitor, CombineEntry entry, IFileFormat format, ArrayList oldFiles, bool recursive)
+		bool ChangeFormat (IProgressMonitor monitor, CombineEntry entry, ArrayList entriesToExport, IFileFormat format, ArrayList oldFiles)
 		{
 			if (entry is Combine) {
-				foreach (CombineEntry e in ((Combine)entry).Entries)
-					ChangeFormat (monitor, e, format, oldFiles, true);
+				bool needsConversion = false;
+				Combine comb = (Combine) entry;
+				CombineEntry[] ents = new CombineEntry [comb.Entries.Count];
+				comb.Entries.CopyTo (ents);
+				foreach (CombineEntry e in ents) {
+					if (ChangeFormat (monitor, e, entriesToExport, format, oldFiles))
+						needsConversion = true;
+					else
+						comb.Entries.Remove (e);
+				}
+				if (!needsConversion && !entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName)))
+					return false;
 			}
-			if (!format.CanWriteFile (entry)) {
-				monitor.ReportWarning (GettextCatalog.GetString ("The project or solution '{0}' can't be converted to format '{1}'", entry.Name, format.Name));
-				return;
+			else {
+				if (!entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName)))
+					return false;
+			}
+			
+			if (format != null) {
+				if (!format.CanWriteFile (entry)) {
+					monitor.ReportWarning (GettextCatalog.GetString ("The project or solution '{0}' can't be converted to format '{1}'", entry.Name, format.Name));
+					return false;
+				}
+				entry.FileFormat = format;
+				entry.FileName = format.GetValidFormatName (entry, entry.FileName);
 			}
 			
 			StringCollection prevFiles = entry.GetExportFiles ();
-			
-			entry.FileFormat = format;
-			entry.FileName = format.GetValidFormatName (entry, entry.FileName);
 			
 			// Add to oldFiles the files which are not included in the new format
 			
@@ -186,6 +228,7 @@ namespace MonoDevelop.Projects
 				if (!newFiles.Contains (file))
 					oldFiles.Add (file);
 			}
+			return true;
 		}
 		
 		public bool CanCreateSingleFileProject (string file)

@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects
 				destPath = Path.GetDirectoryName (projectFile);
 			destPath = Runtime.FileService.GetFullPath (destPath);
 			
-			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format, true);
+			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format);
 			Console.WriteLine ("Saved file: " + ofile);
 			return 0;
 		}
