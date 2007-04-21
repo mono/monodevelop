@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using MonoDevelop.Deployment;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Deployment.Linux
 {
@@ -46,8 +47,9 @@ namespace MonoDevelop.Deployment.Linux
 			string outfile = data.ScriptName;
 			if (string.IsNullOrEmpty (outfile))
 				outfile = netProject.Name.ToLower ();
-			DeployFile df = new DeployFile (file, outfile, TargetDirectory.Binaries);
+			DeployFile df = new DeployFile (netProject, file, outfile, TargetDirectory.Binaries);
 			df.ContainsPathReferences = true;
+			df.DisplayName = GettextCatalog.GetString ("Launch cript for {0}", netProject.Name);
 			return df;
 		}
 		
@@ -66,8 +68,9 @@ namespace MonoDevelop.Deployment.Linux
 				sw.WriteLine ("Libs: " + libs);
 			}
 			string outfile = netProject.Name.ToLower () + ".pc";
-			DeployFile df = new DeployFile (file, outfile, LinuxTargetDirectory.PkgConfig);
+			DeployFile df = new DeployFile (netProject, file, outfile, LinuxTargetDirectory.PkgConfig);
 			df.ContainsPathReferences = true;
+			df.DisplayName = GettextCatalog.GetString ("pkg-config file for {0}", netProject.Name);
 			return df;
 		}
 		

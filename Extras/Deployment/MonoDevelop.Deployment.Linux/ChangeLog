@@ -1,3 +1,10 @@
+2007-04-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.mdp: Updated.
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: Provide the
+	  source project and a description for generated .pc and script
+	  files.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com>
 
 	New unix deployment add-in.
