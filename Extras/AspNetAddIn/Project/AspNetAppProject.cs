@@ -151,12 +151,12 @@ namespace AspNetAddIn
 			
 			//add referenced libraries
 			foreach (string refFile in GetReferenceDeployFiles (false))
-				files.Add (new DeployFile (refFile, Path.Combine ("bin", Path.GetFileName (refFile)), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, refFile, Path.Combine ("bin", Path.GetFileName (refFile)), TargetDirectory.ProgramFiles));
 			
 			//add the compiled output file
 			string outputFile = this.GetOutputFileName ();
 			if (!string.IsNullOrEmpty (outputFile))
-				files.Add (new DeployFile (outputFile, Path.Combine ("bin", Path.GetFileName (outputFile)), TargetDirectory.ProgramFiles));
+				files.Add (new DeployFile (this, outputFile, Path.Combine ("bin", Path.GetFileName (outputFile)), TargetDirectory.ProgramFiles));
 			
 			return files;
 		}
