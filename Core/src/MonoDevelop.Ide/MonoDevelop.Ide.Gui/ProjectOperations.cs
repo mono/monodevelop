@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 					string folder = dlg.TargetFolder;
 					string tmpFolder = null;
 					
-					Services.ProjectService.Export (mon, entry.FileName, folder, format, true);
+					Services.ProjectService.Export (mon, entry.FileName, folder, format);
 				}
 			}
 			dlg.Destroy ();
