@@ -9,8 +9,10 @@ namespace MonoDevelop.Autotools
 {
 	public class TarballTargetEditorWidget : VBox
 	{
-		public TarballTargetEditorWidget (TarballDeployTarget target, Combine targetCombine)
+		public TarballTargetEditorWidget (TarballDeployTarget target)
 		{
+			Combine targetCombine = target.RootCombineEntry as Combine;
+			
 			HBox dir_entry = new HBox ();
 			
 			Label lab = new Label ( GettextCatalog.GetString ("Deploy directory:") );

@@ -1,3 +1,10 @@
+2007-04-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SimpleProjectMakefileHandler.cs, TarballTargetEditorWidget.cs: Track
+	  api changes.
+	* Handler.cs: Track api changes. Added support for exporting a
+	  selection of projects from a solution.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml, Commands.cs,

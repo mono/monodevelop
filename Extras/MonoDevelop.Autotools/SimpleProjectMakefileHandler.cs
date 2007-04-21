@@ -170,7 +170,7 @@ namespace MonoDevelop.Autotools
 				StringBuilder deployBinaries = new StringBuilder ();
 				Hashtable deployDirs = new Hashtable ();
 				
-				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx.DeployContext, project);
+				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx.DeployContext, new CombineEntry[] { project });
 				foreach (DeployFile dfile in deployFiles) {
 					if (dfile.SourcePath == project.GetOutputFileName ())
 						continue;

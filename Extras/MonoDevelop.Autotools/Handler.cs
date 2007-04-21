@@ -46,7 +46,11 @@ namespace MonoDevelop.Autotools
 		public override bool CanBuild (CombineEntry entry)
 		{
 			Combine combine = entry as Combine;
-			if ( combine == null ) return false;
+			if (combine == null)
+				combine = entry.ParentCombine;
+			if (combine == null)
+				return false;
+			
 			SolutionDeployer deployer = new SolutionDeployer ();
 			return deployer.CanDeploy ( combine );
 		}
@@ -62,13 +66,27 @@ namespace MonoDevelop.Autotools
 		}
 
 		
-		protected override void OnBuild (IProgressMonitor monitor, CombineEntry entry)
+		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = Runtime.FileService.CreateTempDirectory ();
 			Combine combine = null;
+			CombineEntry entry = RootCombineEntry;
 			
 			try {
-				string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, tmpFolder, null, true);
+				string[] childEntries;
+				if (entry is Combine) {
+					CombineEntry[] ents = GetChildEntries ();
+					childEntries = new string [ents.Length];
+					for (int n=0; n<ents.Length; n++)
+						childEntries [n] = ents [n].FileName;
+				}
+				else {
+					// If the entry is not a combine, use the parent combine as base combine
+					childEntries = new string [] { entry.FileName };
+					entry = entry.ParentCombine;
+				}
+				
+				string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, childEntries, tmpFolder, null);
 				combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
 				combine.Build (monitor);
 			
@@ -77,12 +95,11 @@ namespace MonoDevelop.Autotools
 			
 				SolutionDeployer deployer = new SolutionDeployer ();
 				
-				using (DeployContext ctx = new DeployContext (this, "Linux", null)) {
-					if (DefaultConfiguration == null || DefaultConfiguration == "")
-						deployer.Deploy ( ctx, combine, TargetDir, monitor );
-					else
-						deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, monitor );
-				}
+				if (DefaultConfiguration == null || DefaultConfiguration == "")
+					deployer.Deploy ( ctx, combine, TargetDir, monitor );
+				else
+					deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, monitor );
+				
 			} finally {
 				if (combine != null)
 					combine.Dispose ();
@@ -110,14 +127,14 @@ namespace MonoDevelop.Autotools
 	
 	public class TarballTargetEditor: IPackageBuilderEditor
 	{
-		public bool CanEdit (PackageBuilder target, CombineEntry entry)
+		public bool CanEdit (PackageBuilder target)
 		{
 			return target is TarballDeployTarget;
 		}
 		
-		public Gtk.Widget CreateEditor (PackageBuilder target, CombineEntry entry)
+		public Gtk.Widget CreateEditor (PackageBuilder target)
 		{
-			return new TarballTargetEditorWidget ((TarballDeployTarget) target, (Combine) entry);
+			return new TarballTargetEditorWidget ((TarballDeployTarget) target);
 		}
 	}
 }
