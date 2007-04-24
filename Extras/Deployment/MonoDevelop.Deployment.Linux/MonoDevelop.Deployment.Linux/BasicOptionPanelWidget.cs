@@ -19,8 +19,8 @@ namespace MonoDevelop.Deployment.Linux
 			this.entry = entry;
 			if (entry is DotNetProject) {
 				DotNetProjectConfiguration conf = entry.ActiveConfiguration as DotNetProjectConfiguration;
-				boxExe.Visible = (conf.CompileTarget == CompileTarget.Exe);
-				boxLibrary.Visible = (conf.CompileTarget == CompileTarget.Library);
+				boxExe.Visible = (conf.CompileTarget == CompileTarget.Exe || conf.CompileTarget == CompileTarget.WinExe);
+				boxLibrary.Visible = (conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll"));
 			} else {
 				boxExe.Visible = boxLibrary.Visible = false;
 			}

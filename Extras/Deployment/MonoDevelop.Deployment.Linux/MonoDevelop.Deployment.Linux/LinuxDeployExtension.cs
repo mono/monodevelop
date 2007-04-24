@@ -18,14 +18,16 @@ namespace MonoDevelop.Deployment.Linux
 				if (netProject != null) {
 					LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (netProject);
 					DotNetProjectConfiguration conf = netProject.ActiveConfiguration as DotNetProjectConfiguration;
-					if (conf != null && conf.CompileTarget == CompileTarget.Exe) {
-						if (data.GenerateScript) {
-							col.Add (GenerateLaunchScript (ctx, netProject, data, conf));
+					if (conf != null) {
+						if (conf.CompileTarget == CompileTarget.Exe || conf.CompileTarget == CompileTarget.WinExe) {
+							if (data.GenerateScript) {
+								col.Add (GenerateLaunchScript (ctx, netProject, data, conf));
+							}
 						}
-					}
-					if (conf != null && conf.CompileTarget == CompileTarget.Library) {
-						if (data.GeneratePcFile) {
-							col.Add (GeneratePcFile (ctx, netProject, data, conf));
+						if (conf.CompileTarget == CompileTarget.Library || conf.CompiledOutputName.EndsWith (".dll")) {
+							if (data.GeneratePcFile) {
+								col.Add (GeneratePcFile (ctx, netProject, data, conf));
+							}
 						}
 					}
 				}
