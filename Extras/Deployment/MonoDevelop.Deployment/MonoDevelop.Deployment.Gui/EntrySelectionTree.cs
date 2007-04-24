@@ -13,6 +13,8 @@ namespace MonoDevelop.Deployment.Gui
 		Hashtable selectedEntries = new Hashtable ();
 		PackageBuilder builder;
 		
+		public event EventHandler SelectionChanged;
+		
 		public EntrySelectionTree ()
 		{
 			this.Build();
@@ -86,6 +88,15 @@ namespace MonoDevelop.Deployment.Gui
 			}
 		}
 		
+		public void SetSelection (CombineEntry rootEntry, CombineEntry[] childEntries)
+		{
+			selectedEntries.Clear ();
+			selectedEntries [rootEntry] = rootEntry;
+			foreach (CombineEntry e in childEntries)
+				selectedEntries [e] = e;
+			UpdateSelectionChecks (TreeIter.Zero, true);
+		}
+		
 		public CombineEntry GetSelectedEntry ()
 		{
 			return GetCommonCombineEntry ();
@@ -95,6 +106,8 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			// The first entry is the root entry
 			CombineEntry common = GetCommonCombineEntry ();
+			if (common == null)
+				return null;
 			ArrayList list = new ArrayList ();
 			foreach (CombineEntry e in selectedEntries.Keys)
 				if (e != common)
@@ -113,7 +126,7 @@ namespace MonoDevelop.Deployment.Gui
 				if (ob is Combine) {
 					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ())
 						selectedEntries.Remove (e);
-					UpdateSelectionChecks (TreeIter.Zero);
+					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
 			} else {
 				selectedEntries [ob] = ob;
@@ -121,13 +134,15 @@ namespace MonoDevelop.Deployment.Gui
 				if (ob is Combine) {
 					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ())
 						selectedEntries [e] = e;
-					UpdateSelectionChecks (TreeIter.Zero);
+					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
 				SelectCommonCombine ((CombineEntry)ob);
 			}
+			if (SelectionChanged != null)
+				SelectionChanged (this, EventArgs.Empty);
 		}
 		
-		void UpdateSelectionChecks (TreeIter iter)
+		void UpdateSelectionChecks (TreeIter iter, bool expandSelected)
 		{
 			if (iter.Equals (TreeIter.Zero)) {
 				if (!store.GetIterFirst (out iter))
@@ -140,7 +155,9 @@ namespace MonoDevelop.Deployment.Gui
 			do {
 				bool sel = selectedEntries.Contains (store.GetValue (iter, 2));
 				store.SetValue (iter, 3, sel);
-				UpdateSelectionChecks (iter);
+				if (sel)
+					tree.ExpandToPath (store.GetPath (iter));
+				UpdateSelectionChecks (iter, expandSelected);
 			}
 			while (store.IterNext (ref iter));
 		}
@@ -148,6 +165,8 @@ namespace MonoDevelop.Deployment.Gui
 		void SelectCommonCombine (CombineEntry e)
 		{
 			CombineEntry common = GetCommonCombineEntry ();
+			if (common == null)
+				return;
 			selectedEntries [common] = common;
 			CombineEntry[] entries = new CombineEntry [selectedEntries.Count];
 			selectedEntries.Keys.CopyTo (entries, 0);
@@ -158,7 +177,7 @@ namespace MonoDevelop.Deployment.Gui
 					ce = ce.ParentCombine;
 				}
 			}
-			UpdateSelectionChecks (TreeIter.Zero);
+			UpdateSelectionChecks (TreeIter.Zero, false);
 		}
 		
 		CombineEntry GetCommonCombineEntry ()
@@ -183,7 +202,10 @@ namespace MonoDevelop.Deployment.Gui
 				
 				firstEntry = false;
 			}
-			return (CombineEntry) combineList [0];
+			if (combineList.Count == 0)
+				return null;
+			else
+				return (CombineEntry) combineList [0];
 		}
 	}
 }

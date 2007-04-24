@@ -1,3 +1,37 @@
+2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/PackagingProject.cs,
+	  MonoDevelop.Deployment.Commands/Commands.cs: Provide the package
+	  name when creating a new package.
+	* MonoDevelop.Deployment/DeployService.cs: In GetDeployFiles, remove
+	  files excluded by the deploy context.
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Clone the
+	  file list returned by IDeployable, since the list is going to be
+	  modified.
+	* MonoDevelop.Deployment/DeployFile.cs: Added copy constructor.
+	* MonoDevelop.Deployment/DeployContext.cs: Added method which allows
+	  filtering the deploy file list.
+	* MonoDevelop.Deployment/PackageBuilder.cs: Added property which allows
+	  specifying files which have to be excluded from the package. If a
+	  combine is open in the IDE, try to get combine entries to package
+	  from it.
+	* MonoDevelop.Deployment/DeployProperties.cs: TargetDirectory now
+	  returns ProgramFiles by default.
+	* gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs: Removed the
+	  Add button.
+	* gtk-gui/objects.xml: Updated.
+	* gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Deployment.Gui/EditPackageDialog.cs,
+	  MonoDevelop.Deployment.Gui/EntrySelectionTree.cs: Added a page for
+	  selecting the combine entries to deploy.
+	* MonoDevelop.Deployment.Gui/DeployFileListWidget.cs: Allow selecting
+	  the files to deploy.
+	* MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs: Track
+	  api changes.
+	* MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs: Source
+	  package don't need a deploy context.
+
 2007-04-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.mdp, Makefile.am: Updated.

@@ -159,14 +159,23 @@ namespace MonoDevelop.Deployment
 		
 		static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
 		{
+			ArrayList todel = new ArrayList ();
+			
 			DeployFileCollection col = GetExtensionChain ().GetDeployFiles (ctx, entry);
 			foreach (DeployFile df in col) {
+				if (!ctx.IncludeFile (df)) {
+					todel.Add (df);
+					continue;
+				}
 				df.SetContext (ctx);
 				if (df.ContainsPathReferences) {
 					string name = df.DisplayName;
 					df.SourcePath = ProcessFileTemplate (ctx, df.SourcePath);
 					df.DisplayName = name;
 				}
+			}
+			foreach (DeployFile df in todel) {
+				col.Remove (df);
 			}
 			return col;
 		}

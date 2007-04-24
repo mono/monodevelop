@@ -64,7 +64,7 @@ namespace MonoDevelop.Deployment
 			DeployDialog dlg = new DeployDialog (project.ParentCombine, true);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					project.AddPackage (dlg.PackageBuilder);
+					project.AddPackage (dlg.NewPackageName, dlg.PackageBuilder);
 					IdeApp.ProjectOperations.SaveCombineEntry (project);
 				}
 			} finally {

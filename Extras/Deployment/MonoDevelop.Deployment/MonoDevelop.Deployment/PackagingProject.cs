@@ -19,9 +19,10 @@ namespace MonoDevelop.Deployment
 			packages = new PackageCollection (this);
 		}
 		
-		public Package AddPackage (PackageBuilder builder)
+		public Package AddPackage (string name, PackageBuilder builder)
 		{
 			Package p = new Package ();
+			p.Name = name;
 			p.PackageBuilder = builder;
 			packages.Add (p);
 			return p;

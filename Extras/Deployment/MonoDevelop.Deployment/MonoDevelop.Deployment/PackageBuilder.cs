@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment
 {
@@ -43,6 +44,10 @@ namespace MonoDevelop.Deployment
 		[ItemProperty ("ChildEntries")]
 		[ProjectPathItemProperty ("Entry", Scope=1)]
 		List<string> childEntries = new List<string> ();
+		
+		[ItemProperty ("ExcludedFiles")]
+		[ItemProperty ("File", Scope=1)]
+		List<string> excludedFiles;
 		
 		[ProjectPathItemProperty]
 		string rootEntry;
@@ -73,6 +78,8 @@ namespace MonoDevelop.Deployment
 			DeployContext ctx = null;
 			try {
 				ctx = CreateDeployContext ();
+				if (ctx != null)
+					ctx.FileFilter = this;
 				OnBuild (monitor, ctx);
 			} catch (Exception ex) {
 				monitor.ReportError ("Package creation failed", ex);
@@ -108,6 +115,10 @@ namespace MonoDevelop.Deployment
 				childCombineEntries = new List<CombineEntry> (other.childCombineEntries);
 			else
 				childCombineEntries = null;
+			if (other.excludedFiles != null)
+				excludedFiles = new List<string> (other.excludedFiles);
+			else
+				excludedFiles = null;
 			rootCombineEntry = other.rootCombineEntry;
 		}
 		
@@ -148,7 +159,7 @@ namespace MonoDevelop.Deployment
 		public CombineEntry RootCombineEntry {
 			get {
 				if (rootCombineEntry == null && rootEntry != null) {
-					rootCombineEntry = Services.ProjectService.ReadCombineEntry (rootEntry, new NullProgressMonitor ());
+					rootCombineEntry = GetEntry (rootEntry);
 				}
 				return rootCombineEntry; 
 			}
@@ -161,7 +172,7 @@ namespace MonoDevelop.Deployment
 			
 			childCombineEntries = new List<CombineEntry> ();
 			foreach (string en in childEntries) {
-				CombineEntry re = Services.ProjectService.ReadCombineEntry (en, new NullProgressMonitor ());
+				CombineEntry re = GetEntry (en);
 				if (re != null && !(re is UnknownCombineEntry))
 					childCombineEntries.Add (re);
 			}
@@ -175,6 +186,55 @@ namespace MonoDevelop.Deployment
 				list.Add (RootCombineEntry);
 			list.AddRange (GetChildEntries ());
 			return list.ToArray ();
+		}
+		
+		CombineEntry GetEntry (string fileName)
+		{
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
+				CombineEntry fe = FindEntry (IdeApp.ProjectOperations.CurrentOpenCombine, Runtime.FileService.GetFullPath (fileName));
+				return fe;
+			}
+			return Services.ProjectService.ReadCombineEntry (fileName, new NullProgressMonitor ());
+		}
+		
+		CombineEntry FindEntry (CombineEntry e, string fileName)
+		{
+			if (Runtime.FileService.GetFullPath (e.FileName) == fileName)
+				return e;
+			if (e is Combine) {
+				foreach (CombineEntry ce in ((Combine)e).Entries) {
+					CombineEntry fe = FindEntry (ce, fileName);
+					if (fe != null)
+						return fe;
+				}
+			}
+			return null;
+		}
+		
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx)
+		{
+			return DeployService.GetDeployFiles (ctx, GetAllEntries ());
+		}
+		
+		public bool IsFileIncluded (DeployFile file)
+		{
+			if (excludedFiles == null)
+				return true;
+			return !excludedFiles.Contains (GetKey (file));
+		}
+		
+		public void SetFileIncluded (DeployFile file, bool included)
+		{
+			if (excludedFiles == null)
+				excludedFiles = new List<string> ();
+			excludedFiles.Remove (GetKey (file));
+			if (!included)
+				excludedFiles.Add (GetKey (file));
+		}
+		
+		string GetKey (DeployFile file)
+		{
+			return file.SourceCombineEntry.Name + "," + file.TargetDirectoryID + "," + file.RelativeTargetPath;
 		}
 	}
 }

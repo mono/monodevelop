@@ -11,7 +11,7 @@ namespace MonoDevelop.Deployment
 		public override DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
 		{
 			if (entry is IDeployable)
-				return ((IDeployable)entry).GetDeployFiles ();
+				return new DeployFileCollection (((IDeployable)entry).GetDeployFiles ());
 			
 			return base.GetDeployFiles (ctx, entry);
 		}

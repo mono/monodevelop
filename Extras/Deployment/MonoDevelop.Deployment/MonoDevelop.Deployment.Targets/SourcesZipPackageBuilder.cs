@@ -108,5 +108,11 @@ namespace MonoDevelop.Deployment
 			format = builder.format;
 			fileFormat = builder.fileFormat;
 		}
+		
+		public override DeployContext CreateDeployContext ()
+		{
+			return null;
+		}
+
 	}
 }

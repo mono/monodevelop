@@ -21,20 +21,31 @@ namespace MonoDevelop.Deployment
 		const int ColTargetDir = 2;
 		const int ColDestFile = 3;
 		const int ColProject = 4;
+		const int ColIncluded = 5;
 		
 		public DeployFileListWidget()
 		{
 			this.Build();
 			
-			store = new ListStore (typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
+			store = new ListStore (typeof(object), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool));
 			fileList.Model = store;
 			
-			CellRendererText crt = new CellRendererText ();
+			CellRendererToggle tog = new CellRendererToggle ();
 			TreeViewColumn col = new TreeViewColumn ();
+			tog.Toggled += OnToggled;
+			col.Title = "";
+			col.PackStart (tog, false);
+			col.AddAttribute (tog, "active", ColIncluded);
+			col.SortColumnId = ColIncluded;
+			fileList.AppendColumn (col);
+			
+			CellRendererText crt = new CellRendererText ();
+			col = new TreeViewColumn ();
 			col.Title = "Solution/Project";
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", ColProject);
-			col.SortColumnId = 0;
+			col.SortColumnId = ColProject;
+			col.Resizable = true;
 			fileList.AppendColumn (col);
 			
 			crt = new CellRendererText ();
@@ -42,7 +53,8 @@ namespace MonoDevelop.Deployment
 			col.Title = "Source File";
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", ColSourceFile);
-			col.SortColumnId = 1;
+			col.SortColumnId = ColSourceFile;
+			col.Resizable = true;
 			fileList.AppendColumn (col);
 			
 			crt = new CellRendererText ();
@@ -50,7 +62,8 @@ namespace MonoDevelop.Deployment
 			col.Title = "Target Directory";
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", ColTargetDir);
-			col.SortColumnId = 2;
+			col.SortColumnId = ColTargetDir;
+			col.Resizable = true;
 			fileList.AppendColumn (col);
 			
 			crt = new CellRendererText ();
@@ -58,10 +71,11 @@ namespace MonoDevelop.Deployment
 			col.Title = "Target Path";
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", ColDestFile);
-			col.SortColumnId = 3;
+			col.SortColumnId = ColDestFile;
+			col.Resizable = true;
 			fileList.AppendColumn (col);
 			
-			store.SetSortColumnId (0, SortType.Ascending);
+			store.SetSortColumnId (ColProject, SortType.Ascending);
 		}
 		
 		public void Fill (PackageBuilder builder)
@@ -72,12 +86,12 @@ namespace MonoDevelop.Deployment
 			this.builder = builder;
 			this.context = builder.CreateDeployContext ();
 			
-			files = DeployService.GetDeployFiles (context, builder.GetAllEntries ());
+			files = builder.GetDeployFiles (context);
 			
 			store.Clear ();
 			foreach (DeployFile file in files) {
 				string desc = GetDirectoryName (file.TargetDirectoryID);
-				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath, file.SourceCombineEntry.Name);
+				store.AppendValues (file, file.DisplayName, desc, file.RelativeTargetPath, file.SourceCombineEntry.Name, builder.IsFileIncluded (file));
 			}
 		}
 		
@@ -95,5 +109,14 @@ namespace MonoDevelop.Deployment
 			base.Dispose ();
 		}
 
+		void OnToggled (object sender, Gtk.ToggledArgs args)
+		{
+			TreeIter iter;
+			store.GetIterFromString (out iter, args.Path);
+			DeployFile file = (DeployFile) store.GetValue (iter, ColObject);
+			bool inc = !builder.IsFileIncluded (file);
+			builder.SetFileIncluded (file, inc);
+			store.SetValue (iter, ColIncluded, inc);
+		}
 	}
 }

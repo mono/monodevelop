@@ -48,6 +48,7 @@
         <signal name="Removed" />
         <signal name="FocusChildSet" />
         <signal name="Added" />
+        <signal name="SelectionChanged" />
       </itemgroup>
     </signals>
   </object>

@@ -52,7 +52,7 @@ namespace MonoDevelop.Deployment
 				string folder = Runtime.FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				
 				// Export the binary files
-				DeployFileCollection deployFiles = DeployService.GetDeployFiles (ctx, GetAllEntries ());
+				DeployFileCollection deployFiles = GetDeployFiles (ctx);
 				foreach (DeployFile file in deployFiles) {
 					string tfile = Path.Combine (folder, file.ResolvedTargetFile);
 					string tdir = Runtime.FileService.GetFullPath (Path.GetDirectoryName (tfile));

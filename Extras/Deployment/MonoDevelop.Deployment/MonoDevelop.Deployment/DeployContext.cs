@@ -10,6 +10,7 @@ namespace MonoDevelop.Deployment
 		string platform;
 		string prefix;
 		IDirectoryResolver resolver;
+		PackageBuilder fileFilter;
 		
 		Random rand = new Random ();
 		ArrayList tempFiles = new ArrayList ();
@@ -38,9 +39,22 @@ namespace MonoDevelop.Deployment
 			return Path.Combine (dir, relativeTargetPath);
 		}
 		
+		public virtual bool IncludeFile (DeployFile file)
+		{
+			if (fileFilter != null)
+				return fileFilter.IsFileIncluded (file);
+			else
+				return true;
+		}
+		
 		internal IDirectoryResolver Resolver {
 			get { return resolver; }
 			set { resolver = value; }
+		}
+		
+		internal PackageBuilder FileFilter {
+			get { return fileFilter; }
+			set { fileFilter = value; }
 		}
 		
 		public string Platform {

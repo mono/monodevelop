@@ -19,13 +19,19 @@ namespace MonoDevelop.Deployment.Gui
 			target = package.PackageBuilder.Clone ();
 			this.Title = target.Description;
 			
-			labelHandler.Markup = "<b>" + target.Description + "</b>";
-			iconHandler.Pixbuf = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.Menu);
+			this.Icon = MonoDevelop.Core.Gui.Services.Resources.GetIcon (target.Icon, Gtk.IconSize.Menu);
 			entryName.Text = package.Name;
 			
 			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);
 			
-			fileListView.Fill (target);
+			entrySelector.Fill (target, null);
+			entrySelector.SetSelection (target.RootCombineEntry, target.GetChildEntries ());
+			
+			DeployContext ctx = target.CreateDeployContext ();
+			if (ctx == null)
+				pageFiles.Hide ();
+			else
+				ctx.Dispose ();
 		}
 
 		protected virtual void OnEntryNameChanged(object sender, System.EventArgs e)
@@ -43,6 +49,20 @@ namespace MonoDevelop.Deployment.Gui
 			package.Name = entryName.Text;
 			package.PackageBuilder = target.Clone ();
 			Respond (Gtk.ResponseType.Ok);
+		}
+
+		protected virtual void OnEntrySelectorSelectionChanged(object sender, System.EventArgs e)
+		{
+			CombineEntry ce = entrySelector.GetSelectedEntry ();
+			if (ce != null)
+				target.SetCombineEntry (ce, entrySelector.GetSelectedChildren ());
+		}
+
+		protected virtual void OnNotebookSwitchPage(object o, Gtk.SwitchPageArgs args)
+		{
+			if (args.PageNum == 2) {
+				fileListView.Fill (target);
+			}
 		}
 	}
 }

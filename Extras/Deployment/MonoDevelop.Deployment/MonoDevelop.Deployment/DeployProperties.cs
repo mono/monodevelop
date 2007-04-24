@@ -16,7 +16,11 @@ namespace MonoDevelop.Deployment
 		
 		public string TargetDirectory {
 			get {
-				return file.ExtendedProperties ["DeployService.TargetDirectoryId"] as string;
+				string d = file.ExtendedProperties ["DeployService.TargetDirectoryId"] as string;
+				if (string.IsNullOrEmpty (d))
+					return MonoDevelop.Deployment.TargetDirectory.ProgramFiles;
+				else
+					return d;
 			}
 			set {
 				if (string.IsNullOrEmpty (value))

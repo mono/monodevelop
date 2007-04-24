@@ -23,8 +23,6 @@ namespace MonoDevelop.Deployment {
         
         private Gtk.HBox hbox2;
         
-        private Gtk.Button button173;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Deployment.DeployFileListWidget
@@ -64,23 +62,11 @@ namespace MonoDevelop.Deployment {
             this.hbox2 = new Gtk.HBox();
             this.hbox2.Name = "hbox2";
             this.hbox2.Spacing = 6;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.button173 = new Gtk.Button();
-            this.button173.CanFocus = true;
-            this.button173.Name = "button173";
-            this.button173.UseStock = true;
-            this.button173.UseUnderline = true;
-            this.button173.Label = "gtk-add";
-            this.hbox2.Add(this.button173);
-            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox2[this.button173]));
-            w4.Position = 0;
+            this.vbox2.Add(this.hbox2);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            w4.Position = 2;
             w4.Expand = false;
             w4.Fill = false;
-            this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
-            w5.Position = 2;
-            w5.Expand = false;
-            w5.Fill = false;
             this.Add(this.vbox2);
             if ((this.Child != null)) {
                 this.Child.ShowAll();

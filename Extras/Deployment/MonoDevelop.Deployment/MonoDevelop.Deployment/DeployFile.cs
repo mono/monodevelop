@@ -122,5 +122,12 @@ namespace MonoDevelop.Deployment
 	
 	public class DeployFileCollection : List<DeployFile>
 	{
+		public DeployFileCollection ()
+		{
+		}
+		
+		public DeployFileCollection (DeployFileCollection other): base (other)
+		{
+		}
 	}
 }
