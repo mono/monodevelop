@@ -1,5 +1,10 @@
 2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Properly destroy the file
+	  selector dialog.
+
+2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs,
 	  MonoDevelop.Ide.Gui.Pads.ProjectPad/CombineNodeBuilder.cs: Show the
 	  options dialog when double-clicking on a project or solution.

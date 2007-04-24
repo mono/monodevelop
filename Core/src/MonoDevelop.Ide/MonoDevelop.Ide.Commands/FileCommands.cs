@@ -99,7 +99,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run()
 		{
-			using (FileSelectorDialog fs = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"))) {
+			FileSelectorDialog fs = new FileSelectorDialog (GettextCatalog.GetString ("File to Open"));
+			try {
 				
 				int response = fs.Run ();
 				string name = fs.Filename;
@@ -120,6 +121,9 @@ namespace MonoDevelop.Ide.Commands
 					else
 						IdeApp.Workbench.OpenDocument (name, fs.Encoding);
 				}	
+			}
+			finally {
+				fs.Destroy ();
 			}
 		}
 	}
