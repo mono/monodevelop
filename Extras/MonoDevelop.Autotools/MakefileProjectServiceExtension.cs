@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -117,6 +118,19 @@ namespace MonoDevelop.Autotools
 					"Error saving to Makefile ({0}) for project {1}", data.AbsoluteMakefileName, project.Name), e);
 			}
 		}
+		
+		public override StringCollection GetExportFiles (CombineEntry entry)
+		{
+			StringCollection col = base.GetExportFiles (entry);
+			
+			MakefileData data = entry.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			if (data == null || !data.IntegrationEnabled || string.IsNullOrEmpty (data.AbsoluteMakefileName))
+				return col;
+			
+			col.Add (data.AbsoluteMakefileName);
+			return col;
+		}
+
 
 		//TODO
 		public override bool GetNeedsBuilding (CombineEntry entry)

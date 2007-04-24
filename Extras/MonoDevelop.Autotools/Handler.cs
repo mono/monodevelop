@@ -21,6 +21,9 @@ namespace MonoDevelop.Autotools
 		[ItemProperty ("DefaultConfiguration")]
 		string defaultConfig;
 		
+		[ItemProperty ("GenerateFiles", DefaultValue=true)]
+		bool generateFiles = true;
+		
 		public override string Description {
 			get { return GettextCatalog.GetString ("Tarball"); }
 		}
@@ -31,6 +34,12 @@ namespace MonoDevelop.Autotools
 			TarballDeployTarget target = other as TarballDeployTarget;
 			targetDir = target.targetDir;
 			defaultConfig = target.defaultConfig;
+			generateFiles = target.generateFiles;
+		}
+		
+		public bool GenerateFiles {
+			get { return generateFiles; }
+			set { generateFiles = value; }
 		}
 		
 		public string TargetDir {
@@ -63,6 +72,12 @@ namespace MonoDevelop.Autotools
 				if (entry.ActiveConfiguration != null)
 					defaultConfig = entry.ActiveConfiguration.Name;
 			}
+			if (File.Exists (Path.Combine (entry.BaseDirectory, "autogen.sh")) ||
+			    File.Exists (Path.Combine (entry.BaseDirectory, "configure"))) {
+				generateFiles = false;
+			}
+			else
+				generateFiles = true;
 		}
 
 		
@@ -73,21 +88,30 @@ namespace MonoDevelop.Autotools
 			CombineEntry entry = RootCombineEntry;
 			
 			try {
-				string[] childEntries;
-				if (entry is Combine) {
-					CombineEntry[] ents = GetChildEntries ();
-					childEntries = new string [ents.Length];
-					for (int n=0; n<ents.Length; n++)
-						childEntries [n] = ents [n].FileName;
+				if (generateFiles) {
+					string[] childEntries;
+					if (entry is Combine) {
+						CombineEntry[] ents = GetChildEntries ();
+						childEntries = new string [ents.Length];
+						for (int n=0; n<ents.Length; n++)
+							childEntries [n] = ents [n].FileName;
+					}
+					else {
+						// If the entry is not a combine, use the parent combine as base combine
+						childEntries = new string [] { entry.FileName };
+						entry = entry.ParentCombine;
+					}
+					
+					string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, childEntries, tmpFolder, null);
+					combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
 				}
 				else {
-					// If the entry is not a combine, use the parent combine as base combine
-					childEntries = new string [] { entry.FileName };
-					entry = entry.ParentCombine;
+					if (entry is Combine)
+						combine = (Combine) entry;
+					else 
+						combine = entry.ParentCombine;
 				}
 				
-				string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, childEntries, tmpFolder, null);
-				combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
 				combine.Build (monitor);
 			
 				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
@@ -96,9 +120,9 @@ namespace MonoDevelop.Autotools
 				SolutionDeployer deployer = new SolutionDeployer ();
 				
 				if (DefaultConfiguration == null || DefaultConfiguration == "")
-					deployer.Deploy ( ctx, combine, TargetDir, monitor );
+					deployer.Deploy ( ctx, combine, TargetDir, generateFiles, monitor );
 				else
-					deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, monitor );
+					deployer.Deploy ( ctx, combine, DefaultConfiguration, TargetDir, generateFiles, monitor );
 				
 			} finally {
 				if (combine != null)
@@ -134,7 +158,7 @@ namespace MonoDevelop.Autotools
 		
 		public Gtk.Widget CreateEditor (PackageBuilder target)
 		{
-			return new TarballTargetEditorWidget ((TarballDeployTarget) target);
+			return new TarballBuilderEditorWidget ((TarballDeployTarget) target);
 		}
 	}
 }

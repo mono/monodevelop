@@ -1,3 +1,19 @@
+2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.mdp, Makefile.am: Synchronized project with
+	  makefile.
+	* Handler.cs, SolutionDeployer.cs: Allow creating a tarball from
+	  autotools files already generated, instead of always generating new
+	  files.
+	* MakefileProjectServiceExtension.cs: Include referenced makefiles when
+	  exporting a project.
+	* TarballBuilderEditorWidget.cs, TarballTargetEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs,
+	  gtk-gui/gui.stetic: Implemented the tarball configuration editor
+	  using stetic.
+	* gtk-gui/objects.xml: Updated.
+	* MakefileData.cs: Fixed warning.
+
 2007-04-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* SimpleProjectMakefileHandler.cs, TarballTargetEditorWidget.cs: Track

@@ -126,14 +126,17 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		public void Deploy ( DeployContext ctx, Combine combine, string targetDir, IProgressMonitor monitor  )
+		public void Deploy ( DeployContext ctx, Combine combine, string targetDir, bool generateFiles, IProgressMonitor monitor  )
 		{
-			Deploy ( ctx, combine, combine.ActiveConfiguration.Name, targetDir, monitor  );
+			Deploy ( ctx, combine, combine.ActiveConfiguration.Name, targetDir, generateFiles, monitor  );
 		}
 		
-		public void Deploy ( DeployContext ctx, Combine combine, string defaultConf, string targetDir, IProgressMonitor monitor  )
+		public void Deploy ( DeployContext ctx, Combine combine, string defaultConf, string targetDir, bool generateFiles, IProgressMonitor monitor  )
 		{
-			if ( !GenerateFiles ( ctx, combine, defaultConf, monitor ) )  return;
+			if (generateFiles) {
+				if ( !GenerateFiles ( ctx, combine, defaultConf, monitor ) ) 
+					return;
+			}
 			
 			monitor.BeginTask ( GettextCatalog.GetString( "Deploying Solution to Tarball" ) , 3 );
 			try

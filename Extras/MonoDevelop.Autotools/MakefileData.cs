@@ -134,7 +134,6 @@ namespace MonoDevelop.Autotools
 
 				relativeMakefileName = value;
 				makefile = null;
-				baseDirectory = null;
 				InitBuildVars ();
 			}
 		}
@@ -147,7 +146,6 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
-		string baseDirectory = null;
 		public string BaseDirectory {
 			get {
 				//FIXME: Check for AbsoluteMakefileName == null or empty

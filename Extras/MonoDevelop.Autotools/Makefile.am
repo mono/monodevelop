@@ -2,54 +2,59 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Autotools
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Autotools.dll
 
-REFS = -r:Mono.Posix \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/bin/log4net.dll  \
+REFS =  \
+	$(GNOME_SHARP_LIBS) \
+	$(GTK_SHARP_LIBS) \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll  \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll  \
-	$(GNOME_SHARP_LIBS) \
-	$(GTK_SHARP_LIBS) 
+	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:Mono.Posix \
+	-r:System 
 
-FILES = \
-	AssemblyInfo.cs		\
-	AutotoolsContext.cs	\
-	Commands.cs	\
+FILES =  \
+	AssemblyInfo.cs \
+	AutotoolsContext.cs \
+	Commands.cs \
+	CustomMakefile.cs \
+	FileNodeBuilderExtension.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
 	Handler.cs \
-	IMakefileHandler.cs	\
+	IMakefileHandler.cs \
 	ImportMakefileDialog.cs \
 	ISimpleAutotoolsSetup.cs \
-	Makefile.cs	\
-	MakefileProject.cs \
-	MakefileReaderExtension.cs \
-	Set.cs				\
-	SimpleProjectMakefileHandler.cs	\
-	SolutionDeployer.cs	\
-	SolutionOptionsPanel.cs	\
-	SolutionMakefileHandler.cs	\
-	TarballTargetEditorWidget.cs \
-	TemplateEngine.cs \
-	CustomMakefile.cs \
+	Makefile.cs \
+	MakefileData.cs \
 	MakefileOptionPanel.cs \
 	MakefileOptionPanelWidget.cs \
-	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
-	gtk-gui/generated.cs \
+	MakefileProject.cs \
 	MakefileProjectServiceExtension.cs \
-	MakefileData.cs \
-	FileNodeBuilderExtension.cs \
-	MakefileVar.cs
+	MakefileReaderExtension.cs \
+	MakefileVar.cs \
+	Set.cs \
+	SimpleProjectMakefileHandler.cs \
+	SolutionDeployer.cs \
+	SolutionMakefileHandler.cs \
+	SolutionOptionsPanel.cs \
+	TarballBuilderEditorWidget.cs \
+	TemplateEngine.cs
 
-RES =
+RES =  \
+	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml
 
-DATA_FILES = \
-	templates/Makefile.am.project.template	\
-	templates/Makefile.include	\
-	templates/autogen.sh.template	\
-	templates/configure.ac.template	\
+DATA_FILES =  \
+	templates/autogen.sh.template \
+	templates/configure.ac.template \
 	templates/exe.wrapper.in.template \
+	templates/Makefile.am.project.template \
+	templates/Makefile.include \
 	templates/package.pc.template
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
