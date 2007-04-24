@@ -198,6 +198,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 		}
+			
+		public override void ActivateItem ()
+		{
+			Combine combine = CurrentNode.DataItem as Combine;
+			IdeApp.ProjectOperations.ShowOptions (combine);
+		}
+
 		
 		[CommandHandler (EditCommands.Delete)]
 		public void RemoveItem ()

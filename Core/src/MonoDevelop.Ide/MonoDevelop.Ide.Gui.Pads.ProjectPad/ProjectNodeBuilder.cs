@@ -313,6 +313,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void ActivateItem ()
 		{
+			Project project = (Project) CurrentNode.DataItem;
+			IdeApp.ProjectOperations.ShowOptions (project);
 		}
 		
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]

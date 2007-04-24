@@ -146,5 +146,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			return true;
 		}
+		
+		public override bool CanDropNode (object dataObject, DragOperation operation)
+		{
+			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			ProjectFile file = dataObject as ProjectFile;
+			return file != null && file.Project == project;
+		}
+
+		
+		public override void OnNodeDrop (object dataObject, DragOperation operation)
+		{
+			ProjectFile file = dataObject as ProjectFile;
+			file.BuildAction = BuildAction.EmbedAsResource;
+		}
 	}
 }
