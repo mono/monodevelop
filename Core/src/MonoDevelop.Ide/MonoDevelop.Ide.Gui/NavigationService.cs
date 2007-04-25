@@ -131,6 +131,8 @@ namespace MonoDevelop.Ide.Gui {
 				currentNode.Value = navPoint;
 			} else {
 				currentNode = history.AddAfter (currentNode, navPoint);
+				if (history.Count > 100)
+					history.RemoveFirst ();
 			}
 			
 			navPoint = null;

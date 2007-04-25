@@ -1,3 +1,9 @@
+2007-04-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/NavigationService.cs (LogNavPoint): Don't
+	allow the history list to grow larger than 100 navpoints - if we
+	try to add more, begin removing the oldest nav points.
+
 2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Properly destroy the file
