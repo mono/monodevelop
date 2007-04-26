@@ -82,8 +82,7 @@ namespace MonoDevelop.Deployment.Gui
 			
 			if (entry is Combine) {
 				foreach (CombineEntry ce in ((Combine)entry).Entries) {
-					if (!(ce is PackagingProject))
-						AddEntry (iter, ce);
+					AddEntry (iter, ce);
 				}
 			}
 		}
@@ -132,8 +131,10 @@ namespace MonoDevelop.Deployment.Gui
 				selectedEntries [ob] = ob;
 				store.SetValue (iter, 3, true);
 				if (ob is Combine) {
-					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ())
-						selectedEntries [e] = e;
+					foreach (CombineEntry e in ((Combine)ob).GetAllEntries ()) {
+						if (builder.CanBuild (e))
+							selectedEntries [e] = e;
+					}
 					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
 				SelectCommonCombine ((CombineEntry)ob);

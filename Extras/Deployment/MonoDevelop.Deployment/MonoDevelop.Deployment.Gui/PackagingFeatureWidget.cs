@@ -36,6 +36,8 @@ namespace MonoDevelop.Deployment.Gui
 				pname = c.Name + " / " + pname;
 				c = c.ParentCombine;
 			}
+			
+			// Get a list of packages that can contain the new project
 			ArrayList list = new ArrayList ();
 			foreach (Package p in project.Packages) {
 				if (p.PackageBuilder.CanBuild (entry))
@@ -113,7 +115,7 @@ namespace MonoDevelop.Deployment.Gui
 			};
 			
 			foreach (PackageBuilder pb in DeployService.GetSupportedPackageBuilders (entry)) {
-				pb.SetCombineEntry (entry);
+				pb.SetCombineEntry (parentCombine, new CombineEntry [] { entry });
 				PackageBuilder[] defp = pb.CreateDefaultBuilders ();
 				if (defp.Length == 0)
 					continue;
@@ -196,8 +198,10 @@ namespace MonoDevelop.Deployment.Gui
 				
 				if (pi.Package.ParentProject == null)
 					pi.Project.Packages.Add (pi.Package);
-				else
+				else {
+					pi.Package.PackageBuilder.AddEntry (parentCombine);
 					pi.Package.PackageBuilder.AddEntry (entry);
+				}
 			}
 			if (newPackProject.Packages.Count > 0) {
 				newPackProject.Name = "Packages";

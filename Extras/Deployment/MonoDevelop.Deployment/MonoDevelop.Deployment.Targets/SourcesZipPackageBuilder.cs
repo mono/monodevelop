@@ -75,6 +75,7 @@ namespace MonoDevelop.Deployment
 				string[] epaths = new string [ents.Length];
 				for (int n=0; n<ents.Length; n++)
 					epaths [n] = ents [n].FileName;
+				
 				Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat);
 				
 				// Create the archive
@@ -93,6 +94,7 @@ namespace MonoDevelop.Deployment
 		public override void InitializeSettings (CombineEntry entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
+			fileFormat = entry.FileFormat;
 		}
 
 		

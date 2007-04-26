@@ -1,5 +1,23 @@
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment/PackageBuilder.cs: Avoid including duplicated
+	  entries to the package builder.
+	* MonoDevelop.Deployment.Gui/DeployDialog.cs: Minor fix.
+	* MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs: Properly select
+	  the default format (comparison is done now by name, since the file
+	  formant instances may be different).
+	* MonoDevelop.Deployment.Gui/EntrySelectionTree.cs: Don't explicitely
+	  exclude PackagingProjects. The package builders will do it.
+	* MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs: Include the
+	  parent combine in new packages.
+	* MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs: Don't
+	  allow including PackagingProjects in the archive. Compile the
+	  project before generating the package.
+	* MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs: Use the
+	  file format of the source project by default.
+
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.addin.xml,
 	  gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs,
 	  gtk-gui/gui.stetic, MonoDevelop.Deployment.Gui/PackagingFeature.cs,

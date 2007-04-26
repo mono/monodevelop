@@ -21,12 +21,17 @@ namespace MonoDevelop.Deployment.Gui
 			CombineEntry entry = target.RootCombineEntry;
 			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
 			
-			foreach (IFileFormat format in formats)
-				comboFormat.AppendText (format.Name);
-
 			if (selectedFormat == null) selectedFormat = this.target.FileFormat;
-			int sel = Array.IndexOf (formats, selectedFormat);
-			if (sel == -1) sel = 0;
+			if (selectedFormat == null)
+				selectedFormat = formats [0];
+			
+			int sel = 0;
+			for (int n=0; n<formats.Length; n++) {
+				comboFormat.AppendText (formats[n].Name);
+				if (formats[n].Name == selectedFormat.Name)
+					sel = n;
+			}
+
 			comboFormat.Active = sel;
 			this.target.FileFormat = formats [sel];
 			

@@ -188,6 +188,14 @@ namespace MonoDevelop.Deployment
 		
 		public void AddEntry (CombineEntry entry)
 		{
+			string fp = Runtime.FileService.GetFullPath (entry.FileName);
+			foreach (string s in childEntries)
+				if (Runtime.FileService.GetFullPath (s) == fp)
+					return;
+			
+			if (Runtime.FileService.GetFullPath (rootEntry) == fp)
+				return;
+			
 			List<CombineEntry> list = new List<CombineEntry> ();
 			list.Add (RootCombineEntry);
 			list.AddRange (GetChildEntries());

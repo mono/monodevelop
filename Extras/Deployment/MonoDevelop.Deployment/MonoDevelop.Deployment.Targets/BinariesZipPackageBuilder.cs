@@ -35,6 +35,12 @@ namespace MonoDevelop.Deployment
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
 		}
+		
+		public override bool CanBuild (CombineEntry entry)
+		{
+			// Can build anything but PackagingProject
+			return !(entry is PackagingProject);
+		}
 
 		public override DeployContext CreateDeployContext ()
 		{
@@ -44,8 +50,14 @@ namespace MonoDevelop.Deployment
 		protected override void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = null;
-				
+			
 			try {
+				if (RootCombineEntry.NeedsBuilding) {
+					ICompilerResult res = RootCombineEntry.Build (monitor);
+					if (res.ErrorCount > 0)
+						return;
+				}
+				
 				tmpFolder = Runtime.FileService.CreateTempDirectory ();
 				
 				string tf = Path.GetFileNameWithoutExtension (targetFile);
@@ -73,6 +85,8 @@ namespace MonoDevelop.Deployment
 				if (tmpFolder != null)
 					Directory.Delete (tmpFolder, true);
 			}
+			if (monitor.AsyncOperation.Success)
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
 		}
 		
 		protected override string OnResolveDirectory (DeployContext ctx, string folderId)

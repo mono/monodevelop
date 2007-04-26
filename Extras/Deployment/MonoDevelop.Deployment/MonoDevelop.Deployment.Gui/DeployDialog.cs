@@ -201,7 +201,7 @@ namespace MonoDevelop.Deployment.Gui
 				break;
 			case 2:
 				msg = currentBuilder.Validate ();
-				if (msg != null)
+				if (msg == null)
 					entrySaveName.Text = currentBuilder.DefaultName;
 				break;
 			case 3:
