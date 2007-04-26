@@ -47,7 +47,7 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "Desktop Entry"
+		<DisplayBinding id    = "Desktop Entry" insertbefore="DefaultDisplayBinding"
 		                class = "MonoDevelop.Deployment.Linux.DotDesktopDisplayBinding"/>
 	</Extension>
 
@@ -71,5 +71,9 @@
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
 		<DeployDirectory id="Linux.PkgConfig" _label="pkg-config folder" />
 		<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+		<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
 	</Extension>
 </AddIn>

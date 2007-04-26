@@ -2,6 +2,7 @@
 <stetic-interface>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment.Linux.dll" />
@@ -1204,8 +1205,10 @@ Directory</property>
     <property name="MemberName" />
     <property name="CanFocus">True</property>
     <property name="Title" translatable="yes">Menu Category Selection</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />

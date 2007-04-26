@@ -1,16 +1,16 @@
 
 using System;
+using System.IO;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Deployment.Linux
 {
-	
-	
 	public partial class BasicOptionPanelWidget : Gtk.Bin
 	{
 		CombineEntry entry;
 		
-		public BasicOptionPanelWidget (CombineEntry entry)
+		public BasicOptionPanelWidget (CombineEntry entry, bool creatingProject)
 		{
 			this.Build();
 			
@@ -29,17 +29,43 @@ namespace MonoDevelop.Deployment.Linux
 			checkScript.Active = data.GenerateScript;
 			entryScript.Text = data.ScriptName;
 			checkPcFile.Active = data.GeneratePcFile;
-			checkDesktop.Active = data.GenerateDesktopEntry;
 			entryScript.Sensitive = checkScript.Active;
+			
+			if (!creatingProject)
+				checkDesktop.Visible = false;
+		}
+		
+		public string Validate ()
+		{
+			if (checkScript.Active && entryScript.Text.Length == 0)
+				return GettextCatalog.GetString ("Script name not provided");
+			return null;
 		}
 		
 		public bool Store ()
 		{
-			LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (entry);
+			DotNetProject project = entry as DotNetProject;
+			if (project == null)
+				return true;
+			
+			LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (project);
 			data.GenerateScript = checkScript.Active;
 			data.ScriptName = entryScript.Text;
 			data.GeneratePcFile = checkPcFile.Active;
-			data.GenerateDesktopEntry = checkDesktop.Active;
+			
+			if (checkDesktop.Active) {
+				DesktopEntry de = new DesktopEntry ();
+				de.SetEntry ("Encoding", "UTF-8");
+				de.Type = DesktopEntryType.Application;
+				de.Name = entry.Name;
+				de.Exec = entryScript.Text;
+				de.Terminal = false;
+				string file = System.IO.Path.Combine (entry.BaseDirectory, "app.desktop");
+				de.Save (file);
+				ProjectFile pfile = project.AddFile (file, BuildAction.FileCopy);
+				DeployProperties props = DeployService.GetDeployProperties (pfile);
+				props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
+			}
 			
 			return true;
 		}

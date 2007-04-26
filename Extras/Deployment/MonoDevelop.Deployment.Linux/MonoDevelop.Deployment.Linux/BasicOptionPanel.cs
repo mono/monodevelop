@@ -22,7 +22,7 @@ namespace MonoDevelop.Deployment.Linux
 		{
 			IProperties props = (IProperties) CustomizationObject;
 			entry = (CombineEntry) props.GetProperty ("CombineEntry");
-			Add (widget = new BasicOptionPanelWidget (entry));
+			Add (widget = new BasicOptionPanelWidget (entry, false));
 		}
 		
 		public override bool StorePanelContents ()

@@ -12,6 +12,7 @@ namespace MonoDevelop.Deployment.Linux
 		ListDictionary entries = new ListDictionary ();
 		Hashtable lists = new Hashtable ();
 		string currentLocale;
+		bool isLoadedFile;
 		
 		IList knownKeys = new string[] {
 			"Type", "Name", "GenericName", "NoDisplay", "Comment", "Icon", "OnlyShowIn", "NotShowIn", "TryExec",
@@ -264,6 +265,7 @@ namespace MonoDevelop.Deployment.Linux
 					sepc++;
 				}
 			}
+			isLoadedFile = true;
 		}
 		
 		public void Save (string file)
@@ -280,6 +282,9 @@ namespace MonoDevelop.Deployment.Linux
 			}
 			
 			using (StreamWriter sw = new StreamWriter (file)) {
+				if (!isLoadedFile) {
+					sw.WriteLine ("[Desktop Entry]");
+				}
 				foreach (DictionaryEntry e in entries) {
 					string key = (string) e.Key;
 					string val = (string) e.Value;

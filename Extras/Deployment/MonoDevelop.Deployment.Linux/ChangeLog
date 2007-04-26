@@ -1,3 +1,20 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.addin.xml: Register new project feature
+	  editor. Place the .desktop editor before the default editor.
+	* MonoDevelop.Deployment.Linux.mdp, Makefile.am: Added new file.
+	* MonoDevelop.Deployment.Linux/DesktopEntry.cs: Write the [Desktop
+	  Entry] group name when a new file is created.
+	* MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs,
+	  MonoDevelop.Deployment.Linux/BasicOptionPanel.cs: Generate the
+	  .desktop file if that option is selected.
+	* MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:
+	  Implemented a project feature which allows setting unix integration
+	  options.
+	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs,
+	  gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+
 2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs,

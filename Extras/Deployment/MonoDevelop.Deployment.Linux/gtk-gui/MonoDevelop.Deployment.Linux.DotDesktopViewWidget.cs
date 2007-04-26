@@ -256,6 +256,8 @@ namespace MonoDevelop.Deployment.Linux {
             this.table6 = new Gtk.Table(((uint)(4)), ((uint)(2)), false);
             this.table6.CanFocus = true;
             this.table6.Name = "table6";
+            this.table6.RowSpacing = ((uint)(6));
+            this.table6.ColumnSpacing = ((uint)(6));
             // Container child table6.Gtk.Table+TableChild
             this.entryComment = new Gtk.Entry();
             this.entryComment.CanFocus = true;
@@ -365,6 +367,8 @@ namespace MonoDevelop.Deployment.Linux {
             // Container child vbox4.Gtk.Box+BoxChild
             this.tableCommand = new Gtk.Table(((uint)(4)), ((uint)(2)), false);
             this.tableCommand.Name = "tableCommand";
+            this.tableCommand.RowSpacing = ((uint)(6));
+            this.tableCommand.ColumnSpacing = ((uint)(6));
             // Container child tableCommand.Gtk.Table+TableChild
             this.checkTerminal = new Gtk.CheckButton();
             this.checkTerminal.CanFocus = true;
@@ -611,6 +615,7 @@ namespace MonoDevelop.Deployment.Linux {
             this.radioAlwaysShow = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Always show"));
             this.radioAlwaysShow.CanFocus = true;
             this.radioAlwaysShow.Name = "radioAlwaysShow";
+            this.radioAlwaysShow.Active = true;
             this.radioAlwaysShow.DrawIndicator = true;
             this.radioAlwaysShow.Group = new GLib.SList(System.IntPtr.Zero);
             this.boxMenu.Add(this.radioAlwaysShow);
@@ -672,6 +677,8 @@ namespace MonoDevelop.Deployment.Linux {
             // Container child notebook.Gtk.Notebook+NotebookChild
             this.tableMimeTypes = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
             this.tableMimeTypes.Name = "tableMimeTypes";
+            this.tableMimeTypes.RowSpacing = ((uint)(6));
+            this.tableMimeTypes.ColumnSpacing = ((uint)(6));
             this.tableMimeTypes.BorderWidth = ((uint)(12));
             // Container child tableMimeTypes.Gtk.Table+TableChild
             this.hbox1 = new Gtk.HBox();

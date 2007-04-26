@@ -33,6 +33,7 @@ FILES =  \
 	MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs \
 	MonoDevelop.Deployment.Linux/LinuxDeployData.cs \
 	MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs \
+	MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs \
 	MonoDevelop.Deployment.Linux/LinuxTargetDirectory.cs \
 	MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs
 
