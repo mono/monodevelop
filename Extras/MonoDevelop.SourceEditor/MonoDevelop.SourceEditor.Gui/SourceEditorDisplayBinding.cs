@@ -1131,6 +1131,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			se.View.InsertSpacesInsteadOfTabs = TextEditorProperties.ConvertTabsToSpaces;
 			se.View.AutoIndent = (TextEditorProperties.IndentStyle == IndentStyle.Auto);
 			se.View.AutoInsertTemplates = TextEditorProperties.AutoInsertTemplates;
+			se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
 			se.Buffer.UnderlineErrors = TextEditorProperties.UnderlineErrors;
 			se.Buffer.Highlight = TextEditorProperties.SyntaxHighlight;
 			se.DisplayBinding.ClassBrowserVisible = TextEditorProperties.ShowClassBrowser;
@@ -1202,6 +1203,13 @@ namespace MonoDevelop.SourceEditor.Gui
 					break;
 				case "ShowClassBrowser":
 					se.DisplayBinding.ClassBrowserVisible = TextEditorProperties.ShowClassBrowser;
+					break;
+				case "HighlightCurrentLine":
+					se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
+					break;
+				case "ShowContolCharacters":
+					SourceEditorView.DrawWhiteSpacesEnabled = TextEditorProperties.ShowContolCharacters;
+				se.View.QueueDraw ();
 					break;
 				default:
 					Console.WriteLine ("unhandled property change: {0}", e.Key);

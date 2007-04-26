@@ -1,3 +1,16 @@
+2007-04-26  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added highlighting
+	  current line functionality when gtksourceview supports it and
+	  drawing of white spaces.
+	* EditorBindings.glade: Configuraion checkboxes.
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	* MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs,
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	  HighlightCurrentLine and ShowContolCharacters confiuration properties.
+	* Makefile.am,
+	* MonoDevelop.SourceEditor.mdp: Added reference to Mono.Cairo.
+	 
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.SourceEditor.addin.xml: Register the editor after the

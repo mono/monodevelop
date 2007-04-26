@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Gtk;
@@ -28,6 +29,9 @@ namespace MonoDevelop.SourceEditor.Gui
 {
 	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
 	{
+		public static readonly bool HighlightCurrentLineSupported;
+		public static bool DrawWhiteSpacesEnabled = true;
+		
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
 		public SourceEditorBuffer buf;
@@ -37,6 +41,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		LanguageItemWindow languageItemWindow;
 		ITextEditorExtension extension;
 		TextEditor thisEditor;
+		DrawControlCharacterImp controlsDrawer;
 		event EventHandler completionContextChanged;
 		
 		const int LanguageItemTipTimer = 800;
@@ -55,6 +60,25 @@ namespace MonoDevelop.SourceEditor.Gui
 			set { autoInsertTemplates = value; }
 		}
 		
+		static SourceEditorView ()
+		{
+			SourceView view = new SourceView ();
+			try
+			{
+				GetHighlightCurrentLine (view.Handle);
+				HighlightCurrentLineSupported = true;
+			}
+			catch
+			{
+				HighlightCurrentLineSupported = false;
+			}
+			finally
+			{
+				view.Destroy ();
+				view = null;
+			}
+		}
+		
 		protected SourceEditorView (IntPtr p): base (p)
 		{
 		}
@@ -68,16 +92,19 @@ namespace MonoDevelop.SourceEditor.Gui
 			SmartHomeEnd = true;
 			ShowLineNumbers = true;
 			ShowLineMarkers = true;
+			controlsDrawer = new DrawControlCharacterImp (this);
+			HighlightCurrentLine = true;
 			buf.PlaceCursor (buf.StartIter);
 			GrabFocus ();
 			buf.MarkSet += new MarkSetHandler (BufferMarkSet);
 			buf.Changed += new EventHandler (BufferChanged);
 			LoadEditActions ();
-			this.Events = this.Events | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
+			this.Events = this.Events | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ExposureMask;
 		}
 		
 		public new void Dispose ()
 		{
+			controlsDrawer.Detach ();
 			HideLanguageItemWindow ();
 			buf.MarkSet -= new MarkSetHandler (BufferMarkSet);
 			buf.Changed -= new EventHandler (BufferChanged);
@@ -755,6 +782,173 @@ namespace MonoDevelop.SourceEditor.Gui
 			get
 			{
 				return Style.Copy();
+			}
+		}
+#endregion
+		
+#region HighlightCurrentLine functionality
+		//gboolean gtk_source_view_get_highlight_current_line (GtkSourceView *view);
+		[DllImport ("gtksourceview-1.0", EntryPoint="gtk_source_view_get_highlight_current_line")]
+		static extern bool GetHighlightCurrentLine (IntPtr raw);
+
+		//void gtk_source_view_set_highlight_current_line (GtkSourceView *view, gboolean show);
+		[DllImport("gtksourceview-1.0", EntryPoint="gtk_source_view_set_highlight_current_line")]
+		static extern void SetHighlightCurrentLine (IntPtr raw, bool show);
+
+		[GLib.Property ("highlight-current-line")]
+		public bool HighlightCurrentLine {
+			get  {
+				if (HighlightCurrentLineSupported)
+					return GetHighlightCurrentLine (Handle);
+				return false;
+			}
+			set  {
+				if (HighlightCurrentLineSupported)
+					SetHighlightCurrentLine (Handle, value);
+			}
+		}
+#endregion
+
+#region Drawing control characters functionality
+		class DrawControlCharacterImp
+		{
+			SourceView view;
+
+			public DrawControlCharacterImp (SourceView view)
+			{
+				this.view = view;
+				view.WidgetEventAfter += OnWidgetEvent;
+			}
+
+			public void Detach ()
+			{
+				view.WidgetEventAfter -= OnWidgetEvent;
+				view = null;
+			}
+
+			void OnWidgetEvent (object o, WidgetEventAfterArgs args)
+			{
+				if (args.Event.Type == Gdk.EventType.Expose &&
+				    o is TextView &&
+				    args.Event.Window == view.GetWindow (TextWindowType.Text))
+				{
+					int x, y;
+					view.WindowToBufferCoords (TextWindowType.Text,
+					                           args.Event.Window.ClipRegion.Clipbox.X,
+					                           args.Event.Window.ClipRegion.Clipbox.Y,
+					                           out x, out y);
+
+					TextIter start, end;
+					int topLine;
+					view.GetLineAtY (out start, y, out topLine);
+					view.GetLineAtY (out end, y + args.Event.Window.ClipRegion.Clipbox.Height, out topLine);
+					end.ForwardToLineEnd ();
+					Draw (args.Event.Window, view, start, end);
+				}
+			}
+
+			static Cairo.Color GetDrawingColorForIter (TextView view, TextIter iter)
+			{
+				TextIter start, end;
+				Gdk.Color color;
+				if (iter.Buffer.GetSelectionBounds (out start, out end) && iter.InRange (start, end))
+				{
+					color = view.Style.Text (StateType.Selected);
+				} else
+				{
+					color = view.Style.Text (StateType.Normal);
+				}
+
+				return new Cairo.Color ((double)(color.Red) / UInt16.MaxValue,
+				                        (double)(color.Green) / UInt16.MaxValue,
+				                        (double)(color.Blue) / UInt16.MaxValue);
+			}
+
+			static void DrawSpaceAtIter (Cairo.Context cntx, TextView view, TextIter iter)
+			{
+				Gdk.Rectangle rect = view.GetIterLocation (iter);
+				int x, y;
+				view.BufferToWindowCoords (TextWindowType.Text,
+				                           rect.X + rect.Width / 2,
+				                           rect.Y + rect.Height / 2,
+				                           out x, out y);
+				cntx.Save ();
+				cntx.Color =  GetDrawingColorForIter (view, iter);
+				cntx.MoveTo (x, y);
+				cntx.Arc (x, y, 0.4, 0, 2 * Math.PI);
+				cntx.Stroke ();
+				cntx.Restore ();
+			}
+
+			static void DrawTabAtIter (Cairo.Context cntx, TextView view, TextIter iter)
+			{
+				Gdk.Rectangle rect = view.GetIterLocation (iter);
+				int x, y;
+				view.BufferToWindowCoords (TextWindowType.Text,
+				                           rect.X,
+				                           rect.Y + rect.Height / 2,
+				                           out x, out y);
+				cntx.Save ();
+				cntx.Color =  GetDrawingColorForIter (view, iter);
+				cntx.MoveTo (x + 2, y);
+				cntx.RelLineTo (new Cairo.Distance (rect.Width - 4, 0));
+				cntx.RelLineTo (new Cairo.Distance (-3, -3));
+				cntx.RelLineTo (new Cairo.Distance (3, 3));
+				cntx.RelLineTo (new Cairo.Distance (-3, 3));
+				cntx.Stroke ();
+				cntx.Restore ();
+			}
+
+			static void DrawLineEndAtIter (Cairo.Context cntx, TextView view, TextIter iter)
+			{
+				Gdk.Rectangle rect = view.GetIterLocation (iter);
+				int x, y;
+				view.BufferToWindowCoords (TextWindowType.Text,
+				                           rect.X,
+				                           rect.Y + rect.Height / 2,
+				                           out x, out y);
+				cntx.Save ();
+				cntx.Color =  GetDrawingColorForIter (view, iter);
+				cntx.MoveTo (x + 10, y);
+				cntx.RelLineTo (new Cairo.Distance (0, -3));
+				cntx.RelLineTo (new Cairo.Distance (0, 3));
+				cntx.RelLineTo (new Cairo.Distance (-8, 0));
+				cntx.RelLineTo (new Cairo.Distance (3, 3));
+				cntx.RelLineTo (new Cairo.Distance (-3, -3));
+				cntx.RelLineTo (new Cairo.Distance (3, -3));
+				cntx.Stroke ();
+				cntx.Restore ();
+			}
+
+			static void Draw (Gdk.Drawable drawable, TextView view, TextIter start, TextIter end)
+			{
+				if (DrawWhiteSpacesEnabled)
+				{
+					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
+					cntx.LineWidth = 0.3;
+
+					TextIter iter = start;
+					while (iter.Compare (end) <= 0)
+					{
+						switch (iter.Char)
+						{
+							case " ":
+								DrawSpaceAtIter (cntx, view, iter);
+								break;
+							case "\t":
+								DrawTabAtIter (cntx, view, iter);
+								break;
+							case "\n":
+							case "\r":
+								DrawLineEndAtIter (cntx, view, iter);
+								break;
+							default:
+								break;
+						}
+						if (! iter.ForwardChar ())
+							break;
+					}
+				}
 			}
 		}
 #endregion

@@ -383,5 +383,23 @@ namespace MonoDevelop.SourceEditor.Properties {
 				properties.SetProperty("ShowClassBrowser", value);
 			}
 		}
+		
+		public static bool HighlightCurrentLine {
+			get {
+				return properties.GetProperty ("HighlightCurrentLine", true);
+			}
+			set {
+				properties.SetProperty ("HighlightCurrentLine", value);
+			}
+		}
+		
+		public static bool ShowContolCharacters {
+			get {
+				return properties.GetProperty ("ShowContolCharacters", true);
+			}
+			set {
+				properties.SetProperty ("ShowContolCharacters", value);
+			}
+		}
 	}
 }
