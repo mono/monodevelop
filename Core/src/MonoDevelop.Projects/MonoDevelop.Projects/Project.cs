@@ -502,13 +502,22 @@ namespace MonoDevelop.Projects
 						isDirty = true;
 						return;
 					}
+					DateTime rptime = GetLastWriteTime (rp.GetOutputFileName ());
+					if (rptime == DateTime.MinValue || rptime > tim) {
+						isDirty = true;
+						return;
+					}
 				}
 			}
 		}
 		
 		protected virtual DateTime GetLastBuildTime ()
 		{
-			string file = GetOutputFileName ();
+			return GetLastWriteTime (GetOutputFileName ());
+		}
+
+		DateTime GetLastWriteTime (string file)
+		{
 			if (file == null)
 				return DateTime.MinValue;
 
@@ -516,7 +525,7 @@ namespace MonoDevelop.Projects
 			if (!finfo.Exists) return DateTime.MinValue;
 			else return finfo.LastWriteTime;
 		}
-		
+
 		private void UpdateFileWatch()
 		{
 			projectFileWatcher.EnableRaisingEvents = false;
