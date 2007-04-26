@@ -1,5 +1,10 @@
 2007-04-26  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (HandleFilePropertyChanged): ProjectFile.DependsOn can
+	be null.
+
+2007-04-26  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (WriteFile): Allow writing for non-root combines
 	which don't have a msbuild combine as parent. Convert any non-msbuild
 	child projects to msbuild format, and Save all child entries.

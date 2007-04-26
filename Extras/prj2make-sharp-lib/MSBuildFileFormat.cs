@@ -767,7 +767,8 @@ namespace MonoDevelop.Prj2Make
 			}
 
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)
-			EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
+			if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
+				EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
 					Runtime.FileService.AbsoluteToRelativePath (
 						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn));
 			//FIXME: Subtype, Data
