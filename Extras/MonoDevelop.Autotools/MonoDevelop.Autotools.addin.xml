@@ -90,4 +90,10 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class = "MonoDevelop.Autotools.PropertyProvider"/>
 	</Extension>
+	
+<!--
+	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />
+	</Extension>
+-->
 </AddIn>

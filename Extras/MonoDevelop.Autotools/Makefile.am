@@ -23,6 +23,7 @@ FILES =  \
 	CustomMakefile.cs \
 	FileNodeBuilderExtension.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
 	Handler.cs \
@@ -31,6 +32,8 @@ FILES =  \
 	ISimpleAutotoolsSetup.cs \
 	Makefile.cs \
 	MakefileData.cs \
+	MakefileIntegrationFeature.cs \
+	MakefileIntegrationFeatureWidget.cs \
 	MakefileOptionPanel.cs \
 	MakefileOptionPanelWidget.cs \
 	MakefileProject.cs \
@@ -50,6 +53,7 @@ RES =  \
 	gtk-gui/objects.xml
 
 DATA_FILES =  \
+	MonoDevelop.Autotools.addin.xml \
 	templates/autogen.sh.template \
 	templates/configure.ac.template \
 	templates/exe.wrapper.in.template \

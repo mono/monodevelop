@@ -147,6 +147,11 @@ namespace MonoDevelop.Autotools
 			}
 			return null;
 		}
+
+		public override PackageBuilder[] CreateDefaultBuilders ()
+		{
+			return new PackageBuilder [] { this };
+		}
 	}
 	
 	public class TarballTargetEditor: IPackageBuilderEditor
