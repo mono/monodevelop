@@ -61,7 +61,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) dataObject;
 			label = group.Name;
-			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-actiongroup");
+			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-actiongroup", Gtk.IconSize.Menu);
 		}
 		
 		public override void OnNodeAdded (object dataObject)

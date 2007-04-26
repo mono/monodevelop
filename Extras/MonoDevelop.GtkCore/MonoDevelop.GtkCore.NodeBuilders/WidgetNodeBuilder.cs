@@ -77,9 +77,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 //			if (win.RootWidget.IsWindow)
 //				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-window");
 			if (win.RootWidget.IsWindow)
-				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-dialog");
+				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-dialog", Gtk.IconSize.Menu);
 			else
-				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget");
+				icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-widget", Gtk.IconSize.Menu);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

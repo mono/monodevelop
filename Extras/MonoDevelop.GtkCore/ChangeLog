@@ -1,3 +1,14 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp,
+	  MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs, Makefile.am:
+	  Implemented project feature for enabling gtk# support in new
+	  projects.
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs: Use
+	  Menu icon size in the project pad.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+
 2007-04-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs: Show a

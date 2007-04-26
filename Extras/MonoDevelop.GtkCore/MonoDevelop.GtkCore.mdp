@@ -1,7 +1,7 @@
 <Project name="MonoDevelop.GtkCore" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Debug" assembly="MonoDevelop.GtkCore" />
+      <Output directory="../../build/AddIns/MonoDevelop.GtkCore" assembly="MonoDevelop.GtkCore" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -64,6 +64,7 @@
     <File name="./MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./icons/image-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
@@ -85,6 +86,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <BuildFilesVar Sync="True" Name="FILES" />

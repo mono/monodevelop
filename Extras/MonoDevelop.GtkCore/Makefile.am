@@ -17,6 +17,7 @@ REFS =  \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:./lib/libstetic.dll \
 	-r:./lib/libsteticui.dll \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
@@ -24,6 +25,7 @@ FILES =  \
 	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
 	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
+	MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs \
 	MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
 	MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
