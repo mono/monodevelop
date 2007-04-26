@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using MonoDevelop.Core;
@@ -87,5 +88,28 @@ namespace MonoDevelop.Deployment
 			platform = builder.platform;
 		}
 
+		public override string DefaultName {
+			get {
+				foreach (DeployPlatformInfo plat in DeployService.GetDeployPlatformInfo ()) {
+					if (plat.Id == Platform)
+						return GettextCatalog.GetString ("{0} Binaries", plat.Description);
+				}
+				return base.DefaultName;
+			}
+		}
+
+		public override PackageBuilder[] CreateDefaultBuilders ()
+		{
+			List<PackageBuilder> list = new List<PackageBuilder> ();
+			foreach (DeployPlatformInfo plat in DeployService.GetDeployPlatformInfo ()) {
+				BinariesZipPackageBuilder pb = (BinariesZipPackageBuilder) Clone ();
+				pb.Platform = plat.Id;
+				string ext = DeployService.GetArchiveExtension (pb.TargetFile);
+				string fn = TargetFile.Substring (0, TargetFile.Length - ext.Length);
+				pb.TargetFile = fn + "-" + plat.Id.ToLower () + ext;
+				list.Add (pb);
+			}
+			return list.ToArray ();
+		}
 	}
 }

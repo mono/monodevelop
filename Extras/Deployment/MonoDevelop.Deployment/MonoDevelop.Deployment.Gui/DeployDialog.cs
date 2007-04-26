@@ -201,6 +201,8 @@ namespace MonoDevelop.Deployment.Gui
 				break;
 			case 2:
 				msg = currentBuilder.Validate ();
+				if (msg != null)
+					entrySaveName.Text = currentBuilder.DefaultName;
 				break;
 			case 3:
 				if (entrySaveName.Text.Length == 0)
@@ -235,16 +237,17 @@ namespace MonoDevelop.Deployment.Gui
 
 		protected virtual void OnButtonNextClicked(object sender, System.EventArgs e)
 		{
-			try {
 			if (!ValidatePage ())
 				return;
+			
+			if (buttonNext.Label != Stock.GoForward) {
+				this.Respond (ResponseType.Ok);
+				return;
+			}
+			
 			if (notebook.Page < notebook.NPages - 1)
 				notebook.Page++;
 			UpdateButtons ();
-			}
-			catch (Exception ex) {
-				Console.WriteLine (ex);
-			}
 		}
 
 		protected virtual void OnNotebookSelectPage(object o, Gtk.SelectPageArgs args)
@@ -255,9 +258,14 @@ namespace MonoDevelop.Deployment.Gui
 		void UpdateButtons ()
 		{
 			buttonBack.Sensitive = notebook.Page > 0 && notebook.GetNthPage (notebook.Page - 1).Visible;
-			buttonNext.Sensitive = notebook.Page < notebook.NPages - 1 && 
-				notebook.GetNthPage (notebook.Page + 1).Visible;
-			buttonPublish.Sensitive = !buttonNext.Sensitive;
+			
+			if (notebook.Page < notebook.NPages - 1 && notebook.GetNthPage (notebook.Page + 1).Visible) {
+				buttonNext.Label = Stock.GoForward;
+				buttonNext.UseStock = true;
+			} else {
+				buttonNext.Label = GettextCatalog.GetString ("Create");
+				buttonNext.UseStock = false;
+			}
 			
 			if (vboxSaveProject.Visible) {
 				tableNewProject.Sensitive = radioCreateProject.Active;

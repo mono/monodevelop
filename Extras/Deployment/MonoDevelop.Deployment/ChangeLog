@@ -1,3 +1,28 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml,
+	  gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs,
+	  gtk-gui/gui.stetic, MonoDevelop.Deployment.Gui/PackagingFeature.cs,
+	  MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs: Implemented a
+	  project feature which allows creating packages for new projects.
+	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs: Show the
+	  package type name if it is different from the package name.
+	* MonoDevelop.Deployment.mdp, Makefile.am: Added new files.
+	* MonoDevelop.Deployment/DeployService.cs: Added method for getting the
+	  extension of an archive.
+	* MonoDevelop.Deployment/PackageBuilder.cs: Added DefaultName and
+	  CreateDefaultBuilders(). Implemented method for add-in new combine
+	  entries to the builder.
+	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs,
+	  gtk-gui/objects.xml: Updated.
+	* MonoDevelop.Deployment.Gui/DeployDialog.cs: Minor fixes.
+	* MonoDevelop.Deployment.Gui/EntrySelectionTree.cs: Moved common
+	  combine selection code to PackageBuilder.
+	* MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs,
+	  MonoDevelop.Deployment.Targets/SourcesZipPackageBuilder.cs:
+	  Implemented DefaultName and CreateDefaultBuilders().
+	* BinariesZipEditorWidget.cs: Moved to GUI directory.
+
 2007-04-24  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment/PackagingProject.cs,

@@ -19,7 +19,6 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
-	BinariesZipEditorWidget.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs \
@@ -30,8 +29,10 @@ FILES =  \
 	gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs \
+	gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs \
 	gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs \
 	MonoDevelop.Deployment.Commands/Commands.cs \
+	MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs \
 	MonoDevelop.Deployment.Gui/CommandDeployEditorWidget.cs \
 	MonoDevelop.Deployment.Gui/DeployDialog.cs \
 	MonoDevelop.Deployment.Gui/DeployDirectoryInfoEditor.cs \
@@ -47,6 +48,8 @@ FILES =  \
 	MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditor.cs \
 	MonoDevelop.Deployment.Gui/LocalFileCopyConfigurationEditorWidget.cs \
 	MonoDevelop.Deployment.Gui/PackageBuilderEditor.cs \
+	MonoDevelop.Deployment.Gui/PackagingFeature.cs \
+	MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs \
 	MonoDevelop.Deployment.Gui/PropertyProvider.cs \
 	MonoDevelop.Deployment.Gui/SourcesZipEditorWidget.cs \
 	MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs \

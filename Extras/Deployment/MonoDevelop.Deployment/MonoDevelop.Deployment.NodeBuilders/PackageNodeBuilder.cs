@@ -70,7 +70,10 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Package package = dataObject as Package;
-			label = package.Name + " (" + package.PackageBuilder.Description + ")";
+			label = package.Name;
+			if (package.Name != package.PackageBuilder.Description)
+				label += " (" + package.PackageBuilder.Description + ")";
+			
 			if (package.PackageBuilder is UnknownPackageBuilder) {
 				icon = Context.GetIcon (Stock.Error);
 			}

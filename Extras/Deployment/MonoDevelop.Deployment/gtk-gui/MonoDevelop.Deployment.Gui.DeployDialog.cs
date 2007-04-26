@@ -119,8 +119,6 @@ namespace MonoDevelop.Deployment.Gui {
         
         private Gtk.Button buttonNext;
         
-        private Gtk.Button buttonPublish;
-        
         protected virtual void Build() {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Deployment.Gui.DeployDialog
@@ -621,18 +619,6 @@ namespace MonoDevelop.Deployment.Gui {
             w51.Position = 2;
             w51.Expand = false;
             w51.Fill = false;
-            // Container child MonoDevelop.Deployment.DeployDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonPublish = new Gtk.Button();
-            this.buttonPublish.CanDefault = true;
-            this.buttonPublish.CanFocus = true;
-            this.buttonPublish.Name = "buttonPublish";
-            this.buttonPublish.UseUnderline = true;
-            this.buttonPublish.Label = Mono.Unix.Catalog.GetString("Create");
-            w48.Add(this.buttonPublish);
-            Gtk.ButtonBox.ButtonBoxChild w52 = ((Gtk.ButtonBox.ButtonBoxChild)(w48[this.buttonPublish]));
-            w52.Position = 3;
-            w52.Expand = false;
-            w52.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
@@ -645,7 +631,6 @@ namespace MonoDevelop.Deployment.Gui {
             this.radioAddProject.Clicked += new System.EventHandler(this.OnRadioAddProjectClicked);
             this.buttonBack.Clicked += new System.EventHandler(this.OnButtonBackClicked);
             this.buttonNext.Clicked += new System.EventHandler(this.OnButtonNextClicked);
-            this.buttonPublish.Clicked += new System.EventHandler(this.OnButtonPublishClicked);
         }
     }
 }

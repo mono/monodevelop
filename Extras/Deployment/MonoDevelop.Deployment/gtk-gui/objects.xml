@@ -86,4 +86,21 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Deployment.Gui.PackagingFeatureWidget" palette-category="widget" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups>
+      <itemgroup label="Container Properties">
+        <property name="BorderWidth" />
+        <property name="FocusHadjustment" />
+        <property name="FocusVadjustment" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="Container Signals">
+        <signal name="ResizeChecked" />
+        <signal name="Removed" />
+        <signal name="FocusChildSet" />
+        <signal name="Added" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

@@ -182,30 +182,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		CombineEntry GetCommonCombineEntry ()
 		{
-			ArrayList combineList = new ArrayList ();
-			bool firstEntry = true;
-			foreach (CombineEntry e in selectedEntries.Keys) {
-				CombineEntry c = e;
-				do {
-					int i = combineList.IndexOf (c);
-					if (i != -1) {
-						// Found a common entry.
-						// Remove all previous entries in the list, since they are not common.
-						combineList.RemoveRange (0, i);
-						break;
-					} else if (firstEntry) {
-						combineList.Add (c);
-					}
-					c = c.ParentCombine;
-				}
-				while (c != null);
-				
-				firstEntry = false;
-			}
-			if (combineList.Count == 0)
-				return null;
-			else
-				return (CombineEntry) combineList [0];
+			return PackageBuilder.GetCommonCombineEntry (selectedEntries.Keys);
 		}
 	}
 }

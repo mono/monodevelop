@@ -67,6 +67,12 @@ namespace MonoDevelop.Deployment
 			get { return "md-package"; }
 		}
 		
+		public virtual string DefaultName {
+			get {
+				return Description;
+			}
+		}
+		
 		public virtual string Validate ()
 		{
 			return null;
@@ -122,6 +128,11 @@ namespace MonoDevelop.Deployment
 			rootCombineEntry = other.rootCombineEntry;
 		}
 		
+		public virtual PackageBuilder[] CreateDefaultBuilders ()
+		{
+			return new PackageBuilder [0];
+		}
+		
 		protected virtual void OnBuild (IProgressMonitor monitor, DeployContext ctx)
 		{
 		}
@@ -141,19 +152,29 @@ namespace MonoDevelop.Deployment
 			return new DeployContext (this, "Linux", null);
 		}
 		
+		public void SetCombineEntry (CombineEntry entry)
+		{
+			SetCombineEntry (entry, null);
+		}
+		
 		public void SetCombineEntry (CombineEntry rootCombineEntry, CombineEntry[] childEntries)
 		{
 			this.rootCombineEntry = rootCombineEntry;
-			this.rootEntry = rootCombineEntry.FileName;
-		
-			this.childEntries.Clear ();
 			childCombineEntries = new List<CombineEntry> ();
-			foreach (CombineEntry e in childEntries) {
-				this.childEntries.Add (e.FileName);
-				this.childCombineEntries.Add (e);
-			}
-		
+			
+			if (childEntries != null)
+			    childCombineEntries.AddRange (childEntries);
+			
+			UpdateEntryNames ();
 			InitializeSettings (rootCombineEntry);
+		}
+		
+		void UpdateEntryNames ()
+		{
+			this.rootEntry = rootCombineEntry.FileName;
+			this.childEntries.Clear ();
+			foreach (CombineEntry e in childCombineEntries)
+				childEntries.Add (e.FileName);
 		}
 		
 		public CombineEntry RootCombineEntry {
@@ -163,6 +184,28 @@ namespace MonoDevelop.Deployment
 				}
 				return rootCombineEntry; 
 			}
+		}
+		
+		public void AddEntry (CombineEntry entry)
+		{
+			List<CombineEntry> list = new List<CombineEntry> ();
+			list.Add (RootCombineEntry);
+			list.AddRange (GetChildEntries());
+			list.Add (entry);
+			
+			rootCombineEntry = GetCommonCombineEntry (list);
+			list.Remove (rootCombineEntry);
+			
+			foreach (CombineEntry e in list.ToArray ()) {
+				CombineEntry ce = e.ParentCombine;
+				while (ce != rootCombineEntry) {
+					if (!list.Contains (ce))
+						list.Add (ce);
+					ce = ce.ParentCombine;
+				}
+			}
+			childCombineEntries = list;
+			UpdateEntryNames ();
 		}
 		
 		public CombineEntry[] GetChildEntries ()
@@ -235,6 +278,35 @@ namespace MonoDevelop.Deployment
 		string GetKey (DeployFile file)
 		{
 			return file.SourceCombineEntry.Name + "," + file.TargetDirectoryID + "," + file.RelativeTargetPath;
+		}
+		
+		
+		internal static CombineEntry GetCommonCombineEntry (ICollection entries)
+		{
+			ArrayList combineList = new ArrayList ();
+			bool firstEntry = true;
+			foreach (CombineEntry e in entries) {
+				CombineEntry c = e;
+				do {
+					int i = combineList.IndexOf (c);
+					if (i != -1) {
+						// Found a common entry.
+						// Remove all previous entries in the list, since they are not common.
+						combineList.RemoveRange (0, i);
+						break;
+					} else if (firstEntry) {
+						combineList.Add (c);
+					}
+					c = c.ParentCombine;
+				}
+				while (c != null);
+				
+				firstEntry = false;
+			}
+			if (combineList.Count == 0)
+				return null;
+			else
+				return (CombineEntry) combineList [0];
 		}
 	}
 }

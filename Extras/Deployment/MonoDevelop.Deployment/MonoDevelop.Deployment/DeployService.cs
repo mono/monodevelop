@@ -122,6 +122,16 @@ namespace MonoDevelop.Deployment
 			pw.WaitForOutput ();
 		}
 		
+		internal static string GetArchiveExtension (string fileName)
+		{
+			if (fileName.EndsWith (".tar.gz"))
+				return ".tar.gz";
+			else if (fileName.EndsWith (".tar.bz2"))
+				return ".tar.bz2";
+			else
+				return Path.GetExtension (fileName);
+		}
+		
 		public static FileCopyHandler[] GetFileCopyHandlers ()
 		{
 			InitCopiers ();

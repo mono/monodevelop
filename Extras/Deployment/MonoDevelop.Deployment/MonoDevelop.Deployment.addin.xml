@@ -138,4 +138,8 @@
 		<DeployPlatform id="Linux" _label="Linux" />
 		<DeployPlatform id="Windows" _label="Windows" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
+		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" />
+	</Extension>
 </AddIn>
