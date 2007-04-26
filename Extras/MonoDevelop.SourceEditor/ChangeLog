@@ -1,3 +1,10 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.SourceEditor.addin.xml: Register the editor after the
+	  default display binding, so other bindings can be registered before
+	  of it and have more priority when opening files.
+	* MonoDevelop.SourceEditor.mdp: Updated.
+
 2007-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs:

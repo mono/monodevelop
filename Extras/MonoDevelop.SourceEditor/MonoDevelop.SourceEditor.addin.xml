@@ -198,7 +198,7 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "NewText"
+		<DisplayBinding id    = "NewText" insertafter="DefaultDisplayBinding"
 		       supportedformats = "Text Files,Source Files"
 		       class = "MonoDevelop.SourceEditor.Gui.SourceEditorDisplayBinding" />
 	</Extension>
