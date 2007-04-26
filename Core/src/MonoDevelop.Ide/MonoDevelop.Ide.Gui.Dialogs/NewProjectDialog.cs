@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 	/// This class displays a new project dialog and sets up and creates a a new project,
 	/// the project types are described in an XML options file
 	/// </summary>
-	internal class NewProjectDialog
+	public partial class NewProjectDialog: Gtk.Dialog
 	{
 		ArrayList alltemplates = new ArrayList();
 		ArrayList categories   = new ArrayList();
@@ -38,38 +38,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		FolderEntry entry_location;
 		TreeStore catStore;
 		
-		[Glade.Widget ("NewProjectDialog")] Dialog dialog;
-//		[Glade.Widget] Button btn_close;
-		[Glade.Widget] Button btn_new;
-		
-//		[Glade.Widget] Label lbl_hdr_template;
-//		[Glade.Widget] Label lbl_hdr_location;
-		[Glade.Widget] Label lbl_subdirectory;
-		[Glade.Widget] Label lbl_will_save_in;
-		[Glade.Widget] Label lbl_template_descr;
-		
-		[Glade.Widget] Gtk.Entry txt_name;
-		[Glade.Widget] Gtk.Entry txt_subdirectory;
-		[Glade.Widget] CheckButton chk_combine_directory;
-		
-		[Glade.Widget] Gtk.TreeView lst_template_types;
-		[Glade.Widget] HBox hbox_template;
-		[Glade.Widget] HBox hbox_for_browser;
-		[Glade.Widget] Gtk.HSeparator hseparator;
-		
 		bool openCombine;
 		string basePath;
 		bool newCombine;
 		string lastName = "";
+		ProjectTemplate selectedItem;
+		CombineEntry currentEntry;
+		Combine parentCombine;
 		
-		public NewProjectDialog (bool openCombine, bool newCombine, string basePath)
+		public NewProjectDialog (Combine parentCombine, bool openCombine, bool newCombine, string basePath)
 		{
+			Build ();
+			notebook.Page = 0;
+			notebook.ShowTabs = false;
+			
+			this.parentCombine = parentCombine;
 			this.basePath = basePath;
 			this.newCombine = newCombine;
 			this.openCombine = openCombine;
-			new Glade.XML (null, "Base.glade", "NewProjectDialog", null).Autoconnect (this);
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			dialog.Title = newCombine ? GettextCatalog.GetString ("New Solution") : GettextCatalog.GetString ("New Project");
+			TransientFor = IdeApp.Workbench.RootWindow;
+			Title = newCombine ? GettextCatalog.GetString ("New Solution") : GettextCatalog.GetString ("New Project");
 
 			InitializeTemplates ();
 			
@@ -80,11 +68,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				hseparator.Hide ();
 				lbl_subdirectory.Hide ();
 			}
-		}
-		
-		public int Run ()
-		{
-			return dialog.Run ();
 		}
 		
 		public void SelectTemplate (string id)
@@ -130,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			TreeIter first;
 			if (catStore.GetIterFirst (out first))
 				lst_template_types.Selection.SelectIter (first);
-			dialog.ShowAll ();
+			ShowAll ();
 		}
 		
 		void InsertCategories (TreeIter node, ArrayList catarray)
@@ -208,9 +191,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			StringBuilder sb = new StringBuilder ();
 			for (int n=0; n<name.Length; n++) {
 				char c = name [n];
-				if (Array.IndexOf (Path.GetInvalidPathChars(), c) != -1)
+				if (Array.IndexOf (System.IO.Path.GetInvalidPathChars(), c) != -1)
 					continue;
-				if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar || c == Path.VolumeSeparatorChar)
+				if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
 					continue;
 				sb.Append (c);
 			}
@@ -224,9 +207,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		string SolutionLocation {
 			get {
 				if (CreateSolutionDirectory)
-					return Path.Combine (entry_location.Path, GetValidDir (txt_subdirectory.Text));
+					return System.IO.Path.Combine (entry_location.Path, GetValidDir (txt_subdirectory.Text));
 				else
-					return Path.Combine (entry_location.Path, GetValidDir (txt_name.Text));
+					return System.IO.Path.Combine (entry_location.Path, GetValidDir (txt_name.Text));
 			}
 		}
 		
@@ -234,9 +217,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			get {
 				string path = entry_location.Path;
 				if (CreateSolutionDirectory)
-					path = Path.Combine (path, GetValidDir (txt_subdirectory.Text));
+					path = System.IO.Path.Combine (path, GetValidDir (txt_subdirectory.Text));
 				
-				return Path.Combine (path, GetValidDir (txt_name.Text));
+				return System.IO.Path.Combine (path, GetValidDir (txt_name.Text));
 			}
 		}
 		
@@ -284,12 +267,62 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		public string NewCombineEntryLocation;
 		
-		void OpenEvent(object sender, EventArgs e)
+		void OpenEvent (object sender, EventArgs e)
 		{
-			if (!btn_new.Sensitive) {
+			if (!btn_new.Sensitive)
 				return;
-			}
 			
+			if (notebook.Page == 0) {
+				if (!CreateProject ())
+					return;
+				
+				CombineEntry entry;
+				try {
+					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+				}
+				catch (Exception ex) {
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
+					return;
+				}
+				if (parentCombine == null) {
+					parentCombine = (Combine) entry;
+					if (parentCombine.Entries.Count > 0)
+						currentEntry = parentCombine.Entries [0];
+					else
+						currentEntry = parentCombine;
+				} else {
+					currentEntry = entry;
+				}
+				try {
+					featureList.Fill (parentCombine, currentEntry, CombineEntryFeatures.GetFeatures (parentCombine, currentEntry));
+				}
+				catch (Exception ex) {
+					Console.WriteLine (ex);
+				}
+				notebook.Page++;
+				btn_new.Label = Gtk.Stock.Ok;
+			}
+			else {
+				if (!featureList.Validate ())
+					return;
+				
+				if (!newCombine)
+					parentCombine.Entries.Add (currentEntry);
+				
+				featureList.ApplyFeatures ();
+				if (newCombine)
+					IdeApp.ProjectOperations.SaveCombineEntry (parentCombine);
+				else
+					IdeApp.ProjectOperations.SaveCombine ();
+				
+				if (openCombine)
+					selectedItem.OpenCreatedCombine();
+				Respond (ResponseType.Ok);
+			}
+		}
+		
+		bool CreateProject ()
+		{
 			if (TemplateView.CurrentlySelected != null) {
 				Runtime.Properties.SetProperty("Dialogs.NewProjectDialog.LastSelectedCategory", ((ProjectTemplate)TemplateView.CurrentlySelected).Name);
 				//Runtime.Properties.SetProperty("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
@@ -303,8 +336,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			//The one below seemed to be failing sometimes.
 			if(solution.IndexOfAny("$#@!%^&*/?\\|'\";:}{".ToCharArray()) > -1) {
-				Services.MessageService.ShowError(dialog, GettextCatalog.GetString ("Illegal project name. \nOnly use letters, digits, space, '.' or '_'."));
-				return;
+				Services.MessageService.ShowError(this, GettextCatalog.GetString ("Illegal project name. \nOnly use letters, digits, space, '.' or '_'."));
+				return false;
 			}
 
 			if ((solution != null && solution.Trim () != "" 
@@ -312,69 +345,61 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			    !Runtime.FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
 			    !Runtime.FileService.IsValidFileName(location)) {
 				Services.MessageService.ShowError(GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
-				return;
+				return false;
 			}
 
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null && IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (name) != null) {
 				Services.MessageService.ShowError(GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
-				return;
+				return false;
 			}
 			
 			Runtime.Properties.SetProperty (
 				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 				CreateSolutionDirectory);
 			
-			if (TemplateView.CurrentlySelected != null && name.Length != 0) {
-				ProjectTemplate item = (ProjectTemplate) TemplateView.CurrentlySelected;
+			if (TemplateView.CurrentlySelected == null || name.Length == 0)
+				return false;
 				
-				try
-				{
-					System.IO.Directory.CreateDirectory (ProjectLocation);
-				}
-				catch (IOException)
-				{
-					Services.MessageService.ShowError (dialog, GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
-					return;
-				}
-				catch (UnauthorizedAccessException)
-				{
-					Services.MessageService.ShowError (dialog, GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
-					return;
-				}
-				
-				ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-				
-				cinfo.CombinePath     = SolutionLocation;
-				cinfo.ProjectBasePath = ProjectLocation;
-//				cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
-				
-				cinfo.ProjectName     = name;
-				cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : name;
-//				cinfo.ProjectTemplate = item.Template;
-				
-				try {
-					if (newCombine)
-						NewCombineEntryLocation = item.CreateCombine (cinfo);
-					else
-						NewCombineEntryLocation = item.CreateProject (cinfo);
-				} catch (Exception ex) {
-					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"));
-				}
-				
-				if (NewCombineEntryLocation == null || NewCombineEntryLocation.Length == 0)
-					return;
-				
-				if (openCombine)
-					item.OpenCreatedCombine();
-				
-				if (OnOked != null)
-					OnOked (null, null);
-				dialog.Destroy ();
+			ProjectTemplate item = (ProjectTemplate) TemplateView.CurrentlySelected;
+			
+			try
+			{
+				System.IO.Directory.CreateDirectory (ProjectLocation);
 			}
+			catch (IOException)
+			{
+				Services.MessageService.ShowError (this, GettextCatalog.GetString ("Could not create directory {0}. File already exists.", ProjectLocation));
+				return false;
+			}
+			catch (UnauthorizedAccessException)
+			{
+				Services.MessageService.ShowError (this, GettextCatalog.GetString ("You do not have permission to create to {0}", ProjectLocation));
+				return false;
+			}
+			
+			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
+			
+			cinfo.CombinePath     = SolutionLocation;
+			cinfo.ProjectBasePath = ProjectLocation;
+//				cinfo.Description     = Runtime.StringParserService.Parse(item.Template.Description);
+			
+			cinfo.ProjectName     = name;
+			cinfo.CombineName     = CreateSolutionDirectory ? txt_subdirectory.Text : name;
+//				cinfo.ProjectTemplate = item.Template;
+			
+			try {
+				if (newCombine)
+					NewCombineEntryLocation = item.CreateCombine (cinfo);
+				else
+					NewCombineEntryLocation = item.CreateProject (cinfo);
+			} catch (Exception ex) {
+				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"));
+				return false;
+			}
+			selectedItem = item;
+			return true;
 		}
 
-		public event EventHandler OnOked;
-		
 		// icon view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
 		{
@@ -400,7 +425,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		protected void cancelClicked (object o, EventArgs e)
 		{
-			dialog.Destroy ();
+			Respond (ResponseType.Cancel);
 		}
 		
 		void ActivateIfReady ()
@@ -449,7 +474,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			entry_location.PathChanged += new EventHandler (PathChanged);
 			InitializeView ();
 		}
-		
+
 		/// <summary>
 		///  Represents a category
 		/// </summary>

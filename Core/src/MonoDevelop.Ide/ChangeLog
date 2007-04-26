@@ -1,3 +1,37 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/ICombineEntryFeature.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
+	  Implemented the new project dialog using stetic. Implemented
+	  support for 'project features'.
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Moved new project dialog
+	  creation to ProjectOperations.NewProject().
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs: Use
+	  the desktop file icon for files which don't have one assigned in
+	  MD.
+	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs,
+	  MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:
+	  Implemented new project feature selector widget, used in the new
+	  project dialog.
+	* MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs: Added new
+	  ProjectFeatures extension point. Added a default display binding to
+	  be used as reference when registering other display bindings (so
+	  they can be added before the default binding if needed).
+	* MonoDevelop.Ide.mdp, Makefile.am: Added new files.
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs,
+	  gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Implemented the NewProject
+	  command. In CreateCombineEntry, moved the code that adds the new
+	  entry to the combine to the NewProjectDialog.
+
 2007-04-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/NavigationService.cs (LogNavPoint): Don't

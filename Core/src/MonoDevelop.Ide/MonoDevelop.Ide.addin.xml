@@ -39,6 +39,8 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings" extension-nodes="DisplayBinding" description="Display bindings.">
+		<DisplayBinding id    = "DefaultDisplayBinding"
+		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
 		<DisplayBinding id    = "Browser"
 		                supportedformats = "Web Pages"
 		                class = "MonoDevelop.Ide.Gui.BrowserDisplayBinding.BrowserDisplayBinding"/>
@@ -1010,5 +1012,8 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures" extension-nodes="Class">
 	</Extension>
 </AddIn>

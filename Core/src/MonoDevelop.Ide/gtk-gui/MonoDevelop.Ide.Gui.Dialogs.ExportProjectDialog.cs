@@ -35,7 +35,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog";
             this.Title = Mono.Unix.Catalog.GetString("Export Project");
-            this.HasSeparator = true;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 					string folder = dlg.TargetFolder;
 					string tmpFolder = null;
 					
-					Services.ProjectService.Export (mon, entry.FileName, folder, format);
+					Services.ProjectService.Export (mon, entry.FileName, folder, dlg.Format);
 				}
 			}
 			dlg.Destroy ();
@@ -622,6 +622,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public void NewProject ()
+		{
+			NewProjectDialog pd = new NewProjectDialog (null, true, true, null);
+			pd.Run ();
+			pd.Destroy ();
+		}
+		
 		public CombineEntry CreateProject (Combine parentCombine)
 		{
 			return CreateCombineEntry (parentCombine, false);
@@ -636,23 +643,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			CombineEntry res = null;
 			string basePath = parentCombine != null ? parentCombine.BaseDirectory : null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentCombine == null, createCombine, basePath);
+			NewProjectDialog npdlg = new NewProjectDialog (parentCombine, parentCombine == null, createCombine, basePath);
 			if (createCombine && parentCombine != null)
 				npdlg.SelectTemplate ("MonoDevelop.BlankSolution");
 
-			if (npdlg.Run () == (int) Gtk.ResponseType.Ok) {
-				try {
-					res = AddCombineEntry (parentCombine, npdlg.NewCombineEntryLocation);
-				}
-				catch (Exception ex) {
-					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", npdlg.NewCombineEntryLocation));
-					res = null;
-				}
-			}
-
-			if (res != null)
-				SaveCombine ();
-
+			npdlg.Run ();
+			npdlg.Destroy ();
 			return res;
 		}
 

@@ -50,8 +50,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			NewProjectDialog pd = new NewProjectDialog (true, true, null);
-			pd.Run ();
+			IdeApp.ProjectOperations.NewProject ();
 		}
 	}
 	

@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -67,7 +68,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			SystemFile file = (SystemFile) dataObject;
 			label = file.Name;
-			icon = Context.GetIcon (Services.Icons.GetImageForFile (file.Path));
+			
+			string ic = Services.Icons.GetImageForFile (file.Path);
+			if (ic != Stock.MiscFiles || !File.Exists (file.Path))
+				icon = Context.GetIcon (ic);
+			else
+				icon = FileIconLoader.GetPixbufForFile (file.Path, 16);
+			
 			if (file.ShowTransparent) {
 				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {

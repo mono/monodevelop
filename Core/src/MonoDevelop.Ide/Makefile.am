@@ -28,8 +28,11 @@ REFS =  \
 
 FILES =  \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
@@ -88,11 +91,13 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IncludeFilesDialog.cs \
@@ -206,6 +211,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
+	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DefaultStatusBarService.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
@@ -265,6 +271,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
 	MonoDevelop.Ide.Templates/ICombineEntryDescriptor.cs \
+	MonoDevelop.Ide.Templates/ICombineEntryFeature.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \
 	MonoDevelop.Ide.Templates/ProjectDescriptor.cs \
 	MonoDevelop.Ide.Templates/ProjectTemplate.cs \
@@ -277,6 +284,7 @@ FILES =  \
 RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/Icons.16x16.LinkOverlay.png \
 	icons/Icons.AboutImage \
 	icons/mono-powered.png \
