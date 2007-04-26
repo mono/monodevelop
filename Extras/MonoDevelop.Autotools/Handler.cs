@@ -54,14 +54,8 @@ namespace MonoDevelop.Autotools
 
 		public override bool CanBuild (CombineEntry entry)
 		{
-			Combine combine = entry as Combine;
-			if (combine == null)
-				combine = entry.ParentCombine;
-			if (combine == null)
-				return false;
-			
 			SolutionDeployer deployer = new SolutionDeployer ();
-			return deployer.CanDeploy ( combine );
+			return deployer.CanDeploy ( entry );
 		}
 		
 		public override void InitializeSettings (CombineEntry entry)

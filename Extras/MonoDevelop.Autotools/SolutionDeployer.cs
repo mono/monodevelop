@@ -53,10 +53,10 @@ namespace MonoDevelop.Autotools
 			return false;
 		}
 		
-		public bool CanDeploy ( Combine combine )
+		public bool CanDeploy (CombineEntry entry)
 		{
-			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( combine );
-			if ( handler == null || !handler.CanDeploy (combine) ) return false;
+			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry);
+			if ( handler == null || !handler.CanDeploy (entry) ) return false;
 			return true;
 		}
 		

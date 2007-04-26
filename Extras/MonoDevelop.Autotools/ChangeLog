@@ -1,5 +1,10 @@
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Handler.cs, SolutionDeployer.cs: Fixed CanBuild method. Any combine
+	  entry for which there is a IMakefileHandler can be deployed.
+
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Autotools.addin.xml, MonoDevelop.Autotools.mdp,
 	  MakefileIntegrationFeatureWidget.cs, Handler.cs,
 	  MakefileIntegrationFeature.cs,
