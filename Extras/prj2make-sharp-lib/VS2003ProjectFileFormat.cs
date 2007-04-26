@@ -136,7 +136,8 @@ namespace MonoDevelop.Prj2Make
 			DotNetProject project = ImportCsproj (fileName, false);
 
 			// ConvertToMSBuild saves the project for mdp
-			return MSBuildSolution.ConvertToMSBuild (project, false) as DotNetProject;
+			MSBuildSolution.ConvertToMSBuild (project);
+			return project as DotNetProject;
 		}
 	}
 }

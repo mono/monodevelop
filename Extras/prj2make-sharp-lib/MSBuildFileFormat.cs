@@ -46,7 +46,6 @@ namespace MonoDevelop.Prj2Make
 {
 	public class MSBuildFileFormat : IFileFormat
 	{
-		string language;
 		internal const string ns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
 		static XmlNamespaceManager manager;
@@ -54,11 +53,6 @@ namespace MonoDevelop.Prj2Make
 
 		public MSBuildFileFormat ()
 		{
-		}
-
-		public MSBuildFileFormat (string language)
-		{
-			this.language = language;
 		}
 
 		public string Name {
@@ -292,16 +286,16 @@ namespace MonoDevelop.Prj2Make
 				}
 			}
 
+			// Always update the project references
+			foreach (ProjectReference pref in project.ProjectReferences)
+				data.ProjectReferenceElements [pref] = ReferenceToXmlElement (data, project, pref);
+		
 			//FIXME: Set ActiveConfiguration
-
 			CleanUpEmptyItemGroups (doc);
-			
+
 			if (newdoc) {
 				foreach (ProjectFile pfile in project.ProjectFiles)
 					data.ProjectFileElements [pfile] = FileToXmlElement (data, project, pfile);
-
-				foreach (ProjectReference pref in project.ProjectReferences)
-					data.ProjectReferenceElements [pref] = ReferenceToXmlElement (data, project, pref);
 
 				XmlElement elem = doc.CreateElement ("Configuration", ns);
 				data.GlobalConfigElement.AppendChild (elem);
@@ -435,7 +429,7 @@ namespace MonoDevelop.Prj2Make
 			project.Version = "0.1"; //FIXME:
 			//Default project name
 			project.Name = Path.GetFileNameWithoutExtension (fname);
-			project.FileFormat = new MSBuildFileFormat (lang);
+			project.FileFormat = new MSBuildFileFormat ();
 			project.ClrVersion = ClrVersion.Net_2_0;
 
 			MSBuildData data = new MSBuildData ();
@@ -516,7 +510,6 @@ namespace MonoDevelop.Prj2Make
 
 		static void SetupHandlers (DotNetProject project)
 		{
-			//Setup handlers
 			//References
 			project.ReferenceRemovedFromProject += new ProjectReferenceEventHandler (HandleReferenceRemoved);
 			project.ReferenceAddedToProject += new ProjectReferenceEventHandler (HandleReferenceAdded);
@@ -594,23 +587,26 @@ namespace MonoDevelop.Prj2Make
 		{
 			ReferenceType refType = projectRef.ReferenceType;
 
-			string elemName;
-			if (refType == ReferenceType.Project)
-				elemName = "ProjectReference";
-			else
-				elemName = "Reference";
-
 			XmlDocument doc = d.Document;
-			XmlElement elem = doc.CreateElement (elemName, ns);
+			XmlElement elem;
+			if (!d.ProjectReferenceElements.TryGetValue (projectRef, out elem)) {
+				string elemName;
+				if (refType == ReferenceType.Project)
+					elemName = "ProjectReference";
+				else
+					elemName = "Reference";
 
-			//Add the element to the document
-			XmlNode node = doc.SelectSingleNode (String.Format ("/tns:Project/tns:ItemGroup/tns:{0}", elemName), NamespaceManager);
-			if (node == null) {
-				node = doc.CreateElement ("ItemGroup", ns);
-				doc.DocumentElement.AppendChild (node);
-				node.AppendChild (elem);
-			} else {
-				node.ParentNode.AppendChild (elem);
+				elem = doc.CreateElement (elemName, ns);
+
+				//Add the element to the document
+				XmlNode node = doc.SelectSingleNode (String.Format ("/tns:Project/tns:ItemGroup/tns:{0}", elemName), NamespaceManager);
+				if (node == null) {
+					node = doc.CreateElement ("ItemGroup", ns);
+					doc.DocumentElement.AppendChild (node);
+					node.AppendChild (elem);
+				} else {
+					node.ParentNode.AppendChild (elem);
+				}
 			}
 
 			string reference = projectRef.Reference;
@@ -620,9 +616,9 @@ namespace MonoDevelop.Prj2Make
 			case ReferenceType.Assembly:
 				reference = AssemblyName.GetAssemblyName (reference).ToString ();
 
-				AppendChild (elem, "HintPath", ns, 
+				EnsureChildValue (elem, "HintPath", ns, 
 					Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, projectRef.Reference));
-				AppendChild (elem, "SpecificVersion", ns, "False");
+				EnsureChildValue (elem, "SpecificVersion", ns, "False");
 				break;
 			case ReferenceType.Project:
 				Combine c = project.RootCombine;
@@ -638,14 +634,13 @@ namespace MonoDevelop.Prj2Make
 							EnsureChildValue (elem, "Project", ns, String.Concat ("{", data.Guid, "}"));
 					}
 
-					AppendChild (elem, "Name", ns, p.Name);
+					EnsureChildValue (elem, "Name", ns, p.Name);
 				}
 				break;
 			case ReferenceType.Custom:
 				break;
 			}
 
-			//Add the Include attribute
 			elem.SetAttribute ("Include", reference);
 
 			return elem;

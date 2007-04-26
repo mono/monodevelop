@@ -76,13 +76,12 @@ namespace MonoDevelop.Prj2Make
 			if (c == null)
 				return;
 
-			if (c.ParentCombine != null)
-				//Not the top most solution
+			if (c.ParentCombine != null && c.ParentCombine.FileFormat is MSBuildFileFormat)
+				// Ignore a non-root combine if its parent is a msbuild solution
+				// Eg. if parent is a mds, then this should get emitted as the
+				// top level solution
 				return;
 
-			if (!c.ExtendedProperties.Contains (typeof (SlnFileFormat)))
-				throw new Exception ("Writing only supported for vs2005 projects (yet)");
-		
 			string tmpfilename = String.Empty;
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
@@ -121,11 +120,16 @@ namespace MonoDevelop.Prj2Make
 				sw.WriteLine ("#MonoDevelop");
 
 				//Write the projects
-				WriteProjects (c, c.RootCombine.BaseDirectory, sw, monitor);
+				WriteProjects (c, c.BaseDirectory, sw, monitor);
 
-				//Write the lines for unknownProjects
 				SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
-				if (slnData != null) {
+				if (slnData == null) {
+					// If a non-msbuild project is being converted by just
+					// changing the fileformat, then create the SlnData for it
+					slnData = new SlnData ();
+					c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+				} else {
+					//Write the lines for unknownProjects
 					foreach (string l in slnData.UnknownProjects)
 						sw.WriteLine (l);
 				}
@@ -183,18 +187,13 @@ namespace MonoDevelop.Prj2Make
 				List<string> l = null;
 				if (c == null) {
 					//Project
-					MSBuildData msbData = (MSBuildData) ce.ExtendedProperties [typeof (MSBuildFileFormat)];
-					if (msbData == null)
-						//This should not happen as any .mdp would've been converted to
-						//.*proj and so would have this object
-						//FIXME : But can happen for unsupported project types.. eg. md-unit
-						throw new Exception (String.Format (
-							"INTERNAL ERROR: Project named '{0}', filename = {1}, does not have a 'data' object.", 
-							ce.Name, ce.FileName));
+					DotNetProject project = ce as DotNetProject;
+					if (project == null) {
+						monitor.ReportWarning (GettextCatalog.GetString (
+							"Error saving project ({0}) : Only DotNetProjects can be part of a MSBuild solution. Ignoring.", ce.Name));
+						continue;
+					}
 
-					l = msbData.Extra;
-
-					DotNetProject project = (DotNetProject)ce;
 					if (!ProjectTypeGuids.ContainsKey (project.LanguageName)) {
 						// FIXME: Should not happen, temp
 						monitor.ReportWarning (GettextCatalog.GetString ("Saving for project {0} not supported. Ignoring.",
@@ -202,18 +201,37 @@ namespace MonoDevelop.Prj2Make
 						continue;
 					}
 
+					IFileFormat ff = project.FileFormat;
+					if (! (ff is MSBuildFileFormat)) {
+						// Convert to a msbuild file format
+						project.FileFormat = new MSBuildFileFormat ();
+						project.FileName = project.FileFormat.GetValidFormatName (project, project.FileName);
+					}
+
+					project.Save (monitor);
+
+					MSBuildData msbData = (MSBuildData) project.ExtendedProperties [typeof (MSBuildFileFormat)];
+					if (msbData == null)
+						//This should not happen as project.Save would've added this
+						throw new Exception (String.Format (
+							"INTERNAL ERROR: Project named '{0}', filename = {1}, does not have a 'data' object.", 
+							project.Name, project.FileName));
+
+					l = msbData.Extra;
+
 					writer.WriteLine (@"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""",
 						ProjectTypeGuids [project.LanguageName],
-						ce.Name, 
-						Runtime.FileService.AbsoluteToRelativePath (baseDirectory, ce.FileName),
+						project.Name, 
+						Runtime.FileService.AbsoluteToRelativePath (baseDirectory, project.FileName),
 						msbData.Guid);
 				} else {
 					//Solution
 					SlnData slnData = (SlnData) c.ExtendedProperties [typeof (SlnFileFormat)];
-					if (slnData == null)
-						throw new Exception (String.Format (
-							"INTERNAL ERROR: Solution named '{0}', filename = {1}, does not have a 'data' object.", 
-							ce.Name, ce.FileName));
+					if (slnData == null) {
+						// Solution folder
+						slnData = new SlnData ();
+						c.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
+					}
 
 					l = slnData.Extra;
 					
@@ -433,10 +451,10 @@ namespace MonoDevelop.Prj2Make
 					folder.Version = "0.1"; //FIXME:
 					folder.FileFormat = new MSBuildFileFormat ();
 
-					SlnData slnData = new SlnData ();
+					SlnData slnData = new SlnData (
+						projectGuid.Trim (new char [] {'{', '}'}));
 					folder.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
 
-					slnData.Guid = projectGuid.Trim (new char [] {'{', '}'});
 					slnData.Extra = lines.GetRange (sec.Start + 1, sec.Count - 2);
 
 					entries [projectGuid] = folder;

@@ -27,6 +27,7 @@
 //
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -129,8 +130,8 @@ namespace MonoDevelop.Prj2Make
 		internal static Combine ImportSlnAsMSBuild (string fileName)
 		{
 			Combine combine = ImportSln (fileName, false);
-			MSBuildSolution.ConvertToMSBuild (combine, false);
-			MSBuildSolution.UpdateProjectReferences (combine, true);
+			MSBuildSolution.ConvertToMSBuild (combine);
+			combine.Save (new NullProgressMonitor ());
 
 			return combine;
 		}

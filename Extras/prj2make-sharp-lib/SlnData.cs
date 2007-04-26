@@ -41,6 +41,16 @@ namespace MonoDevelop.Prj2Make
 		List<string> extra; //used by solution folders..
 		List<string> unknownProjects;
 
+		public SlnData ()
+		{ 
+			this.guid = System.Guid.NewGuid ().ToString ().ToUpper ();
+		}
+
+		public SlnData (string guid)
+		{
+			this.guid = guid;
+		}
+
 		public string Guid {
 			get { return guid; }
 			set { guid = value; }

@@ -49,7 +49,10 @@ namespace MonoDevelop.Prj2Make
 
 		static MSBuildSolution ()
 		{
-			IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
+			if (IdeApp.ProjectOperations != null)
+				// this is when invoked w/o the gui
+				//FIXME: Replace with a better way to check this
+				IdeApp.ProjectOperations.AddingEntryToCombine += new AddEntryEventHandler (HandleAddEntry);
 		}	
 
 		public SlnData Data {
@@ -109,20 +112,17 @@ namespace MonoDevelop.Prj2Make
 				args.FileName = proj.FileName;
 			} else {
 				CombineEntry ce = Services.ProjectService.ReadCombineEntry (args.FileName, monitor);
-				ce = ConvertToMSBuild (ce, false);
+				ConvertToMSBuild (ce);
 				args.FileName = ce.FileName;
-
-				if (String.Compare (extn, ".mds", true) == 0)
-					UpdateProjectReferences (((Combine) ce), true);
-
-				ce.FileFormat.WriteFile (ce.FileName, ce, monitor);
+				ce.Save (monitor);
 			}
 		}
 
 		static void HandleCombineEntryAdded (object sender, CombineEntryEventArgs e)
 		{
 			try {
-				ConvertToMSBuild (e.CombineEntry, true);
+				// ReadFile for Sln/MSBuildFileFormat set the handlers
+				ConvertToMSBuild (e.CombineEntry);
 
 				MSBuildSolution rootSln = (MSBuildSolution) e.CombineEntry.RootCombine;
 				MSBuildSolution sln = e.CombineEntry as MSBuildSolution;
@@ -158,50 +158,22 @@ namespace MonoDevelop.Prj2Make
 			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
 		}
 
-		internal static CombineEntry ConvertToMSBuild (CombineEntry ce, bool prompt)
+		internal static void ConvertToMSBuild (CombineEntry ce)
 		{
-			Combine newCombine = ce as Combine;
-			CombineEntry ret = ce;
+			MSBuildFileFormat msformat = new MSBuildFileFormat ();
+			if (!msformat.CanReadFile (ce.FileName)) {
+				// Convert
+				ce.FileFormat = msformat;
+				ce.FileName = msformat.GetValidFormatName (ce, ce.FileName);
 
-			if (newCombine == null) {
-				DotNetProject project = ce as DotNetProject;
-				if (project == null)
-					return ce;
-
-				//FIXME: Use MSBuildFileFormat.CanReadFile instead
-				if (String.Compare (Path.GetExtension (ce.FileName), ".mdp", true) == 0) {
-					MSBuildFileFormat fileFormat = new MSBuildFileFormat (project.LanguageName);
-					project.FileFormat = fileFormat;
-
-					string newname = fileFormat.GetValidFormatName (project, project.FileName);
-					project.FileName = newname;
-					fileFormat.SaveProject (project, new NullProgressMonitor ());
-				}
-			} else {
-				SlnData slnData = (SlnData) newCombine.ExtendedProperties [typeof (SlnFileFormat)];
-				if (slnData == null) {
-					slnData = new SlnData ();
-					newCombine.ExtendedProperties [typeof (SlnFileFormat)] = slnData;
-				}
-
-			 	slnData.Guid = Guid.NewGuid ().ToString ().ToUpper ();
-
-				if (String.Compare (Path.GetExtension (newCombine.FileName), ".mds", true) == 0) {
-					foreach (CombineEntry e in newCombine.Entries)
-						ConvertToMSBuild (e, false);
-
-					newCombine.FileFormat = new MSBuildFileFormat ();
-					newCombine.FileName = newCombine.FileFormat.GetValidFormatName (newCombine, newCombine.FileName);
-					SetHandlers (newCombine, false);
-				}
-
-				//This is set to ensure that the solution folder's BaseDirectory
-				//(which is derived from .FileName) matches that of the root
-				//combine
-				//newCombine.FileName = newCombine.RootCombine.FileName;
+				// Save will create the required SlnData, MSBuildData
+				// objects, create the new guids for the projects _and_ the
+				// solution folders
+				ce.Save (new NullProgressMonitor ());
+				// Writing out again might be required to fix
+				// project references which have changed (filenames
+				// changed due to the conversion)
 			}
-
-			return ret;
 		}
 
 		internal static void UpdateProjectReferences (Combine c, bool saveProjects)
