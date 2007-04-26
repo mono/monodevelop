@@ -133,20 +133,20 @@ namespace MonoDevelop.Projects
 					entriesToExport.Add (Path.GetFullPath (rootSourceFile));
 					foreach (string file in childEnryFiles)
 						entriesToExport.Add (Path.GetFullPath (file));
+
+					if (sourcePath != targetPath) {
+						// The file location has changed, the entry paths have to be relocated
+						for (int n=0; n<entriesToExport.Count; n++) {
+							string file = (string) entriesToExport [n];
+							file = Runtime.FileService.AbsoluteToRelativePath (sourcePath, file);
+							file = Runtime.FileService.RelativeToAbsolutePath (targetPath, file);
+							file = Path.GetFullPath (file);
+							entriesToExport [n] = file;
+						}
+					}
 				} else if (entry is Combine) {
 					foreach (CombineEntry e in ((Combine)entry).GetAllEntries ())
-						entriesToExport.Add (e.FileName);
-				}
-				
-				if (sourcePath != targetPath) {
-					// The file location has changed
-					for (int n=0; n<entriesToExport.Count; n++) {
-						string file = (string) entriesToExport [n];
-						file = Runtime.FileService.AbsoluteToRelativePath (sourcePath, file);
-						file = Runtime.FileService.RelativeToAbsolutePath (targetPath, file);
-						file = Path.GetFullPath (file);
-						entriesToExport [n] = file;
-					}
+						entriesToExport.Add (Path.GetFullPath (e.FileName));
 				}
 				
 				// The project needs to be converted
@@ -156,8 +156,19 @@ namespace MonoDevelop.Projects
 				entry.Save (monitor);
 				
 				if (newFile != rootSourceFile) {
-					foreach (string file in oldFiles)
+					foreach (string file in oldFiles) {
 						File.Delete (file);
+						
+						// Exclude empty directories
+						string dir = Path.GetDirectoryName (file);
+						if (Directory.GetFiles (dir).Length == 0 && Directory.GetDirectories (dir).Length == 0) {
+							try {
+								Directory.Delete (dir);
+							} catch (Exception ex) {
+								monitor.ReportError (null, ex);
+							}
+						}
+					}
 				}
 				return entry.FileName;
 			}
@@ -202,13 +213,19 @@ namespace MonoDevelop.Projects
 					else
 						comb.Entries.Remove (e);
 				}
-				if (!needsConversion && !entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName)))
+				if (!needsConversion && !entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName))) {
+					oldFiles.AddRange (entry.GetExportFiles ());
 					return false;
+				}
 			}
 			else {
-				if (!entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName)))
+				if (!entriesToExport.Contains (Runtime.FileService.GetFullPath (entry.FileName))) {
+					oldFiles.AddRange (entry.GetExportFiles ());
 					return false;
+				}
 			}
+			
+			StringCollection prevFiles = entry.GetExportFiles ();
 			
 			if (format != null) {
 				if (!format.CanWriteFile (entry)) {
@@ -218,8 +235,6 @@ namespace MonoDevelop.Projects
 				entry.FileFormat = format;
 				entry.FileName = format.GetValidFormatName (entry, entry.FileName);
 			}
-			
-			StringCollection prevFiles = entry.GetExportFiles ();
 			
 			// Add to oldFiles the files which are not included in the new format
 			

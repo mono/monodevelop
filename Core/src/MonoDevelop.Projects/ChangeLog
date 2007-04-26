@@ -1,3 +1,8 @@
+2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Fixed some issues in the
+	  export method.
+
 2007-04-20  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,
