@@ -57,7 +57,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Christian Hergert",
 			"Jacob Ilsø Christensen",
 			"Scott Ellington",
-			"Michael Hutchinson"
+			"Michael Hutchinson",
+			"Jeffrey Stedfast"
 		};
 		
 		public ScrollBox ()

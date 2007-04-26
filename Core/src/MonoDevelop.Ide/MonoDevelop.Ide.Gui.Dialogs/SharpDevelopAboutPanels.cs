@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			hboxLicense.PackStart (licenseLabel, false, false, 5);
 
 			HBox hboxCopyright = new HBox ();
-			copyrightLabel.Markup = GettextCatalog.GetString ("<b>Copyright</b>\n    (c) 2000-2003 by icsharpcode.net\n    (c) 2004-2005 by MonoDevelop contributors");
+			copyrightLabel.Markup = GettextCatalog.GetString ("<b>Copyright</b>\n    (c) 2000-2003 by icsharpcode.net\n    (c) 2004-2007 by MonoDevelop contributors");
 			hboxCopyright.PackStart (copyrightLabel, false, false, 5);
 
 			this.PackStart (hboxVersion, false, true, 0);
