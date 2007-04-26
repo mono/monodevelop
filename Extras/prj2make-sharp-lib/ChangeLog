@@ -1,5 +1,10 @@
 2007-04-26  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildFileFormat.cs (GetExportFiles): Implement.
+	* SlnFileFormat.cs (GetExportFiles): Implement.
+
+2007-04-26  Ankit Jain  <jankit@novell.com>
+
 	* MSBuildFileFormat.cs (HandleFilePropertyChanged): ProjectFile.DependsOn can
 	be null.
 

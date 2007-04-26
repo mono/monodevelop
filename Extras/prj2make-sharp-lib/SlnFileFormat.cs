@@ -67,6 +67,11 @@ namespace MonoDevelop.Prj2Make
 		
 		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
 		{
+			Combine c = obj as Combine;
+			if (c != null && c.ParentCombine != null && c.ParentCombine.FileFormat is MSBuildFileFormat)
+				// Solution folder
+				return new System.Collections.Specialized.StringCollection ();
+
 			return null;
 		}
 		

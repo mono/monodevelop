@@ -114,6 +114,8 @@ namespace MonoDevelop.Prj2Make
 
 		public System.Collections.Specialized.StringCollection GetExportFiles (object obj)
 		{
+			if (obj is Combine)
+				return solutionFormat.GetExportFiles (obj);
 			return null;
 		}
 		
