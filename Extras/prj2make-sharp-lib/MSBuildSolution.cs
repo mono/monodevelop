@@ -142,7 +142,7 @@ namespace MonoDevelop.Prj2Make
 				Console.WriteLine ("HandleCombineEntryAdded : {0}", ex.ToString ());
 			}
 		}
-		
+
 		internal static void SetHandlers (Combine combine, bool setEntries)
 		{
 			if (setEntries) {
@@ -173,35 +173,6 @@ namespace MonoDevelop.Prj2Make
 				// Writing out again might be required to fix
 				// project references which have changed (filenames
 				// changed due to the conversion)
-			}
-		}
-
-		internal static void UpdateProjectReferences (Combine c, bool saveProjects)
-		{
-			CombineEntryCollection allProjects = c.GetAllProjects ();
-
-			foreach (Project proj in allProjects) {
-				foreach (ProjectReference pref in proj.ProjectReferences) {
-					if (pref.ReferenceType != ReferenceType.Project)
-						continue;
-
-					Project p = (Project) allProjects [pref.Reference];
-
-					//FIXME: Move this to MSBuildFileFormat ?
-					MSBuildData data = (MSBuildData) proj.ExtendedProperties [typeof (MSBuildFileFormat)];
-					XmlElement elem = data.ProjectReferenceElements [pref];
-					elem.SetAttribute ("Include", 
-						Runtime.FileService.AbsoluteToRelativePath (
-							proj.BaseDirectory, p.FileName));
-
-					//Set guid of the ProjectReference
-					MSBuildData prefData = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
-					MSBuildFileFormat.EnsureChildValue (elem, "Project", MSBuildFileFormat.ns,
-						String.Concat ("{", prefData.Guid, "}"));
-
-				}
-				if (saveProjects)
-					proj.FileFormat.WriteFile (proj.FileName, proj, new NullProgressMonitor ());
 			}
 		}
 

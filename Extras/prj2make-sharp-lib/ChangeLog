@@ -1,5 +1,9 @@
 2007-04-27  Ankit Jain  <jankit@novell.com>
 
+	* MSBuildSolution.cs (UpdateProjectReferences): Remove.
+
+2007-04-27  Ankit Jain  <jankit@novell.com>
+
 	* SlnFileFormat.cs (WriteNestedProjects): Add @root param. Nested
 	project info should be emitted wrt @root.
 
