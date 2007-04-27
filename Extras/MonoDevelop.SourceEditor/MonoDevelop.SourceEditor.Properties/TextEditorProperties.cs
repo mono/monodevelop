@@ -393,12 +393,12 @@ namespace MonoDevelop.SourceEditor.Properties {
 			}
 		}
 		
-		public static bool ShowContolCharacters {
+		public static bool ShowControlCharacters {
 			get {
-				return properties.GetProperty ("ShowContolCharacters", true);
+				return properties.GetProperty ("ShowControlCharacters", false);
 			}
 			set {
-				properties.SetProperty ("ShowContolCharacters", value);
+				properties.SetProperty ("ShowControlCharacters", value);
 			}
 		}
 	}

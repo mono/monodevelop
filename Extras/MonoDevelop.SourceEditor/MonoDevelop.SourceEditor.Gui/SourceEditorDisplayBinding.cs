@@ -1207,8 +1207,8 @@ namespace MonoDevelop.SourceEditor.Gui
 				case "HighlightCurrentLine":
 					se.View.HighlightCurrentLine = TextEditorProperties.HighlightCurrentLine;
 					break;
-				case "ShowContolCharacters":
-					SourceEditorView.DrawWhiteSpacesEnabled = TextEditorProperties.ShowContolCharacters;
+				case "ShowControlCharacters":
+					SourceEditorView.DrawWhiteSpacesEnabled = TextEditorProperties.ShowControlCharacters;
 				se.View.QueueDraw ();
 					break;
 				default:

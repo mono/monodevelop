@@ -1,3 +1,10 @@
+2007-04-27  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+	* EditorBindings.glade,
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs,
+	* MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs,
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/MarkersTextEditorPanel.cs:
+	  Fixed typo.
+
 2007-04-26  David Makovský (Yakeen) <yakeen@sannyas-on.net>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Added highlighting

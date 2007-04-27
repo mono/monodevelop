@@ -47,7 +47,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			[Glade.Widget] CheckButton showErrorsCheckBox;
 			[Glade.Widget] CheckButton showVRulerCheckBox;
 			[Glade.Widget] CheckButton highlightCurrentLineCheckBox;
-			[Glade.Widget] CheckButton showContolCharactersCheckBox;
+			[Glade.Widget] CheckButton showControlCharactersCheckBox;
 			[Glade.Widget] SpinButton  vRulerRowTextBox;
 			[Glade.Widget] ComboBox    wrapModeComboBox;
 			
@@ -57,7 +57,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				showLineNumberCheckBox.Active = TextEditorProperties.ShowLineNumbers;
 				showBracketHighlighterCheckBox.Active = TextEditorProperties.ShowMatchingBracket;
 				showErrorsCheckBox.Active = TextEditorProperties.UnderlineErrors;
-				showContolCharactersCheckBox.Active = TextEditorProperties.ShowContolCharacters;
+				showControlCharactersCheckBox.Active = TextEditorProperties.ShowControlCharacters;
 				
 				highlightCurrentLineCheckBox.Active = TextEditorProperties.HighlightCurrentLine;
 				highlightCurrentLineCheckBox.Sensitive = MonoDevelop.SourceEditor.Gui.SourceEditorView.HighlightCurrentLineSupported;
@@ -78,7 +78,7 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				TextEditorProperties.UnderlineErrors = showErrorsCheckBox.Active;
 				TextEditorProperties.ShowVerticalRuler = showVRulerCheckBox.Active;
 				TextEditorProperties.HighlightCurrentLine = highlightCurrentLineCheckBox.Active;
-				TextEditorProperties.ShowContolCharacters = showContolCharactersCheckBox.Active;
+				TextEditorProperties.ShowControlCharacters = showControlCharactersCheckBox.Active;
 				try {
 					TextEditorProperties.VerticalRulerRow = (int) vRulerRowTextBox.Value;
 				} 
