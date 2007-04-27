@@ -1,5 +1,10 @@
 2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects/DotNetProject.cs: All deployment stuff has been
+	  moved to MonoDevelop.Deployment.
+
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects/ProjectService.cs: Report errors using the
 	  progress monitor, instead of throwing an exception.
 	* MonoDevelop.Projects/ProjectConvertTool.cs: Print an error message if

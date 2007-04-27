@@ -174,21 +174,7 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
 			conf.SourceDirectory = BaseDirectory;
 			
-			foreach (ProjectFile finfo in ProjectFiles) {
-				// Treat app.config in the project root directory as the application config
-				if (Path.GetFileName (finfo.Name).ToUpper () == "app.config".ToUpper() &&
-					Path.GetDirectoryName (finfo.Name) == BaseDirectory)
-				{
-					Runtime.FileService.CopyFile (finfo.Name, conf.CompiledOutputName + ".config");
-				}
-				if (finfo.BuildAction == BuildAction.FileCopy) {
-					Runtime.FileService.CopyFile (finfo.Name, Path.Combine (Path.GetDirectoryName (conf.CompiledOutputName), Path.GetFileName (finfo.Name)));
-				}
-			}
-
-			ICompilerResult res = languageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
-			CopyReferencesToOutputPath (false);
-			return res;
+			return languageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
 		}
 		
 		public override string GetOutputFileName ()
