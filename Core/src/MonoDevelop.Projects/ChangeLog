@@ -1,3 +1,14 @@
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs: Report errors using the
+	  progress monitor, instead of throwing an exception.
+	* MonoDevelop.Projects/ProjectConvertTool.cs: Print an error message if
+	  the project can't be exported.
+	* MonoDevelop.Projects/ProjectFileCollection.cs: In GetFile, compare
+	  files using the full path.
+	* MonoDevelop.Projects/Project.cs: When exporting a project, include
+	  referenced assemblies.
+
 2007-04-26  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Projects/Project.cs (CheckNeedsBuild): If any project

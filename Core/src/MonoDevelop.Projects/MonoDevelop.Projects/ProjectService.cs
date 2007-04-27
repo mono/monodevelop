@@ -115,7 +115,8 @@ namespace MonoDevelop.Projects
 			
 			if (sourcePath != targetPath) {
 				using (CombineEntry sourceEntry = ReadCombineEntry (rootSourceFile, monitor)) {
-					Export (monitor, sourceEntry, sourceEntry.BaseDirectory, targetPath, true);
+					if (!Export (monitor, sourceEntry, sourceEntry.BaseDirectory, targetPath, true))
+						return null;
 				}
 				
 				newFile = Path.Combine (targetPath, Path.GetFileName (rootSourceFile));
@@ -174,7 +175,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		void Export (IProgressMonitor monitor, CombineEntry entry, string baseCombinePath, string targetBasePath, bool recursive)
+		bool Export (IProgressMonitor monitor, CombineEntry entry, string baseCombinePath, string targetBasePath, bool recursive)
 		{
 			StringCollection files = entry.GetExportFiles ();
 			
@@ -182,8 +183,10 @@ namespace MonoDevelop.Projects
 				string fname = Runtime.FileService.GetFullPath (file);
 				
 				// Can't export files from outside the root solution directory
-				if (!fname.StartsWith (baseCombinePath + Path.DirectorySeparatorChar))
-					throw new InvalidOperationException ("The project or solution references a file located outside the root solution directory.", null);
+				if (!fname.StartsWith (baseCombinePath + Path.DirectorySeparatorChar)) {
+					monitor.ReportError ("The project or solution '" + entry.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the root solution directory.", null);
+					return false;
+				}
 				
 				string rpath = Runtime.FileService.AbsoluteToRelativePath (baseCombinePath, fname);
 				rpath = Path.Combine (targetBasePath, rpath);
@@ -191,13 +194,15 @@ namespace MonoDevelop.Projects
 				if (!Directory.Exists (Path.GetDirectoryName (rpath)))
 					Directory.CreateDirectory (Runtime.FileService.GetFullPath (Path.GetDirectoryName (rpath)));
 				
-				File.Copy (file, rpath);
+				File.Copy (file, rpath, true);
 			}
 			
 			if (recursive && entry is Combine) {
 				foreach (CombineEntry e in ((Combine)entry).Entries)
-					Export (monitor, e, baseCombinePath, targetBasePath, true);
+					if (!Export (monitor, e, baseCombinePath, targetBasePath, true))
+						return false;
 			}
+			return true;
 		}
 		
 		bool ChangeFormat (IProgressMonitor monitor, CombineEntry entry, ArrayList entriesToExport, IFileFormat format, ArrayList oldFiles)

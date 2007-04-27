@@ -7,6 +7,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
@@ -38,8 +39,10 @@ namespace MonoDevelop.Projects
 		public ProjectFile GetFile (string fileName)
 		{
 			if (fileName == null) return null;
+			fileName = Runtime.FileService.GetFullPath (fileName);
+			
 			foreach (ProjectFile file in this) {
-				if (file.Name == fileName)
+				if (Runtime.FileService.GetFullPath (file.Name) == fileName)
 					return file;
 			}
 			return null;

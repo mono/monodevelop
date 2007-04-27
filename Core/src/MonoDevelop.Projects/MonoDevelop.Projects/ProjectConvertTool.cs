@@ -100,8 +100,14 @@ namespace MonoDevelop.Projects
 			destPath = Runtime.FileService.GetFullPath (destPath);
 			
 			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format);
-			Console.WriteLine ("Saved file: " + ofile);
-			return 0;
+			if (ofile != null) {
+				Console.WriteLine ("Saved file: " + ofile);
+				return 0;
+			}
+			else {
+				Console.WriteLine ("Project export failed.");
+				return 1;
+			}
 		}
 	}
 }

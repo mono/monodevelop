@@ -561,6 +561,9 @@ namespace MonoDevelop.Projects
 				if (pf.Subtype != Subtype.Directory)
 					col.Add (pf.FilePath);
 			}
+			foreach (ProjectReference pref in ProjectReferences)
+				if (pref.ReferenceType == ReferenceType.Assembly)
+					col.Add (pref.Reference);
 			return col;
 		}
 
