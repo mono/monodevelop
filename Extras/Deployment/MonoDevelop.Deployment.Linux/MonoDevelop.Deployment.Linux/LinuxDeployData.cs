@@ -13,6 +13,9 @@ namespace MonoDevelop.Deployment.Linux
 		[ItemProperty]
 		string scriptName;
 		
+		[ItemProperty]
+		string packageName;
+		
 		[ItemProperty (DefaultValue=false)]
 		bool generateDesktopEntry;
 		
@@ -69,6 +72,16 @@ namespace MonoDevelop.Deployment.Linux
 			entry.ExtendedProperties ["Deployment.LinuxDeployData"] = this;
 			entry.ExtendedProperties.Remove ("Temp.Deployment.LinuxDeployData");
 			connected = true;
+		}
+		
+		public string PackageName {
+			get {
+				if (packageName != null)
+					return packageName;
+				if (scriptName != null)
+					return scriptName;
+				return entry.Name.ToLower ();
+			}
 		}
 		
 		public bool GenerateScript {

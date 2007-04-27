@@ -13,10 +13,11 @@ namespace MonoDevelop.Deployment.Linux
 		{
 			DeployFileCollection col = base.GetProjectDeployFiles (ctx, project);
 			
+			LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (project);
+			
 			if (ctx.Platform == "Linux") {
 				DotNetProject netProject = project as DotNetProject;
 				if (netProject != null) {
-					LinuxDeployData data = LinuxDeployData.GetLinuxDeployData (netProject);
 					DotNetProjectConfiguration conf = netProject.ActiveConfiguration as DotNetProjectConfiguration;
 					if (conf != null) {
 						if (conf.CompileTarget == CompileTarget.Exe || conf.CompileTarget == CompileTarget.WinExe) {
@@ -30,6 +31,14 @@ namespace MonoDevelop.Deployment.Linux
 							}
 						}
 					}
+				}
+			}
+			
+			// If the project is deploying an app.desktop file, rename it to the name of the project.
+			foreach (DeployFile file in col) {
+				if (Path.GetFileName (file.RelativeTargetPath) == "app.desktop") {
+					string dir = Path.GetDirectoryName (file.RelativeTargetPath);
+					file.RelativeTargetPath = Path.Combine (dir, data.PackageName + ".desktop");
 				}
 			}
 			

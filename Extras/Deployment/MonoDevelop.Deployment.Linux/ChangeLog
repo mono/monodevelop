@@ -1,3 +1,10 @@
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux/LinuxDeployData.cs: Added package name
+	  property.
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: Rename
+	  app.desktop files to <package-name>.desktop when deploying.
+
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.addin.xml: Register new project feature
