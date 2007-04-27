@@ -125,6 +125,10 @@
 		<DialogPanel id = "Deployment" _label = "Deployment" />
 	</Extension>
 
+	<Extension path = "/SharpDevelop/Workbench/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.Deployment.DeployProjectServiceExtension" insertbefore="FinalStep"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories" extension-nodes="DeployDirectory">
 		<DeployDirectory id="ProgramFiles" _label="Program files" />
 		<DeployDirectory id="ProgramFilesRoot" _label="Program files root folder" />

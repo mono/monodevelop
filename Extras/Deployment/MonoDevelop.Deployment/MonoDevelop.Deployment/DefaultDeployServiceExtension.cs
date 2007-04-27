@@ -29,8 +29,15 @@ namespace MonoDevelop.Deployment
 			// Collect deployable files
 			
 			foreach (ProjectFile file in project.ProjectFiles) {
-				if (file.BuildAction == BuildAction.FileCopy)
-					deployFiles.Add (new DeployFile (file));
+				if (file.BuildAction == BuildAction.FileCopy) {
+					DeployFile dp = new DeployFile (file);
+					deployFiles.Add (dp);
+					
+					if (Path.GetFileName (dp.SourcePath) == "app.config" && Path.GetFileName (dp.RelativeTargetPath) == "app.config") {
+						string newName = Path.GetFileName (outputFile) + ".config";
+						dp.RelativeTargetPath = Path.Combine (Path.GetDirectoryName (dp.RelativeTargetPath), newName);
+					}
+				}
 			}
 
 			// Collect referenced assemblies

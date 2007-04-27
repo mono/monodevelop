@@ -1,3 +1,13 @@
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.addin.xml, MonoDevelop.Deployment.mdp,
+	  MonoDevelop.Deployment/DeployService.cs,
+	  MonoDevelop.Deployment/DeployProjectServiceExtension.cs,
+	  Makefile.am: After building a project, copy to the output directory
+	  all files marked with the deploy flag.
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Rename
+	  app.config files to <assembly-name>.config when deploying.
+
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment/PackageBuilder.cs: Avoid including duplicated

@@ -61,6 +61,10 @@ namespace MonoDevelop.Deployment
 			};
 		}
 		
+		public static string CurrentPlatform {
+			get { return "Linux"; }
+		}
+		
 		public static DeployProperties GetDeployProperties (ProjectFile file)
 		{
 			DeployProperties props = (DeployProperties) file.ExtendedProperties [typeof(DeployProperties)];
@@ -167,7 +171,7 @@ namespace MonoDevelop.Deployment
 			return col;
 		}
 		
-		static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, CombineEntry entry)
 		{
 			ArrayList todel = new ArrayList ();
 			
