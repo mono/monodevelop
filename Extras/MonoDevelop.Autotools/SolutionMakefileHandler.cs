@@ -50,7 +50,7 @@ namespace MonoDevelop.Autotools
 				StringBuilder subdirs = new StringBuilder();
 				subdirs.Append ("#Warning: This is an automatically generated file, do not edit!\n");
 
-				Set children = new Set ();
+				ArrayList children = new ArrayList ();
 				foreach ( CombineConfiguration config in combine.Configurations )
 				{
 					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
@@ -73,7 +73,8 @@ namespace MonoDevelop.Autotools
 						subdirs.Append (" ");
 						subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
 
-						children.Add ( ce );
+						if (!children.Contains (ce))
+							children.Add ( ce );
 					}
 					subdirs.Append ( "\nendif\n" );
 				}

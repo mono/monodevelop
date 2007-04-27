@@ -28,7 +28,7 @@ namespace MonoDevelop.Autotools
 		
 		public void Add(object o)
 		{
-			hashtable[o] = true;
+			hashtable[o] = this;
 		}
 		
 		public void Remove(object o)
@@ -59,7 +59,7 @@ namespace MonoDevelop.Autotools
 		public void Union(Set set)
 		{
 			foreach(object o in set) {
-				hashtable[o] = true;
+				hashtable[o] = this;
 			}
 		}
 		

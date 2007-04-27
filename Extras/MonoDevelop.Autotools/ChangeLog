@@ -1,5 +1,13 @@
 2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* SolutionMakefileHandler.cs: Make sure that makefiles are generated in
+	  the same order in which they will be built, since there is some
+	  data collected by the context that it is important to get in the
+	  correct order (e.g. list of built files).
+	* Set.cs: Avoid unneeded boxing.
+
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* SimpleProjectMakefileHandler.cs, SolutionDeployer.cs,
 	  templates/Makefile.include, templates/Makefile.am.project.template,
 	  AutotoolsContext.cs: Fixed several problems in the autotools file
