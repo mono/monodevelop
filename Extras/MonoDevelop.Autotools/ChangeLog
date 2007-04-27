@@ -1,3 +1,12 @@
+2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SimpleProjectMakefileHandler.cs, SolutionDeployer.cs,
+	  templates/Makefile.include, templates/Makefile.am.project.template,
+	  AutotoolsContext.cs: Fixed several problems in the autotools file
+	  generation. Files to be deployed are now copied to the build
+	  directory (doing the change name if necessary), and they are
+	  installed from there. Fixes bug #81470.
+
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Handler.cs, SolutionDeployer.cs: Fixed CanBuild method. Any combine

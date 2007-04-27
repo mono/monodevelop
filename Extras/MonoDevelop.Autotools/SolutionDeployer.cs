@@ -215,27 +215,14 @@ namespace MonoDevelop.Autotools
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile.am") );
 
 			StringBuilder sb = new StringBuilder ();
-			foreach ( string dll in context.GetReferencedDlls() )
-			{
-				string dll_name = Path.GetFileName  ( dll );
-
-				string libdir = Path.Combine (solution_dir, "lib");
-				if ( !Directory.Exists ( libdir ) ) Directory.CreateDirectory ( libdir );
-
-				string newPath = Path.Combine (libdir, dll_name);
-				Runtime.FileService.CopyFile ( dll, newPath );
-
-				newPath = Runtime.FileService.AbsoluteToRelativePath ( solution_dir, newPath );
-				if (PlatformID.Unix != Environment.OSVersion.Platform) 
-					newPath = newPath.Replace ("\\","/");
-				sb.Append (' ');
-				sb.Append ( newPath );
-			}
+			foreach ( string file in context.GetGlobalReferencedFiles() )
+				sb.Append (' ').Append (file);
+			
 			string vals = sb.ToString ();
 
-			makefile.AppendToVariable ( "DLL_REFERENCES", vals );
-			makefile.AppendToVariable ( "EXTRA_DIST", "$(DLL_REFERENCES)" );
-			makefile.AppendToVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
+//			makefile.AppendToVariable ( "DLL_REFERENCES", vals );
+			makefile.AppendToVariable ( "EXTRA_DIST", vals );
+//			makefile.AppendToVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
 		}
 
 		void CreateAutoGenDotSH (IProgressMonitor monitor)
@@ -286,7 +273,7 @@ namespace MonoDevelop.Autotools
 
 				// if yes, populate some vars
 				config_options.AppendFormat ( "if test \"x${0}\" = \"xyes\" ; then\n", ac_var );
-				AppendConfigVariables ( combine, config.Name, config_options );
+//				AppendConfigVariables ( combine, config.Name, config_options );
 				config_options.Append ( "	CONFIG_REQUESTED=\"yes\"\nfi\n" );
 			}
 
@@ -294,7 +281,7 @@ namespace MonoDevelop.Autotools
 			if (defaultConf != null)
 			{
 				config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
-				AppendConfigVariables ( combine, defaultConf, config_options );
+//				AppendConfigVariables ( combine, defaultConf, config_options );
 				config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
 						+ defaultConf.ToUpper()  );
 			}
@@ -353,7 +340,7 @@ namespace MonoDevelop.Autotools
 			writer.Close();
 		}
 	
-		void AppendConfigVariables ( Combine combine, string config, StringBuilder options )
+/*		void AppendConfigVariables ( Combine combine, string config, StringBuilder options )
 		{
 			string name = config.ToLower();
 
@@ -392,7 +379,7 @@ namespace MonoDevelop.Autotools
 			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBRARIES)\n", name.ToUpper() );
 			options.AppendFormat ( "	AC_SUBST({0}_CONFIG_LIBS)\n", name.ToUpper() );
 		}
-		
+*/
 		void CreateMakefileInclude (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
@@ -401,6 +388,8 @@ namespace MonoDevelop.Autotools
 			
 			StringBuilder deployDirs = new StringBuilder ();
 			IDictionary dirs = context.GetReferencedTargetDirectories ();
+			string deployDirVars = "";
+			
 			foreach (DictionaryEntry e in dirs) {
 				// It may be a sub-path
 				string dir = (string) e.Key;
@@ -418,9 +407,11 @@ namespace MonoDevelop.Autotools
 				string dname = var.ToLower ().Replace ("_","");
 				deployDirs.AppendFormat ("{0}dir = {1}\n", dname, resolved);
 				deployDirs.AppendFormat ("{0}_DATA = $({1})\n", dname, var);
+				deployDirVars += "$(" + var + ") ";
 			}
 			
 			templateEngine.Variables["DEPLOY_DIRS"] = deployDirs.ToString();
+			templateEngine.Variables["DEPLOY_FILES_CLEAN"] = deployDirVars;
 
 			string fileName = solution_dir + "/Makefile.include";
 

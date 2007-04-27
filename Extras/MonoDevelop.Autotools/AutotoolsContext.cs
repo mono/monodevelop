@@ -25,6 +25,7 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Deployment;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Autotools
 {
@@ -37,8 +38,9 @@ namespace MonoDevelop.Autotools
 		
 		Set autoconfConfigFiles = new Set ();
 		Set referencedPackages = new Set();
-		Set globalDllReferences = new Set();
+		Set globalFilesReferences = new Set();
 		Set compilers = new Set ();
+		ArrayList builtFiles = new ArrayList ();
 		
 		public DeployContext DeployContext {
 			get { return deployContext; }
@@ -86,7 +88,7 @@ namespace MonoDevelop.Autotools
 			string dir = (string) deployDirs [folderId];
 			if (dir != null)
 				return dir;
-			dir = folderId.ToUpper ().Replace (".","_").Replace ("/", "_");
+			dir = EscapeStringForAutoconf (folderId.ToUpper ().Replace (".","_").Replace ("/", "_"));
 			deployDirs [folderId] = dir;
 			return dir;
 		}
@@ -107,11 +109,17 @@ namespace MonoDevelop.Autotools
 		{
 			compilers.Add ( command_name );
 		}
-
-		public string AddReferencedDll ( string dll_name )
+		
+		public void AddBuiltFile (string filePath)
 		{
-			globalDllReferences.Add ( dll_name );
-			return String.Format ( "{0}/{1}/{2}", base_dir, libdir, Path.GetFileName (dll_name) );
+			string fpath = Runtime.FileService.GetFullPath (filePath);
+			string bd = Runtime.FileService.GetFullPath (BaseDirectory);
+			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
+				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = NormalizeRelativePath (rel);
+				rel = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
+				builtFiles.Add (rel);
+			}
 		}
 
 		public IEnumerable GetAutoConfFiles ()
@@ -129,9 +137,13 @@ namespace MonoDevelop.Autotools
 			return compilers;
 		}
 
-		public IEnumerable GetReferencedDlls ()
+		public IEnumerable GetGlobalReferencedFiles ()
 		{
-			return globalDllReferences;
+			ArrayList list = new ArrayList ();
+			foreach (string f in globalFilesReferences)
+				if (!builtFiles.Contains (f))
+					list.Add (f);
+			return list;
 		}
 		
 		public IDictionary GetReferencedTargetDirectories ()
@@ -139,6 +151,46 @@ namespace MonoDevelop.Autotools
 			return deployDirs;
 		}
 		
+		public string GetRelativePath (Project project, string path, bool isGenerated)
+		{
+			string fpath = Path.GetFullPath (path);
+			string bd = Path.GetFullPath (project.BaseDirectory);
+			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
+				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = NormalizeRelativePath (rel);
+				if (isGenerated)
+					return rel;
+				else
+					return "$(srcdir)" + Path.DirectorySeparatorChar + rel;
+			}
+			bd = Path.GetFullPath (BaseDirectory);
+			if (fpath.StartsWith (bd + Path.DirectorySeparatorChar) || fpath == bd) {
+				string rel = Runtime.FileService.AbsoluteToRelativePath (bd, fpath);
+				rel = NormalizeRelativePath (rel);
+				string file = "$(top_builddir)" + Path.DirectorySeparatorChar + rel;
+				if (builtFiles.Contains (file))
+					return file;
+				else {
+					globalFilesReferences.Add (file);
+					return "$(top_srcdir)" + Path.DirectorySeparatorChar + rel;
+				}
+			}
+			throw new InvalidOperationException ("The project '" + project.Name + "' references the file '" + Path.GetFileName (path) + "' which is located outside the solution directory.");
+		}
+		
+		public static string NormalizeRelativePath (string path)
+		{
+			path = path.Trim (Path.DirectorySeparatorChar,' ');
+			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
+				path = path.Substring (2);
+				path = path.Trim (Path.DirectorySeparatorChar,' ');
+			}
+			if (path == ".")
+				return string.Empty;
+			else
+				return path;
+		}
+			
 		// TODO: add an extension point with which addins can implement 
 		// autotools functionality.
 		public static IMakefileHandler GetMakefileHandler ( CombineEntry entry )

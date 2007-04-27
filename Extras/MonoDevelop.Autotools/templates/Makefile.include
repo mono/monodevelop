@@ -6,17 +6,11 @@ build_references_ref = $(REFERENCES)
 build_references_ref += $(foreach ref, $(DLL_REFERENCES), -r:$(ref))
 build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))
 
-build_datafiles = $(addprefix $(BUILD_DIR)/, $(DATA_FILES))
-  
-$(build_datafiles): $(BUILD_DIR)/% : $(addprefix $(srcdir)/, %)
-	mkdir -p $(dir $@)		
-	cp $< $@
-
 EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES)
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)
-DISTCLEANFILES = $(GENERATED_FILES) $(build_datafiles) $(pc_files)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BINARIES) %%DEPLOY_FILES_CLEAN%%
+DISTCLEANFILES = $(GENERATED_FILES) $(pc_files)
 
-pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
+pkglib_SCRIPTS = $(ASSEMBLY)
 bin_SCRIPTS = $(BINARIES)
 
 %%DEPLOY_DIRS%%
