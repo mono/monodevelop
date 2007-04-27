@@ -851,17 +851,24 @@ namespace MonoDevelop.SourceEditor.Gui
 			{
 				TextIter start, end;
 				Gdk.Color color;
-				if (iter.Buffer.GetSelectionBounds (out start, out end) && iter.InRange (start, end))
-				{
+				Gdk.Color bgColor;
+				
+				if (iter.Buffer.GetSelectionBounds (out start, out end) && iter.InRange (start, end)) {
+					bgColor = view.Style.Base (StateType.Selected);
 					color = view.Style.Text (StateType.Selected);
-				} else
-				{
+				} else {
+					bgColor = view.Style.Base (StateType.Normal);
 					color = view.Style.Text (StateType.Normal);
 				}
+				
+				//simple interpolation 1/4 of way between BG colour and text colour
+				int red   = (bgColor.Red   * 3 + color.Red  ) / 4;
+				int green = (bgColor.Green * 3 + color.Green) / 4;
+				int blue  = (bgColor.Blue  * 3 + color.Blue ) / 4;
 
-				return new Cairo.Color ((double)(color.Red) / UInt16.MaxValue,
-				                        (double)(color.Green) / UInt16.MaxValue,
-				                        (double)(color.Blue) / UInt16.MaxValue);
+				return new Cairo.Color ((double)(red) / UInt16.MaxValue,
+				                        (double)(green) / UInt16.MaxValue,
+				                        (double)(blue) / UInt16.MaxValue);
 			}
 
 			static void DrawSpaceAtIter (Cairo.Context cntx, TextView view, TextIter iter)
@@ -874,8 +881,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				                           out x, out y);
 				cntx.Save ();
 				cntx.Color =  GetDrawingColorForIter (view, iter);
+				//no overlap on the circle, even if context is set to LineCap.Square
+				cntx.LineCap = Cairo.LineCap.Butt;
+				
 				cntx.MoveTo (x, y);
-				cntx.Arc (x, y, 0.4, 0, 2 * Math.PI);
+				cntx.Arc (x, y, 0.5, 0, 2 * Math.PI);
+				
 				cntx.Stroke ();
 				cntx.Restore ();
 			}
@@ -890,11 +901,14 @@ namespace MonoDevelop.SourceEditor.Gui
 				                           out x, out y);
 				cntx.Save ();
 				cntx.Color =  GetDrawingColorForIter (view, iter);
-				cntx.MoveTo (x + 2, y);
+				
+				double arrowSize = 3;
+				cntx.MoveTo (x + 2, y + 0);
 				cntx.RelLineTo (new Cairo.Distance (rect.Width - 4, 0));
-				cntx.RelLineTo (new Cairo.Distance (-3, -3));
-				cntx.RelLineTo (new Cairo.Distance (3, 3));
-				cntx.RelLineTo (new Cairo.Distance (-3, 3));
+				cntx.RelLineTo (new Cairo.Distance (-arrowSize, -arrowSize));
+				cntx.RelMoveTo (new Cairo.Distance (arrowSize, arrowSize));
+				cntx.RelLineTo (new Cairo.Distance (-arrowSize, arrowSize));
+				
 				cntx.Stroke ();
 				cntx.Restore ();
 			}
@@ -909,13 +923,16 @@ namespace MonoDevelop.SourceEditor.Gui
 				                           out x, out y);
 				cntx.Save ();
 				cntx.Color =  GetDrawingColorForIter (view, iter);
+				
+				double arrowSize = 3;
 				cntx.MoveTo (x + 10, y);
-				cntx.RelLineTo (new Cairo.Distance (0, -3));
-				cntx.RelLineTo (new Cairo.Distance (0, 3));
+				cntx.RelLineTo (new Cairo.Distance (0, -arrowSize));
+				cntx.RelMoveTo (new Cairo.Distance (0, arrowSize));
 				cntx.RelLineTo (new Cairo.Distance (-8, 0));
-				cntx.RelLineTo (new Cairo.Distance (3, 3));
-				cntx.RelLineTo (new Cairo.Distance (-3, -3));
-				cntx.RelLineTo (new Cairo.Distance (3, -3));
+				cntx.RelLineTo (new Cairo.Distance (arrowSize, arrowSize));
+				cntx.RelMoveTo (new Cairo.Distance (-arrowSize, -arrowSize));
+				cntx.RelLineTo (new Cairo.Distance (arrowSize, -arrowSize));
+				
 				cntx.Stroke ();
 				cntx.Restore ();
 			}
@@ -925,7 +942,12 @@ namespace MonoDevelop.SourceEditor.Gui
 				if (DrawWhiteSpacesEnabled)
 				{
 					Cairo.Context cntx = Gdk.CairoHelper.Create (drawable);
-					cntx.LineWidth = 0.3;
+					
+					//shift to pixel grid to reduce antialiasing
+					cntx.Antialias = Cairo.Antialias.Default;
+					cntx.LineCap = Cairo.LineCap.Square;
+					cntx.LineWidth = 1;
+					cntx.Translate (0.5, 0.5);
 
 					TextIter iter = start;
 					while (iter.Compare (end) <= 0)
