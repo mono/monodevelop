@@ -250,7 +250,6 @@ namespace MonoDevelop.Ide.Gui
 			this.tabControl = null;
 			this.tabLabel = null;
 			this.tabPage = null;
-			Dispose ();
 			Destroy ();
 		}
 		
