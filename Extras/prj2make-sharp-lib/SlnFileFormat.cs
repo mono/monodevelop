@@ -171,7 +171,7 @@ namespace MonoDevelop.Prj2Make
 
 				//Write Nested Projects
 				sw.WriteLine ("\tGlobalSection(NestedProjects) = preSolution");
-				WriteNestedProjects (c, sw);
+				WriteNestedProjects (c, c, sw);
 				sw.WriteLine ("\tEndGlobalSection");
 
 				//Write 'others'
@@ -309,14 +309,14 @@ namespace MonoDevelop.Prj2Make
 			}
 		}
 
-		void WriteNestedProjects (Combine combine, StreamWriter writer)
+		void WriteNestedProjects (Combine combine, Combine root, StreamWriter writer)
 		{
 			foreach (CombineEntry ce in combine.Entries) {
 				Combine c = ce as Combine;
 				if (c == null || c.ParentCombine == null)
 					continue;
 
-				WriteNestedProjects (c, writer);
+				WriteNestedProjects (c, root, writer);
 			}
 
 			SlnData data = (SlnData) combine.ExtendedProperties [typeof (SlnFileFormat)];
@@ -326,7 +326,6 @@ namespace MonoDevelop.Prj2Make
 					combine.Name, combine.FileName));
 
 			string containerGuid = data.Guid;
-			Combine root = combine.RootCombine;
 			foreach (CombineEntry ce in combine.Entries) {
 				if (ce.ParentCombine == root)
 					continue;
