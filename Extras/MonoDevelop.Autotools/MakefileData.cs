@@ -1263,19 +1263,19 @@ namespace MonoDevelop.Autotools
 				//  to detect changes!)
 				List<string> list = Makefile.GetListVariable (GacRefVar.Name);
 				if (list != null)
-					list.Sort ();
+					list.Sort (System.StringComparer.InvariantCulture);
 
 				if (String.Compare (AsmRefVar.Name, GacRefVar.Name) != 0) {
 					list = Makefile.GetListVariable (AsmRefVar.Name);
 					if (list != null)
-						list.Sort ();
+						list.Sort (System.StringComparer.InvariantCulture);
 				}
 
 				if ((String.Compare (ProjectRefVar.Name, GacRefVar.Name) != 0) && 
 					(String.Compare (ProjectRefVar.Name, AsmRefVar.Name) != 0)) {
 					list = Makefile.GetListVariable (ProjectRefVar.Name);
 					if (list != null)
-						list.Sort ();
+						list.Sort (System.StringComparer.InvariantCulture);
 				}
 			}
 
@@ -1338,7 +1338,7 @@ namespace MonoDevelop.Autotools
 				files.Add (s);
 
 			// Keep the file list sorted in the makefile
-			files.Sort ();
+			files.Sort (System.StringComparer.InvariantCulture);
 			
 			Makefile.SetListVariable (fileVar.Name, files);
 			return true;
