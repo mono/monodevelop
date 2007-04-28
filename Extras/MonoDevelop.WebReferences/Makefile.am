@@ -37,11 +37,11 @@ FILES =  \
 
 RES =  \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/disco.html \
+	$(srcdir)/MonoDevelop.WebReferences.Resources/wsdl.html \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.Service.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/wsdl.html
+	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReferenceItem.png
 
 
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)

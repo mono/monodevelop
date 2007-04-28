@@ -16,16 +16,16 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	CSharpResourceIdBuilder.cs \
 	csproj_ver2003.cs \
 	CsprojInfo.cs \
+	CSharpResourceIdBuilder.cs \
 	IResourceIdBuilder.cs \
 	MdPrjHelper.cs \
+	MsPrjHelper.cs \
 	MSBuildData.cs \
 	MSBuildFileFormat.cs \
 	MSBuildProject.cs \
 	MSBuildSolution.cs \
-	MsPrjHelper.cs \
 	pkgconfiginvoker.cs \
 	PrjHelper.cs \
 	PrjxInfo.cs \
