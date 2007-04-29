@@ -1,3 +1,8 @@
+2007-04-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Fix for initial
+	  settings for drawing control characters.
+
 2007-04-27  Michael Hutchinson <m.j.hutchinson@gmail.com>
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Align white space 

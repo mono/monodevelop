@@ -30,7 +30,7 @@ namespace MonoDevelop.SourceEditor.Gui
 	public class SourceEditorView : SourceView, ICompletionWidget, ITextEditorExtension
 	{
 		public static readonly bool HighlightCurrentLineSupported;
-		public static bool DrawWhiteSpacesEnabled = true;
+		public static bool DrawWhiteSpacesEnabled = TextEditorProperties.ShowControlCharacters;
 		
 		public readonly SourceEditor ParentEditor;
 		internal IFormattingStrategy fmtr = new DefaultFormattingStrategy ();
