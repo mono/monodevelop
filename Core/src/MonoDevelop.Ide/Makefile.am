@@ -34,6 +34,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs \
@@ -106,6 +107,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \

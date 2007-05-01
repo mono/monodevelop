@@ -1,3 +1,23 @@
+2007-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs (CodeRefactorer): Set
+	the TextFileProfider for the refactoer to the
+	OpenDocumentFileProvider.
+	(OpenDocumentFileProvider): Copied here from another
+	location... really need to consolidate the two.
+
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Removed unused
+	solutionLoaded variable.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Got rid of unused guiLock
+	variable.
+
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs: New dialog
+	class for renaming an item (be it a class, interface, whatever).
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Rename):
+	Implemented.
+
 2007-04-27  Mike Kestner  <mkestner@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: can't destroy after

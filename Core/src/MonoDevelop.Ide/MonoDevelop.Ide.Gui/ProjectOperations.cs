@@ -36,6 +36,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Specialized;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
@@ -115,12 +116,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public CodeRefactorer CodeRefactorer {
 			get {
-				if (refactorer == null)
+				if (refactorer == null) {
 					refactorer = new CodeRefactorer (openCombine, parserDatabase);
+					refactorer.TextFileProvider = new OpenDocumentFileProvider ();
+				}
+				
 				return refactorer;
 			}
 		}
-
 
 		public ICompilerResult LastCompilerResult {
 			get { return lastResult; }
@@ -1433,6 +1436,20 @@ namespace MonoDevelop.Ide.Gui
 		public IProgressMonitor CreateProgressMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Code Completion Database Generation", "md-parser");
+		}
+	}
+	
+	class OpenDocumentFileProvider: ITextFileProvider
+	{
+		public IEditableTextFile GetEditableTextFile (string filePath)
+		{
+			foreach (Document doc in IdeApp.Workbench.Documents) {
+				if (doc.FileName == filePath) {
+					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+					if (ef != null) return ef;
+				}
+			}
+			return null;
 		}
 	}
 }

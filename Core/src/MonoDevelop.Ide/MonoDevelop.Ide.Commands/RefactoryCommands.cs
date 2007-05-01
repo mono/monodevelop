@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -113,10 +114,12 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			string txt;
 			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
+			if (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
 				// if we can jump to the declaration, we can rename it
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
-				
+			}
+			
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
 				// ...and of course, we can jump to it :)
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			}
@@ -321,8 +324,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		public void Rename ()
 		{
-			// FIXME: Rename the class/member/whatever - will need to prompt the user.
-			// Need to find derived classes/references and fix those as well, or at least offer to.
+			RenameItemDialog dialog = new RenameItemDialog (ctx, item);
+			dialog.Show ();
 		}
 	}
 }

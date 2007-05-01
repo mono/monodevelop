@@ -54,7 +54,6 @@ namespace MonoDevelop.Ide.Gui
 		DefaultWorkbench workbench;
 		RecentOpen recentOpen = null;
 		IStatusBarService statusBarService;
-		int guiLock;
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;

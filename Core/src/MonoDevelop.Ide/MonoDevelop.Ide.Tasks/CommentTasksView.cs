@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Tasks
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 		
 		Clipboard clipboard;
-		bool solutionLoaded = false;
 		
 		public CommentTasksView ()
 		{
@@ -111,8 +110,6 @@ namespace MonoDevelop.Ide.Tasks
 			Services.TaskService.TaskAdded += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
 			Services.TaskService.TaskRemoved += (TaskEventHandler) Services.DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 			
-			IdeApp.ProjectOperations.CombineOpened += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineOpened));
-			IdeApp.ProjectOperations.CombineClosed += (CombineEventHandler) Services.DispatchService.GuiDispatch (new CombineEventHandler (CombineClosed));
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (OnPropertyUpdated));
 		}
 		
@@ -294,16 +291,6 @@ namespace MonoDevelop.Ide.Tasks
 				color = new Gdk.Color (0, 0, 0);
 			}
 			return color;
-		}
-		
-		void CombineOpened (object sender, CombineEventArgs e)
-		{
-			solutionLoaded = true;
-		}
-		
-		void CombineClosed (object sender, CombineEventArgs e)
-		{
-			solutionLoaded = true;
 		}
 		
 		void OnPropertyUpdated (object sender, PropertyEventArgs e)
