@@ -1,3 +1,11 @@
+2007-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (CreateReference): Trim the name to the
+	base name (we don't want the FullyQualifiedName). Also do some
+	fixing of the offset since the expression start offset begins
+	before the name of the type (e.g. it includes
+	public/private/etc modifiers).
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp: Don't copy referenced assemblies.

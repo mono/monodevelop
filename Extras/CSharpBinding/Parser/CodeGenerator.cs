@@ -106,7 +106,11 @@ namespace CSharpBinding.Parser
 			{
 				int i = txt.IndexOf ('(');
 				if (i == -1) return -1;
-				int p = txt.LastIndexOf (member.Name, i);
+				int p;
+				if (((IMethod) member).IsConstructor)
+					p = txt.LastIndexOf (member.DeclaringType.Name, i);
+				else
+					p = txt.LastIndexOf (member.Name, i);
 				if (p == -1) return -1;
 				return pos1 + p;
 			}
@@ -192,6 +196,7 @@ namespace CSharpBinding.Parser
 			if (member is IClass && member.Name == GetNameWithoutPrefix (ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type))) {
 				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type), fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
 				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
+					Console.WriteLine ("adding FieldDeclaration reference {0}", cls.FullyQualifiedName);
 					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
 				}
 			}
@@ -206,8 +211,10 @@ namespace CSharpBinding.Parser
 				if (cls != null && IsExpectedClass (cls)) {
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
-					if (txt == member.Name)
+					if (txt == member.Name) {
+						Console.WriteLine ("adding FieldDeclarationExpression reference {0}", member.Name);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
+					}
 				}
 			} 
 			
@@ -220,8 +227,10 @@ namespace CSharpBinding.Parser
 				FieldReferenceExpression fieldExp = (FieldReferenceExpression) invokeExp.TargetObject;
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					if (cls != null && IsExpectedClass (cls))
+					if (cls != null && IsExpectedClass (cls)) {
+						Console.WriteLine ("adding InvocationExpression reference {0}", member.Name);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
+					}
 				}
 			}
 			return base.Visit (invokeExp, data);
@@ -239,9 +248,11 @@ namespace CSharpBinding.Parser
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
 					{
+						Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
+					Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
 					references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 				}
 				
@@ -256,8 +267,10 @@ namespace CSharpBinding.Parser
 				
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
 					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc.Type, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
-					if (bclass != null && bclass.FullyQualifiedName == fname)
+					if (bclass != null && bclass.FullyQualifiedName == fname) {
+						Console.WriteLine ("adding TypeDeclaration reference {0}", bc.Type);
 						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc.Type));
+					}
 				}
 			}
 			return base.Visit (typeDeclaration, data);
@@ -271,6 +284,19 @@ namespace CSharpBinding.Parser
 			if (epos == -1) epos = file.Length - 1;
 			
 			string txt;
+			
+			// FIXME: do we always need to do this? or just in my test cases so far? :)
+			// use the base name and not the FullyQualifiedName
+			name = GetNameWithoutPrefix (name);
+			
+			// FIXME: is there a better way to do this?
+			// update @pos to point to the actual identifier and not the 
+			// public/private/whatever modifier.
+			int i;
+			txt = file.GetText (pos, file.Length - 1);
+			if (txt != null && (i = txt.IndexOf (name)) > 0)
+				pos += i;
+			
 			if (spos != -1)
 				txt = file.GetText (spos, epos - 1);
 			else
