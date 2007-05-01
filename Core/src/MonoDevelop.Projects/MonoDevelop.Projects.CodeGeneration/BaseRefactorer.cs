@@ -133,9 +133,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int pos = GetMemberNamePosition (file, member);
 			if (pos == -1)
 				return null;
-
-			string txt = file.GetText (pos, pos + member.Name.Length);
-			if (txt != member.Name)
+			
+			string name;
+			if (member is IMethod && ((IMethod) member).IsConstructor)
+				name = cls.Name;
+			else
+				name = member.Name;
+			
+			string txt = file.GetText (pos, pos + name.Length);
+			if (txt != name)
 				return null;
 			
 			file.DeleteText (pos, txt.Length);

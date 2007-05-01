@@ -1,3 +1,12 @@
+2007-05-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(RenameClass): Rename constructors too.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RenameMember): Need to treat normal methods and constructor
+	methods slightly differently here.
+
 2007-04-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: All deployment stuff has been

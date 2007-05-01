@@ -77,7 +77,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
+			
+			foreach (IMethod method in cls.Methods) {
+				if (method.IsConstructor)
+					r.RenameMember (gctx, cls, (IMember) method, newName);
+			}
+			
 			r.RenameClass (gctx, cls, newName);
+			
 			gctx.Save ();
 		}
 		
