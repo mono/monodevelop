@@ -57,22 +57,37 @@ namespace CSharpBinding.Parser
 		
 		public override IClass RenameClass (RefactorerContext ctx, IClass cls, string newName)
 		{
-			IEditableTextFile file = ctx.GetFile (cls.Region.FileName);
-			if (file == null)
-				return null;
-
-			int pos1 = file.GetPositionFromLineColumn (cls.Region.BeginLine, cls.Region.BeginColumn);
-			int pos2 = file.GetPositionFromLineColumn (cls.Region.EndLine, cls.Region.EndColumn);
-			string txt = file.GetText (pos1, pos2);
+			IEditableTextFile file;
+			int pos, begin, end;
+			IClass []classes;
+			Match match;
+			Regex expr;
+			string txt;
 			
-			Regex targetExp = new Regex(@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
-			Match match = targetExp.Match (" " + txt + " ");
-			if (!match.Success)
+			if ((classes = cls.Parts) == null)
 				return null;
 			
-			int pos = pos1 + match.Groups [1].Index - 1;
-			file.DeleteText (pos, cls.Name.Length);
-			file.InsertText (pos, newName);
+			for (int i = 0; i < classes.Length; i++) {
+				if ((file = ctx.GetFile (classes[i].Region.FileName)) == null)
+					continue;
+				
+				begin = file.GetPositionFromLineColumn (cls.Region.BeginLine, cls.Region.BeginColumn);
+				end = file.GetPositionFromLineColumn (cls.Region.EndLine, cls.Region.EndColumn);
+				
+				txt = file.GetText (begin, end);
+				
+				expr = new Regex (@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+				match = expr.Match (" " + txt + " ");
+				
+				if (!match.Success)
+					continue;
+				
+				pos = begin + match.Groups [1].Index - 1;
+				file.DeleteText (pos, cls.Name.Length);
+				file.InsertText (pos, newName);
+			}
+			
+			file = ctx.GetFile (cls.Region.FileName);
 			
 			return GetGeneratedClass (ctx, file, cls);
 		}

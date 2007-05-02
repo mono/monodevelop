@@ -1,3 +1,8 @@
+2007-05-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (RenameClass): Rename all parts of the class
+	(in case the class is a partial class).
+
 2007-05-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (CreateReference): Trim the name to the
