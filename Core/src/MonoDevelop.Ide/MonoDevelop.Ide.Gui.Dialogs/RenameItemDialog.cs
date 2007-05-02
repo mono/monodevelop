@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			buttonOk.Sensitive = false;
 			entry.Changed += new EventHandler (OnEntryChanged);
+			entry.Activated += new EventHandler (OnEntryActivated);
 			
 			buttonOk.Clicked += new EventHandler (OnOKClicked);
 			buttonCancel.Clicked += new EventHandler (OnCancelClicked);
@@ -55,6 +56,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			// Don't allow the user to click OK unless there is a new name
 			buttonOk.Sensitive = entry.Text.Length > 0;
+		}
+		
+		void OnEntryActivated (object sender, EventArgs e)
+		{
+			if (buttonOk.Sensitive)
+				buttonOk.Click ();
 		}
 		
 		void OnCancelClicked (object sender, EventArgs e)
