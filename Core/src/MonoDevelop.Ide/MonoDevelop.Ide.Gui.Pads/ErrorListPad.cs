@@ -32,15 +32,32 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeModelFilter filter;
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
-		Clipboard clipboard;
 		Hashtable tasks = new Hashtable ();
 		IPadWindow window;
-		
+
+		Menu menu;
+		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
+		Clipboard clipboard;
+
 		Gdk.Pixbuf iconWarning;
 		Gdk.Pixbuf iconError;
 		Gdk.Pixbuf iconInfo;
 		Gdk.Pixbuf iconQuestion;
-		
+
+		enum Columns
+		{
+			Type,
+			Marked,
+			Line,
+			Description,
+			File,
+			Path,
+			Task,
+			Read,
+			Weight,
+			Count
+		}
+
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
@@ -67,8 +84,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			// FIXME
 		}
 
-		const int COL_TYPE = 0, COL_LINE = 1, COL_DESC = 2, COL_FILE = 3, COL_PATH = 4, COL_TASK = 5, COL_READ = 6, COL_MARKED = 7, COL_READ_WEIGHT = 8;
-		
 		public ErrorListPad ()
 		{
 			control = new VBox ();
@@ -108,21 +123,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.SetTooltip (tips, GettextCatalog.GetString ("Show Messages"), GettextCatalog.GetString ("Show Messages"));
 			toolbar.Insert (msgBtn, -1);
 			
-			store = new Gtk.ListStore (
-                typeof (Gdk.Pixbuf), // image
-				typeof (int),        // line
-				typeof (string),     // desc
-				typeof (string),     // file
-				typeof (string),     // path
-				typeof (Task),       // task
-				typeof (bool),       // read?
-				typeof (bool),       // marked?
-				typeof (int));       // read? -- use Pango weight
+			store = new Gtk.ListStore (typeof (Gdk.Pixbuf), // image - type
+			                           typeof (bool),       // marked?
+			                           typeof (int),        // line
+			                           typeof (string),     // desc
+			                           typeof (string),     // file
+			                           typeof (string),     // path
+			                           typeof (Task),       // task
+			                           typeof (bool),       // read?
+			                           typeof (int));       // read? -- use Pango weight
 
 			TreeIterCompareFunc sortFunc = new TreeIterCompareFunc (TaskSortFunc);
-			store.SetSortFunc (COL_TASK, sortFunc);
+			store.SetSortFunc ((int)Columns.Task, sortFunc);
 			store.DefaultSortFunc = sortFunc;
-			store.SetSortColumnId (COL_TASK, SortType.Ascending);
+			store.SetSortColumnId ((int)Columns.Task, SortType.Ascending);
 			
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
@@ -134,6 +148,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
 			view.HeadersClickable = true;
 			AddColumns ();
+			LoadColumnsVisibility ();
 			
 			sw = new Gtk.ScrolledWindow ();
 			sw.ShadowType = ShadowType.In;
@@ -155,62 +170,175 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
 			toolbar.ShowArrow = false;
 			Control.ShowAll ();
+			
+			CreateMenu ();
 		}
+
+		void LoadColumnsVisibility ()
+		{
+			string columns = (string)Runtime.Properties.GetProperty ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
+			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			if (tokens.Length == 6 && view != null && view.Columns.Length == 6)
+			{
+				for (int i = 0; i < 6; i++)
+				{
+					bool visible;
+					if (bool.TryParse (tokens[i], out visible))
+						view.Columns[i].Visible = visible;
+				}
+			}
+		}
+
+		void StoreColumnsVisibility ()
+		{
+			string columns = String.Format ("{0};{1};{2};{3};{4};{5}",
+			                                view.Columns[(int)Columns.Type].Visible,
+			                                view.Columns[(int)Columns.Marked].Visible,
+			                                view.Columns[(int)Columns.Line].Visible,
+			                                view.Columns[(int)Columns.Description].Visible,
+			                                view.Columns[(int)Columns.File].Visible,
+			                                view.Columns[(int)Columns.Path].Visible);
+			Runtime.Properties.SetProperty ("Monodevelop.ErrorListColumns", columns);
+		}
+
+		void CreateMenu ()
+		{
+			if (menu == null)
+			{
+				ActionGroup group = new ActionGroup ("Popup");
+
+				Action help = new Action ("help", GettextCatalog.GetString ("Show Error Reference"),
+				                          GettextCatalog.GetString ("Show Error Reference"), Gtk.Stock.Help);
+				help.Activated += new EventHandler (OnShowReference);
+				group.Add (help, "F1");
+
+				Action copy = new Action ("copy", GettextCatalog.GetString ("_Copy"),
+				                          GettextCatalog.GetString ("Copy task"), Gtk.Stock.Copy);
+				copy.Activated += new EventHandler (OnTaskCopied);
+				group.Add (copy, "<Control><Mod2>c");
+
+				Action jump = new Action ("jump", GettextCatalog.GetString ("_Go to"),
+				                          GettextCatalog.GetString ("Go to task"), Gtk.Stock.JumpTo);
+				jump.Activated += new EventHandler (OnTaskJumpto);
+				group.Add (jump);
+
+				Action columns = new Action ("columns", GettextCatalog.GetString ("Columns"));
+				group.Add (columns, null);
+
+				ToggleAction columnType = new ToggleAction ("columnType", GettextCatalog.GetString ("Type"),
+				                                            GettextCatalog.GetString ("Toggle visibility of Type column"), null);
+				columnType.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnType] = (int)Columns.Type;
+				group.Add (columnType);
+
+				ToggleAction columnValidity = new ToggleAction ("columnValidity", GettextCatalog.GetString ("Validity"),
+				                                                GettextCatalog.GetString ("Toggle visibility of Validity column"), null);
+				columnValidity.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnValidity] = (int)Columns.Marked;
+				group.Add (columnValidity);
+
+				ToggleAction columnLine = new ToggleAction ("columnLine", GettextCatalog.GetString ("Line"),
+				                                            GettextCatalog.GetString ("Toggle visibility of Line column"), null);
+				columnLine.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnLine] = (int)Columns.Line;
+				group.Add (columnLine);
+
+				ToggleAction columnDescription = new ToggleAction ("columnDescription", GettextCatalog.GetString ("Description"),
+				                                                   GettextCatalog.GetString ("Toggle visibility of Description column"), null);
+				columnDescription.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnDescription] = (int)Columns.Description;
+				group.Add (columnDescription);
+
+				ToggleAction columnFile = new ToggleAction ("columnFile", GettextCatalog.GetString ("File"),
+				                                            GettextCatalog.GetString ("Toggle visibility of File column"), null);
+				columnFile.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnFile] = (int)Columns.File;
+				group.Add (columnFile);
+
+				ToggleAction columnPath = new ToggleAction ("columnPath", GettextCatalog.GetString ("Path"),
+				                                            GettextCatalog.GetString ("Toggle visibility of Path column"), null);
+				columnPath.Toggled += new EventHandler (OnColumnVisibilityChanged);
+				columnsActions[columnPath] = (int)Columns.Path;
+				group.Add (columnPath);
+
+				UIManager uiManager = new UIManager ();
+				uiManager.InsertActionGroup (group, 0);
+				
+				string uiStr = "<ui><popup name='popup'>"
+					+ "<menuitem action='help'/>"
+					+ "<menuitem action='copy'/>"
+					+ "<menuitem action='jump'/>"
+					+ "<separator/>"
+					+ "<menu action='columns'>"
+					+ "<menuitem action='columnType' />"
+					+ "<menuitem action='columnValidity' />"
+					+ "<menuitem action='columnLine' />"
+					+ "<menuitem action='columnDescription' />"
+					+ "<menuitem action='columnFile' />"
+					+ "<menuitem action='columnPath' />"
+					+ "</menu>"
+					+ "</popup></ui>";
+
+				uiManager.AddUiFromString (uiStr);
+				menu = (Menu)uiManager.GetWidget ("/popup");
+				menu.ShowAll ();
+
+				menu.Shown += delegate (object o, EventArgs args)
+				{
+					columnType.Active = view.Columns[(int)Columns.Type].Visible;
+					columnValidity.Active = view.Columns[(int)Columns.Marked].Visible;
+					columnLine.Active = view.Columns[(int)Columns.Line].Visible;
+					columnDescription.Active = view.Columns[(int)Columns.Description].Visible;
+					columnFile.Active = view.Columns[(int)Columns.File].Visible;
+					columnPath.Active = view.Columns[(int)Columns.Path].Visible;
+					help.Sensitive = copy.Sensitive = jump.Sensitive =
+						view.Selection != null &&
+						view.Selection.CountSelectedRows () > 0 &&
+						(columnType.Active ||
+						columnValidity.Active ||
+						columnLine.Active ||
+						columnDescription.Active ||
+						columnFile.Active ||
+						columnPath.Active);
+				};
+			}
+		}
+
 
 		[GLib.ConnectBefore]
 		void OnButtonPressed (object o, ButtonPressEventArgs args)
 		{
 			if (args.Event.Button == 3)
-				ShowPopup ();
+				menu.Popup ();
 		}
 
 		void OnPopupMenu (object o, PopupMenuArgs args)
 		{
-			ShowPopup ();
+			menu.Popup ();
 		}
 
-		void ShowPopup ()
+		Task SelectedTask
 		{
-			Menu menu = new Menu ();
-			menu.AccelGroup = new AccelGroup ();
-
-                        ImageMenuItem copy = new ImageMenuItem (Gtk.Stock.Copy, menu.AccelGroup);
-                        copy.Activated += new EventHandler (OnTaskCopied);
-			menu.Append (copy);
-
-			ImageMenuItem help = new ImageMenuItem (GettextCatalog.GetString ("Show Error Reference"));
-			help.AddAccelerator ("activate", menu.AccelGroup, new AccelKey (Gdk.Key.F1, Gdk.ModifierType.None, AccelFlags.Visible));
-			help.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
-			help.Activated += new EventHandler (OnShowReference);
-			menu.Append (help);
-
-			TreeIter dummy;
-			copy.Sensitive = help.Sensitive = view.Selection.GetSelected (out dummy);
-
-			menu.Popup (null, null, null, 3, Global.CurrentEventTime);
-			menu.ShowAll ();
+			get {
+				TreeModel model;
+				TreeIter iter;
+				if (view.Selection.GetSelected (out model, out iter))
+				{
+					return (Task)model.GetValue (iter, (int)Columns.Task);
+				}
+				else return null; // no one selected
+			}
 		}
 
 		void OnTaskCopied (object o, EventArgs args)
 		{
-			Task task;
-			TreeModel model;
-			TreeIter iter;
-
-			if (view.Selection.GetSelected (out model, out iter))
-			{
-				task = (Task) model.GetValue (iter, COL_TASK);
+			Task task = SelectedTask;
+			if (task != null) {
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = task.ToString ();
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+				clipboard.Text = task.ToString ();
 			}
-			else
-			{
-				// no selection
-				return;
-			}
-
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = task.ToString();
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = task.ToString();
 		}
 
 		void OnShowReference (object o, EventArgs args)
@@ -224,42 +352,54 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		bool GetSelectedErrorReference (out string reference)
 		{
-			TreeIter iter;
-			TreeModel model;
-
-			if (view.Selection.GetSelected (out model, out iter)) {
-				Task task = (Task) model.GetValue (iter, COL_TASK);
-				if (task != null && !String.IsNullOrEmpty (task.ErrorNumber)) {
-					reference = task.ErrorNumber;
-					return true;
-				}
+			Task task = SelectedTask;
+			if (task != null && !String.IsNullOrEmpty (task.ErrorNumber)) {
+				reference = task.ErrorNumber;
+				return true;
 			}
 			reference = null;
 			return false;
 		}
-		
+
+		void OnTaskJumpto (object o, EventArgs args)
+		{
+			Task task = SelectedTask;
+			if (task != null)
+				task.JumpToPosition ();
+		}
+
+		void OnColumnVisibilityChanged (object o, EventArgs args)
+		{
+			ToggleAction action = o as ToggleAction;
+			if (action != null)
+			{
+				view.Columns[columnsActions[action]].Visible = action.Active;
+				StoreColumnsVisibility ();
+			}
+		}
+
 		void AddColumns ()
 		{
 			Gtk.CellRendererPixbuf iconRender = new Gtk.CellRendererPixbuf ();
 			
 			Gtk.CellRendererToggle toggleRender = new Gtk.CellRendererToggle ();
 			toggleRender.Toggled += new ToggledHandler (ItemToggled);
-			
+
 			Gtk.CellRendererText line = new Gtk.CellRendererText (), desc = new Gtk.CellRendererText () , path = new Gtk.CellRendererText (),
-			  file = new Gtk.CellRendererText ();
-			
+			file = new Gtk.CellRendererText ();
+
 			TreeViewColumn col;
-			col = view.AppendColumn ("!"                                        , iconRender   , "pixbuf", COL_TYPE);
+			col = view.AppendColumn ("!", iconRender, "pixbuf", Columns.Type);
 			col.Clickable = true;
 			col.Clicked += new EventHandler (OnResortTasks);
 			col.SortIndicator = true;
-			view.AppendColumn (""                                         , toggleRender , "active"  , COL_MARKED, "activatable", COL_READ);
-			view.AppendColumn (GettextCatalog.GetString ("Line")        , line         , "text"    , COL_LINE, "weight", COL_READ_WEIGHT);
-			col = view.AppendColumn (GettextCatalog.GetString ("Description") , desc         , "text"    , COL_DESC, "weight", COL_READ_WEIGHT, "strikethrough", COL_MARKED);
+			view.AppendColumn ("", toggleRender, "active", Columns.Marked);
+			view.AppendColumn (GettextCatalog.GetString ("Line"), line, "text", Columns.Line, "weight", Columns.Weight);
+			col = view.AppendColumn (GettextCatalog.GetString ("Description"), desc, "text", Columns.Description, "weight", Columns.Weight, "strikethrough", Columns.Marked);
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("File")        , file         , "text"    , COL_FILE, "weight", COL_READ_WEIGHT);
+			col = view.AppendColumn (GettextCatalog.GetString ("File"), file, "text", Columns.File, "weight", Columns.Weight);
 			col.Resizable = true;
-			col = view.AppendColumn (GettextCatalog.GetString ("Path")        , path         , "text"    , COL_PATH, "weight", COL_READ_WEIGHT);
+			col = view.AppendColumn (GettextCatalog.GetString ("Path"), path, "text", Columns.Path, "weight", Columns.Weight);
 			col.Resizable = true;
 		}
 		
@@ -293,13 +433,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
-			Gtk.TreeIter iter;
-			if (store.GetIter (out iter, args.Path)) {
-				store.SetValue (iter, COL_READ, true);
-				store.SetValue (iter, COL_READ_WEIGHT, (int) Pango.Weight.Normal);
-				
-				((Task) store.GetValue (iter, COL_TASK)).JumpToPosition ();
-			}
+			OnTaskJumpto (null, null);
 		}
 		
 		public CompilerResults CompilerResults = null;
@@ -312,31 +446,31 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Runtime.Properties.SetProperty ("SharpDevelop.TaskList.ShowMessages", msgBtn.Active);
 			
 			filter.Refilter ();
-		} 
-		
+		}
+
 		bool FilterTaskTypes (TreeModel model, TreeIter iter)
 		{
 			bool canShow = false;
-        	
+
 			try {
-				Task task = (Task) store.GetValue (iter, COL_TASK);
+				Task task = (Task) store.GetValue (iter, (int)Columns.Task);
 				if (task == null)
 					return true;
-       			if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
-        			else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
-        			else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
-        		} catch {
-        			//Not yet fully added
-        			return false;
-        		}
-        	
-        		return canShow;
+				if (task.TaskType == TaskType.Error && errorBtn.Active) canShow = true;
+				else if (task.TaskType == TaskType.Warning && warnBtn.Active) canShow = true;
+				else if (task.TaskType == TaskType.Comment && msgBtn.Active) canShow = true;
+			} catch {
+				//Not yet fully added
+				return false;
+			}
+			
+			return canShow;
 		}
-        
+
 		public void ShowResults (object sender, EventArgs e)
 		{
 			Clear();
-						
+
 			foreach (Task t in Services.TaskService.Tasks) {
 				AddTask (t);
 			}
@@ -432,41 +566,43 @@ namespace MonoDevelop.Ide.Gui.Pads
 				path = Path.GetDirectoryName(tmpPath);
 			} catch (Exception) {}
 			
-			store.AppendValues (
-				stock,
-				t.Line,
-				t.Description,
-				fileName,
-				path,
-				t, false, false, (int) Pango.Weight.Bold);
+			store.AppendValues (stock,
+			                    false,
+			                    t.Line,
+			                    t.Description,
+			                    fileName,
+			                    path,
+			                    t,
+			                    false,
+			                    (int) Pango.Weight.Bold);
 		}
-		
+
 		void UpdateErrorsNum () 
 		{
 			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", IdeApp.Services.TaskService.ErrorsCount), IdeApp.Services.TaskService.ErrorsCount);
 		}
-		
+
 		void UpdateWarningsNum ()
 		{
 			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", IdeApp.Services.TaskService.WarningsCount), IdeApp.Services.TaskService.WarningsCount); 
-		}	
-		
+		}
+
 		void UpdateMessagesNum ()
 		{
 			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", IdeApp.Services.TaskService.MessagesCount), IdeApp.Services.TaskService.MessagesCount);
 		}
-		
+
 		private void ItemToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
 			if (store.GetIterFromString(out iter, args.Path)) {
-				bool val = (bool) store.GetValue(iter, COL_MARKED);
-				store.SetValue(iter, COL_MARKED, !val);
+				bool val = (bool) store.GetValue(iter, (int)Columns.Marked);
+				store.SetValue(iter, (int)Columns.Marked, !val);
 			}
 		}
 
-		private SortType ReverseSortOrder (TreeViewColumn col)     {
-			if (col.SortIndicator)  {
+		private SortType ReverseSortOrder (TreeViewColumn col) {
+			if (col.SortIndicator) {
 				if (col.SortOrder == SortType.Ascending)
 					return SortType.Descending;
 				else
@@ -481,13 +617,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeViewColumn col = sender as TreeViewColumn;
 			col.SortOrder = ReverseSortOrder (col);
 			col.SortIndicator = true;
-			store.SetSortColumnId (COL_TASK, col.SortOrder);
+			store.SetSortColumnId ((int)Columns.Task, col.SortOrder);
 		}
 
 		private int TaskSortFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
 		{
-			Task task1 = model.GetValue (iter1, COL_TASK) as Task;
-			Task task2 = model.GetValue (iter2, COL_TASK) as Task;
+			Task task1 = model.GetValue (iter1, (int)Columns.Task) as Task;
+			Task task2 = model.GetValue (iter2, (int)Columns.Task) as Task;
 
 			if (task1 == null && task2 == null) return 0;
 			else if (task1 == null) return -1;
@@ -496,7 +632,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			int compare = ((int)task1.TaskType).CompareTo ((int)task2.TaskType);
 			if (compare != 0)
 				return compare;
-				
+
 			if (task1.FileName != null || task2.FileName != null) {
 				if (task1.FileName == null) return -1;
 				if (task2.FileName == null) return 1;

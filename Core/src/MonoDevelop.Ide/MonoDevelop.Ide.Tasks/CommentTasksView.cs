@@ -317,20 +317,13 @@ namespace MonoDevelop.Ide.Tasks
 
 		void OnGenTaskCopied (object o, EventArgs args)
 		{
-			Task task;
-			TreeModel model;
-			TreeIter iter;
-
-			if (view.Selection.GetSelected (out model, out iter))
-			{
-				task = (Task) model.GetValue (iter, (int)Columns.Task);
+			Task task = SelectedTask;
+			if (task != null) {
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = task.ToString ();
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+				clipboard.Text = task.ToString ();
 			}
-			else return; // no one selected
-
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = task.ToString ();
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = task.ToString ();
 		}
 
 		Task SelectedTask
