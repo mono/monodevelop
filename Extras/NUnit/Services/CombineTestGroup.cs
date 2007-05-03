@@ -47,9 +47,9 @@ namespace MonoDevelop.NUnit
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			combine = c;
-			combine.EntryAdded += new CombineEntryEventHandler (OnEntryChanged);
-			combine.EntryRemoved += new CombineEntryEventHandler (OnEntryChanged);
-			combine.NameChanged += new CombineEntryRenamedEventHandler (OnCombineRenamed);
+			combine.EntryAdded += OnEntryChanged;
+			combine.EntryRemoved += OnEntryChanged;
+			combine.NameChanged += OnCombineRenamed;
 		}
 		
 		public static CombineTestGroup CreateTest (Combine c)
@@ -59,9 +59,9 @@ namespace MonoDevelop.NUnit
 		
 		public override void Dispose ()
 		{
-			combine.EntryAdded -= new CombineEntryEventHandler (OnEntryChanged);
-			combine.EntryRemoved -= new CombineEntryEventHandler (OnEntryChanged);
-			combine.NameChanged -= new CombineEntryRenamedEventHandler (OnCombineRenamed);
+			combine.EntryAdded -= OnEntryChanged;
+			combine.EntryRemoved -= OnEntryChanged;
+			combine.NameChanged -= OnCombineRenamed;
 			base.Dispose ();
 		}
 		
