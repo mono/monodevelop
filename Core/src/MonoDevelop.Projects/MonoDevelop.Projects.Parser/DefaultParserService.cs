@@ -1687,7 +1687,7 @@ namespace MonoDevelop.Projects.Parser
 				rawTags = "FIXME:2;TODO:1;HACK:1;UNDONE:0";
 			}
 			
-			string[] tags = rawTags.Split (';');
+			string[] tags = rawTags.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < tags.Length; i++)
 			{
 				int pos = tags[i].IndexOf (':');
