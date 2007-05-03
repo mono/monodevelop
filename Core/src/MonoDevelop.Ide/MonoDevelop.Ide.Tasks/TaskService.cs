@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			priorities.Clear ();
 				string tokens = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "FIXME:2;TODO:1;HACK:1;UNDONE:0");
-				foreach (string token in tokens.Split (';'))
+				foreach (string token in tokens.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
 				{
 					int pos = token.IndexOf (':');
 					if (pos != -1)
