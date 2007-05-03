@@ -1,3 +1,8 @@
+2007-03-03 James Fitzsimons <james.fitzsimons@gmail.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorDisplayBinding.cs: Added new 
+	  event handlers to update method combo when user mouse clicks on editor. 
+
 2007-04-29  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.SourceEditor.Gui/SourceEditorView.cs: Fix for initial

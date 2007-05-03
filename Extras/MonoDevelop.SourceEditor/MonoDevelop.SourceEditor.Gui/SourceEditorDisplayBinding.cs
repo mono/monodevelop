@@ -398,7 +398,8 @@ namespace MonoDevelop.SourceEditor.Gui
 			BindClassCombo();
 			
 			IdeApp.ProjectOperations.ParserDatabase.ParseInformationChanged += new ParseInformationEventHandler(UpdateClassBrowser);
-		  	Editor.View.MoveCursor += new MoveCursorHandler(UpdateMethodBrowser);
+		  	Editor.View.MoveCursor += new MoveCursorHandler (OnMoveCursorEvent);
+		  	Editor.View.ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonReleaseEvent);
 		}
 		
 		public INavigationPoint BuildNavPoint ()
@@ -424,8 +425,18 @@ namespace MonoDevelop.SourceEditor.Gui
 			}
 		}
 		
-	
-		private void UpdateMethodBrowser(object sender, Gtk.MoveCursorArgs args)
+		[GLib.ConnectBefore]
+		private void OnButtonReleaseEvent (object o, ButtonReleaseEventArgs args)
+		{
+			UpdateMethodBrowser();
+		}
+		
+		private void OnMoveCursorEvent (object sender, Gtk.MoveCursorArgs args)
+		{
+			UpdateMethodBrowser();
+		}
+		
+		private void UpdateMethodBrowser()
 		{
 			if (memberParseInfo == null) {
 				ClassBrowserVisible = false;
