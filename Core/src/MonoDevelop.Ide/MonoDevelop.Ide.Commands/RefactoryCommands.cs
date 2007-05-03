@@ -114,15 +114,14 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			string txt;
 			
-			if (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
-				// if we can jump to the declaration, we can rename it
+			if ((item is LocalVariable) || (item is IParameter) || 
+			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
+				// we can rename local variables, method params, or class/member-variables if we can jump to their declarations
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 			}
 			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
-				// ...and of course, we can jump to it :)
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
-			}
 			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
