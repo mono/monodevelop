@@ -121,16 +121,21 @@ namespace MonoDevelop.Projects.CodeGeneration
 			buffer.InsertText (sp, code);
 			
 			return FindGeneratedMember (ctx, buffer, cls, memberInfo);
-				
 		}
 		
 		public virtual IMember RenameMember (RefactorerContext ctx, IClass cls, IMember member, string newName)
 		{
-			IEditableTextFile file = ctx.GetFile (cls.Region.FileName);
-			if (file == null)
-				return null;
-
-			int pos = GetMemberNamePosition (file, member);
+			IEditableTextFile file = null;
+			int pos = -1;
+			
+			for (int i = 0; i < cls.Parts.Length; i++) {
+				if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+					continue;
+				
+				if ((pos = GetMemberNamePosition (file, member)) != -1)
+					break;
+			}
+			
 			if (pos == -1)
 				return null;
 			

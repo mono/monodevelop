@@ -1,5 +1,11 @@
 2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RenameMember): Iterate oevr the entire list of partial-class
+	files to find the member before giving up.
+
+2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Added
 	methods for renaming and finding LocalVariable and IParameter
 	references.
