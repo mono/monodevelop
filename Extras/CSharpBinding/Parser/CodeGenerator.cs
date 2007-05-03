@@ -103,6 +103,25 @@ namespace CSharpBinding.Parser
 			return refs;
 		}
 		
+		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
+		{
+			int pos1 = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.BeginColumn);
+			int pos2 = file.GetPositionFromLineColumn (var.Region.EndLine, var.Region.EndColumn);
+			string txt = file.GetText (pos1, pos2);
+			
+			int i = txt.IndexOf ('=');
+			if (i == -1) i = txt.Length;
+			int p = txt.LastIndexOf (var.Name, i);
+			if (p == -1) return -1;
+			return pos1 + p;
+		}
+		
+		protected override int GetParameterNamePosition (IEditableTextFile file, IMethod method, IParameter param)
+		{
+			// FIXME: implement me
+			return -1;
+		}
+		
 		protected override int GetMemberNamePosition (IEditableTextFile file, IMember member)
 		{
 			int pos1 = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
@@ -159,6 +178,28 @@ namespace CSharpBinding.Parser
 			visitor.Visit (ctx.ParserContext, file);
 			return refs;
 		}
+		
+		public override MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
+		{
+			Resolver resolver = new Resolver (ctx.ParserContext);
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, null, var, refs);
+			
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
+			return refs;
+		}
+		
+		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IMethod method, IParameter param)
+		{
+			Resolver resolver = new Resolver (ctx.ParserContext);
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, method.DeclaringType, param, refs);
+			
+			IEditableTextFile file = ctx.GetFile (fileName);
+			visitor.Visit (ctx.ParserContext, file);
+			return refs;
+		}
 	}
 	
 	class MemberRefactoryVisitor: AbstractAstVisitor
@@ -203,6 +244,20 @@ namespace CSharpBinding.Parser
 						return true;
 				}
 			}
+			return false;
+		}
+		
+		bool IsExpectedMethod (IMember m)
+		{
+			if (!(m is IMethod))
+				return false;
+			
+			IMethod actual = ((IParameter) member).DeclaringMember as IMethod;
+			IMethod method = m as IMethod;
+			
+			if (method.FullyQualifiedName == actual.FullyQualifiedName)
+				return true;
+			
 			return false;
 		}
 		
@@ -261,16 +316,29 @@ namespace CSharpBinding.Parser
 					IMember m = item as IMember;
 					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
-						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent)))
-					{
+						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent))) {
 						Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
 					Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
 					references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
+				} else if (member is LocalVariable) {
+					LocalVariable avar = member as LocalVariable;
+					LocalVariable var = item as LocalVariable;
+					
+					if (var != null && var.Region.IsInside (avar.Region.BeginLine, avar.Region.EndColumn)) {
+						Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
+					}
+				} else if (member is IParameter) {
+					IParameter param = item as IParameter;
+					// FIXME: might need to match more than this?
+					if (param != null && IsExpectedMethod (param.DeclaringMember)) {
+						Console.WriteLine ("adding IdentifierExpression param reference {0}", idExp.Identifier);
+						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
+					}
 				}
-				
 			}
 			return base.Visit (idExp, data);
 		}
