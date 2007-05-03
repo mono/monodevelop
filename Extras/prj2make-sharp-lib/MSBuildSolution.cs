@@ -155,7 +155,7 @@ namespace MonoDevelop.Prj2Make
 				}
 			}
 
-			combine.EntryAdded += new CombineEntryEventHandler (HandleCombineEntryAdded);
+			combine.EntryAdded += HandleCombineEntryAdded;
 		}
 
 		internal static void ConvertToMSBuild (CombineEntry ce)
