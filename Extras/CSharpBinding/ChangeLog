@@ -1,5 +1,10 @@
 2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Parser/CodeGenerator.cs (GetMemberNamePosition): Fixed IEvent
+	and IProperty logic and also greatly simplified the overall code.
+
+2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Parser/CodeGenerator.cs (FindVariableNamePosition): New
 	overloaded function to get the offset of a variable name.
 	(FindVariableReferences): New.

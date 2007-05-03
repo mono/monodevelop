@@ -124,48 +124,34 @@ namespace CSharpBinding.Parser
 		
 		protected override int GetMemberNamePosition (IEditableTextFile file, IMember member)
 		{
-			int pos1 = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
-			int pos2 = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
-			string txt = file.GetText (pos1, pos2);
+			int begin = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
+			int end = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
+			string txt = file.GetText (begin, end);
+			string name = member.Name;
+			int len = txt.Length;
+			int pos = -1;
 			
-			if (member is IField)
-			{
-				int i = txt.IndexOf ('=');
-				if (i == -1) i = txt.Length;
-				int p = txt.LastIndexOf (member.Name, i);
-				if (p == -1) return -1;
-				return pos1 + p;
-			}
-			else if (member is IMethod)
-			{
-				int i = txt.IndexOf ('(');
-				if (i == -1) return -1;
-				int p;
+			if (member is IField) {
+				if ((len = txt.IndexOf ('=')) == -1)
+					len = txt.Length;
+			} else if (member is IMethod) {
+				if ((len = txt.IndexOf ('(')) == -1)
+					return -1;
+				
 				if (((IMethod) member).IsConstructor)
-					p = txt.LastIndexOf (member.DeclaringType.Name, i);
-				else
-					p = txt.LastIndexOf (member.Name, i);
-				if (p == -1) return -1;
-				return pos1 + p;
-			}
-			else if (member is IProperty)
-			{
-				int i = txt.IndexOf ('{');
-				if (i == -1) return -1;
-				int p = txt.LastIndexOf (member.Name, i);
-				if (p == -1) return -1;
-				return pos1 + p;
-			}
-			else if (member is IEvent)
-			{
-				int i = txt.IndexOf ('{');
-				if (i == -1) i = txt.Length;
-				int p = txt.LastIndexOf (member.Name, i);
-				if (p == -1) return -1;
-				return pos1 + p;
+					name = member.DeclaringType.Name;
+			} else if (member is IProperty) {
+				// no variables to change
+			} else if (member is IEvent) {
+				// no variables to change
+			} else {
+				return -1;
 			}
 			
-			return -1;
+			if ((pos = txt.LastIndexOf (name, len)) == -1)
+				return -1;
+			
+			return begin + pos;
 		}
 		
 		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)
