@@ -84,8 +84,8 @@ namespace MonoDevelop.Ide.Gui
 		ProjectFileEventHandler filePropertyChangedInProjectHandler;
 		ProjectReferenceEventHandler referenceAddedToProjectHandler;
 		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
-		CombineEntryEventHandler entryAddedToCombineHandler;
-		CombineEntryEventHandler entryRemovedFromCombineHandler;
+		CombineEntryChangeEventHandler entryAddedToCombineHandler;
+		CombineEntryChangeEventHandler entryRemovedFromCombineHandler;
 		
 		internal ProjectOperations ()
 		{
@@ -97,8 +97,8 @@ namespace MonoDevelop.Ide.Gui
 			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
 			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) Services.DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
 		
-			entryAddedToCombineHandler = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (NotifyEntryAddedToCombine));
-			entryRemovedFromCombineHandler = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (NotifyEntryRemovedFromCombine));
+			entryAddedToCombineHandler = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryAddedToCombine));
+			entryRemovedFromCombineHandler = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (NotifyEntryRemovedFromCombine));
 			
 			Runtime.FileService.FileRemoved += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRemove));
 			Runtime.FileService.FileRenamed += (FileEventHandler) Services.DispatchService.GuiDispatch (new FileEventHandler (CheckFileRename));

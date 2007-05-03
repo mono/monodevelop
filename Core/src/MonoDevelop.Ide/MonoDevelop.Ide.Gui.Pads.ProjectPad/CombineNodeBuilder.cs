@@ -41,15 +41,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
-		CombineEntryEventHandler combineEntryAdded;
-		CombineEntryEventHandler combineEntryRemoved;
+		CombineEntryChangeEventHandler combineEntryAdded;
+		CombineEntryChangeEventHandler combineEntryRemoved;
 		CombineEntryRenamedEventHandler combineNameChanged;
 		EventHandler startupChanged;
 		
 		public CombineNodeBuilder ()
 		{
-			combineEntryAdded = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryAdded));
-			combineEntryRemoved = (CombineEntryEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryEventHandler (OnEntryRemoved));
+			combineEntryAdded = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryAdded));
+			combineEntryRemoved = (CombineEntryChangeEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryChangeEventHandler (OnEntryRemoved));
 			combineNameChanged = (CombineEntryRenamedEventHandler) Services.DispatchService.GuiDispatch (new CombineEntryRenamedEventHandler (OnCombineRenamed));
 			startupChanged = (EventHandler) Services.DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
 		}
