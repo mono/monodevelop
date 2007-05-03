@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			StreamWriter sw = new StreamWriter (file);
 			
 			ICodeGenerator gen = GetGenerator ();
-			gen.GenerateCodeFromCompileUnit (unit, sw, GetOpions ());
+			gen.GenerateCodeFromCompileUnit (unit, sw, GetOptions ());
 			
 			sw.Close ();
 			
@@ -193,7 +193,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Field overridables ////////////////////////////
 		
-		
 		protected virtual IField RenameField (RefactorerContext ctx, IClass cls, IField field, string newName)
 		{
 			return null;
@@ -215,9 +214,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual MemberReferenceCollection FindPropertyReferences (RefactorerContext ctx, string fileName, IClass cls, IProperty property)
 		{
 			return null;
-		}		
+		}
 
-		
 		/// Event overridables ////////////////////////////		
 		
 		protected virtual IEvent RenameEvent (RefactorerContext ctx, IClass cls, IEvent evnt, string newName)
@@ -228,11 +226,81 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual MemberReferenceCollection FindEventReferences (RefactorerContext ctx, string fileName, IClass cls, IEvent evnt)
 		{
 			return null;
-		}		
+		}
+
+
+		/// LocalVariable overridables /////////////////////
+		
+		public virtual LocalVariable RenameVariable (RefactorerContext ctx, LocalVariable var, string newName)
+		{
+			IEditableTextFile file = ctx.GetFile (var.Region.FileName);
+			if (file == null)
+				return null;
+			
+			int pos = GetVariableNamePosition (file, var);
+			if (pos == -1)
+				return null;
+			
+			string txt = file.GetText (pos, pos + var.Name.Length);
+			if (txt != var.Name)
+				return null;
+			
+			file.DeleteText (pos, txt.Length);
+			file.InsertText (pos, newName);
+			
+			// FIXME: return the new variable
+			
+			return null;
+		}
+
+		public virtual MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
+		{
+			return null;
+		}
+
+
+		/// Parameter overridables /////////////////////
+		
+		public virtual IParameter RenameParameter (RefactorerContext ctx, IMethod method, IParameter param, string newName)
+		{
+			IEditableTextFile file = ctx.GetFile (method.DeclaringType.Region.FileName);
+			if (file == null)
+				return null;
+			
+			int pos = GetParameterNamePosition (file, method, param);
+			if (pos == -1)
+				return null;
+			
+			string txt = file.GetText (pos, pos + param.Name.Length);
+			if (txt != param.Name)
+				return null;
+			
+			file.DeleteText (pos, txt.Length);
+			file.InsertText (pos, newName);
+			
+			// FIXME: return the new IParameter
+			
+			return null;
+		}
+
+		public virtual MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IMethod method, IParameter param)
+		{
+			return null;
+		}
 
 		/// Helper overridables ////////////////////////////
 
 		protected virtual int GetMemberNamePosition (IEditableTextFile file, IMember member)
+		{
+			return -1;
+		}
+
+		protected virtual int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
+		{
+			return -1;
+		}
+		
+		protected virtual int GetParameterNamePosition (IEditableTextFile file, IMethod method, IParameter param)
 		{
 			return -1;
 		}
@@ -268,7 +336,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			type.Members.Add (member);
 			ICodeGenerator gen = GetGenerator ();
 			StringWriter sw = new StringWriter ();
-			gen.GenerateCodeFromType (type, sw, GetOpions ());
+			gen.GenerateCodeFromType (type, sw, GetOptions ());
 			string code = sw.ToString ();
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');
@@ -504,7 +572,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return buffer.GetText (ipos, pos);
 		}
 		
-		CodeGeneratorOptions GetOpions ()
+		CodeGeneratorOptions GetOptions ()
 		{
 			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
 			ops.IndentString = "\t";

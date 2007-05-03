@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		AddField = 0x08,
 		RemoveField = 0x10,
 		RenameField = 0x20,
+		RenameVariable = 0x40,
+		RenameParameter = 0x80,
 		All = 0xff
 	}
 }

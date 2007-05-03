@@ -141,6 +141,34 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
+		public LocalVariable RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
+		{
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
+			refs.RenameAll (newName);
+			
+			RefactorerContext gctx = GetGeneratorContext (var);
+			IRefactorer r = GetGeneratorForVariable (var);
+			LocalVariable v = r.RenameVariable (gctx, var, newName);
+			gctx.Save ();
+			
+			return v;
+		}
+		
+		public IParameter RenameParameter (IProgressMonitor monitor, IMethod method, IParameter param, string newName)
+		{
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (monitor, method, new RefactorDelegate (new RefactorFindParameterReferences (method, param, refs).Refactor));
+			refs.RenameAll (newName);
+			
+			RefactorerContext gctx = GetGeneratorContext (method.DeclaringType);
+			IRefactorer r = GetGeneratorForClass (method.DeclaringType);
+			IParameter p = r.RenameParameter (gctx, method, param, newName);
+			gctx.Save ();
+			
+			return p;
+		}
+		
 		public IClass[] FindDerivedClasses (IClass baseClass)
 		{
 			ArrayList list = new ArrayList ();
@@ -202,6 +230,32 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
+		void Refactor (IProgressMonitor monitor, LocalVariable var, RefactorDelegate refactorDelegate)
+		{
+			RefactorerContext gctx = GetGeneratorContext (var);
+			string file = var.Region.FileName;
+			
+			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
+			if (gen == null)
+				return;
+			
+			refactorDelegate (monitor, gctx, gen, file);
+			gctx.Save ();
+		}
+		
+		void Refactor (IProgressMonitor monitor, IMethod method, RefactorDelegate refactorDelegate)
+		{
+			RefactorerContext gctx = GetGeneratorContext (method.DeclaringType);
+			string file = method.DeclaringType.Region.FileName;
+			
+			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
+			if (gen == null)
+				return;
+			
+			refactorDelegate (monitor, gctx, gen, file);
+			gctx.Save ();
+		}
+		
 		void RefactorCombine (IProgressMonitor monitor, CombineEntry ce, RefactorDelegate refactorDelegate)
 		{
 			if (ce is Combine) {
@@ -236,6 +290,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return new RefactorerContext (GetParserContext (cls), fileProvider);
 		}
 		
+		RefactorerContext GetGeneratorContext (LocalVariable var)
+		{
+			return new RefactorerContext (GetParserContext (var), fileProvider);
+		}
+		
 		IParserContext GetParserContext (IClass cls)
 		{
 			Project p = GetProjectForFile (cls.Region.FileName);
@@ -243,6 +302,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return pdb.GetProjectParserContext (p);
 			else
 				return pdb.GetFileParserContext (cls.Region.FileName);
+		}
+		
+		IParserContext GetParserContext (LocalVariable var)
+		{
+			Project p = GetProjectForFile (var.Region.FileName);
+			if (p != null)
+				return pdb.GetProjectParserContext (p);
+			else
+				return pdb.GetFileParserContext (var.Region.FileName);
 		}
 		
 		Project GetProjectForFile (string file)
@@ -259,6 +327,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IRefactorer GetGeneratorForClass (IClass cls)
 		{
 			return Services.Languages.GetRefactorerForFile (cls.Region.FileName);
+		}
+		
+		IRefactorer GetGeneratorForVariable (LocalVariable var)
+		{
+			return Services.Languages.GetRefactorerForFile (var.Region.FileName);
 		}
 	}
 	
@@ -302,6 +375,54 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			try {
 				MemberReferenceCollection refs = r.FindMemberReferences (rctx, fileName, cls, member);
+				if (refs != null)
+					references.AddRange (refs);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not look for references in file '{0}': {1}", fileName, ex.Message), ex);
+			}
+		}
+	}
+	
+	class RefactorFindVariableReferences
+	{
+		MemberReferenceCollection references;
+		LocalVariable var;
+		
+		public RefactorFindVariableReferences (LocalVariable var, MemberReferenceCollection references)
+		{
+			this.references = references;
+			this.var = var;
+		}
+		
+		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
+		{
+			try {
+				MemberReferenceCollection refs = r.FindVariableReferences (rctx, fileName, var);
+				if (refs != null)
+					references.AddRange (refs);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Could not look for references in file '{0}': {1}", fileName, ex.Message), ex);
+			}
+		}
+	}
+	
+	class RefactorFindParameterReferences
+	{
+		MemberReferenceCollection references;
+		IParameter param;
+		IMethod method;
+		
+		public RefactorFindParameterReferences (IMethod method, IParameter param, MemberReferenceCollection references)
+		{
+			this.references = references;
+			this.method = method;
+			this.param = param;
+		}
+		
+		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
+		{
+			try {
+				MemberReferenceCollection refs = r.FindParameterReferences (rctx, fileName, method, param);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {

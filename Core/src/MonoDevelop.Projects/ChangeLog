@@ -1,3 +1,28 @@
+2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Added
+	methods for renaming and finding LocalVariable and IParameter
+	references.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RenameVariable): New.
+	(FindVariableReferences): New.
+	(RenameParameter): New.
+	(FindParameterReferences): New.
+	(GetVariableNamePosition): New.
+	(GetParameterNamePosition): New.
+
+	* MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs: Added
+	RenameVariable and RenameParameter.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added 2
+	new classes for finding LocalVariable and IParameter references.
+	(RenameVariable): New method.
+	(RenameParameter): Also new.
+	(Refactor): Added 2 new overloads for Refactor() which will
+	refactor LocalVariables and Methods (for this purpose, method
+	parameters).
+
 2007-05-03  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: use .Net 2.0
