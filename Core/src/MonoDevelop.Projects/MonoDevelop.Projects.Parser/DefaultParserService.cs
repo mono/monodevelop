@@ -435,8 +435,8 @@ namespace MonoDevelop.Projects.Parser
 		Hashtable lastUpdateSize = new Hashtable();
 		Hashtable parsings = new Hashtable ();
 		
-		CombineEntryEventHandler combineEntryAddedHandler;
-		CombineEntryEventHandler combineEntryRemovedHandler;
+		CombineEntryChangeEventHandler combineEntryAddedHandler;
+		CombineEntryChangeEventHandler combineEntryRemovedHandler;
 
 		Queue parseQueue = new Queue();
 		object parseQueueLock = new object ();
@@ -581,8 +581,8 @@ namespace MonoDevelop.Projects.Parser
 		public ParserDatabase (DefaultParserService parserService)
 		{
 			this.parserService = parserService;
-			combineEntryAddedHandler = new CombineEntryEventHandler (OnCombineEntryAdded);
-			combineEntryRemovedHandler = new CombineEntryEventHandler (OnCombineEntryRemoved);
+			combineEntryAddedHandler = new CombineEntryChangeEventHandler (OnCombineEntryAdded);
+			combineEntryRemovedHandler = new CombineEntryChangeEventHandler (OnCombineEntryRemoved);
 			nameTable = new StringNameTable (sharedNameTable);
 		}
 		

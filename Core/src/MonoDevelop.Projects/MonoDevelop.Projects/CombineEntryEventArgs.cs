@@ -27,4 +27,20 @@ namespace MonoDevelop.Projects
 			this.entry = entry;
 		}
 	}
+	
+	public delegate void CombineEntryChangeEventHandler(object sender, CombineEntryChangeEventArgs e);
+	
+	public class CombineEntryChangeEventArgs: CombineEntryEventArgs
+	{
+		bool reloading;
+		
+		public CombineEntryChangeEventArgs (CombineEntry entry, bool reloading): base (entry)
+		{
+			this.reloading = reloading;
+		}
+		
+		public bool Reloading {
+			get { return reloading; }
+		}
+	}
 }

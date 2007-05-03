@@ -235,8 +235,8 @@ namespace MonoDevelop.Projects
 			ConnectChildEntryEvents (newEntry);
 
 			NotifyModified ();
-			OnEntryRemoved (new CombineEntryEventArgs (entry));
-			OnEntryAdded (new CombineEntryEventArgs (newEntry));
+			OnEntryRemoved (new CombineEntryChangeEventArgs (entry, true));
+			OnEntryAdded (new CombineEntryChangeEventArgs (newEntry, true));
 			
 			entry.Dispose ();
 			
@@ -287,7 +287,7 @@ namespace MonoDevelop.Projects
 			ConnectChildEntryEvents (entry);
 
 			NotifyModified ();
-			OnEntryAdded (new CombineEntryEventArgs (entry));
+			OnEntryAdded (new CombineEntryChangeEventArgs (entry, false));
 		}
 		
 		void ConnectChildEntryEvents (CombineEntry entry)
@@ -393,7 +393,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			NotifyModified ();
-			OnEntryRemoved (new CombineEntryEventArgs (entry));
+			OnEntryRemoved (new CombineEntryChangeEventArgs (entry, false));
 		}
 		
 		void DisconnectChildEntryEvents (CombineEntry entry)
@@ -873,7 +873,7 @@ namespace MonoDevelop.Projects
 			OnEntrySaved (e);
 		}
 		
-		internal void NotifyEntryAddedToCombine (object sender, CombineEntryEventArgs e)
+		internal void NotifyEntryAddedToCombine (object sender, CombineEntryChangeEventArgs e)
 		{
 			if (EntryAddedToCombine != null)
 				EntryAddedToCombine (sender, e);
@@ -881,7 +881,7 @@ namespace MonoDevelop.Projects
 				RootCombine.NotifyEntryAddedToCombine (sender, e);
 		}
 		
-		internal void NotifyEntryRemovedFromCombine (object sender, CombineEntryEventArgs e)
+		internal void NotifyEntryRemovedFromCombine (object sender, CombineEntryChangeEventArgs e)
 		{
 			if (EntryRemovedFromCombine != null)
 				EntryRemovedFromCombine (sender, e);
@@ -896,7 +896,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 			
-		protected virtual void OnEntryAdded(CombineEntryEventArgs e)
+		protected virtual void OnEntryAdded (CombineEntryChangeEventArgs e)
 		{
 			if (EntryAdded != null) {
 				EntryAdded (this, e);
@@ -904,7 +904,7 @@ namespace MonoDevelop.Projects
 			NotifyEntryAddedToCombine (this, e);
 		}
 		
-		protected virtual void OnEntryRemoved(CombineEntryEventArgs e)
+		protected virtual void OnEntryRemoved (CombineEntryChangeEventArgs e)
 		{
 			if (EntryRemoved != null) {
 				EntryRemoved (this, e);
@@ -974,10 +974,10 @@ namespace MonoDevelop.Projects
 		}
 		
 		public event EventHandler StartupPropertyChanged;
-		public event CombineEntryEventHandler EntryAdded;
-		public event CombineEntryEventHandler EntryRemoved;
-		public event CombineEntryEventHandler EntryAddedToCombine;     // Fires for child combines
-		public event CombineEntryEventHandler EntryRemovedFromCombine; // Fires for child combines
+		public event CombineEntryChangeEventHandler EntryAdded;
+		public event CombineEntryChangeEventHandler EntryRemoved;
+		public event CombineEntryChangeEventHandler EntryAddedToCombine;     // Fires for child combines
+		public event CombineEntryChangeEventHandler EntryRemovedFromCombine; // Fires for child combines
 		public event ProjectFileEventHandler FileAddedToProject;
 		public event ProjectFileEventHandler FileRemovedFromProject;
 		public event ProjectFileEventHandler FileChangedInProject;
