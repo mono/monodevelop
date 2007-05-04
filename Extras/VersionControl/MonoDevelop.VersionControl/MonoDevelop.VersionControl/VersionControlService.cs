@@ -6,8 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects.Serialization;
+using Mono.Addins;
 
 namespace MonoDevelop.VersionControl
 {
@@ -19,13 +19,13 @@ namespace MonoDevelop.VersionControl
 		
 		static VersionControlService ()
 		{
-			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
 		}
 
-		static void OnExtensionChanged (ExtensionAction action, object item)
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				VersionControlSystem vcs = (VersionControlSystem) item;
+			if (args.Change == ExtensionChange.Add) {
+				VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
 				handlers.Add (vcs);
 				// Include the repository type in the serialization context, so repositories
 				// of this type can be deserialized from the configuration file.

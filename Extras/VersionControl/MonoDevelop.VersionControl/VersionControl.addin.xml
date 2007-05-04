@@ -1,4 +1,5 @@
-<AddIn id        = "MonoDevelop.VersionControl"
+<Addin id        = "VersionControl"
+       namespace   = "MonoDevelop"
        name      = "MonoDevelop Version Control Addin"
        author    = "Joshua Tauberer"
        copyright = "GPL"
@@ -14,18 +15,26 @@
 	</Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+	    <Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
 	
-	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
-	</Extension>
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
+		<Description>Version control systems</Description>
+		<ExtensionNode name="Class">
+			<Description>The specified class must subclass VersionControlSystem.</Description>
+		</ExtensionNode>	
+	</ExtensionPoint>
 
-	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
-	</Extension>
-	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/CommitDialogExtensions" name = "Commit dialog extensions">
+		<Description>Commit dialog extensions.</Description>
+		<ExtensionNode name="Class">
+			<Description>The specified class must subclass CommitDialogExtension.</Description>
+		</ExtensionNode>	
+	</ExtensionPoint>
+
 	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
 		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
 	</Extension>
@@ -161,5 +170,5 @@
 		</ItemSet>
 		<SeparatorItem />
 	</Extension>
-</AddIn>
+</Addin>
 	

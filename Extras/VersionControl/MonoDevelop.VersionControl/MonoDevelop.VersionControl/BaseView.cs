@@ -53,6 +53,10 @@ namespace MonoDevelop.VersionControl
 			get { return false; }
 		}
 		
+		bool IViewContent.IsFile {
+			get { return false; }
+		}
+		
 		string IViewContent.PathRelativeToProject {
 			get { return ""; }
 		}

@@ -1,4 +1,5 @@
-<AddIn id        = "MonoDevelop.VersionControl.Subversion"
+<Addin id        = "VersionControl.Subversion"
+       namespace = "MonoDevelop"
        name      = "Subversion support for the Version Control Addin"
        author    = "Joshua Tauberer"
        copyright = "GPL"
@@ -12,16 +13,16 @@
 	</Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.VersionControl" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+	    <Addin id="Ide" version="0.13.0"/>
+	    <Addin id="VersionControl" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Class class = "MonoDevelop.VersionControl.Subversion.SubversionVersionControl" />
 	</Extension>
 
-</AddIn>
+</Addin>
 	

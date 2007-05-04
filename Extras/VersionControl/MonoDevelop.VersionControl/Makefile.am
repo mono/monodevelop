@@ -48,6 +48,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
 	-r:$(top_builddir)/build/AddIns/VersionControl/DiffWidget.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:Mono.Posix \
 	-r:System \

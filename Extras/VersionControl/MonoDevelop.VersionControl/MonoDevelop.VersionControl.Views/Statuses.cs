@@ -8,7 +8,6 @@ using System.Collections.Specialized;
 
 using Gtk;
 
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;

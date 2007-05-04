@@ -4,7 +4,6 @@ using System.IO;
 
 using Gtk;
 
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 

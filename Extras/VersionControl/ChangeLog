@@ -1,3 +1,16 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs,
+	  MonoDevelop.VersionControl/VersionControl.addin.xml,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Diffs.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/Statuses.cs,
+	  MonoDevelop.VersionControl/Makefile.am,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/BaseView.cs,
+	  MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:
+	  Migration to Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.mdp,

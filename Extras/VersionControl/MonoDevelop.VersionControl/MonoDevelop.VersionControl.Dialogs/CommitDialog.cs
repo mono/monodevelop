@@ -5,6 +5,7 @@ using System.Collections;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using Mono.Addins;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			
 			colCommit.Visible = false;
 			
-			object[] exts = Runtime.AddInService.GetTreeItems ("/MonoDevelop/VersionControl/CommitDialogExtensions");
+			object[] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", false);
 			foreach (object ob in exts) {
 				CommitDialogExtension ext = ob as CommitDialogExtension;
 				if (ext == null) {
