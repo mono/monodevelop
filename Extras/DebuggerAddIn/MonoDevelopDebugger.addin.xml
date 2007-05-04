@@ -1,4 +1,4 @@
-<AddIn id = "MonoDevelop.Debugger"
+<Addin id = "MonoDevelop.Debugger"
        name	= "MonoDevelop Debugger"
        author	 = "Todd Berman"
        copyright = "GPL"
@@ -12,7 +12,7 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Ide" version="0.10.0"/>
+		<Addin id="MonoDevelop.Ide" version="0.10.0"/>
 	</Dependencies>
 	
 	<Extension path="/Workspace/Services">
@@ -31,5 +31,5 @@
 		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
 		<ContextPad id = "MonoDevelop.Debugger.ThreadPad" />
 	</Extension>
-</AddIn>
+</Addin>
 

@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
 

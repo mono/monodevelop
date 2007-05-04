@@ -1,3 +1,8 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* DebuggingService.cs, MonoDevelopDebugger.addin.xml: Migration to
+	  Mono.Addins.
+
 2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
 
 	* MonoDevelop.Debugger.mdp: Updated.
