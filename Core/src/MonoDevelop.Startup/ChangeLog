@@ -1,3 +1,8 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Startup.mdp, MonoDevelop.Startup/MonoDevelopMain.cs,
+	  MonoDevelop.exe.addins, Makefile.am: Migration to Mono.Addins.
+
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Startup.mdp: Don't copy referenced assemblies.

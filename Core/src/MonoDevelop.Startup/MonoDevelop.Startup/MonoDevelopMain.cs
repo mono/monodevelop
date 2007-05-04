@@ -2,7 +2,7 @@
 using System;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Startup
 {
@@ -10,10 +10,11 @@ namespace MonoDevelop.Startup
 	{
 		public static int Main (string[] args)
 		{
-			Runtime.Initialize ();
-			Runtime.AddInService.CheckAssemblyLoadConflicts = true;
+			Runtime.Initialize (true);
+			
+		//	AddinManager.CheckAssemblyLoadConflicts = true;
 			try {
-				return Runtime.AddInService.StartApplication ("IDE", args);
+				return Runtime.ApplicationService.StartApplication ("IDE", args);
 			} finally {
 				Runtime.Shutdown ();
 			}

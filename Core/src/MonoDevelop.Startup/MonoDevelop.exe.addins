@@ -1,0 +1,3 @@
+<Addins>
+	<Directory include-subdirs="true">../AddIns</Directory>
+</Addins>

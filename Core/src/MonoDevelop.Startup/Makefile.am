@@ -10,7 +10,9 @@ AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
-REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+REFS =  \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll
 
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(build_resources:%=/resource:%) $(build_sources)
@@ -18,12 +20,15 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config
 
+$(ASSEMBLY).addins: $(ASSEMBLY) $(srcdir)/MonoDevelop.exe.addins
+	cp $(srcdir)/MonoDevelop.exe.addins $(ASSEMBLY).addins
+	
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).config
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).config $(ASSEMBLY).addins
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES) $(RES) app.config
+EXTRA_DIST = $(FILES) $(RES) app.config MonoDevelop.exe.addins
 
 include $(top_srcdir)/Makefile.include
 
