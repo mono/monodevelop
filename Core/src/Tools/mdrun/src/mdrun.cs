@@ -30,7 +30,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using System.IO;
 using System.Collections;
 
@@ -46,11 +46,11 @@ public class MonoDevelopProcessHost
 		}
 		
 		try {
-			Runtime.Initialize ();
+			Runtime.Initialize (false);
 			
 			if (args [0] == "-q") {
 				Console.WriteLine ("Available applications:");
-				foreach (IApplicationInfo ainfo in Runtime.AddInService.GetApplications ()) {
+				foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
 					Console.Write ("- " + ainfo.Id);
 					if (ainfo.Description != null && ainfo.Description.Length > 0)
 						Console.WriteLine (": " + ainfo.Description);
@@ -62,7 +62,7 @@ public class MonoDevelopProcessHost
 			
 			string[] newArgs = new string [args.Length - 1];
 			Array.Copy (args, 1, newArgs, 0, args.Length - 1);
-			return Runtime.AddInService.StartApplication (args[0], newArgs);
+			return Runtime.ApplicationService.StartApplication (args[0], newArgs);
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			return -1;

@@ -19,5 +19,6 @@
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../../contrib/Mono.Addins.dll" />
   </References>
 </Project>
