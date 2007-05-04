@@ -5,7 +5,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;

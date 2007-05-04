@@ -1,4 +1,5 @@
-<AddIn id          = "MonoDevelop.SourceEditor"
+<Addin id          = "SourceEditor"
+       namespace   = "MonoDevelop"
        name        = "MonoDevelop Text Editor"
        author      = "Ben Maurer, Lluis Sanchez, Todd Berman"
        copyright   = ""
@@ -14,12 +15,32 @@
 	</Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+	    <Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
+
+	<!-- Extension points -->
+	
+	<ExtensionPoint path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu" name = "Editor context menu">
+		<Description>Context menu for the editor.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/AddIns/DefaultTextEditor/EditActions" name = "Custom edit actions">
+		<Description>Custom edit actions for the editor.</Description>
+		<ExtensionNode name="EditAction" type="MonoDevelop.SourceEditor.Codons.EditActionCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/AddIns/DefaultTextEditor/Formatters" name = "Formatters">
+		<Description>Custom edit actions for the editor.</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	
+	<!-- Extensions -->
 	
 	<Extension path = "/Workspace/Services">
 		<Class id = "SourceViewService" class="MonoDevelop.SourceEditor.SourceViewService" />
@@ -78,7 +99,7 @@
 				shortcut = "Shift|Control|P" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu" extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for the editor">
+	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<CommandItem id = "MonoDevelop.Ide.Commands.RefactoryCommands.CurrentRefactoryOperations" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
@@ -108,29 +129,27 @@
 	</Extension>
 	
 	
-	<Extension path = "/SharpDevelop/Workbench/MainMenu">
-		<ItemSet id = "Search" insertafter ="View" insertbefore ="Tools" _label = "_Search">
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+	<Extension path = "/SharpDevelop/Workbench/MainMenu/Search">
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+		
+		<SeparatorItem id = "SearchSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
 			
-			<SeparatorItem id = "SearchSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
-				
-			<SeparatorItem id = "SearchInFilesSeparator" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.NextBookmark" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" />
+		<SeparatorItem id = "SearchInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ToggleBookmark" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.PrevBookmark" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.NextBookmark" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.ClearBookmarks" />
 
-			<SeparatorItem id = "Separator2" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />
-			<SeparatorItem id = "Separator3" />
-			<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" />
-		</ItemSet>
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.SourceEditor.EditorCommands.GotoMatchingBrace" />
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/MainMenu/File">
@@ -147,21 +166,6 @@
 					 insertafter = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
-		<DialogPanel id = "General"
-		             _label = "General"
-		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-		<DialogPanel id = "Markers"
-		             _label = "Markers and Rulers"
-		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-		<DialogPanel id = "Behavior"
-		             _label = "Behavior"
-		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-		<DialogPanel id = "SyntaxHighlighting"
-		             _label = "Syntax Highlighting"
-		             class = "MonoDevelop.SourceEditor.Gui.OptionPanels.SyntaxHighlightingPanel"/>
-	</Extension>
-	
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id    = "TextEditorOptions"
 		             insertafter = "CodingOptions"
@@ -203,4 +207,4 @@
 		       class = "MonoDevelop.SourceEditor.Gui.SourceEditorDisplayBinding" />
 	</Extension>
 	
-</AddIn>
+</Addin>

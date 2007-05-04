@@ -10,19 +10,18 @@ using System.Collections;
 using System.Reflection;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.SourceEditor.Actions;
 
 namespace MonoDevelop.SourceEditor.Codons
 {
-	[CodonNameAttribute("EditAction")]
 	[Description ("A custom editor action. The provided class must implement IEditAction.")]
-	public class EditActionCodon : ClassCodon
+	public class EditActionCodon : TypeExtensionNode
 	{
 		[Description ("Key combinations that trigger the edit action (for example Control|k).")]
-		[XmlMemberArrayAttribute("keys", IsRequired=true)]
+		[NodeAttribute("keys", true)]
 		string[] keys = null;
 
 		public string[] Keys {
@@ -34,12 +33,9 @@ namespace MonoDevelop.SourceEditor.Codons
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
-			if (subItems.Count > 0)
-				throw new ApplicationException ("more than one level of edit actions don't make sense!");
-			
-			IEditAction editAction = (IEditAction) AddIn.CreateObject (Class);
+			IEditAction editAction = (IEditAction) base.CreateInstance ();
 			if (editAction == null)
 				return null;
 							

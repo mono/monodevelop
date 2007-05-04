@@ -10,7 +10,7 @@ using GtkSourceView;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Ide.CodeTemplates;
@@ -226,13 +226,9 @@ namespace MonoDevelop.SourceEditor.Gui
 		void LoadEditActions ()
 		{
 			string editactionsPath = "/AddIns/DefaultTextEditor/EditActions";
-			if (AddInTreeSingleton.AddInTree.TreeNodeExists (editactionsPath)) {
-				IEditAction[] actions = (IEditAction[]) (AddInTreeSingleton.AddInTree.GetTreeNode (editactionsPath).BuildChildItems (this)).ToArray (typeof(IEditAction));
-				foreach (IEditAction action in actions)
-					editactions.Add (action);
-			} else {
-				Console.WriteLine ("/AddIns/DefaultTextEditor/EditActions addin path not found");
-			}
+			IEditAction[] actions = (IEditAction[]) AddinManager.GetExtensionObjects (editactionsPath, typeof(IEditAction));
+			foreach (IEditAction action in actions)
+				editactions.Add (action);
 		}
 		
 		protected override bool OnFocusOutEvent (EventFocus e)

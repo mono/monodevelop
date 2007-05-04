@@ -11,7 +11,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.SourceEditor.Properties;
@@ -773,30 +773,14 @@ namespace MonoDevelop.SourceEditor.Gui
 		
 		public void InitializeFormatter()
 		{
-			string ext = Path.GetExtension (ContentName).ToUpper ();
+			string ext = Path.GetExtension (ContentName).ToLower ();
 
 			if (ext.Length > 0) {
-				string path;
-				switch (ext) {
-					case ".CS":
-						path = "/AddIns/DefaultTextEditor/Formatter/C#";
-						break;
-					case ".VB":
-						path = "/AddIns/DefaultTextEditor/Formatter/VBNET";
-						break;
-					default:
-						// we fall back to the uppercase extension without the .
-						// ex. BOO, XML
-						path = String.Format ("/AddIns/DefaultTextEditor/Formatter/{0}", ext.Substring (1));
-						break;
-				}
-				
-				if (AddInTreeSingleton.AddInTree.TreeNodeExists (path)) {
-					IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTreeSingleton.AddInTree.GetTreeNode(path).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
-					if (formatter != null && formatter.Length > 0) {
-						se.View.fmtr = formatter[0];
-						return;
-					}
+				string id = ext.Substring (1);
+				TypeExtensionNode node = AddinManager.GetExtensionNode ("/AddIns/DefaultTextEditor/Formatters/" + id) as TypeExtensionNode;
+				if (node != null) {
+					se.View.fmtr = (IFormattingStrategy) node.CreateInstance (typeof(IFormattingStrategy));
+					return;
 				}
 			}
 			
