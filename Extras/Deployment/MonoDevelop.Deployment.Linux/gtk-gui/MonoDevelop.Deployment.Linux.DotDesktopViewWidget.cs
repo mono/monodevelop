@@ -615,7 +615,6 @@ namespace MonoDevelop.Deployment.Linux {
             this.radioAlwaysShow = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Always show"));
             this.radioAlwaysShow.CanFocus = true;
             this.radioAlwaysShow.Name = "radioAlwaysShow";
-            this.radioAlwaysShow.Active = true;
             this.radioAlwaysShow.DrawIndicator = true;
             this.radioAlwaysShow.Group = new GLib.SList(System.IntPtr.Zero);
             this.boxMenu.Add(this.radioAlwaysShow);

@@ -1,4 +1,5 @@
-<AddIn id          = "MonoDevelop.Deployment.Linux"
+<Addin id          = "Deployment.Linux"
+       namespace   = "MonoDevelop"
        name        = "MonoDevelop Deployment Services for Linux"
        author      = "Lluis Sanchez, Michael Hutchinson"
        copyright   = "MIT X11"
@@ -13,11 +14,12 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
+		<Addin id="Deployment" version="0.13.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Commands">
@@ -76,4 +78,4 @@
 	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
 		<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
 	</Extension>
-</AddIn>
+</Addin>
