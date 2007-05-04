@@ -105,20 +105,55 @@ namespace CSharpBinding.Parser
 		
 		protected override int GetVariableNamePosition (IEditableTextFile file, LocalVariable var)
 		{
-			int pos1 = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.BeginColumn);
-			int pos2 = file.GetPositionFromLineColumn (var.Region.EndLine, var.Region.EndColumn);
-			string txt = file.GetText (pos1, pos2);
+			int begin = file.GetPositionFromLineColumn (var.Region.BeginLine, var.Region.BeginColumn);
+			int end = file.GetPositionFromLineColumn (var.Region.EndLine, var.Region.EndColumn);
+			string txt = file.GetText (begin, end);
 			
 			int i = txt.IndexOf ('=');
-			if (i == -1) i = txt.Length;
-			int p = txt.LastIndexOf (var.Name, i);
-			if (p == -1) return -1;
-			return pos1 + p;
+			if (i == -1)
+				i = txt.Length;
+			
+			int pos = txt.LastIndexOf (var.Name, i);
+			if (pos == -1)
+				return -1;
+			
+			return begin + pos;
 		}
 		
 		protected override int GetParameterNamePosition (IEditableTextFile file, IMethod method, IParameter param)
 		{
-			// FIXME: implement me
+			int begin = file.GetPositionFromLineColumn (method.Region.BeginLine, method.Region.BeginColumn);
+			int end = file.GetPositionFromLineColumn (method.Region.EndLine, method.Region.EndColumn);
+			string txt = file.GetText (begin, end);
+			int open, close, i, j;
+			
+			Console.WriteLine ("Searching for param '{0}' in '{1}'", param.Name, txt);
+			
+			if ((open = txt.IndexOf ('(')) == -1)
+				return -1;
+			
+			if ((close = txt.LastIndexOf (')')) == -1)
+				return -1;
+			
+			open++;
+			
+			while (open < close) {
+				if ((i = txt.IndexOf (param.Name, open)) == -1)
+					return -1;
+				
+				if (!Char.IsWhiteSpace (txt[i - 1]))
+					return -1;
+				
+				j = i + param.Name.Length;
+				if (j == close || Char.IsWhiteSpace (txt[j]) || txt[j] == ',')
+					return begin + i;
+				
+				if ((open = txt.IndexOf (',', i)) == -1)
+					return -1;
+				
+				open++;
+			}
+			
 			return -1;
 		}
 		
