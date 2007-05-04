@@ -520,7 +520,6 @@ namespace MonoDevelop.Ide.Gui
 				
 				using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
 					string folder = dlg.TargetFolder;
-					string tmpFolder = null;
 					
 					Services.ProjectService.Export (mon, entry.FileName, folder, dlg.Format);
 				}

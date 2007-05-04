@@ -1,3 +1,18 @@
+2007-05-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs (Export): Removed
+	unused variable.
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(BuildRefactoryMenuForItem): Don't recurse for IMembers anymore,
+	this is now handled elsewhere. Also moved the Rename item to below
+	the "Find references" action and changed the IField and IParameter
+	label format.
+	(Update): Flatten the menu tree a bit by moving IMember refactory
+	items to the toplevel menu and also eliminate adding
+	duplicate-named items in the menu due to one being the base-class
+	implementation of a method the user selected.
+
 2007-05-04  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't look for

@@ -84,22 +84,45 @@ namespace MonoDevelop.Ide.Commands
 					}
 					
 					ILanguageItem item = ctx.ResolveIdentifier (id, line, column, editor.Name, null);
-					if (item != null) {
-						CommandInfo ci = BuildRefactoryMenuForItem (ctx, item);
-						if (ci != null) {
-							ainfo.Add (ci, null);
-							added = true;
-						}
+					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
+					
+					if (item != null && eitem != null && eitem.Name == item.Name) {
+						// If this occurs, then @item is the base-class version of @eitem
+						// in which case we don't want to show the base-class @item, we'd
+						// rather show the item the user /actually/ requested, @eitem.
+						item = eitem;
+						eitem = null;
 					}
 					
-					// Look for the enclosing language item
-					ILanguageItem eitem = ctx.GetEnclosingLanguageItem (line, column, editor);
-					if (eitem != null && !eitem.Equals (item)) {
-						CommandInfo ci = BuildRefactoryMenuForItem (ctx, eitem);
-						if (ci != null) {
+					while (item != null) {
+						CommandInfo ci;
+						
+						// Add the selected item
+						if ((ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
 							ainfo.Add (ci, null);
 							added = true;
 						}
+						
+						if (item is IParameter) {
+							// Add the encompasing method for the previous item in the menu
+							item = ((IParameter) item).DeclaringMember;
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
+								ainfo.Add (ci, null);
+								added = true;
+							}
+						}
+						
+						if (item is IMember) {
+							// Add the encompasing class for the previous item in the menu
+							item = ((IMember) item).DeclaringType;
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
+								ainfo.Add (ci, null);
+								added = true;
+							}
+						}
+						
+						item = eitem;
+						eitem = null;
 					}
 					
 					if (added)
@@ -112,19 +135,26 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Refactorer refactorer = new Refactorer (ctx, item);
 			CommandInfoSet ciset = new CommandInfoSet ();
+			bool canRename = false;
 			string txt;
-			
-			if ((item is LocalVariable) || (item is IParameter) || 
-			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
-				// we can rename local variables, method params, or class/member-variables if we can jump to their declarations
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
-			}
 			
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
 			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
+			
+			if ((item is LocalVariable) || (item is IParameter) || 
+			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
+				// We can rename local variables (always), method params (always), 
+				// or class/members (if we can jump to their declarations)
+				canRename = true;
+				
+				if (!(item is IClass)) {
+					// Defer adding this item for Classes until later
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
+				}
+			}
 			
 			if (item is IClass) {
 				IClass cls = (IClass) item;
@@ -142,6 +172,12 @@ namespace MonoDevelop.Ide.Commands
 						}
 					}
 				}
+				
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
+				
+				if (canRename)
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 				
 				if (cls.ClassType == ClassType.Interface) {
 					// An interface is selected, so just need to provide these 2 submenu items
@@ -172,22 +208,24 @@ namespace MonoDevelop.Ide.Commands
 						ciset.CommandInfos.Add (expset, null);
 					}
 				}
-				
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Find _derived classes"), new RefactoryOperation (refactorer.FindDerivedClasses));
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 			} else if (item is IField) {
-				txt = GettextCatalog.GetString ("Field {0} : {1}", item.Name, ((IField)item).ReturnType.Name);
+				txt = GettextCatalog.GetString ("Field '{0}'", item.Name);
 				AddRefactoryMenuForClass (ctx, ciset, ((IField)item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
-				txt = GettextCatalog.GetString ("Property {0} : {1}", item.Name, ((IProperty)item).ReturnType.Name);
+				txt = GettextCatalog.GetString ("Property '{0}'", item.Name);
 				AddRefactoryMenuForClass (ctx, ciset, ((IProperty)item).ReturnType.FullyQualifiedName);
-			} else if (item is IEvent)
+			} else if (item is IEvent) {
 				txt = GettextCatalog.GetString ("Event {0}", item.Name);
-			else if (item is IMethod)
-				txt = GettextCatalog.GetString ("Method {0}", item.Name);
-			else if (item is IIndexer)
+			} else if (item is IMethod) {
+				IMethod method = item as IMethod;
+				
+				if (method.IsConstructor)
+					txt = GettextCatalog.GetString ("Constructor {0}", method.DeclaringType.Name);
+				else
+					txt = GettextCatalog.GetString ("Method {0}", item.Name);
+			} else if (item is IIndexer) {
 				txt = GettextCatalog.GetString ("Indexer {0}", item.Name);
-			else if (item is IParameter) {
+			} else if (item is IParameter) {
 				txt = GettextCatalog.GetString ("Parameter {0}", item.Name);
 				AddRefactoryMenuForClass (ctx, ciset, ((IParameter)item).ReturnType.FullyQualifiedName);
 			} else if (item is LocalVariable) {
@@ -197,15 +235,6 @@ namespace MonoDevelop.Ide.Commands
 			} else
 				return null;
 			
-			if (item is IMember) {
-				IClass cls = ((IMember)item).DeclaringType;
-				if (cls != null) {
-					CommandInfo ci = BuildRefactoryMenuForItem (ctx, cls);
-					if (ci != null)
-						ciset.CommandInfos.Add (ci, null);
-				}
-			} 
-
 			ciset.Text = txt;
 			return ciset;
 		}
@@ -255,14 +284,18 @@ namespace MonoDevelop.Ide.Commands
 				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 				
 				if (item is IMember) {
-					IMember member = (IMember)item;
-					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) { // private is filled only in keyword case
+					IMember member = (IMember) item;
+					
+					// private is filled only in keyword case
+					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
 						// look in project to be partial classes safe
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project);
-					}
-					else {
-						// for all other types look in solution cause internal members can be used in friend assemblies
-						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
+											      RefactoryScope.Project);
+					} else {
+						// for all other types look in solution because
+						// internal members can be used in friend assemblies
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
+											      RefactoryScope.Solution);
 					}
 				} else if (item is IClass) {
 					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
