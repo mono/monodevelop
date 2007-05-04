@@ -32,7 +32,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects.Text;
 using Gtk;
@@ -61,10 +61,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			LocalOnly = true;
 			
 			ArrayList filters = new ArrayList ();
-			filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/Combine/FileFilter").BuildChildItems (this));
+			filters.AddRange (AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/Combine/FileFilter"));
 			try
 			{
-				filters.AddRange (AddInTreeSingleton.AddInTree.GetTreeNode ("/SharpDevelop/Workbench/FileFilter").BuildChildItems (this));
+				filters.AddRange (AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/FileFilter"));
 			}
 			catch
 			{

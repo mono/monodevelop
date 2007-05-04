@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui.Dialogs;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -401,7 +402,7 @@ namespace MonoDevelop.Ide.Gui
 			TreeViewOptions ops = new TreeViewOptions (
 				parentWindow,
 				(IProperties)Runtime.Properties.GetProperty("MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new DefaultProperties()),
-				Runtime.AddInService.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
+				AddinManager.GetExtensionNode ("/SharpDevelop/Dialogs/OptionsDialog"));
 
 			if (panelId != null)
 				ops.SelectPanel (panelId);
@@ -462,7 +463,10 @@ namespace MonoDevelop.Ide.Gui
 						}
 						
 					} else {
-						window.ViewContent.Save (window.ViewContent.ContentName);
+						if (window.ViewContent.IsFile)
+							window.ViewContent.Save (window.ViewContent.ContentName);
+						else
+							window.ViewContent.Save ();
 					}
 				}
 			}

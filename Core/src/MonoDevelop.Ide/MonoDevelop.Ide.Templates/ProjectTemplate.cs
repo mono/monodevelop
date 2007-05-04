@@ -20,7 +20,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 
@@ -132,9 +132,9 @@ namespace MonoDevelop.Ide.Templates
 		}
 #endregion
 		
-		protected ProjectTemplate (AddIn addin, string id, string fileName)
+		protected ProjectTemplate (RuntimeAddin addin, string id, string fileName)
 		{
-			Stream stream = addin.GetResourceStream (fileName);
+			Stream stream = addin.GetResource (fileName);
 			if (stream == null)
 				throw new ApplicationException ("Template " + fileName + " not found");
 
@@ -182,12 +182,12 @@ namespace MonoDevelop.Ide.Templates
 		}
 		
 		
-		private ProjectTemplate (AddIn addin, string id, XmlDocument doc, string languagename, string category)
+		private ProjectTemplate (RuntimeAddin addin, string id, XmlDocument doc, string languagename, string category)
 		{
 			Initialise (addin, id, doc, languagename, category);
 		}
 		
-		private void Initialise (AddIn addin, string id, XmlDocument doc, string languagename, string category)
+		private void Initialise (RuntimeAddin addin, string id, XmlDocument doc, string languagename, string category)
 		{
 			this.id = id;
 			
@@ -277,15 +277,15 @@ namespace MonoDevelop.Ide.Templates
 
 		static ProjectTemplate()
 		{
-			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/ProjectTemplates", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectTemplates", OnExtensionChanged);
 		}
 
-		static void OnExtensionChanged (ExtensionAction action, object item)
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				ProjectTemplateCodon codon = (ProjectTemplateCodon) item;
+			if (args.Change == ExtensionChange.Add) {
+				ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;
 				try {
-					ProjectTemplates.Add (new ProjectTemplate (codon.AddIn, codon.ID, codon.Resource));
+					ProjectTemplates.Add (new ProjectTemplate (codon.Addin, codon.Id, codon.Resource));
 				} catch (Exception e) {
 					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
 				}

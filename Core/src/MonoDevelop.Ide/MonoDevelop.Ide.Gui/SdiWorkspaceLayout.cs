@@ -20,7 +20,7 @@ using Gdl;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CreateDefaultLayout()
 		{
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Contexts", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Contexts", OnExtensionChanged);
 			
 			Runtime.LoggingService.Debug ("Default Layout created.");
 			dockLayout = new DockLayout (dock);
@@ -337,16 +337,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OnExtensionChanged (ExtensionAction action, object item)
+		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				WorkbenchContextCodon codon = (WorkbenchContextCodon) item;
+			if (args.Change == ExtensionChange.Add) {
+				WorkbenchContextCodon codon = (WorkbenchContextCodon) args.ExtensionNode;
 				PadContentCollection collection = new PadContentCollection ();
-				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.ID);
+				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.Id);
 				padCollections [ctx] = collection;
 
 				foreach (ContextPadCodon padCodon in codon.Pads) {
-					IPadContent pad = workbench.PadContentCollection [padCodon.ID];
+					IPadContent pad = workbench.PadContentCollection [padCodon.Id];
 					if (pad != null)
 						collection.Add (pad);
 				}

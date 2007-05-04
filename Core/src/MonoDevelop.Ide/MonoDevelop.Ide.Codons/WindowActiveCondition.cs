@@ -9,29 +9,23 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ConditionAttribute()]
-	internal class WindowActiveCondition : AbstractCondition
+	internal class WindowActiveCondition : ConditionType
 	{
-		[XmlMemberAttribute("activewindow", IsRequired = true)]
-		string activewindow;
-		
-		public string ActiveWindow {
-			get {
-				return activewindow;
-			}
-			set {
-				activewindow = value;
-			}
+		public WindowActiveCondition ()
+		{
+			IdeApp.Workbench.ActiveDocumentChanged += delegate { NotifyChanged (); };
 		}
 		
-		public override bool IsValid(object owner)
+		public override bool Evaluate (NodeElement condition)
 		{
+			string activewindow = condition.GetAttribute ("value");
+			
 			if (activewindow == "*") {
 				return IdeApp.Workbench.ActiveDocument != null;
 			}

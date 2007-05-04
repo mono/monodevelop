@@ -36,7 +36,7 @@ using Gdl;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateSaveFileAs (CommandInfo info)
 		{
 			IViewContent content = window.ActiveViewContent as IViewContent;
-			if (content != null)
+			if (content != null && content.IsFile)
 				info.Enabled = !content.IsViewOnly;
 			else
 				info.Enabled = false;

@@ -15,7 +15,7 @@ using System.ComponentModel;
 using System.Xml;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
 using MonoDevelop.Core;
@@ -191,19 +191,19 @@ namespace MonoDevelop.Ide.Gui
 			foreach (Gtk.Toolbar t in toolbars)
 				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
 				
-			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
-		void OnExtensionChanged (string path)
+		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
 			bool changed = false;
 			
-			if (path.StartsWith (mainMenuPath)) {
+			if (args.PathChanged (mainMenuPath)) {
 				TopMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 				changed = true;
 			}
 			
-			if (path.StartsWith (toolbarsPath)) {
+			if (args.PathChanged (toolbarsPath)) {
 				toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
 				foreach (Gtk.Toolbar t in toolbars)
 					t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
@@ -572,7 +572,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void InitializeLayout (IWorkbenchLayout workbenchLayout)
 		{
-			PadCodon[] padCodons = (PadCodon[]) Runtime.AddInService.GetTreeItems (viewContentPath, typeof(PadCodon));
+			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath, typeof(PadCodon));
 			
 			foreach (PadCodon codon in padCodons)
 				ShowPad (codon.Pad);
@@ -592,13 +592,20 @@ namespace MonoDevelop.Ide.Gui
 			RedrawAllComponents ();
 			
 			// Subscribe to changes in the extension
-			Runtime.AddInService.RegisterExtensionItemListener (viewContentPath, OnExtensionChanged, false);
+			initializing = true;
+			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
+			initializing = false;
 		}
 		
-		void OnExtensionChanged (ExtensionAction action, object item)
+		bool initializing;
+		
+		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				PadCodon codon = (PadCodon) item;
+			if (initializing)
+				return;
+			
+			if (args.Change == ExtensionChange.Add) {
+				PadCodon codon = (PadCodon) args.ExtensionNode;
 				ShowPad (codon.Pad);
 				
 				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);

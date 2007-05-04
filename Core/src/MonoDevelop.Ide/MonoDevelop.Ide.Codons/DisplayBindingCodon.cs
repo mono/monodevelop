@@ -10,59 +10,23 @@ using System.Collections;
 using System.Diagnostics;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
-	[CodonNameAttribute("DisplayBinding")]
-	internal class DisplayBindingCodon : ClassCodon
+	internal class DisplayBindingCodon : TypeExtensionNode
 	{
-		[Description ("Unused.")]
-		[XmlMemberArrayAttribute("supportedformats")]
-		string[] supportedFormats;
-		
-		IDisplayBinding     displayBinding    = null;
-		ISecondaryDisplayBinding  secondaryDisplayBinding = null;
-		
-		public string[] SupportedFormats {
-			get {
-				return supportedFormats;
-			}
-			set {
-				supportedFormats = value;
-			}
-		}
-		
 		public IDisplayBinding DisplayBinding {
 			get {
-				return displayBinding;
+				return GetInstance () as IDisplayBinding;
 			}
 		}
 		public ISecondaryDisplayBinding SecondaryDisplayBinding {
 			get {
-				return secondaryDisplayBinding;
+				return GetInstance () as ISecondaryDisplayBinding;
 			}
-		}
-		
-		/// <summary>
-		/// Creates an item with the specified sub items. And the current
-		/// Condition status for this item.
-		/// </summary>
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-//			if (subItems == null || subItems.Count > 0) {
-//				throw new ApplicationException("Tried to buil a command with sub commands, please check the XML definition.");
-//			}
-			
-			Debug.Assert(Class != null && Class.Length > 0);
-			
-			object o = AddIn.CreateObject(Class);
-			displayBinding          = o as IDisplayBinding;
-			secondaryDisplayBinding = o as ISecondaryDisplayBinding;
-			
-			return this;
 		}
 	}
 }

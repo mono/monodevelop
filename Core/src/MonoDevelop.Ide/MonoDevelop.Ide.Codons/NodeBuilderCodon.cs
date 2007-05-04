@@ -32,26 +32,16 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A node builder for a SolutionPad. The specified class must subclass MonoDevelop.Ide.Gui.Pads.NodeBuilder or MonoDevelop.Ide.Gui.Pads.NodeBuilderExtension.")]
-	[CodonNameAttribute ("NodeBuilder")]
-	internal class NodeBuilderCodon : ClassCodon
+	internal class NodeBuilderCodon : TypeExtensionNode
 	{
-		NodeBuilder builder;
-		
 		public NodeBuilder NodeBuilder {
-			get { return builder; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			builder = (NodeBuilder) AddIn.CreateObject (Class);
-			if (builder == null) throw new ApplicationException ("Could not create object of type: " + Class);
-			return this;
+			get { return (NodeBuilder) GetInstance (typeof(NodeBuilder)); }
 		}
 	}
 }

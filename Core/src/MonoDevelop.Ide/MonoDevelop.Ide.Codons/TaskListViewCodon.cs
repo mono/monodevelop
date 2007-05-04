@@ -30,42 +30,45 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[CodonNameAttribute ("TaskListView")]
 	[Description ("Registers a task list view to be shown in the task list pad.")]
-	internal class TaskListViewCodon : AbstractCodon
+	internal class TaskListViewCodon : ExtensionNode
 	{
 		ITaskListView view;
 		
 		[Description ("Display name of the view.")]
-		[XmlMemberAttribute("_label")]
+		[NodeAttribute("_label")]
 		string label = null;
 		
+		[Description ("Class of the view.")]
+		[NodeAttribute("class")]
+		string className;
+		
 		public ITaskListView View {
-			get { return view; }
+			get {
+				if (view == null)
+					view = CreateView ();
+				return view; 
+			}
+		}
+		
+		public string Class {
+			get { return className; }
 		}
 		
 		public string Label {
 			get { return GettextCatalog.GetString (label); }
 		}		
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			view = CreateView ();
-			return this;
-		}
-		
+
 		protected virtual ITaskListView CreateView ()
 		{
-			ITaskListView view = (ITaskListView) AddIn.CreateObject (Class);
-			if (view == null) throw new ApplicationException ("Could not create task list pad content of type: " + Class);
-			return view;
+			return (ITaskListView) Addin.CreateInstance (className, true);
 		}
 	}
 }

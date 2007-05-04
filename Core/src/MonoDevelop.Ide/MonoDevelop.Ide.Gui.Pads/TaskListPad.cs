@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherComboList = new ListStore (typeof (string), typeof (ITaskListView), typeof (string));
 			try
 			{
-				TaskListViewCodon[] viewCodons = (TaskListViewCodon[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/TaskList/View", typeof (TaskListViewCodon));
+				ExtensionNodeList viewCodons = AddinManager.GetExtensionNodes ("/MonoDevelop/TaskList/View", typeof (TaskListViewCodon));
 				foreach (TaskListViewCodon codon in viewCodons)
 				{
 					switcherComboList.AppendValues (codon.Label, codon.View, codon.Class);

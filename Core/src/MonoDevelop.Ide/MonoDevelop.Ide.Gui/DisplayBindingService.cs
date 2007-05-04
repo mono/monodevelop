@@ -15,7 +15,7 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Codons;
 using MonoDevelop.Ide.Codons;
@@ -99,13 +99,13 @@ namespace MonoDevelop.Ide.Gui
 		public override void InitializeService ()
 		{
 			bindings = new List<DisplayBindingCodon> ();
-			Runtime.AddInService.RegisterExtensionItemListener (displayBindingPath, OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler (displayBindingPath, OnExtensionChanged);
 		}
 		
-		void OnExtensionChanged (ExtensionAction action, object item)
+		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				bindings.Add ((DisplayBindingCodon)item);
+			if (args.Change == ExtensionChange.Add)
+				bindings.Add ((DisplayBindingCodon)args.ExtensionNode);
 		}
 	}
 }

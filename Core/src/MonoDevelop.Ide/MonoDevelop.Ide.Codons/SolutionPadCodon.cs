@@ -32,7 +32,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
@@ -40,9 +40,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[CodonNameAttribute ("SolutionPad")]
-	[Description ("Registers a pad which shows information about a project in a tree view.")]
-	[ChildCodons ("NodeBuilder","PadOption")]
+	[ExtensionNode ("SolutionPad", "Registers a pad which shows information about a project in a tree view.")]
 	internal class SolutionPadCodon : PadCodon
 	{
 		NodeBuilder[] builders;
@@ -55,29 +53,19 @@ namespace MonoDevelop.Ide.Codons
 						"relative placements several positions can be provided. If the " +
 						"pad can be placed in the first position, the next one will be " +
 						"tried. For example 'ProjectPad/left; bottom'.")]
-		[XmlMemberAttribute("defaultPlacement")]
+		[NodeAttribute("defaultPlacement")]
 		string placement = null;
 
-		public NodeBuilder[] NodeBuilders {
-			get { return builders; }
-		}
-		
 		public string DefaultPlacement {
 			get { return placement; }
 		}
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			BuildChildren (subItems);
-			return base.BuildItem (owner, subItems, conditions);
-		}
-		
-		void BuildChildren (ICollection subItems)
+		void BuildChildren ()
 		{
 			ArrayList bs = new ArrayList ();
 			ArrayList ops = new ArrayList ();
 			
-			foreach (object ob in subItems) {
+			foreach (ExtensionNode ob in ChildNodes) {
 				NodeBuilderCodon nbc = ob as NodeBuilderCodon;
 				if (nbc != null)
 					bs.Add (nbc.NodeBuilder);
@@ -93,27 +81,30 @@ namespace MonoDevelop.Ide.Codons
 		
 		protected override IPadContent CreatePad ()
 		{
-			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+			if (builders == null)
+				BuildChildren ();
 			
-			if (Class != null) {
-				object ob = AddIn.CreateObject (Class);
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+			
+			if (ClassName != null && ClassName.Length > 0) {
+				object ob = Addin.CreateInstance (ClassName, true);
 				if (!(ob is TreeViewPad))
-					throw new InvalidOperationException ("'" + Class + "' is not a subclass of TreeViewPad.");
+					throw new InvalidOperationException ("'" + ClassName + "' is not a subclass of TreeViewPad.");
 				pad = (TreeViewPad) ob;
 			} else
 				pad = new SolutionPad ();
 
 			pad.Initialize (builders, options);
 			pad.DefaultPlacement = placement;
-			pad.Id = ID;
+			pad.Id = Id;
 			return pad;
 		}
 		
-		void OnExtensionChanged (string path)
+		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			string codonpath = Extension.Path + "/" + this.ID;
-			if (path.StartsWith (codonpath)) {
-				BuildChildren (Runtime.AddInService.GetTreeItems (codonpath));
+			string codonpath = Path + "/" + this.Id;
+			if (args.PathChanged (codonpath)) {
+				BuildChildren ();
 				pad.UpdateBuilders (builders, options);
 			}
 		}

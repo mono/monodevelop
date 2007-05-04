@@ -10,7 +10,7 @@ using System.Collections;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -18,23 +18,19 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ConditionAttribute()]
-	internal class ProjectActiveCondition : AbstractCondition
+	internal class ProjectActiveCondition : ConditionType
 	{
-		[XmlMemberAttribute("activeproject", IsRequired = true)]
-		string activeproject;
-		
-		public string ActiveProject {
-			get {
-				return activeproject;
-			}
-			set {
-				activeproject = value;
-			}
+		public ProjectActiveCondition ()
+		{
+			IdeApp.ProjectOperations.CurrentProjectChanged += delegate {
+				NotifyChanged(); 
+			};
 		}
 		
-		public override bool IsValid(object owner)
+		public override bool Evaluate (NodeElement condition)
 		{
+			string activeproject = condition.GetAttribute ("value");
+			
 			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (activeproject == "*") {
 				return project != null;

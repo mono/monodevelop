@@ -14,7 +14,7 @@ using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;

@@ -14,7 +14,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui;

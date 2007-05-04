@@ -10,16 +10,15 @@ using System.Collections;
 using System.Diagnostics;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A project template.")]
-	[CodonNameAttribute("ProjectTemplate")]
-	internal class ProjectTemplateCodon : AbstractCodon
+	internal class ProjectTemplateCodon : ExtensionNode
 	{
 		[Description ("Name of the resource where the template is stored.")]
-		[XmlMemberAttribute("resource", IsRequired = true)]
+		[NodeAttribute("resource", true)]
 		string resource;
 		
 		public string Resource {
@@ -29,15 +28,6 @@ namespace MonoDevelop.Ide.Codons
 			set {
 				resource = value;
 			}
-		}
-		
-		/// <summary>
-		/// Creates an item with the specified sub items. And the current
-		/// Condition status for this item.
-		/// </summary>
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
 		}
 	}
 }

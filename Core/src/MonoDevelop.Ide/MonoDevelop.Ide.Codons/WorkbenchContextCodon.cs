@@ -32,31 +32,28 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A workbench context.")]
-	[ChildCodons ("ContextPad")]
-	[CodonNameAttribute ("WorkbenchContext")]
-	internal class WorkbenchContextCodon : AbstractCodon
+	internal class WorkbenchContextCodon : ExtensionNode
 	{
 		ContextPadCodon[] pads;
 		
 		public ContextPadCodon[] Pads {
-			get { return pads; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			ArrayList bs = new ArrayList ();
-			foreach (object ob in subItems) {
-				ContextPadCodon spad = ob as ContextPadCodon;
-				if (spad != null)
-					bs.Add (spad);
+			get {
+				if (pads == null) {
+					ArrayList bs = new ArrayList ();
+					foreach (ExtensionNode ob in ChildNodes) {
+						ContextPadCodon spad = ob as ContextPadCodon;
+						if (spad != null)
+							bs.Add (spad);
+					}
+					pads = (ContextPadCodon[]) bs.ToArray (typeof(ContextPadCodon));
+				}
+				return pads;
 			}
-			pads = (ContextPadCodon[]) bs.ToArray (typeof(ContextPadCodon));
-			return this;
 		}
 	}
 }

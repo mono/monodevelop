@@ -15,7 +15,10 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \
@@ -51,12 +54,10 @@ FILES =  \
 	MonoDevelop.Ide.Codons/PadCodon.cs \
 	MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 	MonoDevelop.Ide.Codons/ProjectActiveCondition.cs \
-	MonoDevelop.Ide.Codons/ProjectOpenCondition.cs \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 	MonoDevelop.Ide.Codons/WindowActiveCondition.cs \
-	MonoDevelop.Ide.Codons/WindowOpenCondition.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs \
 	MonoDevelop.Ide.Commands/CustomStringTagProvider.cs \
@@ -74,8 +75,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \

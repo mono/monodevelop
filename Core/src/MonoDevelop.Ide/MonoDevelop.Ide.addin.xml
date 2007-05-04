@@ -1,4 +1,5 @@
-<AddIn id          = "MonoDevelop.Ide"
+<Addin id          = "Ide"
+       namespace   = "MonoDevelop"
        name        = "MonoDevelop Ide"
        author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
        copyright   = "GPL"
@@ -14,15 +15,158 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Documentation" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Documentation" version="0.13.0"/>
 	</Dependencies>
 
-	<Extension path = "/Workspace/Applications">
-		<Class id    = "IDE"
+	<!-- Extension points -->
+	
+	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
+	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
+	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
+	<ConditionType id="activewindow" type="MonoDevelop.Ide.Codons.WindowActiveCondition" />
+	<ConditionType id="activecontext" type="MonoDevelop.Ide.Codons.WorkbenchContextCondition" />
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/DisplayBindings" name = "Display bindings">
+		<Description>Display bindings.</Description>
+		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/IDE/StartupHandlers" name = "Startup handlers">
+		<Description>Commands to be automatically executed when the IDE starts.</Description>
+		<ExtensionNode name="Class">
+			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Commands" name = "User interface commands">
+		<Description>User interface commands.</Description>
+		<ExtensionNode name="Command" type="MonoDevelop.Core.Gui.Codons.CommandCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/CombineBrowserNode" name = "Solution context menu">
+		<Description>Context menu for solutions in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ResourceFolderNode" name = "Resource folder context menu">
+		<Description>Context menu for the resource folder in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceFolderNode" name = "References folder context menu">
+		<Description>Context menu for the references folder in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceNode" name = "Reference context menu">
+		<Description>Context menu for a reference in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode" name = "Project file context menu">
+		<Description>Context menu for a project file in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode" name = "File context menu">
+		<Description>Context menu for a file (not belonging to a project) in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode" name = "Folder context menu">
+		<Description>Context menu for a folder in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode" name = "Project context menu">
+		<Description>Context menu for a project in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/UnknownEntryNode" name = "Unknown entry context menu">
+		<Description>Context menu for unknown entries in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/TaskList/View" name = "Task list views">
+		<Description>Task list views to be shown in the task list pad.</Description>
+		<ExtensionNode name="TaskListView" type="MonoDevelop.Ide.Codons.TaskListViewCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/Pads" name = "Workbench pads">
+		<Description>Pads shown in the workbench.</Description>
+		<ExtensionNode name="Pad" type="MonoDevelop.Ide.Codons.PadCodon"/>
+		<ExtensionNode name="SolutionPad" type="MonoDevelop.Ide.Codons.SolutionPadCodon">
+			<ExtensionNode name="NodeBuilder" type="MonoDevelop.Ide.Codons.NodeBuilderCodon"/>
+			<ExtensionNode name="PadOption" type="MonoDevelop.Ide.Codons.PadOptionCodon"/>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/Contexts" name = "Workbench contexts">
+		<Description>Workbench contexts.</Description>
+		<ExtensionNode name="WorkbenchContext" type="MonoDevelop.Ide.Codons.WorkbenchContextCodon">
+			<ExtensionNode name ="ContextPad" type="MonoDevelop.Ide.Codons.ContextPadCodon" />
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Dialogs/OptionsDialog" name = "Global options panels">
+		<Description>Dialog panels for global MonoDevelop options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/Combine/FileFilter" name = "Combine file filters">
+		<Description>File filters to be shown in the Project Open dialog.</Description>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/FileFilter" name = "File filters">
+		<Description>File filters to be shown in the File Open dialog.</Description>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Projects.Extensions.FileFilterCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/ToolBar" name = "Main toolbar">
+		<Description>Main toolbar items.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/MainMenu" name = "Main menu">
+		<Description>Main menu items.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/FileTemplates" name = "File templates">
+		<Description>File templates to be shown in the New File dialog.</Description>
+		<ExtensionNode name="FileTemplate" type="MonoDevelop.Ide.Codons.FileTemplateCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/FileTemplateTypes" name = "File template types">
+		<Description>Template types which can be used to create file templates.</Description>
+		<ExtensionNode name="FileTemplateType" type="MonoDevelop.Ide.Codons.FileTemplateTypeCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectTemplates" name = "File template types">
+		<Description>Project templates to be shown in the New Project dialog.</Description>
+		<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Workbench/TextEditorExtensions" name = "Text editor extensions">
+		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Workbench/ProjectFeatures" name = "Project feature editors">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
+
+
+	<Extension path = "/System/Applications">
+		<Application id    = "IDE"
 		       description = "The MonoDevelop IDE"
 		       class = "MonoDevelop.Ide.Gui.IdeStartup"/>
 	</Extension>
@@ -46,12 +190,12 @@
 		                class = "MonoDevelop.Ide.Gui.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/IDE/StartupHandlers" extension-nodes="Class" description="Commands to be automatically executed when the IDE starts.|Specified classes must subclass MonoDevelop.Components.Commands.CommandHandler.">
+	<Extension path = "/MonoDevelop/IDE/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.TipOfTheDayStartupHandler"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Commands" extension-nodes="Command" description="User interface commands.">
+	<Extension path = "/SharpDevelop/Commands">
 	
 		<!-- EditCommands -->
 				
@@ -906,6 +1050,11 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 		</ItemSet>
 		
+		<ItemSet id = "Search" _label = "_Search">
+            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
+                insertafter = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />	        									
+		</ItemSet>
+
 		<ItemSet id = "Run" _label = "_Project">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" />
@@ -967,19 +1116,6 @@
 		</ItemSet>
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/MainMenu/Search">
-            <CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
-                insertafter = "MonoDevelop.SourceEditor.EditorCommands.GotoLineNumber" />	        									
-	</Extension>
-
-	<Extension path = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
-		<LocalCommandItem id = "@*Char" _label = "* Zero or more of any character" />
-		<LocalCommandItem id = "@?Char" _label = "? Any single character" />
-		<LocalCommandItem id = "@#Char" _label = "# Any single digit" />
-		<LocalCommandItem id = "@[]Char" _label = "[] Any one character in the set" />
-		<LocalCommandItem id = "@[!]Char" _label = "[!] Any one character not in the set" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/FileTemplates" extension-nodes="FileTemplate" description="File templates to be shown in the New File dialog.">
 		<FileTemplate resource = "EmptyClass.xft.xml"/>
 		<FileTemplate resource = "EmptyEnum.xft.xml"/>
@@ -1013,7 +1149,4 @@
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures" extension-nodes="Class">
-	</Extension>
-</AddIn>
+</Addin>

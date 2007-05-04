@@ -16,7 +16,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
@@ -127,9 +127,9 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
-		static FileTemplate LoadFileTemplate (AddIn addin, string filename)
+		static FileTemplate LoadFileTemplate (RuntimeAddin addin, string filename)
 		{
-			Stream stream = addin.GetResourceStream (filename);
+			Stream stream = addin.GetResource (filename);
 			if (stream == null)
 				throw new ApplicationException ("Template " + filename + " not found");
 
@@ -203,16 +203,16 @@ namespace MonoDevelop.Ide.Templates
 		
 		static FileTemplate()
 		{
-			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/FileTemplates", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/FileTemplates", OnExtensionChanged);
 		}
 
-		static void OnExtensionChanged (ExtensionAction action, object item)
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				FileTemplateCodon codon = (FileTemplateCodon) item;
+			if (args.Change == ExtensionChange.Add) {
+				FileTemplateCodon codon = (FileTemplateCodon) args.ExtensionNode;
 				try {
-					FileTemplate t = LoadFileTemplate (codon.AddIn, codon.Resource);
-					t.id = codon.ID;
+					FileTemplate t = LoadFileTemplate (codon.Addin, codon.Resource);
+					t.id = codon.Id;
 					fileTemplates.Add (t);
 				} catch (Exception e) {
 					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));

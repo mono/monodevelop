@@ -42,7 +42,7 @@ using Mono.Unix;
 using Mono.GetOptions;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		Socket listen_socket   = null;
 		static string fileToOpen = String.Empty;
+		ArrayList errorsList = new ArrayList ();
 		
 		public int Run (string[] args)
 		{
@@ -67,6 +68,8 @@ namespace MonoDevelop.Ide.Gui
 			string[] remainingArgs = options.RemainingArguments;
 			string socket_filename = null;
 			EndPoint ep = null;
+			
+			AddinManager.AddinLoadError += OnAddinError;
 			
 			if(!options.ipc_tcp){
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
@@ -129,40 +132,25 @@ namespace MonoDevelop.Ide.Gui
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 
-			monitor.BeginTask (GettextCatalog.GetString ("Initializing MonoDevelop"), 2);
-			
 			Exception error = null;
 			int reportedFailures = 0;
 			
 			try {
 				ServiceManager.AddService(new IconService());
-				
-				Runtime.AddInService.PreloadAddins (monitor,
-					"/SharpDevelop/Workbench",
-					"/SharpDevelop/Views",
-					"/SharpDevelop/Commands",
-					"/SharpDevelop/Dialogs"
-					);
 
-				monitor.Step (1);
-
-				AddinError[] errors = Runtime.AddInService.AddInLoadErrors;
-				if (errors.Length > 0) {
+				if (errorsList.Count > 0) {
 					SplashScreenForm.SplashScreen.Hide ();
-					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errors, false);
+					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
 					if (!dlg.Run ())
 						return 1;
 					SplashScreenForm.SplashScreen.Show ();
-					reportedFailures = errors.Length;
+					reportedFailures = errorsList.Count;
 				}
 				
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
 				IdeApp.Initialize (monitor);
-				monitor.Step (1);
-
-				monitor.EndTask ();
 			
 			} catch (Exception e) {
 				error = e;
@@ -178,11 +166,12 @@ namespace MonoDevelop.Ide.Gui
 				return 1;
 			}
 
-			AddinError[] errs = Runtime.AddInService.AddInLoadErrors;
-			if (errs.Length > reportedFailures) {
-				AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errs, true);
+			if (errorsList.Count > reportedFailures) {
+				AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true);
 				dlg.Run ();
 			}
+			
+			errorsList = null;
 			
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
@@ -205,6 +194,13 @@ namespace MonoDevelop.Ide.Gui
 			ServiceManager.UnloadAllServices ();
 			System.Environment.Exit (0);
 			return 0;
+		}
+		
+		void OnAddinError (object s, AddinErrorEventArgs args)
+		{
+			Console.WriteLine (args.Exception);
+			if (errorsList != null)
+				errorsList.Add (new AddinError (args.AddinId, args.Message, args.Exception, false));
 		}
 
 		void ListenCallback (IAsyncResult state)
@@ -288,8 +284,8 @@ namespace MonoDevelop.Ide.Gui
 				pw.WaitForOutput ();
 				current_gnomevfs = sw.ToString ().Trim (' ','\n');
 				
-				bool fail1 = MonoDevelop.Core.AddIns.Setup.AddinInfo.CompareVersions (current_libgda, required_libgda) == 1;
-				bool fail2 = MonoDevelop.Core.AddIns.Setup.AddinInfo.CompareVersions (current_gnomevfs, required_gnomevfs) == 1;
+				bool fail1 = Addin.CompareVersions (current_libgda, required_libgda) == 1;
+				bool fail2 = Addin.CompareVersions (current_gnomevfs, required_gnomevfs) == 1;
 				
 				if (fail1 || fail2) {
 					string msg = GettextCatalog.GetString ("Some packages installed in your system are not compatible with MonoDevelop:\n");
@@ -334,4 +330,36 @@ namespace MonoDevelop.Ide.Gui
 		[Option ("Use the Tcp channel for inter-process comunication.", "ipc-tcp")]
 		public bool ipc_tcp;
 	}	
+	
+	public class AddinError
+	{
+		string addinFile;
+		Exception exception;
+		bool fatal;
+		string message;
+		
+		public AddinError (string addin, string message, Exception exception, bool fatal)
+		{
+			this.addinFile = addin;
+			this.message = message;
+			this.exception = exception;
+			this.fatal = fatal;
+		}
+		
+		public string AddinFile {
+			get { return addinFile; }
+		}
+		
+		public string Message {
+			get { return message; }
+		}
+		
+		public Exception Exception {
+			get { return exception; }
+		}
+		
+		public bool Fatal {
+			get { return fatal; }
+		}
+	}
 }

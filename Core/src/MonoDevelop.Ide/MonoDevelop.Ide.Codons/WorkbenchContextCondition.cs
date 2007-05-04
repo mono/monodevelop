@@ -1,32 +1,17 @@
 using System;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ConditionAttribute()]
-	internal class WorkbenchContextCondition : AbstractCondition
+	internal class WorkbenchContextCondition : ConditionType
 	{
-		[XmlMemberAttribute("context", IsRequired = true)]
-			string context;
-
-		public string CurrentContext 
+		public override bool Evaluate (NodeElement condition)
 		{
-			get 
-			{
-				return context;
-			}
-			set
-			{
-				context = value;
-			}
-		}
-
-		public override bool IsValid (object owner)
-		{
+			string context = condition.GetAttribute ("value");
 			if (context == "*")
 				return true;
 

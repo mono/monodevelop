@@ -76,6 +76,10 @@ namespace MonoDevelop.Ide.Gui
 				isViewOnly = value;
 			}
 		}
+		
+		public virtual bool IsFile {
+			get { return true; }
+		}
 
 		public virtual string StockIconId {
 			get {

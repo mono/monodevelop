@@ -9,7 +9,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
@@ -25,13 +25,12 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (templates == null) {
 				templates = new List<FileTemplateTypeCodon> ();
-				Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/FileTemplateTypes", OnExtensionChanged);
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/FileTemplateTypes", OnExtensionChanged);
 			}
 			
 			foreach (FileTemplateTypeCodon template in templates) {
 				if (template.ElementName == element.Name) {
-					Type type = template.ClassType;
-					FileDescriptionTemplate t = (FileDescriptionTemplate) Activator.CreateInstance (type);
+					FileDescriptionTemplate t = (FileDescriptionTemplate) template.CreateInstance (typeof(FileDescriptionTemplate));
 					t.Load (element);
 					return t;
 				}
@@ -39,10 +38,10 @@ namespace MonoDevelop.Ide.Templates
 			throw new InvalidOperationException ("Unknown file template type: " + element.Name);
 		}
 		
-		static void OnExtensionChanged (ExtensionAction action, object item)
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				templates.Add ((FileTemplateTypeCodon) item);
+			if (args.Change == ExtensionChange.Add)
+				templates.Add ((FileTemplateTypeCodon) args.ExtensionNode);
 		}
 		
 		public abstract string Name { get; }

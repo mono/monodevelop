@@ -51,9 +51,7 @@
     <File name="./MonoDevelop.Ide.Codons/CombineOpenCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/LanguageActiveCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/ProjectActiveCondition.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Codons/ProjectOpenCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/WindowActiveCondition.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.Codons/WindowOpenCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.ExternalTools/ExternalTool.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.ExternalTools/ToolLoader.cs" subtype="Code" buildaction="Compile" />
@@ -271,7 +269,6 @@
     <File name="./MonoDevelop.Ide.Gui.Dialogs/OpenFileInSolutionDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/TextEditor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/INavigationPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/NavigationService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/DefaultNavigationPoint.cs" subtype="Code" buildaction="Compile" />
@@ -279,16 +276,17 @@
     <File name="./MonoDevelop.Ide.Commands/NavigationCommands.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/NavigationHistory.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Templates/ICombineEntryFeature.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs" subtype="Code" buildaction="Compile" />
+    <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs" subtype="Code" buildaction="Compile" />
@@ -317,6 +315,9 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/log4net.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.Setup.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Addins.Gui.dll" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

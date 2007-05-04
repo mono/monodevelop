@@ -34,20 +34,19 @@ using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A display option of a solution pad.")]
-	[CodonNameAttribute ("PadOption")]
-	internal class PadOptionCodon : AbstractCodon
+	internal class PadOptionCodon : ExtensionNode
 	{
 		[Description ("Display name of the option")]
-		[XmlMemberAttribute("_label", IsRequired=true)]
+		[NodeAttribute("_label", true)]
 		string label = null;
 		
 		[Description ("Default value of the option")]
-		[XmlMemberAttribute("defaultValue")]
+		[NodeAttribute("defaultValue")]
 		bool defaultValue;
 		
 		TreePadOption option;
@@ -56,10 +55,10 @@ namespace MonoDevelop.Ide.Codons
 			get { return option; }
 		}
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		protected override void Read (NodeElement elem)
 		{
-			option = new TreePadOption (ID, GettextCatalog.GetString(label), defaultValue);
-			return this;
+			base.Read (elem);
+			option = new TreePadOption (Id, GettextCatalog.GetString (label), defaultValue);
 		}
 	}
 }

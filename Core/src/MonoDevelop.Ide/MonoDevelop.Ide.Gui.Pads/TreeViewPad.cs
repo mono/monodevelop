@@ -39,7 +39,7 @@ using System.Resources;
 using System.Text;
 
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -767,6 +767,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public void RestoreTreeState (XmlElement parent)
 		{
 			ITreeNavigator nav = GetRootNode ();
+			if (nav == null)
+				return;
 			XmlElement rootNode = parent ["Node"];
 			if (rootNode != null) {
 				NodeState state = NodeState.FromXml (rootNode);

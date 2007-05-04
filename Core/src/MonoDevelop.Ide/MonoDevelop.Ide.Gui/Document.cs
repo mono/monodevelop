@@ -40,6 +40,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -141,6 +142,11 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 				return;
 
+			if (!Window.ViewContent.IsFile) {
+				Window.ViewContent.Save ();
+				return;
+			}
+			
 			if (Window.ViewContent.ContentName == null) {
 				SaveAs ();
 			} else {
@@ -169,12 +175,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveAs (string filename)
 		{
-			if (Window.ViewContent.IsViewOnly)
+			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
 
 			ICustomizedCommands cmds = GetContent <ICustomizedCommands> ();
 			if (cmds != null) {
-				if (cmds.SaveAsCommand()) {
+				if (!cmds.SaveAsCommand()) {
 					return;
 				}
 			}
@@ -316,7 +322,7 @@ namespace MonoDevelop.Ide.Gui
 		
 			// If the new document is a text editor, attach the extensions
 			
-			TextEditorExtension[] extensions = (TextEditorExtension[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/Workbench/TextEditorExtensions", typeof(TextEditorExtension));
+			TextEditorExtension[] extensions = (TextEditorExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Workbench/TextEditorExtensions", typeof(TextEditorExtension), false);
 			
 			editorExtension = null;
 			TextEditorExtension last = null;

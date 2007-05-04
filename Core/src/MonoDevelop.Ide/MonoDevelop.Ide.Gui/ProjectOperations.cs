@@ -42,7 +42,7 @@ using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -73,7 +73,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IParserDatabase parserDatabase;
 		CodeRefactorer refactorer;
-		Hashtable combineEntryLock = new Hashtable ();
 
 		ICompilerResult lastResult = new DefaultCompilerResult ();
 		
@@ -600,8 +599,8 @@ namespace MonoDevelop.Ide.Gui
 			if (entry is Project) {
 				Project selectedProject = (Project) entry;
 				
-				IAddInTreeNode generalOptionsNode          = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/GeneralOptions");
-				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
+				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/ProjectOptions/GeneralOptions");
+				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties");
 				
 				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject, generalOptionsNode, configurationPropertiesNode);
 				if (panelId != null)
@@ -614,8 +613,8 @@ namespace MonoDevelop.Ide.Gui
 			} else if (entry is Combine) {
 				Combine combine = (Combine) entry;
 				
-				IAddInTreeNode generalOptionsNode          = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/GeneralOptions");
-				IAddInTreeNode configurationPropertiesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
+				ExtensionNode generalOptionsNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/CombineOptions/GeneralOptions");
+				ExtensionNode configurationPropertiesNode = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties");
 				
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, combine, generalOptionsNode, configurationPropertiesNode);
 				if (panelId != null)

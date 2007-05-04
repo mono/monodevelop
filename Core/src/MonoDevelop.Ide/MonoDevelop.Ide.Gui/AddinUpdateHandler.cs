@@ -34,8 +34,8 @@ using System.Threading;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Setup;
+using Mono.Addins;
+using Mono.Addins.Setup;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui
 				Thread t = new Thread (new ThreadStart (UpdateAddins));
 				t.Start ();
 			} else {
-				updates = Runtime.SetupService.GetAvailableUpdates ();
+				updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
 				if (updates.Length > 0)
 					WarnAvailableUpdates ();
 			}
@@ -95,10 +95,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Runtime.Properties.SetProperty ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			using (UpdateMonitor) {
-				Runtime.SetupService.UpdateRepositories (UpdateMonitor);
-				updates = Runtime.SetupService.GetAvailableUpdates ();
-				if (updates.Length > 0)
-					Services.DispatchService.GuiDispatch (new MessageHandler (WarnAvailableUpdates));
+				using (ProgressStatusMonitor pm = new ProgressStatusMonitor (UpdateMonitor)) {
+					Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
+					updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
+					if (updates.Length > 0)
+						Services.DispatchService.GuiDispatch (new MessageHandler (WarnAvailableUpdates));
+				}
 			}
 		}
 		
@@ -121,7 +123,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (args.Event.Button == 1) {
 				HideAlert ();
-				MonoDevelop.Core.Gui.Services.RunAddinManager ();
+				MonoDevelop.Core.Gui.Services.RunAddinManager (IdeApp.Workbench.RootWindow);
 			}
 		}
 		
@@ -134,32 +136,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			HideAlert ();
 			
-			// Get a list of the currently installed add-ins
-			
-			ArrayList installed = new ArrayList ();
-			foreach (AddinSetupInfo ainfo in Runtime.SetupService.GetInstalledAddins ()) {
-				if (ainfo.Enabled)
-					installed.Add (ainfo.Addin.Id);
-			}
-			
-			Core.Gui.Services.RunAddinManager ();
-			
-			// Load the new installed or enabled add-ins
-			
-			Runtime.AddInService.DiscardAddInLoadErrors ();
-			
-			foreach (AddinSetupInfo ainfo in Runtime.SetupService.GetInstalledAddins ()) {
-				if (ainfo.Enabled && !installed.Contains (ainfo.Addin.Id)) {
-					Runtime.AddInService.PreloadAddin (null, ainfo.Addin.Id);
-				}
-			}
-			
-			AddinError[] errors = Runtime.AddInService.AddInLoadErrors;
-			
-			if (errors.Length > 0) {
-				AddinLoadErrorDialog dlg = new AddinLoadErrorDialog (errors, false);
-				dlg.Run ();
-			}
+			Core.Gui.Services.RunAddinManager (IdeApp.Workbench.RootWindow);
 		}
 	}
 }

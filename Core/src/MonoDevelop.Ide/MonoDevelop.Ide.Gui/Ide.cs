@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core.Gui.ErrorHandlers;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Gui
 		
 			commandService.EnableUpdate ();
 			
-			Runtime.AddInService.RegisterExtensionItemListener ("/MonoDevelop/IDE/StartupHandlers", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/IDE/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 		}
 		
@@ -155,11 +155,11 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		static void OnExtensionChanged (ExtensionAction action, object item)
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
+			if (args.Change == ExtensionChange.Add) {
 				try {
-					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (item, null);
+					typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
 				} catch (Exception ex) {
 					Runtime.LoggingService.Error (ex);
 				}

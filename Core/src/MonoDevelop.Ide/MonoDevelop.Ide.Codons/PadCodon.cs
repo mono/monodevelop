@@ -33,34 +33,41 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[CodonNameAttribute ("Pad")]
-	[Description ("Registers a pad to be shown in the workbench.")]
-	internal class PadCodon : AbstractCodon
+	[ExtensionNode ("Pad", "Registers a pad to be shown in the workbench.")]
+	internal class PadCodon : ExtensionNode
 	{
 		IPadContent content;
 		
 		[Description ("Unused.")]
-		[XmlMemberAttribute("context")]
+		[NodeAttribute("context")]
 		string context = null;
 		
 		[Description ("Display name of the pad.")]
-		[XmlMemberAttribute("_label")]
+		[NodeAttribute("_label")]
 		string label = null;
 		
+		[Description ("Class name.")]
+		[NodeAttribute("class")]
+		string className = null;
+		
 		[Description ("Icon of the pad. It can be a stock icon or a resource icon (use 'res:' as prefix in the last case).")]
-		[XmlMemberAttribute("icon")]
+		[NodeAttribute("icon")]
 		string icon = null;
 
 		string[] contexts;
 		
 		public IPadContent Pad {
-			get { return content; }
+			get {
+				if (content == null)
+					content = CreatePad ();
+				return content; 
+			}
 		}
 		
 		public string Label {
@@ -71,24 +78,19 @@ namespace MonoDevelop.Ide.Codons
 			get { return icon; }
 		}
 		
-		public string[] Contexts {
-			get { return contexts; }
+		public string ClassName {
+			get { return className; }
 		}
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			content = CreatePad ();
-			return this;
+		public string[] Contexts {
+			get { return contexts; }
 		}
 		
 		protected virtual IPadContent CreatePad ()
 		{
 			if (context != null)
 				contexts = context.Split (',');
-
-			IPadContent pad = (IPadContent) AddIn.CreateObject (Class);
-			if (pad == null) throw new ApplicationException ("Could not create pad of type: " + Class);
-			return pad;
+			return (IPadContent) Addin.CreateInstance (className, true);
 		}
 	}
 }

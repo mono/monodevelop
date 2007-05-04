@@ -9,31 +9,24 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ConditionAttribute()]
-	internal class CombineOpenCondition : AbstractCondition
+	internal class CombineOpenCondition : ConditionType
 	{
-		[XmlMemberAttribute("iscombineopen", IsRequired = true)]
-		bool isCombineOpen;
-		
-		public bool IsCombineOpen {
-			get {
-				return isCombineOpen;
-			}
-			set {
-				isCombineOpen = value;
-			}
+		public CombineOpenCondition ()
+		{
+			IdeApp.ProjectOperations.CombineClosed += delegate { NotifyChanged(); };
+			IdeApp.ProjectOperations.CombineOpened += delegate { NotifyChanged(); };
 		}
 		
-		public override bool IsValid(object owner)
+		public override bool Evaluate (NodeElement condition)
 		{
-			return IdeApp.ProjectOperations.CurrentOpenCombine != null || !isCombineOpen;
+			return IdeApp.ProjectOperations.CurrentOpenCombine != null;
 		}
 	}
 }

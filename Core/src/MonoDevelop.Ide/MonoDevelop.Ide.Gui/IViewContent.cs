@@ -65,6 +65,10 @@ namespace MonoDevelop.Ide.Gui
 		bool IsViewOnly {
 			get;
 		}
+		
+		bool IsFile {
+			get;
+		}
 
 		string StockIconId {
 			get;

@@ -9,7 +9,7 @@ using System;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
 

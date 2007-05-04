@@ -33,7 +33,7 @@ using Gtk;
 using Glade;
 using System.Reflection;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -60,12 +60,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			bool fatal = false;
 			
 			foreach (AddinError err in errors) {
+				string msg = err.Message;
+				if (string.IsNullOrEmpty (msg) && err.Exception != null)
+					msg = err.Exception.Message;
 				string name = Path.GetFileNameWithoutExtension (err.AddinFile);
 				if (err.Fatal) name += " (Fatal error)";
 				TreeIter it = store.AppendValues (name);
 				store.AppendValues (it, "Full Path: " + err.AddinFile);
-				store.AppendValues (it, "Error: " + err.Exception.Message);
-				if (!(err.Exception is MissingDependencyException)) {
+				store.AppendValues (it, "Error: " + msg);
+				if (err.Exception != null) {
 					it = store.AppendValues (it, "Exception: " + err.Exception.GetType ());
 					store.AppendValues (it, err.Exception.StackTrace.ToString ());
 				}
@@ -95,5 +98,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return res;
 		}
 	}
+
+	
 }
 

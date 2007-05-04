@@ -32,31 +32,19 @@ using System.Collections;
 using System.Diagnostics;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[Description ("A file template type. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileDescriptionTemplate")]
-	[CodonNameAttribute("FileTemplateType")]
-	internal class FileTemplateTypeCodon : ClassCodon
+	internal class FileTemplateTypeCodon : TypeExtensionNode
 	{
 		[Description ("Name to use to reference this template type in a file template.")]
-		[XmlMemberAttribute("name", IsRequired = true)]
+		[NodeAttribute("name", true)]
 		string name;
-		Type cls;
 		
 		public string ElementName {
 			get { return name; }
-		}
-		
-		public Type ClassType {
-			get { return cls; }
-		}
-		
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			cls = AddIn.GetType (Class);
-			return this;
 		}
 	}
 }

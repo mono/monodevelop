@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -21,7 +22,7 @@ namespace MonoDevelop.Ide.Templates
 		public static ICombineEntryFeature[] GetFeatures (Combine parentCombine, CombineEntry entry)
 		{
 			List<ICombineEntryFeature> list = new List<ICombineEntryFeature> ();
-			foreach (ICombineEntryFeature e in Runtime.AddInService.GetTreeItems ("/MonoDevelop/Workbench/ProjectFeatures", typeof(ICombineEntryFeature))) {
+			foreach (ICombineEntryFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Workbench/ProjectFeatures", typeof(ICombineEntryFeature), true)) {
 				if (e.SupportsCombineEntry (parentCombine, entry))
 					list.Add (e);
 			}

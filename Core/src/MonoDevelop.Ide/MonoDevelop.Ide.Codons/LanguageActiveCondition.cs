@@ -10,7 +10,7 @@ using System.Collections;
 using System.Xml;
 
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -18,29 +18,22 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ConditionAttribute()]
-	internal class LanguageActiveCondition : AbstractCondition
+	internal class LanguageActiveCondition : ConditionType
 	{
-		[XmlMemberAttribute("activelanguage", IsRequired = true)]
-		string activelanguage;
-		
-		public string ActiveLanguage {
-			get {
-				return activelanguage;
-			}
-			set {
-				activelanguage = value;
-			}
+		public LanguageActiveCondition ()
+		{
+			IdeApp.ProjectOperations.CurrentProjectChanged += delegate { NotifyChanged (); };
 		}
 		
-		public override bool IsValid(object owner)
+		public override bool Evaluate (NodeElement condition)
 		{
+			string lang = condition.GetAttribute ("value");
 			DotNetProject project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			
-			if (activelanguage == "*") {
+			if (lang == "*") {
 				return project != null;
 			}
-			return project != null && project.LanguageName == activelanguage;
+			return project != null && project.LanguageName == lang;
 		}
 	}
 

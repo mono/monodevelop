@@ -32,20 +32,12 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[CodonNameAttribute ("ContextPad")]
 	[Description ("Makes a pad available in workbench context. The id property is the id of a registered pad.")]
-	internal class ContextPadCodon : AbstractCodon
+	internal class ContextPadCodon : ExtensionNode
 	{
-//		[XmlMemberAttribute ("defaultVisible")]
-//		bool visible = true;
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
-		}
 	}
 }
