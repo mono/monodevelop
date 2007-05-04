@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
@@ -33,12 +33,12 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 	{
 		Project  project;
 		
-		IAddInTreeNode configurationNode;
+		ExtensionNode configurationNode;
 		Gtk.TreeIter configurationTreeNode;
 		Gtk.CellRendererText textRenderer;		// used to set an editable node
 		Gtk.TreeViewColumn textColumn;			// used to set an editable node
 	
-		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project, IAddInTreeNode node, IAddInTreeNode configurationNode) : base (parentWindow, null, null)
+		public ProjectOptionsDialog (Gtk.Window parentWindow, Project project, ExtensionNode node, ExtensionNode configurationNode) : base (parentWindow, null, null)
 		{
 			this.project = project;
 			this.configurationNode = configurationNode;
@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			properties.SetProperty("Project", project);
 			properties.SetProperty("CombineEntry", project);
 			
-			AddNodes(properties, Gtk.TreeIter.Zero, node.BuildChildItems(this));			
+			AddNodes(properties, Gtk.TreeIter.Zero, node.GetChildObjects (false));			
 			
 			//
 			// This code has to add treeview node items to the treeview. under a configuration node
@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 				configNodeProperties.SetProperty("Project", project);
 				configNodeProperties.SetProperty("CombineEntry", project);
 				configNodeProperties.SetProperty("Config", config);
-				AddNodes(configNodeProperties, newNode, configurationNode.BuildChildItems(this));
+				AddNodes(configNodeProperties, newNode, configurationNode.GetChildObjects (false));
 			}
 		}
 		
@@ -145,7 +145,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs {
 			properties.SetProperty ("Config", newConfig);
 			
 			// add the child nodes to this new config
-			AddNodes (properties, newNode, configurationNode.BuildChildItems(newConfig));			
+			AddNodes (properties, newNode, configurationNode.GetChildObjects (false));			
 			
 			//select new config node and set it for renaming
 			Gtk.TreePath newPath = treeStore.GetPath (newNode);

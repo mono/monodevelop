@@ -30,7 +30,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Projects;
@@ -42,11 +42,11 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 	{
 		Combine combine;
 		
-		IAddInTreeNode configurationNode;
+		ExtensionNode configurationNode;
 		ConfigurationData configData;
 		Gtk.TreeIter configIter;
 	
-		public CombineOptionsDialog (Gtk.Window parentWindow, Combine combine, IAddInTreeNode node, IAddInTreeNode configurationNode) : base (parentWindow, null, null)
+		public CombineOptionsDialog (Gtk.Window parentWindow, Combine combine, ExtensionNode node, ExtensionNode configurationNode) : base (parentWindow, null, null)
 		{
 			this.combine = combine;
 			this.configurationNode = configurationNode;
@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			properties.SetProperty ("CombineEntry", combine);
 			properties.SetProperty ("CombineConfigData", configData);
 			
-			AddNodes (properties, Gtk.TreeIter.Zero, node.BuildChildItems (this));			
+			AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects (false));
 			
 			SelectFirstNode ();	
 		}
@@ -92,8 +92,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 				configNodeProperties.SetProperty("Config", config);
 				configNodeProperties.SetProperty ("CombineConfigData", configData);
 				
-				ArrayList list = configurationNode.BuildChildItems (this);
-				if (list.Count > 1) {
+				object[] list = configurationNode.GetChildObjects (false);
+				if (list.Length > 1) {
 					Gtk.TreeIter newNode = AddPath (config.Name, configIter);
 					AddNodes (configNodeProperties, newNode, list);
 				} else {

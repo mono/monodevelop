@@ -15,8 +15,9 @@ using System.Resources;
 using MonoDevelop.Projects.Parser;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Addins;
 using Stock = MonoDevelop.Core.Gui.Stock;
 
 namespace MonoDevelop.Projects.Gui
@@ -28,7 +29,7 @@ namespace MonoDevelop.Projects.Gui
 		public override void InitializeService()
 		{
 			base.InitializeService();
-			InitializeIcons (Runtime.AddInService.GetTreeNode ("/Workspace/Icons"));
+			InitializeIcons ("/Workspace/Icons");
 		}
 		
 		public string GetImageForProjectType (string projectType)
@@ -50,25 +51,23 @@ namespace MonoDevelop.Projects.Gui
 		}
 
 
-		void InitializeIcons (IAddInTreeNode treeNode)
+		void InitializeIcons (string path)
 		{			
 			extensionHashtable[".PRJX"] = Stock.SolutionIcon;
 			extensionHashtable[".CMBX"] = Stock.CombineIcon;
 			extensionHashtable[".MDS"] = Stock.CombineIcon;
 			extensionHashtable[".MDP"] = Stock.SolutionIcon;
 		
-			IconCodon[] icons = (IconCodon[])treeNode.BuildChildItems(null).ToArray(typeof(IconCodon));
-			for (int i = 0; i < icons.Length; ++i) {
-				IconCodon iconCodon = icons[i];
+			foreach (IconCodon iconCodon in AddinManager.GetExtensionNodes (path, typeof(IconCodon))) {
 				string image;
 				if (iconCodon.Location != null)
 					throw new Exception ("This should be using stock icons");
 				else if (iconCodon.Resource != null)
 					image = iconCodon.Resource;
 				else
-					image = iconCodon.ID;
+					image = iconCodon.Id;
 				
-				image = ResourceService.GetStockId (iconCodon.AddIn, image);
+				image = ResourceService.GetStockId (iconCodon.Addin, image);
 				
 				if (iconCodon.Extensions != null) {
 					foreach (string ext in iconCodon.Extensions)

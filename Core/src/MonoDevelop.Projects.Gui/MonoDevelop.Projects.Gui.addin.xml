@@ -1,4 +1,4 @@
-<AddIn id          = "MonoDevelop.Projects.Gui"
+<Addin id          = "MonoDevelop.Projects.Gui"
        name        = "MonoDevelop GUI for Project Services"
        author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
        copyright   = "GPL"
@@ -12,12 +12,40 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
+		<Addin id="MonoDevelop.Core" version="0.13.0"/>
+		<Addin id="MonoDevelop.Core.Gui" version="0.13.0"/>
+		<Addin id="MonoDevelop.Projects" version="0.13.0"/>
 	</Dependencies>
 
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for project options.">
+	<!-- Extension points -->
+	
+	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
+		<Description>Dialog panels for project options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Description>Dialog panels for project configuration options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
+		<Description>Dialog panels for solution options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
+		<Description>Dialog panels for solution configuration options.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/Workspace/Icons" name="Project service icons">
+		<ExtensionNode name="Icon" type="MonoDevelop.Core.Addins.IconCodon"/>
+	</ExtensionPoint>
+
+	<!-- Extensions points -->
+	
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions">
 		<DialogPanel id    = "Common"
 		             _label = "General">
 			<DialogPanel id = "GeneralProjectPanel"
@@ -29,13 +57,13 @@
 		</DialogPanel>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties" extension-nodes="DialogPanel" description="Dialog panels for project configuration options.">
+	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
 			<DialogPanel id = "CustomCommands"
 			             _label = "Custom Commands"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions" extension-nodes="DialogPanel" description="Dialog panels for solution options.">
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/GeneralOptions">
 		<DialogPanel id    = "Common"
 		             _label = "Common">
 			<DialogPanel id = "Information"
@@ -54,7 +82,7 @@
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanel"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties" extension-nodes="DialogPanel" description="Dialog panels for solution configuration options.">
+	<Extension path = "/SharpDevelop/Workbench/CombineOptions/ConfigurationProperties">
 		<DialogPanel id = "EntryConfigurations"
 			             _label = "Configurations"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanel"/>
@@ -62,4 +90,4 @@
 		             _label = "Custom Commands"
 		             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 	</Extension>
-</AddIn>
+</Addin>
