@@ -1,4 +1,5 @@
-<AddIn id	 = "MonoDevelop.NUnit"
+<Addin id	 = "NUnit"
+       namespace   = "MonoDevelop"
        name	 = "NUnit support"
        author	 = "Lluis Sanchez, John Luke"
        copyright = "GPL"
@@ -14,12 +15,54 @@
 	</Runtime>
 	
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
+	
+	<!-- Extension Points -->
+
+	<ExtensionPoint path = "/Services/NUnit/TestProviders" name = "Test providers">
+		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
+		<ExtensionNode name ="Class" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/TestChart/ContextMenu">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/TestPad/ContextMenu">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/TestResultsPad/ContextMenu">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroup">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/TestAssembly">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/NUnitAssemblyGroupConfiguration">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.DialogPanel" />
+	</ExtensionPoint>
+
+
+	<!-- Extensions -->
 
 	<Extension path="/Workspace/Services">
 		<Class id = "NUnitService" class = "MonoDevelop.NUnit.NUnitService" insertafter = "CommandService"/>
@@ -95,12 +138,6 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestChartCommands.SingleDayResult" />
 	</Extension>
 
-	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions">
-		<DialogPanel id = "NUnitOptionsPanel"
-					 _label = "NUnit options"
-					 class = "MonoDevelop.NUnit.NUnitOptionsDialog"/>
-	</Extension>
-
 	<Extension path = "/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions">
 		<DialogPanel id = "Configurations"
 					 _label = "Configurations" />
@@ -126,10 +163,5 @@
 		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
 	</Extension>
 
-	<!-- New extension points -->
 
-	<Extension path = "/Services/NUnit/TestProviders" extension-nodes="Class" description="Test providers.|Specified classes must implement ITestProvider.">
-		<Class id = "SystemTestProvider" class = "MonoDevelop.NUnit.SystemTestProvider"/>
-	</Extension>
-
-</AddIn>
+</Addin>

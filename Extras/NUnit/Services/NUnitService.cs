@@ -34,7 +34,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 using NUnit.Core;
 using MonoDevelop.Ide.Gui;
@@ -70,14 +70,14 @@ namespace MonoDevelop.NUnit
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
 			ps.DataContext.RegisterProperty (typeof(AbstractConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
-			Runtime.AddInService.RegisterExtensionItemListener ("/Services/NUnit/TestProviders", OnExtensionChange);
+			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/Services/NUnit/TestProviders", OnExtensionChange);
 		}
 		
-		void OnExtensionChange (ExtensionAction action, object item)
+		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
+			if (args.Change == ExtensionChange.Add) {
 				IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-				ITestProvider provider = item as ITestProvider;
+				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Add (provider);
 				
 				Type[] types = provider.GetOptionTypes ();

@@ -30,7 +30,7 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Dialogs;
@@ -41,19 +41,19 @@ namespace MonoDevelop.NUnit {
 	{
 		UnitTest test;
 		
-		IAddInTreeNode configurationNode;
+		ExtensionNode configurationNode;
 	
 		public UnitTestOptionsDialog (Gtk.Window parent, UnitTest test) : base (parent, null, null)
 		{
-			IAddInTreeNode node = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions");
-			configurationNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties");
+			ExtensionNode node = AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/UnitTestOptions/GeneralOptions");
+			configurationNode = AddinManager.GetExtensionNode("/SharpDevelop/Workbench/UnitTestOptions/ConfigurationProperties");
 				
 			this.test = test;
 			this.Title = GettextCatalog.GetString ("Unit Test Options");
 			
 			properties = new DefaultProperties();
 			properties.SetProperty ("UnitTest", test);
-			AddNodes (properties, Gtk.TreeIter.Zero, node.BuildChildItems (this));			
+			AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects ());			
 			SelectFirstNode ();	
 		}
 		
@@ -64,8 +64,8 @@ namespace MonoDevelop.NUnit {
 				configNodeProperties.SetProperty("UnitTest", test);
 				configNodeProperties.SetProperty("Config", name);
 				
-				ArrayList list = configurationNode.BuildChildItems (this);
-				if (list.Count > 1) {
+				object[] list = configurationNode.GetChildObjects ();
+				if (list.Length > 1) {
 					Gtk.TreeIter newNode = AddPath (name, configIter);
 					AddNodes (configNodeProperties, newNode, list);
 				} else {
