@@ -13,6 +13,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:./lib/libstetic.dll \

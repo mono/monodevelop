@@ -1,4 +1,5 @@
-<AddIn id = "MonoDevelop.GtkCore"
+<Addin id = "GtkCore"
+       namespace = "MonoDevelop"
        name	= "GTK# Visual Designer"
        author	 = "Lluis Sanchez Gual"
        copyright = "X11"
@@ -16,13 +17,29 @@
 	</Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-		<AddIn id="MonoDevelop.DesignerSupport" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+	    <Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
+		<AddIn id="DesignerSupport" version="0.13.0"/>
 	</Dependencies>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ActionGroupNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetsNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WidgetNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/StockIconsNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" _label="Widgets Palette" />
@@ -54,12 +71,6 @@
 		<FileTemplate id = "PartialActionGroupFileTemplate" resource = "ActionGroupPartial.xft.xml"/>
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Views/GladeFileNodeBuilder/ContextMenu">
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Views/GladeWindowNodeBuilder/ContextMenu">
-	</Extension>
-
 	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding insertbefore = "NewText"
 		       supportedformats = "Text Files,Source Files"
@@ -143,11 +154,11 @@
 	</Extension>
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
-		<Conditional activeproject="DotNet">
+		<Condition id="activeproject" value ="DotNet">
 			<DialogPanel id = "SteticOptionsPanel"
 			             _label = "GTK# Settings"
 			             class = "MonoDevelop.GtkCore.Dialogs.WidgetBuilderOptionPanel"/>
-		</Conditional>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/FileTemplateTypes">
@@ -172,5 +183,5 @@
 	<Extension path = "/MonoDevelop/Workbench/ProjectFeatures">
 		<Class class = "MonoDevelop.GtkCore.Dialogs.GtkProjectFeature" />
 	</Extension>
-</AddIn>
 
+</Addin>
