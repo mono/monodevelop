@@ -1,3 +1,12 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.addin.xml,
+	  MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/DesignerSupportService.cs,
+	  MonoDevelop.DesignerSupport/CodeBehindService.cs,
+	  MonoDevelop.DesignerSupport/ToolboxService.cs, Makefile.am:
+	  Migration to Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml,

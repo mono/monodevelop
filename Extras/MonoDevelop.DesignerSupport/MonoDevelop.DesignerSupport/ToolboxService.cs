@@ -41,7 +41,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.DesignerSupport.Toolbox;
@@ -66,38 +66,38 @@ namespace MonoDevelop.DesignerSupport
 		internal ToolboxService ()
 		{			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (onActiveDocChanged);
-			Runtime.AddInService.RegisterExtensionItemListener (toolboxLoaderPath, OnLoaderExtensionChanged);
-			Runtime.AddInService.RegisterExtensionItemListener (toolboxProviderPath, OnProviderExtensionChanged);
+			AddinManager.AddExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
+			AddinManager.AddExtensionNodeHandler (toolboxProviderPath, OnProviderExtensionChanged);
 		}
 		
 		#region Extension loading
 		
-		void OnLoaderExtensionChanged (ExtensionAction action, object item)
+		void OnLoaderExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				loaders.Add ((IToolboxLoader) item);
-			else if (action == ExtensionAction.Remove)
-				loaders.Remove ((IToolboxLoader) item);
+			if (args.Change == ExtensionChange.Add)
+				loaders.Add ((IToolboxLoader) args.ExtensionObject);
+			else if (args.Change == ExtensionChange.Remove)
+				loaders.Remove ((IToolboxLoader) args.ExtensionObject);
 		}
 		
-		void OnProviderExtensionChanged (ExtensionAction action, object item)
+		void OnProviderExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
+			if (args.Change == ExtensionChange.Add) {
+				IToolboxDynamicProvider dyProv = args.ExtensionObject as IToolboxDynamicProvider;
 				if (dyProv != null) {
-					dynamicProviders.Add ((IToolboxDynamicProvider) item);
+					dynamicProviders.Add ((IToolboxDynamicProvider) args.ExtensionObject);
 					dyProv.ItemsChanged += OnProviderItemsChanged;
 				}
 				
-				IToolboxDefaultProvider defProv = item as IToolboxDefaultProvider;
+				IToolboxDefaultProvider defProv = args.ExtensionObject as IToolboxDefaultProvider;
 				if (defProv!= null) {
 					IList<ItemToolboxNode> newItems = defProv.GetItems ();
 					if (newItems != null)
 						defaultItems.AddRange (newItems);
 				}	
 			}
-			else if (action == ExtensionAction.Remove) {
-				IToolboxDynamicProvider dyProv = item as IToolboxDynamicProvider;
+			else if (args.Change == ExtensionChange.Remove) {
+				IToolboxDynamicProvider dyProv = args.ExtensionObject as IToolboxDynamicProvider;
 				if (dyProv != null) {
 					dyProv.ItemsChanged -= OnProviderItemsChanged;
 					dynamicProviders.Remove (dyProv);
@@ -160,8 +160,8 @@ namespace MonoDevelop.DesignerSupport
 		
 		~ToolboxService ()
 		{
-			Runtime.AddInService.UnregisterExtensionItemListener (toolboxLoaderPath, OnLoaderExtensionChanged);
-			Runtime.AddInService.UnregisterExtensionItemListener (toolboxProviderPath, OnLoaderExtensionChanged);
+			AddinManager.RemoveExtensionNodeHandler (toolboxLoaderPath, OnLoaderExtensionChanged);
+			AddinManager.RemoveExtensionNodeHandler (toolboxProviderPath, OnLoaderExtensionChanged);
 		}
 		
 		#endregion

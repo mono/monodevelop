@@ -38,6 +38,7 @@ using System.Collections;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport.PropertyGrid;
+using Mono.Addins;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -144,7 +145,7 @@ namespace MonoDevelop.DesignerSupport
 		internal object[] GetPropertyProvidersForObject (object obj, object firstProvider)
 		{
 			if (providers == null)
-				providers = (IPropertyProvider[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/DesignerSupport/PropertyProviders", typeof(IPropertyProvider));
+				providers = (IPropertyProvider[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DesignerSupport/PropertyProviders", typeof(IPropertyProvider), true);
 			
 			ArrayList list = new ArrayList ();
 			if (firstProvider != null)
@@ -197,7 +198,7 @@ namespace MonoDevelop.DesignerSupport
 			base.InitializeService ();
 			codeBehindService.Initialise ();
 			IdeApp.CommandService.CommandManager.RegisterCommandTargetVisitor (new PropertyPadVisitor ());
-			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		public override void UnloadService()
@@ -206,9 +207,9 @@ namespace MonoDevelop.DesignerSupport
 				toolboxService.SaveUserToolbox (System.IO.Path.Combine (Runtime.Properties.ConfigDirectory, "Toolbox.xml"));
 		}
 		
-		void OnExtensionChanged (string path)
+		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (path.StartsWith ("MonoDevelop/DesignerSupport/PropertyProviders")) {
+			if (args.PathChanged ("MonoDevelop/DesignerSupport/PropertyProviders")) {
 				providers = null;
 				ResetPropertyPad ();
 			}

@@ -33,7 +33,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.DesignerSupport.CodeBehind;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
@@ -55,7 +55,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal CodeBehindService ()
 		{
-			Runtime.AddInService.RegisterExtensionItemListener (codeBehindProviderPath, OnProviderExtensionChanged);
+			AddinManager.AddExtensionNodeHandler (codeBehindProviderPath, OnProviderExtensionChanged);
 		}
 		
 		internal void Initialise ()
@@ -70,16 +70,16 @@ namespace MonoDevelop.DesignerSupport
 			IdeApp.ProjectOperations.ParserDatabase.ClassInformationChanged += onClassInformationChanged;
 		}
 		
-		void OnProviderExtensionChanged (ExtensionAction action, object item)
+		void OnProviderExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (item == null)
+			if (args.ExtensionObject == null)
 				throw new Exception ("One of the CodeBehindProvider extension classes is missing");
 			
-			if (action == ExtensionAction.Add)
-				providers.Add ((ICodeBehindProvider) item);
+			if (args.Change == ExtensionChange.Add)
+				providers.Add ((ICodeBehindProvider) args.ExtensionObject);
 			
-			if (action == ExtensionAction.Remove)
-				providers.Remove ((ICodeBehindProvider) item);
+			if (args.Change == ExtensionChange.Remove)
+				providers.Remove ((ICodeBehindProvider) args.ExtensionObject);
 			
 			if (IdeApp.ProjectOperations != null && IdeApp.ProjectOperations.CurrentOpenCombine != null) {
 				CombineEventArgs rootCombineArgs = new CombineEventArgs (IdeApp.ProjectOperations.CurrentOpenCombine);
@@ -93,7 +93,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		~CodeBehindService ()
 		{
-			Runtime.AddInService.UnregisterExtensionItemListener (codeBehindProviderPath, OnProviderExtensionChanged);
+			AddinManager.RemoveExtensionNodeHandler (codeBehindProviderPath, OnProviderExtensionChanged);
 			
 			IdeApp.ProjectOperations.FileAddedToProject -= onFileEvent;
 			IdeApp.ProjectOperations.FileChangedInProject -= onFileEvent;
@@ -157,11 +157,13 @@ namespace MonoDevelop.DesignerSupport
 				
 				codeBehindBindings[update.Key] = newCB;
 				
-				if ( !(oldCB is NotFoundClass))
-					CodeBehindClassUpdated (oldCB);
-				
-				if ( !(newCB is NotFoundClass))
-					CodeBehindClassUpdated (newCB);
+				if (CodeBehindClassUpdated != null) {
+					if ( !(oldCB is NotFoundClass))
+						CodeBehindClassUpdated (oldCB);
+					
+					if ( !(newCB is NotFoundClass))
+						CodeBehindClassUpdated (newCB);
+				}
 			}
 			
 		}
@@ -237,12 +239,14 @@ namespace MonoDevelop.DesignerSupport
 				}
 				
 				this.codeBehindBindings[file] = newCodeBehind;
-				CodeBehindClassUpdated (newCodeBehind);
+				if (CodeBehindClassUpdated != null)
+					CodeBehindClassUpdated (newCodeBehind);
 			}
 			
-			CodeBehindFileUpdated (file);
+			if (CodeBehindFileUpdated != null)
+				CodeBehindFileUpdated (file);
 				
-			if (oldCodeBehind != null)
+			if (oldCodeBehind != null && CodeBehindClassUpdated != null)
 				CodeBehindClassUpdated (oldCodeBehind);
 		}
 		
