@@ -1,3 +1,8 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoQuery/Makefile.am, MonoQuery/MonoQuery.addin.xml,
+	  MonoQuery/MonoQuery.mdp: Migration to Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* tests/Mono.Data.Sql.Tests.mdp, Mono.Data.Sql/Mono.Data.Sql.mdp,

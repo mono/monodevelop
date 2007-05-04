@@ -1,4 +1,5 @@
-<AddIn  id          = "MonoQuery"
+<Addin  id          = "MonoQuery"
+        namespace   = "MonoDevelop"
 		name        = "MonoQuery Database Management"
 		author      = "Christian Hergert"
 		copyright   = "MIT X11"
@@ -13,10 +14,26 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/DatabasePad/ContextMenu/ConnectionsBrowserNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/DatabasePad/ContextMenu/ConnectionBrowserNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/DatabasePad/ContextMenu/TablesBrowserNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/DatabasePad/ContextMenu/TableBrowserNode">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
 	
 	<Extension path = "/Workspace/Services">
 		<Class id    = "MonoQueryService"
@@ -147,4 +164,4 @@
 		<StockIcon stockid = "md-mono-query-blob" resource = "MonoQuery.Blob" />
 	</Extension>
 
-</AddIn>
+</Addin>
