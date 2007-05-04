@@ -29,7 +29,6 @@ import MonoDevelop.Core.Gui.Dialogs
 import MonoDevelop.Components
 import MonoDevelop.Core
 import MonoDevelop.Core.Properties
-import MonoDevelop.Core.AddIns
 
 public class CodeGenerationPanel(AbstractOptionPanel):
 	private codeGenerationLabel as Gtk.Label = Gtk.Label ()

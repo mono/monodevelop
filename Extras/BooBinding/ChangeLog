@@ -1,3 +1,11 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/OptionPanels/GeneralBooShellPanel.boo,
+	  Gui/OptionPanels/GeneralShellPanel.boo,
+	  Gui/OptionPanels/CodeCompilationPanel.boo, BooBinding.addin.xml,
+	  BooBinding.mdp, BooShellPadContent.boo, BooShell/BooShell.mdp,
+	  BooShell/Makefile.am, Makefile.am: Migration to Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.mdp, BooShell/BooShell.mdp: Don't copy referenced

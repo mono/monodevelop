@@ -22,7 +22,6 @@ namespace BooBinding.Pads
 
 import System
 
-import MonoDevelop.Core.AddIns
 import MonoDevelop.Core
 import MonoDevelop.Core.Gui
 import MonoDevelop.Ide.Gui

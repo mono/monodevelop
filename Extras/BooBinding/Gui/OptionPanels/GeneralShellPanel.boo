@@ -28,7 +28,6 @@ import MonoDevelop.Core.Gui.Dialogs
 import MonoDevelop.Components
 import MonoDevelop.Core
 import MonoDevelop.Core.Properties
-import MonoDevelop.Core.AddIns
 
 import BooBinding.Properties
 

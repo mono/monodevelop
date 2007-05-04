@@ -1,4 +1,5 @@
-<AddIn id          = "BooBinding"
+<Addin id          = "BooBinding"
+       namespace   = "MonoDevelop"
        name        = "Boo Language Binding"
        author      = "Peter Johanson"
        copyright   = "GPL"
@@ -13,12 +14,12 @@
   </Runtime>
 
   <Dependencies>
-    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-    <AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-    <AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-    <AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
+    <Addin id="Core" version="0.13.0"/>
+    <Addin id="Core.Gui" version="0.13.0"/>
+    <Addin id="Projects" version="0.13.0"/>
+    <Addin id="Projects.Gui" version="0.13.0"/>
+    <Addin id="Ide" version="0.13.0"/>
+    <Addin id="SourceEditor" version="0.13.0"/>
     <Assembly name="Boo.Lang.Compiler, Version=1.0.0.0" package="Boo" />
   </Dependencies>
 
@@ -45,15 +46,15 @@
 	</Extension>
 	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "Boo">
+    <Condition id="activelanguage" value = "Boo">
       <DialogPanel id = "BooCodeGenerationPanel"
                    _label = "Code Generation"
                    class = "BooBinding.Gui.OptionPanels.CodeGenerationPanel"/>
-    </Conditional>
+    </Condition>
   </Extension>
 
-  <Extension path = "/AddIns/DefaultTextEditor/Formatter/BOO">
-    <Class id ="BooFormattingStrategy" class = "BooBinding.FormattingStrategy.BooFormattingStrategy" />
+  <Extension path = "/AddIns/DefaultTextEditor/Formatters">
+    <Class id ="boo" class = "BooBinding.FormattingStrategy.BooFormattingStrategy" />
   </Extension>
 
   <Extension path = "/Workspace/Icons">
@@ -75,20 +76,9 @@
     <Class class = "BooBinding.Gui.BooTextEditorExtension" />
   </Extension>
 
-  <Extension path = "/Workspace/Parser">
-	<Class id    = "BooParser"
-	       class = "BooBinding.Parser.BooParser"/>
-  </Extension>
-
   <Extension path = "/SharpDevelop/Workbench/Ambiences">
 	  <Class id    = "Boo"
 		 class = "BooBinding.BooAmbience"/>
-  </Extension>
-
-  <Extension path = "/SharpDevelop/Workbench/Views">
-	<Class    id    = "BooShell" 
-		  insertafter = "TaskList"
-		  class               = "BooBinding.Pads.BooShellPadContent"/>
   </Extension>
 
   <Extension path = "/SharpDevelop/Workbench/Pads">
@@ -108,4 +98,4 @@
 	</DialogPanel>
   </Extension>
 
-</AddIn>
+</Addin>
