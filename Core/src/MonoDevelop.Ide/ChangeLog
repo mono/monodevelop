@@ -1,3 +1,8 @@
+2007-05-04  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs: Don't look for
+	  references to private fields in whole solution.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.OptionPanels/AddInsOptionsPanel.cs,

@@ -255,7 +255,15 @@ namespace MonoDevelop.Ide.Commands
 				CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 				
 				if (item is IMember) {
-					references = refactorer.FindMemberReferences (monitor, ((IMember)item).DeclaringType, (IMember)item, RefactoryScope.Solution);
+					IMember member = (IMember)item;
+					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) { // private is filled only in keyword case
+						// look in project to be partial classes safe
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Project);
+					}
+					else {
+						// for all other types look in solution cause internal members can be used in friend assemblies
+						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, RefactoryScope.Solution);
+					}
 				} else if (item is IClass) {
 					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
 				}
