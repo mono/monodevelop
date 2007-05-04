@@ -6,8 +6,19 @@
         <property name="FocusHadjustment" />
         <property name="FocusVadjustment" />
       </itemgroup>
+      <itemgroup label="Container Properties">
+        <property name="BorderWidth" />
+        <property name="FocusHadjustment" />
+        <property name="FocusVadjustment" />
+      </itemgroup>
     </itemgroups>
     <signals>
+      <itemgroup label="Container Signals">
+        <signal name="ResizeChecked" />
+        <signal name="Removed" />
+        <signal name="FocusChildSet" />
+        <signal name="Added" />
+      </itemgroup>
       <itemgroup label="Container Signals">
         <signal name="ResizeChecked" />
         <signal name="Removed" />

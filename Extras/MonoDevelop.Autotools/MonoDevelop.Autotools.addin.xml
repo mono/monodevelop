@@ -1,4 +1,5 @@
-<AddIn	id          = "MonoDevelop.Autotools"
+<Addin	id          = "Autotools"
+        namespace   = "MonoDevelop"
 		name        = "MonoDevelop Autotools AddIn"
 		author      = "Matthias Braun, Scott Ellington"
         copyright   = "LGPL"
@@ -16,13 +17,18 @@
 	</Runtime>
 
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Deployment" version="0.13.0"/>
-		<AddIn id="MonoDevelop.DesignerSupport" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Deployment" version="0.13.0"/>
+		<Addin id="DesignerSupport" version="0.13.0"/>
 	</Dependencies>
+	
+	<ExtensionPoint path = "/Autotools/SimpleSetups">
+		<Description>Simple autotools setups. Specified classes must implement ISimpleAutotoolsSetup</Description>
+		<ExtensionNode name ="Class" />
+	</ExtensionPoint>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
@@ -96,4 +102,5 @@
 		<Class class = "MonoDevelop.Autotools.MakefileIntegrationFeature" />
 	</Extension>
 -->
-</AddIn>
+	
+</Addin>

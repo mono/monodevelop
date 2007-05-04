@@ -13,6 +13,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/bin/log4net.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System 
 
@@ -27,8 +28,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
 	Handler.cs \
-	ImportMakefileDialog.cs \
 	IMakefileHandler.cs \
+	ImportMakefileDialog.cs \
 	ISimpleAutotoolsSetup.cs \
 	Makefile.cs \
 	MakefileData.cs \
@@ -40,6 +41,7 @@ FILES =  \
 	MakefileProjectServiceExtension.cs \
 	MakefileReaderExtension.cs \
 	MakefileVar.cs \
+	PropertyProvider.cs \
 	Set.cs \
 	SimpleProjectMakefileHandler.cs \
 	SolutionDeployer.cs \

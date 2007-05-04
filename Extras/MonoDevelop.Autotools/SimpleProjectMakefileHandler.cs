@@ -27,6 +27,7 @@ using System.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Serialization;
 using MonoDevelop.Core;
+using Mono.Addins;
 using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Autotools
@@ -45,7 +46,7 @@ namespace MonoDevelop.Autotools
 
 		ISimpleAutotoolsSetup FindSetupForProject ( Project project )
 		{
-			object[] items = Runtime.AddInService.GetTreeItems ("/Autotools/SimpleSetups");
+			object[] items = AddinManager.GetExtensionObjects ("/Autotools/SimpleSetups", typeof(ISimpleAutotoolsSetup));
 			foreach ( ISimpleAutotoolsSetup setup in items)
 			{
 				if ( setup.CanDeploy ( project ) ) return setup;
