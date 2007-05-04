@@ -1,4 +1,5 @@
-<AddIn id          = "VBBinding"
+<Addin id          = "VBBinding"
+       namespace   = "MonoDevelop"
        name        = "VB.NET Language Binding"
        author      = "Levi Bard"
        copyright   = "GPL"
@@ -12,10 +13,10 @@
   </Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
 	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
@@ -36,33 +37,28 @@
     <ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
   </Extension>
   
-	<Extension path = "/Workspace/Parser">
-		<Class id    = "VBParser" 
-		       class = "VBBinding.Parser.TParser"/>
-	</Extension>
-  
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "VBNet">
+    <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetCodeGenerationPanel"
                    _label = "Code Generation"
                    class = "VBBinding.CodeGenerationPanel"/>
-    </Conditional>
+    </Condition>
   </Extension>
   
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "VBNet">
+    <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetOutputOptionsPanel"
                    _label = "Output Options"
                    class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
-    </Conditional>
+    </Condition>
   </Extension>
 
   <!-- <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "VBNet">
+    <Condition id="activelanguage" value = "VBNet">
       <DialogPanel id = "VBNetChooseRuntimePanel"
                    _label = "Choose Runtime"
                    class = "VBBinding.ChooseRuntimePanel"/>
-    </Conditional>
+    </Condition>
   </Extension> -->
 
 
@@ -76,9 +72,9 @@
   </Extension>
 	
 	<!-- <Extension path = "/AddIns/DefaultTextEditor/Formatter">  
-  		<Conditional textcontent = "VBNet">
+  		<Condition textcontent = "VBNet">
 			<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class ="VBBinding.FormattingStrategy.VBFormattingStrategy"/>
-		</Conditional>
+		</Condition>
 	</Extension> -->
 
   <Extension path = "/SharpDevelop/Workbench/LanguageBindings">
@@ -96,4 +92,4 @@
 		<DataType class = "VBBinding.VBCompilerParameters" />
 	</Extension>
 	
-</AddIn>
+</Addin>
