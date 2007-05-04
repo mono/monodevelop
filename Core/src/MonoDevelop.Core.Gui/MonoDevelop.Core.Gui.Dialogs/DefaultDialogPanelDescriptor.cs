@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 using System.CodeDom.Compiler;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core.Gui.Dialogs

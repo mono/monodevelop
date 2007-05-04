@@ -110,6 +110,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string Warning = Gtk.Stock.DialogWarning;
 		public static readonly string WebSearchIcon = "md-web-search-icon";
 		public static readonly string XmlFileIcon = "md-xml-file-icon";
+		public static readonly string Addin = "md-addin";
 
 	}
 }

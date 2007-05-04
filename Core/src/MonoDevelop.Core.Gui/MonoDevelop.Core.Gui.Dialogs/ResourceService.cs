@@ -18,8 +18,9 @@ using System.Runtime.InteropServices;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Gui.Codons;
+using Mono.Addins;
+using Mono.Addins.Setup;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
@@ -61,24 +62,19 @@ namespace MonoDevelop.Core.Gui
 			stockMappings = new Hashtable ();
 			iconFactory.AddDefault ();
 
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/StockIcons", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/StockIcons", OnExtensionChange);
 		}
 		
-		void OnExtensionChange (ExtensionAction action, object item)
+		void OnExtensionChange (object sender, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				StockIconCodon icon = (StockIconCodon) item;
-				foreach (Assembly a in icon.AddIn.RuntimeLibraries.Values) {
-					try {
-						System.IO.Stream s = a.GetManifestResourceStream (icon.Resource);
-						if (s != null) {
-							using (s) {
-								Gdk.Pixbuf px = new Gdk.Pixbuf (s);
-								AddToIconFactory (icon.StockId, px, icon.IconSize);
-							}
-							break;
-						}
-					} catch {}
+			if (args.Change == ExtensionChange.Add) {
+				StockIconCodon icon = (StockIconCodon) args.ExtensionNode;
+				System.IO.Stream s = icon.Addin.GetResource (icon.Resource);
+				if (s != null) {
+					using (s) {
+						Gdk.Pixbuf px = new Gdk.Pixbuf (s);
+						AddToIconFactory (icon.StockId, px, icon.IconSize);
+					}
 				}
 			}
 		}
@@ -229,7 +225,7 @@ namespace MonoDevelop.Core.Gui
 			return new Gtk.Image (GetBitmap (name));
 		}
 		
-		public static string GetStockIdFromResource (AddIn addin, string id)
+		public static string GetStockIdFromResource (RuntimeAddin addin, string id)
 		{
 			return Instance.InternalGetStockIdFromResource (addin, id);
 		}
@@ -239,7 +235,7 @@ namespace MonoDevelop.Core.Gui
 			return Instance.InternalGetStockId (filename);
 		}
 
-		public static string GetStockId (AddIn addin, string filename)
+		public static string GetStockId (RuntimeAddin addin, string filename)
 		{
 			return Instance.InternalGetStockId (addin, filename);
 		}
@@ -288,7 +284,7 @@ namespace MonoDevelop.Core.Gui
 			iconSet.AddSource (source);
 		}
 		
-		string InternalGetStockIdFromResource (AddIn addin, string id)
+		string InternalGetStockIdFromResource (RuntimeAddin addin, string id)
 		{
 			if (!id.StartsWith ("res:"))
 				return id;
@@ -305,17 +301,13 @@ namespace MonoDevelop.Core.Gui
 			}
 			string sid = "__asm" + aid + "__" + id;
 			if (!hash.Contains (sid)) {
-				foreach (Assembly asm in addin.RuntimeLibraries.Values) {
-					try {
-						System.IO.Stream s = asm.GetManifestResourceStream (id);
-						if (s != null) {
-							using (s) {
-								Gdk.Pixbuf pix = new Gdk.Pixbuf (s);
-								AddToIconFactory (sid, pix, Gtk.IconSize.Invalid);
-								break;
-							}
-						}
-					} catch {}
+				
+				System.IO.Stream s = addin.GetResource (id);
+				if (s != null) {
+					using (s) {
+						Gdk.Pixbuf pix = new Gdk.Pixbuf (s);
+						AddToIconFactory (sid, pix, Gtk.IconSize.Invalid);
+					}
 				}
 				hash [sid] = sid;
 			}
@@ -337,7 +329,7 @@ namespace MonoDevelop.Core.Gui
 			return InternalGetStockId (null, filename);
 		}
 		
-		internal string InternalGetStockId (AddIn addin, string filename)
+		internal string InternalGetStockId (RuntimeAddin addin, string filename)
 		{
 			if (addin != null && filename.StartsWith ("res:"))
 				return InternalGetStockIdFromResource (addin, filename);

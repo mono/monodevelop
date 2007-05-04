@@ -35,32 +35,30 @@ using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A submenu")]
-	[ChildCodons ("CommandItem","SeparatorItem","ItemSet","LinkItem","LocalCommandItem")]
-	[CodonNameAttribute ("ItemSet")]
-	internal class ItemSetCodon : AbstractCodon
+	internal class ItemSetCodon : TypeExtensionNode
 	{
 		[Description ("Label of the submenu")]
-		[XmlMemberAttribute ("_label")]
+		[NodeAttribute ("_label")]
 		string label;
 		
 		[Description ("Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
-		[XmlMemberAttribute("icon")]
+		[NodeAttribute("icon")]
 		string icon;
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
-			if (label == null) label = ID;
+			if (label == null) label = Id;
 
 			label = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
-			if (icon != null) icon = ResourceService.GetStockId (AddIn, icon);
+			if (icon != null) icon = ResourceService.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
-			foreach (object e in subItems) {
-				CommandEntry ce = e as CommandEntry;
+			foreach (TypeExtensionNode e in ChildNodes) {
+				CommandEntry ce = e.CreateInstance () as CommandEntry;
 				if (ce != null)
 					cset.Add (ce);
 				else

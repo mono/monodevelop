@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
 using Gtk;

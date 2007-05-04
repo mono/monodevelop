@@ -33,15 +33,14 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A command menu or toolbar item. The id of the element must match the id of a registered command.")]
-	[CodonNameAttribute ("CommandItem")]
-	internal class CommandItemCodon : AbstractCodon
+	internal class CommandItemCodon : TypeExtensionNode
 	{
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
 			object id = CommandCodon.ParseCommandId (this);
 			return new CommandEntry (id);

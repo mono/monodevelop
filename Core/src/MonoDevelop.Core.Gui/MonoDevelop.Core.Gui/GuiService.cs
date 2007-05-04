@@ -1,6 +1,8 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui.Dialogs;
+using System;
+using Mono.Addins.Gui;
 
 namespace MonoDevelop.Core.Gui
 {
@@ -34,11 +36,9 @@ namespace MonoDevelop.Core.Gui
 			}
 		}
 		
-		public static void RunAddinManager ()
+		public static void RunAddinManager (Gtk.Window parent)
 		{
-			using (AddinManagerDialog dlg = new AddinManagerDialog (null)) {
-				dlg.Run ();
-			}
+			AddinManagerWindow.Run (parent);
 		}
 	}
 }

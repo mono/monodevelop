@@ -35,17 +35,16 @@ using System.ComponentModel;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("Allows the definition of a complete command item inside a menu or toolbar description")]
-	[CodonNameAttribute ("LocalCommandItem")]
 	internal class LocalCommandItemCodon : CommandCodon
 	{
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
-			Command cmd = (Command) base.BuildItem (owner, subItems, conditions);
+			Command cmd = (Command) base.CreateInstance ();
 			return new LocalCommandEntry (cmd);
 		}
 	}

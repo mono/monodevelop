@@ -34,52 +34,51 @@ using System.Collections;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using System.ComponentModel;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("An user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as id for the command by just using '@' as prefix for the string.")]
-	[CodonNameAttribute ("Command")]
-	internal class CommandCodon : AbstractCodon
+	public class CommandCodon : TypeExtensionNode
 	{
 		[Description ("Label")]
-		[XmlMemberAttribute ("_label", IsRequired=true)]
+		[NodeAttribute ("_label", true)]
 		string label;
 		
 		[Description ("Description of the command")]
-		[XmlMemberAttribute ("_description")]
+		[NodeAttribute ("_description")]
 		string _description;
 		
 		[Description ("Obsolete. Do not use.")]
-		[XmlMemberAttribute ("description")]
+		[NodeAttribute ("description")]
 		string description;
 		
 		[Description ("Key combination that triggers the command. Control and Alt modifiers can be specified using '|' as separator. For example 'Control|d'")]
-		[XmlMemberAttribute ("shortcut")]
+		[NodeAttribute ("shortcut")]
 		string shortcut;
 		
 		[Description ("Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
-		[XmlMemberAttribute("icon")]
+		[NodeAttribute("icon")]
 		string icon;
 		
 		[Description ("Set to 'false' if the command has to be hidden when disabled. 'true' by default.")]
-		[XmlMemberAttribute("disabledVisible")]
+		[NodeAttribute("disabledVisible")]
 		bool disabledVisible = true;
 		
 		[Description ("Type of the command. It can be: normal (the default), check, radio or array.")]
-		[XmlMemberAttribute("type")]
+		[NodeAttribute("type")]
 		string type = "normal";
 		
 		[Description ("Class of the widget to create when type is 'custom'.")]
-		[XmlMemberAttribute("widget")]
+		[NodeAttribute("widget")]
 		string widget = null;
 		
 		[Description ("Class that handles this command. This property is optional.")]
-		[XmlMemberAttribute("defaultHandler")]
+		[NodeAttribute("defaultHandler")]
 		string defaultHandler;
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
 			ActionType ct = ActionType.Normal;
 			bool isArray = false;
@@ -136,7 +135,7 @@ namespace MonoDevelop.Core.Gui.Codons
 				CustomCommand ccmd = new CustomCommand ();
 				ccmd.Text = label;
 				ccmd.Description = description;
-				ccmd.WidgetType = AddIn.GetType (widget);
+				ccmd.WidgetType = Addin.GetType (widget);
 				if (ccmd.WidgetType == null)
 					throw new InvalidOperationException ("Could not find command type '" + widget + "'.");
 				cmd = ccmd;
@@ -149,9 +148,9 @@ namespace MonoDevelop.Core.Gui.Codons
 				acmd.CommandArray = isArray;
 				
 				if (defaultHandler != null) {
-					acmd.DefaultHandlerType = AddIn.GetType (defaultHandler);
+					acmd.DefaultHandlerType = Addin.GetType (defaultHandler);
 					if (acmd.DefaultHandlerType == null)
-						throw new InvalidOperationException ("Could not find handler type '" + defaultHandler + "' for command " + ID);
+						throw new InvalidOperationException ("Could not find handler type '" + defaultHandler + "' for command " + Id);
 				}
 				
 				cmd = acmd;
@@ -168,16 +167,16 @@ namespace MonoDevelop.Core.Gui.Codons
 			cmd.Description = GettextCatalog.GetString(cmd.Description);
 			
 			if (icon != null)
-				cmd.Icon = ResourceService.GetStockId (AddIn, icon);
+				cmd.Icon = ResourceService.GetStockId (Addin, icon);
 			cmd.AccelKey = shortcut;
 			cmd.DisabledVisible = disabledVisible;
 			
 			return cmd;
 		}
 		
-		internal static object ParseCommandId (ICodon codon)
+		internal static object ParseCommandId (ExtensionNode codon)
 		{
-			string id = codon.ID;
+			string id = codon.Id;
 			if (id.StartsWith ("@"))
 				return id.Substring (1);
 
@@ -188,7 +187,7 @@ namespace MonoDevelop.Core.Gui.Codons
 			if (i != -1)
 				typeName = id.Substring (0,i);
 				
-			enumType = codon.AddIn.GetType (typeName);
+			enumType = codon.Addin.GetType (typeName);
 				
 			if (enumType == null)
 				enumType = Type.GetType (typeName);

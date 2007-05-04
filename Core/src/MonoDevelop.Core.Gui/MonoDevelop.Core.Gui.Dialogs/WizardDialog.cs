@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Codons;
 
@@ -194,13 +194,16 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		public WizardDialog (string title, object customizer, string treePath)
 		{
-			IAddInTreeNode node = Runtime.AddInService.GetTreeNode(treePath);
+			ExtensionNode node = AddinManager.GetExtensionNode (treePath);
 			this.Title = title;
 			this.BorderWidth = 6;
 			this.HasSeparator = false;
 			
 			if (node != null) {
-				AddNodes(customizer, node.BuildChildItems(this));
+				ArrayList list = new ArrayList ();
+				foreach (TypeExtensionNode nod in node.ChildNodes)
+					list.Add (nod.CreateInstance ());
+				AddNodes (customizer, list);
 			}
 			InitializeComponents();
 			

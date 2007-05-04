@@ -35,26 +35,25 @@ using System.ComponentModel;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A menu or toolbar item that opens an URL when activated")]
-	[CodonNameAttribute ("LinkItem")]
-	internal class LinkItemCodon : AbstractCodon
+	internal class LinkItemCodon : TypeExtensionNode
 	{
 		[Description ("Label of the item.")]
-		[XmlMemberAttribute ("_label")]
+		[NodeAttribute ("_label")]
 		string label;
 		
 		[Description ("URL to open.")]
-		[XmlMemberAttribute("link")]
+		[NodeAttribute("link")]
 		string link;
 		
 //		[XmlMemberAttribute("description")]
 //		string description;
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
 			return new LinkCommandEntry (label, link, ResourceService.GetStockId ("md-web-search-icon"));
 		}

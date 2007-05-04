@@ -8,7 +8,10 @@ REFS =  \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:System \
 	-r:System.Drawing \
@@ -31,18 +34,12 @@ FILES =  \
 	MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs \
 	MonoDevelop.Core.Gui.Dialogs/AbstractOptionPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/AbstractWizardPanel.cs \
-	MonoDevelop.Core.Gui.Dialogs/AddinInfoDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/AddinInstallDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/AddinManagerDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/AddinTreeWidget.cs \
 	MonoDevelop.Core.Gui.Dialogs/CurrentPanelPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/DefaultDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/IDialogPanelDescriptor.cs \
 	MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
-	MonoDevelop.Core.Gui.Dialogs/ManageSitesDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/NewSiteDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/ResourceService.cs \
 	MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
@@ -170,6 +167,9 @@ RES =  \
 	icons/Icons.SharpDevelopIcon-22.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_22.png \
+	icons/plugin-16.png \
+	icons/plugin-22.png \
+	icons/plugin-32.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/uncomment.png \

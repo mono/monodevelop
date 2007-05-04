@@ -33,15 +33,14 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A separator menu or toolbar item")]
-	[CodonNameAttribute ("SeparatorItem")]
-	internal class SeparatorItemCodon : AbstractCodon
+	internal class SeparatorItemCodon : TypeExtensionNode
 	{
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
+		public override object CreateInstance ()
 		{
 			return new CommandEntry (Command.Separator);
 		}

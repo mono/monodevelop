@@ -10,7 +10,7 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Codons;
 using MonoDevelop.Components.Commands;
@@ -97,11 +97,10 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 			}
 		}		
 		
-		protected void AddNodes (object customizer, Gtk.TreeIter iter, ArrayList dialogPanelDescriptors)
+		protected void AddNodes (object customizer, Gtk.TreeIter iter, IEnumerable descriptors)
 		{
-			foreach (IDialogPanelDescriptor descriptor in dialogPanelDescriptors) {
+			foreach (IDialogPanelDescriptor descriptor in descriptors)
 				AddNode (descriptor.Label, customizer, iter, descriptor);
-			}
 		}
 		
 		protected virtual void AddNode (string label, object customizer, Gtk.TreeIter iter, IDialogPanelDescriptor descriptor)
@@ -181,7 +180,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 				SelectSpecificNode ((Gtk.TreeIter) it);
 		}
 		
-		public TreeViewOptions (Gtk.Window parentWindow, IProperties properties, IAddInTreeNode node)
+		public TreeViewOptions (Gtk.Window parentWindow, IProperties properties, ExtensionNode node)
 		{
 			this.properties = properties;
 			
@@ -199,7 +198,7 @@ namespace MonoDevelop.Core.Gui.Dialogs {
 			this.InitializeComponent();
 			
 			if (node != null)
-				AddNodes (properties, Gtk.TreeIter.Zero, node.BuildChildItems(this));
+				AddNodes (properties, Gtk.TreeIter.Zero, node.GetChildObjects (false));
 			
 			SelectFirstNode ();
 		}

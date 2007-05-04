@@ -32,24 +32,23 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
 	[Description ("A stock icon. It is possible to register several icons with the same 'id' and different sizes.")]
-	[CodonNameAttribute ("StockIcon")]
-	internal class StockIconCodon : AbstractCodon
+	internal class StockIconCodon : ExtensionNode
 	{
 		[Description ("Id of the stock icon.")]
-		[XmlMemberAttribute ("stockid", IsRequired = true)]
+		[NodeAttribute ("stockid", true)]
 		string stockid;
 		
 		[Description ("Size of the icon.")]
-		[XmlMemberAttribute ("size")]
+		[NodeAttribute ("size")]
 		Gtk.IconSize size = Gtk.IconSize.Invalid;
 		
 		[Description ("Name of the resource where the icon is stored.")]
-		[XmlMemberAttribute ("resource")]
+		[NodeAttribute ("resource")]
 		string resource;
 		
 		public string StockId {
@@ -62,11 +61,6 @@ namespace MonoDevelop.Core.Gui.Codons
 		
 		public string Resource {
 			get { return resource; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
 		}
 	}
 }

@@ -10,7 +10,7 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using Gtk;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Codons;
 

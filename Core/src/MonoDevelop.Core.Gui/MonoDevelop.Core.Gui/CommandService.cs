@@ -31,7 +31,7 @@ using System.Xml;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 
@@ -48,13 +48,13 @@ namespace MonoDevelop.Core.Gui
 		
 		public void LoadCommands (string addinPath)
 		{
-			Runtime.AddInService.RegisterExtensionItemListener (addinPath, OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
 		}
 		
-		void OnExtensionChange (ExtensionAction action, object item)
+		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				manager.RegisterCommand (item as Command, null);
+			if (args.Change == ExtensionChange.Add)
+				manager.RegisterCommand (args.ExtensionObject as Command, null);
 		}
 		
 		public void EnableUpdate ()
@@ -153,7 +153,7 @@ namespace MonoDevelop.Core.Gui
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();
-			object[] items = Runtime.AddInService.GetTreeItems (addinPath);
+			object[] items = AddinManager.GetExtensionObjects (addinPath);
 			foreach (CommandEntry e in items)
 				cset.Add (e);
 			return cset;
