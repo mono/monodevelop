@@ -36,10 +36,12 @@ namespace MonoDevelop.Deployment
 							continue;
 						}
 						string tfile = file.ResolvedTargetFile;
-						string tpath = Path.GetDirectoryName (tfile);
-						if (!Directory.Exists (tpath))
-							Directory.CreateDirectory (tpath);
-						File.Copy (file.SourcePath, tfile, true);
+						if (Runtime.FileService.GetFullPath (tfile) != Runtime.FileService.GetFullPath (file.SourcePath)) {
+							string tpath = Path.GetDirectoryName (tfile);
+							if (!Directory.Exists (tpath))
+								Directory.CreateDirectory (tpath);
+							File.Copy (file.SourcePath, tfile, true);
+						}
 					}
 				}
 			}

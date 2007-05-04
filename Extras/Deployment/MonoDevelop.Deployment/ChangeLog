@@ -1,5 +1,10 @@
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment/DeployProjectServiceExtension.cs: Avoid
+	  copying files when the target destination is the same file.
+
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment.addin.xml, MonoDevelop.Deployment.mdp,
 	  MonoDevelop.Deployment/DeployService.cs,
 	  MonoDevelop.Deployment/DeployDirectoryNodeType.cs,
