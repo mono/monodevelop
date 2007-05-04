@@ -1,3 +1,8 @@
+2007-05-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/Resolver.cs (GetMethod): Check if the cursor is within the
+	declaration bounds as well, so that parameter searching works.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Test/Test.cs, Gui/ChooseRuntimePanel.cs, Gui/CodeGenerationPanel.cs,

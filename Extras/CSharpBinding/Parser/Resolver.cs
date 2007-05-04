@@ -156,7 +156,7 @@ namespace CSharpBinding.Parser
 			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
 				type = new ReturnType("System.Array");
 			}
-			Console.WriteLine("Here: Type is " + type.FullyQualifiedName);
+			//Console.WriteLine("Here: Type is " + type.FullyQualifiedName);
 			return type;
 		}
 		
@@ -800,10 +800,13 @@ namespace CSharpBinding.Parser
 		IMethod GetMethod()
 		{
 			foreach (IMethod method in callingClass.Methods) {
-				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (method.Region != null && method.Region.IsInside (caretLine, caretColumn))
 					return method;
-				}
+				
+				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn))
+					return method;
 			}
+			
 			return null;
 		}
 		
@@ -822,14 +825,15 @@ namespace CSharpBinding.Parser
 		IParameter SearchMethodParameter(string parameter)
 		{
 			IMethod method = GetMethod();
-			if (method == null) {
+			if (method == null)
 				return null;
-			}
+			
 			foreach (IParameter p in method.Parameters) {
 				if (p.Name == parameter) {
 					return p;
 				}
 			}
+			
 			return null;
 		}
 		
