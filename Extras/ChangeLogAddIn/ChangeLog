@@ -1,3 +1,9 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* ChangeLogAddIn.addin.xml, ChangeLogAddIn.mdp,
+	  gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am: Migration to Mono.Addins.
+
 2007-03-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* ChangeLogAddIn.addin.xml, ChangeLogAddIn.cs: Simplified a little bit the

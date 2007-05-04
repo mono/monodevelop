@@ -31,6 +31,8 @@ namespace MonoDevelop.ChangeLogAddIn {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.ChangeLogAddIn.AddLogEntryDialog";
             this.Title = Mono.Unix.Catalog.GetString("ChangeLog");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.HasSeparator = false;
             // Internal child MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
