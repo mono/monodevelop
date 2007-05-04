@@ -1,5 +1,6 @@
-<AddIn
-	id = "MonoDevelop.WebReferences"
+<Addin
+	id = "WebReferences"
+    namespace = "MonoDevelop"
 	name = "Project Web References"
 	author = "Gideon de Swardt"
 	copyright = "LGPL"
@@ -13,12 +14,16 @@
     </Runtime>
     
 	<Dependencies>
-		<AddIn id="MonoDevelop.Core" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
+		<Addin id="Core" version="0.13.0"/>
+		<Addin id="Core.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
+		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
 	</Dependencies>
+	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/WebReferenceFolder">
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads/MonoDevelop.Ide.Gui.Pads.ProjectPad">
 		<NodeBuilder class = "MonoDevelop.WebReferences.NodeBuilders.ProjectFolderNodeBuilderExtension"/>
@@ -63,4 +68,4 @@
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-webreference-item" resource = "WebReferenceItem.png" />
 	</Extension>
-</AddIn>
+</Addin>

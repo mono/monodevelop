@@ -9,6 +9,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:Mono.Posix \
 	-r:System \
@@ -37,11 +38,11 @@ FILES =  \
 
 RES =  \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/disco.html \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/wsdl.html \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png \
 	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReference.Service.png \
-	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReferenceItem.png
+	$(srcdir)/MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
+	$(srcdir)/MonoDevelop.WebReferences.Resources/wsdl.html
 
 
 all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN)

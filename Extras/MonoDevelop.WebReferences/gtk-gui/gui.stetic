@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <import>
-    <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
     <widget-library name="../../../build/AddIns/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../build/AddIns/MonoDevelop.Components.dll" />
+    <widget-library name="../../../build/AddIns/MonoDevelop.Ide.dll" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.WebReferences.Dialogs.WebReferenceDialog" design-size="639 472">
     <action-group name="Default">
@@ -62,7 +63,6 @@
               <widget class="Gtk.Toolbar" id="tlbNavigate">
                 <property name="MemberName">tlbNavigate</property>
                 <property name="ShowArrow">False</property>
-                <property name="Tooltips">True</property>
                 <property name="ButtonStyle">Icons</property>
                 <property name="IconSize">SmallToolbar</property>
                 <node name="tlbNavigate" type="Menubar">
@@ -85,6 +85,8 @@
                 <property name="MemberName" />
                 <property name="NRows">1</property>
                 <property name="NColumns">3</property>
+                <property name="RowSpacing">6</property>
+                <property name="ColumnSpacing">6</property>
                 <child>
                   <widget class="Gtk.Button" id="btnGO">
                     <property name="MemberName">btnGO</property>

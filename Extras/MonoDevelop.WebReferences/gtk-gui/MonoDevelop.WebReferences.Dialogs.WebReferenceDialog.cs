@@ -56,7 +56,6 @@ namespace Stetic.SteticGenerated {
             bindings["tlbNavigate"] = w10;
             w10.Name = "tlbNavigate";
             w10.ShowArrow = false;
-            w10.Tooltips = true;
             w10.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
             w10.IconSize = ((Gtk.IconSize)(2));
             w9.Add(w10);
@@ -68,6 +67,8 @@ namespace Stetic.SteticGenerated {
             Gtk.Table w12 = new Gtk.Table(((uint)(1)), ((uint)(3)), false);
             bindings["tblWebReferenceUrl"] = w12;
             w12.Name = "tblWebReferenceUrl";
+            w12.RowSpacing = ((uint)(6));
+            w12.ColumnSpacing = ((uint)(6));
             // Container child tblWebReferenceUrl.Gtk.Table+TableChild
             Gtk.Button w13 = new Gtk.Button();
             bindings["btnGO"] = w13;
