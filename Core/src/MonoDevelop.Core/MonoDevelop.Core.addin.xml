@@ -1,34 +1,51 @@
-<AddIn id          = "MonoDevelop.Core"
+<Addin id          = "Core"
+       namespace   = "MonoDevelop"
        name        = "MonoDevelop Runtime"
        author      = "Lluis Sanchez, Todd Berman, John Luke, Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "Provides the core services of the MonoDevelop platform"
 	   category    = "MonoDevelop Core"
+	   isroot      = "true"
        version     = "0.13.0"
        compatVersion = "0.13.0">
 
 	<Runtime>
 		<Import assembly="../bin/MonoDevelop.Core.dll"/>
 	</Runtime>
+	
+	<ExtensionPoint path = "/Workspace/Services" name = "Services">
+		<Description>Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Core.Addins.ServiceExtensionNode" />
+	</ExtensionPoint>
 
-	<Extension path = "/Workspace/Services" extension-nodes="Class" description="Services|Services to be initialized by the runtime. Specified classes must implement MonoDevelop.Core.IService">
+	<ExtensionPoint path = "/SharpDevelop/Workbench/ExecutionHandlers" name = "Execution handlers">
+		<Description>Default execution handlers.</Description>
+		<ExtensionNode name="ExecutionHandler" type="MonoDevelop.Core.Addins.ExecutionHandlerCodon" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/Workspace/FileSystemExtensions" name = "File system extensions">
+		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Core.FileSystem.FileSystemExtension"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/System/Applications" name = "Applications">
+		<Description>MonoDevelop tools.</Description>
+		<ExtensionNode name="Application" type="MonoDevelop.Core.AddIns.ApplicationExtensionNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Core/SupportPackages">
+		<ExtensionNode name="Package" type="MonoDevelop.Core.AddIns.PackageExtensionNode"/>
+	</ExtensionPoint>
+
+	<Extension path = "/Workspace/Services">
 		<Class id    = "SystemAssemblyService"
 		       class = "MonoDevelop.Core.SystemAssemblyService"/>
 		<Class id    = "ProcessService"
 		       class = "MonoDevelop.Core.Execution.ProcessService"/>
 	</Extension>
 	
-	<Extension path = "/Workspace/Applications" extension-nodes="Class" description="Applications|Applications managed by the runtime. Registered applications can be started using the mdtool command. Specified classes must implement MonoDevelop.Core.AddIns.IApplication.">
-		<Class id    = "setup"
-		       description = "Add-in setup utility"
-		       class = "MonoDevelop.Core.AddIns.Setup.SetupTool"/>
-		<Class id    = "dump-addin-tree"
-		       description = "Dumps the add-in extension tree to an XML file."
-		       class = "MonoDevelop.Core.AddIns.DumpAddinInfoApp"/>
-	</Extension>
-	
-	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers" extension-nodes="ExecutionHandler" description="Default execution handlers.">
+	<Extension path = "/SharpDevelop/Workbench/ExecutionHandlers">
 		<ExecutionHandler id="Mono"
 					platform = "Mono"
 		            class = "MonoDevelop.Core.Execution.MonoPlatformExecutionHandler"/>
@@ -39,11 +56,4 @@
 					platform = "Native"
 		            class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
 	</Extension>
-	
-	<Extension path = "/Workspace/FileSystemExtensions" extension-nodes="Class" description="File system extensions|File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.">
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Core/SupportPackages" extension-nodes="Package">
-	</Extension>
-
-</AddIn>
+</Addin>

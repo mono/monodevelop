@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core
 {
@@ -304,11 +305,11 @@ namespace MonoDevelop.Core
 			}
 			
 			// Get assemblies registered using the extension point
-			foreach (PackageExtensionNode node in Runtime.AddInService.GetTreeItems ("/MonoDevelop/Core/SupportPackages")) {
-				RegisterPackage (node.ID, node.Version, node.ID, node.TargetClrVersion, node.Assemblies);
+			foreach (PackageExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/SupportPackages")) {
+				RegisterPackage (node.Id, node.Version, node.Id, node.TargetClrVersion, node.Assemblies);
 			}
 		}
-	
+
 		void RegisterSystemAssemblies (string prefix, string version, ClrVersion ver)
 		{
 			SystemPackage package = new SystemPackage ();

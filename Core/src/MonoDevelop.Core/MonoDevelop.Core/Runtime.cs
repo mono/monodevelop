@@ -30,9 +30,10 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.AddIns.Setup;
+using MonoDevelop.Core.Execution;
+using Mono.Addins;
+using Mono.Addins.Setup;
 
 namespace MonoDevelop.Core
 {
@@ -44,20 +45,48 @@ namespace MonoDevelop.Core
 		static SystemAssemblyService systemAssemblyService;
 		static FileService fileService;
 		static ILoggingService loggingService;
-		static AddInService addInService;
 		static SetupService setupService;
+		static ApplicationService applicationService;
 		static bool initialized;
 		
 		private Runtime ()
 		{
 		}
 		
-		public static void Initialize ()
+		public static void Initialize (bool updateAddinRegistry)
 		{
 			if (initialized)
 				return;
 			initialized = true;
-			AddInService.Initialize ();
+			
+			AddinManager.AddinLoadError += OnLoadError;
+			AddinManager.AddinLoaded += OnLoad;
+			AddinManager.AddinUnloaded += OnUnload;
+			
+			string configDir = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".config");
+			configDir = System.IO.Path.Combine (configDir, "MonoDevelop");
+				
+			AddinManager.Initialize (configDir);
+			if (updateAddinRegistry)
+				AddinManager.Registry.Update (null);
+			setupService = new SetupService (AddinManager.Registry);
+			ServiceManager.Initialize ();
+		}
+		
+		static void OnLoadError (object s, AddinErrorEventArgs args)
+		{
+			Console.WriteLine ("Add-in error: " + args.Message);
+			Console.WriteLine (args.AddinId);
+		}
+		
+		static void OnLoad (object s, AddinEventArgs args)
+		{
+		//	Console.WriteLine ("Add-in loaded: " + args.AddinId);
+		}
+		
+		static void OnUnload (object s, AddinEventArgs args)
+		{
+			Console.WriteLine ("Add-in unloaded: " + args.AddinId);
 		}
 		
 		internal static bool Initialized {
@@ -118,22 +147,61 @@ namespace MonoDevelop.Core
 			}
 		}
 	
-		public static AddInService AddInService {
+		public static SetupService AddinSetupService {
 			get {
-				if (addInService == null)
-					addInService = new AddInService();
-				
-				return addInService;
-			}
-		}
-	
-		public static SetupService SetupService {
-			get {
-				if (setupService == null)
-					setupService = new SetupService();
-				
 				return setupService;
 			}
 		}
+	
+		public static ApplicationService ApplicationService {
+			get {
+				if (applicationService == null)
+					applicationService = new ApplicationService ();
+				return applicationService;
+			}
+		}
+	}
+	
+	public class ApplicationService
+	{
+		public int StartApplication (string appId, string[] parameters)
+		{
+			ExtensionNode node = AddinManager.GetExtensionNode ("/System/Applications/" + appId);
+			if (node == null)
+				throw new InstallException ("Application not found: " + appId);
+			
+			ApplicationExtensionNode apnode = node as ApplicationExtensionNode;
+			if (apnode == null)
+				throw new Exception ("Invalid node type");
+			
+			IApplication app = (IApplication) apnode.CreateInstance ();
+
+			try {
+				return app.Run (parameters);
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				return -1;
+			}
+		}
+		
+		public IApplicationInfo[] GetApplications ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/System/Applications");
+			IApplicationInfo[] apps = new IApplicationInfo [nodes.Count];
+			for (int n=0; n<nodes.Count; n++)
+				apps [n] = (ApplicationExtensionNode) nodes [n];
+			return apps;
+		}
+	}
+	
+	public interface IApplicationInfo
+	{
+		string Id { get; }
+		string Description { get; }
+	}
+	
+	public interface IApplication
+	{
+		int Run (string[] arguments);
 	}
 }

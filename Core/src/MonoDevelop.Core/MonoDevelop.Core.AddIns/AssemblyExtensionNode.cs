@@ -1,22 +1,18 @@
 
 using System;
 using System.Collections;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.AddIns
 {
-	[CodonNameAttribute("Assembly")]
-	class AssemblyExtensionNode: AbstractCodon
+	[ExtensionNode("Assembly")]
+	class AssemblyExtensionNode: TypeExtensionNode
 	{
-		[XmlMemberAttribute ("file", IsRequired=true)]
+		[NodeAttribute ("file", Required=true)]
 		string file;
 		
 		public string FileName {
 			get { return file; }
-		}
-		
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
 		}
 	}
 }

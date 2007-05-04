@@ -1,3 +1,24 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/IconCodon.cs,
+	  MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs,
+	  MonoDevelop.Core.AddIns/PackageExtensionNode.cs,
+	  MonoDevelop.Core.AddIns/ServiceExtensionNode.cs,
+	  MonoDevelop.Core.Execution/ProcessService.cs,
+	  MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp, Makefile.am,
+	  MonoDevelop.Core/Runtime.cs, MonoDevelop.Core/AbstractService.cs,
+	  MonoDevelop.Core/GettextCatalog.cs.in,
+	  MonoDevelop.Core/ServiceManager.cs,
+	  MonoDevelop.Core/FileService.cs,
+	  MonoDevelop.Core/SystemAssemblyService.cs,
+	  MonoDevelop.Core/IService.cs: Migration to Mono.Addins.
+	* MonoDevelop.Core.AddIns/*,
+	  MonoDevelop.Core.AddIns.Setup/*: Removed many
+	  classes now implemented in Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs: Fix bug

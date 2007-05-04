@@ -2,22 +2,34 @@
 using System;
 using System.IO;
 using System.Collections;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.AddIns
 {
-	[CodonNameAttribute ("Package")]
-	public class PackageExtensionNode: AbstractCodon
+	[ExtensionNode ("Package")]
+	[ExtensionNodeChild (typeof(AssemblyExtensionNode))]
+	public class PackageExtensionNode: TypeExtensionNode
 	{
-		[XmlMemberAttribute ("version", IsRequired=true)]
+		[NodeAttribute ("version", Required=true)]
 		string version;
 		
-		[XmlMemberAttribute("clrVersion")]
+		[NodeAttribute("clrVersion")]
 		ClrVersion clrVersion = ClrVersion.Default;
 		
 		string[] assemblies;
 		
 		public string[] Assemblies {
-			get { return assemblies; }
+			get {
+				if (assemblies == null) {
+					assemblies = new string [ChildNodes.Count];
+					for (int n=0; n<ChildNodes.Count; n++) {
+						string file = ((AssemblyExtensionNode)ChildNodes [n]).FileName;
+						file = base.Addin.GetFilePath (file);
+						assemblies [n] = file;
+					}
+				}
+				return assemblies; 
+			}
 		}
 		
 		public string Version {
@@ -26,18 +38,6 @@ namespace MonoDevelop.Core.AddIns
 		
 		public ClrVersion TargetClrVersion {
 			get { return clrVersion; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			assemblies = new string [subItems.Count];
-			string basePath = Path.GetDirectoryName (this.AddIn.FileName);
-			for (int n=0; n<subItems.Count; n++) {
-				string file = ((AssemblyExtensionNode)subItems [n]).FileName;
-				file = Path.Combine (basePath, file);
-				assemblies [n] = file;
-			}
-			return this;
 		}
 	}
 }

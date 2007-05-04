@@ -9,8 +9,9 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 
+using MonoDevelop.Core.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -144,7 +145,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (executionHandlers == null) {
 				executionHandlers = new ArrayList ();
-				Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ExecutionHandlers", OnExtensionChange);
+				AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ExecutionHandlers", OnExtensionChange);
 			}
 			
 			foreach (ExecutionHandlerCodon codon in executionHandlers)
@@ -152,10 +153,10 @@ namespace MonoDevelop.Core.Execution
 			return null;
 		}
 		
-		void OnExtensionChange (ExtensionAction action, object item)
+		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				executionHandlers.Add (item);
+			if (args.Change == ExtensionChange.Add)
+				executionHandlers.Add (args.ExtensionNode);
 		}
 		
 		ProcessHostController GetHost (string id, bool shared)

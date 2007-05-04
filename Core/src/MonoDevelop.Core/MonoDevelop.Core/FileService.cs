@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.FileSystem;
 
 namespace MonoDevelop.Core
@@ -31,8 +31,8 @@ namespace MonoDevelop.Core
 		public FileService()
 		{
 			sharpDevelopRootPath = PropertyService.EntryAssemblyDirectory + Path.DirectorySeparatorChar + "..";
-			Runtime.AddInService.ExtensionChanged += delegate (string path) {
-				if (path == FileSystemExtensionPath)
+			AddinManager.ExtensionChanged += delegate (object s, ExtensionEventArgs args) {
+				if (args.PathChanged (FileSystemExtensionPath))
 					UpdateExtensions ();
 			};
 		}
@@ -44,7 +44,7 @@ namespace MonoDevelop.Core
 				return;
 			}
 			
-			FileSystemExtension[] extensions = (FileSystemExtension[]) Runtime.AddInService.GetTreeItems (FileSystemExtensionPath, typeof(FileSystemExtension));
+			FileSystemExtension[] extensions = (FileSystemExtension[]) AddinManager.GetExtensionObjects (FileSystemExtensionPath, typeof(FileSystemExtension));
 			for (int n=0; n<extensions.Length - 1; n++)
 				extensions [n].Next = extensions [n + 1];
 

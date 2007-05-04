@@ -33,34 +33,31 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Core.Addins
 {
-	[CodonNameAttribute ("ExecutionHandler")]
 	[Description ("Registers an IExecutionHandler type.")]
-	class ExecutionHandlerCodon : AbstractCodon
+	class ExecutionHandlerCodon : TypeExtensionNode
 	{
 		IExecutionHandler handler;
 		
-		[XmlMemberAttribute ("platform", IsRequired = true)]
+		[NodeAttribute ("platform", true)]
 		[Description ("Platform supported by this execution handler. The core platforms are Mono, Mint and Native. Add-ins may define additional platforms.")]
 		string platform = null;
 		
 		public IExecutionHandler ExecutionHandler {
-			get { return handler; }
+			get {
+				if (handler == null)
+					handler = (IExecutionHandler) base.CreateInstance ();
+				return handler;
+			}
 		}
 		
 		public string Platform {
 			get { return platform; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			handler = (IExecutionHandler) AddIn.CreateObject (Class);
-			return this;
 		}
 	}
 }

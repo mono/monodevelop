@@ -27,7 +27,6 @@ using System;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 
 using Mono.Unix;
 

@@ -7,7 +7,7 @@
 
 using System;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core

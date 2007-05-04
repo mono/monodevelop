@@ -2,79 +2,12 @@
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 FILES =  \
-	MonoDevelop.Core.AddIns.Setup/AddinConfiguration.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinDependency.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinInfo.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinInfoCollection.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinPackage.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinRepositoryEntry.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinSetupInfo.cs \
-	MonoDevelop.Core.AddIns.Setup/AddinSystemConfiguration.cs \
-	MonoDevelop.Core.AddIns.Setup/AssemblyDependency.cs \
-	MonoDevelop.Core.AddIns.Setup/InstallException.cs \
-	MonoDevelop.Core.AddIns.Setup/NativeDependency.cs \
-	MonoDevelop.Core.AddIns.Setup/NativePackage.cs \
-	MonoDevelop.Core.AddIns.Setup/Package.cs \
-	MonoDevelop.Core.AddIns.Setup/PackageCollection.cs \
-	MonoDevelop.Core.AddIns.Setup/PackageDependency.cs \
-	MonoDevelop.Core.AddIns.Setup/PackageDependencyCollection.cs \
-	MonoDevelop.Core.AddIns.Setup/ReferenceRepositoryEntry.cs \
-	MonoDevelop.Core.AddIns.Setup/Repository.cs \
-	MonoDevelop.Core.AddIns.Setup/RepositoryEntry.cs \
-	MonoDevelop.Core.AddIns.Setup/RepositoryEntryCollection.cs \
-	MonoDevelop.Core.AddIns.Setup/RepositoryRecord.cs \
-	MonoDevelop.Core.AddIns.Setup/SetupService.cs \
-	MonoDevelop.Core.AddIns.Setup/SetupTool.cs \
-	MonoDevelop.Core.AddIns.Setup/SystemConfiguration.cs \
-	MonoDevelop.Core.AddIns.Setup/UninstallInfo.cs \
-	MonoDevelop.Core.AddIns/AbstractCodon.cs \
-	MonoDevelop.Core.AddIns/AbstractCommand.cs \
-	MonoDevelop.Core.AddIns/AbstractCondition.cs \
-	MonoDevelop.Core.AddIns/AddIn.cs \
-	MonoDevelop.Core.AddIns/AddInCollection.cs \
-	MonoDevelop.Core.AddIns/AddInInitializeException.cs \
-	MonoDevelop.Core.AddIns/AddInLoadException.cs \
-	MonoDevelop.Core.AddIns/AddInService.cs \
-	MonoDevelop.Core.AddIns/AddInSignatureException.cs \
-	MonoDevelop.Core.AddIns/AddInTreeFormatException.cs \
-	MonoDevelop.Core.AddIns/AddInTreeSingleton.cs \
+	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
-	MonoDevelop.Core.AddIns/AssemblyLoader.cs \
-	MonoDevelop.Core.AddIns/ChildCodonsAttribute.cs \
-	MonoDevelop.Core.AddIns/ClassCodon.cs \
-	MonoDevelop.Core.AddIns/CodonBuilder.cs \
-	MonoDevelop.Core.AddIns/CodonFactory.cs \
-	MonoDevelop.Core.AddIns/CodonNameAttribute.cs \
-	MonoDevelop.Core.AddIns/CodonNotFoundException.cs \
-	MonoDevelop.Core.AddIns/CompareCondition.cs \
-	MonoDevelop.Core.AddIns/ComplexConditions.cs \
-	MonoDevelop.Core.AddIns/ConditionAttribute.cs \
-	MonoDevelop.Core.AddIns/ConditionBuilder.cs \
-	MonoDevelop.Core.AddIns/ConditionBuilderCollection.cs \
-	MonoDevelop.Core.AddIns/ConditionCollection.cs \
-	MonoDevelop.Core.AddIns/ConditionFactory.cs \
-	MonoDevelop.Core.AddIns/ConditionNotFoundException.cs \
-	MonoDevelop.Core.AddIns/ConditionWithoutRequiredAttributesException.cs \
-	MonoDevelop.Core.AddIns/DefaultAddInTree.cs \
-	MonoDevelop.Core.AddIns/DefaultAddInTreeNode.cs \
-	MonoDevelop.Core.AddIns/DumpAddinInfoApp.cs \
-	MonoDevelop.Core.AddIns/DuplicateCodonException.cs \
-	MonoDevelop.Core.AddIns/DuplicateConditionException.cs \
 	MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs \
-	MonoDevelop.Core.AddIns/IAddInTree.cs \
-	MonoDevelop.Core.AddIns/IAddInTreeNode.cs \
-	MonoDevelop.Core.AddIns/IApplication.cs \
 	MonoDevelop.Core.AddIns/IconCodon.cs \
-	MonoDevelop.Core.AddIns/ICodon.cs \
-	MonoDevelop.Core.AddIns/ICommand.cs \
-	MonoDevelop.Core.AddIns/ICondition.cs \
-	MonoDevelop.Core.AddIns/OwnerStateCondition.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
-	MonoDevelop.Core.AddIns/PathAttribute.cs \
-	MonoDevelop.Core.AddIns/TreePathNotFoundException.cs \
-	MonoDevelop.Core.AddIns/TypeNotFoundException.cs \
-	MonoDevelop.Core.AddIns/XmlMemberArraryAttribute.cs \
-	MonoDevelop.Core.AddIns/XmlMemberAttributeAttribute.cs \
+	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \
@@ -100,6 +33,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedOperationMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
+	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs \
 	MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \
@@ -143,7 +77,9 @@ RES =
 
 REFS =  \
 	-r:$(top_builddir)/build/bin/log4net.dll \
+	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \

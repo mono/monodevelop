@@ -9,30 +9,29 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.ComponentModel;
+using Mono.Addins;
 
 using MonoDevelop.Core.Properties;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Core.Addins
 {
-	[CodonNameAttribute("Icon")]
 	[Description ("An icon bound to a language or file extension.")]
-	public class IconCodon : AbstractCodon
+	public class IconCodon : ExtensionNode
 	{
 		[Description ("Obsolete. Do not use.")]
-		[PathAttribute()]
-		[XmlMemberAttribute("location")]
+		[NodeAttribute("location")]
 		string location = null;
 		
 		[Description ("Name of the language represented by this icon. Optional.")]
-		[XmlMemberAttributeAttribute("language")]
+		[NodeAttribute("language")]
 		string language  = null;
 		
 		[Description ("Resource name.")]
-		[XmlMemberAttributeAttribute("resource")]
+		[NodeAttribute("resource")]
 		string resource  = null;
 		
 		[Description ("File extensions represented by this icon. Optional.")]
-		[XmlMemberArrayAttribute("extensions")]
+		[NodeAttribute("extensions")]
 		string[] extensions = null;
 		
 		public string Language {
@@ -70,19 +69,5 @@ namespace MonoDevelop.Core.AddIns
 				extensions = value;
 			}
 		}
-		
-		/// <summary>
-		/// Creates an item with the specified sub items. And the current
-		/// Condition status for this item.
-		/// </summary>
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			if (subItems.Count > 0) {
-				throw new ApplicationException("more than one level of icons don't make sense!");
-			}
-			
-			return this;
-		}
-		
 	}
 }
