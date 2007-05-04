@@ -39,6 +39,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Reflection;
 using System.Collections;
 using Mono.Remoting.Channels.Unix;
+using Mono.Addins;
 
 public class MonoDevelopProcessHost
 {
@@ -111,9 +112,9 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 	
 	public void LoadAddins (string[] addinIds)
 	{
-		Runtime.Initialize ();
+		Runtime.Initialize (false);
 		foreach (string ad in addinIds)
-			Runtime.AddInService.PreloadAddin (null, ad);
+			AddinManager.LoadAddin (null, ad);
 	}
 	
 	public RemoteProcessObject CreateInstance (string fullTypeName)
