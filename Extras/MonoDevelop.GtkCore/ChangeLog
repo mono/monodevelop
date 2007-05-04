@@ -1,3 +1,9 @@
+2007-05-04  Wade Berrier  <wberrier@novell.com> 
+	* lib/libstetic.dll.config:
+	* lib/libsteticui.dll.config:
+	Fix os attribute formats (mono-config.c separates oses by comma, 
+	and ignores or includes the whole string.)
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, Makefile.am:
