@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Deployment;
 using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -57,7 +58,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IPackageBuilderEditor GetEditor (PackageBuilder builder)
 		{
-			foreach (IPackageBuilderEditor editor in Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/PackageBuilderEditors")) {
+			foreach (IPackageBuilderEditor editor in AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilderEditors", false)) {
 				if (editor.CanEdit (builder))
 					return editor;
 			}

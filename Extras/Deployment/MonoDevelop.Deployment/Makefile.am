@@ -11,6 +11,7 @@ REFS =  \
 	-r:../../../build/AddIns/MonoDevelop.Ide.dll \
 	-r:../../../build/AddIns/MonoDevelop.Projects.dll \
 	-r:../../../build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:../../../build/bin/Mono.Addins.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \

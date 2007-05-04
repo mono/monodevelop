@@ -33,9 +33,9 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
+using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Serialization;
@@ -55,8 +55,8 @@ namespace MonoDevelop.Deployment
 		
 		static DeployService ()
 		{
-			Runtime.AddInService.ExtensionChanged += delegate (string path) {
-				if (path.StartsWith ("/MonoDevelop/DeployService/DeployDirectories"))
+			AddinManager.ExtensionChanged += delegate (object s, ExtensionEventArgs args) {
+				if (args.PathChanged ("/MonoDevelop/DeployService/DeployDirectories"))
 					directoryInfos = null;
 			};
 		}
@@ -77,7 +77,7 @@ namespace MonoDevelop.Deployment
 		
 		public static PackageBuilder[] GetSupportedPackageBuilders (CombineEntry entry)
 		{
-			object[] builders = Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/PackageBuilders");
+			object[] builders = AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilders", false);
 			ArrayList list = new ArrayList ();
 			foreach (PackageBuilder builder in builders) {
 				if (builder.CanBuild (entry)) {
@@ -92,7 +92,7 @@ namespace MonoDevelop.Deployment
 		
 		public static PackageBuilder[] GetPackageBuilders ()
 		{
-			return (PackageBuilder[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/PackageBuilders", typeof(PackageBuilder));
+			return (PackageBuilder[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilders", typeof(PackageBuilder), false);
 		}
 		
 		public static void Install (IProgressMonitor monitor, CombineEntry entry, string prefix, string appName)
@@ -196,7 +196,7 @@ namespace MonoDevelop.Deployment
 		
 		internal static DeployServiceExtension GetExtensionChain ()
 		{
-			DeployServiceExtension[] extensions = (DeployServiceExtension[]) Runtime.AddInService.GetTreeItems ("/MonoDevelop/DeployService/DeployServiceExtensions", typeof(DeployServiceExtension));
+			DeployServiceExtension[] extensions = (DeployServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/DeployServiceExtensions", typeof(DeployServiceExtension), false);
 			for (int n=0; n<extensions.Length - 1; n++)
 				extensions [n].Next = extensions [n+1];
 			return extensions [0];
@@ -213,7 +213,7 @@ namespace MonoDevelop.Deployment
 				return directoryInfos;
 			
 			ArrayList list = new ArrayList ();
-			foreach (DeployDirectoryNodeType dir in Runtime.AddInService.GetTreeItems ("/MonoDevelop/Deployment/DeployDirectories"))
+			foreach (DeployDirectoryNodeType dir in AddinManager.GetExtensionNodes ("/MonoDevelop/Deployment/DeployDirectories"))
 				list.Add (dir.GetDeployDirectoryInfo ());
 			
 			return directoryInfos = (DeployDirectoryInfo[]) list.ToArray (typeof(DeployDirectoryInfo));
@@ -225,7 +225,7 @@ namespace MonoDevelop.Deployment
 				return platformInfos;
 			
 			ArrayList list = new ArrayList ();
-			foreach (DeployPlatformNodeType dir in Runtime.AddInService.GetTreeItems ("/MonoDevelop/Deployment/DeployPlatforms"))
+			foreach (DeployPlatformNodeType dir in AddinManager.GetExtensionNodes ("/MonoDevelop/Deployment/DeployPlatforms"))
 				list.Add (dir.GetDeployPlatformInfo ());
 			
 			return platformInfos = (DeployPlatformInfo[]) list.ToArray (typeof(DeployPlatformInfo));
@@ -262,13 +262,13 @@ namespace MonoDevelop.Deployment
 			if (copiers != null)
 				return;
 			copiers = new List<FileCopyHandler> ();
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/DeployFileCopiers", OnCopierExtensionChanged);
+			AddinManager.RemoveExtensionNodeHandler ("/SharpDevelop/Workbench/DeployFileCopiers", OnCopierExtensionChanged);
 		}
 		
-		static void OnCopierExtensionChanged (ExtensionAction action, object item)
+		static void OnCopierExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				copiers.Add (new FileCopyHandler ((IFileCopyHandler)item));
+			if (args.Change == ExtensionChange.Add) {
+				copiers.Add (new FileCopyHandler ((IFileCopyHandler)args.ExtensionObject));
 			}
 		}
 	}

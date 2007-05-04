@@ -1,24 +1,19 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Deployment
 {
-	[CodonNameAttribute("DeployDirectory")]
-	internal class DeployDirectoryNodeType: AbstractCodon
+	[ExtensionNode ("DeployDirectory")]
+	internal class DeployDirectoryNodeType: ExtensionNode
 	{
-		[XmlMemberAttribute ("_label")]
+		[NodeAttribute ("_label")]
 		string description;
 		
 		public DeployDirectoryInfo GetDeployDirectoryInfo ()
 		{
-			return new DeployDirectoryInfo (ID, description);
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
+			return new DeployDirectoryInfo (Id, description);
 		}
 	}
 }

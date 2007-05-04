@@ -1,24 +1,19 @@
 
 using System;
 using System.Collections;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Deployment
 {
-	[CodonNameAttribute("DeployPlatform")]
-	internal class DeployPlatformNodeType: AbstractCodon
+	[ExtensionNode("DeployPlatform")]
+	internal class DeployPlatformNodeType: ExtensionNode
 	{
-		[XmlMemberAttribute ("_label")]
+		[NodeAttribute ("_label")]
 		string description;
 		
 		public DeployPlatformInfo GetDeployPlatformInfo ()
 		{
-			return new DeployPlatformInfo (ID, description);
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
+			return new DeployPlatformInfo (Id, description);
 		}
 	}
 }

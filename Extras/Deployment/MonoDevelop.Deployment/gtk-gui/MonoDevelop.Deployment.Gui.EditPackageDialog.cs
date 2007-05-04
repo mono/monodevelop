@@ -51,6 +51,8 @@ namespace MonoDevelop.Deployment.Gui {
             Stetic.Gui.Initialize();
             // Widget MonoDevelop.Deployment.Gui.EditPackageDialog
             this.Name = "MonoDevelop.Deployment.Gui.EditPackageDialog";
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.HasSeparator = false;
             // Internal child MonoDevelop.Deployment.Gui.EditPackageDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

@@ -2,6 +2,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Deployment;
+using Mono.Addins;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -57,7 +58,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IFileCopyConfigurationEditor GetEditor (FileCopyConfiguration config)
 		{
-			foreach (IFileCopyConfigurationEditor editor in Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/FileCopyConfigurationEditors")) {
+			foreach (IFileCopyConfigurationEditor editor in AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/FileCopyConfigurationEditors", false)) {
 				if (editor.CanEdit (config))
 					return editor;
 			}

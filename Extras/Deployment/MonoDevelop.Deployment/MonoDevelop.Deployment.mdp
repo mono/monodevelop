@@ -77,6 +77,8 @@
     <File name="./MonoDevelop.Deployment.Gui/DeployFileListWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Gui/PackagingFeatureWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Gui/PackagingFeature.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Deployment/DeployProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs" subtype="Code" buildaction="Compile" />
@@ -88,8 +90,6 @@
     <File name="./gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Deployment.Gui/BinariesZipEditorWidget.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Deployment/DeployProjectServiceExtension.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -108,6 +108,7 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Addins.dll" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
