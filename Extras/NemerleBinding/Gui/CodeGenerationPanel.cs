@@ -6,7 +6,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 using Gtk;
 using MonoDevelop.Components;

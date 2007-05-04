@@ -1,4 +1,5 @@
-<AddIn id          = "NemerleBinding"
+<Addin id          = "NemerleBinding"
+       namespace   = "MonoDevelop"
        name        = "Nemerle Language Binding"
        author      = "Todd Berman and Alejandro Serrano"
        copyright   = "GPL"
@@ -12,10 +13,10 @@
   </Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
 	
   <Extension path = "/SharpDevelop/Workbench/Ambiences">
@@ -46,14 +47,14 @@
 	</Extension>
 	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "Nemerle">
+    <Condition id="activelanguage" value = "Nemerle">
       <DialogPanel id = "NemerleCodeGenerationPanel"
                    _label = "Code Generation"
                    class = "NemerleBinding.CodeGenerationPanel"/>
       <DialogPanel id = "NemerleOutputPanel"
                    _label = "Output"
                    class = "NemerleBinding.OutputPanel"/>
-    </Conditional>
+    </Condition>
   </Extension>
 
   <Extension path = "/Workspace/Icons">
@@ -71,13 +72,8 @@
                      class = "NemerleBinding.NemerleLanguageBinding" />
   </Extension>
 
-  <Extension path = "/Workspace/Parser">
-	<Class id    = "NemerleParser" 
-	       class = "NemerleBinding.Parser.TParser"/>
-  </Extension>
-
   <Extension path = "/AddIns/DefaultTextEditor/Formatter/Nemerle">
 	<Class id ="NemerleFormattingStrategy" class = "NemerleBinding.FormattingStrategy.NemerleFormattingStrategy" />
   </Extension>
 
-</AddIn>
+</Addin>

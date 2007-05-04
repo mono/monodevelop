@@ -1,3 +1,8 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CodeGenerationPanel.cs, NemerleBinding.addin.xml: Migration to
+	  Mono.Addins.
+
 2007-04-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* NemerleBinding.mdp: Don't copy referenced assemblies.
