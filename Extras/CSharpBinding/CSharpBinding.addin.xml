@@ -1,4 +1,5 @@
-<AddIn id          = "CSharpBinding"
+<Addin id          = "CSharpBinding"
+       namespace   = "MonoDevelop"
        name        = "CSharp Language Binding"
        author      = "Todd Berman"
        copyright   = "GPL"
@@ -12,12 +13,12 @@
 	</Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-    	<AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
-		<AddIn id="MonoDevelop.SourceEditor" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+    	<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
+		<Addin id="SourceEditor" version="0.13.0"/>
 	</Dependencies>
 	
 	<Extension path = "/SharpDevelop/Workbench/Ambiences">
@@ -68,43 +69,38 @@
 		            extensions = "*.resources,*.resx"/>
 	</Extension>
 
-	<Extension path = "/Workspace/Parser">
-		<Class id    = "CSharpParser" 
-		       class = "CSharpBinding.Parser.TParser"/>
-	</Extension>
-	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-		<Conditional activelanguage="C#">
+		<Condition id="activelanguage" value="C#">
 			<DialogPanel id = "CSharpCodeGenerationPanel"
 			             _label = "Code Generation"
 			             class = "CSharpBinding.CodeGenerationPanel"/>
 			<DialogPanel id = "CSharpOutputOptionsPanel"
 			             _label = "Output"
 			             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
-		</Conditional>
+		</Condition>
 	</Extension>
 	
 	
 	<Extension path = "/SharpDevelop/Workbench/ProjectOptions/GeneralOptions/Common">
-		<Conditional activelanguage="C#">
+		<Condition id="activelanguage" value="C#">
 				<DialogPanel id = "RuntimeOptionsPanel"
 				             _label = "Runtime Options"
 				             class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanel"/>
-		</Conditional>
+		</Condition>
 	</Extension>
 		
-	<Extension path = "/AddIns/DefaultTextEditor/Formatter/C#">
-		<Class id ="CSharpFormattingStrategy" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />
+	<Extension path = "/AddIns/DefaultTextEditor/Formatters">
+		<Class id ="cs" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy" />
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
-		<Conditional activelanguage="C#">
+		<Condition id="activelanguage" value="C#">
 			<DialogPanel id = "Formatting"
 			             _label = "Formatting"
 			             insertafter = "Behavior"
 			             insertbefore = "SyntaxHighlighting"
 			             class = "CSharpBinding.FormattingPanel"/>
-		</Conditional>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/Workspace/Icons">
@@ -151,10 +147,10 @@
 	        <Import assembly="CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<AddIn id="MonoDevelop.Autotools" version="0.13.0"/>
+			<Addin id="MonoDevelop.Autotools" version="0.13.0"/>
 		</Dependencies>
 		<Extension path = "/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
 		</Extension>
 	</Module>
-</AddIn>
+</Addin>

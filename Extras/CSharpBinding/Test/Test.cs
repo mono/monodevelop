@@ -31,7 +31,7 @@ public class C
 		public void SetUp()
 		{
 			Runtime.Initialize();
-			Runtime.AddInService.PreloadAddin(null, "MonoDevelop.Projects");
+			AddinManager.PreloadAddin(null, "MonoDevelop.Projects");
 
 			TextWriter tw = new StreamWriter(testFileName);
 			tw.Write(testFileContents);
