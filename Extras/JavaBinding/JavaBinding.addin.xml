@@ -1,4 +1,5 @@
-<AddIn id          = "MonoDevelop.JavaBinding"
+<Addin id          = "JavaBinding"
+       namespace   = "MonoDevelop"
        name        = "Java Language Binding"
        author      = "Todd Berman"
        copyright   = "GPL"
@@ -12,10 +13,10 @@
   </Runtime>
 
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
 	
   <Extension path = "/SharpDevelop/Workbench/FileFilter">
@@ -47,14 +48,14 @@
   </Extension>
 
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activelanguage = "Java">
+    <Condition id="activelanguage" value = "Java">
       <DialogPanel id = "JavaProjectPanel"
                    _label = "Code Generation"
                    class = "JavaBinding.ProjectConfigurationPropertyPanel"/>
 	  <DialogPanel id = "JavaOutputOptionsPanel"
 				 _label = "Output"
 				 class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
-    </Conditional>
+    </Condition>
   </Extension>
 
   <Extension path = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -86,4 +87,4 @@
 		<DataType class = "JavaBinding.JavaCompilerParameters" />
 	</Extension>
 
-</AddIn>
+</Addin>

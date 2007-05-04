@@ -1,3 +1,7 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* JavaBinding.addin.xml: Migration to Mono.Addins.
+
 2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* JavaBinding.mdp: Don't copy referenced assemblies.
