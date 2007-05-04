@@ -10,20 +10,17 @@ using System.Collections;
 using System.Diagnostics;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
 	[Description ("A language binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
-	[CodonNameAttribute("LanguageBinding")]
-	internal class LanguageBindingCodon : ClassCodon
+	internal class LanguageBindingCodon : TypeExtensionNode
 	{
 		[Description ("File extensions supported by this binding (to be shown in the Open File dialog)")]
-		[XmlMemberArrayAttribute("supportedextensions")]
+		[NodeAttribute("supportedextensions")]
 		string[] supportedExtensions;
-		
-		ILanguageBinding languageBinding;
 		
 		public string[] Supportedextensions {
 			get {
@@ -36,24 +33,8 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public ILanguageBinding LanguageBinding {
 			get {
-				return languageBinding;
+				return (ILanguageBinding) GetInstance ();
 			}
-		}
-		
-		/// <summary>
-		/// Creates an item with the specified sub items. And the current
-		/// Condition status for this item.
-		/// </summary>
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-//			if (subItems == null || subItems.Count > 0) {
-//				throw new ApplicationException("Tried to buil a command with sub commands, please check the XML definition.");
-//			}
-			Debug.Assert(Class != null && Class.Length > 0);
-			
-			languageBinding = (ILanguageBinding)AddIn.CreateObject(Class);
-			
-			return this;
 		}
 	}
 }

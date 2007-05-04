@@ -47,7 +47,6 @@
     <File name="./MonoDevelop.Projects/ProjectRenameEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/FileFormatCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Utility/Comparers.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Utility/DiffUtility.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Utility/SortUtility.cs" subtype="Code" buildaction="Compile" />
@@ -149,8 +148,6 @@
     <File name="./MonoDevelop.Projects/ProjectFileEventArgs.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectReference.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectReferenceEventArgs.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectFileCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectReferenceCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Serialization/ArrayHandler.cs" subtype="Code" buildaction="Compile" />
@@ -189,7 +186,6 @@
     <File name="./MonoDevelop.Projects.Text/TextFile.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectCreateInformation.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/IProjectBinding.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/DefaultCompilerResult.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/FileFilterCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ICompilerResult.cs" subtype="Code" buildaction="Compile" />
@@ -201,12 +197,10 @@
     <File name="./MonoDevelop.Projects/ConfigurationEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/BuildTool.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/ProjectsServices.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/GenericParameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/ReturnTypeList.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/GenericParameterList.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Extensions/DataTypeCodon.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/UnknownCombineEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Parser/PersistentGenericParamater.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.Text/TextEncoding.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
@@ -228,11 +222,16 @@
     <File name="./MonoDevelop.Projects/GenericProjectBinding.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects.dll.config" subtype="Code" buildaction="FileCopy" />
+    <File name="./MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/CustomCommandExtension.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/ProjectConvertTool.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/MonoDevelopFileFormat.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Projects/SharpDevelopFileFormat.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Projects/DefaultFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/ProjectsServices.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/SharpDevelopFileFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/TypelibImporter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/UnknownCombineEntry.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Projects/UnknownProjectVersionException.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
@@ -241,6 +240,7 @@
     <ProjectReference type="Gac" localcopy="False" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../../build/bin/Mono.Cecil.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Addins.dll" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">

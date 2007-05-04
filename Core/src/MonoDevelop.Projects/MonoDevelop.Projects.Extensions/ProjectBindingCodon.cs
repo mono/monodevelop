@@ -33,25 +33,16 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
 	[Description ("A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.")]
-	[CodonNameAttribute ("ProjectBinding")]
-	internal class ProjectBindingCodon : ClassCodon
+	internal class ProjectBindingCodon : TypeExtensionNode
 	{
-		IProjectBinding projectBinding;
-		
 		public IProjectBinding ProjectBinding {
-			get { return projectBinding; }
-		}
-		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			projectBinding = (IProjectBinding) AddIn.CreateObject (Class);
-			return this;
+			get { return (IProjectBinding) base.GetInstance (); }
 		}
 	}
 }

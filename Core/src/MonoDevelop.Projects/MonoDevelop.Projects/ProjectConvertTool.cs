@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects

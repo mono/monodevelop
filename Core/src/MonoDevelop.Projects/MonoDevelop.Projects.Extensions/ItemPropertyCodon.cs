@@ -29,41 +29,32 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.Extensions
 {
-	[Description ("A custom property. The type specified in the 'class' property is the type to which the property has to be added. Only types which implement IExtendedDataItem can be extended in this way.")]
-	[CodonNameAttribute("ItemProperty")]
-	public class ItemPropertyCodon: ClassCodon
+	public class ItemPropertyCodon: DataTypeCodon
 	{
 		[Description ("Name of the property.")]
-		[XmlMemberAttribute("name", IsRequired=true)]
+		[NodeAttribute("name", true)]
 		string propName;
 		
 		[Description ("Full name of the property type.")]
-		[XmlMemberAttribute("type", IsRequired=true)]
+		[NodeAttribute("type", true)]
 		string propType;
 		
-		Type cls, type;
+		Type type;
 		
 		public Type PropertyType {
-			get { return type; }
+			get {
+				if (type == null)
+					type = Addin.GetType (propType);
+				return type; 
+			}
 		}
 		
 		public string PropertyName {
 			get { return propName; }
-		}
-		
-		public Type ClassType {
-			get { return cls; }
-		}
-		
-		public override object BuildItem(object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			cls = AddIn.GetType (Class);
-			type = AddIn.GetType (propType);
-			return this;
 		}
 	}
 	

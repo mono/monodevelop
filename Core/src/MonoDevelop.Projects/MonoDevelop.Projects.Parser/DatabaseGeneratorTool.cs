@@ -27,7 +27,8 @@
 //
 
 using System;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Parser
 {

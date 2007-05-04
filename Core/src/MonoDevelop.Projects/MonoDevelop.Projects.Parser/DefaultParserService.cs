@@ -23,7 +23,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Utility;
 using MonoDevelop.Projects.Text;

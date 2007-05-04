@@ -31,21 +31,18 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.Extensions
 {
-	[CodonNameAttribute("DataType")]
 	[Description ("A type name.")]
-	public class DataTypeCodon: ClassCodon
+	public class DataTypeCodon: ExtensionNode
 	{
-		public DataTypeCodon()
-		{
-		}
+		[NodeAttribute ("class", true)]
+		string typeName;
 		
-		public override object BuildItem (object owner, ArrayList subItems, ConditionCollection conditions)
-		{
-			return this;
+		public Type Class {
+			get { return Addin.GetType (typeName, true); }
 		}
 	}
 }

@@ -7,6 +7,7 @@ REFS =  \
 	$(MONODOC_LIBS) \
 	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
@@ -27,7 +28,6 @@ FILES =  \
 	MonoDevelop.Projects.Documentation/IDocumentationService.cs \
 	MonoDevelop.Projects.Extensions/DataTypeCodon.cs \
 	MonoDevelop.Projects.Extensions/FileFilterCodon.cs \
-	MonoDevelop.Projects.Extensions/FileFormatCodon.cs \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \

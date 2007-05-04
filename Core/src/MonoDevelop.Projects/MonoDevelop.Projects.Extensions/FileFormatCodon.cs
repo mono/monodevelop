@@ -33,7 +33,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions

@@ -30,8 +30,9 @@
 using System;
 using System.IO;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {

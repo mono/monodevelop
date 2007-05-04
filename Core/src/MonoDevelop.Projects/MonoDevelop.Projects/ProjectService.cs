@@ -20,9 +20,9 @@ using MonoDevelop.Projects.Serialization;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
+using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
@@ -298,58 +298,55 @@ namespace MonoDevelop.Projects
 		{
 			base.InitializeService();
 
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectFileFormats", OnFormatExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/SerializableClasses", OnSerializableExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/Serialization/ExtendedProperties", OnPropertiesExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/ProjectBindings", OnProjectsExtensionChanged);
 			UpdateExtensions ();
-			Runtime.AddInService.ExtensionChanged += OnExtensionChanged;
+			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
-		void OnFormatExtensionChanged (ExtensionAction action, object item)
+		void OnFormatExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				FileFormatCodon codon = (FileFormatCodon) item;
-				if (codon.FileFormat != null)
-					formatManager.RegisterFileFormat (codon.FileFormat);
-			}
+			if (args.Change == ExtensionChange.Add)
+				formatManager.RegisterFileFormat ((IFileFormat) args.ExtensionObject);
 		}
 		
-		void OnSerializableExtensionChanged (ExtensionAction action, object item)
+		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				Type t = ((DataTypeCodon)item).Type;
+			if (args.Change == ExtensionChange.Add) {
+				Type t = ((DataTypeCodon)args.ExtensionNode).Class;
 				if (t == null) {
-					throw new UserException ("Type '" + ((DataTypeCodon)item).Class + "' not found. It could not be registered as a serializable type.");
+					throw new UserException ("Type '" + ((DataTypeCodon)args.ExtensionNode).Class + "' not found. It could not be registered as a serializable type.");
 				}
 				DataContext.IncludeType (t);
 			}
 		}
 		
-		void OnPropertiesExtensionChanged (ExtensionAction action, object item)
+		void OnPropertiesExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				ItemPropertyCodon cls = (ItemPropertyCodon) item;
-				if (cls.ClassType != null && cls.PropertyType != null)
-					DataContext.RegisterProperty (cls.ClassType, cls.PropertyName, cls.PropertyType);
+			if (args.Change == ExtensionChange.Add) {
+				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
+				if (cls.Class != null && cls.PropertyType != null)
+					DataContext.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType);
 			}
 		}
 		
-		void OnProjectsExtensionChanged (ExtensionAction action, object item)
+		void OnProjectsExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add)
-				projectBindings.Add (item);
+			if (args.Change == ExtensionChange.Add)
+				projectBindings.Add (args.ExtensionNode);
 		}
 		
-		void OnExtensionChanged (string path)
+		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (path == "/SharpDevelop/Workbench/ProjectServiceExtensions")
+			if (args.PathChanged ("/SharpDevelop/Workbench/ProjectServiceExtensions"))
 				UpdateExtensions ();
 		}
 		
 		void UpdateExtensions ()
 		{
-			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) Runtime.AddInService.GetTreeItems ("/SharpDevelop/Workbench/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) AddinManager.GetExtensionObjects ("/SharpDevelop/Workbench/ProjectServiceExtensions", typeof(ProjectServiceExtension));
 			for (int n=0; n<extensions.Length - 1; n++)
 				extensions [n].Next = extensions [n + 1];
 

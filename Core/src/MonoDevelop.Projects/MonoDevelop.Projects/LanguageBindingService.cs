@@ -19,7 +19,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Parser;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
@@ -119,13 +119,13 @@ namespace MonoDevelop.Projects
 		{
 			base.InitializeService ();
 			bindings = new List<LanguageBindingCodon> ();
-			Runtime.AddInService.RegisterExtensionItemListener ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/SharpDevelop/Workbench/LanguageBindings", OnExtensionChanged);
 		}
 		
-		void OnExtensionChanged (ExtensionAction action, object item)
+		void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
-			if (action == ExtensionAction.Add) {
-				bindings.Add ((LanguageBindingCodon) item);
+			if (args.Change == ExtensionChange.Add) {
+				bindings.Add ((LanguageBindingCodon) args.ExtensionNode);
 				
 				// Make sure the langs list is re-created
 				langs = null;

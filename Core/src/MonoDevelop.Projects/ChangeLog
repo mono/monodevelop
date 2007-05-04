@@ -1,3 +1,22 @@
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/ProjectService.cs,
+	  MonoDevelop.Projects/LanguageBindingService.cs,
+	  MonoDevelop.Projects/ProjectConvertTool.cs,
+	  MonoDevelop.Projects/BuildTool.cs, MonoDevelop.Projects/Project.cs,
+	  MonoDevelop.Projects.Ambience/AmbienceService.cs,
+	  MonoDevelop.Projects.addin.xml, MonoDevelop.Projects.mdp,
+	  Makefile.am, MonoDevelop.Projects.Parser/DatabaseGeneratorTool.cs,
+	  MonoDevelop.Projects.Parser/DefaultParserService.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Extensions/FileFormatCodon.cs,
+	  MonoDevelop.Projects.Extensions/DataTypeCodon.cs,
+	  MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs,
+	  MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs,
+	  MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs,
+	  MonoDevelop.Projects.Extensions/FileFilterCodon.cs: Migration to
+	  Mono.Addins.
+
 2007-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs

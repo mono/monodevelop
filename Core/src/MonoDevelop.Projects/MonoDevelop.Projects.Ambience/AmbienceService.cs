@@ -9,7 +9,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Projects.Ambience
@@ -53,25 +53,24 @@ namespace MonoDevelop.Projects.Ambience
 		
 		public string[] AvailableAmbiences {
 			get {
-				IAddInTreeNode ambiencesNode = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
-				string[] availableAmbiences = new string[ambiencesNode.ChildNodes.Count];
+				ExtensionNodeList ambiencesNodes = AddinManager.GetExtensionNodes ("/SharpDevelop/Workbench/Ambiences");
+				string[] availableAmbiences = new string [ambiencesNodes.Count];
 				int index = 0;
-				foreach(string ambienceName in ambiencesNode.ChildNodes.Keys)
-					availableAmbiences[index++] = ambienceName;
+				foreach (ExtensionNode node in ambiencesNodes)
+					availableAmbiences [index++] = node.Id;
 				
 				return availableAmbiences;
 			}
 		}
 		
-		public Ambience AmbienceFromName(string name)
+		public Ambience AmbienceFromName (string name)
 		{
 			Ambience amb = (Ambience) ambiences [name];
 			
-			if (amb == null) {				
-				IAddInTreeNode node = Runtime.AddInService.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
-					
-				if(node.ChildNodes.Contains(name)) {
-					amb = (Ambience)node.BuildChildItem(name, this);
+			if (amb == null) {
+				TypeExtensionNode node = (TypeExtensionNode) AddinManager.GetExtensionNode ("/SharpDevelop/Workbench/Ambiences/" + name);
+				if (node != null) {
+					amb = (Ambience) node.CreateInstance ();
 				} else {
 					amb = GenericAmbience;
 				}

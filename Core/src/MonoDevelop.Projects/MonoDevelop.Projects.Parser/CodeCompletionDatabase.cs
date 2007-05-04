@@ -40,7 +40,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Core.Properties;
 using MonoDevelop.Core;
-using MonoDevelop.Core.AddIns;
+using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
 using System.Reflection;
