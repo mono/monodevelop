@@ -1,4 +1,5 @@
-<AddIn id          = "MonoDeveloperExtensions"
+<Addin id          = "MonoDeveloperExtensions"
+       namespace   = "MonoDevelop"
        name        = "IDE Extensions for developers of the Mono framework"
        author      = "Lluis Sanchez Gual"
        copyright   = "(c) 2005 Novell, Inc."
@@ -11,11 +12,11 @@
     </Runtime>
 	
 	<Dependencies>
-	    <AddIn id="MonoDevelop.Core" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Core.Gui" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects" version="0.13.0"/>
-	    <AddIn id="MonoDevelop.Projects.Gui" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Ide" version="0.13.0"/>
+	    <Addin id="Core" version="0.13.0"/>
+	    <Addin id="Core.Gui" version="0.13.0"/>
+	    <Addin id="Projects" version="0.13.0"/>
+	    <Addin id="Projects.Gui" version="0.13.0"/>
+		<Addin id="Ide" version="0.13.0"/>
 	</Dependencies>
 
 	<Extension path = "/SharpDevelop/Workbench/ProjectFileFormats">
@@ -24,11 +25,11 @@
 	</Extension>
 	
   <Extension path = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
-    <Conditional activeproject = "MonoMakefile">
+    <Condition id="activeproject" value = "MonoMakefile">
 		<DialogPanel id = "MonoMakefileOptionsPanel"
 					 _label = "Output"
-					 class = "MonoDevelop.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
-    </Conditional>
+					 class = "MonoDevelop.Projects.Gui.Dialogs.OutputOptionsPanel"/>
+    </Condition>
   </Extension>
 
 	<Extension path = "/SharpDevelop/Commands">
@@ -43,12 +44,12 @@
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
-		<Conditional activeproject="MonoMakefile" action="Exclude">
+		<Condition id="activeproject" value="MonoMakefile">
 			<CommandItem id = "MonoDeveloper.Commands.Install"
 					  insertafter = "BuildGroupSeparator"
 					  insertbefore = "Add" />
 			<SeparatorItem id = "svnSep" />
-		</Conditional>
+		</Condition>
 	</Extension>
 
 	<Module>
@@ -56,11 +57,11 @@
 	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<AddIn id="MonoDevelop.NUnit" version="0.13.0"/>
+			<Addin id="MonoDevelop.NUnit" version="0.13.0"/>
 		</Dependencies>
 		<Extension path = "/Services/NUnit/TestProviders">
 			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
 		</Extension>
 	</Module>
-</AddIn>
+</Addin>
 
