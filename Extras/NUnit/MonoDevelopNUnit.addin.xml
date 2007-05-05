@@ -163,5 +163,8 @@
 		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat, MonoDevelop.NUnit"/>
 	</Extension>
 
+	<Extension path = "/Services/NUnit/TestProviders">
+		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+	</Extension>
 
 </Addin>

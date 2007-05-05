@@ -1,3 +1,8 @@
+2007-05-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelopNUnit.addin.xml: Restore extension deleted during the M.A
+	  migration.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.NUnit.mdp, MonoDevelopNUnit.addin.xml,
