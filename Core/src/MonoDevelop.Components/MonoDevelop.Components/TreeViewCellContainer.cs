@@ -31,9 +31,11 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
-	class TreeViewCellContainer: Entry
+	public class TreeViewCellContainer: Entry
 	{
 		EventBox box;
+		
+		public event EventHandler EditingDone;
 		
 		public TreeViewCellContainer (Gtk.Widget child)
 		{
@@ -63,8 +65,11 @@ namespace MonoDevelop.Components
 				box.Parent = Parent;
 				box.Show ();
 			}
-			else
+			else {
 				box.Unparent ();
+				if (EditingDone != null)
+					EditingDone (this, EventArgs.Empty);
+			}
 		}
 		
 		protected override void OnShown ()

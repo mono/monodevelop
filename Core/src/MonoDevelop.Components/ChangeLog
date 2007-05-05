@@ -1,3 +1,8 @@
+2007-05-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components/TreeViewCellContainer.cs: Made the class
+	  public and added EditingDone event.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment/DeployProjectServiceExtension.cs: Avoid
