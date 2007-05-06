@@ -1,3 +1,9 @@
+2007-05-06  Michael Hutchinson  <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.Ide.Codons/LanguageActiveCondition.cs: Check using 
+	Project.SupportedLanguages instead of DotNetProject.LanguageName 
+	so it works with non-.NET languages.
+
 2007-05-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs (Export): Removed

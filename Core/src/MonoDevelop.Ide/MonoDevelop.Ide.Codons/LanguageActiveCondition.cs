@@ -28,12 +28,16 @@ namespace MonoDevelop.Ide.Codons
 		public override bool Evaluate (NodeElement condition)
 		{
 			string lang = condition.GetAttribute ("value");
-			DotNetProject project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			
-			if (lang == "*") {
-				return project != null;
-			}
-			return project != null && project.LanguageName == lang;
+			if (lang == "*")
+				return (project is DotNetProject);
+			
+			if (project != null)
+				foreach (string suppLang in project.SupportedLanguages)
+					if (suppLang == lang) return true;
+			
+			return false;
 		}
 	}
 
