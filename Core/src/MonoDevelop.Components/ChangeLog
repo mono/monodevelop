@@ -1,3 +1,10 @@
+2007-05-06  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Components/TreeViewCellContainer.cs: Fixed compiler
+	  warning.
+	* MonoDevelop.Components/IconView.cs: Ported to use Gtk.IconView
+	  instead of GNOME.IconList.
+
 2007-05-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Components/TreeViewCellContainer.cs: Made the class

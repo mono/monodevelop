@@ -35,7 +35,7 @@ namespace MonoDevelop.Components
 	{
 		EventBox box;
 		
-		public event EventHandler EditingDone;
+		public new event EventHandler EditingDone;
 		
 		public TreeViewCellContainer (Gtk.Widget child)
 		{
