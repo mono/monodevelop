@@ -1,3 +1,14 @@
+2007-05-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.Parser/PersistentIndexer.cs: Same as below.
+
+	* MonoDevelop.Projects.Parser/PersistentMethod.cs (Resolve, Read):
+	Updated for changes to PersistentParameter.cs
+
+	* MonoDevelop.Projects.Parser/PersistentParameter.cs
+	(Resolve, Read): Now take a declaringMember argument to set on the
+	newly allocated DefaultParameter instance.
+
 2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Extensions/FileFormatCodon.cs,

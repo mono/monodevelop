@@ -269,12 +269,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public virtual IParameter RenameParameter (RefactorerContext ctx, IMethod method, IParameter param, string newName)
 		{
 			IEditableTextFile file = ctx.GetFile (method.DeclaringType.Region.FileName);
-			if (file == null)
+			if (file == null) {
+				Console.WriteLine ("couldn't get file for param renaming");
 				return null;
+			}
 			
 			int pos = GetParameterNamePosition (file, method, param);
-			if (pos == -1)
+			if (pos == -1) {
+				Console.WriteLine ("couldn't get param position");
 				return null;
+			}
 			
 			string txt = file.GetText (pos, pos + param.Name.Length);
 			if (txt != param.Name)

@@ -23,7 +23,7 @@ namespace MonoDevelop.Projects.Parser
 			ind.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
 
 			foreach (IParameter p in source.Parameters)
-				ind.Parameters.Add (PersistentParameter.Resolve (p, typeResolver));
+				ind.Parameters.Add (PersistentParameter.Resolve (p, (IMember) ind, typeResolver));
 
 			ind.Region = source.Region;
 			ind.Attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Parser
 			
 			uint count = reader.ReadUInt32();
 			for (uint i = 0; i < count; ++i) {
-				ind.Parameters.Add (PersistentParameter.Read (reader, nameTable));
+				ind.Parameters.Add (PersistentParameter.Read (reader, (IMember) ind, nameTable));
 			}
 			ind.Region = PersistentRegion.Read (reader, nameTable);
 			ind.Attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);

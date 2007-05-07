@@ -14,24 +14,28 @@ namespace MonoDevelop.Projects.Parser
 	[Serializable]
 	internal sealed class PersistentParameter
 	{
-		public static DefaultParameter Resolve (IParameter source, ITypeResolver typeResolver)
+		public static DefaultParameter Resolve (IParameter source, IMember declaringMember, ITypeResolver typeResolver)
 		{
-			DefaultParameter par = new DefaultParameter ();
-			par.Name = source.Name;
+			IReturnType returnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			DefaultParameter par = new DefaultParameter (declaringMember, source.Name, returnType);
 			par.Documentation = source.Documentation;
 			par.Modifier = source.Modifier;
-			par.ReturnType = PersistentReturnType.Resolve (source.ReturnType, typeResolver);
+			
 			return par;
 		}
 		
-		public static DefaultParameter Read (BinaryReader reader, INameDecoder nameTable)
+		public static DefaultParameter Read (BinaryReader reader, IMember declaringMember, INameDecoder nameTable)
 		{
-			DefaultParameter par = new DefaultParameter ();
-			par.Name = PersistentHelper.ReadString (reader, nameTable);
-			par.Documentation = PersistentHelper.ReadString (reader, nameTable);
-			par.Modifier = (ParameterModifier)reader.ReadByte();
-			par.ReturnType = PersistentReturnType.Read (reader, nameTable);
-			return par;
+			string name = PersistentHelper.ReadString (reader, nameTable);
+			string docs = PersistentHelper.ReadString (reader, nameTable);
+			byte mod = reader.ReadByte ();
+			IReturnType returnType = PersistentReturnType.Read (reader, nameTable);
+			
+			DefaultParameter param = new DefaultParameter (declaringMember, name, returnType);
+			param.Modifier = (ParameterModifier) mod;
+			param.Documentation = docs;
+			
+			return param;
 		}
 		
 		public static void WriteTo (IParameter p, BinaryWriter writer, INameEncoder nameTable)
