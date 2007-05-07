@@ -15,23 +15,16 @@ using MonoDevelop.Core.Properties;
 
 namespace MonoDevelop.Core.Addins
 {
-	[Description ("An icon bound to a language or file extension.")]
+	[ExtensionNode ("Icon", "An icon bound to a language or file extension")]
 	public class IconCodon : ExtensionNode
 	{
-		[Description ("Obsolete. Do not use.")]
-		[NodeAttribute("location")]
-		string location = null;
-		
-		[Description ("Name of the language represented by this icon. Optional.")]
-		[NodeAttribute("language")]
+		[NodeAttribute("language", "Name of the language represented by this icon. Optional.")]
 		string language  = null;
 		
-		[Description ("Resource name.")]
-		[NodeAttribute("resource")]
+		[NodeAttribute("resource", "Resource name.")]
 		string resource  = null;
 		
-		[Description ("File extensions represented by this icon. Optional.")]
-		[NodeAttribute("extensions")]
+		[NodeAttribute("extensions", "File extensions represented by this icon. Optional.")]
 		string[] extensions = null;
 		
 		public string Language {
@@ -40,15 +33,6 @@ namespace MonoDevelop.Core.Addins
 			}
 			set {
 				language = value;
-			}
-		}
-		
-		public string Location {
-			get {
-				return location;
-			}
-			set {
-				location = value;
 			}
 		}
 		

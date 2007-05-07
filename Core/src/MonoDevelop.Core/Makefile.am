@@ -8,6 +8,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/IconCodon.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ServiceExtensionNode.cs \
+	MonoDevelop.Core.AddIns/SetupApp.cs \
 	MonoDevelop.Core.Execution/AddinDependencyAttribute.cs \
 	MonoDevelop.Core.Execution/BreakpointEventHandler.cs \
 	MonoDevelop.Core.Execution/DefaultExecutionHandlerFactory.cs \

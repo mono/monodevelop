@@ -1,3 +1,18 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.AddIns/IconCodon.cs: Updated description attributes.
+	  Removed unused property.
+	* MonoDevelop.Core.AddIns/SetupApp.cs, Makefile.am,
+	  MonoDevelop.Core.addin.xml, MonoDevelop.Core.mdp: Implemented setup
+	  tool using Mono.Addins.
+	* MonoDevelop.Core.AddIns/ExecutionHandlerCodon.cs: Updated description
+	  attributes.
+	* MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs: Read the class
+	  name from the 'class' attribute, not from 'type'. Updated
+	  documentation attributes.
+	* MonoDevelop.Core/Runtime.cs: Register the main md repository by
+	  default. Improved add-in error message.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.AddIns/IconCodon.cs,

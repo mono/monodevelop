@@ -70,18 +70,20 @@ namespace MonoDevelop.Core
 			if (updateAddinRegistry)
 				AddinManager.Registry.Update (null);
 			setupService = new SetupService (AddinManager.Registry);
+			setupService.Repositories.RegisterRepository (null, "http://go-mono.com/md/main.mrep", false);
+
 			ServiceManager.Initialize ();
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
-			Console.WriteLine ("Add-in error: " + args.Message);
-			Console.WriteLine (args.AddinId);
+			Console.WriteLine ("Add-in error (" + args.AddinId + "): " + args.Message);
+			Console.WriteLine (args.Exception);
 		}
 		
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-		//	Console.WriteLine ("Add-in loaded: " + args.AddinId);
+//			Console.WriteLine ("Add-in loaded: " + args.AddinId);
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
