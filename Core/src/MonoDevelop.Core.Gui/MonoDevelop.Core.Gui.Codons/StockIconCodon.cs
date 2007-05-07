@@ -36,19 +36,16 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A stock icon. It is possible to register several icons with the same 'id' and different sizes.")]
+	[ExtensionNode (Description="A stock icon. It is possible to register several icons with the same 'id' and different sizes.")]
 	internal class StockIconCodon : ExtensionNode
 	{
-		[Description ("Id of the stock icon.")]
-		[NodeAttribute ("stockid", true)]
+		[NodeAttribute ("stockid", true, "Id of the stock icon.")]
 		string stockid;
 		
-		[Description ("Size of the icon.")]
-		[NodeAttribute ("size")]
+		[NodeAttribute ("size", "Size of the icon.")]
 		Gtk.IconSize size = Gtk.IconSize.Invalid;
 		
-		[Description ("Name of the resource where the icon is stored.")]
-		[NodeAttribute ("resource")]
+		[NodeAttribute ("resource", "Name of the resource where the icon is stored.")]
 		string resource;
 		
 		public string StockId {

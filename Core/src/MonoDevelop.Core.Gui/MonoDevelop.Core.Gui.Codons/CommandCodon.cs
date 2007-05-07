@@ -39,43 +39,31 @@ using System.ComponentModel;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("An user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as id for the command by just using '@' as prefix for the string.")]
+	[ExtensionNode (Description="An user interface command. The 'id' of the command must match the full name of an existing enumeration. An arbitrary string can also be used as id for the command by just using '@' as prefix for the string.")]
 	public class CommandCodon : TypeExtensionNode
 	{
-		[Description ("Label")]
-		[NodeAttribute ("_label", true)]
+		[NodeAttribute ("_label", true, "Label")]
 		string label;
 		
-		[Description ("Description of the command")]
-		[NodeAttribute ("_description")]
+		[NodeAttribute ("_description", "Description of the command")]
 		string _description;
 		
-		[Description ("Obsolete. Do not use.")]
-		[NodeAttribute ("description")]
-		string description;
-		
-		[Description ("Key combination that triggers the command. Control and Alt modifiers can be specified using '|' as separator. For example 'Control|d'")]
-		[NodeAttribute ("shortcut")]
+		[NodeAttribute ("shortcut", "Key combination that triggers the command. Control and Alt modifiers can be specified using '|' as separator. For example 'Control|d'")]
 		string shortcut;
 		
-		[Description ("Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
-		[NodeAttribute("icon")]
+		[NodeAttribute("icon", "Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		
-		[Description ("Set to 'false' if the command has to be hidden when disabled. 'true' by default.")]
-		[NodeAttribute("disabledVisible")]
+		[NodeAttribute("disabledVisible", "Set to 'false' if the command has to be hidden when disabled. 'true' by default.")]
 		bool disabledVisible = true;
 		
-		[Description ("Type of the command. It can be: normal (the default), check, radio or array.")]
-		[NodeAttribute("type")]
+		[NodeAttribute("type", "Type of the command. It can be: normal (the default), check, radio or array.")]
 		string type = "normal";
 		
-		[Description ("Class of the widget to create when type is 'custom'.")]
-		[NodeAttribute("widget")]
+		[NodeAttribute("widget", "Class of the widget to create when type is 'custom'.")]
 		string widget = null;
 		
-		[Description ("Class that handles this command. This property is optional.")]
-		[NodeAttribute("defaultHandler")]
+		[NodeAttribute("defaultHandler", "Class that handles this command. This property is optional.")]
 		string defaultHandler;
 		
 		public override object CreateInstance ()
@@ -134,7 +122,6 @@ namespace MonoDevelop.Core.Gui.Codons
 					
 				CustomCommand ccmd = new CustomCommand ();
 				ccmd.Text = label;
-				ccmd.Description = description;
 				ccmd.WidgetType = Addin.GetType (widget);
 				if (ccmd.WidgetType == null)
 					throw new InvalidOperationException ("Could not find command type '" + widget + "'.");
@@ -160,9 +147,6 @@ namespace MonoDevelop.Core.Gui.Codons
 			cmd.Text = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
 			if ((_description != null) && (_description.Length > 0)){
 				cmd.Description = _description;				
-			}
-			else{
-				cmd.Description = description;
 			}
 			cmd.Description = GettextCatalog.GetString(cmd.Description);
 			

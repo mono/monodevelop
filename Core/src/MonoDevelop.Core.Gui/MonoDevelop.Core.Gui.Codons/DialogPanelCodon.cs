@@ -16,11 +16,10 @@ using MonoDevelop.Core.Gui.Dialogs;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A dialog panel to be shown in an options dialog. The specified class must implement MonoDevelop.Core.Gui.Dialogs.IDialogPanel.")]
+	[ExtensionNode (Description="A dialog panel to be shown in an options dialog. The specified class must implement MonoDevelop.Core.Gui.Dialogs.IDialogPanel.")]
 	public class DialogPanelCodon : TypeExtensionNode
 	{
-		[Description ("A dialog panel to be shown in an options dialog.")]
-		[NodeAttribute("_label", true)]
+		[NodeAttribute("_label", true, "Name of the panel")]
 		string label = null;
 		
 		string clsName;

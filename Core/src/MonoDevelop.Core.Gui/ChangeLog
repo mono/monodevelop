@@ -1,3 +1,18 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp, MonoDevelop.Core.Gui.Dialogs/SetupApp.cs,
+	  Makefile.am, MonoDevelop.Core.Gui.addin.xml: Implemented the gsetup
+	  utility using Mono.Addins.
+	* MonoDevelop.Core.Gui.Codons/LocalCommandItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/ItemSetCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/LinkItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/StockIconCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/CommandItemCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/CommandCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/DialogPanelCodon.cs,
+	  MonoDevelop.Core.Gui.Codons/SeparatorItemCodon.cs: Use the
+	  Mono.Addins attributes to provide extension documentation.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp,

@@ -39,15 +39,13 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A submenu")]
-	internal class ItemSetCodon : TypeExtensionNode
+	[ExtensionNode (Description="A submenu")]
+	internal class ItemSetCodon : InstanceExtensionNode
 	{
-		[Description ("Label of the submenu")]
-		[NodeAttribute ("_label")]
+		[NodeAttribute ("_label", "Label of the submenu")]
 		string label;
 		
-		[Description ("Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
-		[NodeAttribute("icon")]
+		[NodeAttribute("icon", "Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		
 		public override object CreateInstance ()
@@ -57,7 +55,7 @@ namespace MonoDevelop.Core.Gui.Codons
 			label = Runtime.StringParserService.Parse (GettextCatalog.GetString (label));
 			if (icon != null) icon = ResourceService.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
-			foreach (TypeExtensionNode e in ChildNodes) {
+			foreach (InstanceExtensionNode e in ChildNodes) {
 				CommandEntry ce = e.CreateInstance () as CommandEntry;
 				if (ce != null)
 					cset.Add (ce);

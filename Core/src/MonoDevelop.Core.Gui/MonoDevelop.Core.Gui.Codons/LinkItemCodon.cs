@@ -39,15 +39,13 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A menu or toolbar item that opens an URL when activated")]
-	internal class LinkItemCodon : TypeExtensionNode
+	[ExtensionNode (Description="A menu or toolbar item that opens an URL when activated")]
+	internal class LinkItemCodon : InstanceExtensionNode
 	{
-		[Description ("Label of the item.")]
-		[NodeAttribute ("_label")]
+		[NodeAttribute ("_label", "Label of the item.")]
 		string label;
 		
-		[Description ("URL to open.")]
-		[NodeAttribute("link")]
+		[NodeAttribute ("link", "URL to open.")]
 		string link;
 		
 //		[XmlMemberAttribute("description")]

@@ -39,7 +39,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("Allows the definition of a complete command item inside a menu or toolbar description")]
+	[ExtensionNode (Description="Allows the definition of a complete command item inside a menu or toolbar description")]
 	internal class LocalCommandItemCodon : CommandCodon
 	{
 		public override object CreateInstance ()

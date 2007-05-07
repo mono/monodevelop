@@ -42,6 +42,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/IWizardPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/ResourceService.cs \
+	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
 	MonoDevelop.Core.Gui.Dialogs/StatusPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/TreeViewOptions.cs \
 	MonoDevelop.Core.Gui.Dialogs/WizardDialog.cs \

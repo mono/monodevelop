@@ -37,8 +37,8 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A separator menu or toolbar item")]
-	internal class SeparatorItemCodon : TypeExtensionNode
+	[ExtensionNode (Description="A separator menu or toolbar item")]
+	internal class SeparatorItemCodon : InstanceExtensionNode
 	{
 		public override object CreateInstance ()
 		{

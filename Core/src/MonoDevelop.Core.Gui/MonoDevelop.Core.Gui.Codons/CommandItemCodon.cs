@@ -37,8 +37,8 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.Gui.Codons
 {
-	[Description ("A command menu or toolbar item. The id of the element must match the id of a registered command.")]
-	internal class CommandItemCodon : TypeExtensionNode
+	[ExtensionNode (Description="A command menu or toolbar item. The id of the element must match the id of a registered command.")]
+	internal class CommandItemCodon : InstanceExtensionNode
 	{
 		public override object CreateInstance ()
 		{

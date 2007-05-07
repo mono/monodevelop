@@ -55,7 +55,7 @@
 	<Extension path = "/System/Applications">
 		<Application id    = "gsetup"
 		       description = "Graphical add-in setup utility"
-		       type = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
+		       class = "MonoDevelop.Core.Gui.Dialogs.SetupApp"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
