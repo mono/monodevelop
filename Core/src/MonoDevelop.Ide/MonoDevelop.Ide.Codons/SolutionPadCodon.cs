@@ -47,13 +47,14 @@ namespace MonoDevelop.Ide.Codons
 		TreePadOption[] options;
 		TreeViewPad pad;
 		
-		[Description (	"Default placement of the pad inside the workbench. " +
-						"It can be: left, right, top, bottom, or a relative position, for example: 'ProjectPad/left'" +
-						"would show the pad at the left side of the project pad. When using " +
-						"relative placements several positions can be provided. If the " +
-						"pad can be placed in the first position, the next one will be " +
-						"tried. For example 'ProjectPad/left; bottom'.")]
-		[NodeAttribute("defaultPlacement")]
+		[NodeAttribute("defaultPlacement",
+		               "Default placement of the pad inside the workbench. " +
+		               "It can be: left, right, top, bottom, or a relative position, for example: 'ProjectPad/left'" +
+		               "would show the pad at the left side of the project pad. When using " +
+		               "relative placements several positions can be provided. If the " +
+		               "pad can be placed in the first position, the next one will be " +
+		               "tried. For example 'ProjectPad/left; bottom'."
+		               )]
 		string placement = null;
 
 		public string DefaultPlacement {

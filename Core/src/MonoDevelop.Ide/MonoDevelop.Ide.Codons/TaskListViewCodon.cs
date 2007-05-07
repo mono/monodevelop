@@ -37,17 +37,15 @@ using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("Registers a task list view to be shown in the task list pad.")]
+	[ExtensionNode (Description="Registers a task list view to be shown in the task list pad.")]
 	internal class TaskListViewCodon : ExtensionNode
 	{
 		ITaskListView view;
 		
-		[Description ("Display name of the view.")]
-		[NodeAttribute("_label")]
+		[NodeAttribute("_label", "Display name of the view.")]
 		string label = null;
 		
-		[Description ("Class of the view.")]
-		[NodeAttribute("class")]
+		[NodeAttribute("class", "Class of the view.")]
 		string className;
 		
 		public ITaskListView View {

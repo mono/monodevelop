@@ -36,7 +36,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("Makes a pad available in workbench context. The id property is the id of a registered pad.")]
+	[ExtensionNode (Description="Makes a pad available in workbench context. The id property is the id of a registered pad.")]
 	internal class ContextPadCodon : ExtensionNode
 	{
 	}

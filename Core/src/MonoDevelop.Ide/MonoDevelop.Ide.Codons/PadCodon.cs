@@ -44,20 +44,13 @@ namespace MonoDevelop.Ide.Codons
 	{
 		IPadContent content;
 		
-		[Description ("Unused.")]
-		[NodeAttribute("context")]
-		string context = null;
-		
-		[Description ("Display name of the pad.")]
-		[NodeAttribute("_label")]
+		[NodeAttribute("_label", "Display name of the pad.")]
 		string label = null;
 		
-		[Description ("Class name.")]
-		[NodeAttribute("class")]
+		[NodeAttribute("class", "Class name.")]
 		string className = null;
 		
-		[Description ("Icon of the pad. It can be a stock icon or a resource icon (use 'res:' as prefix in the last case).")]
-		[NodeAttribute("icon")]
+		[NodeAttribute("icon", "Icon of the pad. It can be a stock icon or a resource icon (use 'res:' as prefix in the last case).")]
 		string icon = null;
 
 		string[] contexts;
@@ -88,8 +81,6 @@ namespace MonoDevelop.Ide.Codons
 		
 		protected virtual IPadContent CreatePad ()
 		{
-			if (context != null)
-				contexts = context.Split (',');
 			return (IPadContent) Addin.CreateInstance (className, true);
 		}
 	}

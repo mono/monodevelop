@@ -36,11 +36,10 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A file template type. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileDescriptionTemplate")]
+	[ExtensionNode (Description="A file template type. The specified class must be a subclass of MonoDevelop.Ide.Templates.FileDescriptionTemplate")]
 	internal class FileTemplateTypeCodon : TypeExtensionNode
 	{
-		[Description ("Name to use to reference this template type in a file template.")]
-		[NodeAttribute("name", true)]
+		[NodeAttribute("name", true, "Name to use to reference this template type in a file template.")]
 		string name;
 		
 		public string ElementName {

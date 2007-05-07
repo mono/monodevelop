@@ -14,11 +14,10 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A file template.")]
+	[ExtensionNode (Description="A file template.")]
 	internal class FileTemplateCodon : ExtensionNode
 	{
-		[Description ("Resource name where the template is stored.")]
-		[NodeAttribute("resource", true)]
+		[NodeAttribute("resource", true, "Resource name where the template is stored.")]
 		string resource;
 		
 		public string Resource {

@@ -15,7 +15,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
+	[ExtensionNode (Description="A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
 	internal class DisplayBindingCodon : TypeExtensionNode
 	{
 		public IDisplayBinding DisplayBinding {

@@ -36,7 +36,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A workbench context.")]
+	[ExtensionNode (Description="A workbench context.")]
 	internal class WorkbenchContextCodon : ExtensionNode
 	{
 		ContextPadCodon[] pads;

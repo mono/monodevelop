@@ -38,15 +38,13 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A display option of a solution pad.")]
+	[ExtensionNode (Description="A display option of a solution pad.")]
 	internal class PadOptionCodon : ExtensionNode
 	{
-		[Description ("Display name of the option")]
-		[NodeAttribute("_label", true)]
+		[NodeAttribute("_label", true, "Display name of the option")]
 		string label = null;
 		
-		[Description ("Default value of the option")]
-		[NodeAttribute("defaultValue")]
+		[NodeAttribute("defaultValue", "Default value of the option")]
 		bool defaultValue;
 		
 		TreePadOption option;

@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[Description ("A node builder for a SolutionPad. The specified class must subclass MonoDevelop.Ide.Gui.Pads.NodeBuilder or MonoDevelop.Ide.Gui.Pads.NodeBuilderExtension.")]
+	[ExtensionNode ("NodeBuilder", "A node builder for a SolutionPad. The specified class must subclass MonoDevelop.Ide.Gui.Pads.NodeBuilder or MonoDevelop.Ide.Gui.Pads.NodeBuilderExtension.")]
 	internal class NodeBuilderCodon : TypeExtensionNode
 	{
 		public NodeBuilder NodeBuilder {
