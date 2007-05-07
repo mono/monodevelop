@@ -1,3 +1,7 @@
+2007-05-07 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* configure.in: We now require gtk 2.8.
+
 2007-05-05 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* Makefile.am: When running MD without installing, use a private
