@@ -1,3 +1,8 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* SharpDevelop.exe.manifest, MonoDevelop.Startup.mdp: Remove unused
+	  files.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Startup.mdp, MonoDevelop.Startup/MonoDevelopMain.cs,

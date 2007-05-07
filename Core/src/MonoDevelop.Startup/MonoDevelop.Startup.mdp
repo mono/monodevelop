@@ -17,8 +17,6 @@
     <File name="./AssemblyInfo.cs.in" subtype="Code" buildaction="Nothing" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Startup.glade" subtype="Code" buildaction="Nothing" />
-    <File name="./MonoDevelopMain.cs.rej" subtype="Code" buildaction="Nothing" />
-    <File name="./SharpDevelop.exe.manifest" subtype="Code" buildaction="Nothing" />
     <File name="./app.config" subtype="Code" buildaction="Nothing" />
     <File name="./MonoDevelop.Startup/MonoDevelopMain.cs" subtype="Code" buildaction="Compile" />
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
