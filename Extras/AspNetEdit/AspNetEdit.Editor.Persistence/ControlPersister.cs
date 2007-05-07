@@ -221,6 +221,14 @@ namespace AspNetEdit.Editor.Persistence
 					throw;
 			}
 			
+			//FIXME: Mono has started to return prop.ShouldSerializeValue = false for ID
+			//workaround, because I'm not sure if this is expected behaviour, and it would still be 
+			//broken for some people's runtime
+			if (prop.DisplayName == "ID") {
+				writer.WriteAttribute ("id", prop.GetValue (o) as string);
+				return true;
+			}
+			
 			//check whether we're serialising it
 			if (prop.SerializationVisibility == DesignerSerializationVisibility.Hidden
 				|| prop.DesignTimeOnly
@@ -228,8 +236,8 @@ namespace AspNetEdit.Editor.Persistence
 				|| !prop.ShouldSerializeValue (o)
 				|| prop.Converter == null
 				|| !prop.Converter.CanConvertTo (typeof(string)))
-				return false;	
-
+				return false;
+			
 			bool foundAttrib = false;
 				
 			//is this an attribute? If it's content, we deal with it later.		

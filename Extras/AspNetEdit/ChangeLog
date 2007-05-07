@@ -1,3 +1,9 @@
+2007-05-07  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* AspNetEdit.Editor.Persistence/ControlPersister.cs: Special-case the 
+	  ID attribute, as a workaround for possible issue on some Mono 
+	  versions. Need to follow this up.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.addin.xml: Migration to Mono.Addins.
