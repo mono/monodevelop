@@ -1,6 +1,7 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Parser;
@@ -35,8 +36,10 @@ namespace AspNetAddIn
 			IParserContext ctx = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (aspProject);
 			ctx.UpdateDatabase ();
 			
-			int addedMembers = 0;
+			List<System.CodeDom.CodeMemberField> membersToAdd = new List<System.CodeDom.CodeMemberField> ();
+			List<IClass> classesForMembers = new List<IClass> ();
 			
+			//find the members that need to be added to CodeBehind classes
 			foreach (ProjectFile file in aspProject.ProjectFiles) {
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (Path.GetExtension (file.FilePath));
 				if ((type != WebSubtype.WebForm) && (type != WebSubtype.WebControl))
@@ -53,20 +56,28 @@ namespace AspNetAddIn
 				}
 				
 				foreach (System.CodeDom.CodeMemberField member in doc.MemberList.List.Values) {
-					try {
 						MonoDevelop.Projects.Parser.IMember existingMember = BindingService.GetCompatibleMemberInClass (cls, member);
 						if (existingMember == null) {
-							BindingService.GetCodeGenerator ().AddMember (cls, member);
-							addedMembers++;
+							classesForMembers.Add (cls);
+							membersToAdd.Add (member);
 						}
-					} catch (MemberExistsException m) {
-						monitor.ReportWarning (m.ToString ());
-					}
 				}
 			}
 			
-			if (addedMembers > 0) {
-				monitor.Log.WriteLine (string.Format ("Added {0} member{1} to CodeBehind classes. Saving updated source files.", addedMembers, (addedMembers>1)?"s":""));
+			//add all the members
+			//documents may be open, so needs to run in GUI thread
+			Gtk.Application.Invoke ( delegate {
+				for (int i = 0; i < membersToAdd.Count; i++)
+					try {
+						BindingService.GetCodeGenerator ().AddMember (classesForMembers[i], membersToAdd[i]);
+					} catch (MemberExistsException m) {
+						monitor.ReportWarning (m.ToString ());
+					}			
+			});
+			
+			
+			if (membersToAdd.Count > 0) {
+				monitor.Log.WriteLine (string.Format ("Added {0} member{1} to CodeBehind classes. Saving updated source files.", membersToAdd.Count, (membersToAdd.Count>1)?"s":""));
 				
 				//make sure updated files are saved before compilation
 				Gtk.Application.Invoke ( delegate {
@@ -80,5 +91,17 @@ namespace AspNetAddIn
 			
 			return base.Build (monitor, project);
 		}
+		/*
+		class AddMembersEventArgs : System.EventArgs
+		{
+			public IClass Class;
+			public IMember Member;
+			
+			AddMembersEventArgs (IClass cls, IMember member)
+			{
+				Class = cls;
+				Member = member;
+			}
+		}*/
 	}
 }
