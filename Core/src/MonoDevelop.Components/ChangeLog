@@ -1,3 +1,8 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Components/IconView.cs: Use less spacing between icons.
+	  Removed use of gtk# 2.10 property.
+
 2007-05-06  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Components/TreeViewCellContainer.cs: Fixed compiler

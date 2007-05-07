@@ -15,13 +15,13 @@ namespace MonoDevelop.Components {
 			store = new ListStore (typeof (Gdk.Pixbuf), typeof (string), typeof (object));
 			iconView = new Gtk.IconView (store);
 			iconView.PixbufColumn = 0;
-			iconView.ColumnSpacing = 8;
-			iconView.RowSpacing = 8;
+			iconView.ColumnSpacing = 6;
+			iconView.RowSpacing = 6;
 			CellRendererText cr = new CellRendererText ();
-			cr.Alignment = Pango.Alignment.Center;
 			cr.WrapWidth = 80;
 			cr.WrapMode = Pango.WrapMode.Word;
 			cr.Yalign = 0.0f;
+			cr.Xalign = 0.5f;
 			iconView.PackEnd (cr, true);
 			iconView.ItemWidth = 80;
 			iconView.SetAttributes (cr, "text", 1);
