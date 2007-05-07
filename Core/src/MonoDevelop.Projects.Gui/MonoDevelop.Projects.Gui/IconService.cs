@@ -60,9 +60,7 @@ namespace MonoDevelop.Projects.Gui
 		
 			foreach (IconCodon iconCodon in AddinManager.GetExtensionNodes (path, typeof(IconCodon))) {
 				string image;
-				if (iconCodon.Location != null)
-					throw new Exception ("This should be using stock icons");
-				else if (iconCodon.Resource != null)
+				if (iconCodon.Resource != null)
 					image = iconCodon.Resource;
 				else
 					image = iconCodon.Id;

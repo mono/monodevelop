@@ -1,3 +1,8 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: Removed reference to deleted
+	  property.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
