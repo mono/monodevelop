@@ -15,15 +15,13 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[Description ("A file filter to be used in the Open File dialog.")]
+	[ExtensionNode (Description="A file filter to be used in the Open File dialog.")]
 	internal class FileFilterCodon : TypeExtensionNode
 	{
-		[Description ("Display name of the filter.")]
-		[NodeAttribute ("_label", true)]
+		[NodeAttribute ("_label", true, "Display name of the filter.")]
 		string filtername = null;
 		
-		[Description ("Extensions to use as filter.")]
-		[NodeAttribute("extensions", true)]
+		[NodeAttribute("extensions", true, "Extensions to use as filter.")]
 		string[] extensions = null;
 		
 		public string FilterName {

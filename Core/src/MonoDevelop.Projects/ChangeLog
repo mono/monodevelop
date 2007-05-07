@@ -1,3 +1,13 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Extensions/FileFormatCodon.cs,
+	  MonoDevelop.Projects.Extensions/DataTypeCodon.cs,
+	  MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs,
+	  MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs,
+	  MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs,
+	  MonoDevelop.Projects.Extensions/FileFilterCodon.cs: Use the
+	  Mono.Addins attributes to provide extension documentation.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,

@@ -35,12 +35,10 @@ namespace MonoDevelop.Projects.Extensions
 {
 	public class ItemPropertyCodon: DataTypeCodon
 	{
-		[Description ("Name of the property.")]
-		[NodeAttribute("name", true)]
+		[NodeAttribute("name", true, Description="Name of the property")]
 		string propName;
 		
-		[Description ("Full name of the property type.")]
-		[NodeAttribute("type", true)]
+		[NodeAttribute("type", true, Description="Full name of the property type")]
 		string propType;
 		
 		Type type;

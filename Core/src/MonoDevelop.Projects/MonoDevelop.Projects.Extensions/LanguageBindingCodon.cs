@@ -15,11 +15,10 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[Description ("A language binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
+	[ExtensionNode (Description="A language binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
 	internal class LanguageBindingCodon : TypeExtensionNode
 	{
-		[Description ("File extensions supported by this binding (to be shown in the Open File dialog)")]
-		[NodeAttribute("supportedextensions")]
+		[NodeAttribute("supportedextensions", "File extensions supported by this binding (to be shown in the Open File dialog)")]
 		string[] supportedExtensions;
 		
 		public string[] Supportedextensions {

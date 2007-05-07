@@ -38,7 +38,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[Description ("A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.")]
+	[ExtensionNode (Description="A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.")]
 	internal class ProjectBindingCodon : TypeExtensionNode
 	{
 		public IProjectBinding ProjectBinding {
