@@ -89,8 +89,13 @@ namespace MonoDevelop.DesignerSupport
 					keepRunning = true;
 					exceptionOccurred = true;
 					System.Console.WriteLine ("An exception occurred in the GUI thread");
+					System.Console.WriteLine (e.ToString ());
 					HandleError (e);
 				}
+				
+				//put in a 0.5s wait to limit the restarting rate in case we get 
+				//repeatedly reoccurring exceptions
+				System.Threading.Thread.Sleep (500);
 			}
 			
 			System.Diagnostics.Trace.WriteLine ("Designer GUI thread ending.");

@@ -1,3 +1,13 @@
+2007-03-07  Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* MonoDevelop.DesignerSupport.PropertyGrid/EditorManager.cs: Avoid 
+	  some invalid PropertyEditorCell casts.
+	
+	* MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs: Tweaks to aid 
+	  in tracking down exceptions. The error display should really be moved 
+	  into the MD thread so that the entire designer process can go down,
+	  or we risk having loose ends. 
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.addin.xml,
