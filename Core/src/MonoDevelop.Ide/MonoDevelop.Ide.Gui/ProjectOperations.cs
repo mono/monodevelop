@@ -324,6 +324,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (!File.Exists (filename)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
+					monitor.Dispose ();
 					return;
 				}
 				
@@ -334,8 +335,10 @@ namespace MonoDevelop.Ide.Gui
 				}
 			
 				CombineEntry entry = projectService.ReadCombineEntry (filename, monitor);
-				if (monitor.IsCancelRequested)
+				if (monitor.IsCancelRequested) {
+					monitor.Dispose ();
 					return;
+				}
 
 				if (!(entry is Combine)) {
 					Combine loadingCombine = new Combine();
