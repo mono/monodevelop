@@ -679,7 +679,7 @@ namespace CSharpBinding.FormattingStrategy {
 					break;
 				default:
 					if (stack.PeekLineNr (0) == curLineNr) {
-						// is this right? I don't rememebr why I did this...
+						// is this right? I don't remember why I did this...
 						break;
 					}
 					

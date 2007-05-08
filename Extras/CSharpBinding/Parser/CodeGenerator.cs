@@ -120,19 +120,27 @@ namespace CSharpBinding.Parser
 			return begin + pos;
 		}
 		
-		protected override int GetParameterNamePosition (IEditableTextFile file, IMethod method, IParameter param)
+		protected override int GetParameterNamePosition (IEditableTextFile file, IParameter param)
 		{
-			int begin = file.GetPositionFromLineColumn (method.Region.BeginLine, method.Region.BeginColumn);
-			int end = file.GetPositionFromLineColumn (method.Region.EndLine, method.Region.EndColumn);
+			IMember member = param.DeclaringMember;
+			int begin = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
+			int end = file.GetPositionFromLineColumn (member.Region.EndLine, member.Region.EndColumn);
 			string txt = file.GetText (begin, end);
 			int open, close, i, j;
+			char obrace, cbrace;
 			
-			Console.WriteLine ("Searching for param '{0}' in '{1}'", param.Name, txt);
+			if (member is IIndexer) {
+				obrace = '[';
+				cbrace = ']';
+			} else {
+				obrace = '(';
+				cbrace = ')';
+			}
 			
-			if ((open = txt.IndexOf ('(')) == -1)
+			if ((open = txt.IndexOf (obrace)) == -1)
 				return -1;
 			
-			if ((close = txt.LastIndexOf (')')) == -1)
+			if ((close = txt.LastIndexOf (cbrace)) == -1)
 				return -1;
 			
 			open++;
@@ -179,6 +187,9 @@ namespace CSharpBinding.Parser
 				// no variables to change
 			} else if (member is IEvent) {
 				// no variables to change
+			} else if (member is IIndexer) {
+				if ((len = txt.IndexOf ('[')) == -1)
+					return -1;
 			} else {
 				return -1;
 			}
@@ -211,14 +222,16 @@ namespace CSharpBinding.Parser
 			return refs;
 		}
 		
-		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IMethod method, IParameter param)
+		public override MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
+			IMember member = param.DeclaringMember;
 			Resolver resolver = new Resolver (ctx.ParserContext);
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, method.DeclaringType, param, refs);
+			MemberRefactoryVisitor visitor = new MemberRefactoryVisitor (ctx, resolver, member.DeclaringType, param, refs);
 			
 			IEditableTextFile file = ctx.GetFile (fileName);
 			visitor.Visit (ctx.ParserContext, file);
+			
 			return refs;
 		}
 	}
@@ -268,15 +281,11 @@ namespace CSharpBinding.Parser
 			return false;
 		}
 		
-		bool IsExpectedMethod (IMember m)
+		bool IsExpectedMember (IMember member)
 		{
-			if (!(m is IMethod))
-				return false;
+			IMember actual = ((IParameter) this.member).DeclaringMember;
 			
-			IMethod actual = ((IParameter) member).DeclaringMember as IMethod;
-			IMethod method = m as IMethod;
-			
-			if (method.FullyQualifiedName == actual.FullyQualifiedName)
+			if (member.Name == actual.Name)
 				return true;
 			
 			return false;
@@ -287,7 +296,7 @@ namespace CSharpBinding.Parser
 			if (member is IClass && member.Name == GetNameWithoutPrefix (ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type))) {
 				IClass cls = resolver.ResolveIdentifier (fileCompilationUnit, ReturnType.GetSystemType (fieldDeclaration.TypeReference.Type), fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X) as IClass;
 				if (cls != null && cls.FullyQualifiedName == ((IClass)member).FullyQualifiedName) {
-					Console.WriteLine ("adding FieldDeclaration reference {0}", cls.FullyQualifiedName);
+					//Console.WriteLine ("adding FieldDeclaration reference {0}", cls.FullyQualifiedName);
 					references.Add (CreateReference (fieldDeclaration.StartLocation.Y, fieldDeclaration.StartLocation.X, cls.FullyQualifiedName));
 				}
 			}
@@ -303,7 +312,7 @@ namespace CSharpBinding.Parser
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name) {
-						Console.WriteLine ("adding FieldDeclarationExpression reference {0}", member.Name);
+						//Console.WriteLine ("adding FieldDeclarationExpression reference {0}", member.Name);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -319,7 +328,7 @@ namespace CSharpBinding.Parser
 				if (fieldExp.FieldName == member.Name) {
 					IClass cls = resolver.ResolveExpressionType (fileCompilationUnit, fieldExp.TargetObject, fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					if (cls != null && IsExpectedClass (cls)) {
-						Console.WriteLine ("adding InvocationExpression reference {0}", member.Name);
+						//Console.WriteLine ("adding InvocationExpression reference {0}", member.Name);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -338,25 +347,26 @@ namespace CSharpBinding.Parser
 					if (m != null && IsExpectedClass (m.DeclaringType) &&
 						((member is IField && item is IField) || (member is IMethod && item is IMethod) ||
 						 (member is IProperty && item is IProperty) || (member is IEvent && item is IEvent))) {
-						Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
+						//Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
 				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
-					Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+					//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
 					references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 				} else if (member is LocalVariable) {
 					LocalVariable avar = member as LocalVariable;
 					LocalVariable var = item as LocalVariable;
 					
 					if (var != null && var.Region.IsInside (avar.Region.BeginLine, avar.Region.EndColumn)) {
-						Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+						//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				} else if (member is IParameter) {
 					IParameter param = item as IParameter;
+					
 					// FIXME: might need to match more than this?
-					if (param != null && IsExpectedMethod (param.DeclaringMember)) {
-						Console.WriteLine ("adding IdentifierExpression param reference {0}", idExp.Identifier);
+					if (param != null && IsExpectedMember (param.DeclaringMember)) {
+						//Console.WriteLine ("adding IdentifierExpression param reference {0}", idExp.Identifier);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
 					}
 				}
