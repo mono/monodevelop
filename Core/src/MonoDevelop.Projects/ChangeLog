@@ -1,3 +1,19 @@
+2007-05-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(RenameParameter): No longer takes an IMethod argument.
+	(Refactor): (IParameter version): Loop over all partial class
+	files to make sure we get the right one.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RenameParameter): Fixed to work and updated fro IRefactorer API
+	changes.
+	(GetParameterNamePosition): No longer needs an IMethod argument.
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Drop the
+	IMethod argument for renaming/finding IParameter references. No
+	longer needed.
+
 2007-05-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.Parser/PersistentIndexer.cs: Same as below.

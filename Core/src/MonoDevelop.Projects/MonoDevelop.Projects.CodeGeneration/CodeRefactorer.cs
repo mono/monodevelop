@@ -155,15 +155,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return v;
 		}
 		
-		public IParameter RenameParameter (IProgressMonitor monitor, IMethod method, IParameter param, string newName)
+		public IParameter RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, method, new RefactorDelegate (new RefactorFindParameterReferences (method, param, refs).Refactor));
+			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
 			refs.RenameAll (newName);
 			
-			RefactorerContext gctx = GetGeneratorContext (method.DeclaringType);
-			IRefactorer r = GetGeneratorForClass (method.DeclaringType);
-			IParameter p = r.RenameParameter (gctx, method, param, newName);
+			IMember member = param.DeclaringMember;
+			RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
+			IRefactorer r = GetGeneratorForClass (member.DeclaringType);
+			IParameter p = r.RenameParameter (gctx, param, newName);
 			gctx.Save ();
 			
 			return p;
@@ -243,17 +244,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 			gctx.Save ();
 		}
 		
-		void Refactor (IProgressMonitor monitor, IMethod method, RefactorDelegate refactorDelegate)
+		void Refactor (IProgressMonitor monitor, IParameter param, RefactorDelegate refactorDelegate)
 		{
-			RefactorerContext gctx = GetGeneratorContext (method.DeclaringType);
-			string file = method.DeclaringType.Region.FileName;
+			IMember member = param.DeclaringMember;
+			RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
+			IClass cls = member.DeclaringType;
+			IRefactorer gen;
+			string file;
 			
-			IRefactorer gen = Services.Languages.GetRefactorerForFile (file);
-			if (gen == null)
-				return;
-			
-			refactorDelegate (monitor, gctx, gen, file);
-			gctx.Save ();
+			for (int i = 0; i < cls.Parts.Length; i++) {
+				file = cls.Parts[i].Region.FileName;
+				
+				if ((gen = Services.Languages.GetRefactorerForFile (file)) == null)
+					continue;
+				
+				refactorDelegate (monitor, gctx, gen, file);
+				gctx.Save ();
+			}
 		}
 		
 		void RefactorCombine (IProgressMonitor monitor, CombineEntry ce, RefactorDelegate refactorDelegate)
@@ -410,19 +417,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		MemberReferenceCollection references;
 		IParameter param;
-		IMethod method;
 		
-		public RefactorFindParameterReferences (IMethod method, IParameter param, MemberReferenceCollection references)
+		public RefactorFindParameterReferences (IParameter param, MemberReferenceCollection references)
 		{
 			this.references = references;
-			this.method = method;
 			this.param = param;
 		}
 		
 		public void Refactor (IProgressMonitor monitor, RefactorerContext rctx, IRefactorer r, string fileName)
 		{
 			try {
-				MemberReferenceCollection refs = r.FindParameterReferences (rctx, fileName, method, param);
+				MemberReferenceCollection refs = r.FindParameterReferences (rctx, fileName, param);
 				if (refs != null)
 					references.AddRange (refs);
 			} catch (Exception ex) {

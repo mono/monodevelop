@@ -266,18 +266,36 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Parameter overridables /////////////////////
 		
-		public virtual IParameter RenameParameter (RefactorerContext ctx, IMethod method, IParameter param, string newName)
+		public virtual IParameter RenameParameter (RefactorerContext ctx, IParameter param, string newName)
 		{
-			IEditableTextFile file = ctx.GetFile (method.DeclaringType.Region.FileName);
-			if (file == null) {
-				Console.WriteLine ("couldn't get file for param renaming");
-				return null;
+			IMember member = param.DeclaringMember;
+			IEditableTextFile file = null;
+			int pos = -1;
+			
+			// It'd be nice if we didn't have to worry about this being null
+			if (member.Region.FileName != null) {
+				if ((file = ctx.GetFile (member.Region.FileName)) != null)
+					pos = GetParameterNamePosition (file, param);
 			}
 			
-			int pos = GetParameterNamePosition (file, method, param);
+			// Plan B. - fallback to searching all partial class files for this parameter's parent member
 			if (pos == -1) {
-				Console.WriteLine ("couldn't get param position");
-				return null;
+				IClass cls = member.DeclaringType;
+				
+				for (int i = 0; i < cls.Parts.Length; i++) {
+					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+						continue;
+					
+					// sanity check, if the parent member isn't here then neither is the param
+					//if ((pos = GetMemberNamePosition (file, member)) == -1)
+					//	continue;
+					
+					if ((pos = GetParameterNamePosition (file, param)) != -1)
+						break;
+				}
+				
+				if (pos == -1)
+					return null;
 			}
 			
 			string txt = file.GetText (pos, pos + param.Name.Length);
@@ -292,7 +310,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 
-		public virtual MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IMethod method, IParameter param)
+		public virtual MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)
 		{
 			return null;
 		}
@@ -309,7 +327,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return -1;
 		}
 		
-		protected virtual int GetParameterNamePosition (IEditableTextFile file, IMethod method, IParameter param)
+		protected virtual int GetParameterNamePosition (IEditableTextFile file, IParameter param)
 		{
 			return -1;
 		}

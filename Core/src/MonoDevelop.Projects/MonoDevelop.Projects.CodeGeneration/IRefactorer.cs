@@ -51,8 +51,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		LocalVariable RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
 		MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
 		
-		IParameter RenameParameter (RefactorerContext ctx, IMethod method, IParameter param, string newName);
-		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IMethod method, IParameter param);
+		IParameter RenameParameter (RefactorerContext ctx, IParameter param, string newName);
+		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
 	}
 	
 	public class MemberReference
