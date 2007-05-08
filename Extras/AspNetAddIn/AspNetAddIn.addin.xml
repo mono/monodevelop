@@ -20,7 +20,7 @@
 		<Addin id="Ide" version="0.13.0"/>
 		<Addin id="SourceEditor" version="0.13.0"/>
 		<Addin id="DesignerSupport" version="0.13.0"/>
-		<AddIn id="MonoDevelop.Deployment" version="0.13.0"/>
+		<AddIn id="Deployment" version="0.13.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/FileTemplates">
