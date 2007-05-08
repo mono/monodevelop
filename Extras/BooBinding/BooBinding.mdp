@@ -55,7 +55,6 @@
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="False" refto="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="False" refto="gconf-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="False" refto="gtksourceview-sharp, Version=1.0.0.2, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Project" localcopy="False" refto="BooShell" />
@@ -66,11 +65,6 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Parser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.CodeDom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Compiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Useful, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <ProjectReference type="Gac" localcopy="False" refto="Boo.Lang.Interpreter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
     <ProjectReference type="Gac" localcopy="False" refto="gconf-sharp-peditors, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />

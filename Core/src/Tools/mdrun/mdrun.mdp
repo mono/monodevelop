@@ -21,4 +21,5 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../../contrib/Mono.Addins.dll" />
   </References>
+  <Deployment.LinuxDeployData scriptName="mdrun" />
 </Project>

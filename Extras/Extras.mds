@@ -4,8 +4,6 @@
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
-      <Entry build="True" name="MonoQuery" configuration="Debug" />
-      <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
@@ -28,8 +26,6 @@
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
-      <Entry build="True" name="MonoQuery" configuration="Debug" />
-      <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.SourceEditor" configuration="Debug" />
@@ -49,12 +45,11 @@
       <Entry build="True" name="Deployment" configuration="" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="BooBinding" single="True">
+  <StartMode startupentry="MonoDevelop.NUnit" single="True">
     <Execute type="None" entry="MonoDevelop.NUnit" />
     <Execute type="None" entry="CSharpBinding" />
     <Execute type="None" entry="ILAsmBinding" />
     <Execute type="None" entry="MonoQuery" />
-    <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="VersionControl" />
     <Execute type="None" entry="JavaBinding" />
     <Execute type="None" entry="MonoDevelop.SourceEditor" />
@@ -77,8 +72,6 @@
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
     <Entry filename="./CSharpBinding/CSharpBinding.mdp" />
     <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
-    <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
-    <Entry filename="./BooBinding/BooBinding.mds" />
     <Entry filename="./VersionControl/VersionControl.mds" />
     <Entry filename="./JavaBinding/JavaBinding.mdp" />
     <Entry filename="./MonoDevelop.SourceEditor/MonoDevelop.SourceEditor.mdp" />

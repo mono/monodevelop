@@ -34,6 +34,7 @@ using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.StandardHeaders;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -166,7 +167,13 @@ namespace MonoDevelop.Ide.Templates
 			content = sps.Parse (content, HashtableToStringArray (tags));
 			
 			MemoryStream ms = new MemoryStream ();
-			byte[] data = System.Text.Encoding.UTF8.GetBytes (content);
+			StringParserService stringParserService = (StringParserService) ServiceManager.GetService (typeof (StringParserService));
+			string header = stringParserService.Parse(StandardHeaderService.GetHeader(language), new string[,] { { "FileName", fileName } } );
+			
+			byte[] data = System.Text.Encoding.UTF8.GetBytes (header);
+			ms.Write (data, 0, data.Length);
+			
+			data = System.Text.Encoding.UTF8.GetBytes (content);
 			ms.Write (data, 0, data.Length);
 			ms.Position = 0;
 			return ms;

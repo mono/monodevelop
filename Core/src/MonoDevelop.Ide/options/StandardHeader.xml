@@ -1,0 +1,5 @@
+<StandardHeader version="1.0"> ${FileName} created with MonoDelop
+ User: ${User} at ${Time} ${Date}
+
+ To change standard headers go to Edit->Preferences->Coding->Standard Headers
+</StandardHeader>

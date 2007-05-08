@@ -75,8 +75,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -260,6 +260,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
+	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
+	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
 	MonoDevelop.Ide.Tasks/ITaskListView.cs \
 	MonoDevelop.Ide.Tasks/Task.cs \
@@ -314,6 +316,7 @@ options/DefaultEditingLayout.xml \
 options/MonoDevelopProperties.xml \
 options/MonoDevelop-templates.xml \
 options/MonoDevelop-tools.xml \
+options/StandardHeader.xml \
 options/TipsOfTheDay.xml
 
 build_OPTIONS = $(addprefix $(top_builddir)/build/data/options/, $(notdir $(OPTIONS)))

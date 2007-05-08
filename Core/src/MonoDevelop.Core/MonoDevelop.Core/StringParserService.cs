@@ -72,6 +72,9 @@ namespace MonoDevelop.Core
 				case "TIME": // current time
 					propertyValue = DateTime.Now.ToShortTimeString();
 					break;
+				case "USER": // current time
+					propertyValue = Environment.UserName;
+					break;
 				default:
 					propertyValue = null;
 					if (customTags != null) {

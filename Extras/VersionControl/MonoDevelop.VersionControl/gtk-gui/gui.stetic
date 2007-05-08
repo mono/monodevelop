@@ -2,6 +2,7 @@
 <stetic-interface>
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.Components.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Ide.dll" />
   </import>
   <icon-factory>
     <icon-set id="vcs-repository">
@@ -14,8 +15,10 @@
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Select Repository</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />
@@ -512,9 +515,11 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog" design-size="537 414">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Repository Configuration</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="DefaultWidth">500</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox3">
         <property name="MemberName" />
@@ -1084,8 +1089,10 @@
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Commit Files</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
+    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog_VBox">
         <property name="MemberName" />

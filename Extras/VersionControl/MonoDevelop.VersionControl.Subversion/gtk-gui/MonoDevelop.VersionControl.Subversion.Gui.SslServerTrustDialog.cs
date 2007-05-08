@@ -73,8 +73,8 @@ namespace MonoDevelop.VersionControl.Subversion.Gui {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog";
             this.Title = Mono.Unix.Catalog.GetString("Repository Certified by an Unknown Authority");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = true;
             // Internal child MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));

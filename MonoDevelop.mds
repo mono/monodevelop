@@ -9,11 +9,11 @@
       <Entry build="True" name="Extras" configuration="Release" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <StartMode startupentry="Core" single="True">
     <Execute type="None" entry="Core" />
     <Execute type="None" entry="Extras" />
   </StartMode>
+  <DeployTargets />
   <Entries>
     <Entry filename="./Core/src/Core.mds" />
     <Entry filename="./Extras/Extras.mds" />

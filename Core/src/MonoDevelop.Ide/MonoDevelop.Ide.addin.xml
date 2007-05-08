@@ -906,6 +906,9 @@
 			<DialogPanel id = "CodeGeneration"
 			             _label = "Code Generation"
 			             class = "MonoDevelop.Ide.Gui.OptionPanels.CodeGenerationPanel"/>
+			<DialogPanel id = "EditStandardHeaders"
+			             _label = "Standard Header"
+			             class = "MonoDevelop.Ide.StandardHeaders.StandardHeaderPanel"/>
 		</DialogPanel>
 		
 		<DialogPanel id    = "ToolsOptions"
