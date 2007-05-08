@@ -84,11 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			} else if (item is LocalVariable) {
 				refactorer.RenameVariable (monitor, (LocalVariable) item, name);
 			} else if (item is IParameter) {
-				IParameter param = (IParameter) item;
-				IMethod method = param.DeclaringMember as IMethod;
-				
-				if (method != null)
-					refactorer.RenameParameter (monitor, method, param, name);
+				refactorer.RenameParameter (monitor, (IParameter) item, name);
 			}
 			
 			((Widget) this).Destroy ();

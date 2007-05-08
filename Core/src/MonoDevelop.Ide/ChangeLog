@@ -1,3 +1,9 @@
+2007-05-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs (OnOKClicked):
+	Simplified and fixed to work where the param is not an IMethod
+	param.
+
 2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Codons/TaskListViewCodon.cs,
