@@ -17,11 +17,10 @@ using MonoDevelop.SourceEditor.Actions;
 
 namespace MonoDevelop.SourceEditor.Codons
 {
-	[Description ("A custom editor action. The provided class must implement IEditAction.")]
+	[ExtensionNode (Description="A custom editor action. The provided class must implement IEditAction.")]
 	public class EditActionCodon : TypeExtensionNode
 	{
-		[Description ("Key combinations that trigger the edit action (for example Control|k).")]
-		[NodeAttribute("keys", true)]
+		[NodeAttribute("keys", true, "Key combinations that trigger the edit action (for example Control|k).")]
 		string[] keys = null;
 
 		public string[] Keys {
