@@ -21,6 +21,7 @@
 		<Addin id="Core.Gui" version="0.13.0"/>
 		<Addin id="Ide" version="0.13.0"/>
 		<Addin id="Projects" version="0.13.0"/>
+		<Addin id="Projects.Gui" version="0.13.0"/>
 		<Addin id="Deployment" version="0.13.0"/>
 		<Addin id="DesignerSupport" version="0.13.0"/>
 	</Dependencies>

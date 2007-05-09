@@ -1378,7 +1378,7 @@ namespace MonoDevelop.Autotools
 						continue;
 					break;
 				case ReferenceType.Assembly:
-					refstr = AsmRefToString (pr.Reference, refVar);
+					refstr = AsmRefToString (pr.Reference, refVar, false);
 					break;
 				case ReferenceType.Project:
 					refstr = ProjectRefToString (pr, refVar);
@@ -1432,7 +1432,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (pkg == null)
-				return AsmRefToString (pr.GetReferencedFileNames () [0], refVar);
+				return AsmRefToString (pr.GetReferencedFileNames () [0], refVar, false);
 
 			// Reference is from a package
 
@@ -1480,11 +1480,15 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		string AsmRefToString (string reference, MakefileVar refVar)
+		string AsmRefToString (string reference, MakefileVar refVar, bool isBuiltAssembly)
 		{
-			if (!reference.StartsWith (BaseDirectory) && EncodeValues [refVar.Name])
-				//Reference is external to this project
-				return EncodeFileName (reference, "top_builddir", true);
+			if (EncodeValues [refVar.Name]) {
+				if (!isBuiltAssembly)
+					return EncodeFileName (reference, "top_srcdir", true);
+				else if (!reference.StartsWith (BaseDirectory))
+					//Reference is external to this project
+					return EncodeFileName (reference, "top_builddir", true);
+			}
 
 			// !external and !encode
 			return GetRelativePath (reference);
@@ -1497,7 +1501,7 @@ namespace MonoDevelop.Autotools
 				//Reference not found, ignoring
 				return null;
 
-			return AsmRefToString (tmp [0], refVar);
+			return AsmRefToString (tmp [0], refVar, true);
 		}
 
 		static string EscapeString (string str)
