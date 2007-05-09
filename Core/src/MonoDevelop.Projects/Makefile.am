@@ -5,9 +5,9 @@ CONFIG = MonoDevelop.Projects.dll.config
 
 REFS =  \
 	$(MONODOC_LIBS) \
-	-r:$(top_builddir)/build/bin/Mono.Cecil.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Drawing \
@@ -220,9 +220,9 @@ FILES =  \
 	MonoDevelop.Projects/ProjectReferenceCollection.cs \
 	MonoDevelop.Projects/ProjectReferenceEventArgs.cs \
 	MonoDevelop.Projects/ProjectRenameEventArgs.cs \
-	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/ProjectService.cs \
 	MonoDevelop.Projects/ProjectServiceExtension.cs \
+	MonoDevelop.Projects/ProjectsServices.cs \
 	MonoDevelop.Projects/SharpDevelopFileFormat.cs \
 	MonoDevelop.Projects/TypelibImporter.cs \
 	MonoDevelop.Projects/UnknownCombineEntry.cs \
