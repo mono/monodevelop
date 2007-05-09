@@ -253,6 +253,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
+			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
+			
 			// FIXME: return the new variable
 			
 			return null;
@@ -304,6 +306,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
+			
+			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
 			
 			// FIXME: return the new IParameter
 			

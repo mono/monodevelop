@@ -1,3 +1,10 @@
+2007-05-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RenameVariable, RenameParameter): Update the pidb. I wonder if
+	these methods can be changed to return void instead of having to
+	return the new ietm? The item currently wouldn't even be used.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.mdp, Makefile.am: Reference shared assemblies
