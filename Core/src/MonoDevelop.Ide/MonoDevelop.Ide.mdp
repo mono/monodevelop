@@ -290,7 +290,6 @@
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Ide.StandardHeader" subtype="Directory" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs" subtype="Code" buildaction="Compile" />
   </Contents>
@@ -326,6 +325,11 @@
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <GtkDesignInfo partialTypes="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>./AssemblyInfo.cs</File>
@@ -339,11 +343,6 @@
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
   <Deployment.LinuxDeployData scriptName="monodevelop.ide" />
-  <GtkDesignInfo partialTypes="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <DeploymentInformation strategy="File">
     <excludeFiles />
   </DeploymentInformation>

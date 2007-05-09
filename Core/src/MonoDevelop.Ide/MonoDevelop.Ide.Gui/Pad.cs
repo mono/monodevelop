@@ -31,17 +31,20 @@
 using System;
 using System.Drawing;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public class Pad
 	{
 		IPadWindow window;
+		PadCodon content;
 		IWorkbench workbench;
 		
-		internal Pad (IWorkbench workbench, IPadContent content)
+		internal Pad (IWorkbench workbench, PadCodon content)
 		{
-			this.window = workbench.WorkbenchLayout.GetPadWindow (content);
+			this.window    = workbench.WorkbenchLayout.GetPadWindow (content);
+			this.content   = content;
 			this.workbench = workbench;
 		}
 		
@@ -59,7 +62,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void BringToFront ()
 		{
-			workbench.BringToFront (window.Content);
+			workbench.BringToFront (content);
 		}
 		
 		public bool Visible {

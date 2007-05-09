@@ -1,3 +1,18 @@
+2007-05-09  Mike Krüger <mkrueger@novell.com>
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
+	  MonoDevelop.Ide.addin.xml,
+	  MonoDevelop.Ide.Gui/IPadContent.cs,
+	  MonoDevelop.Ide.Gui/IPadContainer.cs,
+	  MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/IWorkbenchLayout.cs,
+	  MonoDevelop.Ide.Gui/IWorkbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs,
+	  MonoDevelop.Ide.Gui/Pad.cs,
+	  MonoDevelop.Ide.Codons/SolutionPadCodon.cs,
+	  MonoDevelop.Ide.Codons/PadCodon.cs:
+	 Worked on lazy loading of pads.
+
 2007-05-08  Mike Krüger <mkrueger@novell.com> 
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,

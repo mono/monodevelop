@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (pads == null) {
 					pads = new PadCollection ();
-					foreach (IPadContent pc in workbench.ActivePadContentCollection)
+					foreach (PadCodon pc in workbench.ActivePadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;
@@ -240,10 +240,15 @@ namespace MonoDevelop.Ide.Gui
 				ActiveDocument.Close ();
 		}
 
-		public Pad ShowPad (IPadContent content)
+		public Pad ShowPad (PadCodon content)
 		{
 			workbench.ShowPad (content);
 			return WrapPad (content);
+		}
+		
+		public Pad ShowPad (IPadContent padContent)
+		{
+			return ShowPad (new PadCodon (padContent));
 		}
 		
 		public FileViewer[] GetFileViewers (string fileName)
@@ -430,7 +435,7 @@ namespace MonoDevelop.Ide.Gui
 			return doc;
 		}
 		
-		Pad WrapPad (IPadContent padContent)
+		Pad WrapPad (PadCodon padContent)
 		{
 			Pad pad = new Pad (workbench, padContent);
 			Pads.Add (pad);

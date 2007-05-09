@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.Ide.Codons
 {
 	[ExtensionNode ("Pad", "Registers a pad to be shown in the workbench.")]
-	internal class PadCodon : ExtensionNode
+	public class PadCodon : ExtensionNode
 	{
 		IPadContent content;
 		
@@ -52,7 +52,17 @@ namespace MonoDevelop.Ide.Codons
 		
 		[NodeAttribute("icon", "Icon of the pad. It can be a stock icon or a resource icon (use 'res:' as prefix in the last case).")]
 		string icon = null;
-
+		
+		[NodeAttribute("defaultPlacement",
+		               "Default placement of the pad inside the workbench. " +
+		               "It can be: left, right, top, bottom, or a relative position, for example: 'ProjectPad/left'" +
+		               "would show the pad at the left side of the project pad. When using " +
+		               "relative placements several positions can be provided. If the " +
+		               "pad can be placed in the first position, the next one will be " +
+		               "tried. For example 'ProjectPad/left; bottom'."
+		               )]
+		string defaultPlacement = "left";
+		
 		string[] contexts;
 		
 		public IPadContent Pad {
@@ -75,13 +85,51 @@ namespace MonoDevelop.Ide.Codons
 			get { return className; }
 		}
 		
+		/// <summary>
+		/// Returns the default placement of the pad: left, right, top, bottom.
+		/// Relative positions can be used, for example: "ProjectPad/left"
+		/// would show the pad at the left of the project pad. When using
+		/// relative placements several positions can be provided. If the
+		/// pad can be placed in the first position, the next one will be
+		/// tried. For example "ProjectPad/left; bottom".
+		/// </summary>
+		public string DefaultPlacement {
+			get { return defaultPlacement; }
+		}
+		
 		public string[] Contexts {
 			get { return contexts; }
+		}
+		
+		IPadContent padContent = null;
+		public IPadContent PadContent {
+			get {
+				if (!Initialized) {
+					padContent = CreatePad ();
+				}
+				return padContent;
+			}
+		}
+		public bool Initialized {
+			get {
+				return padContent != null;
+			}
+		}
+		
+		public PadCodon ()
+		{
+		}
+		
+		public PadCodon (IPadContent content)
+		{
+			this.padContent = content;
+			//this.id = content.Id;
 		}
 		
 		protected virtual IPadContent CreatePad ()
 		{
 			return (IPadContent) Addin.CreateInstance (className, true);
 		}
+		
 	}
 }

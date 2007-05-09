@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -60,25 +62,25 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Shows a new <see cref="IPadContent"/>.
 		/// </summary>
-		void ShowPad(IPadContent content);
+		void ShowPad(PadCodon content);
 		
-		IPadWindow GetPadWindow (IPadContent content);
+		IPadWindow GetPadWindow (PadCodon content);
 		
 		/// <summary>
 		/// Activates a pad (Show only makes it visible but Activate does
 		/// bring it to foreground)
 		/// </summary>
-		void ActivatePad(IPadContent content);
+		void ActivatePad(PadCodon content);
 		
 		/// <summary>
 		/// Hides a new <see cref="IPadContent"/>.
 		/// </summary>
-		void HidePad(IPadContent content);
+		void HidePad(PadCodon content);
 		
 		/// <summary>
 		/// returns true, if padContent is visible;
 		/// </summary>
-		bool IsVisible(IPadContent padContent);
+		bool IsVisible(PadCodon padContent);
 		
 		/// <summary>
 		/// Re-initializes all components of the layout manager.
@@ -111,7 +113,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// A collection of all valid pads in the layout for the workbench context.
 		/// </summary>
-		PadContentCollection PadContentCollection {
+		List<PadCodon> PadContentCollection {
 			get;
 		}
 		

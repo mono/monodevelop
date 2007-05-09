@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 		readonly static string toolbarsPath = "/SharpDevelop/Workbench/ToolBar";
 		
-		PadContentCollection padContentCollection       = new PadContentCollection();
+		List<PadCodon> padContentCollection       = new List<PadCodon>();
 		ViewContentCollection workbenchContentCollection = new ViewContentCollection();
 		
 		bool closeAll = false;
@@ -100,19 +101,18 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public PadContentCollection PadContentCollection {
+		public List<PadCodon> PadContentCollection {
 			get {
 				Debug.Assert(padContentCollection != null);
 				return padContentCollection;
 			}
 		}
 		
-		public PadContentCollection ActivePadContentCollection {
+		public List<PadCodon> ActivePadContentCollection {
 			get {
 				if (layout == null)
-					return new PadContentCollection ();
-				else
-					return layout.PadContentCollection;
+					return new List<PadCodon> ();
+				return layout.PadContentCollection;
 			}
 		}
 		
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Gui
 				editor.TextChanged += new EventHandler (OnViewTextChanged);
 		}
 		
-		public virtual void ShowPad (IPadContent content)
+		public virtual void ShowPad (PadCodon content)
 		{
 			PadContentCollection.Add(content);
 			
@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.Gui
 				layout.ShowPad (content);
 		}
 		
-		public virtual void BringToFront (IPadContent content)
+		public virtual void BringToFront (PadCodon content)
 		{
 			if (!layout.IsVisible (content))
 				layout.ShowPad (content);
@@ -287,8 +287,10 @@ namespace MonoDevelop.Ide.Gui
 			foreach (IViewContent content in workbenchContentCollection) {
 				content.RedrawContent();
 			}
-			foreach (IPadContent content in padContentCollection) {
-				content.RedrawContent();
+			foreach (PadCodon content in padContentCollection) {
+				if (content.Initialized) {
+					content.PadContent.RedrawContent();
+				}
 			}
 			layout.RedrawAllComponents();
 			//statusBarManager.RedrawStatusbar();
@@ -449,8 +451,10 @@ namespace MonoDevelop.Ide.Gui
 		protected /*override*/ void OnClosed(EventArgs e)
 		{
 			layout.Detach();
-			foreach (IPadContent content in PadContentCollection) {
-				content.Dispose();
+			foreach (PadCodon content in PadContentCollection) {
+				if (content.Initialized) {
+					content.PadContent.Dispose();
+				}
 			}
 		}
 		
@@ -560,10 +564,19 @@ namespace MonoDevelop.Ide.Gui
 			get { return toolbars; }
 		}
 		
-		public IPadContent GetPad(Type type)
+		public PadCodon GetPad(Type type)
 		{
-			foreach (IPadContent pad in PadContentCollection) {
-				if (pad.GetType() == type) {
+			foreach (PadCodon pad in PadContentCollection) {
+				if (pad.ClassName == type.FullName) {
+					return pad;
+				}
+			}
+			return null;
+		}
+		public PadCodon GetPad(string id)
+		{
+			foreach (PadCodon pad in PadContentCollection) {
+				if (pad.Id == id) {
 					return pad;
 				}
 			}
@@ -575,14 +588,14 @@ namespace MonoDevelop.Ide.Gui
 			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath, typeof(PadCodon));
 			
 			foreach (PadCodon codon in padCodons)
-				ShowPad (codon.Pad);
+				ShowPad (codon);
 			
 			layout = workbenchLayout;
 			layout.Attach(this);
 			layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
 			
 			foreach (PadCodon codon in padCodons) {
-				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);
+				IPadWindow win = WorkbenchLayout.GetPadWindow (codon);
 				if (codon.Label != null)
 					win.Title = codon.Label;
 				if (codon.Icon != null)
@@ -606,9 +619,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (args.Change == ExtensionChange.Add) {
 				PadCodon codon = (PadCodon) args.ExtensionNode;
-				ShowPad (codon.Pad);
+				ShowPad (codon);
 				
-				IPadWindow win = WorkbenchLayout.GetPadWindow (codon.Pad);
+				IPadWindow win = WorkbenchLayout.GetPadWindow (codon);
 				if (codon.Label != null)
 					win.Title = codon.Label;
 				if (codon.Icon != null)

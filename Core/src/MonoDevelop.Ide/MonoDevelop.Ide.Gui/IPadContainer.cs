@@ -30,6 +30,7 @@
 using System;
 using System.Drawing;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -51,16 +52,20 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		string icon;
 		IPadContent content;
+		PadCodon    codon;
 		IWorkbenchLayout layout;
 		
-		internal PadWindow (IWorkbenchLayout layout, IPadContent content)
+		internal PadWindow (IWorkbenchLayout layout, PadCodon codon)
 		{
 			this.layout = layout;
-			this.content = content;
+			this.codon = codon;
 		}
 		
 		public IPadContent Content {
-			get { return content; }
+			get {
+				CreateContent ();
+				return content; 
+			}
 		}
 		
 		public string Title {
@@ -83,21 +88,29 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Visible {
 			get {
-				return layout.IsVisible (content);
+				return layout.IsVisible (codon);
 			}
 			set {
 				if (value) {
-					layout.ShowPad (content);
+					layout.ShowPad (codon);
 				}
 				else {
-					layout.HidePad (content);
+					layout.HidePad (codon);
 				}
 			}
 		}
 		
 		public void Activate ()
 		{
-			layout.ActivatePad (content);
+			CreateContent ();
+			layout.ActivatePad (codon);
+		}
+		
+		void CreateContent ()
+		{
+			if (this.content == null) {
+				this.content = codon.PadContent;
+			}
 		}
 		
 		internal void NotifyHidden ()

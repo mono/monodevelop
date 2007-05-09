@@ -75,10 +75,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 		
-		public string DefaultPlacement {
-			get { return "Bottom"; }
-		}
-		
 		public void RedrawContent()
 		{
 			// FIXME

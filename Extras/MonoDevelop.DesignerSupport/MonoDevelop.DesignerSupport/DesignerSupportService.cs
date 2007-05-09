@@ -91,7 +91,8 @@ namespace MonoDevelop.DesignerSupport
 		{
 			DisposePropertyPadProvider ();
 			DisposeCustomPropertyPadProvider ();
-			propertyPad.BlankPad ();
+			if (propertyPad != null)
+				propertyPad.BlankPad ();
 		}
 		
 		public void SetPropertyPadContent (IPropertyPadProvider provider)

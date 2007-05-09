@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
 using System.Xml.Serialization;
@@ -52,7 +53,8 @@ namespace MonoDevelop.Ide.Gui
 		DockLayout dockLayout;
 		DragNotebook tabControl;
 		EventHandler contextChangedHandler;
-		Hashtable padWindows = new Hashtable ();
+		Dictionary<PadCodon, IPadWindow> padWindows = new Dictionary<PadCodon, IPadWindow> ();
+		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
 		bool initialized;
 		IWorkbenchWindow lastActive;
@@ -133,7 +135,7 @@ namespace MonoDevelop.Ide.Gui
 			activePadCollection = workbench.PadContentCollection;
 
 			// create DockItems for all the pads
-			foreach (IPadContent content in workbench.PadContentCollection)
+			foreach (PadCodon content in workbench.PadContentCollection)
 			{
 				AddPad (content, content.DefaultPlacement);
 			}
@@ -175,11 +177,11 @@ namespace MonoDevelop.Ide.Gui
 
 		void SwitchContext (WorkbenchContext ctxt)
 		{
-			PadContentCollection old = activePadCollection;
+			List<PadCodon> old = activePadCollection;
 			
 			// switch pad collections
 			if (padCollections [ctxt] != null)
-				activePadCollection = (PadContentCollection) padCollections [ctxt];
+				activePadCollection = (List<PadCodon>) padCollections [ctxt];
 			else
 				// this is so, for unkwown contexts, we get the full set of pads
 				activePadCollection = workbench.PadContentCollection;
@@ -202,7 +204,7 @@ namespace MonoDevelop.Ide.Gui
 				("MonoDevelop.Core.Gui.SdiWorkbenchLayout." + ctxt.Id, "Default");
 			
 			// make sure invalid pads for the new context are not visible
-			foreach (IPadContent content in old)
+			foreach (PadCodon content in old)
 			{
 				if (!activePadCollection.Contains (content))
 				{
@@ -224,7 +226,7 @@ namespace MonoDevelop.Ide.Gui
 			set {
 				// Store a list of pads being shown
 				ArrayList visible = new ArrayList ();
-				foreach (IPadContent content in activePadCollection) {
+				foreach (PadCodon content in activePadCollection) {
 					if (IsVisible (content))
 						visible.Add (content);
 				}
@@ -270,7 +272,7 @@ namespace MonoDevelop.Ide.Gui
 				                             workbenchContext.Id, value);
 
 				// Notify hide/show events
-				foreach (IPadContent content in activePadCollection) {
+				foreach (PadCodon content in activePadCollection) {
 					if (IsVisible (content)) {
 						if (!visible.Contains (content)) {
 							PadWindow win = (PadWindow) padWindows [content];
@@ -303,18 +305,18 @@ namespace MonoDevelop.Ide.Gui
 
 
 		// pad collection for the current workbench context
-		PadContentCollection activePadCollection;
+		List<PadCodon> activePadCollection;
 
 		// set of PadContentCollection objects for the different workbench contexts
 		Hashtable padCollections = new Hashtable ();
 
-		public PadContentCollection PadContentCollection {
+		public List<PadCodon> PadContentCollection {
 			get {
 				return activePadCollection;
 			}
 		}
 		
-		DockItem GetDockItem (IPadContent content)
+		DockItem GetDockItem (PadCodon content)
 		{
 			if (activePadCollection.Contains (content))
 			{
@@ -341,12 +343,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (args.Change == ExtensionChange.Add) {
 				WorkbenchContextCodon codon = (WorkbenchContextCodon) args.ExtensionNode;
-				PadContentCollection collection = new PadContentCollection ();
+				List<PadCodon> collection = new List<PadCodon> ();
 				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.Id);
 				padCollections [ctx] = collection;
 
 				foreach (ContextPadCodon padCodon in codon.Pads) {
-					IPadContent pad = workbench.PadContentCollection [padCodon.Id];
+					PadCodon pad = workbench.GetPad (padCodon.Id);
 					if (pad != null)
 						collection.Add (pad);
 				}
@@ -394,7 +396,7 @@ namespace MonoDevelop.Ide.Gui
 			if (dockPlacement != DockPlacement.None) {
 				// If there is a pad in the same position, place the new one
 				// over the existing one with a new tab.
-				foreach (IPadContent pad in activePadCollection) {
+				foreach (PadCodon pad in activePadCollection) {
 					string[] places = pad.DefaultPlacement.Split (';');
 					foreach (string p in places)
 						if (string.Compare (p.Trim(), dockPlacement.ToString(), true) == 0) {
@@ -410,21 +412,45 @@ namespace MonoDevelop.Ide.Gui
 			originItem = null;
 		}
 		
-		void AddPad (IPadContent content, string placement)
+		void AddPad (PadCodon content, string placement)
 		{
 			PadWindow window = new PadWindow (this, content);
 			window.Icon = "md-output-icon";
 			padWindows [content] = window;
-			content.Initialize (window);
+			padCodons [window] = content;
+				
 			
 			window.TitleChanged += new EventHandler (UpdatePad);
 			window.IconChanged += new EventHandler (UpdatePad);
-			
+			string windowTitle = GettextCatalog.GetString (content.Label);
 			DockItem item = new DockItem (content.Id,
-								 window.Title,
+								 windowTitle,
 								 window.Icon,
 								 DockItemBehavior.Normal);
-
+			
+			item.Realized  += delegate {
+				try {
+				if (!content.Initialized) {
+					IPadContent newContent = content.PadContent;
+					newContent.Initialize (window);
+				
+					Gtk.Widget pcontent;
+					if (content is Widget) {
+						pcontent = newContent.Control;
+					} else {
+						CommandRouterContainer crc = new CommandRouterContainer (newContent.Control, newContent, true);
+						crc.Show ();
+						pcontent = crc;
+					}
+					
+					CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
+					router.Show ();
+					item.Add (router);
+				}
+				} catch (Exception e) {
+					Console.WriteLine (e.ToString ());
+				}
+			};
 			item.DockItemShown += delegate (object s, EventArgs a) {
 				window.NotifyShown ();
 			};
@@ -434,21 +460,8 @@ namespace MonoDevelop.Ide.Gui
 			};
 
 			Gtk.Label label = item.TabLabel as Gtk.Label;
-			label.UseMarkup = true;
-
-			Gtk.Widget pcontent;
-			if (content is Widget)
-				pcontent = content.Control;
-			else {
-				CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
-				crc.Show ();
-				pcontent = crc;
-			}
+			label.UseMarkup = true;			
 			
-			CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
-			router.Show ();
-			item.Add (router);
-				
 			item.Show ();
 			item.HideItem ();
 			
@@ -486,16 +499,20 @@ namespace MonoDevelop.Ide.Gui
 		void UpdatePad (object source, EventArgs args)
 		{
 			IPadWindow window = (IPadWindow) source;
-			DockItem item = GetDockItem (window.Content);
+			if (!padCodons.ContainsKey (window)) 
+				return;
+			PadCodon codon = padCodons [window];
+			DockItem item = GetDockItem (codon);
 			if (item != null) {
 				Gtk.Label label = item.TabLabel as Gtk.Label;
+				string windowTitle = GettextCatalog.GetString (codon.Label);
 				label.Markup = window.Title;
 				item.LongName = window.Title;
 				item.StockId = window.Icon;
 			}
 		}
 
-		public void ShowPad (IPadContent content)
+		public void ShowPad (PadCodon content)
 		{
 			DockItem item = GetDockItem (content);
 			if (item != null) {
@@ -511,7 +528,7 @@ namespace MonoDevelop.Ide.Gui
 				AddPad (content, content.DefaultPlacement);
 		}
 		
-		public bool IsVisible (IPadContent padContent)
+		public bool IsVisible (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
@@ -519,7 +536,7 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 		
-		public void HidePad (IPadContent padContent)
+		public void HidePad (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null) {
@@ -527,7 +544,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void ActivatePad (IPadContent padContent)
+		public void ActivatePad (PadCodon padContent)
 		{
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
@@ -536,7 +553,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void RedrawAllComponents()
 		{
-			foreach (IPadContent content in ((IWorkbench)workbench).PadContentCollection) {
+			foreach (PadCodon content in ((IWorkbench)workbench).PadContentCollection) {
 				DockItem item = dock.GetItemByName (content.Id);
 				if (item != null)
 					item.LongName = GetPadWindow (content).Title;
@@ -573,7 +590,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IPadWindow GetPadWindow (IPadContent content)
+		public IPadWindow GetPadWindow (PadCodon content)
 		{
 			return (IPadWindow) padWindows [content];
 		}

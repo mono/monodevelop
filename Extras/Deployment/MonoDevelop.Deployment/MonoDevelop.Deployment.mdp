@@ -110,15 +110,6 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Addins.dll" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar Sync="True" Name="DATA_FILES" />
-    <ResourcesVar Sync="True" Name="RES" />
-    <OthersVar />
-    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-  </MonoDevelop.Autotools.MakefileInfo>
   <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
     <ExportedWidgets>
       <Widget>MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector</Widget>
@@ -131,4 +122,13 @@
       <Widget>MonoDevelop.Deployment.Gui.PackagingFeatureWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar Sync="True" Name="DATA_FILES" />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

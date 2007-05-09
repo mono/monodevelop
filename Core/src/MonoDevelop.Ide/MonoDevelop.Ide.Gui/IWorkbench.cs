@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -67,7 +69,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// A collection in which all active workspace windows are saved.
 		/// </summary>
-		PadContentCollection PadContentCollection {
+		List<PadCodon> PadContentCollection {
 			get;
 		}
 		
@@ -90,19 +92,24 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Inserts a new <see cref="IPadContent"/> object in the workspace.
 		/// </summary>
-		void ShowPad(IPadContent content);
+		void ShowPad(PadCodon content);
 		
 		void CloseContent(IViewContent content);
 		
 		/// <summary>
 		/// Returns a pad from a specific type.
 		/// </summary>
-		IPadContent GetPad(Type type);
+		PadCodon GetPad(Type type);
+		
+		/// <summary>
+		/// Returns a pad from an id.
+		/// </summary>
+		PadCodon GetPad(string id);
 		
 		/// <summary>
 		/// Tries to make the pad visible to the user.
 		/// </summary>
-		void BringToFront (IPadContent content);
+		void BringToFront (PadCodon content);
 		
 		/// <summary>
 		/// Closes all views inside the workbench.
