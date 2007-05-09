@@ -43,7 +43,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.Deployment.Linux/DesktopInfo.xml
 
-DATA_FILES = MonoDevelop.Deployment.Linux.addin.xml
+DATA_FILES = 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
