@@ -37,13 +37,14 @@ FILES =  \
 	Schema/ViewSchema.cs
 
 REFS =  \
-	-r:$(top_builddir)/build/AddIns/MonoQuery/FirebirdSql.Data.Firebird.dll \
+	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
 	-r:ByteFX.Data \
 	-r:Mono.Data.SqliteClient \
 	-r:Mono.Data.SybaseClient \
 	-r:Npgsql \
 	-r:System \
-	-r:System.Data
+	-r:System.Data \
+	-r:System.Data.OracleClient
 
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery

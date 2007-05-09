@@ -1,3 +1,11 @@
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Data.Sql/Makefile.am, Mono.Data.Sql/Mono.Data.Sql.mdp: Reference
+	  shared assemblies from the correct location. Added missing assembly
+	  reference.
+	* MonoQuery/Makefile.am, MonoQuery/MonoQuery.mdp: Reference shared
+	  assemblies from the correct location.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoQuery/Makefile.am, MonoQuery/MonoQuery.addin.xml,
