@@ -51,7 +51,3 @@ public class BooShellPadContent (AbstractPadContent):
 	override def Dispose():
 		_shellView.Dispose()
 		_scroller.Dispose()
-		
-	override DefaultPlacement:
-		get:
-			return "Bottom"

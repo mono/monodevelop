@@ -1,3 +1,9 @@
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.mdp, BooShell/BooShell.mdp, BooShell/Makefile.am,
+	  Makefile.am: Reference shared assemblies from the correct location.
+	* BooShellPadContent.boo: Fix the build.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/OptionPanels/GeneralBooShellPanel.boo,
