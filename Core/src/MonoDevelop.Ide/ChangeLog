@@ -1,3 +1,10 @@
+2007-05-08  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs,
+	  MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs, 
+	  MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs: Added 
+	  standard header feature.
+	  
 2007-05-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Added some missing dispose
