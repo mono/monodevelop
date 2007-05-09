@@ -95,7 +95,7 @@ RES =  \
 	icons/packaging-project-32.png \
 	templates/PackagingProject.xpt.xml
 
-DATA_FILES = MonoDevelop.Deployment.addin.xml
+DATA_FILES = 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
