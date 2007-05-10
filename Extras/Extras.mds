@@ -2,7 +2,6 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
-      <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
@@ -23,10 +22,10 @@
       <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="BooBinding" configuration="Debug" />
       <Entry build="True" name="MonoQuery" configuration="Debug" />
+      <Entry build="True" name="CSharpBinding" configuration="" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
-      <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="ILAsmBinding" configuration="Debug" />
       <Entry build="True" name="VersionControl" configuration="Debug" />
       <Entry build="True" name="JavaBinding" configuration="Debug" />
@@ -47,6 +46,7 @@
       <Entry build="True" name="Deployment" configuration="" />
       <Entry build="True" name="BooBinding" configuration="Release" />
       <Entry build="True" name="MonoQuery" configuration="Release" />
+      <Entry build="True" name="CSharpBinding" configuration="" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -73,12 +73,10 @@
     <Execute type="None" entry="MonoQuery" />
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="MonoQuery" />
-    <Execute type="None" entry="BooBinding" />
-    <Execute type="None" entry="MonoQuery" />
+    <Execute type="None" entry="CSharpBinding" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
-    <Entry filename="./CSharpBinding/CSharpBinding.mdp" />
     <Entry filename="./ILAsmBinding/ILAsmBinding.mdp" />
     <Entry filename="./VersionControl/VersionControl.mds" />
     <Entry filename="./JavaBinding/JavaBinding.mdp" />
@@ -99,5 +97,6 @@
     <Entry filename="./Deployment/Deployment.mds" />
     <Entry filename="./BooBinding/BooBinding.mds" />
     <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
+    <Entry filename="./CSharpBinding/CSharpBinding.mds" />
   </Entries>
 </Combine>
