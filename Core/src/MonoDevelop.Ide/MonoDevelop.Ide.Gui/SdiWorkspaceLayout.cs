@@ -440,6 +440,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			window.TitleChanged += new EventHandler (UpdatePad);
 			window.IconChanged += new EventHandler (UpdatePad);
+			
 			string windowTitle = GettextCatalog.GetString (padCodon.Label);
 			DockItem item = new DockItem (padCodon.Id,
 								 windowTitle,
@@ -504,14 +505,16 @@ namespace MonoDevelop.Ide.Gui
 			if (!padCodons.ContainsKey (window)) 
 				return;
 			PadCodon codon = padCodons [window];
-			DockItem item = GetDockItem (codon);
+/*			DockItem item = GetDockItem (codon);
 			if (item != null) {
 				Gtk.Label label = item.TabLabel as Gtk.Label;
-				string windowTitle = GettextCatalog.GetString (codon.Label);
-				label.Markup = window.Title;
-				item.LongName = window.Title;
-				item.StockId = window.Icon;
-			}
+				string windowTitle = GettextCatalog.GetString (window.Title); 
+				if (String.IsNullOrEmpty (windowTitle)) 
+					windowTitle = GettextCatalog.GetString (codon.Label);
+				label.Markup  = windowTitle;
+				item.LongName = windowTitle;
+				item.StockId  = window.Icon;
+			}*/
 		}
 
 		public void ShowPad (PadCodon content)

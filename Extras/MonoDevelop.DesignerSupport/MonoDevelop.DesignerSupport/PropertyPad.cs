@@ -46,7 +46,7 @@ namespace MonoDevelop.DesignerSupport
 		Gtk.Frame frame;
 		bool customWidget;
 		
-		public PropertyPad ()  : base ("")
+		public PropertyPad ()
 		{
 			DesignerSupport.Service.SetPropertyPad (this);
 			DefaultPlacement = "right";

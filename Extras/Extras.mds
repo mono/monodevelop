@@ -71,6 +71,7 @@
     <Execute type="None" entry="MonoDevelop.WebReferences" />
     <Execute type="None" entry="Deployment" />
     <Execute type="None" entry="MonoQuery" />
+    <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="MonoQuery" />
     <Execute type="None" entry="BooBinding" />
     <Execute type="None" entry="MonoQuery" />

@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			SearchResultPad monitorPad = new SearchResultPad ();
 			monitorPad.Id = "SearchPad" + (monitorId++);
-			pad = IdeApp.Workbench.ShowPad (monitorPad, "Search Results", "Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
+			pad = IdeApp.Workbench.ShowPad (monitorPad, GettextCatalog.GetString ("Search Results"), "Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 			if (bringToFront) pad.BringToFront ();
 
 			return new SearchProgressMonitor (monitorPad, title);

@@ -43,7 +43,7 @@ namespace MonoDevelop.DesignerSupport
 	{
 		Toolbox.Toolbox toolbox;
 		
-		public ToolboxPad ()  : base ("")
+		public ToolboxPad ()
 		{
 			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService);
 		}
