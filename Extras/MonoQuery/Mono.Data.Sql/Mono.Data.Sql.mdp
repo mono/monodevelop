@@ -57,8 +57,8 @@
     <ProjectReference type="Gac" localcopy="False" refto="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="False" refto="Mono.Data.SybaseClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="False" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/FirebirdSql.Data.Firebird.dll" />
-    <ProjectReference type="Assembly" localcopy="True" refto="./System.Data.OracleClient" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/FirebirdSql.Data.Firebird.dll" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
