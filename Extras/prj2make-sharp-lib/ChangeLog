@@ -1,3 +1,7 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, prj2make-sharp-lib.mdp: Updated.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* prj2make-sharp-lib.addin.xml, Makefile.am: Flush
