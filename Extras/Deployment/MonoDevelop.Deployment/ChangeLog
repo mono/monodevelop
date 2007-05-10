@@ -1,3 +1,7 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.mdp: Don't copy project references.
+
 2007-05-10  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* MonoDevelop.Deployment.mdp: Add MonoDevelop.Deployment.addin.xml

@@ -101,27 +101,15 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Core.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Components" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Addins.dll" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Components" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Projects.Gui" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Ide" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
+    <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
   </References>
-  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector</Widget>
-      <Widget>MonoDevelop.Deployment.DesktopIntegrationOptionPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.SourcesZipEditorWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.EntrySelectionTree</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.BinariesZipEditorWidget</Widget>
-      <Widget>MonoDevelop.Deployment.DeployFileListWidget</Widget>
-      <Widget>MonoDevelop.Deployment.CombineEntrySelector</Widget>
-      <Widget>MonoDevelop.Deployment.Gui.PackagingFeatureWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>./MonoDevelop.Deployment.addin.xml</File>
@@ -134,4 +122,16 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector</Widget>
+      <Widget>MonoDevelop.Deployment.DesktopIntegrationOptionPanelWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Gui.SourcesZipEditorWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Gui.EntrySelectionTree</Widget>
+      <Widget>MonoDevelop.Deployment.Gui.BinariesZipEditorWidget</Widget>
+      <Widget>MonoDevelop.Deployment.DeployFileListWidget</Widget>
+      <Widget>MonoDevelop.Deployment.CombineEntrySelector</Widget>
+      <Widget>MonoDevelop.Deployment.Gui.PackagingFeatureWidget</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
 </Project>
