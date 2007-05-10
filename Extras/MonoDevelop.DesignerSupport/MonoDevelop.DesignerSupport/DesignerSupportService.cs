@@ -71,7 +71,7 @@ namespace MonoDevelop.DesignerSupport
 		void DisposePropertyPadProvider ()
 		{
 			if (lastPadProvider != null) {
-				if (propertyPad.PropertyGrid != null)
+				if (propertyPad != null && propertyPad.PropertyGrid != null)
 					propertyPad.PropertyGrid.Changed -= OnPropertyGridChanged;
 				lastPadProvider.OnEndEditing (lastComponent);
 				lastPadProvider = null;
@@ -110,6 +110,9 @@ namespace MonoDevelop.DesignerSupport
 				lastPadProvider = provider;
 				lastComponent = comp;
 				
+				if (propertyPad == null)
+					return;
+					
 				object[] provs = GetPropertyProvidersForObject (comp, provider.GetPropertyProvider ());
 				if (provs.Length > 0)
 					propertyPad.PropertyGrid.SetCurrentObject (comp, provs);
@@ -136,7 +139,8 @@ namespace MonoDevelop.DesignerSupport
 
 				lastCustomProvider = provider;
 				
-				propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
+				if (propertyPad != null)
+					propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
 			}
 			else {
 				ResetPropertyPad ();

@@ -1,3 +1,9 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp: Deploy the addin.xml file.
+	* MonoDevelop.DesignerSupport/DesignerSupportService.cs: Added some
+	  null checks.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp, Makefile.am: Reference shared
