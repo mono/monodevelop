@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					entry = Services.ProjectService.ReadCombineEntry (NewCombineEntryLocation, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 				}
 				catch (Exception ex) {
-					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation));
+					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", NewCombineEntryLocation), this, true);
 					return;
 				}
 				if (parentCombine == null) {
@@ -344,12 +344,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				&& (!Runtime.FileService.IsValidFileName (solution) || solution.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0)) ||
 			    !Runtime.FileService.IsValidFileName(name)     || name.IndexOf(System.IO.Path.DirectorySeparatorChar) >= 0 ||
 			    !Runtime.FileService.IsValidFileName(location)) {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
+				Services.MessageService.ShowError (this, GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return false;
 			}
 
 			if (IdeApp.ProjectOperations.CurrentOpenCombine != null && IdeApp.ProjectOperations.CurrentOpenCombine.FindProject (name) != null) {
-				Services.MessageService.ShowError(GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
+				Services.MessageService.ShowError (this, GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}
 			
@@ -393,7 +393,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				else
 					NewCombineEntryLocation = item.CreateProject (cinfo);
 			} catch (Exception ex) {
-				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"));
+				Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The project could not be created"), this, true);
 				return false;
 			}
 			selectedItem = item;

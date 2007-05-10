@@ -1,3 +1,9 @@
+2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Use modal dialogs
+	  for error messages.
+	* MonoDevelop.Ide.mdp, Makefile.am: Updated.
+
 2007-05-10  Mike Krüger <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs,
