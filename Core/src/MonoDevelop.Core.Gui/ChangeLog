@@ -1,3 +1,7 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui.mdp: Reference copy fix.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp, Makefile.am: Reference shared assemblies
