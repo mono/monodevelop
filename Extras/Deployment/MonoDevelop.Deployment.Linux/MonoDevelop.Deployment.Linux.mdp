@@ -25,7 +25,6 @@
     <File name="./MonoDevelop.Deployment.Linux/DotDesktopView.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Linux/DesktopEntry.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Linux/DesktopInfo.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="./MonoDevelop.Deployment.Linux.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Linux/BasicOptionPanel.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment.Linux/LinuxDeployData.cs" subtype="Code" buildaction="Compile" />
@@ -58,13 +57,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
   </References>
-  <GtkDesignInfo partialTypes="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Deployment.Linux.BasicOptionPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DesktopPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DotDesktopViewWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -74,4 +66,11 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo partialTypes="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Deployment.Linux.BasicOptionPanelWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Linux.DesktopPanelWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Linux.DotDesktopViewWidget</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
 </Project>

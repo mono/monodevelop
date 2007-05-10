@@ -21,8 +21,8 @@
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Debug" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Debug" />
       <Entry build="True" name="Deployment" configuration="" />
-      <Entry build="True" name="MonoQuery" configuration="Debug" />
       <Entry build="True" name="BooBinding" configuration="Debug" />
+      <Entry build="True" name="MonoQuery" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.NUnit" configuration="Debug" />
@@ -45,8 +45,8 @@
       <Entry build="True" name="MonoDevelop.Autotools" configuration="Release" />
       <Entry build="True" name="MonoDevelop.WebReferences" configuration="Release" />
       <Entry build="True" name="Deployment" configuration="" />
-      <Entry build="True" name="MonoQuery" configuration="Release" />
       <Entry build="True" name="BooBinding" configuration="Release" />
+      <Entry build="True" name="MonoQuery" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="MonoDevelop.NUnit" single="True">
@@ -73,6 +73,7 @@
     <Execute type="None" entry="MonoQuery" />
     <Execute type="None" entry="MonoQuery" />
     <Execute type="None" entry="BooBinding" />
+    <Execute type="None" entry="MonoQuery" />
   </StartMode>
   <Entries>
     <Entry filename="./NUnit/MonoDevelop.NUnit.mdp" />
@@ -95,7 +96,7 @@
     <Entry filename="./MonoDevelop.Autotools/MonoDevelop.Autotools.mdp" />
     <Entry filename="./MonoDevelop.WebReferences/MonoDevelop.WebReferences.mdp" />
     <Entry filename="./Deployment/Deployment.mds" />
-    <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
     <Entry filename="./BooBinding/BooBinding.mds" />
+    <Entry filename="./MonoQuery/Mono.Data.Sql.mds" />
   </Entries>
 </Combine>

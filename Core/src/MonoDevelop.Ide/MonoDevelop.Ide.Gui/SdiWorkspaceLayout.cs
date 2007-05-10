@@ -411,46 +411,48 @@ namespace MonoDevelop.Ide.Gui
 			
 			originItem = null;
 		}
-		
-		void AddPad (PadCodon content, string placement)
+		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
-			PadWindow window = new PadWindow (this, content);
-			window.Icon = "md-output-icon";
-			padWindows [content] = window;
-			padCodons [window] = content;
+			if (force || !padCodon.Initialized) {
+				IPadContent newContent = padCodon.PadContent;
+				newContent.Initialize (window);
+			
+				Gtk.Widget pcontent;
+				if (padCodon is Widget) {
+					pcontent = newContent.Control;
+				} else {
+					CommandRouterContainer crc = new CommandRouterContainer (newContent.Control, newContent, true);
+					crc.Show ();
+					pcontent = crc;
+				}
 				
+				CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
+				router.Show ();
+				item.Add (router);
+			}
+		}
+		void AddPad (PadCodon padCodon, string placement)
+		{
+			PadWindow window = new PadWindow (this, padCodon);
+			window.Icon = "md-output-icon";
+			padWindows [padCodon] = window;
+			padCodons [window] = padCodon;
 			
 			window.TitleChanged += new EventHandler (UpdatePad);
 			window.IconChanged += new EventHandler (UpdatePad);
-			string windowTitle = GettextCatalog.GetString (content.Label);
-			DockItem item = new DockItem (content.Id,
+			string windowTitle = GettextCatalog.GetString (padCodon.Label);
+			DockItem item = new DockItem (padCodon.Id,
 								 windowTitle,
 								 window.Icon,
 								 DockItemBehavior.Normal);
+			if (padCodon.Initialized) {
+				CreatePadContent (true, padCodon, window, item);
+			} else {
+				item.Realized  += delegate {
+					CreatePadContent (false, padCodon, window, item);
+				};
+			}
 			
-			item.Realized  += delegate {
-				try {
-				if (!content.Initialized) {
-					IPadContent newContent = content.PadContent;
-					newContent.Initialize (window);
-				
-					Gtk.Widget pcontent;
-					if (content is Widget) {
-						pcontent = newContent.Control;
-					} else {
-						CommandRouterContainer crc = new CommandRouterContainer (newContent.Control, newContent, true);
-						crc.Show ();
-						pcontent = crc;
-					}
-					
-					CommandRouterContainer router = new CommandRouterContainer (pcontent, toolbarFrame, false);
-					router.Show ();
-					item.Add (router);
-				}
-				} catch (Exception e) {
-					Console.WriteLine (e.ToString ());
-				}
-			};
 			item.DockItemShown += delegate (object s, EventArgs a) {
 				window.NotifyShown ();
 			};
@@ -467,8 +469,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			DockPad (item, placement);
 
-			if (!activePadCollection.Contains (content))
-				activePadCollection.Add (content);
+			if (!activePadCollection.Contains (padCodon))
+				activePadCollection.Add (padCodon);
 		}
 		
 		void DockPad (DockItem item, string placement)

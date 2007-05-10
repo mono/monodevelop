@@ -38,13 +38,13 @@ FILES =  \
 
 REFS =  \
 	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
+	-r:$(top_srcdir)/Extras/MonoQuery/Mono.Data.Sql/System.Data.OracleClient \
 	-r:ByteFX.Data \
 	-r:Mono.Data.SqliteClient \
 	-r:Mono.Data.SybaseClient \
 	-r:Npgsql \
 	-r:System \
-	-r:System.Data \
-	-r:System.Data.OracleClient
+	-r:System.Data
 
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoQuery
