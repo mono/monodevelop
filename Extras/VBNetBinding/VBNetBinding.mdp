@@ -51,6 +51,7 @@
     <File name="./icons/VB.Project.ServiceProject" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/VB.Project.UserControl" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/VB.Project.WebProject" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./VBNetBinding.addin.xml" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

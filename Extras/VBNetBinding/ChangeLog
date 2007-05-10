@@ -1,3 +1,7 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* VBNetBinding.mdp: Added missing file.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* VBNetBinding.mdp, Makefile.am: Reference shared assemblies from the
