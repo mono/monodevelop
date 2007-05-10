@@ -51,7 +51,7 @@ Dependencies
 ------------
 
 	Mono >= 1.1.10
-	Gtk# >= 2.4.2
+	Gtk# >= 2.8.0
 	monodoc >= 1.0
 	gecko-sharp-2.0 >= 0.10
 	gtksourceview-sharp >= 0.10

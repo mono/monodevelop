@@ -1,3 +1,7 @@
+2007-05-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* README: Updated to reflect new gtk-sharp dependency
+
 2007-05-07 Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* configure.in: We now require gtk 2.8.
