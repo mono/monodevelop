@@ -1,12 +1,12 @@
-FILES = \
-CSharpAutotoolsSetup.cs
+FILES = CSharpAutotoolsSetup.cs
 
-REFS = -r:System \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
-	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+REFS =  \
+	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
-	-r:$(top_builddir)/build/AddIns/BackendBindings/CSharpBinding.dll
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:System
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/CSharpBinding.Autotools.dll

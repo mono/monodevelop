@@ -1,3 +1,8 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Autotools/Autotools.mdp, Autotools/Makefile.am: Added project for the
+	  autotools assembly.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mdp: Don't copy assembly references.
