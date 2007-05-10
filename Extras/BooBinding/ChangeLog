@@ -1,3 +1,8 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* BooBinding.mdp, BooShell/BooShell.mdp, BooShell/Makefile.am,
+	  Makefile.am: Fix the build, again.
+
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* BooBinding.mdp, BooShell/BooShell.mdp, BooShell/Makefile.am,
