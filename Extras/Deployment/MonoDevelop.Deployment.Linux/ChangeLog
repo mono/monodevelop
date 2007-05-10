@@ -1,3 +1,9 @@
+2007-05-10  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.Deployment.Linux.mdp: Add 
+	  MonoDevelop.Deployment.Linux.addin.xml back to the file list, 
+	  but exclude from makefile synching.
+
 2007-05-09  Michael Hutchinson <m.j.hutchinson@gmail.com> 
 
 	* Makefile.am: Eliminate duplication of 
