@@ -29,8 +29,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs \
 	Handler.cs \
-	ImportMakefileDialog.cs \
 	IMakefileHandler.cs \
+	ImportMakefileDialog.cs \
 	ISimpleAutotoolsSetup.cs \
 	Makefile.cs \
 	MakefileData.cs \
