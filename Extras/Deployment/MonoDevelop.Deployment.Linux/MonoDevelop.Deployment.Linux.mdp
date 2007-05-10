@@ -50,7 +50,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Deployment" />
+    <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Deployment" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -58,13 +58,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="gnome-vfs-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../../contrib/Mono.Addins.dll" />
   </References>
-  <GtkDesignInfo partialTypes="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Deployment.Linux.BasicOptionPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DesktopPanelWidget</Widget>
-      <Widget>MonoDevelop.Deployment.Linux.DotDesktopViewWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
     <ExcludedFiles>
       <File>./MonoDevelop.Deployment.Linux.addin.xml</File>
@@ -77,4 +70,11 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <GtkDesignInfo partialTypes="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Deployment.Linux.BasicOptionPanelWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Linux.DesktopPanelWidget</Widget>
+      <Widget>MonoDevelop.Deployment.Linux.DotDesktopViewWidget</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
 </Project>
