@@ -1,3 +1,14 @@
+2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix for a problem that happens
+	  when an assembly A depends on another assembly B, which depends on
+	  C. When compiling A the compiler won't be able to load B unless C
+	  is copied to the B directory. This fixes makes a copy of C to the B
+	  dir and deletes it after compilation.
+	* MonoDevelop.Projects/Project.cs: Copy to output references with the
+	  local copy flag only.
+	* Makefile.am: Updated.
+
 2007-05-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs

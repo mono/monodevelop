@@ -8,6 +8,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Xml;
@@ -174,7 +175,63 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) ActiveConfiguration;
 			conf.SourceDirectory = BaseDirectory;
 			
-			return languageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
+			List<string> supportAssemblies = new List<string> ();
+			CopySupportAssemblies (supportAssemblies);
+			
+			try {
+				return languageBinding.Compile (ProjectFiles, ProjectReferences, conf, monitor);
+			}
+			finally {
+				// Delete support assemblies
+				foreach (string s in supportAssemblies) {
+					try {
+						File.Delete (s);
+					} catch {
+						// Ignore
+					}
+				}
+			}
+		}
+		
+		
+		void CopySupportAssemblies (List<string> files)
+		{
+			foreach (ProjectReference projectReference in ProjectReferences) {
+				if (projectReference.ReferenceType == ReferenceType.Project) {
+					// It is a project reference. If this project depends
+					// on other (non-gac) assemblies there may be a compilation problem because
+					// the compiler won't be able to indirectly find them.
+					// The solution is to copy them in the project directory, and delete
+					// them after compilation.
+					Project p = RootCombine.FindProject (projectReference.Reference);
+					if (p == null)
+						continue;
+					
+					string tdir = Path.GetDirectoryName (p.GetOutputFileName ());
+					CopySupportAssemblies (p, tdir, files);
+				}
+			}
+		}
+		
+		void CopySupportAssemblies (Project prj, string targetDir, List<string> files)
+		{
+			foreach (ProjectReference pref in prj.ProjectReferences) {
+				if (pref.ReferenceType == ReferenceType.Gac)
+					continue;
+				foreach (string referenceFileName in pref.GetReferencedFileNames ()) {
+					string asmName = Path.GetFileName (referenceFileName);
+					asmName = Path.Combine (targetDir, asmName);
+					if (!File.Exists (asmName)) {
+						File.Copy (referenceFileName, asmName);
+						files.Add (asmName);
+					}
+				}
+				if (pref.ReferenceType == ReferenceType.Project) {
+					Project sp = RootCombine.FindProject (pref.Reference);
+					if (sp != null)
+						CopySupportAssemblies (sp, targetDir, files);
+				}
+			}
 		}
 		
 		public override string GetOutputFileName ()

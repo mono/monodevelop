@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects
 							deployFiles.Add (referenceFileName + ".config");
 					}
 				}
-				if (projectReference.ReferenceType == ReferenceType.Project && RootCombine != null) {
+				if (projectReference.ReferenceType == ReferenceType.Project && projectReference.LocalCopy && RootCombine != null) {
 					Project p = RootCombine.FindProject (projectReference.Reference);
 					if (p != null)
 						deployFiles.AddRange (p.GetReferenceDeployFiles (force));
