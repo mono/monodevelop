@@ -1,3 +1,7 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* WelcomePage.mdp: Copy the .addins.xml file to the output dir.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.addin.xml: Migration to Mono.Addins.
