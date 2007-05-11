@@ -1,5 +1,9 @@
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AspNetAddIn.mdp: Copy the .addins.xml file to the output dir.
+
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* AspNetAddIn.mdp: Don't copy project references.
 
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
