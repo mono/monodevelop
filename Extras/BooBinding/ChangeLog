@@ -1,5 +1,9 @@
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* BooBinding.mdp: Copy the .addins.xml file to the output dir.
+
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* BooBinding.mdp, BooShell/BooShell.mdp, BooShell/Makefile.am,
 	  Makefile.am: Fix the build, again.
 

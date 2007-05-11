@@ -51,6 +51,7 @@
     <File name="./Parser/Tree.boo" subtype="Code" buildaction="Compile" />
     <File name="./Parser/Visitor.boo" subtype="Code" buildaction="Compile" />
     <File name="./Gui/BooTextEditorExtension.boo" subtype="Code" buildaction="Compile" />
+    <File name="./BooBinding.addin.xml" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
