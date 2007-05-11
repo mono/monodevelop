@@ -1,5 +1,9 @@
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.GtkCore.mdp: Copy the .addins.xml file to the output dir.
+
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.GtkCore.mdp: Copy stetic dlls together with the assembly.
 	* lib/libsteticui.dll, lib/libstetic.dll: Updated.
 
