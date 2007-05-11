@@ -1,3 +1,8 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDeveloperExtensions.mdp: Copy the .addins.xml file to the output
+	  dir.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, MonoDeveloperExtensions.mdp: Reference shared assemblies

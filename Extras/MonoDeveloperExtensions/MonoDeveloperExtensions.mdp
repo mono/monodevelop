@@ -21,6 +21,7 @@
     <File name="./MonoProject.cs" subtype="Code" buildaction="Compile" />
     <File name="./Commands.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoProjectConfiguration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDeveloperExtensions.addin.xml" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />
