@@ -1,3 +1,9 @@
+2007-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (AddMember): Override default
+	implementation so that we can add a statement to throw a
+	NotImplementedException.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.mds: Added new c# binding solution.
