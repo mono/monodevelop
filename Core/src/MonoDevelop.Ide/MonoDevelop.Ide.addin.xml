@@ -820,7 +820,9 @@
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Right" _label = "Help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
-
+		
+		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectSolutionPad" defaultPlacement = "Left" _label = "New Solution" class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ProjectSolutionPad"/>
+		
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.CombineNodeBuilder"/>
@@ -867,6 +869,7 @@
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
+			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectSolutionPad"/>
 		</WorkbenchContext>
 		<WorkbenchContext id = "Debug">
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad"/>

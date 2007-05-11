@@ -292,6 +292,27 @@
     <File name="./MonoDevelop.Ide.Gui.Dialogs/RenameItemDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/IProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/MSBuildProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ProjectEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ProjectReadHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/ProjectService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/Solution.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionFolder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionItemFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionProject.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionReadHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/SolutionSection.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ItemType.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectFile.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectSolutionPad.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

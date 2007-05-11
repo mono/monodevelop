@@ -43,16 +43,13 @@ namespace CSharpBinding {
             Stetic.Gui.Initialize();
             // Widget CSharpBinding.FormattingPanelWidget
             Stetic.BinContainer.Attach(this);
-            this.Events = ((Gdk.EventMask)(0));
             this.Name = "CSharpBinding.FormattingPanelWidget";
             // Container child CSharpBinding.FormattingPanelWidget.Gtk.Container+ContainerChild
             this.container = new Gtk.VBox();
-            this.container.Events = ((Gdk.EventMask)(0));
             this.container.Name = "container";
             this.container.Spacing = 12;
             // Container child container.Gtk.Box+BoxChild
             this.Indentation = new Gtk.Label();
-            this.Indentation.Events = ((Gdk.EventMask)(0));
             this.Indentation.Name = "Indentation";
             this.Indentation.Xalign = 0F;
             this.Indentation.LabelProp = Mono.Unix.Catalog.GetString("<b>Indentation</b>");
@@ -64,12 +61,10 @@ namespace CSharpBinding {
             w1.Fill = false;
             // Container child container.Gtk.Box+BoxChild
             this.hboxIndentation = new Gtk.HBox();
-            this.hboxIndentation.Events = ((Gdk.EventMask)(0));
             this.hboxIndentation.Name = "hboxIndentation";
             // Container child hboxIndentation.Gtk.Box+BoxChild
             this.indentationSpacer = new Gtk.Label();
             this.indentationSpacer.WidthRequest = 18;
-            this.indentationSpacer.Events = ((Gdk.EventMask)(0));
             this.indentationSpacer.Name = "indentationSpacer";
             this.indentationSpacer.LabelProp = "";
             this.hboxIndentation.Add(this.indentationSpacer);
@@ -79,13 +74,11 @@ namespace CSharpBinding {
             w2.Fill = false;
             // Container child hboxIndentation.Gtk.Box+BoxChild
             this.vboxIndentation = new Gtk.VBox();
-            this.vboxIndentation.Events = ((Gdk.EventMask)(0));
             this.vboxIndentation.Name = "vboxIndentation";
             this.vboxIndentation.Spacing = 6;
             // Container child vboxIndentation.Gtk.Box+BoxChild
             this.indentCaseLabels = new Gtk.CheckButton();
             this.indentCaseLabels.CanFocus = true;
-            this.indentCaseLabels.Events = ((Gdk.EventMask)(0));
             this.indentCaseLabels.Name = "indentCaseLabels";
             this.indentCaseLabels.Label = Mono.Unix.Catalog.GetString("Indent case labels");
             this.indentCaseLabels.DrawIndicator = true;
@@ -107,7 +100,6 @@ namespace CSharpBinding {
             w5.Fill = false;
             // Container child container.Gtk.Box+BoxChild
             this.LabelIndentation = new Gtk.Label();
-            this.LabelIndentation.Events = ((Gdk.EventMask)(0));
             this.LabelIndentation.Name = "LabelIndentation";
             this.LabelIndentation.Xalign = 0F;
             this.LabelIndentation.LabelProp = Mono.Unix.Catalog.GetString("<b>Label Indentation</b>");
@@ -119,12 +111,10 @@ namespace CSharpBinding {
             w6.Fill = false;
             // Container child container.Gtk.Box+BoxChild
             this.hboxLabelIndentation = new Gtk.HBox();
-            this.hboxLabelIndentation.Events = ((Gdk.EventMask)(0));
             this.hboxLabelIndentation.Name = "hboxLabelIndentation";
             // Container child hboxLabelIndentation.Gtk.Box+BoxChild
             this.labelIndentationSpacer = new Gtk.Label();
             this.labelIndentationSpacer.WidthRequest = 18;
-            this.labelIndentationSpacer.Events = ((Gdk.EventMask)(0));
             this.labelIndentationSpacer.Name = "labelIndentationSpacer";
             this.labelIndentationSpacer.LabelProp = "";
             this.hboxLabelIndentation.Add(this.labelIndentationSpacer);
@@ -134,13 +124,11 @@ namespace CSharpBinding {
             w7.Fill = false;
             // Container child hboxLabelIndentation.Gtk.Box+BoxChild
             this.vboxLabelIndentation = new Gtk.VBox();
-            this.vboxLabelIndentation.Events = ((Gdk.EventMask)(0));
             this.vboxLabelIndentation.Name = "vboxLabelIndentation";
             this.vboxLabelIndentation.Spacing = 6;
             // Container child vboxLabelIndentation.Gtk.Box+BoxChild
             this.indentGotoLabelsLeftJustify = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Place goto labels in leftmost column"));
             this.indentGotoLabelsLeftJustify.CanFocus = true;
-            this.indentGotoLabelsLeftJustify.Events = ((Gdk.EventMask)(0));
             this.indentGotoLabelsLeftJustify.Name = "indentGotoLabelsLeftJustify";
             this.indentGotoLabelsLeftJustify.Active = true;
             this.indentGotoLabelsLeftJustify.DrawIndicator = true;
@@ -154,7 +142,6 @@ namespace CSharpBinding {
             // Container child vboxLabelIndentation.Gtk.Box+BoxChild
             this.indentGotoLabelsUpOneLevel = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Place goto labels one indent less than current"));
             this.indentGotoLabelsUpOneLevel.CanFocus = true;
-            this.indentGotoLabelsUpOneLevel.Events = ((Gdk.EventMask)(0));
             this.indentGotoLabelsUpOneLevel.Name = "indentGotoLabelsUpOneLevel";
             this.indentGotoLabelsUpOneLevel.DrawIndicator = true;
             this.indentGotoLabelsUpOneLevel.UseUnderline = true;
@@ -167,7 +154,6 @@ namespace CSharpBinding {
             // Container child vboxLabelIndentation.Gtk.Box+BoxChild
             this.indentGotoLabelsNormally = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Indent goto labels normally"));
             this.indentGotoLabelsNormally.CanFocus = true;
-            this.indentGotoLabelsNormally.Events = ((Gdk.EventMask)(0));
             this.indentGotoLabelsNormally.Name = "indentGotoLabelsNormally";
             this.indentGotoLabelsNormally.DrawIndicator = true;
             this.indentGotoLabelsNormally.UseUnderline = true;

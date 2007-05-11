@@ -153,6 +153,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectSolutionPad.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \
@@ -260,6 +263,24 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindowCollection.cs \
+	MonoDevelop.Ide.Projects.Item/ItemType.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
+	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
+	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
+	MonoDevelop.Ide.Projects/IProject.cs \
+	MonoDevelop.Ide.Projects/MSBuildProject.cs \
+	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
+	MonoDevelop.Ide.Projects/ProjectReadHelper.cs \
+	MonoDevelop.Ide.Projects/ProjectService.cs \
+	MonoDevelop.Ide.Projects/Solution.cs \
+	MonoDevelop.Ide.Projects/SolutionEventArgs.cs \
+	MonoDevelop.Ide.Projects/SolutionFolder.cs \
+	MonoDevelop.Ide.Projects/SolutionItem.cs \
+	MonoDevelop.Ide.Projects/SolutionItemFactory.cs \
+	MonoDevelop.Ide.Projects/SolutionProject.cs \
+	MonoDevelop.Ide.Projects/SolutionReadHelper.cs \
+	MonoDevelop.Ide.Projects/SolutionSection.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

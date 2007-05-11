@@ -112,10 +112,12 @@ namespace MonoDevelop.Ide.Commands
 							IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
 						return;
 					}
-					IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-					if (ps.IsCombineEntryFile (name) && fs.SelectedViewer == null)
-						IdeApp.ProjectOperations.OpenCombine (name);
-					else if (fs.SelectedViewer != null)
+					 
+					//IProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+					// && fs.SelectedViewer == null
+					if (MonoDevelop.Ide.Projects.ProjectService.IsSolution (name) ) {
+						MonoDevelop.Ide.Projects.ProjectService.OpenSolution (name);
+					} else if (fs.SelectedViewer != null)
 						fs.SelectedViewer.OpenFile (name, fs.Encoding);
 					else
 						IdeApp.Workbench.OpenDocument (name, fs.Encoding);

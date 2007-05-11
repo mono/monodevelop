@@ -33,7 +33,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.Events = ((Gdk.EventMask)(256));
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog";
             this.Title = Mono.Unix.Catalog.GetString("Delete File");
+            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.BorderWidth = ((uint)(6));
+            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Events = ((Gdk.EventMask)(256));
