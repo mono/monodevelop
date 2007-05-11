@@ -17,8 +17,8 @@ Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ErrorHandlers/CombineLoadErro
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs
 Core/src/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/ResourceNotFoundException.cs
-Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns/AddInService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core.addin.xml
+Core/src/MonoDevelop.Core/MonoDevelop.Core.AddIns.Setup/SetupService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core/FileService.cs
 Core/src/MonoDevelop.Core/MonoDevelop.Core/ServiceManager.cs
 Core/src/MonoDevelop.Dock/DockItem.cs
