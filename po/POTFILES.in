@@ -280,16 +280,6 @@ Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/Prop
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs
 Extras/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs
 Extras/MonoDeveloperExtensions/MonoDeveloperExtensions.addin.xml
-Extras/MonoDevelop.Gettext/Commands.cs
-Extras/MonoDevelop.Gettext/GettextEditorDisplayBinding.cs
-Extras/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Editor.CatalogHeadersWidget.cs
-Extras/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.Translator.LanguageChooserDialog.cs
-Extras/MonoDevelop.Gettext/MonoDevelop.Gettext.addin.xml
-Extras/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/Catalog.cs
-Extras/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/CatalogEditor.cs
-Extras/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/CatalogEntryEditorWidget.cs
-Extras/MonoDevelop.Gettext/MonoDevelop.Gettext.Translator/TranslationProject.cs
-Extras/MonoDevelop.Gettext/templates/TranslationProject.xpt.xml
 Extras/MonoDevelop.GtkCore/gui.glade
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.addin.xml
 Extras/MonoDevelop.GtkCore/MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs
