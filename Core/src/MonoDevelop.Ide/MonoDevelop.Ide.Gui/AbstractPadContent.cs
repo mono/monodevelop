@@ -20,6 +20,10 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		string icon;
 		
+		protected AbstractPadContent () : this (null)
+		{
+		}
+		
 		public AbstractPadContent (string title) : this(title, null)
 		{
 			id = GetType ().FullName;

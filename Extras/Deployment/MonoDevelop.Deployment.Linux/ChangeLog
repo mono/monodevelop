@@ -1,3 +1,13 @@
+2007-05-09  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* Makefile.am: Eliminate duplication of 
+	  MonoDevelop.Deployment.Linux.addin.xml target.
+
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment.Linux.mdp, Makefile.am: Reference shared
+	  assemblies from the correct location.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.addin.xml,

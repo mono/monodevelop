@@ -38,7 +38,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Gtk.Widget widget;
 		Stetic.Palette palette;
 		
-		public GuiBuilderPalettePad (): base ("")
+		public GuiBuilderPalettePad ()
 		{
 			palette = GuiBuilderService.SteticApp.PaletteWidget;
 			palette.ShowWindowCategory = false;

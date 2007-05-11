@@ -14,11 +14,11 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Documentation.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:$(top_builddir)/build/bin/log4net.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Gui.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:$(top_builddir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/log4net.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.Gui.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.GetOptions \
 	-r:Mono.Posix \

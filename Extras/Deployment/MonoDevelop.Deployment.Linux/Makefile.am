@@ -6,14 +6,14 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../build/AddIns/MonoDevelop.Components.dll \
-	-r:../../../build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:../../../build/AddIns/MonoDevelop.Deployment.dll \
-	-r:../../../build/AddIns/MonoDevelop.Ide.dll \
-	-r:../../../build/AddIns/MonoDevelop.Projects.dll \
-	-r:../../../build/AddIns/MonoDevelop.Projects.Gui.dll \
-	-r:../../../build/bin/Mono.Addins.dll \
-	-r:../../../build/bin/MonoDevelop.Core.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Deployment.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml 
@@ -43,7 +43,7 @@ RES =  \
 	gtk-gui/objects.xml \
 	MonoDevelop.Deployment.Linux/DesktopInfo.xml
 
-DATA_FILES = MonoDevelop.Deployment.Linux.addin.xml
+DATA_FILES = 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 

@@ -246,9 +246,9 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 		
-		public Pad ShowPad (IPadContent padContent)
+		public Pad ShowPad (IPadContent padContent, string label, string defaultPlacement, string icon)
 		{
-			return ShowPad (new PadCodon (padContent));
+			return ShowPad (new PadCodon (padContent, label, defaultPlacement, icon));
 		}
 		
 		public FileViewer[] GetFileViewers (string fileName)

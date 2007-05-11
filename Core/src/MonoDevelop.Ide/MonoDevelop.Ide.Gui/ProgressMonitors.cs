@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui
 			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon);
 			monitorId++;
 			monitorPad.Id = "OutputPad" + monitorId;
-			pad = IdeApp.Workbench.ShowPad (monitorPad);
+			pad = IdeApp.Workbench.ShowPad (monitorPad, title, "Bottom", icon);
 			if (bringToFront) pad.BringToFront ();
 
 			return new OutputProgressMonitor (monitorPad, title, icon);
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			SearchResultPad monitorPad = new SearchResultPad ();
 			monitorPad.Id = "SearchPad" + (monitorId++);
-			pad = IdeApp.Workbench.ShowPad (monitorPad);
+			pad = IdeApp.Workbench.ShowPad (monitorPad, GettextCatalog.GetString ("Search Results"), "Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 			if (bringToFront) pad.BringToFront ();
 
 			return new SearchProgressMonitor (monitorPad, title);

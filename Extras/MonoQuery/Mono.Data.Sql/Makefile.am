@@ -37,7 +37,8 @@ FILES =  \
 	Schema/ViewSchema.cs
 
 REFS =  \
-	-r:$(top_builddir)/build/AddIns/MonoQuery/FirebirdSql.Data.Firebird.dll \
+	-r:$(top_srcdir)/contrib/FirebirdSql.Data.Firebird.dll \
+	-r:$(top_srcdir)/Extras/MonoQuery/Mono.Data.Sql/System.Data.OracleClient \
 	-r:ByteFX.Data \
 	-r:Mono.Data.SqliteClient \
 	-r:Mono.Data.SybaseClient \

@@ -16,9 +16,16 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.dll \
-	-r:$(top_builddir)/build/bin/Mono.Addins.Setup.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Components.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Core.Gui.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Ide.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.Projects.Gui.dll \
+	-r:$(top_srcdir)/build/AddIns/MonoDevelop.SourceEditor.dll \
+	-r:$(top_srcdir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml

@@ -1,3 +1,16 @@
+2007-05-09  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* MonoDevelop.Autotools/Makefile.am: Eliminate duplication of 
+	MonoDevelop.Autotools.addin.xml target.
+	Fix dependencies for DATA_FILE_BUILD.
+
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml: Added missing dependency.
+	* MonoDevelop.Autotools.mdp, Makefile.am: Updated assembly references.
+	* MakefileData.cs: Use top_srcdir to reference files not generated at
+	  build time.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Updated.

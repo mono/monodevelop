@@ -1,3 +1,15 @@
+2007-05-10  Mike Krüger <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs,
+	  MonoDevelop.Ide.Gui/ProgressMonitors.cs,
+	  MonoDevelop.Ide.Codons/PadCodon.cs:
+	Fixed bug in pad loading.
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.mdp, Makefile.am: Reference shared assemblies from
+	  the correct location.
+
 2007-05-09  Mike Krüger <mkrueger@novell.com>
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs,
 	  MonoDevelop.Ide.addin.xml,

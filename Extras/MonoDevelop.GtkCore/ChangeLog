@@ -1,3 +1,8 @@
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.mdp, Makefile.am: Reference shared assemblies
+	  from the correct location.
+
 2007-05-04  Wade Berrier  <wberrier@novell.com> 
 	* lib/libstetic.dll.config:
 	* lib/libsteticui.dll.config:

@@ -96,7 +96,7 @@ namespace MonoDevelop.NUnit
 		public IAsyncOperation RunTest (UnitTest test)
 		{
 			if (resultsPad == null) {
-				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad ());
+				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), GettextCatalog.GetString ("Test results"), "Bottom", "md-combine-icon");
 			}
 			
 			resultsPad.BringToFront ();

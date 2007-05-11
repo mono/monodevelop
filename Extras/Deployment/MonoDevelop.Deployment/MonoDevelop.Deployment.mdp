@@ -38,7 +38,6 @@
     <File name="./MonoDevelop.Deployment.Commands/Commands.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/objects.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Deployment.Gui/DeployDialog.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MonoDevelop.Deployment.addin.xml" subtype="Code" buildaction="FileCopy" />
     <File name="./icons/package-x-generic.png" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./MonoDevelop.Deployment/IDeployDirectoryResolver.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Deployment/DeployServiceExtension.cs" subtype="Code" buildaction="Compile" />
@@ -108,8 +107,17 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Projects.Gui" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Ide" />
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.DesignerSupport" />
-    <ProjectReference type="Assembly" localcopy="True" refto="../../../build/bin/Mono.Addins.dll" />
+    <ProjectReference type="Assembly" localcopy="True" refto="../../../contrib/Mono.Addins.dll" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+    <BuildFilesVar Sync="True" Name="FILES" />
+    <DeployFilesVar Sync="True" Name="DATA_FILES" />
+    <ResourcesVar Sync="True" Name="RES" />
+    <OthersVar />
+    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
     <ExportedWidgets>
       <Widget>MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector</Widget>
@@ -122,13 +130,4 @@
       <Widget>MonoDevelop.Deployment.Gui.PackagingFeatureWidget</Widget>
     </ExportedWidgets>
   </GtkDesignInfo>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
-    <BuildFilesVar Sync="True" Name="FILES" />
-    <DeployFilesVar Sync="True" Name="DATA_FILES" />
-    <ResourcesVar Sync="True" Name="RES" />
-    <OthersVar />
-    <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-    <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

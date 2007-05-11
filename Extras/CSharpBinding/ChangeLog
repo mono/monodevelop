@@ -1,3 +1,7 @@
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.mdp: Don't copy assembly references.
+
 2007-05-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (GetMemberNamePosition): Fixed to
