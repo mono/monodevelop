@@ -1,7 +1,17 @@
+2007-05-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): If an
+	interface was selected, find the class it is being implemented on
+	to pass to BuildRefactoryMenuForItem().
+	(BuildRefactoryMenuForItem): Now takes an IClass argument for
+	toplevel interface items so that we know which IClass to implement
+	the interface members on if the user requests to do so.
+	(ImplementInterface): Implemented.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
-	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Don't crash
-	  if the header file can't be found.
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Don't
+	  crash if the header file can't be found.
 
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 

@@ -28,6 +28,7 @@
 
 
 using System;
+using System.CodeDom;
 using System.Threading;
 
 using MonoDevelop.Core;
@@ -94,11 +95,20 @@ namespace MonoDevelop.Ide.Commands
 						eitem = null;
 					}
 					
+					IClass eclass = null;
+					
+					if (item is IClass) {
+						if (((IClass) item).ClassType == ClassType.Interface)
+							eclass = FindEnclosingClass (ctx, editor.Name, line, column);
+						else
+							eclass = (IClass) item;
+					}
+					
 					while (item != null) {
 						CommandInfo ci;
 						
 						// Add the selected item
-						if ((ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
+						if ((ci = BuildRefactoryMenuForItem (ctx, eclass, item)) != null) {
 							ainfo.Add (ci, null);
 							added = true;
 						}
@@ -106,7 +116,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IParameter) {
 							// Add the encompasing method for the previous item in the menu
 							item = ((IParameter) item).DeclaringMember;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, null, item)) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -115,7 +125,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IMember) {
 							// Add the encompasing class for the previous item in the menu
 							item = ((IMember) item).DeclaringType;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, null, item)) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -123,6 +133,7 @@ namespace MonoDevelop.Ide.Commands
 						
 						item = eitem;
 						eitem = null;
+						eclass = null;
 					}
 					
 					if (added)
@@ -131,9 +142,38 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 		
-		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, ILanguageItem item)
+		// public class Funkadelic : IAwesomeSauce, IRockOn { ...
+		//        ----------------   -------------
+		// finds this ^ if you clicked on this ^
+		IClass FindEnclosingClass (IParserContext ctx, string fileName, int line, int col)
 		{
-			Refactorer refactorer = new Refactorer (ctx, item);
+			IClass [] classes = ctx.GetFileContents (fileName);
+			IClass klass = null;
+			
+			if (classes == null)
+				return null;
+			
+			for (int i = 0; i < classes.Length; i++) {
+				if (classes[i] != null &&
+				    classes[i].Region != null &&
+				    (line > classes[i].Region.BeginLine ||
+				     (line == classes[i].Region.BeginLine && col >= classes[i].Region.BeginColumn)) &&
+				    (line < classes[i].Region.EndLine ||
+				     (line == classes[i].Region.EndLine && col <= classes[i].Region.EndColumn))) {
+					klass = classes[i];
+					break;
+				}
+			}
+			
+			if (klass != null && klass.ClassType != ClassType.Interface)
+				return klass;
+			
+			return null;
+		}
+		
+		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, IClass eclass, ILanguageItem item)
+		{
+			Refactorer refactorer = new Refactorer (ctx, eclass, item);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			bool canRename = false;
 			string txt;
@@ -179,11 +219,11 @@ namespace MonoDevelop.Ide.Commands
 				if (canRename)
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 				
-				if (cls.ClassType == ClassType.Interface) {
+				if (cls.ClassType == ClassType.Interface && eclass != null) {
 					// An interface is selected, so just need to provide these 2 submenu items
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
-				} else if (cls.BaseTypes.Count > 0) {
+				} else if (cls.BaseTypes.Count > 0 && cls.ClassType != ClassType.Interface && cls == eclass) {
 					// Class might have interfaces... offer to implement them
 					CommandInfoSet impset = new CommandInfoSet ();
 					CommandInfoSet expset = new CommandInfoSet ();
@@ -192,7 +232,7 @@ namespace MonoDevelop.Ide.Commands
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IClass iface = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
 						if (iface != null && iface.ClassType == ClassType.Interface) {
-							Refactorer ifaceRefactorer = new Refactorer (ctx, iface);
+							Refactorer ifaceRefactorer = new Refactorer (ctx, cls, iface);
 							
 							impset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
 							expset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
@@ -243,7 +283,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IClass cls = ctx.GetClass (className, true, true);
 			if (cls != null) {
-				CommandInfo ci = BuildRefactoryMenuForItem (ctx, cls);
+				CommandInfo ci = BuildRefactoryMenuForItem (ctx, null, cls);
 				if (ci != null)
 					ciset.CommandInfos.Add (ci, null);
 			}
@@ -254,13 +294,15 @@ namespace MonoDevelop.Ide.Commands
 	
 	class Refactorer
 	{
+		IClass klass;
 		ILanguageItem item;
 		IParserContext ctx;
 		MemberReferenceCollection references;
 		ISearchProgressMonitor monitor;
 		
-		public Refactorer (IParserContext ctx, ILanguageItem item)
+		public Refactorer (IParserContext ctx, IClass klass, ILanguageItem item)
 		{
+			this.klass = klass;
 			this.item = item;
 			this.ctx = ctx;
 		}
@@ -290,12 +332,12 @@ namespace MonoDevelop.Ide.Commands
 					if (member.IsPrivate || (!member.IsProtectedOrInternal && !member.IsPublic)) {
 						// look in project to be partial classes safe
 						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-											      RefactoryScope.Project);
+						                                              RefactoryScope.Project);
 					} else {
 						// for all other types look in solution because
 						// internal members can be used in friend assemblies
 						references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member,
-											      RefactoryScope.Solution);
+						                                              RefactoryScope.Solution);
 					}
 				} else if (item is IClass) {
 					references = refactorer.FindClassReferences (monitor, (IClass)item, RefactoryScope.Solution);
@@ -349,7 +391,109 @@ namespace MonoDevelop.Ide.Commands
 		
 		void ImplementInterface (bool explicitly)
 		{
-			// FIXME: implement me
+			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
+			CodeThrowExceptionStatement throwNotImplemented = new CodeThrowExceptionStatement ();
+			IClass iface = item as IClass;
+			bool alreadyImplemented;
+			int i, j;
+			
+			if (klass == null)
+				return;
+			
+			if (iface == null)
+				return;
+			
+			// Add stubs of props, methods and events in reverse order as each
+			// item is always written to the top of the class.
+			
+			// Stub out non-implemented events defined by @iface
+			for (i = iface.Events.Count - 1; i >= 0; i--) {
+				IEvent ev = iface.Events[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
+					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				CodeMemberEvent member;
+				
+				member = new CodeMemberEvent ();
+				if (explicitly)
+					member.Name = ev.FullyQualifiedName;
+				else
+					member.Name = ev.Name;
+				
+				member.Type = new CodeTypeReference (ev.ReturnType.Name);
+				
+				refactorer.AddMember (klass, member);
+			}
+			
+			// Stub out non-implemented methods defined by @iface
+			for (i = iface.Methods.Count - 1; i >= 0; i--) {
+				IMethod method = iface.Methods[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
+					if (klass.Methods[j].FullyQualifiedName == method.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				CodeMemberMethod member;
+				member = new CodeMemberMethod ();
+				if (explicitly)
+					member.Name = method.FullyQualifiedName;
+				else
+					member.Name = method.Name;
+				
+				member.ReturnType = new CodeTypeReference (method.ReturnType.Name);
+				member.Attributes = MemberAttributes.Public;
+				foreach (IParameter param in method.Parameters) {
+					CodeParameterDeclarationExpression par;
+					par = new CodeParameterDeclarationExpression (param.ReturnType.Name, param.Name);
+					member.Parameters.Add (par);
+				}
+				
+				refactorer.AddMember (klass, member);
+			}
+			
+			// Stub out non-implemented properties defined by @iface
+			for (i = iface.Properties.Count - 1; i >= 0; i--) {
+				IProperty prop = iface.Properties[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
+					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				CodeMemberProperty member;
+				
+				member = new CodeMemberProperty ();
+				if (explicitly)
+					member.Name = prop.FullyQualifiedName;
+				else
+					member.Name = prop.Name;
+				
+				member.Type = new CodeTypeReference (prop.ReturnType.Name);
+				member.Attributes = MemberAttributes.Public;
+				member.HasGet = prop.CanGet;
+				member.HasSet = prop.CanSet;
+				
+				refactorer.AddMember (klass, member);
+			}
 		}
 		
 		public void ImplementImplicitInterface ()
