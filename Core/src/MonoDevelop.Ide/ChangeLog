@@ -1,3 +1,8 @@
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs: Don't crash
+	  if the header file can't be found.
+
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Use modal dialogs

@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.StandardHeaders
 		}
 		public static string GetHeader (string language)
 		{
-			if (GetComment (language) == null) {
+			if (Header == null || GetComment (language) == null) {
 				return "";
 			}
 			StringBuilder result = new StringBuilder ();
@@ -95,7 +95,9 @@ namespace MonoDevelop.Ide.StandardHeaders
 				return;
 			}
 			PropertyService propertyService = (PropertyService) ServiceManager.GetService (typeof (PropertyService));
-			Load (Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName));
+			string file = Path.Combine (Path.Combine (propertyService.DataDirectory, "options"), templateFileName);
+			if (File.Exists (file))
+				Load (file);
 		}
 		
 #region I/O
