@@ -1,5 +1,9 @@
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoQuery/MonoQuery.mdp: Copy the .addins.xml file to the output dir.
+
+2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Data.Sql/Makefile.am, Mono.Data.Sql/Mono.Data.Sql.mdp,
 	  MonoQuery/Makefile.am, MonoQuery/MonoQuery.mdp: Fixed.
 
