@@ -60,7 +60,7 @@ namespace MonoDevelop.Deployment.Linux
 				outfile = netProject.Name.ToLower ();
 			DeployFile df = new DeployFile (netProject, file, outfile, TargetDirectory.Binaries);
 			df.ContainsPathReferences = true;
-			df.DisplayName = GettextCatalog.GetString ("Launch cript for {0}", netProject.Name);
+			df.DisplayName = GettextCatalog.GetString ("Launch script for {0}", netProject.Name);
 			return df;
 		}
 		

@@ -1,3 +1,7 @@
+2007-05-12  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs: Fixed typo.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.Linux.mdp: Don't copy project references.
