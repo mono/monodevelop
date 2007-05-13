@@ -1,3 +1,7 @@
+2007-05-13 Michael Hutchinson <m.j.hutchinson@gmail.com>
+
+	* configure.in: Remove JSCall# dependency for AspNetEdit.
+
 2007-05-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* README: Updated to reflect new gtk-sharp dependency
