@@ -212,8 +212,10 @@ Extras/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Li
 Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux.addin.xml
 Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs
 Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml
+Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs
 Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs
 Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs
+Extras/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/MenuCategorySelectorDialog.cs
 Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml
 Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/DeployProjectServiceExtension.cs
 Extras/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/DeployDialog.cs
