@@ -40,7 +40,7 @@ namespace MonoDevelop.Deployment.Linux
 			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			store.SetSortColumnId (/* GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID */ -1, Gtk.SortType.Ascending);
 			
-			store.AppendValues ("__other", "Additional categories", false);
+			store.AppendValues ("__other", Mono.Unix.Catalog.GetString ("Additional categories"), false);
 			
 			insertedCats = new Hashtable ();
 			insertedCats ["__other"] = null;
@@ -134,14 +134,14 @@ namespace MonoDevelop.Deployment.Linux
 		{
 			string lab;
 			if (cat.GetAttribute ("main") == "yes")
-				lab = "<b>" + GLib.Markup.EscapeText (cat.GetAttribute ("_label")) + "</b>";
+				lab = "<b>" + GLib.Markup.EscapeText (Mono.Unix.Catalog.GetString (cat.GetAttribute ("_label"))) + "</b>";
 			else
-				lab = GLib.Markup.EscapeText (cat.GetAttribute ("_label"));
+				lab = GLib.Markup.EscapeText (Mono.Unix.Catalog.GetString (cat.GetAttribute ("_label")));
 			
 			if (iter.Equals (TreeIter.Zero))
-				store.AppendValues (cat.GetAttribute ("name"), lab, false);
+				store.AppendValues (Mono.Unix.Catalog.GetString (cat.GetAttribute ("name")), lab, false);
 			else
-				store.AppendValues (iter, cat.GetAttribute ("name"), lab, false);
+				store.AppendValues (iter, Mono.Unix.Catalog.GetString (cat.GetAttribute ("name")), lab, false);
 		}
 
 		protected virtual void OnToggled(object sender, Gtk.ToggledArgs args)

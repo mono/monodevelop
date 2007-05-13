@@ -62,8 +62,8 @@ namespace MonoDevelop.Deployment.Linux
 			mimeTypeCell.Edited += new Gtk.EditedHandler (HandleOnEditMimeType);
 			mimeTypeCell.EditingCanceled += new EventHandler (HandleOnEditMimeTypeCancelled);
 			mimeTypeCell.Editable = true;
-			treeMimeTypes.AppendColumn ("Mime Type", mimeTypeCell, "text", 0);
-			treeMimeTypes.AppendColumn ("Description", new CellRendererText (), "text", 1);
+			treeMimeTypes.AppendColumn (Mono.Unix.Catalog.GetString ("Mime Type"), mimeTypeCell, "text", 0);
+			treeMimeTypes.AppendColumn (Mono.Unix.Catalog.GetString ("Description"), new CellRendererText (), "text", 1);
 			
 			// Other entries
 			
@@ -73,11 +73,11 @@ namespace MonoDevelop.Deployment.Linux
 			entryKeyCell.Edited += new Gtk.EditedHandler (HandleOnEditKey);
 			entryKeyCell.EditingCanceled += new EventHandler (HandleOnEditKeyCancelled);
 			entryKeyCell.Editable = false;
-			treeEntries.AppendColumn ("Key", entryKeyCell, "markup", 0);
+			treeEntries.AppendColumn (Mono.Unix.Catalog.GetString ("Key"), entryKeyCell, "markup", 0);
 			crt = new CellRendererText ();
 			crt.Edited += new Gtk.EditedHandler (HandleOnEditValue);
 			crt.Editable = true;
-			treeEntries.AppendColumn ("Value", crt, "text", 2);
+			treeEntries.AppendColumn (Mono.Unix.Catalog.GetString ("Value"), crt, "text", 2);
 		}
 		
 		void NotifyChanged ()
@@ -102,7 +102,7 @@ namespace MonoDevelop.Deployment.Linux
 			entryUrl.Text = entry.Url;
 			checkTerminal.Active = entry.Terminal;
 			
-			comboLocales.AppendText ("<Default>");
+			comboLocales.AppendText (Mono.Unix.Catalog.GetString ("<Default>"));
 			comboLocales.Active = 0;
 			
 			foreach (string loc in entry.GetLocales ())
@@ -199,7 +199,7 @@ namespace MonoDevelop.Deployment.Linux
 					catName = node.InnerText;
 				else
 					catName = cat;
-				storeCategs.AppendValues (catName, cat);
+				storeCategs.AppendValues (Mono.Unix.Catalog.GetString (catName), cat);
 			}
 		}
 		
