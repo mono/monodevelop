@@ -10,7 +10,6 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-pkg:jscall-sharp \
 	-r:$(top_builddir)/build/AddIns/AspNetAddIn/AspNetAddIn.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
@@ -20,6 +19,8 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Projects.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/build/AddIns/AspNetEdit/jscall.dll \
 	-r:System \
 	-r:System.Design \
 	-r:System.Drawing \
@@ -71,12 +72,17 @@ RES = #
 DATA_FILES = \
 	data/WebControlsToolbox.xml
 
+LOCAL_LIBS = \
+	libs/jscall.dll
+
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
+
+LOCAL_LIBS_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(LOCAL_LIBS)))
 
 ADDIN = AspNetEdit.addin.xml
 
 if ENABLE_ASPNETEDIT
-  all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD)
+  all: $(ASSEMBLY) $(ADDIN_BUILD)/$(ADDIN) $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
 else
   all:
 endif
@@ -85,7 +91,7 @@ $(ADDIN_BUILD)/$(ADDIN): $(srcdir)/$(ADDIN)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/$(ADDIN) $(ADDIN_BUILD)/$(ADDIN)
 
-$(ASSEMBLY): $(build_sources) $(RES)
+$(ASSEMBLY): $(build_sources) $(RES) $(LOCAL_LIBS_BUILD)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -debug -d:TRACE -out:$@ -target:library $(REFS) \
 		$(RES:%=/resource:%) $(build_sources)
@@ -94,14 +100,18 @@ $(DATA_FILE_BUILD): $(srcdir)/data/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(srcdir)/data/$(notdir $@) $(ADDIN_BUILD)/.
 
+$(LOCAL_LIBS_BUILD): $(srcdir)/libs/$(notdir $@)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(srcdir)/libs/$(notdir $@) $(ADDIN_BUILD)/.
+
 if ENABLE_ASPNETEDIT
   aspneteditlibdir = $(MD_ADDIN_DIR)/AspNetEdit
-  aspneteditlib_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES)
+  aspneteditlib_DATA = $(ASSEMBLY) $(ADDIN) $(DATA_FILES) $(LOCAL_LIBS)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(LOCAL_LIBS_BUILD)
 
-EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES)
+EXTRA_DIST = $(FILES) $(ADDIN) $(RES) $(DATA_FILES) $(LOCAL_LIBS)
 
 include $(top_srcdir)/Makefile.include
 

@@ -1,3 +1,15 @@
+2007-05-13  Michael Hutchinson <m.j.hutchinson@gmail.com> 
+
+	* libs/jscall.dll, libs/JSCall.js: Having removed the unmanaged 
+	  dependencies from JSCall#, we can now bundle it. Yay!
+	
+	* chrome/content/aspdesigner/editor.js,
+	  AspNetEdit.Editor.UI/RootDesignerView.cs: Track JSCall# API changes.
+	
+	* Makefile.am: Add libs/jscall.dll to build.
+	
+	* chrome/Makefile.am: Take account of new JSCALL_SCRIPT location.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AspNetEdit.mdp: Copy the .addins.xml file to the output dir.

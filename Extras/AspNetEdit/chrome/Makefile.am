@@ -3,7 +3,7 @@ extension_guid="{d7d824a2-030d-11db-9804-b622a1ef5492}"
 packagedir=$(MD_ADDIN_DIR)/AspNetEdit
 chromedir = $(MOZILLA_HOME)/chrome
 installed_chrome_txt = $(chromedir)/installed-chrome.txt
-
+JSCALL_SCRIPT = ../libs/JSCall.js
 
 ### Build the JAR ###
 

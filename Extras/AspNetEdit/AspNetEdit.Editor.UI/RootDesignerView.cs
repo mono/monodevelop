@@ -436,7 +436,7 @@ namespace AspNetEdit.Editor.UI
 			/// 	string content:	The HTML content of the control
 			/// Returns: none
 			///</summary>
-			public static readonly string AddControl = "AddControl";
+			public static readonly string AddControl = "JSCall_AddControl";
 			
 			///<summary>
 			/// Updates the design-time HTML of a control to the document
@@ -445,7 +445,7 @@ namespace AspNetEdit.Editor.UI
 			/// 	string content:	The HTML content of the control
 			/// Returns: none
 			///</summary>
-			public static readonly string UpdateControl = "UpdateControl";
+			public static readonly string UpdateControl = "JSCall_UpdateControl";
 
 			///<summary>
 			/// Removes a control from the document
@@ -453,7 +453,7 @@ namespace AspNetEdit.Editor.UI
 			/// 	string id:		the unique ID of the control.
 			/// Returns: none
 			///</summary>
-			public static readonly string RemoveControl = "RemoveControl";
+			public static readonly string RemoveControl = "JSCall_RemoveControl";
 			
 			///<summary>
 			/// Selects a control
@@ -461,7 +461,7 @@ namespace AspNetEdit.Editor.UI
 			/// 	string id:		the unique ID of the control, or empty to clear selection.
 			/// Returns: none
 			///</summary>
-			public static readonly string SelectControl = "SelectControl";
+			public static readonly string SelectControl = "JSCall_SelectControl";
 			
 			///<summary>
 			/// Replaces the currently loaded document
@@ -469,14 +469,14 @@ namespace AspNetEdit.Editor.UI
 			/// 	string document:	the document text, with placeholder'd controls.
 			/// Returns: none
 			///</summary>
-			public static readonly string LoadPage = "LoadPage";
+			public static readonly string LoadPage = "JSCall_LoadPage";
 			
 			///<summary>
 			/// Replaces the currently loaded document
 			/// Args: none
 			/// Returns: none
 			///</summary>
-			public static readonly string GetPage = "GetPage";
+			public static readonly string GetPage = "JSCall_GetPage";
 			
 			///<summary>
 			/// Passes a simple command to Gecko
@@ -484,7 +484,7 @@ namespace AspNetEdit.Editor.UI
 			///		string command:		Use the enum EditorCommand
 			/// Returns: none
 			///</summary>
-			public static readonly string DoCommand = "DoCommand";
+			public static readonly string DoCommand = "JSCall_DoCommand";
 			
 			///<summary>
 			/// Inserts a document fragment. Host should have deserialised it.
@@ -492,7 +492,7 @@ namespace AspNetEdit.Editor.UI
 			///		string fragment:		The document fragment
 			/// Returns: none
 			///</summary>
-			public static readonly string InsertFragment = "InsertFragment";
+			public static readonly string InsertFragment = "JSCall_InsertFragment";
 		}
 		
 		

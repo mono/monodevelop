@@ -51,31 +51,6 @@ aspNetHost.prototype =
 
 	initialize: function()
 	{
-		// Register our interface methods with the host
-		JSCallInit ();
-
-		//  Loading/Saving/ControlState
-		JSCallRegisterClrHandler ('LoadPage', JSCall_LoadPage);
-		JSCallRegisterClrHandler ('GetPage', JSCall_GetPage);
-		JSCallRegisterClrHandler ('AddControl', JSCall_AddControl);
-		JSCallRegisterClrHandler ('RemoveControl', JSCall_RemoveControl);
-		JSCallRegisterClrHandler ('UpdateControl', JSCall_UpdateControl);
-		JSCallRegisterClrHandler ('RenameControl', JSCall_RenameControl);
-		// Control selection
-		JSCallRegisterClrHandler ('SelectControl', JSCall_SelectControl);
-		// HTML editing
-		JSCallRegisterClrHandler ('DoCommand',
-			JSCall_DoCommand);
-		JSCallRegisterClrHandler ('IsCommandEnabled',
-			JSCall_IsCommandEnabled);
-		JSCallRegisterClrHandler ('InsertFragment',
-			JSCall_InsertFragment);
-		// Misc
-		JSCallRegisterClrHandler ('SerializeReturn',
-			JSCall_SerializeReturn);
-		JSCallRegisterClrHandler ('DeserializeAndAddReturn',
-			JSCall_DeserializeAndAddReturn);
-
 		//tell the host we're ready for business
 		JSCallPlaceClrCall ('Activate', '', '');
 	},
@@ -174,62 +149,53 @@ aspNetHost.prototype =
  * surrogate functions instead
  */
 
-function JSCall_SelectControl (arg) {
-	aControlId = arg [0];
-	aAdd = true;
+function JSCall_SelectControl (aControlId) {	aAdd = true;
 	aPrimary = true;
 	return editor.selectControl (aControlId, aAdd, aPrimary);
 }
 
-function JSCall_UpdateControl (arg) {
-	aControlId = arg [0];
-	aNewDesignTimeHtml = arg [1];
+function JSCall_UpdateControl (aControlId, aNewDesignTimeHtml) {
 	return editor.updateControl (aControlId, aNewDesignTimeHtml);
 }
 
-function JSCall_RemoveControl (arg) {
-	return editor.removeControl (arg [0]);
+function JSCall_RemoveControl (aControlId) {
+	return editor.removeControl (aControlId);
 }
 
-function JSCall_RenameControl (arg) {
-	return editor.renameControl (arg [0], arg [1]);
+function JSCall_RenameControl (arg1, arg2) {
+	return editor.renameControl (arg1, arg2);
 }
 
-function JSCall_AddControl (arg) {
-	aControlId = arg [0];
-	aControlHtml = arg [1];
-	return editor.addControl (aControlHtml, aControlId);
+function JSCall_AddControl (aControlId, aControlHtml) {	return editor.addControl (aControlHtml, aControlId);
 }
 
 function JSCall_GetPage () {
 	return editor.getPage ();
 }
 
-function JSCall_LoadPage (arg) {
-	return editor.loadPage (arg [0]);
+function JSCall_LoadPage (pageHtml) {
+	return editor.loadPage (pageHtml);
 }
 
-function JSCall_DoCommand (arg) {
-	var command = arg [0];
+function JSCall_DoCommand (command) {
 	editor.doCommand (command);
 	return "";
 }
 
-function JSCall_IsCommandEnabled (arg) {
-	var command = arg [0];
+function JSCall_IsCommandEnabled (command) {
 	return editor.isCommandEnabled (command);
 }
 
-function JSCall_InsertFragment (arg) {
-	return editor.insertFragment (arg [0]);
+function JSCall_InsertFragment (fragment) {
+	return editor.insertFragment (fragment);
 }
 
 function JSCall_SerializeReturn (arg) {
-	host.serialize (arg [0], true);
+	host.serialize (arg, true);
 }
 
 function JSCall_DeserializeAndAddReturn (arg) {
-	host.deserializeAndAdd (arg [0], true);
+	host.deserializeAndAdd (arg, true);
 }
 
 //* ___________________________________________________________________________
