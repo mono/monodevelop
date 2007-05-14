@@ -243,14 +243,6 @@ namespace MonoDevelop.NUnit
 			UpdateCounters ();
 		}
 		
-		public string Id {
-			get { return "MonoDevelop.NUnit.TestResultsPad"; }
-		}
-		
-		public string DefaultPlacement {
-			get { return "Bottom"; }
-		}
-		
 		bool Running {
 			get { return running; }
 			set {
