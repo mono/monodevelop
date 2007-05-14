@@ -14,7 +14,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.QuestionLabel.Text = question;
 		}
 
-		public bool Run ()
+		public new bool Run ()
 		{
 			int response = base.Run ();
 			Hide ();

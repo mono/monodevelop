@@ -35,39 +35,58 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				box.Remove (w);
 				w.Destroy ();
 			}
-			foreach (ICombineEntryFeature feature in features) {
-				Gtk.HBox cbox = new Gtk.HBox ();
-				CheckButton check = new CheckButton ();
-				Label fl = new Label ();
-				fl.Markup = "<b>" + feature.Title + "</b>";
+			// Show enabled features at the beginning
+			foreach (ICombineEntryFeature feature in features)
+				if (feature.IsEnabled (parentCombine, entry))
+					AddFeature (feature);
+			foreach (ICombineEntryFeature feature in features)
+				if (!feature.IsEnabled (parentCombine, entry))
+					AddFeature (feature);
+			scrolled.AddWithViewport (box);
+		}
+		
+		void AddFeature (ICombineEntryFeature feature)
+		{
+			Gtk.HBox cbox = new Gtk.HBox ();
+			CheckButton check = null;
+			
+			Label fl = new Label ();
+			fl.Markup = "<b>" + feature.Title + "</b>";
+			
+			if (feature.IsEnabled (parentCombine, entry)) {
+				cbox.PackStart (fl, false, false, 0);
+			}
+			else {
+				check = new CheckButton ();
 				check.Image = fl;
 				cbox.PackStart (check, false, false, 0);
-				box.PackStart (cbox, false, false, 0);
-				cbox.ShowAll ();
-				
-				HBox fbox = new HBox ();
-				Gtk.Widget editor = feature.CreateFeatureEditor (parentCombine, entry);
-				if (editor != null) {
-					Label sp = new Label ("");
-					sp.WidthRequest = 24;
-					sp.Show ();
-					fbox.PackStart (sp, false, false, 0);
-					editor.Show ();
-					fbox.PackStart (editor, false, false, 0);
-					box.PackStart (fbox, false, false, 0);
-					HSeparator sep = new HSeparator ();
-					sep.Show ();
-					box.PackStart (sep, false, false, 0);
-				}
-				
+			}
+			box.PackStart (cbox, false, false, 0);
+			cbox.ShowAll ();
+			
+			HBox fbox = new HBox ();
+			Gtk.Widget editor = feature.CreateFeatureEditor (parentCombine, entry);
+			if (editor != null) {
+				Label sp = new Label ("");
+				sp.WidthRequest = 24;
+				sp.Show ();
+				fbox.PackStart (sp, false, false, 0);
+				editor.Show ();
+				fbox.PackStart (editor, false, false, 0);
+				box.PackStart (fbox, false, false, 0);
+				HSeparator sep = new HSeparator ();
+				sep.Show ();
+				box.PackStart (sep, false, false, 0);
+			}
+			
+			if (check != null) {
 				ICombineEntryFeature f = feature;
 				check.Toggled += delegate {
 					OnClickFeature (f, check, fbox, editor);
 				};
-				if (feature.IsEnabled (parentCombine, entry))
-					check.Active = true;
+			} else {
+				fbox.ShowAll ();
 			}
-			scrolled.AddWithViewport (box);
 		}
 		
 		void OnClickFeature (ICombineEntryFeature feature, CheckButton check, HBox fbox, Gtk.Widget editor)

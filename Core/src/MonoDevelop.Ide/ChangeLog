@@ -1,3 +1,23 @@
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix incorrect type check
+	  in CreatePadContent. The pad codon can't be a widget, the check
+	  must be done for the content pad. Restore the code that updates the
+	  pad label when the title changes.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Don't save the combine when
+	  opening a new one.
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectReferenceFolderNodeBuilder.cs:
+	  Allow creating project references by dropping a project to the
+	  references folder. Added check for cyclic references.
+	* MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs: Don't
+	  allow unchecking features which are enabled by default.
+	* MonoDevelop.Ide.addin.xml: Removed unused attributes.
+	* MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs,
+	  MonoDevelop.Ide.Commands/RefactoryCommands.cs: Fix warning.
+	* MonoDevelop.Ide.Commands/DebugCommands.cs,
+	  MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs,
+	  MonoDevelop.Ide.Gui/Document.cs: Destroy file selector when done.
+
 2007-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): If an

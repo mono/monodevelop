@@ -392,7 +392,6 @@ namespace MonoDevelop.Ide.Commands
 		void ImplementInterface (bool explicitly)
 		{
 			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
-			CodeThrowExceptionStatement throwNotImplemented = new CodeThrowExceptionStatement ();
 			IClass iface = item as IClass;
 			bool alreadyImplemented;
 			int i, j;

@@ -25,12 +25,16 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("Application to Debug"))) {
+			FileSelector fs = new FileSelector (GettextCatalog.GetString ("Application to Debug"));
+			try {
 				int response = fs.Run ();
 				string name = fs.Filename;
 				fs.Hide ();
 				if (response == (int)Gtk.ResponseType.Ok)
 					IdeApp.ProjectOperations.DebugApplication (name);
+			}
+			finally {
+				fs.Destroy ();
 			}
 		}
 		

@@ -236,83 +236,87 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			
-			using (FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"))) {
-				fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
-				fdiag.SelectMultiple = true;
+			FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"));
+			fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
+			fdiag.SelectMultiple = true;
+			
+			int result;
+			string[] files;
+			IProgressMonitor monitor = null;
+			
+			try {
+				result = fdiag.Run ();
+				files = fdiag.Filenames;
+				if (result != (int) ResponseType.Ok)
+					return;
+			} finally {
+				fdiag.Destroy ();
+			}
+			
+			int action = -1;
+			
+			if (files.Length > 10) {
+				monitor = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true);
+				monitor.BeginTask (GettextCatalog.GetString("Adding files..."), files.Length);
+			}
+			
+			using (monitor) {
 				
-				IProgressMonitor monitor = null;
-				int result = fdiag.Run ();
-				try {
-					if (result != (int) ResponseType.Ok)
-						return;
-					
-					int action = -1;
-					
-					if (fdiag.Filenames.Length > 10) {
-						monitor = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true);
-						monitor.BeginTask (GettextCatalog.GetString("Adding files..."), fdiag.Filenames.Length);
-					}
-					
-					foreach (string file in fdiag.Filenames) {
-						if (monitor != null)
-							monitor.Log.WriteLine (file);
-						if (file.StartsWith (project.BaseDirectory)) {
-							MoveCopyFile (project, CurrentNode, file, true, true);
-						} else {
-							using (MessageDialog md = new MessageDialog (
-								 IdeApp.Workbench.RootWindow,
-								 DialogFlags.Modal | DialogFlags.DestroyWithParent,
-								 MessageType.Question, ButtonsType.None,
-								 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file)))
-							{
-								CheckButton remember = null;
-								if (fdiag.Filenames.Length > 1) {
-									remember = new CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
-									md.VBox.PackStart (remember, false, false, 0);
+				foreach (string file in files) {
+					if (monitor != null)
+						monitor.Log.WriteLine (file);
+					if (file.StartsWith (project.BaseDirectory)) {
+						MoveCopyFile (project, CurrentNode, file, true, true);
+					} else {
+						using (MessageDialog md = new MessageDialog (
+							 IdeApp.Workbench.RootWindow,
+							 DialogFlags.Modal | DialogFlags.DestroyWithParent,
+							 MessageType.Question, ButtonsType.None,
+							 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file)))
+						{
+							CheckButton remember = null;
+							if (files.Length > 1) {
+								remember = new CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
+								md.VBox.PackStart (remember, false, false, 0);
+							}
+							
+							int LINK_VALUE = 3;
+							int COPY_VALUE = 1;
+							int MOVE_VALUE = 2;
+							
+							md.AddButton (GettextCatalog.GetString ("_Link"), LINK_VALUE);
+							md.AddButton (Gtk.Stock.Copy, COPY_VALUE);
+							md.AddButton (GettextCatalog.GetString ("_Move"), MOVE_VALUE);
+							md.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
+							md.VBox.ShowAll ();
+							
+							int ret = -1;
+							if (action < 0) {
+								ret = md.Run ();
+								md.Hide ();
+								if (ret < 0) {
+									IdeApp.ProjectOperations.SaveCombine();
+									return;
 								}
-								
-								int LINK_VALUE = 3;
-								int COPY_VALUE = 1;
-								int MOVE_VALUE = 2;
-								
-								md.AddButton (GettextCatalog.GetString ("_Link"), LINK_VALUE);
-								md.AddButton (Gtk.Stock.Copy, COPY_VALUE);
-								md.AddButton (GettextCatalog.GetString ("_Move"), MOVE_VALUE);
-								md.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
-								md.VBox.ShowAll ();
-								
-								int ret = -1;
-								if (action < 0) {
-									ret = md.Run ();
-									md.Hide ();
-									if (ret < 0) {
-										IdeApp.ProjectOperations.SaveCombine();
-										return;
-									}
-									if (remember != null && remember.Active) action = ret;
-								} else {
-									ret = action;
-								}
-								
-								try {
-									MoveCopyFile (project, CurrentNode, file,
-												  (ret == MOVE_VALUE) || (ret == LINK_VALUE), ret == LINK_VALUE);
-								}
-								catch (Exception ex) {
-									Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
-								}
+								if (remember != null && remember.Active) action = ret;
+							} else {
+								ret = action;
+							}
+							
+							try {
+								MoveCopyFile (project, CurrentNode, file,
+											  (ret == MOVE_VALUE) || (ret == LINK_VALUE), ret == LINK_VALUE);
+							}
+							catch (Exception ex) {
+								Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
 							}
 						}
-						if (monitor != null)
-							monitor.Step (1);
 					}
-					IdeApp.ProjectOperations.SaveCombine();
-				} finally {
-					fdiag.Hide ();
 					if (monitor != null)
-						monitor.Dispose ();
+						monitor.Step (1);
 				}
 			}
+			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		static void MoveCopyFile (Project project, ITreeNavigator nav, string filename, bool move, bool alreadyInPlace)

@@ -418,7 +418,7 @@ namespace MonoDevelop.Ide.Gui
 				newContent.Initialize (window);
 			
 				Gtk.Widget pcontent;
-				if (padCodon is Widget) {
+				if (newContent is Widget) {
 					pcontent = newContent.Control;
 				} else {
 					CommandRouterContainer crc = new CommandRouterContainer (newContent.Control, newContent, true);
@@ -505,7 +505,7 @@ namespace MonoDevelop.Ide.Gui
 			if (!padCodons.ContainsKey (window)) 
 				return;
 			PadCodon codon = padCodons [window];
-/*			DockItem item = GetDockItem (codon);
+			DockItem item = GetDockItem (codon);
 			if (item != null) {
 				Gtk.Label label = item.TabLabel as Gtk.Label;
 				string windowTitle = GettextCatalog.GetString (window.Title); 
@@ -514,7 +514,7 @@ namespace MonoDevelop.Ide.Gui
 				label.Markup  = windowTitle;
 				item.LongName = windowTitle;
 				item.StockId  = window.Icon;
-			}*/
+			}
 		}
 
 		public void ShowPad (PadCodon content)

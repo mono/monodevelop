@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Gui
 				int response = fdiag.Run ();
 				filename = fdiag.Filename;
 				encoding = fdiag.Encoding;
-				fdiag.Hide ();
+				fdiag.Destroy ();
 				if (response != (int)Gtk.ResponseType.Ok)
 					return;
 			}

@@ -859,7 +859,7 @@
 -->			 
 	</Extension>
 	
-	<Extension path = "/SharpDevelop/Workbench/Contexts" extension-nodes="WorkbenchContext" description="Workbench contexts.">
+	<Extension path = "/SharpDevelop/Workbench/Contexts">
 		<WorkbenchContext id = "Edit">
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" />
 			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ClassPad" />

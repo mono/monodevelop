@@ -300,10 +300,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IAsyncOperation OpenCombine(string filename)
 		{
-			if (openCombine != null) {
-				SaveCombine();
+			if (openCombine != null)
 				CloseCombine();
-			}
 
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
@@ -660,7 +658,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			CombineEntry res = null;
 			
-			using (FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Solution"))) {
+			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Solution"));
+			try {
 				fdiag.SetCurrentFolder (parentCombine.BaseDirectory);
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
@@ -671,9 +670,10 @@ namespace MonoDevelop.Ide.Gui
 						Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
 					}
 				}
-
-				fdiag.Hide ();
+			} finally {
+				fdiag.Destroy ();
 			}
+			
 			if (res != null)
 				SaveCombine ();
 

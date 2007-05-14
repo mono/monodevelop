@@ -124,31 +124,65 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			return dataObject is ProjectReference;
+			return dataObject is ProjectReference || dataObject is Project;
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
+			// It allows dropping either project references or projects.
+			// Dropping a project creates a new project reference to that project
+			
+			Project project = dataObject as Project;
+			if (project != null) {
+				ProjectReference pr = new ProjectReference (project);
+				Project p = CurrentNode.GetParentDataItem (typeof(Project), false) as Project;
+				if (ProjectReferencesProject (project, p.Name))
+					return;
+				p.ProjectReferences.Add (pr);
+				IdeApp.ProjectOperations.SaveProject (p);
+				return;
+			}
+			
+			// It's dropping a ProjectReference object.
+			
 			ProjectReference pref = dataObject as ProjectReference;
 			ITreeNavigator nav = CurrentNode;
 
 			if (operation == DragOperation.Move) {
 				NodePosition pos = nav.CurrentPosition;
 				nav.MoveToObject (dataObject);
-				nav.MoveToParent (typeof(Project));
-				Project p = nav.DataItem as Project;
-				p.ProjectReferences.Remove (pref);
-				
+				Project p = nav.GetParentDataItem (typeof(Project), true) as Project;
 				nav.MoveToPosition (pos);
-				nav.MoveToParent (typeof(Project));
-				p = nav.DataItem as Project;
-				p.ProjectReferences.Add (pref);
+				Project p2 = nav.GetParentDataItem (typeof(Project), true) as Project;
+				
+				p.ProjectReferences.Remove (pref);
+
+				// Check if there is a cyclic reference after removing from the source project
+				if (pref.ReferenceType == ReferenceType.Project) {
+					Project pdest = p.RootCombine.FindProject (pref.Reference);
+					if (pdest == null || ProjectReferencesProject (pdest, p2.Name)) {
+						// Restore the dep
+						p.ProjectReferences.Add (pref);
+						return;
+					}
+				}
+				
+				p2.ProjectReferences.Add (pref);
+				IdeApp.ProjectOperations.SaveProject (p);
+				IdeApp.ProjectOperations.SaveProject (p2);
 			} else {
 				nav.MoveToParent (typeof(Project));
 				Project p = nav.DataItem as Project;
+				
+				// Check for cyclic referencies
+				if (pref.ReferenceType == ReferenceType.Project) {
+					Project pdest = p.RootCombine.FindProject (pref.Reference);
+					if (pdest == null || ProjectReferencesProject (pdest, p.Name))
+						return;
+				}
 				p.ProjectReferences.Add ((ProjectReference) pref.Clone ());
+				IdeApp.ProjectOperations.SaveProject (p);
 			}
-			IdeApp.ProjectOperations.SaveCombine();
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
@@ -159,6 +193,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				IdeApp.ProjectOperations.SaveProject (p);
 				CurrentNode.Expanded = true;
 			}
+		}
+		
+		bool ProjectReferencesProject (Project project, string targetProject)
+		{
+			if (project.Name == targetProject) {
+				IdeApp.Services.MessageService.ShowError (GettextCatalog.GetString ("Cyclic project references are not allowed."));
+				return true;
+			}
+			
+			foreach (ProjectReference pr in project.ProjectReferences) {
+				Project pref = project.RootCombine.FindProject (pr.Reference);
+				if (pref != null && ProjectReferencesProject (pref, targetProject))
+					return true;
+			}
+			return false;
 		}
 	}
 }
