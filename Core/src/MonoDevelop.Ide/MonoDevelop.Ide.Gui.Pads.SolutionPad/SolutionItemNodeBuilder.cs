@@ -37,6 +37,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
 
+
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
 	public class SolutionItemNodeBuilder : TypeNodeBuilder
@@ -51,7 +52,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "Solution !!!";
+			SolutionItem solutionItem = dataObject as SolutionItem;
+			if (solutionItem == null) 
+				return "SolutionItem";
+			
+			return solutionItem.Location;
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -66,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			SolutionItem solutionItem = dataObject as SolutionItem;
-			
+			label = solutionItem.Location;
 			icon = Context.GetIcon (Stock.EmptyFileIcon);
 		}
 

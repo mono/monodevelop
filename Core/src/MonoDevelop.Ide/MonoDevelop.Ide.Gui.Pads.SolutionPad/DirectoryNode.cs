@@ -1,10 +1,10 @@
 //
-// SolutionItemFactory.cs
+// DirectoryNode.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,23 +27,35 @@
 //
 
 using System;
-using System.Diagnostics;
+using System.Collections;
 using System.IO;
 
-namespace MonoDevelop.Ide.Projects
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
+
+namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public static class SolutionItemFactory
+	public class DirectoryNode
 	{
-		public static SolutionItem CreateSolutionItem (TextReader reader, string basePath, string typeGuid, string guid, string name, string location)
-		{
-			Debug.Assert (reader != null);
-			switch (typeGuid) {
-			case SolutionFolder.FolderGuid:
-				return SolutionFolder.Read (reader, guid, name, location);
-			default:
-				return SolutionProject.Read (reader, basePath, typeGuid, guid, name, location);;
+		SolutionProject solutionProject;
+		string          path;
+		
+		public SolutionProject Project {
+			get {
+				return this.solutionProject;
 			}
-			
+		}
+		
+		public string Path {
+			get {
+				return path;
+			}
+		}
+		
+		public DirectoryNode (SolutionProject solutionProject, string path)
+		{
+			this.solutionProject = solutionProject;
+			this.path            = path;
 		}
 	}
 }

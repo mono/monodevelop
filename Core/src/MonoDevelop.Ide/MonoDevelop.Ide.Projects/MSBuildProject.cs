@@ -38,8 +38,25 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class MSBuildProject : IProject
 	{
+		string            fileName;
 		List<ProjectItem> items   = new List<ProjectItem> ();
 		List<string>      imports = new List<string> ();
+		
+		public string FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value;
+			}
+		}
+		
+		public string BasePath {
+			get {
+				return Path.GetDirectoryName (FileName);
+			}
+		}
+
 		
 		public List<ProjectItem> Items {
 			get {
@@ -47,37 +64,38 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public MSBuildProject()
+		public MSBuildProject (string fileName)
 		{
+			this.fileName = fileName;
 		}
 		
-		void ReadPropertyGroup(XmlReader reader)
+		void ReadPropertyGroup (XmlReader reader)
 		{
 			ProjectReadHelper.ReadList (reader, "PropertyGroup", delegate() {
 				return true;
 			});
 		}
 		
-		void ReadItemGroup(XmlReader reader)
+		void ReadItemGroup (XmlReader reader)
 		{
 			ProjectReadHelper.ReadList (reader, "ItemGroup", delegate() {
-				ProjectItem item = ProjectItemFactory.Create(reader.LocalName);
+				ProjectItem item = ProjectItemFactory.Create (reader.LocalName);
 				if (item != null) {
-					item.Include = reader.GetAttribute("Include");
-					Console.WriteLine("Prj. Item:" + item + " -- " + item.Include);
-					ProjectReadHelper.ReadList(reader, reader.LocalName, delegate() {
-						item.SetMetadata(reader.LocalName, reader.ReadString());
+					item.Include = reader.GetAttribute ("Include");
+					ProjectReadHelper.ReadList (reader, reader.LocalName, delegate() {
+						item.SetMetadata (reader.LocalName, reader.ReadString ());
 						return true;
 					});
+					items.Add (item);
 					return true;
 				}
 				return false;
 			});
 		}
 		
-		public static IProject Load(string fileName)
+		public static IProject Load (string fileName)
 		{
-			MSBuildProject result = new MSBuildProject();
+			MSBuildProject result = new MSBuildProject (fileName);
 			using (XmlReader reader = XmlTextReader.Create (fileName)) {
 				ProjectReadHelper.ReadList (reader, "Project", delegate() {
 					switch (reader.LocalName) {
@@ -92,7 +110,7 @@ namespace MonoDevelop.Ide.Projects
 						return true;
 					case "Import":
 						if (!String.IsNullOrEmpty (reader.GetAttribute ("Project"))) {
-							result.imports.Add (reader.GetAttribute("Project"));
+							result.imports.Add (reader.GetAttribute ("Project"));
 						}
 						return true;
 					}

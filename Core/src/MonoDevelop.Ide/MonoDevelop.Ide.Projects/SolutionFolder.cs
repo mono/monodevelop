@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -35,6 +37,7 @@ namespace MonoDevelop.Ide.Projects
 	public class SolutionFolder : SolutionItem
 	{
 		public const string FolderGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
+		List<SolutionItem> items = new List<SolutionItem> ();
 		
 		public override string TypeGuid {
 			get {
@@ -42,8 +45,23 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public ReadOnlyCollection<SolutionItem> Items {
+			get {
+				return items.AsReadOnly();
+			}
+		}
+		
 		public SolutionFolder (string guid, string name, string location) : base (guid, name, location)
 		{
+		}
+		
+		public void AddChild (SolutionItem child)
+		{
+			SolutionFolder oldParent = child.Parent as SolutionFolder;
+			if (oldParent != null) 
+				oldParent.items.Remove (child);
+			child.Parent = this;
+			items.Add (child);
 		}
 		
 		public static SolutionFolder Read (TextReader reader, string guid, string name, string location)

@@ -153,9 +153,16 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/DirectoryNode.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/DirectoryNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNode.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectSolutionPad.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionProjectNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \

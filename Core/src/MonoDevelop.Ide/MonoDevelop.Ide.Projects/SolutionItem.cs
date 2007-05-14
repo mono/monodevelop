@@ -38,8 +38,15 @@ namespace MonoDevelop.Ide.Projects
 		string name;
 		string location;
 		
+		SolutionItem parent = null;
+		
 		public abstract string TypeGuid {
 			get;
+		}
+		
+		public SolutionItem Parent {
+			get { return parent; }
+			set { parent = value; }
 		}
 		
 		public string Guid {

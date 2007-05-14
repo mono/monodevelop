@@ -414,7 +414,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			nodeHash = new Hashtable ();
 			nodeOptions = new Hashtable ();
-			store.Clear ();
+			if (store != null)
+				store.Clear ();
 		}
 		
 		public ITreeNavigator GetSelectedNode ()

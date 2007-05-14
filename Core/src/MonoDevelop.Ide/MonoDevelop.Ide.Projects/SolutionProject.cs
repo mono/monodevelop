@@ -34,10 +34,18 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class SolutionProject : SolutionItem
 	{
-		string typeGuid;
+		string   typeGuid;
+		IProject project;
+		
 		public override string TypeGuid {
 			get {
 				return typeGuid;
+			}
+		}
+		
+		public IProject Project {
+			get {
+				return project;
 			}
 		}
 		
@@ -46,11 +54,20 @@ namespace MonoDevelop.Ide.Projects
 			this.typeGuid = typeGuid;
 		}
 		
-		public static SolutionProject Read (TextReader reader, string typeGuid, string guid, string name, string location)
+		static string NormalizePath (string path)
+		{
+			if (Path.DirectorySeparatorChar == '/')
+				return path.Replace ('\\', Path.DirectorySeparatorChar);
+			return path.Replace ('/', Path.DirectorySeparatorChar);
+		}
+			
+		
+		public static SolutionProject Read (TextReader reader, string basePath, string typeGuid, string guid, string name, string location)
 		{
 			Debug.Assert (reader != null);
 			SolutionProject result = new SolutionProject (typeGuid, guid, name, location);
 			result.ReadContents (reader);
+			result.project = MSBuildProject.Load (NormalizePath (Path.Combine (basePath, location)));
 			return result;
 		}
 		

@@ -34,6 +34,15 @@ namespace MonoDevelop.Ide.Projects
 {
 	public interface IProject
 	{
+		string FileName {
+			get;
+			set;
+		}
+		
+		string BasePath {
+			get;
+		}
+		
 		List<ProjectItem> Items {
 			get;
 		}

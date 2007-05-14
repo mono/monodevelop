@@ -1,5 +1,5 @@
 //
-// SolutionNodeBuilder.cs
+// FileNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -28,30 +28,37 @@
 
 using System;
 using System.Collections;
+using System.IO;
 
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class SolutionNodeBuilder : TypeNodeBuilder
+	public class FileNodeBuilder : TypeNodeBuilder
 	{
-		public SolutionNodeBuilder ()
+		public FileNodeBuilder ()
 		{
 		}
 
 		public override Type NodeDataType {
-			get { return typeof(Solution); }
+			get { return typeof(FileNode); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "SolutionNode";
+			FileNode fileNode = dataObject as FileNode;
+			if (fileNode == null) 
+				return "FileNode";
+			
+			return Path.GetFileName (fileNode.FileName);
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -65,58 +72,32 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Solution solution = dataObject as Solution;
+			FileNode fileNode = dataObject as FileNode;
+			if (fileNode == null) 
+				return;
+			label = Path.GetFileName (fileNode.FileName);
 			
-			if (solution != null) {
-				switch (solution.Items.Count) {
-					case 0:
-						label = GettextCatalog.GetString ("Solution {0}", solution.Name);
-						break;
-					case 1:
-						label = GettextCatalog.GetString ("Solution {0} (1 entry)", solution.Name);
-						break;
-					default:
-						label = GettextCatalog.GetString ("Solution {0} ({1} entries)", solution.Name, solution.Items.Count);
-						break;
-				}
-			}
-			icon = Context.GetIcon (Stock.CombineIcon);
+			string ic = Services.Icons.GetImageForFile (fileNode.FileName);
+			if (ic != Stock.MiscFiles || !File.Exists (fileNode.FileName))
+				icon = Context.GetIcon (ic);
+			else
+				icon = FileIconLoader.GetPixbufForFile (fileNode.FileName, 16);
 		}
-
+		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			Solution solution = dataObject as Solution;
-			if (solution != null) {
-				foreach (SolutionItem item in solution.Items) {
-					if (item.Parent == null) { 
-						ctx.AddChild (item);
-					}
-				}
-			}
+			// todo
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Solution solution = dataObject as Solution;
-			return solution != null && solution.Items.Count > 0;
-		}
-		
-		public override void OnNodeAdded (object dataObject)
-		{
-			Solution solution = dataObject as Solution;
-/*			combine.EntryAdded += combineEntryAdded;
-			combine.EntryRemoved += combineEntryRemoved;
-			combine.NameChanged += combineNameChanged;
-			combine.StartupPropertyChanged += startupChanged;*/
-		}
-		
-		public override void OnNodeRemoved (object dataObject)
-		{
-			Solution solution = dataObject as Solution;
-/*			combine.EntryAdded -= combineEntryAdded;
-			combine.EntryRemoved -= combineEntryRemoved;
-			combine.NameChanged -= combineNameChanged;
-			combine.StartupPropertyChanged -= startupChanged;*/
+			FileNode fileNode = dataObject as FileNode;
+			if (fileNode == null) 
+				return false;
+			
+			// todo: code behind files
+			return false;
 		}
 	}
 }
+

@@ -1,5 +1,5 @@
 //
-// SolutionNodeBuilder.cs
+// SolutionFolderNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -37,21 +37,26 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
 
+
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class SolutionNodeBuilder : TypeNodeBuilder
+	public class SolutionFolderNodeBuilder : TypeNodeBuilder
 	{
-		public SolutionNodeBuilder ()
+		public SolutionFolderNodeBuilder ()
 		{
 		}
 
 		public override Type NodeDataType {
-			get { return typeof(Solution); }
+			get { return typeof(SolutionFolder); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "SolutionNode";
+			SolutionFolder solutionFolder = dataObject as SolutionFolder;
+			if (solutionFolder == null) 
+				return "SolutionFolder";
+			
+			return solutionFolder.Location;
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -65,45 +70,28 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Solution solution = dataObject as Solution;
-			
-			if (solution != null) {
-				switch (solution.Items.Count) {
-					case 0:
-						label = GettextCatalog.GetString ("Solution {0}", solution.Name);
-						break;
-					case 1:
-						label = GettextCatalog.GetString ("Solution {0} (1 entry)", solution.Name);
-						break;
-					default:
-						label = GettextCatalog.GetString ("Solution {0} ({1} entries)", solution.Name, solution.Items.Count);
-						break;
-				}
-			}
-			icon = Context.GetIcon (Stock.CombineIcon);
+			SolutionFolder solutionFolder = dataObject as SolutionFolder;
+			label = solutionFolder.Location;
+			icon = Context.GetIcon (Stock.OpenFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			Solution solution = dataObject as Solution;
-			if (solution != null) {
-				foreach (SolutionItem item in solution.Items) {
-					if (item.Parent == null) { 
-						ctx.AddChild (item);
-					}
-				}
-			}
+			SolutionFolder solutionFolder = dataObject as SolutionFolder;
+			if (solutionFolder == null) 
+				return;
+			foreach (SolutionItem item in solutionFolder.Items)
+				ctx.AddChild (item);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Solution solution = dataObject as Solution;
-			return solution != null && solution.Items.Count > 0;
+			SolutionFolder solutionFolder = dataObject as SolutionFolder;
+			return solutionFolder != null && solutionFolder.Items.Count > 0;
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			Solution solution = dataObject as Solution;
 /*			combine.EntryAdded += combineEntryAdded;
 			combine.EntryRemoved += combineEntryRemoved;
 			combine.NameChanged += combineNameChanged;
@@ -112,7 +100,6 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Solution solution = dataObject as Solution;
 /*			combine.EntryAdded -= combineEntryAdded;
 			combine.EntryRemoved -= combineEntryRemoved;
 			combine.NameChanged -= combineNameChanged;

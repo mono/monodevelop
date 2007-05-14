@@ -105,7 +105,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = builder.GetParentDataItem (typeof(Project), true) as Project;
 			
-			// For big projects, a real HasChildNodes value is too slow to get
+			// For big projects, a real HasChildNodes value is too slow to ge
+			
 			if (project.ProjectFiles.Count > 500)
 				return true;
 

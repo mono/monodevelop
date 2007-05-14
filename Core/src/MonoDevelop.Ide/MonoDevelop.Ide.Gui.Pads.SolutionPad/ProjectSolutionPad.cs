@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				}
 			};
 			
-//			FillTree (ProjectService.Solution);
+			FillTree (ProjectService.Solution);
 		}
 		
 		void FillTree (Solution solution)

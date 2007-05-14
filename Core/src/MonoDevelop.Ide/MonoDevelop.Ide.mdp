@@ -313,6 +313,13 @@
     <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectSolutionPad.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionFolderNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionProjectNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectItemNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/DirectoryNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/DirectoryNodeBuilder.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNodeBuilder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

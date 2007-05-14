@@ -39,8 +39,16 @@ namespace MonoDevelop.Ide.Projects
 	{
 		const string versionNumber = "9.00";
 		
+		string fileName;
+		
 		List<SolutionItem>    items    = new List<SolutionItem> ();
 		List<SolutionSection> sections = new List<SolutionSection> ();
+		
+		public string Name {
+			get {
+				return Path.GetFileNameWithoutExtension (this.fileName);
+			}
+		}
 		
 		public List<SolutionItem> Items {
 			get {
@@ -54,8 +62,9 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public Solution ()
+		public Solution (string fileName)
 		{
+			this.fileName = fileName;
 		}
 		
 		enum ReadState {
@@ -71,11 +80,28 @@ namespace MonoDevelop.Ide.Projects
 			//System.Console.WriteLine ("Add item:" + item);
 		}
 		
+		public SolutionItem GetItem (string guid)
+		{
+			foreach (SolutionItem item in this.Items) {
+				if (item.Guid == guid) 
+					return item;
+			}
+			return null;
+		}
+		
 		public void AddSection (SolutionSection section)
 		{
 			Sections.Add(section);
-			
 			//System.Console.WriteLine ("Add section:" + section);
+		}
+		
+		public SolutionSection GetSection (string name)
+		{
+			foreach (SolutionSection section in this.Sections) {
+				if (section.Name == name) 
+					return section;
+			}
+			return null;
 		}
 		
 #region I/O
@@ -88,7 +114,8 @@ namespace MonoDevelop.Ide.Projects
 			if (!File.Exists (fileName)) {
 				throw new FileNotFoundException ("Solution file not found", fileName);
 			}
-			Solution result = new Solution ();
+			Solution result = new Solution (fileName);
+			string basePath = Path.GetDirectoryName (fileName);
 			using (StreamReader reader = File.OpenText (fileName)) {
 				ReadState state = ReadState.ReadVersion;
 				Match match;
@@ -114,7 +141,7 @@ namespace MonoDevelop.Ide.Projects
 							string guid         = match.Result ("${Guid}");
 							string name         = match.Result ("${Name}");
 							string location     = match.Result ("${Location}");
-							result.AddItem (SolutionItemFactory.CreateSolutionItem(reader, typeGuid, guid, name, location));
+							result.AddItem (SolutionItemFactory.CreateSolutionItem(reader, basePath, typeGuid, guid, name, location));
 						} else if (curLine == "Global") {
 							state = ReadState.ReadGlobal;
 						}
@@ -127,6 +154,17 @@ namespace MonoDevelop.Ide.Projects
 						break;
 					}
 				});
+				
+				SolutionSection nestedProjects = result.GetSection ("NestedProjects");
+				if (nestedProjects != null) {
+					foreach (KeyValuePair<string, string> pair in nestedProjects.Contents) {
+						SolutionFolder parent = result.GetItem (pair.Value) as SolutionFolder;
+						SolutionItem   child  = result.GetItem (pair.Key);
+						if (parent != null && child != null) {
+							parent.AddChild (child);
+						}
+					}
+				}
 				return result;
 			}
 		}
