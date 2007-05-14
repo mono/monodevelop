@@ -1,5 +1,13 @@
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Make the splash screen a
+	  toplevel instead of popup, it's less intrusive.
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs: Always add the
+	  generated combine entry to the solution. Disable the 'next' button
+	  if the solution path entry is empty.
+
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use the Expose event to
 	  get notified the first time a pad is shown. The Realized even can
 	  be fired sometimes even if the widget has not yet been shown.

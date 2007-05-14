@@ -273,6 +273,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				return;
 			
 			if (notebook.Page == 0) {
+				
 				if (!CreateProject ())
 					return;
 				
@@ -306,7 +307,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				if (!featureList.Validate ())
 					return;
 				
-				if (!newCombine)
+				// New combines (not added to parent combines) already have the project as child.
+				if (!newCombine || (newCombine && !openCombine))
 					parentCombine.Entries.Add (currentEntry);
 				
 				featureList.ApplyFeatures ();
@@ -415,6 +417,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					txt_subdirectory.Sensitive = true;
 					chk_combine_directory.Sensitive = true;
 					lbl_subdirectory.Sensitive = true;
+					txt_subdirectory.Text = txt_name.Text;
 				}
 			}
 			else
@@ -430,7 +433,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void ActivateIfReady ()
 		{
-			if (TemplateView.CurrentlySelected == null || txt_name.Text.Trim () == "")
+			if (TemplateView.CurrentlySelected == null || txt_name.Text.Trim () == "" || (txt_subdirectory.Sensitive && chk_combine_directory.Active && txt_subdirectory.Text.Trim ().Length == 0))
 				btn_new.Sensitive = false;
 			else
 				btn_new.Sensitive = true;

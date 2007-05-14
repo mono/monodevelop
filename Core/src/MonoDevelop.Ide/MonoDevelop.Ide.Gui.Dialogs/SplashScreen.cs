@@ -26,7 +26,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 		}
 		
-		public SplashScreenForm () : base (Gtk.WindowType.Popup)
+		public SplashScreenForm () : base (Gtk.WindowType.Toplevel)
 		{
 			AppPaintable = true;
 			this.Decorated = false;
