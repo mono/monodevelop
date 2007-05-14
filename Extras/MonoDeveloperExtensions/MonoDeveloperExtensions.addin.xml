@@ -57,7 +57,7 @@
 	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="MonoDevelop.NUnit" version="0.13.0"/>
+			<Addin id="NUnit" version="0.13.0"/>
 		</Dependencies>
 		<Extension path = "/Services/NUnit/TestProviders">
 			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
