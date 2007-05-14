@@ -5,7 +5,9 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll
 
 RES =                                                         
  

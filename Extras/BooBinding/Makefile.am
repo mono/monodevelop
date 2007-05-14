@@ -18,6 +18,7 @@ REFS =  \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor.dll \
 	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	-r:$(top_srcdir)/contrib/Mono.Addins.dll \
+	-r:$(top_srcdir)/contrib/Mono.Addins.Setup.dll \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
 	-r:System.Xml
