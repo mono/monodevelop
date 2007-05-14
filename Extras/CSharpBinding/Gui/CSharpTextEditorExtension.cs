@@ -438,8 +438,11 @@ namespace CSharpBinding
 				c = Editor.GetCharAt (--i);
 			} while (i > 0 && char.IsWhiteSpace (c) && (allowLineChange ? true : c != '\n'));
 			
-			if (i == 0 || !char.IsLetterOrDigit (c))
+			if (i == 0)
 				return null;
+			
+			if (!char.IsLetterOrDigit (c))
+				return new string (c, 1);
 			
 			int endOffset = i + 1;
 			

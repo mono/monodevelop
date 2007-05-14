@@ -1,3 +1,8 @@
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Gui/CSharpTextEditorExtension.cs: (GetPreviousToken): Return tokens
+	  composed by a single char which is not a letter of digits.
+
 2007-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs: Comment out our own implementation of
