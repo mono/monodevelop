@@ -1,5 +1,11 @@
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Use the Expose event to
+	  get notified the first time a pad is shown. The Realized even can
+	  be fired sometimes even if the widget has not yet been shown.
+
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.mdp, Makefile.am,
 	  MonoDevelop.Ide.Gui/PadContentCollection.cs: Removed unused file.
 	* MonoDevelop.Ide.Gui/IPadContent.cs, MonoDevelop.Ide.Gui/Workbench.cs,

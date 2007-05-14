@@ -449,7 +449,7 @@ namespace MonoDevelop.Ide.Gui
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
 			} else {
-				item.Realized  += delegate {
+				item.ExposeEvent  += delegate {
 					CreatePadContent (false, padCodon, window, item);
 				};
 			}
