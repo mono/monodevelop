@@ -147,7 +147,7 @@
 	        <Import assembly="CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="MonoDevelop.Autotools" version="0.13.0"/>
+			<Addin id="Autotools" version="0.13.0"/>
 		</Dependencies>
 		<Extension path = "/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />

@@ -1,3 +1,9 @@
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CSharpBinding.addin.xml: Don't use the MD namespace in add-in
+	  dependencies, since the c# add-in is alread declared in the MS
+	  namespace.
+
 2007-05-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (AddMember): Override default
