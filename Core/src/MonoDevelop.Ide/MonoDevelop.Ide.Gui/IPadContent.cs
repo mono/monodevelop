@@ -19,13 +19,6 @@ namespace MonoDevelop.Ide.Gui
 		void Initialize (IPadWindow container);
 
 		/// <summary>
-		/// Id of the pad
-		/// </summary>
-		string Id {
-			get;
-		}
-		
-		/// <summary>
 		/// Returns the Gtk Widget for this pad.
 		/// </summary>
 		Gtk.Widget Control {

@@ -244,7 +244,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadCollection.cs \
-	MonoDevelop.Ide.Gui/PadContentCollection.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
 	MonoDevelop.Ide.Gui/ProjectOperations.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \

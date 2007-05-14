@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Codons
 	public class PadCodon : ExtensionNode
 	{
 		IPadContent content;
+		string id;
 		
 		[NodeAttribute("_label", "Display name of the pad.")]
 		string label = null;
@@ -71,6 +72,11 @@ namespace MonoDevelop.Ide.Codons
 					content = CreatePad ();
 				return content; 
 			}
+		}
+		
+		public string PadId {
+			get { return id != null ? id : base.Id; }
+			set { id = value; }
 		}
 		
 		public string Label {
@@ -120,8 +126,9 @@ namespace MonoDevelop.Ide.Codons
 		{
 		}
 		
-		public PadCodon (IPadContent content, string label, string defaultPlacement, string icon)
+		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, string icon)
 		{
+			this.id               = id;
 			this.padContent       = content;
 			this.label            = label;
 			this.defaultPlacement = defaultPlacement;

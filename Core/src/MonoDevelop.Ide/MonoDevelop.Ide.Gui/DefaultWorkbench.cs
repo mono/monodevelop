@@ -573,10 +573,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return null;
 		}
+		
 		public PadCodon GetPad(string id)
 		{
 			foreach (PadCodon pad in PadContentCollection) {
-				if (pad.Id == id) {
+				if (pad.PadId == id) {
 					return pad;
 				}
 			}

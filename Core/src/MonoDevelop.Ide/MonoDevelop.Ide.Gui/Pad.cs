@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public string Id {
-			get { return window.Content.Id; }
+			get { return window.Id; }
 		}
 		
 		public void BringToFront ()

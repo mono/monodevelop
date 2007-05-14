@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui
 			{
 				if (!activePadCollection.Contains (content))
 				{
-					DockItem item = dock.GetItemByName (content.Id);
+					DockItem item = dock.GetItemByName (content.PadId);
 					if (item != null)
 						item.HideItem ();
 				}
@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (activePadCollection.Contains (content))
 			{
-				DockItem item = dock.GetItemByName (content.Id);
+				DockItem item = dock.GetItemByName (content.PadId);
 				return item;
 			}
 			return null;
@@ -442,7 +442,7 @@ namespace MonoDevelop.Ide.Gui
 			window.IconChanged += new EventHandler (UpdatePad);
 			
 			string windowTitle = GettextCatalog.GetString (padCodon.Label);
-			DockItem item = new DockItem (padCodon.Id,
+			DockItem item = new DockItem (padCodon.PadId,
 								 windowTitle,
 								 window.Icon,
 								 DockItemBehavior.Normal);
@@ -559,7 +559,7 @@ namespace MonoDevelop.Ide.Gui
 		public void RedrawAllComponents()
 		{
 			foreach (PadCodon content in ((IWorkbench)workbench).PadContentCollection) {
-				DockItem item = dock.GetItemByName (content.Id);
+				DockItem item = dock.GetItemByName (content.PadId);
 				if (item != null)
 					item.LongName = GetPadWindow (content).Title;
 			}

@@ -1,5 +1,22 @@
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.mdp, Makefile.am,
+	  MonoDevelop.Ide.Gui/PadContentCollection.cs: Removed unused file.
+	* MonoDevelop.Ide.Gui/IPadContent.cs, MonoDevelop.Ide.Gui/Workbench.cs,
+	  MonoDevelop.Ide.Gui/ProgressMonitors.cs,
+	  MonoDevelop.Ide.Gui/Pad.cs: Added ID paremeter to
+	  Workbench.ShowPad. The ID is not part of IPadContent anymore. It
+	  must be specified either in the addin.xml file or when calling
+	  ShowPad.
+	* MonoDevelop.Ide.Gui/IPadContainer.cs: Added Id property.
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs,
+	  MonoDevelop.Ide.Codons/PadCodon.cs: Added PadId property to
+	  PadCodon. This property is the id set in the extension node, or one
+	  specified by the user when calling ShowPad.
+
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Fix incorrect type check
 	  in CreatePadContent. The pad codon can't be a widget, the check
 	  must be done for the content pad. Restore the code that updates the

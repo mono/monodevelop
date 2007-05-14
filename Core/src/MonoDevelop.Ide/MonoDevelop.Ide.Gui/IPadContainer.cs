@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public interface IPadWindow
 	{
+		string Id { get; }
 		string Title { get; set; }
 		string Icon { get; set; }
 		bool Visible { get; set; }
@@ -84,6 +85,10 @@ namespace MonoDevelop.Ide.Gui
 				if (IconChanged != null)
 					IconChanged (this, EventArgs.Empty);
 			}
+		}
+		
+		public string Id {
+			get { return codon.PadId; }
 		}
 		
 		public bool Visible {
