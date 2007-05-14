@@ -1,3 +1,9 @@
+2007-05-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs: Comment out our own implementation of
+	AddMember, throwing a NotImplementedException() in generated code
+	can be annoying sometimes.
+
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CSharpBinding.addin.xml: Don't use the MD namespace in add-in

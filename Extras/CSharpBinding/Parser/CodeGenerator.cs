@@ -92,28 +92,28 @@ namespace CSharpBinding.Parser
 			return GetGeneratedClass (ctx, file, cls);
 		}
 		
-		static CodeStatement ThrowNewNotImplementedException ()
-		{
-			CodeExpression expr = new CodeSnippetExpression ("new NotImplementedException ()");
-			return new CodeThrowExceptionStatement (expr);
-		}
-		
-		public override IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember member)
-		{
-			if (member is CodeMemberProperty) {
-				CodeMemberProperty prop = (CodeMemberProperty) member;
-				if (prop.HasGet && prop.GetStatements.Count == 0)
-					prop.GetStatements.Add (ThrowNewNotImplementedException ());
-				if (prop.HasSet && prop.SetStatements.Count == 0)
-					prop.SetStatements.Add (ThrowNewNotImplementedException ());
-			} else if (member is CodeMemberMethod) {
-				CodeMemberMethod method = (CodeMemberMethod) member;
-				if (method.Statements.Count == 0)
-					method.Statements.Add (ThrowNewNotImplementedException ());
-			}
-			
-			return base.AddMember (ctx, cls, member);
-		}
+		//static CodeStatement ThrowNewNotImplementedException ()
+		//{
+		//	CodeExpression expr = new CodeSnippetExpression ("new NotImplementedException ()");
+		//	return new CodeThrowExceptionStatement (expr);
+		//}
+		//
+		//public override IMember AddMember (RefactorerContext ctx, IClass cls, CodeTypeMember member)
+		//{
+		//	if (member is CodeMemberProperty) {
+		//		CodeMemberProperty prop = (CodeMemberProperty) member;
+		//		if (prop.HasGet && prop.GetStatements.Count == 0)
+		//			prop.GetStatements.Add (ThrowNewNotImplementedException ());
+		//		if (prop.HasSet && prop.SetStatements.Count == 0)
+		//			prop.SetStatements.Add (ThrowNewNotImplementedException ());
+		//	} else if (member is CodeMemberMethod) {
+		//		CodeMemberMethod method = (CodeMemberMethod) member;
+		//		if (method.Statements.Count == 0)
+		//			method.Statements.Add (ThrowNewNotImplementedException ());
+		//	}
+		//	
+		//	return base.AddMember (ctx, cls, member);
+		//}
 		
 		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls)
 		{
