@@ -67,11 +67,15 @@ namespace MonoDevelop.Ide.Commands
 					int line, column;
 					
 					editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
+					IParseInformation pinfo;
 					IParserContext ctx;
-					if (doc.Project != null)
+					if (doc.Project != null) {
 						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-					else
+						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.Project, doc.FileName, null);
+					} else {
 						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
+						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.FileName, null);
+					}
 					
 					// Look for an identifier at the cursor position
 					
@@ -108,7 +112,7 @@ namespace MonoDevelop.Ide.Commands
 						CommandInfo ci;
 						
 						// Add the selected item
-						if ((ci = BuildRefactoryMenuForItem (ctx, eclass, item)) != null) {
+						if ((ci = BuildRefactoryMenuForItem (ctx, pinfo, eclass, item)) != null) {
 							ainfo.Add (ci, null);
 							added = true;
 						}
@@ -116,7 +120,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IParameter) {
 							// Add the encompasing method for the previous item in the menu
 							item = ((IParameter) item).DeclaringMember;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, null, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item)) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -125,7 +129,7 @@ namespace MonoDevelop.Ide.Commands
 						if (item is IMember) {
 							// Add the encompasing class for the previous item in the menu
 							item = ((IMember) item).DeclaringType;
-							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, null, item)) != null) {
+							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item)) != null) {
 								ainfo.Add (ci, null);
 								added = true;
 							}
@@ -171,9 +175,9 @@ namespace MonoDevelop.Ide.Commands
 			return null;
 		}
 		
-		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, IClass eclass, ILanguageItem item)
+		CommandInfo BuildRefactoryMenuForItem (IParserContext ctx, IParseInformation pinfo, IClass eclass, ILanguageItem item)
 		{
-			Refactorer refactorer = new Refactorer (ctx, eclass, item);
+			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, item);
 			CommandInfoSet ciset = new CommandInfoSet ();
 			bool canRename = false;
 			string txt;
@@ -232,7 +236,7 @@ namespace MonoDevelop.Ide.Commands
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IClass iface = ctx.GetClass (rt.FullyQualifiedName, null, true, true);
 						if (iface != null && iface.ClassType == ClassType.Interface) {
-							Refactorer ifaceRefactorer = new Refactorer (ctx, cls, iface);
+							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface);
 							
 							impset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
 							expset.CommandInfos.Add (iface.Name, new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
@@ -250,10 +254,10 @@ namespace MonoDevelop.Ide.Commands
 				}
 			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field '{0}'", item.Name);
-				AddRefactoryMenuForClass (ctx, ciset, ((IField)item).ReturnType.FullyQualifiedName);
+				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
 			} else if (item is IProperty) {
 				txt = GettextCatalog.GetString ("Property '{0}'", item.Name);
-				AddRefactoryMenuForClass (ctx, ciset, ((IProperty)item).ReturnType.FullyQualifiedName);
+				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IProperty) item).ReturnType.FullyQualifiedName);
 			} else if (item is IEvent) {
 				txt = GettextCatalog.GetString ("Event {0}", item.Name);
 			} else if (item is IMethod) {
@@ -267,10 +271,10 @@ namespace MonoDevelop.Ide.Commands
 				txt = GettextCatalog.GetString ("Indexer {0}", item.Name);
 			} else if (item is IParameter) {
 				txt = GettextCatalog.GetString ("Parameter {0}", item.Name);
-				AddRefactoryMenuForClass (ctx, ciset, ((IParameter)item).ReturnType.FullyQualifiedName);
+				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IParameter) item).ReturnType.FullyQualifiedName);
 			} else if (item is LocalVariable) {
 				LocalVariable var = (LocalVariable) item;
-				AddRefactoryMenuForClass (ctx, ciset, var.ReturnType.FullyQualifiedName);
+				AddRefactoryMenuForClass (ctx, pinfo, ciset, var.ReturnType.FullyQualifiedName);
 				txt = GettextCatalog.GetString ("Variable {0}", item.Name);
 			} else
 				return null;
@@ -279,11 +283,11 @@ namespace MonoDevelop.Ide.Commands
 			return ciset;
 		}
 		
-		void AddRefactoryMenuForClass (IParserContext ctx, CommandInfoSet ciset, string className)
+		void AddRefactoryMenuForClass (IParserContext ctx, IParseInformation pinfo, CommandInfoSet ciset, string className)
 		{
 			IClass cls = ctx.GetClass (className, true, true);
 			if (cls != null) {
-				CommandInfo ci = BuildRefactoryMenuForItem (ctx, null, cls);
+				CommandInfo ci = BuildRefactoryMenuForItem (ctx, pinfo, null, cls);
 				if (ci != null)
 					ciset.CommandInfos.Add (ci, null);
 			}
@@ -294,14 +298,16 @@ namespace MonoDevelop.Ide.Commands
 	
 	class Refactorer
 	{
-		IClass klass;
-		ILanguageItem item;
-		IParserContext ctx;
 		MemberReferenceCollection references;
 		ISearchProgressMonitor monitor;
+		IParseInformation pinfo;
+		IParserContext ctx;
+		ILanguageItem item;
+		IClass klass;
 		
-		public Refactorer (IParserContext ctx, IClass klass, ILanguageItem item)
+		public Refactorer (IParserContext ctx, IParseInformation pinfo, IClass klass, ILanguageItem item)
 		{
+			this.pinfo = pinfo;
 			this.klass = klass;
 			this.item = item;
 			this.ctx = ctx;
@@ -389,11 +395,60 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 		
+		string ExplicitNamePrefix (IClass klass, IClass iface)
+		{
+			if (iface.Namespace == klass.Namespace)
+				return iface.Name + ".";
+			
+			string name = iface.FullyQualifiedName;
+			int maxLen = name.LastIndexOf ('.') - 1;
+			
+			if (maxLen < 0)
+				return iface.Name + ".";
+			
+			string longestMatch = null;
+			
+			if (name.StartsWith (klass.Namespace + "."))
+				longestMatch = klass.Namespace;
+			
+			if (pinfo.BestCompilationUnit != null) {
+				ICompilationUnit compilationUnit = (ICompilationUnit) pinfo.BestCompilationUnit;
+				bool found = false;
+				string prefix;
+				IUsing use;
+				int i, j;
+				
+				for (i = 0; i < compilationUnit.Usings.Count && !found; i++) {
+					if ((use = compilationUnit.Usings[i]) == null)
+						continue;
+					
+					for (j = 0; j < use.Usings.Count; j++) {
+						prefix = use.Usings[j];
+						if (name.StartsWith (prefix + ".")) {
+							if (longestMatch == null || prefix.Length > longestMatch.Length) {
+								longestMatch = prefix;
+								if (longestMatch.Length == maxLen) {
+									found = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			if (longestMatch != null)
+				return name.Substring (longestMatch.Length + 1) + ".";
+			
+			return name + ".";
+		}
+		
 		void ImplementInterface (bool explicitly)
 		{
 			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 			IClass iface = item as IClass;
 			bool alreadyImplemented;
+			string prefix = null;
 			int i, j;
 			
 			if (klass == null)
@@ -401,6 +456,9 @@ namespace MonoDevelop.Ide.Commands
 			
 			if (iface == null)
 				return;
+			
+			if (explicitly)
+				prefix = ExplicitNamePrefix (klass, iface);
 			
 			// Add stubs of props, methods and events in reverse order as each
 			// item is always written to the top of the class.
@@ -423,7 +481,7 @@ namespace MonoDevelop.Ide.Commands
 				
 				member = new CodeMemberEvent ();
 				if (explicitly)
-					member.Name = ev.FullyQualifiedName;
+					member.Name = prefix + ev.Name;
 				else
 					member.Name = ev.Name;
 				
@@ -449,7 +507,7 @@ namespace MonoDevelop.Ide.Commands
 				CodeMemberMethod member;
 				member = new CodeMemberMethod ();
 				if (explicitly)
-					member.Name = method.FullyQualifiedName;
+					member.Name = prefix + method.Name;
 				else
 					member.Name = method.Name;
 				
@@ -482,7 +540,7 @@ namespace MonoDevelop.Ide.Commands
 				
 				member = new CodeMemberProperty ();
 				if (explicitly)
-					member.Name = prop.FullyQualifiedName;
+					member.Name = prefix + prop.Name;
 				else
 					member.Name = prop.Name;
 				

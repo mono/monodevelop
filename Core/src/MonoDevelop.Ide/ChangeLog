@@ -1,3 +1,9 @@
+2007-05-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (ImplementInterface): When
+	implementing explicitly, trim what we can from the explicit name depending
+	on the namespace and/or using statements the file contains.
+
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Make the splash screen a
