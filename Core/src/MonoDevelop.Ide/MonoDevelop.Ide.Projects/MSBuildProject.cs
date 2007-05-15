@@ -32,6 +32,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Projects
@@ -69,6 +71,48 @@ namespace MonoDevelop.Ide.Projects
 			this.fileName = fileName;
 		}
 		
+		public CompilerResult Build (IProgressMonitor monitor)
+		{
+			string responseFileName = Path.GetTempFileName ();
+			Console.WriteLine ("response file:" + responseFileName);
+			using (StreamWriter writer = new StreamWriter (responseFileName)) {
+				writer.WriteLine("/noconfig");
+				writer.WriteLine("/nologo");
+				writer.WriteLine("/codepage:utf8");
+				writer.WriteLine("/t:exe");
+				
+				writer.WriteLine("\"/out:{0}\"", "a.exe");
+				
+				foreach (ProjectItem item in this.Items) {
+					if (item is ProjectFile) {
+						writer.WriteLine("\"{0}\"", item.Include);
+					}
+				}
+			}
+			
+			string output = Path.GetTempFileName ();
+			string error = Path.GetTempFileName ();
+			
+			using (StreamWriter outWriter = new StreamWriter (output)) {
+				using (StreamWriter errWriter = new StreamWriter (error)) {
+					ProcessWrapper pw = Runtime.ProcessService.StartProcess ("gmcs", "\"@" + responseFileName + "\"", BasePath, outWriter, errWriter, delegate {});
+					pw.WaitForExit();
+				}
+			}
+			
+			return new CompilerResult();
+		}
+		
+		public void Start (IProgressMonitor monitor, ExecutionContext context)
+		{
+			Runtime.ProcessService.StartConsoleProcess ( Path.Combine(BasePath, "a.exe"),
+			                                            "",
+			                                            BasePath,
+			                                            context.ConsoleFactory.CreateConsole (true),
+			                                            delegate {});
+		}
+
+#region I/O
 		void ReadPropertyGroup (XmlReader reader)
 		{
 			ProjectReadHelper.ReadList (reader, "PropertyGroup", delegate() {
@@ -119,5 +163,6 @@ namespace MonoDevelop.Ide.Projects
 			}
 			return result;
 		}
+#endregion
 	}
 }

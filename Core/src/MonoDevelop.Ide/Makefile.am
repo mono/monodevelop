@@ -275,6 +275,8 @@ FILES =  \
 	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
 	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
+	MonoDevelop.Ide.Projects/CompilerResult.cs \
+	MonoDevelop.Ide.Projects/ExecutionContext.cs \
 	MonoDevelop.Ide.Projects/IProject.cs \
 	MonoDevelop.Ide.Projects/MSBuildProject.cs \
 	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \

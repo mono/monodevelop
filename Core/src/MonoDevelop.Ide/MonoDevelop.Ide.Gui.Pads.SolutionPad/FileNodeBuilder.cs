@@ -52,6 +52,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			get { return typeof(FileNode); }
 		}
 		
+		public override Type CommandHandlerType {
+			get { return typeof(FileNodeCommandHandler); }
+		}
+		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			FileNode fileNode = dataObject as FileNode;
@@ -97,6 +101,17 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			
 			// todo: code behind files
 			return false;
+		}
+		
+	}
+	
+	public class FileNodeCommandHandler: NodeCommandHandler
+	{
+		public override void ActivateItem ()
+		{
+			FileNode fileNode = CurrentNode.DataItem as FileNode;
+			if (fileNode != null) 
+				IdeApp.Workbench.OpenDocument (fileNode.FileName);
 		}
 	}
 }

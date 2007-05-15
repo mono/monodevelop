@@ -1,10 +1,10 @@
 //
-// IProject.cs
+// ExecutionContext.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Lluis Sanchez Gual
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,29 +27,32 @@
 //
 
 using System;
-using System.Collections.Generic;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Projects.Item;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public interface IProject
+	[Serializable]
+	public class ExecutionContext
 	{
-		string FileName {
-			get;
-			set;
+		IExecutionHandlerFactory executionHandlerFactory;
+		IConsoleFactory consoleFactory;
+		
+		public ExecutionContext (IExecutionHandlerFactory executionHandlerFactory, IConsoleFactory consoleFactory)
+		{
+			this.executionHandlerFactory = executionHandlerFactory;
+			this.consoleFactory = consoleFactory;
 		}
 		
-		string BasePath {
-			get;
+		public IExecutionHandlerFactory ExecutionHandlerFactory {
+			get { return executionHandlerFactory; }
 		}
 		
-		List<ProjectItem> Items {
-			get;
+		public IConsoleFactory ConsoleFactory {
+			get { return consoleFactory; }
 		}
 		
-		CompilerResult Build (IProgressMonitor monitor);
-		void Start (IProgressMonitor monitor, ExecutionContext context);
+		public IConsoleFactory ExternalConsoleFactory {
+			get { return MonoDevelop.Core.Execution.ExternalConsoleFactory.Instance; }
+		}
 	}
 }

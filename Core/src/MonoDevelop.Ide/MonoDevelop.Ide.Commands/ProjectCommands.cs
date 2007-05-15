@@ -66,8 +66,9 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.BuildSolution ();
 				op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
@@ -91,7 +92,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (op.Success)
 				// FIXME: check RunWithWarnings
-				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentOpenCombine);
+				MonoDevelop.Ide.Projects.ProjectService.StartSolution ();
 		}
 		
 		void ExecuteFile (IAsyncOperation op)
@@ -104,25 +105,25 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class RunEntryHandler: CommandHandler
 	{
-		CombineEntry entry;
+		MonoDevelop.Ide.Projects.IProject entry;
 		
 		protected override void Run ()
 		{
-			entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-			IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
+			entry = MonoDevelop.Ide.Projects.ProjectService.ActiveProject;
+			IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.BuildProject (entry);
 			op.Completed += new OperationHandler (ExecuteCombine);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null && 
-							IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null && 
+							MonoDevelop.Ide.Projects.ProjectService.CurrentRunOperation.IsCompleted;
 		}
 		
 		void ExecuteCombine (IAsyncOperation op)
 		{
 			if (op.Success)
-				IdeApp.ProjectOperations.Execute (entry);
+				MonoDevelop.Ide.Projects.ProjectService.StartProject (entry);
 		}
 	}
 	
@@ -138,8 +139,8 @@ namespace MonoDevelop.Ide.Commands
 				return;
 			}
 			
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.BuildSolution ();
 				op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
@@ -172,8 +173,9 @@ namespace MonoDevelop.Ide.Commands
 		
 		void ExecuteCombine (IAsyncOperation op)
 		{
-			if (op.Success)
-				IdeApp.ProjectOperations.Debug (IdeApp.ProjectOperations.CurrentOpenCombine);
+			// TODO:
+//			if (op.Success)
+//				IdeApp.ProjectOperations.Debug (IdeApp.ProjectOperations.CurrentOpenCombine);
 		}
 		
 		void ExecuteFile (IAsyncOperation op)
@@ -216,11 +218,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
-			}
-			else if (IdeApp.Workbench.ActiveDocument != null) {
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null)
+					MonoDevelop.Ide.Projects.ProjectService.BuildProject (MonoDevelop.Ide.Projects.ProjectService.ActiveProject);
+			} else if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.Save ();
 				IdeApp.Workbench.ActiveDocument.Build ();
 			}
@@ -259,9 +260,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null)
-					IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null)
+					MonoDevelop.Ide.Projects.ProjectService.RebuildProject (MonoDevelop.Ide.Projects.ProjectService.ActiveProject);
 			}
 			else if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.Save ();
@@ -295,13 +296,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentOpenCombine);
+			MonoDevelop.Ide.Projects.ProjectService.BuildSolution ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.ProjectOperations.CurrentOpenCombine != null);
+			info.Enabled = MonoDevelop.Ide.Projects.ProjectService.Solution != null && MonoDevelop.Ide.Projects.ProjectService.CurrentBuildOperation.IsCompleted;
 		}
 	}
 	
@@ -309,13 +309,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentOpenCombine);
+			MonoDevelop.Ide.Projects.ProjectService.RebuildSolution ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted &&
-							(IdeApp.ProjectOperations.CurrentOpenCombine != null);
+			info.Enabled = MonoDevelop.Ide.Projects.ProjectService.Solution != null && MonoDevelop.Ide.Projects.ProjectService.CurrentBuildOperation.IsCompleted;
 		}
 	}
 	
@@ -323,12 +322,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentOpenCombine);
+			MonoDevelop.Ide.Projects.ProjectService.CleanSolution ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+			info.Enabled = MonoDevelop.Ide.Projects.ProjectService.Solution != null;
 		}
 	}
 	
@@ -336,14 +335,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Clean (IdeApp.ProjectOperations.CurrentSelectedCombineEntry);
+			MonoDevelop.Ide.Projects.ProjectService.CleanProject (MonoDevelop.Ide.Projects.ProjectService.ActiveProject);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedCombineEntry != null;
-				info.Text = info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedCombineEntry.Name);
+			if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null) {
+				info.Enabled = MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null;
+				info.Text = info.Description = GettextCatalog.GetString ("Clean {0}", Path.GetFileNameWithoutExtension (MonoDevelop.Ide.Projects.ProjectService.ActiveProject.FileName));
 			} else {
 				info.Enabled = false;
 			}

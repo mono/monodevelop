@@ -30,6 +30,17 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
+using MonoDevelop.Core;
+using MonoDevelop.Core.Properties;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+
 namespace MonoDevelop.Ide.Projects
 {
 	public static class ProjectService
@@ -75,6 +86,147 @@ namespace MonoDevelop.Ide.Projects
 		public static bool IsSolution (string fileName)
 		{
 			return Path.GetExtension (fileName) == ".sln";
+		}
+		
+		static IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
+		public static IAsyncOperation CurrentBuildOperation {
+			get { return currentBuildOperation; }
+			set { currentBuildOperation = value; }
+		}
+		
+		public static IAsyncOperation BuildSolution ()
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return currentBuildOperation;
+			}
+			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+
+			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {Solution, monitor, context});
+			currentRunOperation = monitor.AsyncOperation;
+			
+			return currentRunOperation;
+		}
+		static void BuildSolutionAsync (object data)
+		{
+			Console.WriteLine ("1");
+			object[] array = (object[])data;
+			Solution solution = array[0] as Solution;
+			if (solution == null) 
+				return;
+			Console.WriteLine ("2");
+			IProgressMonitor monitor = array[1] as IProgressMonitor;
+			ExecutionContext context = array[2] as ExecutionContext;
+			
+			foreach (SolutionItem item in solution.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project == null)
+					continue;
+				Console.WriteLine (" build:" + project.Location);
+				BuildProject (project.Project);
+			}
+		}
+		
+		public static IAsyncOperation RebuildSolution ()
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return currentBuildOperation;
+			}
+			return null;
+		}
+		
+		public static IAsyncOperation CleanSolution ()
+		{
+			return null;
+		}
+		
+		public static IAsyncOperation BuildProject (IProject project)
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return currentBuildOperation;
+			}
+			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+
+			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {project, monitor, context});
+			currentRunOperation = monitor.AsyncOperation;
+			return currentRunOperation;
+			
+			project.Build (null);
+			return null;
+		}
+		static void BuildProjectAsync (object data)
+		{
+			object[] array = (object[])data;
+			IProject project = array[0] as IProject;
+			if (project == null) 
+				return;
+			IProgressMonitor monitor = array[1] as IProgressMonitor;
+			ExecutionContext context = array[2] as ExecutionContext;
+			
+			project.Build (null);
+		}
+		
+		public static IAsyncOperation RebuildProject (IProject project)
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return currentBuildOperation;
+			}
+			
+			return null;
+		}
+		public static IAsyncOperation CleanProject (IProject project)
+		{
+			return null;
+		}
+		
+		static IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
+		public static IAsyncOperation CurrentRunOperation {
+			get { return currentRunOperation; }
+			set { currentRunOperation = value; }
+		}
+		
+		public static IAsyncOperation StartSolution ()
+		{
+			foreach (SolutionItem item in Solution.Items) {
+				SolutionProject project = item as SolutionProject;
+				if (project == null)
+					continue;
+				return StartProject (project.Project);
+			}
+			return null;
+		}
+		
+		public static IAsyncOperation StartProject(IProject project)
+		{
+			if (currentRunOperation != null && !currentRunOperation.IsCompleted) {
+				return currentRunOperation;
+			}
+
+			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+
+			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (StartProjectAsync), new object[] {project, monitor, context});
+			currentRunOperation = monitor.AsyncOperation;
+			return currentRunOperation;
+		}
+		
+		static void StartProjectAsync (object data)
+		{
+			object[] array = (object[])data;
+			IProject project = array[0] as IProject;
+			if (project == null) 
+				return;
+			IProgressMonitor monitor = array[1] as IProgressMonitor;
+			ExecutionContext context = array[2] as ExecutionContext;
+			//OnBeforeStartProject ();
+			try {
+				project.Start (monitor, context);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
+			} finally {
+				monitor.Dispose ();
+			}
 		}
 		
 		public static event EventHandler<ProjectEventArgs>  ActiveProjectChanged;
