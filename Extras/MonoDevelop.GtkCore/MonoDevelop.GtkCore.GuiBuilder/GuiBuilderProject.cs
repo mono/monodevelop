@@ -57,6 +57,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		DateTime lastSaveTime;
 		object fileSaveLock = new object ();
 		bool disposed;
+		bool librariesUpdated;
 		
 		public event WindowEventHandler WindowAdded;
 		public event WindowEventHandler WindowRemoved;
@@ -91,19 +92,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				IdeApp.Services.MessageService.ShowError (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
 				hasError = true;
 			}
-			
-			// Sync project libraries
-			UpdateLibraries ();
 
 			gproject.ResourceProvider = GtkCoreService.GetGtkInfo (project).ResourceProvider;
-			gproject.ComponentAdded += new Stetic.ComponentEventHandler (OnAddWidget);
-			gproject.ComponentRemoved += new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
+			gproject.WidgetAdded += OnAddWidget;
+			gproject.WidgetRemoved += OnRemoveWidget;
 			gproject.ActionGroupsChanged += OnGroupsChanged;
-			project.FileRemovedFromProject += new ProjectFileEventHandler (OnFileRemoved);
+			project.FileRemovedFromProject += OnFileRemoved;
 			project.ReferenceAddedToProject += OnReferenceAdded;
 			project.ReferenceRemovedFromProject += OnReferenceRemoved;
 			
-			foreach (Stetic.WidgetComponent ob in gproject.GetComponents ())
+			foreach (Stetic.WidgetInfo ob in gproject.Widgets)
 				RegisterWindow (ob, false);
 				
 			// Monitor changes in the file
@@ -128,10 +126,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (GuiBuilderWindow win in formInfos)
 				win.Dispose ();
 
-			gproject.ComponentAdded -= new Stetic.ComponentEventHandler (OnAddWidget);
-			gproject.ComponentRemoved -= new Stetic.ComponentRemovedEventHandler (OnRemoveWidget);
+			gproject.WidgetAdded -= OnAddWidget;
+			gproject.WidgetRemoved -= OnRemoveWidget;
 			gproject.ActionGroupsChanged -= OnGroupsChanged;
-			project.FileRemovedFromProject -= new ProjectFileEventHandler (OnFileRemoved);
+			project.FileRemovedFromProject -= OnFileRemoved;
 			project.ReferenceAddedToProject -= OnReferenceAdded;
 			project.ReferenceRemovedFromProject -= OnReferenceRemoved;
 			gproject.Dispose ();
@@ -139,6 +137,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			formInfos = null;
 			needsUpdate = true;
 			hasError = false;
+			librariesUpdated = false;
 			GuiBuilderService.SteticApp.UpdateWidgetLibraries (false);
 			
 			watcher.Dispose ();
@@ -235,16 +234,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return GuiBuilderService.SteticApp.ActiveProject == SteticProject && !disposed;
 		}
 		
-		public Stetic.WidgetComponent AddNewComponent (Stetic.ComponentType type, string name)
+		public Stetic.WidgetInfo AddNewComponent (Stetic.ComponentType type, string name)
 		{
-			Stetic.WidgetComponent c = SteticProject.AddNewComponent (type, name);
+			Stetic.WidgetInfo c = SteticProject.AddNewComponent (type, name);
 			RegisterWindow (c, true);
 			return c;
 		}
 		
-		public Stetic.WidgetComponent AddNewComponent (XmlElement element)
+		public Stetic.WidgetInfo AddNewComponent (XmlElement element)
 		{
-			Stetic.WidgetComponent c = SteticProject.AddNewComponent (element);
+			Stetic.WidgetInfo c = SteticProject.AddNewComponent (element);
 			// Register the window now, don't wait for the WidgetAdded event since
 			// it may take some time, and the GuiBuilderWindow object is needed
 			// just after this call
@@ -252,7 +251,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return c;
 		}
 	
-		void RegisterWindow (Stetic.WidgetComponent widget, bool notify)
+		void RegisterWindow (Stetic.WidgetInfo widget, bool notify)
 		{
 			foreach (GuiBuilderWindow w in formInfos)
 				if (w.RootWidget == widget)
@@ -288,23 +287,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			UnregisterWindow (win);
 		}
 	
-		public void RemoveActionGroup (Stetic.ActionGroupComponent group)
+		public void RemoveActionGroup (Stetic.ActionGroupInfo group)
 		{
 			gproject.RemoveActionGroup (group);
 		}
 	
-		void OnAddWidget (object s, Stetic.ComponentEventArgs args)
+		void OnAddWidget (object s, Stetic.WidgetInfoEventArgs args)
 		{
 			if (!disposed)
-				RegisterWindow ((Stetic.WidgetComponent)args.Component, true);
+				RegisterWindow (args.WidgetInfo, true);
 		}
 		
-		void OnRemoveWidget (object s, Stetic.ComponentRemovedEventArgs args)
+		void OnRemoveWidget (object s, Stetic.WidgetInfoEventArgs args)
 		{
 			if (disposed)
 				return;
 			foreach (GuiBuilderWindow form in Windows) {
-				if (form.RootWidget.Name == args.ComponentName) {
+				if (form.RootWidget.Name == args.WidgetInfo.Name) {
 					UnregisterWindow (form);
 					break;
 				}
@@ -334,7 +333,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		void OnReferenceAdded (object ob, ProjectReferenceEventArgs args)
 		{
-			if (disposed)
+			if (disposed || !librariesUpdated)
 				return;
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
@@ -345,7 +344,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnReferenceRemoved (object ob, ProjectReferenceEventArgs args)
 		{
-			if (disposed)
+			if (disposed || !librariesUpdated)
 				return;
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
@@ -427,25 +426,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		public Stetic.ActionGroupComponent GetActionGroupForFile (string fileName)
+		public Stetic.ActionGroupInfo GetActionGroupForFile (string fileName)
 		{
-			foreach (Stetic.ActionGroupComponent group in SteticProject.GetActionGroups ()) {
+			foreach (Stetic.ActionGroupInfo group in SteticProject.ActionGroups) {
 				if (fileName == GetSourceCodeFile (group))
 					return group;
 			}
 			return null;
 		}
 		
-		public Stetic.ActionGroupComponent GetActionGroup (string name)
+		public Stetic.ActionGroupInfo GetActionGroup (string name)
 		{
-			foreach (Stetic.ActionGroupComponent group in SteticProject.GetActionGroups ()) {
-				if (name == group.Name)
-					return group;
-			}
-			return null;
+			return SteticProject.GetActionGroup (name);
 		}
 		
-		public string GetSourceCodeFile (Stetic.Component obj)
+		public string GetSourceCodeFile (Stetic.ProjectItemInfo obj)
 		{
 			IClass cls = GetClass (obj);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
@@ -461,7 +456,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		IClass GetClass (Stetic.Component obj)
+		IClass GetClass (Stetic.ProjectItemInfo obj)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name);
@@ -500,6 +495,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (hasError || disposed || gproject == null)
 				return;
 
+			librariesUpdated = true;
+			
 			string[] oldLibs = gproject.WidgetLibraries;
 			
 			ArrayList libs = new ArrayList ();

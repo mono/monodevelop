@@ -325,5 +325,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			return obj.Name;
 		}
+		
+		internal static string GetClassName (Stetic.ProjectItemInfo obj)
+		{
+			return GetObjectName (obj);
+		}
+		
+		internal static string GetObjectName (Stetic.ProjectItemInfo obj)
+		{
+			return obj.Name;
+		}
 	}
 }

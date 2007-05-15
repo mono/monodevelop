@@ -48,14 +48,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderWindow: IDisposable
 	{
-		Stetic.WidgetComponent rootWidget;
+		Stetic.WidgetInfo rootWidget;
 		GuiBuilderProject fproject;
 		Stetic.Project gproject;
 		string name;
 		
 		public event WindowEventHandler Changed;
 		
-		internal GuiBuilderWindow (GuiBuilderProject fproject, Stetic.Project gproject, Stetic.WidgetComponent rootWidget)
+		internal GuiBuilderWindow (GuiBuilderProject fproject, Stetic.Project gproject, Stetic.WidgetInfo rootWidget)
 		{
 			this.fproject = fproject;
 			this.rootWidget = rootWidget;
@@ -65,7 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			rootWidget.Changed += OnChanged;
 		}
 		
-		public Stetic.WidgetComponent RootWidget {
+		public Stetic.WidgetInfo RootWidget {
 			get { return rootWidget; }
 		}
 		
@@ -90,7 +90,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnProjectReloaded (object s, EventArgs args)
 		{
 			rootWidget.Changed -= OnChanged;
-			rootWidget = gproject.GetComponent (name);
+			rootWidget = gproject.GetWidget (name);
 			if (rootWidget != null)
 				rootWidget.Changed += OnChanged;
 		}
@@ -144,19 +144,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			CodeRefactorer gen = new CodeRefactorer (IdeApp.ProjectOperations.CurrentOpenCombine, IdeApp.ProjectOperations.ParserDatabase);
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (fproject.Project);
+			Stetic.WidgetComponent component = (Stetic.WidgetComponent) rootWidget.Component;
 			
 			CodeTypeDeclaration type = new CodeTypeDeclaration ();
 			type.Name = name;
 			type.IsClass = true;
 			type.IsPartial = info.GeneratePartialClasses;
-			type.BaseTypes.Add (new CodeTypeReference (rootWidget.Type.ClassName));
+			type.BaseTypes.Add (new CodeTypeReference (component.Type.ClassName));
 			
 			// Generate the constructor. It contains the call that builds the widget.
 			
 			CodeConstructor ctor = new CodeConstructor ();
 			ctor.Attributes = MemberAttributes.Public | MemberAttributes.Final;
 			
-			foreach (object val in rootWidget.Type.InitializationValues) {
+			foreach (object val in component.Type.InitializationValues) {
 				if (val is Enum) {
 					ctor.BaseConstructorArgs.Add (
 						new CodeFieldReferenceExpression (
@@ -192,8 +193,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Add signal handlers
 			
-			AddSignalsRec (type, rootWidget);
-			foreach (Stetic.Component ag in rootWidget.GetActionGroups ())
+			AddSignalsRec (type, component);
+			foreach (Stetic.Component ag in component.GetActionGroups ())
 				AddSignalsRec (type, ag);
 			
 			// Create the class
@@ -231,7 +232,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (cls.BaseTypes != null) {
 				foreach (IReturnType bt in cls.BaseTypes) {
-					if (bt.FullyQualifiedName == rootWidget.Type.ClassName)
+					if (bt.FullyQualifiedName == rootWidget.Component.Type.ClassName)
 						return true;
 					
 					IClass baseCls = ctx.GetClass (bt.FullyQualifiedName, true, true);

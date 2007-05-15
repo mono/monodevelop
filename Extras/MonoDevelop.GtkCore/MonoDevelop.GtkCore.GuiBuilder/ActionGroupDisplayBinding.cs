@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return null;
 		}
 		
-		Stetic.ActionGroupComponent GetActionGroup (string file)
+		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
 			Project project = IdeApp.ProjectOperations.CurrentOpenCombine.GetProjectContainingFile (file);
 			if (project == null)
@@ -102,7 +102,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return info.GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
-		internal static string BindToClass (Project project, Stetic.ActionGroupComponent group)
+		internal static string BindToClass (Project project, Stetic.ActionGroupInfo group)
 		{
 			GuiBuilderProject gproject = GuiBuilderService.GetGuiBuilderProject (project);
 			string file = gproject.GetSourceCodeFile (group);
@@ -124,7 +124,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return null;
 				
 				if (dialog.CreateNew)
-					CreateClass (project, group, dialog.ClassName, dialog.Namespace, dialog.Folder);
+					CreateClass (project, (Stetic.ActionGroupComponent) group.Component, dialog.ClassName, dialog.Namespace, dialog.Folder);
 
 				string fullName = dialog.Namespace.Length > 0 ? dialog.Namespace + "." + dialog.ClassName : dialog.ClassName;
 				group.Name = fullName;

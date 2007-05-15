@@ -45,9 +45,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		CodeBinder codeBinder;
 		GuiBuilderProject project;
 		Stetic.ActionGroupComponent group;
+		Stetic.ActionGroupInfo groupInfo;
 		string groupName;
 		
-		public ActionGroupView (IViewContent content, Stetic.ActionGroupComponent group, GuiBuilderProject project): base (content)
+		public ActionGroupView (IViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
 		{
 			groupName = group.Name;
 			this.project = project;
@@ -56,16 +57,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void LoadDesigner ()
 		{
-			group = project.GetActionGroup (groupName);
-			if (group == null)
+			groupInfo = project.GetActionGroup (groupName);
+			if (groupInfo == null)
 				// Group not found
 				return;
-				
+			
+			group = (Stetic.ActionGroupComponent) groupInfo.Component;
 			project.Unloaded += OnDisposeProject;
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project.Project);
 
-			designer = project.SteticProject.CreateActionGroupDesigner (group, false);
+			designer = project.SteticProject.CreateActionGroupDesigner (groupInfo, false);
 			designer.AllowActionBinding = (info != null && !info.GeneratePartialClasses);
 			designer.BindField += new EventHandler (OnBindField);
 			
@@ -137,7 +139,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Save (string fileName)
 		{
-			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, group);
+			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			
 			base.Save (fileName);
 			if (designer == null)
@@ -147,7 +149,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			designer.Save ();
 			
-			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, group);
+			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			if (oldBuildFile != newBuildFile)
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);
 

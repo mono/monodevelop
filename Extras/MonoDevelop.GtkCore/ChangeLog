@@ -1,3 +1,23 @@
+2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/WindowsFolderNodeBuilder.cs,
+	  MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs,
+	  MonoDevelop.GtkCore/GtkDesignInfo.cs,
+	  MonoDevelop.GtkCore/WidgetFileDescriptionTemplate.cs,
+	  MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderWindow.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/ActionGroupView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs,
+	  MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: Track api changes in
+	  Stetic.
+	* MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs: Delay
+	  library updating until really necessary.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp: Copy the .addins.xml file to the output dir.

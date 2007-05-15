@@ -261,7 +261,7 @@ namespace MonoDevelop.GtkCore
 					}
 				}
 				
-				foreach (Stetic.ActionGroupComponent ag in GuiBuilderProject.SteticProject.GetActionGroups ()) {
+				foreach (Stetic.ActionGroupInfo ag in GuiBuilderProject.SteticProject.ActionGroups) {
 					string fn = GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false);
 					partialFiles.Add (fn);
 					if (!project.IsFileInProject (fn)) {

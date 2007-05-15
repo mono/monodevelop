@@ -152,7 +152,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 							designInfo.IsWidgetLibrary = true;
 							designInfo.ExportedWidgets = (string[]) selection.ToArray (typeof(string));
 							GtkCoreService.UpdateObjectsFile (project);
-							designInfo.GuiBuilderProject.UpdateLibraries ();
 						}
 					} else
 						designInfo.IsWidgetLibrary = false;

@@ -108,7 +108,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 		}
 		
-		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupComponent group)
+		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
 		{
 			GuiBuilderProject p = GetGuiBuilderProject (project);
 			string file = p != null ? p.GetSourceCodeFile (group) : null;
@@ -252,17 +252,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			info.GuiBuilderProject.ImportGladeFile ();
 		}
 		
-		public static string GetBuildCodeFileName (Project project, Stetic.Component component)
+		public static string GetBuildCodeFileName (Project project, string componentName)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			return Path.Combine (info.GtkGuiFolder, component.Name + Path.GetExtension (info.SteticGeneratedFile));
+			return Path.Combine (info.GtkGuiFolder, componentName + Path.GetExtension (info.SteticGeneratedFile));
+		}
+		
+		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, bool saveToFile, bool overwrite)
+		{
+			return GenerateSteticCodeStructure (project, item, null, saveToFile, overwrite);
 		}
 		
 		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, bool saveToFile, bool overwrite)
 		{
+			return GenerateSteticCodeStructure (project, null, component, saveToFile, overwrite);
+		}
+		
+		static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, Stetic.Component component, bool saveToFile, bool overwrite)
+		{
 			// Generate a class which contains fields for all bound widgets of the component
 			
-			string name = component.Name;
+			string name = item != null ? item.Name : component.Name;
+			string fileName = GetBuildCodeFileName (project, name);
+			
 			string ns = "";
 			int i = name.LastIndexOf ('.');
 			if (i != -1) {
@@ -271,10 +283,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
-			string fileName = GetBuildCodeFileName (project, component);
 			
 			if (saveToFile && !overwrite && File.Exists (fileName))
 				return fileName;
+			
+			if (item != null)
+				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
 			

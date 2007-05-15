@@ -104,7 +104,7 @@ namespace MonoDevelop.GtkCore
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
-				Stetic.WidgetComponent w = gproject.AddNewComponent (doc.DocumentElement);
+				Stetic.WidgetInfo w = gproject.AddNewComponent (doc.DocumentElement);
 				gproject.Save (false);
 				
 				if (!w.IsWindow)

@@ -85,7 +85,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			foreach (Stetic.ActionGroupComponent agroup in win.RootWidget.GetActionGroups ()) {
+			foreach (Stetic.ActionGroupInfo agroup in win.RootWidget.ActionGroups) {
 				builder.AddChild (agroup);
 			}
 		}
@@ -93,7 +93,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			return win.RootWidget.GetActionGroups().Length > 0;
+			return win.RootWidget.ActionGroups.GetEnumerator().MoveNext ();
 		}
 		
 		public override void OnNodeAdded (object dataObject)

@@ -48,31 +48,31 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		}
 			
 		public override Type NodeDataType {
-			get { return typeof(Stetic.ActionGroupComponent); }
+			get { return typeof(Stetic.ActionGroupInfo); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) dataObject;
+			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
 			return group.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) dataObject;
+			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
 			label = group.Name;
 			icon = IdeApp.Services.Resources.GetIcon ("md-gtkcore-actiongroup", Gtk.IconSize.Menu);
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) dataObject;
+			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
 			group.Changed += new EventHandler (OnChanged);
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) dataObject;
+			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
 			group.Changed -= new EventHandler (OnChanged);
 		}
 		
@@ -97,12 +97,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				if (doc != null) {
 					GuiBuilderView view = doc.GetContent<GuiBuilderView> ();
 					if (view != null)
-						view.ShowActionDesignerView (((Stetic.ActionGroupComponent) CurrentNode.DataItem).Name);
+						view.ShowActionDesignerView (((Stetic.ActionGroupInfo) CurrentNode.DataItem).Name);
 				}
 			}
 			else {
 				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-				Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) CurrentNode.DataItem;
+				Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
 				GuiBuilderService.OpenActionGroup (project, group);
 			}
 		}
@@ -125,7 +125,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				return;
 
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-			Stetic.ActionGroupComponent group = (Stetic.ActionGroupComponent) CurrentNode.DataItem;
+			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
 			GuiBuilderProject gproject = GtkCoreService.GetGtkInfo (project).GuiBuilderProject;
 			string sfile = gproject.GetSourceCodeFile (group);
 

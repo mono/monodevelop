@@ -67,6 +67,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			rootName = window.Name;
 			gproject = window.Project;
+			gproject.UpdateLibraries ();
 			LoadDesigner ();
 		}
 		
@@ -215,7 +216,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void OnComponentTypesChanged (object s, EventArgs a)
 		{
-			ToolboxProvider.Instance.NotifyItemsChanged ();
+			if (ToolboxProvider.Instance != null)
+				ToolboxProvider.Instance.NotifyItemsChanged ();
 		}
 		
 		void OnActionshanged (object s, EventArgs args)
@@ -267,7 +269,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			string oldName = window.RootWidget.Name;
-			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget);
+			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
  
 			codeBinder.UpdateBindings (fileName);
 			if (!ErrorMode) {
@@ -277,7 +279,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					actionsBox.Save ();
 			}
 			
-			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget);
+			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
 			if (oldBuildFile != newBuildFile)
 				Runtime.FileService.MoveFile (oldBuildFile, newBuildFile);

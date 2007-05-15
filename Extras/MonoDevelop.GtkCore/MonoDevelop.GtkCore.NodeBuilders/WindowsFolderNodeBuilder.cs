@@ -88,7 +88,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				builder.AddChild (new StockIconsNode (p));
 				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
 					builder.AddChild (fi);
-				foreach (Stetic.ActionGroupComponent group in info.GuiBuilderProject.SteticProject.GetActionGroups ())
+				foreach (Stetic.ActionGroupInfo group in info.GuiBuilderProject.SteticProject.ActionGroups)
 					builder.AddChild (group);
 			}
 		}
