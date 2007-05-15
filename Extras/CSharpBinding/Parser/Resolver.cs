@@ -408,8 +408,8 @@ namespace CSharpBinding.Parser
 		{
 			if (c.ClassType == ClassType.Enum && (member is IField))
 				return showStatic;
-			if ((!showStatic && member.IsStatic) ||
-			    (showStatic && !member.IsStatic) ||
+			bool memStatic = member.IsStatic || ((member is IField) && member.IsLiteral);
+			if ((showStatic != memStatic) ||
 			    (showStatic && member.IsStatic && member.IsSpecialName && member.Name.StartsWith ("op_"))
 			    ) {
 				//// enum type fields are not shown here - there is no info in member about enum field

@@ -1,3 +1,9 @@
+2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/Resolver.cs: Include const fields in the static field list.
+	  Fixes bug #81078.
+	* CSharpBinding.mds, gtk-gui/gui.stetic: Updated.
+
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: (GetPreviousToken): Return tokens

@@ -1,5 +1,5 @@
 <Combine name="CSharpBinding" fileversion="2.0">
-  <Configurations active="Debug">
+  <Configurations>
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="CSharpBinding" configuration="Debug" />
       <Entry build="True" name="CSharpBinding.Autotools" configuration="Debug" />
