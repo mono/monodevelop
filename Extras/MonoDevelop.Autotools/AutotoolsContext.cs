@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Deployment;
@@ -41,6 +42,7 @@ namespace MonoDevelop.Autotools
 		Set globalFilesReferences = new Set();
 		Set compilers = new Set ();
 		ArrayList builtFiles = new ArrayList ();
+		Dictionary<string, string> configNamesDict = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
 		
 		public DeployContext DeployContext {
 			get { return deployContext; }
@@ -66,7 +68,15 @@ namespace MonoDevelop.Autotools
 				return configurations;
 			}
 		}
-		
+
+		public string EscapeAndUpperConfigName (string configName)
+		{
+			if (!configNamesDict.ContainsKey (configName))
+				configNamesDict [configName] = EscapeStringForAutoconf (configName).ToUpper ();
+
+			return configNamesDict [configName];
+		}
+
 		public AutotoolsContext ( DeployContext deployContext, string base_directory, string[] configs )
 		{
 			this.deployContext = deployContext;
@@ -233,7 +243,7 @@ namespace MonoDevelop.Autotools
 			foreach (char c in str)
 			{
 				if ( char.IsLetterOrDigit (c) || (c == '.' && allowPeriods) ) sb.Append ( c );
-				else if (c == '-' || c == '_' || (c == '.' && !allowPeriods) ) sb.Append ( '_' );
+				else if (c == '-' || c == '_' || c == ' ' || (c == '.' && !allowPeriods) ) sb.Append ( '_' );
 			}
 			return sb.ToString ();	
 		}

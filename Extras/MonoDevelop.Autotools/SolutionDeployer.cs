@@ -101,7 +101,7 @@ namespace MonoDevelop.Autotools
 
 				CreateAutoGenDotSH ( monitor );
 				CreatePkgConfigFile ( combine, monitor, makefile, context );
-				CreateConfigureDotAC ( combine, defaultConf, monitor );
+				CreateConfigureDotAC ( combine, defaultConf, monitor, context );
 				CreateMakefileInclude ( monitor );
 
 				AddTopLevelMakefileVars ( makefile, monitor );
@@ -250,7 +250,7 @@ namespace MonoDevelop.Autotools
 				Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-		void CreateConfigureDotAC ( Combine combine, string defaultConf, IProgressMonitor monitor )
+		void CreateConfigureDotAC ( Combine combine, string defaultConf, IProgressMonitor monitor, AutotoolsContext context )
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
@@ -260,14 +260,14 @@ namespace MonoDevelop.Autotools
 			StringBuilder config_options = new StringBuilder ();
 			foreach ( IConfiguration config in combine.Configurations )
 			{
-				string name = config.Name.ToLower();
+				string name = context.EscapeAndUpperConfigName (config.Name).ToLower();
 				string def = config == combine.ActiveConfiguration ? "YES" : "NO";
 				string ac_var = "enable_" + name;
 
 				// test to see if a configuration was enabled
 				config_options.AppendFormat ( "AC_ARG_ENABLE({0},\n", name );
 				config_options.AppendFormat ("	AC_HELP_STRING([--enable-{0}],\n", name );
-				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", config.Name, def );
+				config_options.AppendFormat ("		[Use '{0}' Configuration [default={1}]]),\n", context.EscapeAndUpperConfigName (config.Name), def );
 				config_options.AppendFormat ( "		{0}=yes, {0}=no)\n", ac_var );
 				config_options.AppendFormat ( "AM_CONDITIONAL({0}, test x${1} = xyes)\n", ac_var.ToUpper(), ac_var );
 
@@ -283,7 +283,7 @@ namespace MonoDevelop.Autotools
 				config_options.Append ( "if test -z \"$CONFIG_REQUESTED\" ; then\n" );
 //				AppendConfigVariables ( combine, defaultConf, config_options );
 				config_options.AppendFormat ( "	AM_CONDITIONAL({0}, true)\nfi\n", "ENABLE_"
-						+ defaultConf.ToUpper()  );
+						+ context.EscapeAndUpperConfigName (defaultConf));
 			}
 
 			templateEngine.Variables ["CONFIG_OPTIONS"] = config_options.ToString();
@@ -447,8 +447,9 @@ namespace MonoDevelop.Autotools
 			StringBuilder libraries = new StringBuilder ();
 			foreach ( IConfiguration config in combine.Configurations )
 			{
-				libs.AppendFormat ( "@{0}_CONFIG_LIBS@ ", config.Name.ToUpper() );
-				libraries.AppendFormat ( "@{0}_CONFIG_LIBRARIES@ ", config.Name.ToUpper() );
+				string configName = context.EscapeAndUpperConfigName (config.Name);
+				libs.AppendFormat ( "@{0}_CONFIG_LIBS@ ", configName);
+				libraries.AppendFormat ( "@{0}_CONFIG_LIBRARIES@ ", configName);
 			}
 			templateEngine.Variables ["LIBS"] = libs.ToString ();
 			templateEngine.Variables ["LIBRARIES"] = libraries.ToString ();

@@ -252,7 +252,7 @@ namespace MonoDevelop.Autotools
 				{
 					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
 					
-					conf_vars.AppendFormat ("if ENABLE_{0}\n", config.Name.ToUpper () );
+					conf_vars.AppendFormat ("if ENABLE_{0}\n", ctx.EscapeAndUpperConfigName (config.Name));
 					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.CompiledOutputName ) : project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
 
 					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
@@ -436,7 +436,7 @@ namespace MonoDevelop.Autotools
 			foreach ( DotNetProjectConfiguration config in project.Configurations )
 			{
 				if ( !context.IsSupportedConfiguration ( config.Name ) ) continue;
-				vars.AppendFormat ( "@{0}_{1}_LIB@", projname, config.Name.ToUpper () );
+				vars.AppendFormat ( "@{0}_{1}_LIB@", projname, context.EscapeAndUpperConfigName (config.Name));
 			}
 
 			// add additional assemblies to references

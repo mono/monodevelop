@@ -1,3 +1,12 @@
+2007-05-16  Ankit Jain  <jankit@novell.com>
+
+	* AutotoolsContext.cs (EscapeAndUpperConfigName): New.
+	(EscapeStringForAutoconf): Escape ' ' also.
+	* SolutionMakefileHandler.cs: Use EscapeAndUpperConfigName when emitting
+	config name.
+	* SimpleProjectMakefileHandler.cs: Likewise.
+	* SolutionDeployer.cs: Likewise.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp: Don't copy project references.

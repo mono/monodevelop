@@ -55,7 +55,7 @@ namespace MonoDevelop.Autotools
 				{
 					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
 					
-					subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + config.Name.ToUpper () );
+					subdirs.AppendFormat ( "if {0}\n", "ENABLE_" + ctx.EscapeAndUpperConfigName (config.Name));
 					subdirs.Append (" SUBDIRS = ");
 					
 					foreach ( CombineEntry ce in CalculateSubDirOrder ( config ) )
