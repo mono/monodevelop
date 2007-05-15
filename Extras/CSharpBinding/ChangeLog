@@ -1,3 +1,8 @@
+2007-05-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (RenameClass): Handle renaming of structs,
+	enums, and interfaces too.
+
 2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/Resolver.cs: Include const fields in the static field list.

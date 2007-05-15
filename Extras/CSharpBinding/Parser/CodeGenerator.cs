@@ -40,6 +40,8 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using CSharpBinding.Parser.SharpDevelopTree;
 
+using ClassType = MonoDevelop.Projects.Parser.ClassType;
+
 namespace CSharpBinding.Parser
 {
 	class CSharpRefactorer: BaseRefactorer
@@ -76,7 +78,21 @@ namespace CSharpBinding.Parser
 				
 				txt = file.GetText (begin, end);
 				
-				expr = new Regex (@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+				switch (cls.ClassType) {
+				case ClassType.Interface:
+					expr = new Regex (@"\sinterface\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					break;
+				case ClassType.Struct:
+					expr = new Regex (@"\sstruct\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					break;
+				case ClassType.Enum:
+					expr = new Regex (@"\senum\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					break;
+				default:
+					expr = new Regex (@"\sclass\s*(" + cls.Name + @")\s", RegexOptions.Multiline);
+					break;
+				}
+				
 				match = expr.Match (" " + txt + " ");
 				
 				if (!match.Success)
@@ -293,7 +309,7 @@ namespace CSharpBinding.Parser
 		{
 			if (type.FullyQualifiedName == declaringType.FullyQualifiedName)
 				return true;
-				
+			
 			if (type.BaseTypes != null) {
 				foreach (IReturnType bc in type.BaseTypes) {
 					IClass bcls = ctx.ParserContext.GetClass (bc.FullyQualifiedName, bc.GenericArguments, true, true);
@@ -335,7 +351,7 @@ namespace CSharpBinding.Parser
 					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
 					string txt = file.GetText (pos, pos + member.Name.Length);
 					if (txt == member.Name) {
-						//Console.WriteLine ("adding FieldDeclarationExpression reference {0}", member.Name);
+						//Console.WriteLine ("adding FieldReferenceExpression reference {0}", member.Name);
 						references.Add (CreateReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, member.Name));
 					}
 				}
@@ -373,9 +389,11 @@ namespace CSharpBinding.Parser
 						//Console.WriteLine ("adding IdentifierExpression member reference {0}", member.Name);
 						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, member.Name));
 					}
-				} else if (member is IClass && item is IClass && (((IClass)member).FullyQualifiedName ==  ((IClass)item).FullyQualifiedName)) {
-					//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
-					references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
+				} else if (member is IClass) {
+					if (item is IClass && ((IClass) item).FullyQualifiedName == declaringType.FullyQualifiedName) {
+						//Console.WriteLine ("adding IdentifierExpression class reference {0}", idExp.Identifier);
+						references.Add (CreateReference (idExp.StartLocation.Y, idExp.StartLocation.X, idExp.Identifier));
+					}
 				} else if (member is LocalVariable) {
 					LocalVariable avar = member as LocalVariable;
 					LocalVariable var = item as LocalVariable;
@@ -405,7 +423,7 @@ namespace CSharpBinding.Parser
 				foreach (TypeReference bc in typeDeclaration.BaseTypes) {
 					IClass bclass = resolver.ResolveIdentifier (fileCompilationUnit, bc.Type, typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X) as IClass;
 					if (bclass != null && bclass.FullyQualifiedName == fname) {
-						Console.WriteLine ("adding TypeDeclaration reference {0}", bc.Type);
+						//Console.WriteLine ("adding TypeDeclaration reference {0}", bc.Type);
 						references.Add (CreateReference (typeDeclaration.StartLocation.Y, typeDeclaration.StartLocation.X, bc.Type));
 					}
 				}
