@@ -66,8 +66,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			
 			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				Console.WriteLine ("a");
 				IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.BuildSolution ();
 				op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
@@ -81,8 +81,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				info.Enabled = MonoDevelop.Ide.Projects.ProjectService.CurrentRunOperation.IsCompleted;
 			} else {
 				info.Enabled = (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsBuildTarget);
 			}
@@ -90,6 +90,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		void ExecuteCombine (IAsyncOperation op)
 		{
+			Console.WriteLine ("exec !!!");
 			if (op.Success)
 				// FIXME: check RunWithWarnings
 				MonoDevelop.Ide.Projects.ProjectService.StartSolution ();
@@ -229,17 +230,17 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-				if (entry != null) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = GettextCatalog.GetString ("Build {0}", entry.Name);
-					if (entry is Combine)
-						info.Description = GettextCatalog.GetString ("Build Solution {0}", entry.Name);
-					else if (entry is Project)
-						info.Description = GettextCatalog.GetString ("Build Project {0}", entry.Name);
-					else
-						info.Description = info.Text;
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null) {
+					info.Enabled = MonoDevelop.Ide.Projects.ProjectService.CurrentBuildOperation.IsCompleted;
+					string name = MonoDevelop.Ide.Projects.ProjectService.ActiveProject.Name; 
+					info.Text = GettextCatalog.GetString ("Build {0}", name);
+/*					if (entry is Combine)
+						info.Description = GettextCatalog.GetString ("Build Solution {0}", name);
+					else if (entry is Project)*/
+						info.Description = GettextCatalog.GetString ("Build Project {0}", name);
+/*					else
+						info.Description = info.Text;*/
 				} else {
 					info.Enabled = false;
 				}
@@ -272,11 +273,10 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.ProjectOperations.CurrentOpenCombine != null) {
-				CombineEntry entry = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
-				if (entry != null) {
-					info.Enabled = IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-					info.Text = info.Description = GettextCatalog.GetString ("Rebuild {0}", entry.Name);
+			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
+				if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null) {
+					info.Enabled = MonoDevelop.Ide.Projects.ProjectService.CurrentBuildOperation.IsCompleted;
+					info.Text = info.Description = GettextCatalog.GetString ("Rebuild {0}", MonoDevelop.Ide.Projects.ProjectService.ActiveProject.Name);
 				} else {
 					info.Enabled = false;
 				}

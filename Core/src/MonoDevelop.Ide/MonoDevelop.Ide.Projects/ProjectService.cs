@@ -101,20 +101,19 @@ namespace MonoDevelop.Ide.Projects
 			}
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
-
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {Solution, monitor, context});
-			currentRunOperation = monitor.AsyncOperation;
+			currentBuildOperation = monitor.AsyncOperation;
 			
 			return currentRunOperation;
 		}
+		
 		static void BuildSolutionAsync (object data)
 		{
-			Console.WriteLine ("1");
+
 			object[] array = (object[])data;
 			Solution solution = array[0] as Solution;
 			if (solution == null) 
 				return;
-			Console.WriteLine ("2");
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
 			
@@ -122,8 +121,7 @@ namespace MonoDevelop.Ide.Projects
 				SolutionProject project = item as SolutionProject;
 				if (project == null)
 					continue;
-				Console.WriteLine (" build:" + project.Location);
-				BuildProject (project.Project);
+				project.Project.Build (null);
 			}
 		}
 		
@@ -149,7 +147,7 @@ namespace MonoDevelop.Ide.Projects
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {project, monitor, context});
-			currentRunOperation = monitor.AsyncOperation;
+			currentBuildOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 			
 			project.Build (null);

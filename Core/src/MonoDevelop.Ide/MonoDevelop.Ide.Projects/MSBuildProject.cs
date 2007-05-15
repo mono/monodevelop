@@ -53,6 +53,13 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public string Name {
+			get {
+				return Path.GetFileNameWithoutExtension (FileName);
+			}
+		}
+		
+		
 		public string BasePath {
 			get {
 				return Path.GetDirectoryName (FileName);
@@ -73,6 +80,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		public CompilerResult Build (IProgressMonitor monitor)
 		{
+			Console.WriteLine ("!!!!!!!!!!!");
 			string responseFileName = Path.GetTempFileName ();
 			Console.WriteLine ("response file:" + responseFileName);
 			using (StreamWriter writer = new StreamWriter (responseFileName)) {
