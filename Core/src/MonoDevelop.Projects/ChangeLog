@@ -1,3 +1,8 @@
+2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Remove unused
+	  code.
+
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/DotNetProject.cs: Fix for a problem that happens

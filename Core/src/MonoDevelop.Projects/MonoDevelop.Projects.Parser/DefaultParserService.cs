@@ -447,32 +447,6 @@ namespace MonoDevelop.Projects.Parser
 		Hashtable databases = new Hashtable();
 		Hashtable singleDatabases = new Hashtable ();
 		
-		readonly static string[] assemblyList = {
-			"Microsoft.VisualBasic",
-			"mscorlib",
-			"System.Data",
-			"System.Design",
-			"System.Drawing.Design",
-			"System.Drawing",
-			"System.Runtime.Remoting",
-			"System.Security",
-			"System.ServiceProcess",
-			"System.Web.Services",
-			"System.Web",
-			"System",
-			"System.Xml",
-			"glib-sharp",
-			"atk-sharp",
-			"pango-sharp",
-			"gdk-sharp",
-			"gtk-sharp",
-			"gnome-sharp",
-			"gconf-sharp",
-			"gtkhtml-sharp",
-			//"System.Windows.Forms",
-			//"Microsoft.JScript",
-		};
-		
 		StringNameTable nameTable;
 		
 		string[] sharedNameTable = new string[] {
@@ -633,34 +607,6 @@ namespace MonoDevelop.Projects.Parser
 		public IExpressionFinder GetExpressionFinder(string fileName)
 		{
 			return parserService.GetExpressionFinder (fileName);
-		}
-		
-		public void GenerateCodeCompletionDatabase(string createPath, IProgressMonitor progressMonitor)
-		{
-			if (progressMonitor != null)
-				progressMonitor.BeginTask(GettextCatalog.GetString ("Generating database"), assemblyList.Length);
-
-			for (int i = 0; i < assemblyList.Length; ++i)
-			{
-				try {
-					AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (codeCompletionPath, assemblyList[i], this);
-					db.ParseAll ();
-					db.Write ();
-					
-					if (progressMonitor != null)
-						progressMonitor.Step (1);
-						
-					if (progressMonitor.IsCancelRequested)
-						return;
-				}
-				catch (Exception ex) {
-					Runtime.LoggingService.Error (ex);
-				}
-			}
-
-			if (progressMonitor != null) {
-				progressMonitor.Dispose ();
-			}
 		}
 		
 		void SetDefaultCompletionFileLocation()
