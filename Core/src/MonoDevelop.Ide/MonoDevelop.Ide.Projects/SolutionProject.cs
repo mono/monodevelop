@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			this.typeGuid = typeGuid;
 		}
 		
-		static string NormalizePath (string path)
+		public static string NormalizePath (string path)
 		{
 			if (Path.DirectorySeparatorChar == '/')
 				return path.Replace ('\\', Path.DirectorySeparatorChar);

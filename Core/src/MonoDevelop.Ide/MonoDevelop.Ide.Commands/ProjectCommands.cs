@@ -67,9 +67,11 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			if (MonoDevelop.Ide.Projects.ProjectService.Solution != null) {
-				Console.WriteLine ("a");
 				IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.BuildSolution ();
-				op.Completed += new OperationHandler (ExecuteCombine);
+				if (op.IsCompleted) 
+					ExecuteCombine (op);
+				else
+					op.Completed += new OperationHandler (ExecuteCombine);
 			} else {
 				doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null) {

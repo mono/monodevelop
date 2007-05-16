@@ -53,6 +53,41 @@ namespace MonoDevelop.Ide.Projects
 			get;
 		}
 		
+		string Configuration {
+			get;
+			set;
+		}
+		
+		string Platform {
+			get;
+			set;
+		}
+		
+		string AssemblyName {
+			get;
+			set;
+		}
+		
+		string RootNamespace {
+			get;
+			set;
+		}
+		
+		string OutputType {
+			get;
+			set;
+		}
+		
+		string OutputPath {
+			get;
+			set;
+		}
+		
+		string DefineConstants {
+			get;
+			set;
+		}
+		
 		CompilerResult Build (IProgressMonitor monitor);
 		void Start (IProgressMonitor monitor, ExecutionContext context);
 	}
