@@ -49,5 +49,7 @@ public class BooShellPadContent (AbstractPadContent):
 		_scroller.ShowAll()
 
 	override def Dispose():
-		_shellView.Dispose()
-		_scroller.Dispose()
+		if _shellView != null:
+			_shellView.Dispose()
+		if _scroller != null:
+			_scroller.Dispose()
