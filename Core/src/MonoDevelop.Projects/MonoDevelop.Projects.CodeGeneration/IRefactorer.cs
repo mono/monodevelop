@@ -48,10 +48,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo);
 		MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member);
 		
-		LocalVariable RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
+		bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName);
 		MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var);
 		
-		IParameter RenameParameter (RefactorerContext ctx, IParameter param, string newName);
+		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
 		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
 	}
 	

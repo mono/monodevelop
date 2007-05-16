@@ -262,28 +262,26 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// LocalVariable overridables /////////////////////
 		
-		public virtual LocalVariable RenameVariable (RefactorerContext ctx, LocalVariable var, string newName)
+		public virtual bool RenameVariable (RefactorerContext ctx, LocalVariable var, string newName)
 		{
 			IEditableTextFile file = ctx.GetFile (var.Region.FileName);
 			if (file == null)
-				return null;
+				return false;
 			
 			int pos = GetVariableNamePosition (file, var);
 			if (pos == -1)
-				return null;
+				return false;
 			
 			string txt = file.GetText (pos, pos + var.Name.Length);
 			if (txt != var.Name)
-				return null;
+				return false;
 			
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
 			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
 			
-			// FIXME: return the new variable
-			
-			return null;
+			return true;
 		}
 
 		public virtual MemberReferenceCollection FindVariableReferences (RefactorerContext ctx, string fileName, LocalVariable var)
@@ -294,7 +292,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 
 		/// Parameter overridables /////////////////////
 		
-		public virtual IParameter RenameParameter (RefactorerContext ctx, IParameter param, string newName)
+		public virtual bool RenameParameter (RefactorerContext ctx, IParameter param, string newName)
 		{
 			IMember member = param.DeclaringMember;
 			IEditableTextFile file = null;
@@ -323,21 +321,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 				
 				if (pos == -1)
-					return null;
+					return false;
 			}
 			
 			string txt = file.GetText (pos, pos + param.Name.Length);
 			if (txt != param.Name)
-				return null;
+				return false;
 			
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
 			ctx.ParserContext.ParserDatabase.UpdateFile (file.Name, file.Text);
 			
-			// FIXME: return the new IParameter
-			
-			return null;
+			return true;
 		}
 
 		public virtual MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param)

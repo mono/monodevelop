@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
-		public LocalVariable RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
+		public bool RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
@@ -149,13 +149,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			
 			RefactorerContext gctx = GetGeneratorContext (var);
 			IRefactorer r = GetGeneratorForVariable (var);
-			LocalVariable v = r.RenameVariable (gctx, var, newName);
+			bool rv = r.RenameVariable (gctx, var, newName);
 			gctx.Save ();
 			
-			return v;
+			return rv;
 		}
 		
-		public IParameter RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
+		public bool RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
 		{
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs).Refactor));
@@ -164,10 +164,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IMember member = param.DeclaringMember;
 			RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
 			IRefactorer r = GetGeneratorForClass (member.DeclaringType);
-			IParameter p = r.RenameParameter (gctx, param, newName);
+			bool rv = r.RenameParameter (gctx, param, newName);
 			gctx.Save ();
 			
-			return p;
+			return rv;
 		}
 		
 		public IClass[] FindDerivedClasses (IClass baseClass)

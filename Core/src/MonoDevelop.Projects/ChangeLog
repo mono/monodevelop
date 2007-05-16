@@ -1,22 +1,35 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (GetOptions):
-	Only set C-style for methods.
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Similar
+	change as below.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Updated.
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs:
+	RenameVaqriable and RenameParameter no longer return the new item,
+	instead they return bool for success/fail.
+
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(GetOptions): Only set C-style for methods.
 
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.Parser/PersistentProperty.cs: Load/Save the
-	BodyRegion which is neded by the refactorer when adding new properties.
+	BodyRegion which is neded by the refactorer when adding new
+	properties.
 
-	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (RemoveMember):
-	Fixed to iterate over all partial class files until we find the target
-	member rather than blindly assuming it is in the default file.
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(RemoveMember): Fixed to iterate over all partial class files
+	until we find the target member rather than blindly assuming it is
+	in the default file.
 	(ReplaceMember): Same.
 
 2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
-	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Remove unused
-	  code.
+	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Remove
+	  unused code.
 
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 
