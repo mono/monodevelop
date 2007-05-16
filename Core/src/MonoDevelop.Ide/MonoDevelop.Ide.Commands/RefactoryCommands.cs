@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.Commands
 				prefix = ExplicitNamePrefix (klass, iface);
 			
 			// Stub out non-implemented properties defined by @iface
-			for (i = 0; i < iface.Properties.Count; i--) {
+			for (i = 0; i < iface.Properties.Count; i++) {
 				IProperty prop = iface.Properties[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
@@ -512,7 +512,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			for (i = 0; i < iface.Methods.Count; i--) {
+			for (i = 0; i < iface.Methods.Count; i++) {
 				IMethod method = iface.Methods[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
@@ -546,7 +546,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 			// Stub out non-implemented events defined by @iface
-			for (i = 0; i < iface.Events.Count; i--) {
+			for (i = 0; i < iface.Events.Count; i++) {
 				IEvent ev = iface.Events[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
