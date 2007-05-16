@@ -1,5 +1,10 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (GetOptions):
+	Only set C-style for methods.
+
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Projects.Parser/PersistentProperty.cs: Load/Save the
 	BodyRegion which is neded by the refactorer when adding new properties.
 

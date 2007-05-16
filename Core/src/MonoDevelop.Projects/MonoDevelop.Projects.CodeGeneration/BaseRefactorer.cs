@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			StreamWriter sw = new StreamWriter (file);
 			
 			ICodeGenerator gen = GetGenerator ();
-			gen.GenerateCodeFromCompileUnit (unit, sw, GetOptions ());
+			gen.GenerateCodeFromCompileUnit (unit, sw, GetOptions (false));
 			
 			sw.Close ();
 			
@@ -393,7 +393,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			type.Members.Add (member);
 			ICodeGenerator gen = GetGenerator ();
 			StringWriter sw = new StringWriter ();
-			gen.GenerateCodeFromType (type, sw, GetOptions ());
+			gen.GenerateCodeFromType (type, sw, GetOptions (member is CodeMemberMethod));
 			string code = sw.ToString ();
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');
@@ -627,11 +627,12 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return buffer.GetText (ipos, pos);
 		}
 		
-		CodeGeneratorOptions GetOptions ()
+		CodeGeneratorOptions GetOptions (bool isMethod)
 		{
 			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
 			ops.IndentString = "\t";
-			//ops.BracingStyle = "Block";
+			if (isMethod)
+				ops.BracingStyle = "C";
 			return ops;
 		}
 	}
