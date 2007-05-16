@@ -1,3 +1,13 @@
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.Parser/PersistentProperty.cs: Load/Save the
+	BodyRegion which is neded by the refactorer when adding new properties.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (RemoveMember):
+	Fixed to iterate over all partial class files until we find the target
+	member rather than blindly assuming it is in the default file.
+	(ReplaceMember): Same.
+
 2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects.Parser/DefaultParserService.cs: Remove unused

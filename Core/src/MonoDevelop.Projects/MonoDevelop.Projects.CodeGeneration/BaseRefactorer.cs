@@ -99,7 +99,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public virtual void RemoveMember (RefactorerContext ctx, IClass cls, IMember member)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = null;
+			int pos = -1;
+			
+			for (int i = 0; i < cls.Parts.Length; i++) {
+				if ((buffer = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+					continue;
+				
+				if ((pos = GetMemberNamePosition (buffer, member)) != -1)
+					break;
+			}
+			
+			if (pos == -1)
+				return;
+			
 			IRegion reg = GetMemberBounds (member);
 			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
 			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
@@ -108,7 +121,20 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public virtual IMember ReplaceMember (RefactorerContext ctx, IClass cls, IMember oldMember, CodeTypeMember memberInfo)
 		{
-			IEditableTextFile buffer = ctx.GetFile (cls.Region.FileName);
+			IEditableTextFile buffer = null;
+			int pos = -1;
+			
+			for (int i = 0; i < cls.Parts.Length; i++) {
+				if ((buffer = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+					continue;
+				
+				if ((pos = GetMemberNamePosition (buffer, oldMember)) != -1)
+					break;
+			}
+			
+			if (pos == -1)
+				return null;
+			
 			IRegion reg = GetMemberBounds (oldMember);
 			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
 			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
@@ -360,7 +386,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 			return new DefaultRegion (minLin, minCol, maxLin, maxCol);
 		}
-				
+		
 		protected virtual string GenerateCodeFromMember (CodeTypeMember member)
 		{
 			CodeTypeDeclaration type = new CodeTypeDeclaration ("temp");
@@ -511,17 +537,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 				pos = GetNextLine (buffer, pos);
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
-			}
-			else {
+			} else {
 				IMethod m = cls.Methods [cls.Methods.Count - 1];
 				
 				int pos;
-				if (m.BodyRegion != null && m.BodyRegion.EndLine > 0)
+				if (m.BodyRegion != null && m.BodyRegion.EndLine > 0) {
 					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
-				else
+				} else {
 					// Abstract or P/Inboke methods don't have a body
 					pos = buffer.GetPositionFromLineColumn (m.Region.EndLine, m.Region.EndColumn);
-
+				}
+				
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
 				string ind = GetLineIndent (buffer, m.Region.EndLine);
@@ -536,19 +562,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 				int pos = GetNewEventPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
-				string ind = GetLineIndent (buffer, line);
+				string indent = GetLineIndent (buffer, line);
 				pos = GetNextLine (buffer, pos);
-				buffer.InsertText (pos, ind);
-				return pos + ind.Length;
-			}
-			else {
+				buffer.InsertText (pos, indent);
+				return pos + indent.Length;
+			} else {
 				IProperty m = cls.Properties [cls.Properties.Count - 1];
 				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
 				pos = GetNextLine (buffer, pos);
 				pos = GetNextLine (buffer, pos);
-				string ind = GetLineIndent (buffer, m.Region.EndLine);
-				buffer.InsertText (pos, ind);
-				return pos + ind.Length;
+				string indent = GetLineIndent (buffer, m.Region.EndLine);
+				buffer.InsertText (pos, indent);
+				return pos + indent.Length;
 			}
 		}
 		
@@ -562,8 +587,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				pos = GetNextLine (buffer, pos);
 				buffer.InsertText (pos, ind);
 				return pos + ind.Length;
-			}
-			else {
+			} else {
 				IEvent m = cls.Events [cls.Events.Count - 1];
 				int pos = buffer.GetPositionFromLineColumn (m.BodyRegion.EndLine, m.BodyRegion.EndColumn);
 				pos = GetNextLine (buffer, pos);
@@ -607,7 +631,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
 			ops.IndentString = "\t";
-			ops.BracingStyle = "C";
+			//ops.BracingStyle = "Block";
 			return ops;
 		}
 	}

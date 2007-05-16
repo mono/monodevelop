@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects.Parser
 			pro.canGet = source.CanGet;
 			pro.canSet = source.CanSet;
 			pro.region = source.Region;
+			pro.bodyRegion = source.BodyRegion;
 			pro.attributes = PersistentAttributeSectionCollection.Resolve (source.Attributes, typeResolver);
 			return pro;
 		}
@@ -57,6 +58,7 @@ namespace MonoDevelop.Projects.Parser
 			pro.canSet = (m & canSetFlag) == canSetFlag;
 			pro.returnType = PersistentReturnType.Read (reader, nameTable);
 			pro.region = PersistentRegion.Read (reader, nameTable);
+			pro.bodyRegion = PersistentRegion.Read (reader, nameTable);
 			pro.attributes = PersistentAttributeSectionCollection.Read (reader, nameTable);
 			return pro;
 		}
@@ -68,6 +70,7 @@ namespace MonoDevelop.Projects.Parser
 			writer.Write((uint)p.Modifiers + (p.CanGet ? canGetFlag : 0) + (p.CanSet ? canSetFlag : 0));
 			PersistentReturnType.WriteTo (p.ReturnType, writer, nameTable);
 			PersistentRegion.WriteTo (p.Region, writer, nameTable);
+			PersistentRegion.WriteTo (p.BodyRegion, writer, nameTable);
 			PersistentAttributeSectionCollection.WriteTo (p.Attributes, writer, nameTable);
 		}
 	}
