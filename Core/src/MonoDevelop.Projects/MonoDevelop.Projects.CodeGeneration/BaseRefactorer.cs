@@ -208,6 +208,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 				return null;
 		}
 		
+		///
+		/// EncapsulateField:
+		///
+		/// Override this method for each language to fill-in the Get/SetStatements
+		///
+		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop)
+		{
+			return AddMember (ctx, cls, prop);
+		}
+		
 
 		/// Method overridables ////////////////////////////
 		

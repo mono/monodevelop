@@ -170,6 +170,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return rv;
 		}
 		
+		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, CodeMemberProperty prop)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer r = GetGeneratorForClass (cls);
+			IMember m = r.EncapsulateField (gctx, cls, field, prop);
+			gctx.Save ();
+			
+			return m;
+		}
+		
 		public IClass[] FindDerivedClasses (IClass baseClass)
 		{
 			ArrayList list = new ArrayList ();

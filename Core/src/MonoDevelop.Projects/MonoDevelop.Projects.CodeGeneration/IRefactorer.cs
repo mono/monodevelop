@@ -53,6 +53,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
 		MemberReferenceCollection FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param);
+		
+		IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop);
 	}
 	
 	public class MemberReference
