@@ -1,5 +1,11 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs (OnOKClicked):
+	Updated to call refactorer.EncapsulateField() so that the get/set methods
+	get filled-in approprietly for each language.
+
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: New dialog for
 	encapsulating a single field.
 

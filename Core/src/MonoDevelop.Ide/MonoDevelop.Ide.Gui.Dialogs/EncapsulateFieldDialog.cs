@@ -145,11 +145,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			member.Type = new CodeTypeReference (field.ReturnType.Name);
 			member.Attributes = MemberAttributes.Public;
 			
-			// FIXME: need to fill in these implementations
 			member.HasGet = true;
 			member.HasSet = true;
 			
-			refactorer.AddMember (field.DeclaringType, member);
+			refactorer.EncapsulateField (monitor, field.DeclaringType, field, member);
 			
 			((Widget) this).Destroy ();
 		}
