@@ -1,3 +1,12 @@
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: New dialog for
+	encapsulating a single field.
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (BuildRefactoryMenuForItem):
+	Add an "Encapsulate Field" menu item for all fiends.
+	(EncapsulateField): Open an EncapsulateFieldDialog.
+
 2007-05-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (ImplementInterface): When

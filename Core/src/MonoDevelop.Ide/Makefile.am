@@ -33,6 +33,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.DeleteFileDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
@@ -98,6 +99,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/DeleteFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/EditTemplateDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \

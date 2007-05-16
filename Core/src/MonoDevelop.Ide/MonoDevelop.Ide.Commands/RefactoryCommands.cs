@@ -255,6 +255,7 @@ namespace MonoDevelop.Ide.Commands
 			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field '{0}'", item.Name);
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
+				ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
 			} else if (item is IProperty) {
 				txt = GettextCatalog.GetString ("Property '{0}'", item.Name);
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IProperty) item).ReturnType.FullyQualifiedName);
@@ -561,6 +562,12 @@ namespace MonoDevelop.Ide.Commands
 		public void ImplementExplicitInterface ()
 		{
 			ImplementInterface (true);
+		}
+		
+		public void EncapsulateField ()
+		{
+			EncapsulateFieldDialog dialog = new EncapsulateFieldDialog (ctx, (IField) item);
+			dialog.Show ();
 		}
 		
 		public void Rename ()
