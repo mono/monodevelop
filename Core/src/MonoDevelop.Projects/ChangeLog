@@ -1,5 +1,8 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump the
+	version number.
+
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added an
 	EncapsulateField method.
 
