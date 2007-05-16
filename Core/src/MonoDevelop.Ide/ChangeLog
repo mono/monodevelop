@@ -1,23 +1,39 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs (OnOKClicked):
-	Updated to call refactorer.EncapsulateField() so that the get/set methods
-	get filled-in approprietly for each language.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(ImplementInterface): Don't add items in reverse order anymore,
+	the bug that caused items to appear in reverse order has now been
+	fixed. Also, always update our klass variable to reference the
+	most recent revision after each AddMember() call so that this
+	works.
+	(EscapeName): New method to help escape _'s in strings that will
+	be used in a Gtk.Label so that they aren't interpreted by
+	Gtk.Label as accels.
+	(BuildRefactoryMenuForItem): Escape menu item names.
 
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: New dialog for
-	encapsulating a single field.
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs
+	(OnOKClicked): Updated to call refactorer.EncapsulateField() so
+	that the get/set methods get filled-in approprietly for each
+	language.
 
-	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (BuildRefactoryMenuForItem):
-	Add an "Encapsulate Field" menu item for all fiends.
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: New
+	dialog for encapsulating a single field.
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(BuildRefactoryMenuForItem): Add an "Encapsulate Field" menu item
+	for all fiends.
 	(EncapsulateField): Open an EncapsulateFieldDialog.
 
 2007-05-15  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (ImplementInterface): When
-	implementing explicitly, trim what we can from the explicit name depending
-	on the namespace and/or using statements the file contains.
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(ImplementInterface): When implementing explicitly, trim what we
+	can from the explicit name depending on the namespace and/or using
+	statements the file contains.
 
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 

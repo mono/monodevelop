@@ -1,8 +1,6 @@
 // /cvs/monodevelop/Core/src/MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs created with MonoDevelop
 // User: fejj at 3:50 PM 5/15/2007
 //
-// To change standard headers go to Edit->Preferences->Coding->Standard Headers
-//
 
 using System;
 using System.Text;
