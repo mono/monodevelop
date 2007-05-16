@@ -1,13 +1,20 @@
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(GetGeneratedClass): Use the MostRecentCompilationUnit so that we
+	actually get the updated IClass and not the old one.
+
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Bump the
 	version number.
 
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs: Added an
 	EncapsulateField method.
 
-	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs (EncapsulateField):
-	Implemented (should be overridden to fill in get/set).
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(EncapsulateField): Implemented (should be overridden to fill in
+	get/set).
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Added an
 	EncapsulateField method.

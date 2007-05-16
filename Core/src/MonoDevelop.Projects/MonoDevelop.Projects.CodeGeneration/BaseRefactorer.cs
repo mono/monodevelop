@@ -414,7 +414,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected IClass GetGeneratedClass (RefactorerContext ctx, IEditableTextFile buffer, IClass cls)
 		{
 			IParseInformation pi = ctx.ParserContext.ParserDatabase.UpdateFile (buffer.Name, buffer.Text);
-			foreach (IClass rclass in ((ICompilationUnit)pi.BestCompilationUnit).Classes) {
+			foreach (IClass rclass in ((ICompilationUnit) pi.MostRecentCompilationUnit).Classes) {
 				if (cls.Name == rclass.Name)
 					return rclass;
 			}
@@ -565,7 +565,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual int GetNewPropertyPosition (IEditableTextFile buffer, IClass cls)
 		{
 			if (cls.Properties.Count == 0) {
-				int pos = GetNewEventPosition (buffer, cls);
+				int pos = GetNewFieldPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
 				string indent = GetLineIndent (buffer, line);
@@ -586,7 +586,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual int GetNewEventPosition (IEditableTextFile buffer, IClass cls)
 		{
 			if (cls.Events.Count == 0) {
-				int pos = GetNewFieldPosition (buffer, cls);
+				int pos = GetNewMethodPosition (buffer, cls);
 				int line, col;
 				buffer.GetLineColumnFromPosition (pos, out line, out col);
 				string ind = GetLineIndent (buffer, line);
