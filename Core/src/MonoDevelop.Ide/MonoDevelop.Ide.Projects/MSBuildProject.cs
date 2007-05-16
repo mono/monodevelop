@@ -40,9 +40,11 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class MSBuildProject : IProject
 	{
+
 		string            fileName;
-		List<ProjectItem> items   = new List<ProjectItem> ();
 		List<string>      imports = new List<string> ();
+		List<ProjectItem> items   = new List<ProjectItem> ();
+		List<PropertyGroup> propertyGroups = new List<PropertyGroup> ();
 		
 		public string FileName {
 			get {
@@ -70,6 +72,12 @@ namespace MonoDevelop.Ide.Projects
 		public List<ProjectItem> Items {
 			get {
 				return items;
+			}
+		}
+		
+		public List<PropertyGroup> PropertyGroups {
+			get {
+				return this.propertyGroups;
 			}
 		}
 		
@@ -121,11 +129,69 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 #region I/O
-		void ReadPropertyGroup (XmlReader reader)
+		
+		class Property
 		{
-			ProjectReadHelper.ReadList (reader, "PropertyGroup", delegate() {
-				return true;
-			});
+			string name;
+			string value;
+			Dictionary<string, string> attributes = new Dictionary<string, string> ();
+			
+			public string Name {
+				get { return name; }
+				set { name = value; }
+			}
+			public string Value {
+				get { return this.value; }
+				set { this.value = value; }
+			}
+			public Dictionary<string, string> Attributes {
+				get { return this.attributes; }
+			}
+			
+			public static Property Read (XmlReader reader)
+			{
+				Property result = new Property ();
+				result.Name = reader.LocalName;
+				for (int i = 0; i < reader.AttributeCount; ++i) {
+					reader.MoveToAttribute (i);
+					result.Attributes[reader.LocalName] = reader.Value;
+				}
+				reader.MoveToElement();
+				result.Value = reader.Value;
+				Console.WriteLine (result.Name + " --" + result.Value);
+				return result;
+			}
+			
+		}
+		
+		class PropertyGroup
+		{
+			string condition;
+			List<Property> properties = new List<Property> ();
+			
+			public string Condition {
+				get { return condition; }
+				set { condition = value; }
+			}
+			
+			public List<Property> Properties {
+				get { return properties; }
+			}
+			
+			public PropertyGroup (string condition)
+			{
+				this.condition = condtion;
+			}
+			
+			public static PropertyGroup Read (XmlReader reader)
+			{
+				PropertyGroup result = new PropertyGroup (reader.GetAttribute("Condition"));
+				ProjectReadHelper.ReadList (reader, "PropertyGroup", delegate() {
+					result.Properties.Add (Property.Read (reader));
+					return true;
+				});
+				return result;
+			}
 		}
 		
 		void ReadItemGroup (XmlReader reader)
@@ -155,7 +221,7 @@ namespace MonoDevelop.Ide.Projects
 						// Root node
 						return true;
 					case "PropertyGroup":
-						result.ReadPropertyGroup (reader);
+						result.PropertyGroups.Add(PropertyGroup.Read (reader));
 						return true;
 					case "ItemGroup":
 						result.ReadItemGroup (reader);
