@@ -131,6 +131,17 @@ namespace CSharpBinding.Parser
 		//	return base.AddMember (ctx, cls, member);
 		//}
 		
+		public override IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop)
+		{
+			if (prop.HasGet && prop.GetStatements.Count == 0)
+				prop.GetStatements.Add (new CodeSnippetExpression ("return " + field.Name));
+			
+			if (prop.HasSet && prop.SetStatements.Count == 0)
+				prop.SetStatements.Add (new CodeAssignStatement (new CodeVariableReferenceExpression (field.Name), new CodeVariableReferenceExpression ("value")));
+			
+			return base.EncapsulateField (ctx, cls, field, prop);
+		}
+		
 		public override MemberReferenceCollection FindClassReferences (RefactorerContext ctx, string fileName, IClass cls)
 		{
 			Resolver resolver = new Resolver (ctx.ParserContext);

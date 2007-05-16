@@ -1,3 +1,8 @@
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (EncapsulateField): Implemented so that
+	get/set actually have code statements.
+
 2007-05-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (RenameClass): Handle renaming of structs,
