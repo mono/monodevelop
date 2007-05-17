@@ -45,6 +45,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Runtime.Properties.PropertyChanged += (PropertyEventHandler) Services.DispatchService.GuiDispatch (new PropertyEventHandler (TrackPropertyChange));
 		}
 		
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options)
+		{
+			base.Initialize (builders, options);
+			if (IdeApp.ProjectOperations.CurrentOpenCombine != null)
+				LoadTree (IdeApp.ProjectOperations.CurrentOpenCombine);
+		}
+		
 		void TrackPropertyChange (object o, MonoDevelop.Core.Properties.PropertyEventArgs e)
 		{
 			if (e.OldValue != e.NewValue && e.Key == "MonoDevelop.Core.Gui.ProjectBrowser.ShowExtensions") {
