@@ -72,10 +72,10 @@ namespace MonoDevelop.Ide.Commands
 					IParserContext ctx;
 					if (doc.Project != null) {
 						ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (doc.Project);
-						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.Project, doc.FileName, null);
+						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.Project, doc.FileName, editor.Text);
 					} else {
 						ctx = IdeApp.ProjectOperations.ParserDatabase.GetFileParserContext (doc.FileName);
-						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.FileName, null);
+						pinfo = IdeApp.ProjectOperations.ParserDatabase.UpdateFile (doc.FileName, editor.Text);
 					}
 					
 					// Look for an identifier at the cursor position
@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Commands
 							}
 						}
 						
-						if (item is IMember) {
+						if (item is IMember && !(eitem != null && eitem is IMember)) {
 							// Add the encompasing class for the previous item in the menu
 							item = ((IMember) item).DeclaringType;
 							if (item != null && (ci = BuildRefactoryMenuForItem (ctx, pinfo, null, item)) != null) {
@@ -159,9 +159,7 @@ namespace MonoDevelop.Ide.Commands
 				return null;
 			
 			for (int i = 0; i < classes.Length; i++) {
-				if (classes[i] != null &&
-				    classes[i].Region != null &&
-				    (line > classes[i].Region.BeginLine ||
+				if ((line > classes[i].Region.BeginLine ||
 				     (line == classes[i].Region.BeginLine && col >= classes[i].Region.BeginColumn)) &&
 				    (line < classes[i].Region.EndLine ||
 				     (line == classes[i].Region.EndLine && col <= classes[i].Region.EndColumn))) {
@@ -197,16 +195,19 @@ namespace MonoDevelop.Ide.Commands
 			CommandInfoSet ciset = new CommandInfoSet ();
 			string itemName = EscapeName (item.Name);
 			bool canRename = false;
+			bool canJumpTo = false;
 			string txt;
 			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item))
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Go to declaration"), new RefactoryOperation (refactorer.GoToDeclaration));
+				canJumpTo = true;
+			}
 			
 			if ((item is IMember) && !(item is IClass))
 				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Find references"), new RefactoryOperation (refactorer.FindReferences));
 			
 			if ((item is LocalVariable) || (item is IParameter) || 
-			    (((item is IMember) || (item is IClass)) && IdeApp.ProjectOperations.CanJumpToDeclaration (item))) {
+			    (((item is IMember) || (item is IClass)) && canJumpTo)) {
 				// We can rename local variables (always), method params (always), 
 				// or class/members (if we can jump to their declarations)
 				canRename = true;
@@ -271,8 +272,9 @@ namespace MonoDevelop.Ide.Commands
 				}
 			} else if (item is IField) {
 				txt = GettextCatalog.GetString ("Field '{0}'", itemName);
+				if (canJumpTo)
+					ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IField) item).ReturnType.FullyQualifiedName);
-				ciset.CommandInfos.Add (GettextCatalog.GetString ("Encapsulate Field"), new RefactoryOperation (refactorer.EncapsulateField));
 			} else if (item is IProperty) {
 				txt = GettextCatalog.GetString ("Property '{0}'", itemName);
 				AddRefactoryMenuForClass (ctx, pinfo, ciset, ((IProperty) item).ReturnType.FullyQualifiedName);
@@ -479,12 +481,14 @@ namespace MonoDevelop.Ide.Commands
 			if (explicitly)
 				prefix = ExplicitNamePrefix (klass, iface);
 			
-			// Stub out non-implemented properties defined by @iface
-			for (i = 0; i < iface.Properties.Count; i++) {
-				IProperty prop = iface.Properties[i];
+			// Add stubs in reverse order
+			
+			// Stub out non-implemented events defined by @iface
+			for (i = iface.Events.Count - 1; i >= 0; i--) {
+				IEvent ev = iface.Events[i];
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
-					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
+				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
+					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
 						alreadyImplemented = true;
 						break;
 					}
@@ -493,18 +497,15 @@ namespace MonoDevelop.Ide.Commands
 				if (alreadyImplemented)
 					continue;
 				
-				CodeMemberProperty member;
+				CodeMemberEvent member;
 				
-				member = new CodeMemberProperty ();
+				member = new CodeMemberEvent ();
 				if (explicitly)
-					member.Name = prefix + prop.Name;
+					member.Name = prefix + ev.Name;
 				else
-					member.Name = prop.Name;
+					member.Name = ev.Name;
 				
-				member.Type = new CodeTypeReference (prop.ReturnType.Name);
-				member.Attributes = MemberAttributes.Public;
-				member.HasGet = prop.CanGet;
-				member.HasSet = prop.CanSet;
+				member.Type = new CodeTypeReference (ev.ReturnType.Name);
 				
 				// Update @klass so we have the most recent info
 				if ((newMember = refactorer.AddMember (klass, member)) != null)
@@ -512,7 +513,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			for (i = 0; i < iface.Methods.Count; i++) {
+			for (i = iface.Methods.Count - 1; i >= 0; i--) {
 				IMethod method = iface.Methods[i];
 				
 				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
@@ -545,12 +546,12 @@ namespace MonoDevelop.Ide.Commands
 					klass = newMember.DeclaringType;
 			}
 			
-			// Stub out non-implemented events defined by @iface
-			for (i = 0; i < iface.Events.Count; i++) {
-				IEvent ev = iface.Events[i];
+			// Stub out non-implemented properties defined by @iface
+			for (i = iface.Properties.Count - 1; i >= 0; i--) {
+				IProperty prop = iface.Properties[i];
 				
-				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
-					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
+				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
+					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
 						alreadyImplemented = true;
 						break;
 					}
@@ -559,15 +560,18 @@ namespace MonoDevelop.Ide.Commands
 				if (alreadyImplemented)
 					continue;
 				
-				CodeMemberEvent member;
+				CodeMemberProperty member;
 				
-				member = new CodeMemberEvent ();
+				member = new CodeMemberProperty ();
 				if (explicitly)
-					member.Name = prefix + ev.Name;
+					member.Name = prefix + prop.Name;
 				else
-					member.Name = ev.Name;
+					member.Name = prop.Name;
 				
-				member.Type = new CodeTypeReference (ev.ReturnType.Name);
+				member.Type = new CodeTypeReference (prop.ReturnType.Name);
+				member.Attributes = MemberAttributes.Public;
+				member.HasGet = prop.CanGet;
+				member.HasSet = prop.CanSet;
 				
 				// Update @klass so we have the most recent info
 				if ((newMember = refactorer.AddMember (klass, member)) != null)

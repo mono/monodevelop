@@ -25,6 +25,20 @@
 
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): Pass the
+	editor.Text into UpdateFile() to fix a bug preventing the editor
+	state from auto-updating and catching new fields as the user types
+	them. Also fixed a bug which would show IMember, IClass, IMember,
+	IClass (which looks odd).
+	(BuildRefactoryMenuForItem): Keep a canJumpTo bool so we don't
+	have to check it multiple times. Also check canJumpTo when adding
+	an "Encapsulate Field" item (can't encapsulate it unless we have
+	access to its declaration).
+	(ImplementInterface): I was wrong, these still need to be in
+	reverse order afterall.
+
+2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
 	(ImplementInterface): Don't add items in reverse order anymore,
 	the bug that caused items to appear in reverse order has now been
