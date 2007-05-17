@@ -215,6 +215,33 @@ namespace MonoDevelop.Projects.CodeGeneration
 		///
 		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop)
 		{
+//			// If the field isn't already private/protected/internal, we'll need to fix it to be
+//			if (field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
+//				IEditableTextFile file = null;
+//				int pos = -1;
+//				
+//				// Find the file the field is contained in
+//				for (int i = 0; i < cls.Parts.Length; i++) {
+//					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+//						continue;
+//					
+//					if ((pos = GetMemberNamePosition (file, field)) != -1)
+//						break;
+//				}
+//				
+//				if (pos != -1) {
+//					// FIXME: need a way to get the CodeMemberField fieldInfo as a parsed object
+//					// (so we don't lose initialization state nor custom attributes, etc).
+//					CodeMemberField fieldInfo = new CodeMemberField ();
+//					
+//					fieldInfo.Attributes = fieldInfo.Attributes & ~MemberAttributes.Public;
+//					fieldInfo.Attributes |= MemberAttributes.Private;
+//					
+//					RemoveMember (ctx, cls, field);
+//					AddMember (ctx, cls, fieldInfo);
+//				}
+//			}
+			
 			return AddMember (ctx, cls, prop);
 		}
 		

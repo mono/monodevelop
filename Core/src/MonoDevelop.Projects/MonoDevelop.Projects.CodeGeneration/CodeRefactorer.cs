@@ -172,6 +172,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, CodeMemberProperty prop)
 		{
+			RefactoryScope scope;
+			
+			if (field.IsPrivate || (!field.IsProtectedOrInternal && !field.IsPublic))
+				scope = RefactoryScope.Project;
+			else
+				scope = RefactoryScope.Solution;
+			
+			MemberReferenceCollection refs = new MemberReferenceCollection ();
+			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs).Refactor));
+			
+			// FIXME: user might not want to rename refs that are internal to the class
+			refs.RenameAll (prop.Name);
+			
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
 			IMember m = r.EncapsulateField (gctx, cls, field, prop);

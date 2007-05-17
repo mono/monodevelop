@@ -1,3 +1,15 @@
+2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(EncapsulateField): Added some beginning logic to modify the
+	original IField to be private (if not already). It remains
+	commented out until I can figure out a way to make it always work,
+	though.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(EncapsulateField): Replace references to the original field with
+	a reference to the new property.
+
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
