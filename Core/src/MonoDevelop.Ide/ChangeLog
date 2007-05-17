@@ -1,5 +1,12 @@
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: If a node is being edited,
+	  don't delegate commands to the node builders, since what's selected
+	  is not the node, but the node label. In this way commands such as
+	  Delete will be handled by the node Entry.
+
+2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Pads/SolutionPad.cs: Fill the tree if there is an
 	  open combine when the pad is shown for the first time.
 

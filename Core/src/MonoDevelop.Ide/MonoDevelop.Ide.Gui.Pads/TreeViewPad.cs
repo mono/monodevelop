@@ -498,6 +498,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
 		{
+			// If a node is being edited, don't delegate commands to the
+			// node builders, since what's selected is not the node,
+			// but the node label. In this way commands such as Delete
+			// will be handled by the node Entry.
+			if (editingText)
+				return null;
+			
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node != null) {
 				NodeBuilder[] chain = node.NodeBuilderChain;
