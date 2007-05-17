@@ -279,7 +279,7 @@ namespace CSharpBinding
 			if (charTyped == '#') {
 				int lin, col;
 				Editor.GetLineColumnFromPosition (Editor.CursorPosition, out lin, out col);
-				if (col == 1)
+				if (col == 2)
 					return GetDirectiveCompletionData ();
 			}
 			
