@@ -306,6 +306,9 @@ namespace MonoDevelop.NUnit
 			detailsTree.RowActivated += new Gtk.RowActivatedHandler (OnTestActivated);
 			regressionTree.RowActivated += new Gtk.RowActivatedHandler (OnRegressionTestActivated);
 			failedTree.RowActivated += new Gtk.RowActivatedHandler (OnFailedTestActivated);
+			
+			if (testService.RootTest != null)
+				LoadTree (testService.RootTest);
 		}
 		
 		void OnTestSuiteChanged (object sender, EventArgs e)
