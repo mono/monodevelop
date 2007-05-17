@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		string[] contexts;
 		
-		public IPadContent Pad {
+		public IPadContent PadContent {
 			get {
 				if (content == null)
 					content = CreatePad ();
@@ -107,18 +107,9 @@ namespace MonoDevelop.Ide.Codons
 			get { return contexts; }
 		}
 		
-		IPadContent padContent = null;
-		public IPadContent PadContent {
-			get {
-				if (!Initialized) {
-					padContent = CreatePad ();
-				}
-				return padContent;
-			}
-		}
 		public bool Initialized {
 			get {
-				return padContent != null;
+				return content != null;
 			}
 		}
 		
@@ -129,7 +120,7 @@ namespace MonoDevelop.Ide.Codons
 		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, string icon)
 		{
 			this.id               = id;
-			this.padContent       = content;
+			this.content          = content;
 			this.label            = label;
 			this.defaultPlacement = defaultPlacement;
 			this.icon             = icon;

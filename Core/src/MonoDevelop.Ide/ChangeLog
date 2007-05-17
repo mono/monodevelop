@@ -1,5 +1,13 @@
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: A pad may already be
+	  initialized but not yet added to the dock. So, a better way to know
+	  when a pad needs to be added to the dock is just to check if the
+	  dock already has a child or not.
+	* MonoDevelop.Ide.Codons/PadCodon.cs: Removed duplicate property.
+
+2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Workaround to what seems
 	  to be a gtk/gtk# bug.
 

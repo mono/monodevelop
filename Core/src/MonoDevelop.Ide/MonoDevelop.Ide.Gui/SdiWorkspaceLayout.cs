@@ -411,9 +411,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			originItem = null;
 		}
+		
 		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
-			if (force || !padCodon.Initialized) {
+			if (force || item.Child == null) {
 				IPadContent newContent = padCodon.PadContent;
 				newContent.Initialize (window);
 			
