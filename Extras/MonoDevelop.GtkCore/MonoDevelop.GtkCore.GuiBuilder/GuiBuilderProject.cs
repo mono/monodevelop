@@ -500,6 +500,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string[] oldLibs = gproject.WidgetLibraries;
 			
 			ArrayList libs = new ArrayList ();
+			string[] internalLibs;
 			
 			foreach (ProjectReference pref in project.ProjectReferences) {
 				string wref = GetReferenceLibraryPath (pref);
@@ -510,7 +511,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// If the project is a library, add itself as a widget source
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);
 			if (info != null && info.IsWidgetLibrary)
-				libs.Add (project.GetOutputFileName ());
+				internalLibs = new string [] { project.GetOutputFileName () };
+			else
+				internalLibs = new string [0];
 
 			string[] newLibs = (string[]) libs.ToArray (typeof(string));
 			
@@ -523,10 +526,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						break;
 					}
 				}
+				foreach (string s in internalLibs) {
+					if (!((IList)oldLibs).Contains (s)) {
+						found = true;
+						break;
+					}
+				}
 				if (!found)	// Arrays are the same
 					return;
 			}
-			gproject.WidgetLibraries = newLibs;
+			gproject.SetWidgetLibraries (newLibs, internalLibs);
 			Save (true);
 		}
 		

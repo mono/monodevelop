@@ -242,6 +242,11 @@ namespace MonoDevelop.GtkCore
 		{
 			string topType = GetBaseType (widgetClass, project);
 			
+			if (!widgetClass.IsPublic)
+				objectElem.SetAttribute ("internal", "true");
+			else
+				objectElem.RemoveAttribute ("internal");
+
 			ListDictionary properties = new ListDictionary ();
 			ListDictionary events = new ListDictionary ();
 			

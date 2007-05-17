@@ -1,3 +1,20 @@
+2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, Makefile.am,
+	  MonoDevelop.GtkCore.GuiBuilder/GuiBuilderPalettePad.cs: Removed old
+	  palette pad.
+	* MonoDevelop.GtkCore/GtkCoreService.cs: Set the 'internal' flag for
+	  widgets implemented by private classes.
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from svn module.
+	  Fixes bugs #80875, #81261, #81365.
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: If the project
+	  is a library, add itself as an internal widget library, so widgets
+	  with internal visibility will be shown.
+	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs: When saving a window,
+	  use the visibility of the class to set the visibility of the
+	  component. Together with all changes done in stetic, fixes bug
+	  #80875.
+
 2007-05-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.NodeBuilders/WidgetNodeBuilder.cs,

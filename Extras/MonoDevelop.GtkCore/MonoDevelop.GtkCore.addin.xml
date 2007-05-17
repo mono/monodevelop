@@ -42,12 +42,10 @@
 	</ExtensionPoint>
 	
 	<Extension path = "/SharpDevelop/Workbench/Pads">
-		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" _label="Widgets Palette" />
 		<Pad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" class = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" _label="Widget Tree"/>
 	</Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
-		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderPalettePad" />
 		<ContextPad id = "MonoDevelop.GtkCore.GuiBuilder.GuiBuilderProjectPad" />
 	</Extension>
 	
