@@ -1,3 +1,9 @@
+2007-05-18  Ankit Jain  <jankit@novell.com>
+
+	* MSBuildFileFormat.cs (FileToXmlElement): Ignore directories for
+	BuildAction.Compile, return null.
+	Update code to avoid adding nulls to ProjectFileElements.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, prj2make-sharp-lib.mdp: Updated.

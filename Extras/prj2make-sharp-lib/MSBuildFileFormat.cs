@@ -296,8 +296,11 @@ namespace MonoDevelop.Prj2Make
 			CleanUpEmptyItemGroups (doc);
 
 			if (newdoc) {
-				foreach (ProjectFile pfile in project.ProjectFiles)
-					data.ProjectFileElements [pfile] = FileToXmlElement (data, project, pfile);
+				foreach (ProjectFile pfile in project.ProjectFiles) {
+					XmlElement xe = FileToXmlElement (data, project, pfile);
+					if (xe != null)
+						data.ProjectFileElements [pfile] = xe;
+				}
 
 				XmlElement elem = doc.CreateElement ("Configuration", ns);
 				data.GlobalConfigElement.AppendChild (elem);
@@ -667,11 +670,16 @@ namespace MonoDevelop.Prj2Make
 			if (d == null)
 				return;
 
-			d.ProjectFileElements [e.ProjectFile] = FileToXmlElement (d, e.Project, e.ProjectFile);
+			XmlElement xe = FileToXmlElement (d, e.Project, e.ProjectFile);
+			if (xe != null)
+				d.ProjectFileElements [e.ProjectFile] = xe;
 		}
 
 		static XmlElement FileToXmlElement (MSBuildData d, Project project, ProjectFile projectFile)
 		{
+			if (projectFile.BuildAction == BuildAction.Compile && projectFile.Subtype != Subtype.Code)
+				return null;
+
 			string name = BuildActionToString (projectFile.BuildAction);
 			if (name == null) {
 				Runtime.LoggingService.WarnFormat ("BuildAction.{0} not supported!", projectFile.BuildAction);
