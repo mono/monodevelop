@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			member.HasGet = true;
 			member.HasSet = true;
 			
-			refactorer.EncapsulateField (monitor, field.DeclaringType, field, member);
+			refactorer.EncapsulateField (monitor, field.DeclaringType, field, member, radioUpdateAll.Active);
 			
 			((Widget) this).Destroy ();
 		}

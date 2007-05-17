@@ -1,5 +1,8 @@
 2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs
+	(OnOKClicked): Updated to pass the updateInternalRefs argument.
+
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (Update): Pass the
 	editor.Text into UpdateFile() to fix a bug preventing the editor
 	state from auto-updating and catching new fields as the user types
