@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		class MemberComparer: IComparer
+		public class MemberComparer: IComparer
 		{
 			public int Compare (object o1, object o2)
 			{

@@ -1,5 +1,15 @@
 2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Made
+	MemberComparer class public.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(EncapsulateField): Now takes an updateInternalRefs bool argument
+	to specify whether or not to also update references to the field
+	internal to the class.
+
+2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
 	(EncapsulateField): Added some beginning logic to modify the
 	original IField to be private (if not already). It remains

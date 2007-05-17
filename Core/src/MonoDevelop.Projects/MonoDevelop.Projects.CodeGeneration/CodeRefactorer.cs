@@ -170,7 +170,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return rv;
 		}
 		
-		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, CodeMemberProperty prop)
+		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, CodeMemberProperty prop, bool updateInternalRefs)
 		{
 			RefactoryScope scope;
 			
@@ -182,8 +182,36 @@ namespace MonoDevelop.Projects.CodeGeneration
 			MemberReferenceCollection refs = new MemberReferenceCollection ();
 			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs).Refactor));
 			
-			// FIXME: user might not want to rename refs that are internal to the class
-			refs.RenameAll (prop.Name);
+			if (!updateInternalRefs) {
+				ArrayList list = new ArrayList ();
+				list.AddRange (refs);
+				list.Sort (new MemberReferenceCollection.MemberComparer ());
+				
+				foreach (MemberReference mref in list) {
+					bool rename = true;
+					
+					for (int i = 0; i < field.DeclaringType.Parts.Length; i++) {
+						if (mref.FileName == field.DeclaringType.Parts[i].Region.FileName) {
+							IRegion region = field.DeclaringType.Parts[i].BodyRegion;
+							
+							// check if the reference is internal to the class
+							if ((mref.Line > region.BeginLine ||
+							     (mref.Line == region.BeginLine && mref.Column >= region.BeginColumn)) &&
+							    (mref.Line < region.EndLine ||
+							     (mref.Line == region.EndLine && mref.Column <= region.EndColumn))) {
+								// Internal to the class, don't rename
+								rename = false;
+								break;
+							}
+						}
+					}
+					
+					if (rename)
+						mref.Rename (prop.Name);
+				}
+			} else {
+				refs.RenameAll (prop.Name);
+			}
 			
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
