@@ -1,3 +1,8 @@
+2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Workaround to what seems
+	  to be a gtk/gtk# bug.
+
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
