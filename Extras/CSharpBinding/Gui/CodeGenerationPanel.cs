@@ -90,14 +90,19 @@ namespace CSharpBinding
 		
 		void FillClasses ()
 		{
-			IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
-			foreach (IClass c in ctx.GetProjectContents ()) {
-				if (c.Methods != null) {
-					foreach (IMethod m in c.Methods) {
-						if (m.IsStatic && m.Name == "Main")
-							classListStore.AppendValues (c.FullyQualifiedName);
+			try {
+				IParserContext ctx = IdeApp.ProjectOperations.ParserDatabase.GetProjectParserContext (project);
+				foreach (IClass c in ctx.GetProjectContents ()) {
+					if (c.Methods != null) {
+						foreach (IMethod m in c.Methods) {
+							if (m.IsStatic && m.Name == "Main")
+								classListStore.AppendValues (c.FullyQualifiedName);
+						}
 					}
 				}
+				classListFilled = true;
+			} catch (InvalidOperationException) {
+				// Project not found in parser database
 			}
 		}
 		
@@ -109,10 +114,8 @@ namespace CSharpBinding
 			} else {
 				mainClassEntry.Sensitive = true;
 				iconEntry.Sensitive = true;
-				if (!classListFilled) {
+				if (!classListFilled)
 					FillClasses ();
-					classListFilled = true;
-				}
 			}
 		}
 		
@@ -128,7 +131,8 @@ namespace CSharpBinding
 			}
 			configuration.CompileTarget =  (CompileTarget) compileTargetCombo.Active;
 			compilerParameters.DefineSymbols =  symbolsEntry.Text;
-			compilerParameters.MainClass     =  ((Entry)mainClassEntry.Child).Text;
+			if (mainClassEntry.Sensitive)
+				compilerParameters.MainClass     =  ((Entry)mainClassEntry.Child).Text;
 
 			configuration.DebugMode                = generateDebugInformationCheckButton.Active;
 			compilerParameters.GenerateXmlDocumentation = generateXmlOutputCheckButton.Active;
@@ -138,7 +142,8 @@ namespace CSharpBinding
 			configuration.RunWithWarnings          = ! warningsAsErrorsCheckButton.Active;
 
 			compilerParameters.WarningLevel = warningLevelSpinButton.ValueAsInt;
-			compilerParameters.Win32Icon = iconEntry.Path;
+			if (iconEntry.Sensitive)
+				compilerParameters.Win32Icon = iconEntry.Path;
 
 			if (codepageEntry.Entry.Text.Length > 0) {
 				// Get the codepage. If the user specified an encoding name, find it.			

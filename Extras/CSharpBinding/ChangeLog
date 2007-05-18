@@ -1,3 +1,8 @@
+2007-05-19  Ankit Jain  <jankit@novell.com>
+
+	* CodeGenerationPanel.cs: GetProjectParserContext can fail, handle that.
+	(Store): Save mainClass and Win32Icon only when relevant.
+
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/CSharpTextEditorExtension.cs: Cursor already moved to position 2
