@@ -215,6 +215,21 @@ namespace CSharpBinding.Parser
 			return -1;
 		}
 		
+		bool IsMatchedField (string txt, string field, int index)
+		{
+			char c = txt[index - 1];
+			
+			if (Char.IsLetterOrDigit (c) || c == '_')
+				return false;
+			
+			c = txt[index + field.Length];
+			
+			if (Char.IsLetterOrDigit (c) || c == '_')
+				return false;
+			
+			return true;
+		}
+		
 		protected override int GetMemberNamePosition (IEditableTextFile file, IMember member)
 		{
 			int begin = file.GetPositionFromLineColumn (member.Region.BeginLine, member.Region.BeginColumn);
@@ -225,8 +240,16 @@ namespace CSharpBinding.Parser
 			int pos = -1;
 			
 			if (member is IField) {
-				if ((len = txt.IndexOf ('=')) == -1)
-					len = txt.Length;
+				// Fields are different because multiple fields can be declared
+				// in the same region and might even reference each other
+				// e.g. "public int fu, bar = 1, baz = bar;"
+				
+				do {
+					if ((pos = txt.IndexOf (member.Name, pos + 1)) == -1)
+						return -1;
+				} while (!IsMatchedField (txt, member.Name, pos));
+				
+				return begin + pos;
 			} else if (member is IMethod) {
 				if ((len = txt.IndexOf ('(')) == -1)
 					return -1;
@@ -248,6 +271,84 @@ namespace CSharpBinding.Parser
 				return -1;
 			
 			return begin + pos;
+		}
+		
+		protected override IRegion GetMemberBounds (IEditableTextFile file, IMember member)
+		{
+			if (!(member is IField))
+				return base.GetMemberBounds (file, member);
+			
+			// The idea here is that it is common to declare multiple fields in the same
+			// statement, like so:
+			//
+			// public int fu, bar, baz;
+			//
+			// If @member is "bar", then we want to return the region containing:
+			//
+			// ", bar"
+			//
+			// so that when our caller uses this region to delete the text declaring @member,
+			// it won't also delete the text declaring the other fields in this same statement.
+			
+			IClass klass = member.DeclaringType;
+			IField field = (IField) member;
+			int lineBegin, lineEnd;
+			int colBegin, colEnd;
+			IRegion region;
+			int pos, i;
+			
+			// find the offset of the field
+			for (i = 0; i < klass.Fields.Count; i++) {
+				if (klass.Fields[i].Name == field.Name)
+					break;
+			}
+			
+			if (i > 0 && klass.Fields[i - 1].Region.CompareTo (field.Region) == 0) {
+				// Field has other fields declared before it in the same statement
+				pos = GetMemberNamePosition (file, member);
+				
+				// seek backward for declaration separator
+				while (file.Text[pos] != ',')
+					pos--;
+				
+				// eat up unneeded lwsp
+				while (Char.IsWhiteSpace (file.Text[pos]))
+					pos--;
+				
+				file.GetLineColumnFromPosition (pos, out lineBegin, out colBegin);
+				
+				if (i < klass.Fields.Count && klass.Fields[i + 1].Region.CompareTo (field.Region) == 0) {
+					// Field also has other fields declared after it in the same statement
+					pos = GetMemberNamePosition (file, klass.Fields[i + 1]);
+					
+					// seek backward for declaration separator
+					while (file.Text[pos] != ',')
+						pos--;
+					
+					// eat up unneeded lwsp
+					while (Char.IsWhiteSpace (file.Text[pos]))
+						pos--;
+					
+					file.GetLineColumnFromPosition (pos, out lineEnd, out colEnd);
+				} else {
+					// No fields after this...
+					colEnd = field.Region.EndColumn - 1;  // don't include the ';'
+					lineEnd = field.Region.EndLine;
+				}
+			} else if (i < (klass.Fields.Count - 1) && klass.Fields[i + 1].Region.CompareTo (field.Region) == 0) {
+				// Field has other fields declared after it in the same statement
+				pos = GetMemberNamePosition (file, member);
+				file.GetLineColumnFromPosition (pos, out lineBegin, out colBegin);
+				pos = GetMemberNamePosition (file, klass.Fields[i + 1]);
+				file.GetLineColumnFromPosition (pos, out lineEnd, out colEnd);
+			} else {
+				// Field is declared in a statement by itself
+				
+				// fall back to default implementation
+				return base.GetMemberBounds (file, member);
+			}
+			
+			return new DefaultRegion (lineBegin, colBegin, lineEnd, colEnd);
 		}
 		
 		public override MemberReferenceCollection FindMemberReferences (RefactorerContext ctx, string fileName, IClass cls, IMember member)

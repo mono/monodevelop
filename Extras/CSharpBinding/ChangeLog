@@ -1,12 +1,27 @@
+2007-05-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/CodeGenerator.cs (IsMatchedField): New convenience
+	function to do some trivial checks to make sure the 'match' isn't
+	in the middle of some other field name (e.g. if the field we are
+	looking for is a substring of another field name, we don't want to
+	match in the middle of some other field).
+	(GetMemberNamePosition): Fixed the IField case to be a bit more
+	correct.
+	(GetMemberBounds): Overridden base class' implementation for
+	IFields so that we can get the subregion for a field declaration
+	if it is in the middle of other field declarations within the same
+	statement region.
+
 2007-05-19  Ankit Jain  <jankit@novell.com>
 
-	* CodeGenerationPanel.cs: GetProjectParserContext can fail, handle that.
+	* CodeGenerationPanel.cs: GetProjectParserContext can fail, handle
+	that.
 	(Store): Save mainClass and Win32Icon only when relevant.
 
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
-	* Gui/CSharpTextEditorExtension.cs: Cursor already moved to position 2
-	  after typing '#'.
+	* Gui/CSharpTextEditorExtension.cs: Cursor already moved to
+	  position 2 after typing '#'.
 
 2007-05-16  Jeffrey Stedfast  <fejj@novell.com>
 

@@ -171,7 +171,7 @@ namespace CSharpBinding
 						engine.Push (' ');
 					}
 					
-					// we handled the Return
+					// we handled the <Return>
 					return true;
 				}
 				
@@ -187,9 +187,9 @@ namespace CSharpBinding
 					break;
 			}
 			
-			// ok, we should have enough context now
+			// Okay, we should have enough context now
 			
-			// measure the current indent
+			// Measure the current indent
 			int nlwsp = 0;
 			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
 				nlwsp++;
@@ -212,7 +212,7 @@ namespace CSharpBinding
 					Editor.DeleteText (pos, nlwsp);
 					Editor.InsertText (pos, newIndent);
 					
-					// engine state is now invalid
+					// Engine state is now invalid
 					engine.Reset ();
 				}
 				
