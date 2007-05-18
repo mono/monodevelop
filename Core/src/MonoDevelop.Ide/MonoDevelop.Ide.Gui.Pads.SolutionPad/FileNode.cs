@@ -39,10 +39,15 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 	{
 		SolutionProject solutionProject;
 		string          fileName;
-		
+		bool            isInProject;
 		public SolutionProject Project {
 			get {
 				return this.solutionProject;
+			}
+		}
+		public bool IsInProject {
+			get {
+				return isInProject;
 			}
 		}
 		
@@ -52,10 +57,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 		}
 		
-		public FileNode (SolutionProject solutionProject, string fileName)
+		public FileNode (SolutionProject solutionProject, string fileName, bool isInProject)
 		{
 			this.solutionProject = solutionProject;
 			this.fileName        = fileName;
+			this.isInProject     = isInProject;
 		}
 	}
 }

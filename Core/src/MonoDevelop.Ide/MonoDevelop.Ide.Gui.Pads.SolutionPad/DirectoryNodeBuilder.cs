@@ -76,8 +76,28 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				return;
 			label = Path.GetFileName (directoryNode.Path);
 			
-			icon       = Context.GetIcon (Stock.OpenFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedFolder);
+			icon       = Context.GetIcon (directoryNode.IsInProject ? Stock.OpenFolder : Stock.OpenDashedFolder);
+			closedIcon = Context.GetIcon (directoryNode.IsInProject ? Stock.ClosedFolder : Stock.ClosedDashedFolder);
+		}
+		
+		public static bool IsFileInProject (IProject project, string fileName)
+		{
+			foreach (ProjectItem item in project.Items) {
+				string fullName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include));
+				if (fullName == fileName) 
+					return true;
+			}
+			return false;
+		}
+		
+		public static bool IsDirectoryInProject (IProject project, string directoryName)
+		{
+			foreach (ProjectItem item in project.Items) {
+				string fullName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include));
+				if (fullName.StartsWith(directoryName)) 
+					return true;
+			}
+			return false;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
@@ -88,11 +108,18 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			
 			string basePath = directoryNode.Path;
 			
-			foreach (string fileName in Directory.GetFiles(basePath))
-				ctx.AddChild (new FileNode (directoryNode.Project, fileName));
+			foreach (string fileName in Directory.GetFiles(basePath)) {
+				bool isInProject = IsFileInProject(directoryNode.Project.Project, fileName);
+				
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
+					ctx.AddChild (new FileNode (directoryNode.Project, fileName, isInProject));
+			}
 			
-			foreach (string directoryName in Directory.GetDirectories(basePath))
-				ctx.AddChild (new DirectoryNode (directoryNode.Project, directoryName));
+			foreach (string directoryName in Directory.GetDirectories(basePath)) {
+				bool isInProject = IsDirectoryInProject(directoryNode.Project.Project, directoryName);
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
+					ctx.AddChild (new DirectoryNode (directoryNode.Project, directoryName, isInProject));
+			}
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

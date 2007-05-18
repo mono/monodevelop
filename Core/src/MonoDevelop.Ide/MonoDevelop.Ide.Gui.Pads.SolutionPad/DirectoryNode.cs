@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 	{
 		SolutionProject solutionProject;
 		string          path;
+		bool            isInProject;
 		
 		public SolutionProject Project {
 			get {
@@ -52,10 +53,17 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 		}
 		
-		public DirectoryNode (SolutionProject solutionProject, string path)
+		public bool IsInProject {
+			get {
+				return isInProject;
+			}
+		}
+		
+		public DirectoryNode (SolutionProject solutionProject, string path, bool isInProject)
 		{
 			this.solutionProject = solutionProject;
 			this.path            = path;
+			this.isInProject     = isInProject;
 		}
 	}
 }

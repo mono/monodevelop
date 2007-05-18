@@ -80,12 +80,15 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			if (fileNode == null) 
 				return;
 			label = Path.GetFileName (fileNode.FileName);
-			
-			string ic = Services.Icons.GetImageForFile (fileNode.FileName);
-			if (ic != Stock.MiscFiles || !File.Exists (fileNode.FileName))
-				icon = Context.GetIcon (ic);
-			else
-				icon = FileIconLoader.GetPixbufForFile (fileNode.FileName, 16);
+			if (fileNode.IsInProject) {
+				string ic = Services.Icons.GetImageForFile (fileNode.FileName);
+				if (ic != Stock.MiscFiles || !File.Exists (fileNode.FileName))
+					icon = Context.GetIcon (ic);
+				else
+					icon = FileIconLoader.GetPixbufForFile (fileNode.FileName, 16);
+			} else {
+				icon = Context.GetIcon (Stock.DashedFileIcon);
+			}
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

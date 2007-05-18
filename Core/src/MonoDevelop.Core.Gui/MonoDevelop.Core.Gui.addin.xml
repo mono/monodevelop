@@ -69,8 +69,10 @@
 		<StockIcon stockid = "md-closed-folder" resource = "Icons.16x16.ClosedFolderBitmap" />
 		<StockIcon stockid = "md-closed-reference-folder" resource = "Icons.16x16.ClosedReferenceFolder" />
 		<StockIcon stockid = "md-closed-resource-folder" resource = "Icons.16x16.ClosedResourceFolder" />
+		<StockIcon stockid = "md-closed-dashed-folder" resource = "Icons.16x16.ClosedDashedFolder" />
 		<StockIcon stockid = "md-combine-icon" resource = "Icons.16x16.CombineIcon" size = "Menu" />
 		<StockIcon stockid = "md-combine-icon" resource = "Icons.32x32.CombineIcon" size = "Dnd" />
+		<StockIcon stockid = "md-dashed-file" resource = "Icons.16x16.DashedFile" />
 		<StockIcon stockid = "md-delegate" resource = "Icons.16x16.Delegate" />
 		<StockIcon stockid = "md-empty" resource = "Icons.16x16.Empty" />
 		<StockIcon stockid = "md-empty-file-icon" resource = "Icons.32x32.EmptyFileIcon" />
@@ -108,6 +110,7 @@
 		<StockIcon stockid = "md-open-project-icon" resource = "Icons.16x16.OpenProjectIcon" />
 		<StockIcon stockid = "md-open-reference-folder" resource = "Icons.16x16.OpenReferenceFolder" />
 		<StockIcon stockid = "md-open-resource-folder" resource = "Icons.16x16.OpenResourceFolder" />
+		<StockIcon stockid = "md-open-dashed-folder" resource = "Icons.16x16.OpenDashedFolderBitmap" />
 		<StockIcon stockid = "md-output-icon" resource = "Icons.16x16.OutputIcon" />
 		<StockIcon stockid = "md-private-class" resource = "Icons.16x16.PrivateClass" />
 		<StockIcon stockid = "md-private-delegate" resource = "Icons.16x16.PrivateDelegate" />

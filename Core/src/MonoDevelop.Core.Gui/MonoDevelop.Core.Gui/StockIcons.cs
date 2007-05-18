@@ -17,6 +17,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string ClosedFolder = "md-closed-folder";
 		public static readonly string ClosedReferenceFolder = "md-closed-reference-folder";
 		public static readonly string ClosedResourceFolder = "md-closed-resource-folder";
+		public static readonly string ClosedDashedFolder = "md-closed-dashed-folder";
 		public static readonly string CombineIcon = "md-combine-icon";
 		public static readonly string CopyIcon = Gtk.Stock.Copy;
 		public static readonly string CutIcon = Gtk.Stock.Cut;
@@ -30,6 +31,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string Event = "md-event";
 		public static readonly string ExecutionMarker = "md-execution-marker";
 		public static readonly string Field = "md-field";
+		public static readonly string DashedFileIcon = "md-dashed-file";
 		public static readonly string FileXmlIcon = "md-file-xml-icon";
 		public static readonly string FindIcon = Gtk.Stock.Find;
 		public static readonly string FindInFiles = "md-find-in-files";
@@ -61,6 +63,7 @@ namespace MonoDevelop.Core.Gui
 		public static readonly string OpenProjectIcon = "md-open-project-icon";
 		public static readonly string OpenReferenceFolder = "md-open-reference-folder";
 		public static readonly string OpenResourceFolder = "md-open-resource-folder";
+		public static readonly string OpenDashedFolder = "md-open-dashed-folder";
 		public static readonly string Options = Gtk.Stock.Preferences;
 		public static readonly string OutputIcon = "md-output-icon";
 		public static readonly string PasteIcon = Gtk.Stock.Paste;

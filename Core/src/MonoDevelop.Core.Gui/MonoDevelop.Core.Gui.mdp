@@ -92,6 +92,9 @@
     <File name="./icons/Icons.16x16.ToggleBookmark" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.WebSearchIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.16x16.XMLFileIcon" subtype="Code" buildaction="EmbedAsResource" />
+	<File name="./icons/Icons.16x16.ClosedDashedFolder" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/Icons.16x16.DashedFile" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="./icons/Icons.16x16.OpenDashedFolderBitmap" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.CombineIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.EmptyFileIcon" subtype="Code" buildaction="EmbedAsResource" />
     <File name="./icons/Icons.32x32.EmptyProjectIcon" subtype="Code" buildaction="EmbedAsResource" />

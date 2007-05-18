@@ -86,11 +86,19 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			
 			string basePath = solutionProject.Project.BasePath;
 			
-			foreach (string fileName in Directory.GetFiles(basePath))
-				ctx.AddChild (new FileNode (solutionProject, fileName));
+			foreach (string fileName in Directory.GetFiles(basePath)) {
+				bool isInProject = DirectoryNodeBuilder.IsFileInProject(solutionProject.Project, fileName);
+				
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
+					ctx.AddChild (new FileNode (solutionProject, fileName, isInProject));
+			}
 			
-			foreach (string directoryName in Directory.GetDirectories(basePath))
-				ctx.AddChild (new DirectoryNode (solutionProject, directoryName));
+			foreach (string directoryName in Directory.GetDirectories(basePath)) {
+				bool isInProject = DirectoryNodeBuilder.IsDirectoryInProject(solutionProject.Project, directoryName);
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
+					ctx.AddChild (new DirectoryNode (solutionProject, directoryName, isInProject));
+			}
+			
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
