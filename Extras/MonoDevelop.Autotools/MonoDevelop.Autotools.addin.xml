@@ -60,9 +60,6 @@
 		<NodeBuilder class = "MonoDevelop.Autotools.FileNodeBuilderExtension"/>
 	</Extension>
 	
-	<Extension path = "/Autotools/SimpleSetups" extension-nodes="Class" description="SimpleSetups.|Specified classes must implement ISimpleAutotoolsSetup">
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Class class="MonoDevelop.Autotools.TarballDeployTarget" />
 	</Extension>

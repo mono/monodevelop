@@ -1,3 +1,9 @@
+2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.addin.xml: Removed empty extension element.
+	* PropertyProvider.cs: Added a more complete description of the
+	  IncludeInMakefile property.
+
 2007-05-16  Ankit Jain  <jankit@novell.com>
 
 	* AutotoolsContext.cs (EscapeAndUpperConfigName): New.

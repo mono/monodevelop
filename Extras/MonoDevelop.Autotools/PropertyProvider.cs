@@ -37,7 +37,8 @@ namespace MonoDevelop.Autotools
 		}
 		
 		[Category ("Makefile Integration")]
-		[Description ("Include in Synchronized Makefile")]
+		[DisplayName ("Include in Makefile")]
+		[Description ("Include this file in the file list of the synchronized Makefile")]
 		public bool IncludeInMakefile {
 			get {
 				return !data.IsFileExcluded (file.FilePath); 
