@@ -88,10 +88,12 @@ RES =  \
 	icons/Icons.16x16.ClearAllBookmarks \
 	icons/Icons.16x16.CloseAllDocuments \
 	icons/Icons.16x16.CloseCombineIcon \
+	icons/Icons.16x16.ClosedDashedFolder \
 	icons/Icons.16x16.ClosedFolderBitmap \
 	icons/Icons.16x16.ClosedReferenceFolder \
 	icons/Icons.16x16.ClosedResourceFolder \
 	icons/Icons.16x16.CombineIcon \
+	icons/Icons.16x16.DashedFile \
 	icons/Icons.16x16.Delegate \
 	icons/Icons.16x16.Empty \
 	icons/Icons.16x16.Enum \
@@ -118,6 +120,7 @@ RES =  \
 	icons/Icons.16x16.NewCombineIcon.png \
 	icons/Icons.16x16.NewFolderIcon \
 	icons/Icons.16x16.NewSolutionIcon.png \
+	icons/Icons.16x16.OpenDashedFolderBitmap \
 	icons/Icons.16x16.OpenFolderBitmap \
 	icons/Icons.16x16.OpenProjectIcon \
 	icons/Icons.16x16.OpenReferenceFolder \

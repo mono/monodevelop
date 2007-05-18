@@ -166,6 +166,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
+		protected virtual Gtk.Toolbar CreateToolbar ()
+		{
+			return null;
+		}
+		
 		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options)
 		{
 			builderContext = new TreeBuilderContext (this);
@@ -220,7 +225,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
 			sw.Add(tree);
 			contentPanel = new Gtk.Frame ();
-			contentPanel.Add(sw);
+			Gtk.Toolbar toolbar = CreateToolbar ();
+			
+			if (toolbar != null) {
+				Gtk.VBox vBox = new Gtk.VBox ();
+				vBox.PackStart (toolbar, false, false, 0);
+				vBox.PackEnd (sw);
+				contentPanel.Add (vBox);
+			} else {
+				contentPanel.Add (sw);
+			}
 			
 			tree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			tree.RowActivated += new Gtk.RowActivatedHandler(OnNodeActivated);
