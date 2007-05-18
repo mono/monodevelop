@@ -1116,6 +1116,103 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public string[] AddFilesToProject (Project project, string[] files, string targetDirectory)
+		{
+			int action = -1;
+			IProgressMonitor monitor = null;
+			
+			if (files.Length > 10) {
+				monitor = new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true);
+				monitor.BeginTask (GettextCatalog.GetString("Adding files..."), files.Length);
+			}
+			
+			List<string> newFileList = new List<string> ();
+			
+			using (monitor) {
+				
+				foreach (string file in files) {
+					if (monitor != null)
+						monitor.Log.WriteLine (file);
+					if (file.StartsWith (project.BaseDirectory)) {
+						newFileList.Add (MoveCopyFile (project, targetDirectory, file, true, true));
+					} else {
+						using (Gtk.MessageDialog md = new Gtk.MessageDialog (
+							 IdeApp.Workbench.RootWindow,
+							 Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent,
+							 Gtk.MessageType.Question, Gtk.ButtonsType.None,
+							 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file)))
+						{
+							Gtk.CheckButton remember = null;
+							if (files.Length > 1) {
+								remember = new Gtk.CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
+								md.VBox.PackStart (remember, false, false, 0);
+							}
+							
+							int LINK_VALUE = 3;
+							int COPY_VALUE = 1;
+							int MOVE_VALUE = 2;
+							
+							md.AddButton (GettextCatalog.GetString ("_Link"), LINK_VALUE);
+							md.AddButton (Gtk.Stock.Copy, COPY_VALUE);
+							md.AddButton (GettextCatalog.GetString ("_Move"), MOVE_VALUE);
+							md.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
+							md.VBox.ShowAll ();
+							
+							int ret = -1;
+							if (action < 0) {
+								ret = md.Run ();
+								md.Destroy ();
+								if (ret < 0)
+									return newFileList.ToArray ();
+								if (remember != null && remember.Active) action = ret;
+							} else {
+								ret = action;
+							}
+							
+							try {
+								string nf = MoveCopyFile (project, targetDirectory, file,
+											  (ret == MOVE_VALUE) || (ret == LINK_VALUE), ret == LINK_VALUE);
+								newFileList.Add (nf);
+							}
+							catch (Exception ex) {
+								Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
+								newFileList.Add (null);
+							}
+						}
+					}
+					if (monitor != null)
+						monitor.Step (1);
+				}
+			}
+			return newFileList.ToArray ();
+		}
+		
+		string MoveCopyFile (Project project, string baseDirectory, string filename, bool move, bool alreadyInPlace)
+		{
+			if (Runtime.FileService.IsDirectory (filename))
+			    return null;
+
+			string name = System.IO.Path.GetFileName (filename);
+			string newfilename = alreadyInPlace ? filename : Path.Combine (baseDirectory, name);
+
+			if (filename != newfilename) {
+				if (File.Exists (newfilename)) {
+					if (!Services.MessageService.AskQuestion (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to replace it?", newfilename), "MonoDevelop"))
+						return null;
+				}
+				Runtime.FileService.CopyFile (filename, newfilename);
+				if (move)
+					Runtime.FileService.DeleteFile (filename);
+			}
+			
+			if (project.IsCompileable (newfilename)) {
+				project.AddFile (newfilename, BuildAction.Compile);
+			} else {
+				project.AddFile (newfilename, BuildAction.Nothing);
+			}
+			return newfilename;
+		}		
+
 		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, string sourcePath, Project targetProject, string targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
