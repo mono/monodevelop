@@ -19,16 +19,19 @@ namespace MonoDevelop.Deployment.Gui
 		}
 	}
 	
-	class ProjectFileWrapper
+	class ProjectFileWrapper: CustomDescriptor
 	{
 		DeployProperties props;
+		ProjectFile file;
 		
 		public ProjectFileWrapper (ProjectFile file)
 		{
 			props = DeployService.GetDeployProperties (file);
+			this.file = file;
 		}
 		
 		[Category ("Deployment")]
+		[DisplayName ("Target directory")]
 		[Description ("Target Directory")]
 		public DeployDirectoryInfo TargetDirectory {
 			get {
@@ -45,6 +48,7 @@ namespace MonoDevelop.Deployment.Gui
 		}
 		
 		[Category ("Deployment")]
+		[DisplayName ("Relative target path")]
 		[Description ("Relative path of the file in the installation directory.")]
 		public string RelativeDeployPath {
 			get { return props.RelativeDeployPath; }
@@ -52,10 +56,31 @@ namespace MonoDevelop.Deployment.Gui
 		}
 		
 		[Category ("Deployment")]
+		[DisplayName ("Has path references")]
 		[Description ("Set to 'true' if the text file contains unresolved references to paths (e.g. @ProgramFiles@)")]
 		public bool HasPathReferences {
 			get { return props.HasPathReferences; }
 			set { props.HasPathReferences = value; }
 		}
+		
+		[Category ("Deployment")]
+		[DisplayName ("Use project relative path")]
+		[Description ("Use the relative path of the file in the project when deploying to the target directory.")]
+		public bool UseProjectRelativePath {
+			get { return props.UseProjectRelativePath; }
+			set { props.UseProjectRelativePath = value; }
+		}
+		
+		protected override bool IsReadOnly (string propertyName)
+		{
+			if (file.BuildAction != BuildAction.FileCopy)
+				return true;
+			if (UseProjectRelativePath) {
+				if (propertyName == "RelativeDeployPath")
+					return true;
+			}
+			return false;
+		}
+
 	}
 }

@@ -32,6 +32,8 @@ namespace MonoDevelop.Deployment
 		
 		public string RelativeDeployPath {
 			get {
+				if (UseProjectRelativePath)
+					return file.RelativePath;
 				string s = file.ExtendedProperties ["DeployService.RelativeDeployPath"] as string;
 				if (string.IsNullOrEmpty (s))
 					return Path.GetFileName (file.Name);
@@ -56,6 +58,22 @@ namespace MonoDevelop.Deployment
 					file.ExtendedProperties.Remove ("DeployService.HasPathReferences");
 				else
 					file.ExtendedProperties ["DeployService.HasPathReferences"] = true;
+			}
+		}
+		
+		// When set, the file will be deployed to the same relative path it has in the project.
+		public bool UseProjectRelativePath {
+			get {
+				object val = file.ExtendedProperties ["DeployService.UseProjectRelativePath"];
+				return val != null && (bool) val;
+			}
+			set {
+				if (!value)
+					file.ExtendedProperties.Remove ("DeployService.UseProjectRelativePath");
+				else {
+					RelativeDeployPath = "";
+					file.ExtendedProperties ["DeployService.UseProjectRelativePath"] = true;
+				}
 			}
 		}
 	}

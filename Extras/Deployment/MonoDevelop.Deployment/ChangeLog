@@ -1,3 +1,12 @@
+2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Deployment/DeployProperties.cs: Added
+	  UseProjecRelativePath property. When set, the file will be deployed
+	  to the same relative path it has in the project.
+	* MonoDevelop.Deployment.Gui/PropertyProvider.cs: Use a custom type
+	  descriptor. Disable the deploy properties when the file is not set
+	  for deployment.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.mdp: Don't copy project references.
