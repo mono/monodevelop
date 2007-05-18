@@ -158,23 +158,31 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void SetDesignerLayout ()
 		{
 			if (IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
-				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) != -1;
-				defaultLayout = IdeApp.Workbench.CurrentLayout;
-				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
-				if (!exists) {
-					Pad p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.ToolboxPad)];
-					if (p != null) p.Visible = true;
-					p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.PropertyPad)];
-					if (p != null) p.Visible = true;
-				}
+				// Added a delay here to avoid a conflict between the tab switch and the layout switch.
+				GLib.Timeout.Add (100, delegate {
+					bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) != -1;
+					defaultLayout = IdeApp.Workbench.CurrentLayout;
+					IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
+					if (!exists) {
+						Pad p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.ToolboxPad)];
+						if (p != null) p.Visible = true;
+						p = IdeApp.Workbench.Pads [typeof(MonoDevelop.DesignerSupport.PropertyPad)];
+						if (p != null) p.Visible = true;
+					}
+					return false;
+				});
 			}
 		}
 		
 		static void RestoreLayout ()
 		{
 			if (defaultLayout != null) {
-				IdeApp.Workbench.CurrentLayout = defaultLayout;
-				defaultLayout = null;
+				// Added a delay here to avoid a conflict between the tab switch and the layout switch.
+				GLib.Timeout.Add (100, delegate {
+					IdeApp.Workbench.CurrentLayout = defaultLayout;
+					defaultLayout = null;
+					return false;
+				});
 			}
 		}
 		

@@ -1,3 +1,9 @@
+2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Added some delay
+	  in the code that changes the workbench layout when selecting the
+	  designer. Fixes bug #80963.
+
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.addin.xml, MonoDevelop.GtkCore.mdp, Makefile.am,

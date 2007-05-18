@@ -6,6 +6,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.GtkCore.dll
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
+	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Components.dll \
 	-r:$(top_builddir)/build/AddIns/MonoDevelop.Core.Gui.dll \
