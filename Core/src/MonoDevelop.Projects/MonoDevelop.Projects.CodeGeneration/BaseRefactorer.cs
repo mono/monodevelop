@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (pos == -1)
 				return;
 			
-			IRegion reg = GetMemberBounds (member);
+			IRegion reg = GetMemberBounds (buffer, member);
 			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
 			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
 			buffer.DeleteText (sp, ep - sp);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			if (pos == -1)
 				return null;
 			
-			IRegion reg = GetMemberBounds (oldMember);
+			IRegion reg = GetMemberBounds (buffer, oldMember);
 			int sp = buffer.GetPositionFromLineColumn (reg.BeginLine, reg.BeginColumn);
 			int ep = buffer.GetPositionFromLineColumn (reg.EndLine, reg.EndColumn);
 			buffer.DeleteText (sp, ep - sp);
@@ -215,23 +215,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 		///
 		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop)
 		{
-//			// If the field isn't already private/protected/internal, we'll need to fix it to be
-//			if (field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
-//				IEditableTextFile file = null;
-//				int pos = -1;
-//				
-//				// Find the file the field is contained in
-//				for (int i = 0; i < cls.Parts.Length; i++) {
-//					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
-//						continue;
-//					
-//					if ((pos = GetMemberNamePosition (file, field)) != -1)
-//						break;
-//				}
-//				
-//				if (pos != -1) {
-//					// FIXME: need a way to get the CodeMemberField fieldInfo as a parsed object
-//					// (so we don't lose initialization state nor custom attributes, etc).
+			// If the field isn't already private/protected/internal, we'll need to fix it to be
+			if (true || field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
+				IEditableTextFile file = null;
+				int pos = -1;
+				
+				// Find the file the field is contained in
+				for (int i = 0; i < cls.Parts.Length; i++) {
+					if ((file = ctx.GetFile (cls.Parts[i].Region.FileName)) == null)
+						continue;
+					
+					if ((pos = GetMemberNamePosition (file, field)) != -1)
+						break;
+				}
+				
+				if (pos != -1) {
+					// FIXME: need a way to get the CodeMemberField fieldInfo as a parsed object
+					// (so we don't lose initialization state nor custom attributes, etc).
 //					CodeMemberField fieldInfo = new CodeMemberField ();
 //					
 //					fieldInfo.Attributes = fieldInfo.Attributes & ~MemberAttributes.Public;
@@ -239,8 +239,24 @@ namespace MonoDevelop.Projects.CodeGeneration
 //					
 //					RemoveMember (ctx, cls, field);
 //					AddMember (ctx, cls, fieldInfo);
-//				}
-//			}
+					
+					//int begin = file.GetPositionFromLineColumn (field.Region.BeginLine, field.Region.BeginColumn);
+					//int end = file.GetPositionFromLineColumn (field.Region.EndLine, field.Region.EndColumn);
+					//
+					//string snippet = file.GetText (begin, end);
+					//
+					//Console.WriteLine ("field declaration: {0}", snippet);
+					//
+					//IRegion region = GetMemberBounds (file, field);
+					//
+					//begin = file.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
+					//end = file.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+					//
+					//snippet = file.GetText (begin, end);
+					//
+					//Console.WriteLine ("delete '{0}'", snippet);
+				}
+			}
 			
 			return AddMember (ctx, cls, prop);
 		}
@@ -395,7 +411,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return -1;
 		}
 
-		protected virtual IRegion GetMemberBounds (IMember member)
+		protected virtual IRegion GetMemberBounds (IEditableTextFile file, IMember member)
 		{
 			int minLin = member.Region.BeginLine;
 			int minCol = member.Region.BeginColumn;

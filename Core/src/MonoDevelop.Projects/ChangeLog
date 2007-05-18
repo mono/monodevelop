@@ -1,3 +1,20 @@
+2007-05-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs: Added
+	EncapsulateField flag.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(GetMemberBounds): This logic was not quite correct for IFields
+	since we can have multiple fields all declared within the same
+	statement region (e.g. multiple IFields will all share the same
+	Region). To do this properly, we need to defer to a
+	language-specific implementation. To make our lives simpler, we
+	also now require an IEditableTextFile argument (our current
+	callers already had that info anyway).
+	(RemoveMember): Updated - with the CSharpBinding implementation of
+	GetMemberBounds(), this should now always work for IField members.
+	(ReplaceMember): Same as RemoveMember()
+
 2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Made
