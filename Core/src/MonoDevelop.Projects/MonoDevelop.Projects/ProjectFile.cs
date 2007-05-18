@@ -22,11 +22,11 @@ namespace MonoDevelop.Projects
 	}
 	
 	public enum BuildAction {
-		Nothing,
-		Compile,
-		EmbedAsResource,
-		FileCopy,
-		Exclude		
+		[Description ("Nothing")] Nothing,
+		[Description ("Compile")] Compile,
+		[Description ("Embed as resource")] EmbedAsResource,
+		[Description ("Deploy")] FileCopy,
+		[Description ("Exclude")] Exclude		
 	}
 	
 	/// <summary>
