@@ -1,5 +1,9 @@
 2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Deployment.addin.xml: Register the new property.
+
+2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Deployment/DeployProperties.cs: Added
 	  UseProjecRelativePath property. When set, the file will be deployed
 	  to the same relative path it has in the project.

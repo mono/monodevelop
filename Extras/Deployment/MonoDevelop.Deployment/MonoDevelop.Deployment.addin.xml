@@ -137,6 +137,8 @@
 			name = "DeployService.RelativeDeployPath" type = "System.String" />
 		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
 			name = "DeployService.HasPathReferences" type = "System.Boolean" />
+		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
+			name = "DeployService.UseProjectRelativePath" type = "System.Boolean" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectTemplates">
