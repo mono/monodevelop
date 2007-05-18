@@ -111,7 +111,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		{
 			base.Dispose ();
 			if (!disposed && initialText != entry.Text) {
-				Console.WriteLine ("pp1: ");
 				TextChanged (null, null);
 			}
 			disposed = true;

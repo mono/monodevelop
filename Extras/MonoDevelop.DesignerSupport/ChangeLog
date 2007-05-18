@@ -1,3 +1,22 @@
+2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.DesignerSupport.mdp,
+	  MonoDevelop.DesignerSupport/CustomDescriptor.cs, Makefile.am: Added
+	  default implementation of ICustomTypeDescriptor.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/TextEditor.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid.Editors/CollectionEditor.cs:
+	  Removed debug code.
+	* MonoDevelop.DesignerSupport.PropertyGrid.Editors/EnumerationEditorCell.cs:
+	  If an enum member has a Description attribute applied to it, use it
+	  as display name.
+	* MonoDevelop.DesignerSupport.Projects/ProjectsPropertyProvider.cs:
+	  Added more complete descriptions of the properties. Disable the
+	  ResourceId property if the file is not a resource.
+	* MonoDevelop.DesignerSupport.PropertyGrid/PropertyGrid.cs,
+	  MonoDevelop.DesignerSupport.PropertyGrid/PropertyGridTree.cs: When
+	  the value of a property changes, update all other properties, since
+	  their values may also change, or they may be enabled/disabled.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.DesignerSupport.mdp: Deploy the addin.xml file.

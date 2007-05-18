@@ -137,6 +137,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			textScroll.Add (descText);
 
 			tree = new PropertyGridTree (editorManager, this);
+			tree.Changed += delegate {
+				Update ();
+			};
 
 			vpaned.Pack1 (tree, true, true);
 			vpaned.Pack2 (descFrame, false, true);
@@ -269,6 +272,22 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 				}
 			}
 			tree.RestoreStatus ();
+		}
+		
+		void Update ()
+		{
+			PropertyDescriptorCollection properties;
+			
+			if (currentObject == null) {
+				properties = new PropertyDescriptorCollection (new PropertyDescriptor[0] {});
+				tree.Update (properties, currentObject);
+			}
+			else {
+				foreach (object prov in propertyProviders) {
+					properties = selectedTab.GetProperties (prov);
+					tree.Update (properties, prov);
+				}
+			}
 		}
 		
 		public bool ShowHelp

@@ -191,6 +191,38 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			}
 		}
 		
+		internal void Update (PropertyDescriptorCollection properties, object instance)
+		{
+			foreach (PropertyDescriptor pd in properties) {
+				TreeIter it;
+				if (!store.GetIterFirst (out it))
+					continue;
+				
+				UpdateProperty (pd, it, instance);
+			}
+		}
+		
+		bool UpdateProperty (PropertyDescriptor pd, TreeIter it, object instance)
+		{
+			do {
+				PropertyDescriptor prop = (PropertyDescriptor) store.GetValue (it, 1);
+				InstanceData idata = (InstanceData) store.GetValue (it, 3);
+				if (prop != null && idata != null && prop.Name == pd.Name && idata.Instance == instance) {
+					// Don't update the current editing node, since it may cause tree update problems
+					if (!tree.EditingIter.Equals (it))
+						store.SetValue (it, 1, pd);
+					return true;
+				}
+				TreeIter ci;
+				if (store.IterChildren (out ci, it)) {
+					if (UpdateProperty (pd, ci, instance))
+						return true;
+				}
+			}
+			while (store.IterNext (ref it));
+			return false;
+		}
+	
 		protected void AppendProperty (PropertyDescriptor prop, object instance)
 		{
 			AppendProperty (TreeIter.Zero, prop, new InstanceData (instance));
@@ -204,10 +236,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		void AppendProperty (TreeIter piter, PropertyDescriptor prop, InstanceData idata)
 		{
 			TreeIter iter;
+			
 			if (piter.Equals (TreeIter.Zero))
-				iter = store.AppendValues (prop.Name, prop, false, idata);
+				iter = store.AppendValues (prop.DisplayName, prop, false, idata);
 			else
-				iter = store.AppendValues (piter, prop.Name, prop, false, idata);
+				iter = store.AppendValues (piter, prop.DisplayName, prop, false, idata);
 			propertyRows [prop] = store.GetStringFromIter (iter);
 			
 			TypeConverter tc = prop.Converter;
@@ -220,8 +253,13 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		
 		protected virtual void OnObjectChanged ()
 		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			// Delay the notification of the change. There may be problems if the
+			// handler of this event starts its own gui loop.
+			GLib.Timeout.Add (0, delegate {
+				if (Changed != null)
+					Changed (this, EventArgs.Empty);
+				return false;
+			});
 		}
 		
 		void OnSelectionChanged (object s, EventArgs a)
@@ -267,6 +305,12 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			CellRendererPropertyGroup rc = (CellRendererPropertyGroup) cell;
 			rc.IsGroup = (bool) model.GetValue (iter, 2);
 			rc.Text = (string) model.GetValue (iter, 0);
+			
+			PropertyDescriptor prop = (PropertyDescriptor) model.GetValue (iter, 1);
+			if (prop != null)
+				rc.SensitiveProperty = !prop.IsReadOnly;
+			else
+				rc.SensitiveProperty = true;
 		}
 		
 		private class SortByCat : IComparer
@@ -296,6 +340,7 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		internal ArrayList Groups = new ArrayList ();
 		Pango.Layout layout;
 		bool editing;
+		TreeIter editingIter;
 		PropertyGridTree tree;
 		internal bool dragging;
 		int dragPos;
@@ -313,6 +358,11 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		public bool Editing {
 			get { return editing; }
 			set { editing = value; }
+		}
+		
+		public TreeIter EditingIter {
+			get { return editingIter; }
+			set { editingIter = value; }
 		}
 		
 		public PropertyGridTree PropertyTree {
@@ -415,10 +465,14 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 		{
 			this.instance = instance;
 			this.property = property;
-			if (property == null)
+			if (property == null) {
 				this.CellBackgroundGdk = darkColor;
-			else
+				sensitive = true;
+			}
+			else {
 				this.CellBackground = null;
+				sensitive = !property.IsReadOnly;
+			}
 			
 			editorCell = editor;
 		}
@@ -479,6 +533,9 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid
 			session.Changed += delegate {
 				((InternalTree)widget).PropertyTree.NotifyChanged ();
 			};
+			TreeIter it;
+			((InternalTree)widget).Model.GetIterFromString (out it, path);
+			((InternalTree)widget).EditingIter = it;
 			return e;
 		}
 		

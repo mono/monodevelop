@@ -18,7 +18,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		}
 	}
 	
-	class ProjectFileWrapper
+	class ProjectFileWrapper: CustomDescriptor
 	{
 		ProjectFile file;
 		
@@ -28,15 +28,26 @@ namespace MonoDevelop.DesignerSupport.Projects
 		}
 		
 		[Category ("Build")]
+		[DisplayName ("Build action")]
+		[Description ("Action to perform when building this file.")]
 		public BuildAction BuildAction {
 			get { return file.BuildAction; }
 			set { file.BuildAction = value; }
 		}
 		
 		[Category ("Build")]
+		[DisplayName ("Resource ID")]
+		[Description ("Identifier of the embedded resource.")]
 		public string ResourceId {
 			get { return file.ResourceId; }
 			set { file.ResourceId = value; }
+		}
+		
+		protected override bool IsReadOnly (string propertyName)
+		{
+			if (propertyName == "ResourceId" && file.BuildAction != BuildAction.EmbedAsResource)
+				return true;
+			return false;
 		}
 	}
 }

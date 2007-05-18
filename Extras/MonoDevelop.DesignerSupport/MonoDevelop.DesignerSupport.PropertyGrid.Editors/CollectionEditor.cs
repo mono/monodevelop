@@ -79,7 +79,6 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 		{
 			//the Type in the collection
 			IList collection = (IList) Value;
-			Console.WriteLine ("COL: " + collection);
 			string displayName = Property.DisplayName;
 
 			//populate list with existing items

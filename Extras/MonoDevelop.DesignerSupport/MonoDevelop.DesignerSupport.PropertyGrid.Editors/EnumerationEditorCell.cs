@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 {
@@ -40,7 +41,19 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 			if (Value == null)
 				return "";
 
-			return Value.ToString ();
+			string val = Value.ToString ();
+			
+			// If the enum value has a Description attribute, return the description
+			foreach (FieldInfo f in Property.PropertyType.GetFields ()) {
+				if (f.Name == val) {
+					DescriptionAttribute att = (DescriptionAttribute) Attribute.GetCustomAttribute (f, typeof(DescriptionAttribute));
+					if (att != null)
+						return att.Description;
+					else
+						return val;
+				}
+			}
+			return val;
 		}
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)
@@ -68,6 +81,16 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 				throw new ApplicationException ("Enumeration editor does not support editing values of type " + prop.PropertyType);
 			
 			values = System.Enum.GetValues (prop.PropertyType);
+			Hashtable names = new Hashtable ();
+			foreach (FieldInfo f in prop.PropertyType.GetFields ()) {
+				DescriptionAttribute att = (DescriptionAttribute) Attribute.GetCustomAttribute (f, typeof(DescriptionAttribute));
+				if (att != null)
+					names [f.Name] = att.Description;
+				else
+					names [f.Name] = f.Name;
+			}
+				       
+			
 			ebox = new Gtk.EventBox ();
 			ebox.Show ();
 			PackStart (ebox, true, true, 0);
@@ -84,6 +107,8 @@ namespace MonoDevelop.DesignerSupport.PropertyGrid.PropertyEditors
 
 			foreach (object value in values) {
 				string str = prop.Converter.ConvertToString (value);
+				if (names.Contains (str))
+					str = (string) names [str];
 				combo.AppendText (str);
 			}
 		}
