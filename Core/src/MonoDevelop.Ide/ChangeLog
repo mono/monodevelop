@@ -1,3 +1,11 @@
+2007-05-18  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs
+	(ExportProjectHandler.Update): Override. Should be enabled only if there
+	is an open combine.
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs (Export): Ensure that Destroy
+	is called.
+
 2007-05-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs

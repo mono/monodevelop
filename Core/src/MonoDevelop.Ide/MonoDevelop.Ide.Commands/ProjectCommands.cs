@@ -422,6 +422,12 @@ namespace MonoDevelop.Ide.Commands
 			CombineEntry ce = IdeApp.ProjectOperations.CurrentSelectedCombineEntry;
 			IdeApp.ProjectOperations.Export (ce, null);
 		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.ProjectOperations.CurrentOpenCombine != null;
+		}
+
 	}
 	
 	internal class GenerateProjectDocumentation : CommandHandler

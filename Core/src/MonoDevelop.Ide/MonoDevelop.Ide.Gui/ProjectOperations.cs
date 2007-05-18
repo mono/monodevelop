@@ -517,15 +517,18 @@ namespace MonoDevelop.Ide.Gui
 		public void Export (CombineEntry entry, IFileFormat format)
 		{
 			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				
-				using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
-					string folder = dlg.TargetFolder;
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					
-					Services.ProjectService.Export (mon, entry.FileName, folder, dlg.Format);
+					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
+						string folder = dlg.TargetFolder;
+						
+						Services.ProjectService.Export (mon, entry.FileName, folder, dlg.Format);
+					}
 				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 		
 		public void SaveCombine()
