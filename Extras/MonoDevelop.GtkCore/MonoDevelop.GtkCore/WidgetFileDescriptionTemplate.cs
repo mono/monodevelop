@@ -71,6 +71,11 @@ namespace MonoDevelop.GtkCore
 				throw new InvalidOperationException ("Stetic template not found in widget template.");
 		}
 		
+		public override string[] Create (string language, string directory, string name)
+		{
+			// TODO: Gtk 
+			return new string[] { };
+		}
 		public override void AddToProject (Project project, string language, string directory, string name)
 		{
 			GtkDesignInfo info = GtkCoreService.GetGtkInfo (project);

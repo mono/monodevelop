@@ -65,12 +65,13 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public static void OpenSolution (string fileName)
+		public static IAsyncOperation OpenSolution (string fileName)
 		{
 			solution = Solution.Load (fileName);
 			Console.WriteLine ("loaded : " + solution);
 			ActiveProject = null;
 			OnSolutionOpened (new SolutionEventArgs (solution));
+			return NullAsyncOperation.Success;
 		}
 		
 		public static void CloseSolution ()

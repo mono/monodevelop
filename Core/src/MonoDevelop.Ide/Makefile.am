@@ -274,6 +274,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects.Item/ProjectFile.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
+	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
 	MonoDevelop.Ide.Projects/CompilerResult.cs \
 	MonoDevelop.Ide.Projects/ExecutionContext.cs \

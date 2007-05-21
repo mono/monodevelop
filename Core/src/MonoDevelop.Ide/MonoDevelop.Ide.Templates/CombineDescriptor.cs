@@ -14,7 +14,8 @@ using System.Diagnostics;
 using System.Reflection;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 
@@ -45,8 +46,63 @@ namespace MonoDevelop.Ide.Templates
 			get { return (ICombineEntryDescriptor[]) entryDescriptors.ToArray (typeof(ICombineEntryDescriptor)); }
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
+			Solution newCombine;
+			
+			if (typeName != null && typeName.Length > 0) {
+				Type type = Type.GetType (typeName);
+				if (type == null) {
+					Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create solution with type: {0}", typeName));
+					return String.Empty;
+				}
+				newCombine = (Solution) Activator.CreateInstance (type);
+			} else
+				newCombine = new Solution ("");
+
+			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
+				{"ProjectName", projectCreateInformation.CombineName}
+			});
+			
+			string oldCombinePath = projectCreateInformation.CombinePath;
+			string oldProjectPath = projectCreateInformation.ProjectBasePath;
+			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
+				projectCreateInformation.CombinePath     = projectCreateInformation.CombinePath + Path.DirectorySeparatorChar + relativeDirectory;
+				projectCreateInformation.ProjectBasePath = projectCreateInformation.CombinePath + Path.DirectorySeparatorChar + relativeDirectory;
+				if (!Directory.Exists(projectCreateInformation.CombinePath)) {
+					Directory.CreateDirectory(projectCreateInformation.CombinePath);
+				}
+				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
+					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
+				}
+			}
+
+			// Create sub projects
+			foreach (ICombineEntryDescriptor entryDescriptor in entryDescriptors) {
+				string fileName = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage);
+				newCombine.AddItem ( new SolutionProject ("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", Guid.NewGuid ().ToString (), Path.GetFileNameWithoutExtension (fileName), fileName));
+			}
+			
+			projectCreateInformation.CombinePath     = oldCombinePath;
+			projectCreateInformation.ProjectBasePath = oldProjectPath;
+			
+			// Save combine
+			using (IProgressMonitor monitor = new NullProgressMonitor ()) {
+				string combineLocation = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath) + newCombineName + ".sln";
+				if (File.Exists(combineLocation)) {
+					IMessageService messageService =(IMessageService)ServiceManager.GetService(typeof(IMessageService));
+					if (messageService.AskQuestion (GettextCatalog.GetString ("Solution file {0} already exists, do you want to overwrite\nthe existing file?", combineLocation))) {
+						newCombine.Save (combineLocation);
+					}
+				} else {
+					newCombine.Save (combineLocation);
+				}
+				
+				//newCombine.Dispose();
+				return combineLocation;
+			}
+			
+			/*
 			Combine newCombine;
 			
 			if (typeName != null && typeName.Length > 0) {
@@ -101,6 +157,7 @@ namespace MonoDevelop.Ide.Templates
 				newCombine.Dispose();
 				return combineLocation;
 			}
+			*/
 		}
 		
 		public static CombineDescriptor CreateCombineDescriptor(XmlElement element)

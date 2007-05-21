@@ -90,5 +90,6 @@ namespace MonoDevelop.Ide.Projects
 		
 		CompilerResult Build (IProgressMonitor monitor);
 		void Start (IProgressMonitor monitor, ExecutionContext context);
+		void Save ();
 	}
 }

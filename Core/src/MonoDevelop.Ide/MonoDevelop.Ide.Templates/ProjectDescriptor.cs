@@ -12,7 +12,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Projects.Item;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -31,7 +32,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		ArrayList files      = new ArrayList(); // contains FileTemplate classes
 		ArrayList references = new ArrayList(); 
-		ArrayList resources = new ArrayList ();
+		ArrayList resources  = new ArrayList ();
 		
 		XmlElement projectOptions = null;
 		
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Templates
 			this.name = name;
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			StringParserService stringParserService = Runtime.StringParserService;
 			
@@ -76,7 +77,8 @@ namespace MonoDevelop.Ide.Templates
 */				projectOptions.SetAttribute ("language", defaultLanguage);
 			}
 			
-			Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
+			//Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
+			IProject project = new MSBuildProject (null);
 			
 			if (project == null) {
 				Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));
@@ -87,12 +89,12 @@ namespace MonoDevelop.Ide.Templates
 				{"ProjectName", projectCreateInformation.ProjectName}
 			});
 			
-			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".mdp";
-			project.Name = newProjectName;
+			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".cspoj";
+//			project.Name = newProjectName;
 			
 			// Add References
-			foreach (ProjectReference projectReference in references) {
-				project.ProjectReferences.Add(projectReference);
+			foreach (MonoDevelop.Projects.ProjectReference projectReference in references) {
+				project.Items.Add (new ReferenceProjectItem (projectReference.Reference));
 			}
 
 			foreach (FileDescriptionTemplate file in resources) {
@@ -101,11 +103,9 @@ namespace MonoDevelop.Ide.Templates
 					throw new InvalidOperationException ("Only single-file templates can be used to generate resource files");
 
 				try {
-					string fileName = singleFile.SaveFile (project, defaultLanguage, project.BaseDirectory, null);
-
-					ProjectFile resource = new ProjectFile (fileName);
-					resource.BuildAction = BuildAction.EmbedAsResource;
-					project.ProjectFiles.Add(resource);
+					string[] fileNames = singleFile.Create (defaultLanguage, project.BasePath, null);
+					foreach (string fileName in fileNames) 
+						project.Items.Add (new ProjectFile (fileName, FileType.EmbeddedResource));
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
@@ -114,7 +114,9 @@ namespace MonoDevelop.Ide.Templates
 			// Add Files
 			foreach (FileDescriptionTemplate file in files) {
 				try {
-					file.AddToProject (project, defaultLanguage, project.BaseDirectory, null);
+					string[] fileNames = file.Create (defaultLanguage, project.BasePath, null);
+					foreach (string fileName in fileNames) 
+						project.Items.Add (new ProjectFile (fileName, FileType.Compile));
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex, GettextCatalog.GetString ("File {0} could not be written.", file.Name));
 				}
@@ -127,10 +129,10 @@ namespace MonoDevelop.Ide.Templates
 					if (Services.MessageService.AskQuestion (GettextCatalog.GetString (
 						"Project file {0} already exists, do you want to overwrite\nthe existing file?", project.FileName),
 						 GettextCatalog.GetString ("File already exists"))) {
-						project.Save (project.FileName, monitor);
+						project.Save (); // project.FileName, monitor
 					}
 				} else {
-					project.Save (monitor);
+					project.Save ();
 				}
 			}
 			
@@ -165,9 +167,8 @@ namespace MonoDevelop.Ide.Templates
 			if (element["References"] != null) {
 				foreach (XmlNode node in element["References"].ChildNodes) {
 					if (node != null && node.Name == "Reference") {
-					
-						ReferenceType referenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
-						ProjectReference projectReference = new ProjectReference (referenceType, node.Attributes["refto"].InnerXml);
+						MonoDevelop.Projects.ReferenceType referenceType = (MonoDevelop.Projects.ReferenceType)Enum.Parse(typeof(MonoDevelop.Projects.ReferenceType), node.Attributes["type"].InnerXml);
+						MonoDevelop.Projects.ProjectReference projectReference = new MonoDevelop.Projects.ProjectReference (referenceType, node.Attributes["refto"].InnerXml);
 						projectDescriptor.references.Add(projectReference);
 					}
 				}

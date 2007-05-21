@@ -41,23 +41,30 @@ namespace MonoDevelop.Ide.Projects.Item
 			set { this.include = value; }
 		}
 		
-		public ProjectItem()
+		public ProjectItem ()
 		{
 		}
 		
-		public bool HasMetadata(string name)
+		public ProjectItem (string include)
 		{
-			return metaData.ContainsKey(name);
+			this.Include = include;
 		}
-		public string GetMetadata(string name)
+		
+		public bool HasMetadata (string name)
+		{
+			return metaData.ContainsKey (name);
+		}
+		
+		public string GetMetadata (string name)
 		{
 			return metaData[name];
 		}
-		public void SetMetadata(string name, string value)
+		
+		public void SetMetadata (string name, string value)
 		{
 			//Console.WriteLine("set:" + name + " to " + value);
-			if (String.IsNullOrEmpty(value)) {
-				metaData.Remove(name);
+			if (String.IsNullOrEmpty (value)) {
+				metaData.Remove (name);
 				return;
 			}
 			metaData[name] = value;

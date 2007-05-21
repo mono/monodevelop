@@ -48,6 +48,10 @@ namespace MonoDevelop.Ide.Templates
 		
 		public abstract void Load (XmlElement filenode);
 		public abstract void AddToProject (Project project, string language, string directory, string name);
+		
+		/// <returns>Returns a list of all files created.</returns>
+		public abstract string[] Create (string language, string directory, string name);
+		
 		public abstract void Show ();
 		
 		public virtual bool IsValidName (string name, string language)

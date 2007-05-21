@@ -52,6 +52,11 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
+		public override string[] Create (string language, string directory, string name)
+		{
+			return template.Create (language, directory, name);
+		}
+		
 		public override void AddToProject (Project project, string language, string directory, string name)
 		{
 			ProjectFile file = template.AddFileToProject (project, language, directory, name);

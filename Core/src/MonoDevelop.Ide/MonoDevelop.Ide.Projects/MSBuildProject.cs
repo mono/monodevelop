@@ -409,6 +409,10 @@ namespace MonoDevelop.Ide.Projects
 			}
 			return result;
 		}
+		
+		public void Save ()
+		{
+		}
 #endregion
 	}
 }

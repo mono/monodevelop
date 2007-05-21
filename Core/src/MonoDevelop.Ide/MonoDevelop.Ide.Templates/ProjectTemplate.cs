@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Templates
 			} finally {
 				stream.Close ();
 			}
-						
+			
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			string category = config["Category"].InnerText;
 			string languageElement  = (config["LanguageName"] == null)? null : config["LanguageName"].InnerText;
@@ -267,7 +267,8 @@ namespace MonoDevelop.Ide.Templates
 		
 		public void OpenCreatedCombine()
 		{
-			IAsyncOperation op = IdeApp.ProjectOperations.OpenCombine (lastCombine);
+			//IAsyncOperation op = IdeApp.ProjectOperations.OpenCombine (lastCombine);
+			IAsyncOperation op = MonoDevelop.Ide.Projects.ProjectService.OpenSolution (lastCombine);
 			op.WaitForCompleted ();
 			if (op.Success) {
 				foreach (OpenFileAction action in actions)

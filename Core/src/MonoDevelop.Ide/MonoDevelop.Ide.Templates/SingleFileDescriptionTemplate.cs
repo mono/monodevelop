@@ -80,6 +80,11 @@ namespace MonoDevelop.Ide.Templates
 			IdeApp.Workbench.OpenDocument (generatedFile);
 		}
 		
+		public override string[] Create (string language, string directory, string name)
+		{
+			return new string [] { SaveFile (null, language, directory, name) };
+		}
+		
 		// Creates a file and saves it to disk. Returns the path to the new file
 		// All parameters are optional (can be null)
 		public string SaveFile (Project project, string language, string baseDirectory, string entryName)
