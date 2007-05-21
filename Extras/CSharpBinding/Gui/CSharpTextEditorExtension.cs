@@ -41,6 +41,16 @@ namespace CSharpBinding
 			if (TextEditorProperties.IndentStyle != IndentStyle.Smart)
 				return base.KeyPress (key, modifier);
 			
+			// If any text is selected, it's going to blown away or modified in some
+			// unpredictable way, so if the selected region starts somewhere before
+			// our known cursor position, reset our engine state - it will have to
+			// be recalculated.
+			if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
+				if (engine.Cursor > Editor.SelectionStartPosition)
+					engine.Reset ();
+				return base.KeyPress (key, modifier);
+			}
+			
 			switch (key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
@@ -87,13 +97,6 @@ namespace CSharpBinding
 				// Tab is a special case... depending on the context, the user may be
 				// requesting a re-indent, tab-completing, or may just be wanting to
 				// insert a literal tab.
-				
-				if (Editor.SelectionEndPosition > Editor.SelectionStartPosition) {
-					// FIXME: replace with an appropriate indent for the line
-					// containing the cursor position Editor.SelectionStartPosition?
-					return base.KeyPress (key, modifier);
-				}
-				
 				if (!engine.IsInsideVerbatimString) {
 					bufLen = Editor.TextLength;
 					

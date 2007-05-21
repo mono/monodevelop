@@ -1,3 +1,10 @@
+2007-05-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs (KeyPress): If a region of text
+	is selected, then simply pass it along to our base implementation
+	and reset our engine state if the region begins somewhere before
+	the engine's cursor. Fixes bug #81620.
+
 2007-05-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (IsMatchedField): New convenience
