@@ -1,5 +1,13 @@
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
+	* MonoDevelop.Ide.Commands/HelpCommands.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs:
+	Ensure that Dialogs are Destroy()'ed.
+
+2007-05-21  Ankit Jain  <jankit@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ResourceFolderNodeBuilder.cs:
 	(AskFiles): Ensure that Destroy is called. Also, SetCurrentFolder.
 

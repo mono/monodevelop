@@ -265,22 +265,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PropertyService PropertyService = (PropertyService)ServiceManager.GetService (typeof (PropertyService));			
 			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select directory"));
 
-			// set up the dialog to point to currently selected folder, or the default projects folder
-			string defaultFolder = this.directoryTextBox.Text;	
-			if (defaultFolder == string.Empty || defaultFolder == null) {
-				// only use the bew project default path if there is no path set
-				defaultFolder =	PropertyService.GetProperty (
-						"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
-						System.IO.Path.Combine (
-							System.Environment.GetEnvironmentVariable ("HOME"),
-							"Projects")).ToString ();
+			try {
+				// set up the dialog to point to currently selected folder, or the default projects folder
+				string defaultFolder = this.directoryTextBox.Text;	
+				if (defaultFolder == string.Empty || defaultFolder == null) {
+					// only use the bew project default path if there is no path set
+					defaultFolder =	PropertyService.GetProperty (
+							"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", 
+							System.IO.Path.Combine (
+								System.Environment.GetEnvironmentVariable ("HOME"),
+								"Projects")).ToString ();
+				}
+				fd.SetFilename( defaultFolder );
+				if (fd.Run() == (int)Gtk.ResponseType.Ok)
+				{
+					directoryTextBox.Text = fd.Filename;
+				}
+				fd.Hide ();
+			} finally {
+				fd.Destroy ();
 			}
-			fd.SetFilename( defaultFolder );
-			if (fd.Run() == (int)Gtk.ResponseType.Ok)
-			{
-				directoryTextBox.Text = fd.Filename;
-			}
-			fd.Hide ();
 		}
 		
 		void SearchLocationCheckBoxChangedEvent(object sender, EventArgs e)

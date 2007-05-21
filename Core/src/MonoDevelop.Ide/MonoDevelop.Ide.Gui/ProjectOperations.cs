@@ -1136,12 +1136,13 @@ namespace MonoDevelop.Ide.Gui
 					if (file.StartsWith (project.BaseDirectory)) {
 						newFileList.Add (MoveCopyFile (project, targetDirectory, file, true, true));
 					} else {
-						using (Gtk.MessageDialog md = new Gtk.MessageDialog (
+						Gtk.MessageDialog md = new Gtk.MessageDialog (
 							 IdeApp.Workbench.RootWindow,
 							 Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent,
 							 Gtk.MessageType.Question, Gtk.ButtonsType.None,
-							 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file)))
-						{
+							 GettextCatalog.GetString ("{0} is outside the project directory, what should I do?", file));
+
+						try {
 							Gtk.CheckButton remember = null;
 							if (files.Length > 1) {
 								remember = new Gtk.CheckButton (GettextCatalog.GetString ("Use the same action for all selected files."));
@@ -1161,7 +1162,6 @@ namespace MonoDevelop.Ide.Gui
 							int ret = -1;
 							if (action < 0) {
 								ret = md.Run ();
-								md.Destroy ();
 								if (ret < 0)
 									return newFileList.ToArray ();
 								if (remember != null && remember.Active) action = ret;
@@ -1178,6 +1178,8 @@ namespace MonoDevelop.Ide.Gui
 								Services.MessageService.ShowError (ex, GettextCatalog.GetString ("An error occurred while attempt to move/copy that file. Please check your permissions."));
 								newFileList.Add (null);
 							}
+						} finally {
+							md.Destroy ();
 						}
 					}
 					if (monitor != null)

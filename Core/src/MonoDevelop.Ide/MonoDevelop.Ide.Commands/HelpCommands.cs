@@ -40,8 +40,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			using (CommonAboutDialog ad = new CommonAboutDialog ()) {
+			CommonAboutDialog ad = new CommonAboutDialog ();
+			try {
 				ad.Run ();
+			} finally {
 				ad.Destroy ();
 			}
 		}

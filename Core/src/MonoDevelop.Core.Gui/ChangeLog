@@ -1,3 +1,7 @@
+2007-05-21  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Core.Gui/MessageService.cs: Ensure Dialogs are Destroy()'ed.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Gui.mdp: Reference copy fix.

@@ -129,7 +129,8 @@ namespace MonoDevelop.Core.Gui
 		
 		public bool AskQuestion(string question, string caption)
 		{
-			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, EscapeBraces(question))) {
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, EscapeBraces(question));
+			try {
 				int response = md.Run ();
 				md.Hide ();
 				
@@ -137,6 +138,8 @@ namespace MonoDevelop.Core.Gui
 					return true;
 				else
 					return false;
+			} finally {
+				md.Destroy ();
 			}
 		}
 		
@@ -157,8 +160,8 @@ namespace MonoDevelop.Core.Gui
 
 		public QuestionResponse AskQuestionWithCancel(string question, string caption)
 		{
-			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(question))) {
-				
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(question));
+			try {
 				md.AddActionWidget (new Button (Gtk.Stock.No), ResponseType.No);
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
 				md.AddActionWidget (new Button (Gtk.Stock.Yes), ResponseType.Yes);
@@ -180,6 +183,8 @@ namespace MonoDevelop.Core.Gui
 				}
 
 				return QuestionResponse.Cancel;
+			} finally {
+				md.Destroy ();
 			}
 		}
 		
@@ -200,8 +205,9 @@ namespace MonoDevelop.Core.Gui
 		
 		public int ShowCustomDialog(string caption, string dialogText, params string[] buttontexts)
 		{
-			using (MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(dialogText))) {
+			MessageDialog md = new MessageDialog (rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.None, EscapeBraces(dialogText));
 				
+			try {
 				for (int i = 0; i < buttontexts.Length; i++)
 					md.AddActionWidget (new Button (buttontexts[i]), i);
 
@@ -210,6 +216,8 @@ namespace MonoDevelop.Core.Gui
 				md.Hide ();
 
 				return response;
+			} finally {
+				md.Destroy ();
 			}
 		}
 		
@@ -274,7 +282,8 @@ namespace MonoDevelop.Core.Gui
 		{
 			string returnValue = null;
 			
-			using (Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent)) {
+			Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent);
+			try {
 				// add a label with the question
 				Label questionLabel = new Label(question);
 				questionLabel.UseMarkup = true;
@@ -301,9 +310,11 @@ namespace MonoDevelop.Core.Gui
 				if ((ResponseType) response == ResponseType.Ok) {
 					returnValue =  responseEntry.Text;
 				}
+
+				return returnValue;
+			} finally {
+				md.Destroy ();
 			}
-			
-			return returnValue;
 		}
 		
 		public string GetTextResponse(string question, string caption)

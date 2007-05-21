@@ -196,15 +196,18 @@ namespace MonoDevelop.Ide.Gui
 				
 			if (filename == null) {
 				FileSelectorDialog fdiag = new FileSelectorDialog (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
-				fdiag.CurrentName = Window.ViewContent.UntitledName;
-				fdiag.Encoding = encoding;
-				fdiag.ShowEncodingSelector = (tbuffer != null);
-				int response = fdiag.Run ();
-				filename = fdiag.Filename;
-				encoding = fdiag.Encoding;
-				fdiag.Destroy ();
-				if (response != (int)Gtk.ResponseType.Ok)
-					return;
+				try {
+					fdiag.CurrentName = Window.ViewContent.UntitledName;
+					fdiag.Encoding = encoding;
+					fdiag.ShowEncodingSelector = (tbuffer != null);
+					int response = fdiag.Run ();
+					filename = fdiag.Filename;
+					encoding = fdiag.Encoding;
+					if (response != (int)Gtk.ResponseType.Ok)
+						return;
+				} finally {
+					fdiag.Destroy ();
+				}
 			}
 		
 			if (!Runtime.FileService.IsValidFileName (filename)) {

@@ -56,7 +56,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
-			using (FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Select File"))) {
+			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Select File"));
+			try {
 				fdiag.SetCurrentFolder (entry.BaseDirectory);
 				fdiag.SelectMultiple = false;
 				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
@@ -66,6 +67,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 						entryCommand.Text = fdiag.Filename;
 				}
 				fdiag.Hide ();
+			} finally {
+				fdiag.Destroy ();
 			}
 		}
 
