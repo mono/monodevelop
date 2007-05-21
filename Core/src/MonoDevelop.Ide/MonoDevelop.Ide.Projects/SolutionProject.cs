@@ -60,6 +60,13 @@ namespace MonoDevelop.Ide.Projects
 				return path.Replace ('\\', Path.DirectorySeparatorChar);
 			return path.Replace ('/', Path.DirectorySeparatorChar);
 		}
+		
+		public static string DeNormalizePath (string path)
+		{
+			if (Path.DirectorySeparatorChar == '\\')
+				return path;
+			return path.Replace (Path.DirectorySeparatorChar, '\\');
+		}
 			
 		
 		public static SolutionProject Read (TextReader reader, string basePath, string typeGuid, string guid, string name, string location)

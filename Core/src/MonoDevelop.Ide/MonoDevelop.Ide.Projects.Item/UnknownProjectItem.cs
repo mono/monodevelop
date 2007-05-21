@@ -39,6 +39,12 @@ namespace MonoDevelop.Ide.Projects.Item
 			set { itemType = value; }
 		}
 		
+		protected override string Tag {
+			get {
+				return itemType;
+			}
+		}
+		
 		public UnknownProjectItem(string itemType)
 		{
 			this.ItemType = itemType;

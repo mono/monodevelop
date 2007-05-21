@@ -45,6 +45,10 @@ namespace MonoDevelop.Ide.Projects
 			get;
 		}
 		
+		string Guid {
+			get;
+		}
+		
 		string BasePath {
 			get;
 		}

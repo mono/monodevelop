@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		
 		public string Name {
 			get {
 				return Path.GetFileNameWithoutExtension (FileName);
@@ -77,6 +78,28 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				return this.propertyGroups;
 			}
+		}
+		
+		public MSBuildProject ()
+		{
+			propertyGroups.Add(new PropertyGroup (null));
+			propertyGroups.Add(new PropertyGroup (" '$(Configuration)' == 'Debug' "));
+			propertyGroups.Add(new PropertyGroup (" '$(Configuration)' == 'Release' "));
+			SetProperty ("ProjectGuid", "{" + System.Guid.NewGuid ().ToString ().ToUpper () + "}", null, null);
+			SetProperty ("Configuration", "Debug", null, null);
+			SetProperty ("Platform", "AnyCPU", null, null);
+			
+			SetProperty ("OutputPath", @"bin\Debug\", "Debug", null);
+			SetProperty ("DebugSymbols", @"True", "Debug", null);
+			SetProperty ("DebugType", @"Full", "Debug", null);
+			SetProperty ("CheckForOverflowUnderflow", @"True", "Debug", null);
+			SetProperty ("DefineConstants", @"DEBUG;TRACE", "Debug", null);
+			
+			SetProperty ("OutputPath", @"bin\Release\", "Release", null);
+			SetProperty ("DebugSymbols", @"False", "Release", null);
+			SetProperty ("DebugType", @"None", "Release", null);
+			SetProperty ("CheckForOverflowUnderflow", @"False", "Release", null);
+			SetProperty ("DefineConstants", @"TRACE", "Release", null);
 		}
 		
 		public MSBuildProject (string fileName)
@@ -167,6 +190,13 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 #region Global Properties
+		public string Guid {
+			get {
+				return GetProperty ("ProjectGuid", null, null);
+			}
+		}
+		
+		
 		public string Configuration {
 			get {
 				return GetProperty ("Configuration", null, null);
@@ -242,15 +272,21 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 		
-		void SetProperty (string name, string value, string configuration, string cpu)
+		void SetProperty (string name, string value, string configuration, string platform)
 		{
 			foreach (PropertyGroup group in this.PropertyGroups) {
-				if (!group.IsValid (configuration, cpu)) 
+				if (!group.IsValid (configuration, platform)) 
+					continue;
+				if (!String.IsNullOrEmpty (configuration) && String.IsNullOrEmpty (group.Configuration))
+					continue;
+				if (!String.IsNullOrEmpty (platform) && String.IsNullOrEmpty (group.Platform))
 					continue;
 				Property property = group.GetProperty (name);
 				if (property != null) {
 					property.Value = value;
 					return;
+				} else {
+					group.Properties.Add (new Property (name, value));
 				}
 			}
 		}
@@ -273,6 +309,25 @@ namespace MonoDevelop.Ide.Projects
 			}
 			public Dictionary<string, string> Attributes {
 				get { return this.attributes; }
+			}
+			
+			public Property ()
+			{
+			}
+			
+			public Property (string name, string value)
+			{
+				this.Name  = name;
+				this.Value = value;
+			}
+			
+			public void Write (XmlWriter writer)
+			{
+				writer.WriteStartElement (this.Name);
+				foreach (KeyValuePair<string, string> attribute in this.Attributes) 
+					writer.WriteAttributeString (attribute.Key, attribute.Value);
+				writer.WriteString (this.Value);
+				writer.WriteEndElement ();
 			}
 			
 			public static Property Read (XmlReader reader)
@@ -355,6 +410,27 @@ namespace MonoDevelop.Ide.Projects
 					   (this.Platform == platform || String.IsNullOrEmpty (this.Platform));
 			}
 			
+			string GetMSBuildCondition ()
+			{
+				if (String.IsNullOrEmpty (this.Configuration) && String.IsNullOrEmpty (this.Platform)) 
+					return null;
+				if (String.IsNullOrEmpty (this.Configuration)) 
+					return String.Format(@"'$(Platform)' == '{0}'", this.Platform);
+				if (String.IsNullOrEmpty (this.Platform)) 
+					return String.Format(@"'$(Configuration)' == '{0}'", this.Configuration);
+				return String.Format(@"'$(Configuration)|$(Platform)' == '{0}|{1}'", this.Configuration, this.Platform);
+			}
+			
+			public void Write (XmlWriter writer)
+			{
+				writer.WriteStartElement ("PropertyGroup");
+				if (!String.IsNullOrEmpty (GetMSBuildCondition ()))
+				    writer.WriteAttributeString ("Condition", GetMSBuildCondition ());
+				foreach (Property property in this.Properties) 
+					property.Write (writer);
+				writer.WriteEndElement ();
+			}
+			
 			public static PropertyGroup Read (XmlReader reader)
 			{
 				PropertyGroup result = new PropertyGroup (reader.GetAttribute("Condition"));
@@ -412,6 +488,37 @@ namespace MonoDevelop.Ide.Projects
 		
 		public void Save ()
 		{
+			using (XmlTextWriter writer = new XmlTextWriter (FileName, System.Text.Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				writer.WriteStartElement ("Project");
+				foreach (PropertyGroup propertyGroup in this.propertyGroups) {
+					propertyGroup.Write (writer);
+				}
+				writer.WriteStartElement ("ItemGroup");
+				foreach (ProjectItem item in this.Items) {
+					if (item is ReferenceProjectItem) {
+						item.Write (writer);
+					}
+				}
+				writer.WriteEndElement (); // ItemGroup
+				
+				writer.WriteStartElement ("ItemGroup");
+				foreach (ProjectItem item in this.Items) {
+					if (!(item is ReferenceProjectItem)) {
+						item.Write (writer);
+					}
+				}
+				writer.WriteEndElement (); // ItemGroup
+				
+				foreach (string import in this.imports) {
+					writer.WriteStartElement ("Import");
+					writer.WriteAttributeString ("Project", import);
+					writer.WriteEndElement (); //  Import
+				}
+				
+				writer.WriteEndElement (); // Project
+			}
+			
 		}
 #endregion
 	}

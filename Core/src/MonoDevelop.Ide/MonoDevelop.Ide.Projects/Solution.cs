@@ -62,6 +62,11 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		public Solution ()
+		{
+			sections.Add (new SolutionSection ("SolutionConfigurationPlatforms", "preSolution"));
+			sections.Add (new SolutionSection ("ProjectConfigurationPlatforms", "postSolution"));
+		}
 		public Solution (string fileName)
 		{
 			this.fileName = fileName;
@@ -173,10 +178,10 @@ namespace MonoDevelop.Ide.Projects
 		{
 			using (StreamWriter writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
 				writer.WriteLine ();
-				writer.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + versionNumber);
-				writer.WriteLine ("# Visual Studio 2005");
-				writer.WriteLine ("# MonoDevelop ");
-			
+				writer.WriteLine ("#Microsoft Visual Studio Solution File, Format Version " + versionNumber);
+				writer.WriteLine ("# Visual Studio 2005");				writer.WriteLine ("# MonoDevelop ");
+				Console.WriteLine ("items:" + this.Items.Count);
+				
 				foreach (SolutionItem item in this.Items) {
 					item.Write (writer);
 				}

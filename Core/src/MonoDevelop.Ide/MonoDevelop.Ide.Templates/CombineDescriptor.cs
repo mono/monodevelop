@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -46,8 +47,9 @@ namespace MonoDevelop.Ide.Templates
 			get { return (ICombineEntryDescriptor[]) entryDescriptors.ToArray (typeof(ICombineEntryDescriptor)); }
 		}
 		
-		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public string CreateEntry (MonoDevelop.Projects.ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid)
 		{
+			guid = "";
 			Solution newCombine;
 			
 			if (typeName != null && typeName.Length > 0) {
@@ -58,7 +60,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 				newCombine = (Solution) Activator.CreateInstance (type);
 			} else
-				newCombine = new Solution ("");
+				newCombine = new Solution ();
 
 			string  newCombineName = Runtime.StringParserService.Parse(name, new string[,] { 
 				{"ProjectName", projectCreateInformation.CombineName}
@@ -76,11 +78,26 @@ namespace MonoDevelop.Ide.Templates
 					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
 				}
 			}
+			SolutionSection configSection = newCombine.GetSection ("SolutionConfigurationPlatforms");
+			if (configSection != null) {
+				configSection.Contents.Add(new KeyValuePair<string, string> ("Debug|Any CPU", "Debug|Any CPU"));
+				configSection.Contents.Add(new KeyValuePair<string, string> ("Release|Any CPU", "Release|Any CPU"));
+			}
 
 			// Create sub projects
+			SolutionSection projectConfigSection = newCombine.GetSection ("ProjectConfigurationPlatforms");
 			foreach (ICombineEntryDescriptor entryDescriptor in entryDescriptors) {
-				string fileName = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage);
-				newCombine.AddItem ( new SolutionProject ("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", Guid.NewGuid ().ToString (), Path.GetFileNameWithoutExtension (fileName), fileName));
+				string newGuid = "";
+				string fileName = entryDescriptor.CreateEntry (projectCreateInformation, defaultLanguage, ref newGuid);
+				string deNormalizedFileName = SolutionProject.DeNormalizePath (fileName.Substring (Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.CombinePath).Length));  
+					
+				newCombine.AddItem ( new SolutionProject ("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", newGuid, Path.GetFileNameWithoutExtension (fileName), deNormalizedFileName));
+				if (configSection != null && projectConfigSection != null) {
+					foreach (KeyValuePair<string, string> config in configSection.Contents) {
+						projectConfigSection.Contents.Add(new KeyValuePair<string, string> (newGuid + "." + config.Key + ".Build.0", config.Value));
+						projectConfigSection.Contents.Add(new KeyValuePair<string, string> (newGuid + "." + config.Key + ".ActiveCfg", config.Value));
+					}
+				}
 			}
 			
 			projectCreateInformation.CombinePath     = oldCombinePath;

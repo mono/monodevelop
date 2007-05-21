@@ -28,10 +28,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace MonoDevelop.Ide.Projects.Item
 {
-	public class ProjectItem
+	public abstract class ProjectItem
 	{
 		string                     include;
 		Dictionary<string, string> metaData = new Dictionary<string, string>();
@@ -39,6 +40,10 @@ namespace MonoDevelop.Ide.Projects.Item
 		public string Include {
 			get { return this.include; }
 			set { this.include = value; }
+		}
+		
+		protected abstract string Tag {
+			get;
 		}
 		
 		public ProjectItem ()
@@ -69,5 +74,19 @@ namespace MonoDevelop.Ide.Projects.Item
 			}
 			metaData[name] = value;
 		}
+		
+		public void Write (XmlWriter writer)
+		{
+			writer.WriteStartElement (Tag);
+			if (!String.IsNullOrEmpty (Include)) 
+				writer.WriteAttributeString ("Include", Include);
+			foreach (KeyValuePair<string, string> pair in this.metaData) {
+				writer.WriteStartElement (pair.Key);
+				writer.WriteString (pair.Value);
+				writer.WriteEndElement (); // pair.Value
+			}
+			writer.WriteEndElement (); // ItemGroup
+		}
+		
 	}
 }

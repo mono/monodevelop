@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Projects
 		public virtual void Write (TextWriter writer)
 		{
 			Debug.Assert (writer != null);
-			writer.WriteLine ("Project(\"" + TypeGuid + "\") = ­­­\"" + Name + "\", ­­­\"" + Location + "\", \"" + Guid + "\"");
+			writer.WriteLine ("Project(\"" + TypeGuid + "\") = \"" + Name + "\", \"" + Location + "\", \"" + Guid + "\"");
 			writer.WriteLine ("EndProject");
 		}
 	}

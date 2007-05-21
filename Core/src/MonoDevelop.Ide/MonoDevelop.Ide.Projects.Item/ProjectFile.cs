@@ -48,6 +48,12 @@ namespace MonoDevelop.Ide.Projects.Item
 			set { this.fileType = value; }
 		}
 		
+		protected override string Tag {
+			get {
+				return this.FileType.ToString ();
+			}
+		}
+		
 		public static FileType GetFileType (string str)
 		{
 			try {

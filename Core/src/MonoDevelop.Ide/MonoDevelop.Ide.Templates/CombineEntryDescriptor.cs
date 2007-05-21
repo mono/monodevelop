@@ -58,8 +58,9 @@ namespace MonoDevelop.Ide.Templates
 			template = element;
 		}
 		
-		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid)
 		{
+			guid = "";
 			StringParserService stringParserService = Runtime.StringParserService;
 			
 			Type type = Type.GetType (typeName);

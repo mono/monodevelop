@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects.Item
 		{
 			switch (itemType) {
 			case "Reference":
-				return new UnknownProjectItem(itemType);
+				return new ReferenceProjectItem();
 			case "ProjectReference":
 				return new UnknownProjectItem(itemType);
 			case "Import":

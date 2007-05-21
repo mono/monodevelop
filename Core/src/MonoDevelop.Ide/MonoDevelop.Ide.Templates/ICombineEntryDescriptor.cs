@@ -34,6 +34,6 @@ namespace MonoDevelop.Ide.Templates
 {
 	internal interface ICombineEntryDescriptor
 	{
-		string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage);
+		string CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage, ref string guid);
 	}
 }

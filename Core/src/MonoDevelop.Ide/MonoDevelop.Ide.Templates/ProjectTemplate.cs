@@ -184,7 +184,11 @@ namespace MonoDevelop.Ide.Templates
 		
 		private ProjectTemplate (RuntimeAddin addin, string id, XmlDocument doc, string languagename, string category)
 		{
-			Initialise (addin, id, doc, languagename, category);
+			try {
+				Initialise (addin, id, doc, languagename, category);
+			} catch (Exception e) {
+				Console.WriteLine (e.ToString ());
+			}
 		}
 		
 		private void Initialise (RuntimeAddin addin, string id, XmlDocument doc, string languagename, string category)
@@ -247,7 +251,8 @@ namespace MonoDevelop.Ide.Templates
 		public string CreateCombine (ProjectCreateInformation projectCreateInformation)
 		{
 			this.projectCreateInformation = projectCreateInformation;
-			lastCombine = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename);
+			string guid = "";
+			lastCombine = combineDescriptor.CreateEntry (projectCreateInformation, this.languagename, ref guid);
 			return lastCombine;
 		}
 		
@@ -262,7 +267,8 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Combine template does not contain any project template");
 
 			lastCombine = null;
-			return entries[0].CreateEntry (projectCreateInformation, this.languagename);
+			string guid = "";
+			return entries[0].CreateEntry (projectCreateInformation, this.languagename, ref guid);
 		}
 		
 		public void OpenCreatedCombine()
