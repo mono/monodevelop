@@ -734,34 +734,32 @@ namespace MonoDevelop.SourceEditor.Gui
 #region ICodeStyleOperations
 		public void CommentCode ()
 		{
-			string commentTag = "//"; // as default
+			TextMark curMark, endMark;
+			TextIter start, end;
+			string commentTag;
+			
+			if (!GetSelectionBounds (out start, out end))
+				return;
+			
 			commentTag = Services.Languages.GetBindingPerFileName (IdeApp.Workbench.ActiveDocument.FileName).CommentTag;
 			
-			TextIter textStart;
-			TextIter textEnd;
-			GetSelectionBounds (out textStart, out textEnd);
-			if (textStart.Line == textEnd.Line)
-			{ // all the code is in one line, just comment the select text
-				textStart.LineOffset = 0;
-				Insert (ref textStart, commentTag);
-			}
-			else
-			{ // comment the entire lines
-				int numberOfLines = textEnd.Line - textStart.Line + 1;
-				TextMark mTextStart = CreateMark (null, textStart, true);
-				TextMark mTextTmp = mTextStart;
-				
-				for (int i=0; i<numberOfLines; i++)
-				{
-					TextIter textTmp = GetIterAtMark (mTextTmp);
-					// add the comment tag
-					textTmp.LineOffset = 0;
-					Insert (ref textTmp, commentTag);
-					// setup a mark on next line
-					textTmp = GetIterAtMark (mTextTmp);
-					textTmp.ForwardLine ();
-					mTextTmp = CreateMark (null, textTmp, true);
-				}			
+			if (commentTag == null)
+				commentTag = "//";
+			
+			// Don't comment lines where no chars are actually selected (fixes bug #81632)
+			if (end.LineOffset == 0)
+				end.BackwardLine ();
+			
+			start.LineOffset = 0;
+			
+			endMark = CreateMark (null, end, false);
+			
+			while (start.Line <= end.Line) {
+				curMark = CreateMark (null, start, true);
+				Insert (ref start, commentTag);
+				start = GetIterAtMark (curMark);
+				end = GetIterAtMark (endMark);
+				start.ForwardLine ();
 			}
 		}
 		
@@ -774,7 +772,7 @@ namespace MonoDevelop.SourceEditor.Gui
 			TextIter textEnd;
 			GetSelectionBounds (out textStart, out textEnd);
 			if (textStart.Line == textEnd.Line)
-			{ // all the code is in one line, just umcomment is text starts with comment tag
+			{ // all the code is in one line, just uncomment is text starts with comment tag
 				textStart.LineOffset = 0;
 				textEnd = textStart;
 				textEnd.ForwardChars (commentTag.Length);
@@ -813,8 +811,8 @@ namespace MonoDevelop.SourceEditor.Gui
 					textTmp = GetIterAtMark (mTextTmp);
 					textTmp.ForwardLine ();
 					mTextTmp = CreateMark (null, textTmp, true);
-				}			
-			}			
+				}
+			}
 		}
 #endregion
 		

@@ -1,7 +1,14 @@
+2007-05-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.SourceEditor.Gui/SourceEditorBuffer.cs
+	(CommentCode): Changed the logic a bit to not comment the last
+	line if no chars were actually in the selection on that
+	line. Fixes bug #81632.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
-	* MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs: Ensure
-	that dialogs are Destroy()'ed.
+	* MonoDevelop.SourceEditor.Gui.OptionPanels/CodeTemplatePanel.cs:
+	Ensure that dialogs are Destroy()'ed.
 
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
