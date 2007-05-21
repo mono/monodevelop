@@ -30,7 +30,8 @@ namespace MonoDevelop.VersionControl
 			} else
 				return false;
 	
-			using (SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish)) {
+			SelectRepositoryDialog dlg = new SelectRepositoryDialog (SelectRepositoryMode.Publish);
+			try {
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
 				do {
@@ -43,6 +44,8 @@ namespace MonoDevelop.VersionControl
 					} else
 						break;
 				} while (true);
+			} finally {
+				dlg.Destroy ();
 			}
 			return true;
 		}

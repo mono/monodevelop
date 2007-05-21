@@ -1,3 +1,7 @@
+2007-05-21  Ankit Jain  <jankit@novell.com>
+
+	* WelcomePageView.cs (CatchUri): Destroy dialog.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* WelcomePage.mdp: Copy the .addins.xml file to the output dir.

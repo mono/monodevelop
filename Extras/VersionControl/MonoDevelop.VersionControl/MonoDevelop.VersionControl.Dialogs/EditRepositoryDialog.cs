@@ -74,10 +74,5 @@ namespace MonoDevelop.VersionControl.Dialogs
 			get { return repo; }
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			Destroy ();
-		}
 	}
 }

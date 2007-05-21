@@ -1,3 +1,15 @@
+2007-05-21  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:
+	(Dispose): Remove.
+	Ensure that dialogs are Destroy()'ed.	
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs:
+	(Dispose): Remove.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Checkout.cs (Run): 
+	Destroy dialog.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs
+	(PublishCommand.Publish): Destroy dialog.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.mdp: Don't copy

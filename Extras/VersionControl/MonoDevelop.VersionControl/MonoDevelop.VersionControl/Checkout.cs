@@ -13,11 +13,13 @@ namespace MonoDevelop.VersionControl
 		protected override void Run()
 		{
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
-			using (del) {
+			try {
 				if (del.Run () == (int) Gtk.ResponseType.Ok) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
 					w.Start ();
 				}
+			} finally {
+				del.Destroy ();
 			}
 		}
 		

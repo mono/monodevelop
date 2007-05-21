@@ -212,8 +212,11 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			
 			bool ShowEditTemplateGroupDialog(ref CodeTemplateGroup templateGroup, string title)
 			{
-				using (EditTemplateGroupDialog etgd = new EditTemplateGroupDialog(templateGroup, title)) {
+				EditTemplateGroupDialog etgd = new EditTemplateGroupDialog(templateGroup, title);
+				try {
 					return (etgd.Run() == (int) Gtk.ResponseType.Ok);
+				} finally {
+					etgd.Destroy ();
 				}
 			}
 	#endregion
@@ -261,7 +264,8 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 			void AddEvent(object sender, System.EventArgs e)
 			{
 				CodeTemplate newTemplate = new CodeTemplate();
-				using (EditTemplateDialog etd = new EditTemplateDialog(newTemplate)) {
+				EditTemplateDialog etd = new EditTemplateDialog(newTemplate);
+				try {
 					if (etd.Run() == (int) Gtk.ResponseType.Ok) {
 						CurrentTemplateGroup.Templates.Add(newTemplate);						
 						templateListView.Selection.UnselectAll();
@@ -274,6 +278,8 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 							templateListView.Selection.SelectIter(nextIter);
 						}
 					}
+				} finally {
+					etd.Destroy ();
 				}
 			}
 			
@@ -284,12 +290,15 @@ namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 				if(((ListStore)templateListView.Model).GetIter(out selectedIter, (TreePath) templateListView.Selection.GetSelectedRows(out ls)[0])) {
 					CodeTemplate template = ls.GetValue(selectedIter, 0) as CodeTemplate;
 					
-					using (EditTemplateDialog etd = new EditTemplateDialog(template)) {
+					EditTemplateDialog etd = new EditTemplateDialog(template);
+					try {
 						if (etd.Run() == (int) Gtk.ResponseType.Ok) {
 							ls.SetValue(selectedIter, 0, template);
 							StoreTemplateGroup();
 						}
-					}					
+					} finally {
+						etd.Destroy ();
+					}
 					
 					// select the newly edited item
 					templateListView.Selection.SelectIter(selectedIter);

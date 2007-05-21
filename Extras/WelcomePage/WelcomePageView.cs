@@ -191,10 +191,12 @@ namespace MonoDevelop.WelcomePage
 					Gnome.Url.Show (URI);
 				} catch (Exception) {
 					string msg = String.Format (GettextCatalog.GetString ("Could not open the url {0}"), URI);
-					using (Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg))
-					{
+					Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
+					try {
 						md.Run ();
 						md.Hide ();
+					} finally {
+						md.Destroy ();
 					}
 				}
 			}

@@ -144,12 +144,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected virtual void OnButtonAddClicked(object sender, System.EventArgs e)
 		{
-			using (EditRepositoryDialog dlg = new EditRepositoryDialog (null)) {
+			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
+			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
 					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
 				}
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 
@@ -170,7 +173,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			try {
 			Repository rep = GetSelectedRepository ();
 			if (rep != null) {
-				using (EditRepositoryDialog dlg = new EditRepositoryDialog (rep)) {
+				EditRepositoryDialog dlg = new EditRepositoryDialog (rep);
+				try {
 					if (dlg.Run () != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
 						return;
@@ -187,6 +191,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 						store.SetValue (iter, FilledCol, false);
 					}
 					UpdateRepoDescription ();
+				} finally {
+					dlg.Destroy ();
 				}
 			}
 			} catch (Exception ex) {
@@ -233,12 +239,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 				args.RetVal = false;
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			Destroy ();
-		}
-
 		protected virtual void OnRepoTreeCursorChanged(object sender, System.EventArgs e)
 		{
 			UpdateControls ();
