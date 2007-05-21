@@ -324,8 +324,10 @@ namespace MonoDevelop.NUnit
 		public void SelectTest (UnitTest t)
 		{
 			ITreeNavigator node = FindTestNode (t);
-			node.ExpandToNode ();
-			node.Selected = true;
+			if (node != null) {
+				node.ExpandToNode ();
+				node.Selected = true;
+			}
 		}
 		
 		ITreeNavigator FindTestNode (UnitTest t)
