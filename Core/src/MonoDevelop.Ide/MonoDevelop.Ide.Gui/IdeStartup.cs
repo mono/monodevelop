@@ -82,7 +82,10 @@ namespace MonoDevelop.Ide.Gui
 						listen_socket.Connect (ep);
 						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", remainingArgs)));
 						return 0;
-					} catch {}
+					} catch {
+						// Reset the socket
+						File.Delete (socket_filename);
+					}
 				}
 			}
 			
@@ -206,10 +209,6 @@ namespace MonoDevelop.Ide.Gui
 		void ListenCallback (IAsyncResult state)
 		{
 			Socket sock = (Socket)state.AsyncState;
-
-			if (!sock.Connected) {
-				return;
-			}
 
 			Socket client = sock.EndAccept (state);
 			((Socket)state.AsyncState).BeginAccept (new AsyncCallback (ListenCallback), sock);

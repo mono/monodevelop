@@ -1,5 +1,13 @@
 2007-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: When it's not possible to connect
+	  to a running MD instance using the socket, just delete the socket
+	  file so a new session can be properly started. Removed connection
+	  check in the socket listener which was always returning false. All
+	  this fixes bug #81648.
+
+2007-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: When validating
 	  data, don't use the DocumentIteratorType property before it is set.
 	  Fixes bug #81593.
