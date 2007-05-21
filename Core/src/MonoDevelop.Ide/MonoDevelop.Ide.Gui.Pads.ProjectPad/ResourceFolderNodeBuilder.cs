@@ -122,9 +122,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		string[] AskFiles (Project project)
 		{
-			using (FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"))) {
+			FileSelector fs = new FileSelector (GettextCatalog.GetString ("File to Open"));
+			try {
 				fs.SelectMultiple = true;
-				fs.SetFilename (project.BaseDirectory);
+				fs.SetCurrentFolder (project.BaseDirectory);
 				int response = fs.Run ();
 				string [] files = fs.Filenames;
 				fs.Hide ();
@@ -133,6 +134,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return null;
 				else
 					return files;
+			} finally {
+				if (fs != null)
+					fs.Destroy ();
 			}
 		}
 		
