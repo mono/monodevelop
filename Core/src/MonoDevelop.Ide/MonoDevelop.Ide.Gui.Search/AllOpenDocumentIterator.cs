@@ -8,10 +8,11 @@
 using System;
 using System.Collections;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
-	internal class AllOpenDocumentIterator : IDocumentIterator
+	internal class AllOpenDocumentIterator : GuiSyncObject, IDocumentIterator
 	{
 		int  startIndex = -1;
 		bool resetted    = true;
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Search
 				if (!SearchReplaceUtilities.IsTextAreaSelected) {
 					return null;
 				}
-				return IdeApp.Workbench.ActiveDocument.Window.ViewContent as IDocumentInformation;
+				return IdeApp.Workbench.ActiveDocument.GetContent <IDocumentInformation> ();
 			}
 		}
 		

@@ -5,7 +5,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "The MonoDevelop IDE application."
-	   category    = "Applications"
+	   category    = "MonoDevelop Core"
        version     = "0.13.0"
        compatVersion = "0.13.0">
 

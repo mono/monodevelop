@@ -1,3 +1,17 @@
+2007-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Dialogs/ReplaceInFilesDialog.cs: When validating
+	  data, don't use the DocumentIteratorType property before it is set.
+	  Fixes bug #81593.
+	* MonoDevelop.Ide.addin.xml: Move the IDE to 'MonoDevelop Core'
+	  category
+	* MonoDevelop.Ide.Gui.Search/ForwardTextIterator.cs: Make sure this
+	  class always runs in the GUI thread. Removed useless Assert which
+	  is causing a null ref.
+	* MonoDevelop.Ide.Gui.Search/AllOpenDocumentIterator.cs: Make sure this
+	  class always runs in the GUI thread. Use Document.GetContent to get
+	  content interfaces.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Ide.Commands/HelpCommands.cs:

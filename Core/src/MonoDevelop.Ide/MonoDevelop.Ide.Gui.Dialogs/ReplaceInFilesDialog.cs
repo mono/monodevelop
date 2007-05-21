@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return false;
 			}
 			
-			if (SearchReplaceInFilesManager.SearchOptions.DocumentIteratorType == DocumentIteratorType.Directory) {
+			if (searchLocationComboBox.Active == 0) {
 				
 				if (directoryName == string.Empty) {
 					messageService.ShowError(GettextCatalog.GetString ("Empty directory name"));

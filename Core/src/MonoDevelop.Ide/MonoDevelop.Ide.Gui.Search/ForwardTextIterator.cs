@@ -13,7 +13,7 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Search
 {
-	public class ForwardTextIterator : ITextIterator
+	public class ForwardTextIterator : GuiSyncObject, ITextIterator
 	{
 		enum TextIteratorState {
 			Resetted,
@@ -30,8 +30,6 @@ namespace MonoDevelop.Ide.Gui.Search
 		
 		public ForwardTextIterator (IDocumentInformation docInfo, Gtk.TextView document, int endOffset)
 		{
-			Debug.Assert(endOffset >= 0 && endOffset < BufferLength);
-			
 			this.docInfo = docInfo;
 			this.textBuffer = document.Buffer;
 			this.endOffset = endOffset;
