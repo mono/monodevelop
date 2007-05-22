@@ -122,6 +122,14 @@ namespace MonoDevelop.Autotools
 				templateEngine.Variables["REFERENCES"] = references.ToString();
 				templateEngine.Variables["DLL_REFERENCES"] =  dllReferences.ToString () ;
 				templateEngine.Variables["WARNING"] = "Warning: This is an automatically generated file, do not edit!";
+
+				DotNetProject dotnetProject = entry as DotNetProject;
+				if (dotnetProject != null) {
+					if (dotnetProject.ClrVersion == ClrVersion.Net_2_0)
+						templateEngine.Variables ["RESGEN"] = "resgen2";
+					else
+						templateEngine.Variables ["RESGEN"] = "resgen";
+				}
 				
 				// grab all project files
 				StringBuilder files = new StringBuilder ();
@@ -155,9 +163,12 @@ namespace MonoDevelop.Autotools
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
 								Runtime.FileService.CopyFile ( projectFile.FilePath, newPath ) ;
 								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
-								res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
 							}
-							else res_files.AppendFormat ( "\\\n\t{0} ", pfpath );
+							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
+								res_files.AppendFormat ( "\\\n\t{0},{1} ", pfpath, projectFile.ResourceId);
+							else
+								res_files.AppendFormat ( "\\\n\t{0} ", pfpath);
+ 
 							break;
 
 						case BuildAction.FileCopy:

@@ -1,3 +1,11 @@
+2007-05-22  Ankit Jain  <jankit@novell.com>
+	    Raja R Harinath  <rharinath@novell.com>
+
+	* SimpleProjectMakefileHandler.cs (Deploy): Emit resgen script name.
+	Emit resourceId if required.
+	* templates/Makefile.include, templates/Makefile.am: Several improvements.
+	Added support for compiling resx resources with custom resource ids.
+
 2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.addin.xml: Removed empty extension element.
