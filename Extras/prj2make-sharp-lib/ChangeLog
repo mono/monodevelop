@@ -1,3 +1,8 @@
+2007-05-22  Ankit Jain  <jankit@novell.com>
+
+	* MsPrjHelper.cs (CreatePrjxFromCsproj): Rethrow the exception.
+	(MsSlnToCmbxHelper): Likewise.
+
 2007-05-18  Ankit Jain  <jankit@novell.com>
 
 	* MSBuildFileFormat.cs (FileToXmlElement): Ignore directories for

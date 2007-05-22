@@ -511,7 +511,7 @@ namespace MonoDevelop.Prj2Make
 
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not import project:") + csprojFileName, ex);
-				return null;
+				throw;
 			} finally {
 				monitor.EndTask ();
 			}
@@ -578,7 +578,7 @@ namespace MonoDevelop.Prj2Make
 			catch (Exception e)
 			{
 				monitor.ReportError (GettextCatalog.GetString ("The solution could not be imported."), e);
-				return null;
+				throw;
 			}
 			finally
 			{
