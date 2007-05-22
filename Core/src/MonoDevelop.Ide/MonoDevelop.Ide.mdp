@@ -322,6 +322,11 @@
     <File name="./MonoDevelop.Ide.Projects/ExecutionContext.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Projects/CompilerResult.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/IBackendBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/BackendBindingService.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/BackendBindingCodon.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/AbstractBackendBinding.cs" subtype="Code" buildaction="Compile" />
+    <File name="./MonoDevelop.Ide.Projects/UnknownProject.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="False" refto="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />

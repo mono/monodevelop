@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 		
-		public string Name {
+		public virtual string Name {
 			get {
 				return Path.GetFileNameWithoutExtension (FileName);
 			}

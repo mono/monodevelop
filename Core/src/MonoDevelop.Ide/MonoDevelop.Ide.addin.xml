@@ -35,6 +35,11 @@
 		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/BackendBindings" name = "Backend bindings">
+		<Description>Backend bindings.</Description>
+		<ExtensionNode name="BackendBinding" type="MonoDevelop.Ide.Projects.BackendBindingCodon" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/IDE/StartupHandlers" name = "Startup handlers">
 		<Description>Commands to be automatically executed when the IDE starts.</Description>
 		<ExtensionNode name="Class">

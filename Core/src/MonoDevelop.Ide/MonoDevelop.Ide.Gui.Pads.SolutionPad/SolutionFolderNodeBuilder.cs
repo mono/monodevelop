@@ -72,7 +72,9 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		{
 			SolutionFolder solutionFolder = dataObject as SolutionFolder;
 			label = solutionFolder.Location;
-			icon = Context.GetIcon (Stock.OpenFolder);
+			icon       = Context.GetIcon (Stock.OpenResourceFolder);
+			closedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
+			
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

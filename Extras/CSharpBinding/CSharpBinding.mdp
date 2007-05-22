@@ -77,6 +77,7 @@
     <File name="./FormattingStrategy/CSharpFormattingProperties.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/CSharpBinding.CodeGenerationPanelWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./gtk-gui/CSharpBinding.FormattingPanelWidget.cs" subtype="Code" buildaction="Compile" />
+    <File name="./CSharpBackendBinding.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core" />

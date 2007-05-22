@@ -276,8 +276,12 @@ FILES =  \
 	MonoDevelop.Ide.Projects.Item/ProjectItemFactory.cs \
 	MonoDevelop.Ide.Projects.Item/ReferenceProjectItem.cs \
 	MonoDevelop.Ide.Projects.Item/UnknownProjectItem.cs \
+	MonoDevelop.Ide.Projects/AbstractBackendBinding.cs \
+	MonoDevelop.Ide.Projects/BackendBindingCodon.cs \
+	MonoDevelop.Ide.Projects/BackendBindingService.cs \
 	MonoDevelop.Ide.Projects/CompilerResult.cs \
 	MonoDevelop.Ide.Projects/ExecutionContext.cs \
+	MonoDevelop.Ide.Projects/IBackendBinding.cs \
 	MonoDevelop.Ide.Projects/IProject.cs \
 	MonoDevelop.Ide.Projects/MSBuildProject.cs \
 	MonoDevelop.Ide.Projects/ProjectEventArgs.cs \
@@ -291,6 +295,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects/SolutionProject.cs \
 	MonoDevelop.Ide.Projects/SolutionReadHelper.cs \
 	MonoDevelop.Ide.Projects/SolutionSection.cs \
+	MonoDevelop.Ide.Projects/UnknownProject.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

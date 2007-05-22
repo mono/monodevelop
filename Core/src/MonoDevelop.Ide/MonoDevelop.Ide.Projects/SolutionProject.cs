@@ -74,7 +74,13 @@ namespace MonoDevelop.Ide.Projects
 			Debug.Assert (reader != null);
 			SolutionProject result = new SolutionProject (typeGuid, guid, name, location);
 			result.ReadContents (reader);
-			result.project = MSBuildProject.Load (NormalizePath (Path.Combine (basePath, location)));
+			
+			IBackendBinding binding = BackendBindingService.GetBackendBindingByGuid (typeGuid);
+			if (binding != null && binding.HasProjectSupport) {
+				result.project = binding.LoadProject (NormalizePath (Path.Combine (basePath, location))); 
+			} else {
+				result.project = new UnknownProject ();
+			}
 			return result;
 		}
 		

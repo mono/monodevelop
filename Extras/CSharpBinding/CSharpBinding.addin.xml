@@ -127,6 +127,14 @@
 		      resource   = "md-text-file-icon"/>
 
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/BackendBindings">
+		<BackendBinding id                   = "C#"
+		                guid                 = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+		                fileExtensions       = ".cs"
+		                projectFileExtension = ".csproj"
+		                class                = "CSharpBinding.CSharpBackendBinding" />
+    </Extension>
 
 	<Extension path = "/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding id    = "CSharp"

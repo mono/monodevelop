@@ -74,8 +74,16 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			SolutionProject solutionProject = dataObject as SolutionProject;
 			if (solutionProject == null) 
 				return;
-			label = solutionProject.Name;
-			icon = Context.GetIcon (Stock.EmptyProjectIcon);
+			if (solutionProject.Project is UnknownProject) {
+				icon = Context.GetIcon (Stock.Error);
+				label = String.Format (GettextCatalog.GetString ("Error loading {0}: Project type guid unknown {1})."), solutionProject.Name, solutionProject.TypeGuid);
+			} else {
+				label = solutionProject.Name;
+				
+				Console.WriteLine (BackendBindingService.GetBackendBindingCodonByGuid (solutionProject.TypeGuid).Id);
+				
+				icon = Context.GetIcon (Services.Icons.GetImageForProjectType (BackendBindingService.GetBackendBindingCodonByGuid (solutionProject.TypeGuid).Id));
+			}
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

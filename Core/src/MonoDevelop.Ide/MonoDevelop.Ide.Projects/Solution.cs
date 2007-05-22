@@ -180,7 +180,6 @@ namespace MonoDevelop.Ide.Projects
 				writer.WriteLine ();
 				writer.WriteLine ("#Microsoft Visual Studio Solution File, Format Version " + versionNumber);
 				writer.WriteLine ("# Visual Studio 2005");				writer.WriteLine ("# MonoDevelop ");
-				Console.WriteLine ("items:" + this.Items.Count);
 				
 				foreach (SolutionItem item in this.Items) {
 					item.Write (writer);
