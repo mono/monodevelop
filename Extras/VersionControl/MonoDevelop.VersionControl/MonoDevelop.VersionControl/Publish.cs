@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl
 				dlg.ModuleName = moduleName;
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
 				do {
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 						if (IdeApp.Services.MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project to the repository '{0}'?", dlg.Repository.Name))) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, (string[]) files.ToArray (typeof(string)), dlg.Message);
 							w.Start ();

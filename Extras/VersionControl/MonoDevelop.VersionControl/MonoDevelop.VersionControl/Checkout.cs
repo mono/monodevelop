@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl
 		{
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
 			try {
-				if (del.Run () == (int) Gtk.ResponseType.Ok) {
+				if (del.Run () == (int) Gtk.ResponseType.Ok && del.Repository != null) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
 					w.Start ();
 				}

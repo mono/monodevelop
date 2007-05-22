@@ -1,3 +1,12 @@
+2007-05-22  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs
+	(OnButtonEditClicked): Null check.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Checkout.cs
+	(CheckOutCommand.Run): Likewise.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Publish.cs
+	(PublishCommand.Publish): Likewise.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:

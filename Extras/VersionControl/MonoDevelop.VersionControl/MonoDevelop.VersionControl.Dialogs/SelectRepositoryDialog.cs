@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
 					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
