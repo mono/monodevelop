@@ -100,30 +100,61 @@ namespace MonoDevelop.Ide.Projects
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				return currentBuildOperation;
 			}
-			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			monitor.BeginTask (GettextCatalog.GetString ("Build Solution {0}", Solution.Name), Solution.Items.Count);			
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {Solution, monitor, context});
 			currentBuildOperation = monitor.AsyncOperation;
-			
-			return currentRunOperation;
+			return currentBuildOperation;
 		}
 		
 		static void BuildSolutionAsync (object data)
 		{
-
 			object[] array = (object[])data;
 			Solution solution = array[0] as Solution;
 			if (solution == null) 
 				return;
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
-			
-			foreach (SolutionItem item in solution.Items) {
-				SolutionProject project = item as SolutionProject;
+
+			List<CompilerResult> results = new List<CompilerResult> ();
+			Console.WriteLine ("1");
+			for (int i = 0; i < solution.Items.Count; ++i) {
+				SolutionProject project = solution.Items[i] as SolutionProject;
 				if (project == null)
 					continue;
-				project.Project.Build (null);
+				Services.DispatchService.GuiDispatch (delegate {
+					monitor.BeginStepTask (GettextCatalog.GetString ("Build Project {0}", project.Project.Name), solution.Items.Count, i);
+				});
+				try {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
+					CompilerResult result = project.Project.Build (null);
+					if (result != null) {
+						results.Add (result);
+						Services.DispatchService.GuiDispatch (delegate {
+							ReportResult (monitor, result);
+						});
+					} else {
+						Services.DispatchService.GuiDispatch (delegate {
+							monitor.ReportError (GettextCatalog.GetString ("Got no result from building."), null);
+						});
+					}
+				} catch (Exception ex) {
+					Services.DispatchService.GuiDispatch (delegate {
+						monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
+					});
+				}
+				
 			}
+			Console.WriteLine ("2");
+		
+			monitor.EndTask();
+			Console.WriteLine ("2.5");
+			Services.DispatchService.GuiDispatch (delegate {
+				BuildDone (monitor, results);
+			});
+			monitor.Dispose ();
+			Console.WriteLine ("3");
 		}
 		
 		public static IAsyncOperation RebuildSolution ()
@@ -163,7 +194,11 @@ namespace MonoDevelop.Ide.Projects
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
 			
-			project.Build (null);
+			try {
+				project.Build (null);
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
+			}
 		}
 		
 		public static IAsyncOperation RebuildProject (IProject project)
@@ -177,6 +212,58 @@ namespace MonoDevelop.Ide.Projects
 		public static IAsyncOperation CleanProject (IProject project)
 		{
 			return null;
+		}
+		
+		static void ReportResult (IProgressMonitor monitor, CompilerResult result)
+		{
+			string errorString   = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.Errors, result.Errors);
+			string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.Warnings, result.Warnings);
+		
+			if (result.Errors == 0 && result.Warnings == 0) {
+				monitor.ReportSuccess (GettextCatalog.GetString ("Compilation succeeded."));
+			} else if (result.Errors == 0) {
+				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Compilation succeeded - ") + warningString, result.Warnings));
+			} else {
+				monitor.ReportError(String.Format (GettextCatalog.GetString("Compilation failed - ") + errorString + ", " + warningString, result.Errors, result.Warnings), null);
+			}
+			
+			foreach (string output in result.CompilerResults.Output) 
+				monitor.Log.WriteLine (output);
+		}
+		
+		static void BuildDone (IProgressMonitor monitor, List<CompilerResult> results)
+		{
+			monitor.Log.WriteLine ();
+			monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
+			
+			int errors       = 0;
+			int warnings     = 0;
+			int failedBuilds = 0;
+			foreach (CompilerResult result in results) {
+				if (result == null) 
+					continue;
+				errors   += result.Errors;
+				warnings += result.Warnings;
+				if (result.Errors != 0)
+					failedBuilds++;
+				Task[] tasks = new Task [result.CompilerResults.Errors.Count];
+				for (int i=0; i<tasks.Length; i++)
+					tasks [i] = new Task (null, result.CompilerResults.Errors [i]);
+				Services.TaskService.AddRange (tasks);
+			}
+			
+			string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", errors, errors);
+			string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", warnings, warnings);
+
+			if (errors == 0 && warnings == 0 && failedBuilds == 0) {
+				monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
+			} else if (errors == 0 && warnings > 0) {
+				monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
+			} else if (errors > 0) {
+				monitor.ReportError(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString, null);
+			} else {
+				monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
+			}
 		}
 		
 		static IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
