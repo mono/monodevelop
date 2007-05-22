@@ -1,3 +1,10 @@
+2007-05-22  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
+
+	* MonoDevelop.Ide.addin.xml: Register new stock icons.
+	* MonoDevelop.Ide.mdp, Makefile.am, icons/navigate-previous.png,
+	  icons/navigate-next.png: Added icons.
+	* MonoDevelop.Ide.Gui/NavigationHistory.cs: Use new icons.
+
 2007-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: When it's not possible to connect

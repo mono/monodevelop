@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui {
 	}
 	
 	public class NavigationHistoryBack : NavigationHistory {
-		public NavigationHistoryBack () : base ("gtk-go-back")
+		public NavigationHistoryBack () : base ("md-navigate-previous")
 		{
 			UpdateHistory ();
 		}
@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui {
 	}
 	
 	public class NavigationHistoryForward : NavigationHistory {
-		public NavigationHistoryForward () : base ("gtk-go-forward")
+		public NavigationHistoryForward () : base ("md-navigate-next")
 		{
 			UpdateHistory ();
 		}

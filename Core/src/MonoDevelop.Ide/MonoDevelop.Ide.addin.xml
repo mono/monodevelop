@@ -1151,5 +1151,7 @@
 	
 	<Extension path = "/SharpDevelop/Workbench/StockIcons">
 		<StockIcon stockid = "md-parser" resource = "parsing.png" />
+		<StockIcon stockid = "md-navigate-next" resource = "navigate-next.png" />
+		<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous.png" />
 	</Extension>
 </Addin>

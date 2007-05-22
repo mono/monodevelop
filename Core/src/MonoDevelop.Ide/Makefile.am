@@ -76,8 +76,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -294,6 +294,8 @@ RES =  \
 	icons/Icons.16x16.LinkOverlay.png \
 	icons/Icons.AboutImage \
 	icons/mono-powered.png \
+	icons/navigate-next.png \
+	icons/navigate-previous.png \
 	icons/parsing.png \
 	icons/SplashScreen.png \
 	templates/AppConfigFile.xft.xml \
