@@ -1,3 +1,9 @@
+2007-05-22  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Deployment.Gui/DeployOperations.cs (Install):
+	Destroy dialog in finally block.
+	(ShowPackageSettings): Likewise.
+
 2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Deployment.addin.xml: Register the new property.

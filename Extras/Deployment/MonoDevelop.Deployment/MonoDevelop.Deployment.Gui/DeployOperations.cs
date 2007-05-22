@@ -13,10 +13,12 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
 				InstallDialog dlg = new InstallDialog (entry);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName);
+				try {
+					if (dlg.Run () == (int) Gtk.ResponseType.Ok)
+						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName);
+				} finally {
+					dlg.Destroy ();
 				}
-				dlg.Destroy ();
 			}
 		}
 		
@@ -57,10 +59,12 @@ namespace MonoDevelop.Deployment.Gui
 		public static void ShowPackageSettings (Package package)
 		{
 			EditPackageDialog dlg = new EditPackageDialog (package);
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				IdeApp.ProjectOperations.SaveCombineEntry (package.ParentProject);
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
+					IdeApp.ProjectOperations.SaveCombineEntry (package.ParentProject);
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 	}
 }
