@@ -1,5 +1,5 @@
 //
-// DirectoryNode.cs
+// ReferenceFolderNode.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,42 +27,23 @@
 //
 
 using System;
-using System.IO;
 
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class DirectoryNode
+	public class ReferenceFolderNode
 	{
 		SolutionProject solutionProject;
-		string          path;
-		bool            isInProject;
 		
-		public SolutionProject Project {
-			get {
-				return this.solutionProject;
-			}
+		public SolutionProject SolutionProject {
+			get { return solutionProject;}
 		}
 		
-		public string Path {
-			get {
-				return path;
-			}
-		}
-		
-		public bool IsInProject {
-			get {
-				return isInProject;
-			}
-		}
-		
-		public DirectoryNode (SolutionProject solutionProject, string path, bool isInProject)
+		public ReferenceFolderNode(SolutionProject solutionProject)
 		{
 			this.solutionProject = solutionProject;
-			this.path            = path;
-			this.isInProject     = isInProject;
 		}
 	}
 }

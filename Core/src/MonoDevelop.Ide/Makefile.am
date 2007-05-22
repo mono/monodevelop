@@ -159,6 +159,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/ProjectSolutionPad.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/ReferenceFolderNode.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/ReferenceFolderNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/ReferenceProjectItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs \

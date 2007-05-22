@@ -1,5 +1,5 @@
 //
-// DirectoryNode.cs
+// ReferenceProjectItemNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,42 +27,46 @@
 //
 
 using System;
+using System.Collections;
 using System.IO;
 
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Projects.Item;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui.Search;
+
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class DirectoryNode
+	public class ReferenceProjectItemNodeBuilder : TypeNodeBuilder
 	{
-		SolutionProject solutionProject;
-		string          path;
-		bool            isInProject;
-		
-		public SolutionProject Project {
-			get {
-				return this.solutionProject;
-			}
-		}
-		
-		public string Path {
-			get {
-				return path;
-			}
-		}
-		
-		public bool IsInProject {
-			get {
-				return isInProject;
-			}
-		}
-		
-		public DirectoryNode (SolutionProject solutionProject, string path, bool isInProject)
+		public ReferenceProjectItemNodeBuilder ()
 		{
-			this.solutionProject = solutionProject;
-			this.path            = path;
-			this.isInProject     = isInProject;
+		}
+
+		public override Type NodeDataType {
+			get { return typeof(ReferenceProjectItem); }
+		}
+		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{
+			ReferenceProjectItem referenceProjectItem = dataObject as ReferenceProjectItem;
+			if (referenceProjectItem == null) 
+				return "Reference";
+			return referenceProjectItem.Include;
+		}
+		
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		{
+			ReferenceProjectItem referenceProjectItem = dataObject as ReferenceProjectItem;
+			if (referenceProjectItem == null) 
+				return;
+			label = referenceProjectItem.Include;
+			icon  = Context.GetIcon (Stock.Reference);
 		}
 	}
 }

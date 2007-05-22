@@ -832,10 +832,14 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionItemNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionNodeBuilder"/>
 			
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ProjectItemNodeBuilder"/>
 			
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.DirectoryNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FileNodeBuilder"/>
+			
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ReferenceFolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ReferenceProjectItemNodeBuilder"/>
+			
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ProjectItemNodeBuilder"/>
 		</SolutionPad>
 		
 		<SolutionPad id = "MonoDevelop.Ide.Gui.Pads.ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-combine-icon" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
