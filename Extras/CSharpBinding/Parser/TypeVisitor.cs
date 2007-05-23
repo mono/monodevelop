@@ -277,6 +277,11 @@ namespace CSharpBinding.Parser
 			if (identifierExpression == null) {
 				return null;
 			}
+			
+			object ob = resolver.DynamicLookup(identifierExpression.Identifier);
+			if (ob != null)
+				return ob;
+			
 			string name = resolver.SearchNamespace (identifierExpression.Identifier, resolver.CompilationUnit);
 			if (name != null)
 				return new ReturnType (name);
@@ -293,7 +298,7 @@ namespace CSharpBinding.Parser
 				resolver.ShowStatic = true;
 				return new ReturnType(c.FullyQualifiedName);
 			}
-			return resolver.DynamicLookup(identifierExpression.Identifier);
+			return null;
 		}
 		
 		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)

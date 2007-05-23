@@ -1,3 +1,8 @@
+2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Parser/TypeVisitor.cs: When resolving an identifier, look first in
+	  class members, then look for types. Fixes bug #81542.
+
 2007-05-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Gui/CSharpTextEditorExtension.cs (KeyPress): If a region of text
