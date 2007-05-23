@@ -1,3 +1,14 @@
+2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Gui/CSharpTextEditorExtension.cs:
+	MonoDevelop.SourceEditor.Properties namespace no longer exists.
+
+	* FormattingStrategy/CSharpIndentEngine.cs: Same.
+
+	* Gui/OverrideCompletionData.cs: Same.
+
+	* Gui/FormattingPanel.cs: Same.
+
 2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Parser/TypeVisitor.cs: When resolving an identifier, look first in

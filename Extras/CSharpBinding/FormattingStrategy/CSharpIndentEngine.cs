@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-using MonoDevelop.SourceEditor.Properties;
+using MonoDevelop.Ide.Gui.Content;
 
 using CSharpBinding.FormattingStrategy.Properties;
 

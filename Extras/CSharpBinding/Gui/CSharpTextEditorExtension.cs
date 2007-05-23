@@ -1,16 +1,19 @@
-
 using System;
 using System.Text;
 using System.Collections;
+
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+
 using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.Properties;
 using MonoDevelop.SourceEditor.FormattingStrategy;
+
 using CSharpBinding.Parser;
 using CSharpBinding.FormattingStrategy;
+
 using MonoDevelop.Projects.Ambience;
 using Ambience_ = MonoDevelop.Projects.Ambience.Ambience;
 
