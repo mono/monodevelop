@@ -66,7 +66,7 @@ namespace MonoDevelop.Core
 			try {
 				GetFileSystemForPath (fileName, false).DeleteFile (fileName);
 			} catch (Exception e) {
-				if (!HandleError (GettextCatalog.GetString ("Can't remove file {0}"), e))
+				if (!HandleError (GettextCatalog.GetString ("Can't remove file {0}", fileName), e))
 					throw;
 				return;
 			}

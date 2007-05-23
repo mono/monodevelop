@@ -1,3 +1,8 @@
+2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core/FileService.cs: Added missing error message
+	  parameter in DeleteFile.
+
 2007-05-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.mdp: Copy mono.addins to target directory.
