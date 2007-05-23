@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.Gui
 			outputPad.EndProgress ();
 			base.OnCompleted ();
 			
-			IdeApp.Workbench.ProgressMonitors.ReleasePad (outputPad);
 			outputPad = null;
 		}
 		

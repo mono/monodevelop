@@ -105,9 +105,10 @@ namespace MonoDevelop.Ide.Gui
 					// Look for an available pad
 					for (int n=0; n<outputMonitors.Count; n++) {
 						Pad mpad = (Pad) outputMonitors [n];
+						Console.WriteLine (mpad.Title + " == " + title);
 						if (mpad.Title == title) {
 							pad = mpad;
-							outputMonitors.RemoveAt (n);
+//							outputMonitors.RemoveAt (n);
 							break;
 						}
 					}
@@ -123,15 +124,8 @@ namespace MonoDevelop.Ide.Gui
 			monitorPad.Id = "OutputPad" + monitorId;
 			pad = IdeApp.Workbench.ShowPad (monitorPad, title, "Bottom", icon);
 			if (bringToFront) pad.BringToFront ();
-
+			outputMonitors.Add (pad);
 			return new OutputProgressMonitor (monitorPad, title, icon);
-		}
-
-		internal void ReleasePad (DefaultMonitorPad pad)
-		{
-			lock (outputMonitors) {
-				outputMonitors.Add (IdeApp.Workbench.FindPad (pad));
-			}
 		}
 		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
@@ -145,7 +139,7 @@ namespace MonoDevelop.Ide.Gui
 					Pad mpad = (Pad) searchMonitors [n];
 					if (((SearchResultPad)mpad.Content).AllowReuse) {
 						pad = mpad;
-						searchMonitors.RemoveAt (n);
+//						searchMonitors.RemoveAt (n);
 						break;
 					}
 				}
@@ -159,15 +153,11 @@ namespace MonoDevelop.Ide.Gui
 			monitorPad.Id = "SearchPad" + (monitorId++);
 			pad = IdeApp.Workbench.ShowPad (monitorPad, GettextCatalog.GetString ("Search Results"), "Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
 			if (bringToFront) pad.BringToFront ();
+			
+			searchMonitors.Add (pad);
 
 			return new SearchProgressMonitor (monitorPad, title);
 		}
 
-		internal void ReleasePad (SearchResultPad pad)
-		{
-			lock (searchMonitors) {
-				searchMonitors.Add (IdeApp.Workbench.FindPad (pad));
-			}
-		}
 	}
 }

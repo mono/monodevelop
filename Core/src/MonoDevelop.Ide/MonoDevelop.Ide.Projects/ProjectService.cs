@@ -95,20 +95,6 @@ namespace MonoDevelop.Ide.Projects
 			set { currentBuildOperation = value; }
 		}
 		
-		public static IAsyncOperation BuildSolution ()
-		{
-			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
-				return currentBuildOperation;
-			}
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
-			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
-			monitor.BeginTask (GettextCatalog.GetString ("Build Solution {0}", Solution.Name), Solution.Items.Count);			
-			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {Solution, monitor, context});
-			currentBuildOperation = monitor.AsyncOperation;
-			return currentBuildOperation;
-		}
-		
-		
 		static IBackendBinding GetBackendBinding (SolutionProject project, IProgressMonitor monitor)  
 		{
 			IBackendBinding result = BackendBindingService.GetBackendBinding (project);
@@ -123,6 +109,54 @@ namespace MonoDevelop.Ide.Projects
 			return result;
 		}
 		
+		static List<string> dirtyFiles = new List<string> ();
+		static void MarkFileDirty (string fileName)
+		{
+			if (!dirtyFiles.Contains (fileName))
+				dirtyFiles.Add (fileName);
+		}
+		
+		static void HandleBeforeCompileAction ()
+		{
+			Services.TaskService.ClearExceptCommentTasks ();
+			
+			switch ((BeforeCompileAction)Runtime.Properties.GetProperty("SharpDevelop.Services.DefaultParserService.BeforeCompileAction", BeforeCompileAction.SaveAllFiles)) {
+				case BeforeCompileAction.Nothing:
+					break;
+				case BeforeCompileAction.PromptForSave:
+					foreach (Document document in IdeApp.Workbench.Documents) {
+						if (document.IsDirty) {
+							if (Services.MessageService.AskQuestion(GettextCatalog.GetString ("Save changed files?"))) {
+								MarkFileDirty (document.FileName);
+								document.Save ();
+							} else
+								break;
+						}
+					}
+					break;
+				case BeforeCompileAction.SaveAllFiles:
+					IdeApp.Workbench.SaveAll ();
+					break;
+				default:
+					System.Diagnostics.Debug.Assert(false);
+					break;
+			}
+		}
+		
+		public static IAsyncOperation BuildSolution ()
+		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return currentBuildOperation;
+			}
+			HandleBeforeCompileAction ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
+			monitor.BeginTask (GettextCatalog.GetString ("Build Solution {0}", Solution.Name), Solution.Items.Count);			
+			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {Solution, monitor, context});
+			currentBuildOperation = monitor.AsyncOperation;
+			return currentBuildOperation;
+		}
+		
 		static void BuildSolutionAsync (object data)
 		{
 			object[] array = (object[])data;
@@ -131,7 +165,7 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
-
+			
 			List<CompilerResult> results = new List<CompilerResult> ();
 			for (int i = 0; i < solution.Items.Count; ++i) {
 				SolutionProject project = solution.Items[i] as SolutionProject;
@@ -170,6 +204,7 @@ namespace MonoDevelop.Ide.Projects
 				BuildDone (monitor, results);
 			});
 			monitor.Dispose ();
+			dirtyFiles.Clear ();
 		}
 		
 		public static IAsyncOperation RebuildSolution ()
@@ -194,6 +229,7 @@ namespace MonoDevelop.Ide.Projects
 			currentBuildOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}
+		
 		static void CleanSolutionAsync (object data)
 		{
 			object[] array = (object[])data;
@@ -221,7 +257,8 @@ namespace MonoDevelop.Ide.Projects
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				return currentBuildOperation;
 			}
-			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
+			HandleBeforeCompileAction ();
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {project, monitor, context});
@@ -235,6 +272,7 @@ namespace MonoDevelop.Ide.Projects
 			SolutionProject project = array[0] as SolutionProject;
 			if (project == null) 
 				return;
+			
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
 			List<CompilerResult> results = new List<CompilerResult> ();
@@ -270,6 +308,7 @@ namespace MonoDevelop.Ide.Projects
 				BuildDone (monitor, results);
 			});
 			monitor.Dispose ();
+			dirtyFiles.Clear ();
 		}
 		
 		public static IAsyncOperation RebuildProject (SolutionProject project)
