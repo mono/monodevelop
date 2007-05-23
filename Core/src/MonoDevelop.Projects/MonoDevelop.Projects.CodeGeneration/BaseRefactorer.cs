@@ -27,10 +27,11 @@
 //
 
 using System;
+using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
-using System.IO;
+
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
@@ -676,7 +677,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return buffer.GetText (ipos, pos);
 		}
 		
-		CodeGeneratorOptions GetOptions (bool isMethod)
+		protected virtual CodeGeneratorOptions GetOptions (bool isMethod)
 		{
 			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
 			ops.IndentString = "\t";
