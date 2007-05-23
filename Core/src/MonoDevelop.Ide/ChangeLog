@@ -1,3 +1,15 @@
+2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Moved here
+	from MonoDevelop.SourceEditor.Properties
+
+	* MonoDevelop.Ide.Gui.Content/IndentStyle.cs: Moved here from
+	MonoDevelop.SourceEditor.Gui
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	Check the TextEditorProperties settings for spaces vs tabs for
+	indenting and how many spaces to use for an indent string.
+
 2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Handle exceptions thrown

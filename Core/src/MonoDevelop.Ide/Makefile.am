@@ -1,6 +1,7 @@
 
 
 REFS =  \
+	$(GCONF_SHARP_LIBS) \
 	$(GECKO_SHARP_LIBS) \
 	$(GLADE_SHARP_LIBS) \
 	$(GNOME_SHARP_LIBS) \
@@ -76,8 +77,8 @@ FILES =  \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ToolLoader.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/BrowserDisplayBinding.cs \
-	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HTMLInterfaces.cs \
+	MonoDevelop.Ide.Gui.BrowserDisplayBinding/HtmlViewPane.cs \
 	MonoDevelop.Ide.Gui.Content/IBookmarkBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IClipboardHandler.cs \
 	MonoDevelop.Ide.Gui.Content/ICodeStyleOperations.cs \
@@ -85,12 +86,14 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IEditable.cs \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
+	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IParsableContent.cs \
 	MonoDevelop.Ide.Gui.Content/IPositionable.cs \
 	MonoDevelop.Ide.Gui.Content/IPrintable.cs \
 	MonoDevelop.Ide.Gui.Content/ITextBuffer.cs \
 	MonoDevelop.Ide.Gui.Content/IViewHistory.cs \
 	MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs \
+	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddWebReferenceDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \

@@ -35,6 +35,8 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
 
+using MonoDevelop.Ide.Gui.Content;
+
 namespace MonoDevelop.Ide.Templates
 {
 	public class CodeDomFileDescriptionTemplate: SingleFileDescriptionTemplate
@@ -68,7 +70,11 @@ namespace MonoDevelop.Ide.Templates
 			
 			ICodeGenerator generator = provider.CreateGenerator();
 			CodeGeneratorOptions options = new CodeGeneratorOptions();
-			options.IndentString = "\t";
+			if (TextEditorProperties.ConvertTabsToSpaces) {
+				options.IndentString = new String (' ', TextEditorProperties.TabIndent);
+			} else {
+				options.IndentString = "\t";
+			}
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();
