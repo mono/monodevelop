@@ -1,3 +1,8 @@
+2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* lib/libsteticui.dll, lib/libstetic.dll: Updated from stetic module.
+	  Fixes bugs #80783 and #81683.
+
 2007-05-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.GtkCore.mdp, Makefile.am: Added new dependency.
