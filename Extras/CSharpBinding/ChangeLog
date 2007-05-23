@@ -1,5 +1,10 @@
 2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Parser/CodeGenerator.cs (GetOptions): Override our base
+	implementation.
+
+2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Gui/CSharpTextEditorExtension.cs:
 	MonoDevelop.SourceEditor.Properties namespace no longer exists.
 

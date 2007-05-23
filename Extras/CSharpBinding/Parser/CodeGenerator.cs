@@ -27,17 +27,22 @@
 //
 
 using System;
+using System.IO;
+using System.Drawing;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Text.RegularExpressions;
 using Microsoft.CSharp;
-using System.IO;
+
+using MonoDevelop.Ide.Gui.Content;
+
 using MonoDevelop.Projects.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
+
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
-using System.Drawing;
-using System.Text.RegularExpressions;
+
 using CSharpBinding.Parser.SharpDevelopTree;
 
 using ClassType = MonoDevelop.Projects.Parser.ClassType;
@@ -384,6 +389,20 @@ namespace CSharpBinding.Parser
 			visitor.Visit (ctx.ParserContext, file);
 			
 			return refs;
+		}
+		
+		protected override CodeGeneratorOptions GetOptions (bool isMethod)
+		{
+			CodeGeneratorOptions ops = new CodeGeneratorOptions ();
+			if (TextEditorProperties.ConvertTabsToSpaces)
+				ops.IndentString = new String (' ', TextEditorProperties.TabIndent);
+			else
+				ops.IndentString = "\t";
+			
+			if (isMethod)
+				ops.BracingStyle = "C";
+			
+			return ops;
 		}
 	}
 	
