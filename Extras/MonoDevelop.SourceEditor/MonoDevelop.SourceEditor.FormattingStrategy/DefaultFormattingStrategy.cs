@@ -6,10 +6,11 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Text;
+using System.Collections;
+
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.SourceEditor.Properties;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor.FormattingStrategy
 {

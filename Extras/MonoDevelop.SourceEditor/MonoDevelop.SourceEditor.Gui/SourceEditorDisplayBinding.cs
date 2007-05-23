@@ -1,29 +1,32 @@
 using System;
+using System.IO;
+using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Completion;
-using MonoDevelop.Core.Properties;
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Search;
-using MonoDevelop.Ide.Codons;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.SourceEditor.FormattingStrategy;
 
 using Gtk;
 using GtkSourceView;
+
+using Mono.Addins;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Utils;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Properties;
+
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Search;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Codons;
+
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Parser;
+using MonoDevelop.Projects.Gui.Completion;
+
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
 namespace MonoDevelop.SourceEditor.Gui
 {

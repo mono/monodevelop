@@ -8,14 +8,15 @@
 using System;
 using System.IO;
 
-using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.Core.Properties;
+using Gtk;
+
+using MonoDevelop.Components;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.Properties;
 using MonoDevelop.Core.Gui.Dialogs;
 
-using Gtk;
-using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {

@@ -19,7 +19,7 @@ using Gnome;
 namespace MonoDevelop.SourceEditor.Gui
 {
 	public class SourceEditor : ScrolledWindow
-	{	
+	{
 		public SourceEditorBuffer Buffer;
 		public SourceEditorView View;
 		public SourceEditorDisplayBindingWrapper DisplayBinding;

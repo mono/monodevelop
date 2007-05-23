@@ -9,16 +9,19 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Ide.CodeTemplates;
-using MonoDevelop.Core.Properties;
-using MonoDevelop.Core;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Components;
-using MonoDevelop.SourceEditor.FormattingStrategy;
-
 using Gtk;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Properties;
+using MonoDevelop.Core.Gui.Dialogs;
+
+using MonoDevelop.Components;
+
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide.Gui.Content;
+
+using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.FormattingStrategy;
 
 namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {

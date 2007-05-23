@@ -9,7 +9,6 @@ FILES =  \
 	MonoDevelop.SourceEditor.Codons/EditActionCodon.cs \
 	MonoDevelop.SourceEditor.FormattingStrategy/DefaultFormattingStrategy.cs \
 	MonoDevelop.SourceEditor.FormattingStrategy/IFormattingStrategy.cs \
-	MonoDevelop.SourceEditor.FormattingStrategy/IndentStyle.cs \
 	MonoDevelop.SourceEditor.Gui.Dialogs/EditTemplateGroupDialog.cs \
 	MonoDevelop.SourceEditor.Gui.Dialogs/GotoLineNumberDialog.cs \
 	MonoDevelop.SourceEditor.Gui.OptionPanels/BehaviorTextEditorPanel.cs \
@@ -23,7 +22,6 @@ FILES =  \
 	MonoDevelop.SourceEditor.Gui/SourceEditorView.cs \
 	MonoDevelop.SourceEditor.Gui/SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor.Gui/TextNavigationPoint.cs \
-	MonoDevelop.SourceEditor.Properties/TextEditorProperties.cs \
 	MonoDevelop.SourceEditor/EditorCommands.cs \
 	MonoDevelop.SourceEditor/Services.cs \
 	MonoDevelop.SourceEditor/SourceViewService.cs

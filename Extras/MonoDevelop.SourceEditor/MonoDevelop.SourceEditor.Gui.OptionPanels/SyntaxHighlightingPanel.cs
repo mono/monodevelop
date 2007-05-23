@@ -1,16 +1,19 @@
 using System;
 using System.IO;
-using System.Collections;
 using System.Text;
+using System.Collections;
+
 using Gtk;
 using Pango;
 using GtkSourceView;
 
-using MonoDevelop.Core.Properties;
-using MonoDevelop.SourceEditor.Properties;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Properties;
+using MonoDevelop.Core.Gui.Dialogs;
+
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.SourceEditor.Gui.OptionPanels
 {

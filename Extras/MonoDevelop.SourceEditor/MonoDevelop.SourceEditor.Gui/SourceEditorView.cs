@@ -8,21 +8,25 @@ using Gdk;
 using Global = Gtk.Global;
 using GtkSourceView;
 
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 using Mono.Addins;
+
+using MonoDevelop.Components.Commands;
+
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
-using MonoDevelop.Ide.CodeTemplates;
+
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.SourceEditor.Actions;
-using MonoDevelop.SourceEditor.Properties;
+
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.Actions;
 using MonoDevelop.SourceEditor.FormattingStrategy;
 
 namespace MonoDevelop.SourceEditor.Gui
