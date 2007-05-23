@@ -52,6 +52,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			get { return typeof(ReferenceFolderNode); }
 		}
 		
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ReferenceFolderNode"; }
+		}
+		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return "References";

@@ -92,7 +92,6 @@ namespace MonoDevelop.Ide.Projects
 			set;
 		}
 		
-		void Start (IProgressMonitor monitor, ExecutionContext context);
 		void Save ();
 	}
 }

@@ -40,11 +40,13 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		SolutionProject solutionProject;
 		string          fileName;
 		bool            isInProject;
+		
 		public SolutionProject Project {
 			get {
 				return this.solutionProject;
 			}
 		}
+		
 		public bool IsInProject {
 			get {
 				return isInProject;

@@ -25,7 +25,8 @@ namespace MonoDevelop.Ide.Projects
 		public virtual IRefactorer Refactorer { 
 			get {
 				return null;
-			}
+			}		void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context);
+
 		}
 		
 		public abstract string CommentTag {
@@ -44,11 +45,18 @@ namespace MonoDevelop.Ide.Projects
 			this.hasProjectSupport = hasProjectSupport;
 		}
 		
+		public virtual void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context)
+		{
+		}
+		
+		public virtual void CleanProject (IProject project, IProgressMonitor monitor)
+		{
+		}
+		
 		public virtual IProject LoadProject (string fileName)
 		{
 			return null;
 		}
-		
 		public virtual IProject CreateProject (MonoDevelop.Projects.ProjectCreateInformation info)
 		{
 			return null;

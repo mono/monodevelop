@@ -69,6 +69,15 @@ namespace CSharpBinding
 		{
 		}
 		
+#region running projects
+		
+		public override void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context)
+		{
+			((MSBuildProject)project).Start (monitor, context);
+		}
+		
+#endregion
+		
 		public override IProject LoadProject (string fileName)
 		{
 			return MSBuildProject.Load (fileName);
