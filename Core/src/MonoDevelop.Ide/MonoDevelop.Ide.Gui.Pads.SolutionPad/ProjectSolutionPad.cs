@@ -122,7 +122,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		void ShowHiddenButtonToggled (object sender, EventArgs e)
 		{
+			IXmlConvertable memento = base.CreateMemento();
 			FillTree (ProjectService.Solution);
+			if (memento != null) 
+				base.SetMemento (memento);
 		}
 		
 		void FillTree (Solution solution)

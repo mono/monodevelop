@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 		
 		public string BasePath {
-			get {Start (IProgressMonitor monitor, ExecutionContext context)
+			get {
 				return Path.GetDirectoryName (FileName);
 			}
 		}

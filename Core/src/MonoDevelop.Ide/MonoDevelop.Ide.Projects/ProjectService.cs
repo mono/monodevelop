@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Projects
 			IProgressMonitor monitor = new MessageDialogProgressMonitor ();
 			ExecutionContext context = new ExecutionContext (new DefaultExecutionHandlerFactory (), IdeApp.Workbench.ProgressMonitors);
 
-			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (CleanSolutionAsync), new object[] {project, monitor, context});
+			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (CleanSolutionAsync), new object[] {Solution, monitor, context});
 			currentBuildOperation = monitor.AsyncOperation;
 			return currentRunOperation;
 		}

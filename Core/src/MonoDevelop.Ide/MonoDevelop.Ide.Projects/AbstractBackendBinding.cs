@@ -25,8 +25,7 @@ namespace MonoDevelop.Ide.Projects
 		public virtual IRefactorer Refactorer { 
 			get {
 				return null;
-			}		void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context);
-
+			}	
 		}
 		
 		public abstract string CommentTag {
