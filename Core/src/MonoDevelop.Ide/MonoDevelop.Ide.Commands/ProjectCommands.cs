@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Commands
 	
 	internal class RunEntryHandler: CommandHandler
 	{
-		MonoDevelop.Ide.Projects.IProject entry;
+		MonoDevelop.Ide.Projects.SolutionProject entry;
 		
 		protected override void Run ()
 		{
@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null) {
 				info.Enabled = MonoDevelop.Ide.Projects.ProjectService.ActiveProject != null;
-				info.Text = info.Description = GettextCatalog.GetString ("Clean {0}", Path.GetFileNameWithoutExtension (MonoDevelop.Ide.Projects.ProjectService.ActiveProject.FileName));
+				info.Text = info.Description = GettextCatalog.GetString ("Clean {0}", Path.GetFileNameWithoutExtension (MonoDevelop.Ide.Projects.ProjectService.ActiveProject.Project.FileName));
 			} else {
 				info.Enabled = false;
 			}

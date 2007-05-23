@@ -34,7 +34,6 @@ using System.Xml;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Projects
@@ -107,73 +106,6 @@ namespace MonoDevelop.Ide.Projects
 			this.fileName = fileName;
 		}
 		
-		string ToOutput (string outputType)
-		{
-			return outputType.ToLower ();
-		}
-		
-		string GetExtension (string outputType)
-		{
-			if (outputType.ToLower () == "exe" || outputType.ToLower () == "winexe") {
-				return ".exe";
-			}
-			return ".dll";
-		}
-		
-		public CompilerResult Build (IProgressMonitor monitor)
-		{
-			string responseFileName = Path.GetTempFileName ();
-			Console.WriteLine ("response file:" + responseFileName);
-			StreamWriter writer = new StreamWriter (responseFileName);
-			try {
-				writer.WriteLine ("/noconfig");
-				writer.WriteLine ("/nologo");
-				writer.WriteLine ("/codepage:utf8");
-				writer.WriteLine ("/t:{0}", ToOutput (this.OutputType));
-				if (!String.IsNullOrEmpty (this.DefineConstants))
-					writer.WriteLine ("/d:{0}", this.DefineConstants);
-				
-				Console.WriteLine ("Writing Out!!!");
-				string assemblyName = this.AssemblyName + GetExtension (this.OutputType);
-				if (String.IsNullOrEmpty (this.OutputPath)) {
-					writer.WriteLine ("\"/out:{0}\"", assemblyName);
-				} else {
-					string path = SolutionProject.NormalizePath (this.OutputPath);
-					if (!Directory.Exists (Path.Combine (BasePath, path))) {
-						Directory.CreateDirectory (Path.Combine (BasePath, path));
-					}
-					writer.WriteLine ("\"/out:{0}\"", Path.Combine(path, assemblyName));
-				}
-				
-				Console.WriteLine ("Writing items");
-				foreach (ProjectItem item in this.Items) {
-					Console.WriteLine (item);
-					if (item is ProjectFile) {
-						writer.WriteLine ("\"{0}\"", item.Include);
-					}
-				}
-			} catch (Exception e) {
-				Console.WriteLine ("error:" + e);
-			} finally {
-				writer.Close();
-			}
-			
-			string output = Path.GetTempFileName ();
-			string error = Path.GetTempFileName ();
-			
-			StreamWriter outWriter = new StreamWriter (output);
-			StreamWriter errWriter = new StreamWriter (error);
-			try {
-				ProcessWrapper pw = Runtime.ProcessService.StartProcess ("gmcs", "\"@" + responseFileName + "\"", BasePath, outWriter, errWriter, delegate {});
-				pw.WaitForExit ();
-			} finally {
-				errWriter.Close ();
-				outWriter.Close ();
-			}
-			
-			return new CompilerResult();
-		}
-		
 		public void Start (IProgressMonitor monitor, ExecutionContext context)
 		{
 			string path;
@@ -181,8 +113,7 @@ namespace MonoDevelop.Ide.Projects
 			    path = Path.Combine (BasePath, SolutionProject.NormalizePath (this.OutputPath));
 			else 
 				path = BasePath;
-			Console.WriteLine ("exec: " + (this.AssemblyName + GetExtension (this.OutputType)));
-			Runtime.ProcessService.StartConsoleProcess ( Path.Combine(path, this.AssemblyName + GetExtension (this.OutputType)),
+			Runtime.ProcessService.StartConsoleProcess ( Path.Combine(path, this.AssemblyName + ".exe"),
 			                                            "",
 			                                            BasePath,
 			                                            context.ConsoleFactory.CreateConsole (true),

@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 	public static class ProjectService
 	{
 		static Solution solution;
-		static IProject activeProject;
+		static SolutionProject activeProject;
 		
 		public static Solution Solution {
 			get {
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public static IProject ActiveProject {
+		public static SolutionProject ActiveProject {
 			get {
 				return activeProject;
 			}
@@ -118,7 +118,6 @@ namespace MonoDevelop.Ide.Projects
 			ExecutionContext context = array[2] as ExecutionContext;
 
 			List<CompilerResult> results = new List<CompilerResult> ();
-			Console.WriteLine ("1");
 			for (int i = 0; i < solution.Items.Count; ++i) {
 				SolutionProject project = solution.Items[i] as SolutionProject;
 				if (project == null)
@@ -128,7 +127,16 @@ namespace MonoDevelop.Ide.Projects
 				});
 				try {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
-					CompilerResult result = project.Project.Build (null);
+					IBackendBinding backendBinding = BackendBindingService.GetBackendBinding (project);
+					if (backendBinding == null) {
+						monitor.ReportError (GettextCatalog.GetString ("Found no backend binding for project."), null);
+						continue;
+					}
+					if (!backendBinding.HasProjectSupport) {
+						monitor.ReportError (GettextCatalog.GetString ("Backend binding has no project support."), null);
+						continue;
+					}
+					CompilerResult result = backendBinding.Compile (project.Project, monitor);
 					if (result != null) {
 						results.Add (result);
 						Services.DispatchService.GuiDispatch (delegate {
@@ -146,15 +154,12 @@ namespace MonoDevelop.Ide.Projects
 				}
 				
 			}
-			Console.WriteLine ("2");
 		
 			monitor.EndTask();
-			Console.WriteLine ("2.5");
 			Services.DispatchService.GuiDispatch (delegate {
 				BuildDone (monitor, results);
 			});
 			monitor.Dispose ();
-			Console.WriteLine ("3");
 		}
 		
 		public static IAsyncOperation RebuildSolution ()
@@ -170,7 +175,7 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 		
-		public static IAsyncOperation BuildProject (IProject project)
+		public static IAsyncOperation BuildProject (SolutionProject project)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				return currentBuildOperation;
@@ -181,35 +186,61 @@ namespace MonoDevelop.Ide.Projects
 			Services.DispatchService.ThreadDispatch (new StatefulMessageHandler (BuildSolutionAsync), new object[] {project, monitor, context});
 			currentBuildOperation = monitor.AsyncOperation;
 			return currentRunOperation;
-			
-			project.Build (null);
-			return null;
 		}
 		static void BuildProjectAsync (object data)
 		{
 			object[] array = (object[])data;
-			IProject project = array[0] as IProject;
+			SolutionProject project = array[0] as SolutionProject;
 			if (project == null) 
 				return;
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
+			List<CompilerResult> results = new List<CompilerResult> ();
 			
 			try {
-				project.Build (null);
+				Services.DispatchService.GuiDispatch (delegate {
+					monitor.BeginStepTask (GettextCatalog.GetString ("Build Project {0}", project.Project.Name), 1, 0);
+				});
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
+				
+				IBackendBinding backendBinding = BackendBindingService.GetBackendBinding (project);
+				if (backendBinding == null) {
+					monitor.ReportError (GettextCatalog.GetString ("Found no backend binding for project."), null);
+					return;
+				}
+				if (!backendBinding.HasProjectSupport) {
+					monitor.ReportError (GettextCatalog.GetString ("Backend binding has no project support."), null);
+					return;
+				}
+				CompilerResult result = backendBinding.Compile (project.Project, monitor);
+				if (result != null) {
+					results.Add (result);
+					Services.DispatchService.GuiDispatch (delegate {
+						ReportResult (monitor, result);
+					});
+				} else {
+					Services.DispatchService.GuiDispatch (delegate {
+						monitor.ReportError (GettextCatalog.GetString ("Got no result from building."), null);
+					});
+				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
 			}
+			monitor.EndTask();
+			Services.DispatchService.GuiDispatch (delegate {
+				BuildDone (monitor, results);
+			});
+			monitor.Dispose ();
 		}
 		
-		public static IAsyncOperation RebuildProject (IProject project)
+		public static IAsyncOperation RebuildProject (SolutionProject project)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				return currentBuildOperation;
 			}
-			
 			return null;
 		}
-		public static IAsyncOperation CleanProject (IProject project)
+		public static IAsyncOperation CleanProject (SolutionProject project)
 		{
 			return null;
 		}
@@ -227,8 +258,9 @@ namespace MonoDevelop.Ide.Projects
 				monitor.ReportError(String.Format (GettextCatalog.GetString("Compilation failed - ") + errorString + ", " + warningString, result.Errors, result.Warnings), null);
 			}
 			
-			foreach (string output in result.CompilerResults.Output) 
-				monitor.Log.WriteLine (output);
+//			foreach (string output in result.CompilerResults.Output) 
+//				monitor.Log.WriteLine (output);
+			monitor.Log.WriteLine (result.Output);
 		}
 		
 		static void BuildDone (IProgressMonitor monitor, List<CompilerResult> results)
@@ -278,12 +310,12 @@ namespace MonoDevelop.Ide.Projects
 				SolutionProject project = item as SolutionProject;
 				if (project == null)
 					continue;
-				return StartProject (project.Project);
+				return StartProject (project);
 			}
 			return null;
 		}
 		
-		public static IAsyncOperation StartProject(IProject project)
+		public static IAsyncOperation StartProject(SolutionProject project)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) {
 				return currentRunOperation;
@@ -300,14 +332,14 @@ namespace MonoDevelop.Ide.Projects
 		static void StartProjectAsync (object data)
 		{
 			object[] array = (object[])data;
-			IProject project = array[0] as IProject;
+			SolutionProject project = array[0] as SolutionProject;
 			if (project == null) 
 				return;
 			IProgressMonitor monitor = array[1] as IProgressMonitor;
 			ExecutionContext context = array[2] as ExecutionContext;
 			//OnBeforeStartProject ();
 			try {
-				project.Start (monitor, context);
+				project.Project.Start (monitor, context);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
 			} finally {

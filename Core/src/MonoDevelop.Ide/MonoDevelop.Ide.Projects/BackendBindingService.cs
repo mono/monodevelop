@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
+		
 		public static BackendBindingCodon GetBackendBindingCodonByGuid (string guid)
 		{
 			foreach (BackendBindingCodon codon in backendBindingCodons) { 
@@ -76,6 +77,12 @@ namespace MonoDevelop.Ide.Projects
 			BackendBindingCodon codon = GetBackendBindingCodonByGuid (guid);
 			if (codon != null)
 				return codon.BackendBinding;
+			return null;
+		}
+		public static IBackendBinding GetBackendBinding (SolutionProject project)
+		{
+			if (project != null)
+				return GetBackendBindingByGuid (project.TypeGuid);
 			return null;
 		}
 		

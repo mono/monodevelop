@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 		
-		public virtual CompilerResult Compile (List<IProject> projects, IProgressMonitor monitor)
+		public virtual CompilerResult Compile (IProject project, IProgressMonitor monitor)
 		{
 			return null;
 		}

@@ -111,7 +111,6 @@ namespace MonoDevelop.Ide.ExternalTools
 						
 			PromptForArguments = Boolean.Parse(el["PROMPTFORARGUMENTS"].InnerText);
 			UseOutputPad       = Boolean.Parse(el["USEOUTPUTPAD"].InnerText);
-			
 		}
 		
 		public override string ToString()

@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Projects
 		IProject LoadProject (string fileName);
 		IProject CreateProject (MonoDevelop.Projects.ProjectCreateInformation info);
 		
-		CompilerResult Compile (List<IProject> projects, IProgressMonitor monitor);
+		CompilerResult Compile (IProject project, IProgressMonitor monitor);
 #endregion
 		
 	}
