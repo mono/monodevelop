@@ -1,3 +1,8 @@
+2007-05-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Handle exceptions thrown
+	  when renaming items. Fixes bug #81716.
+
 2007-05-22  David Makovský (Yakeen) <yakeen@sannyas-on.net> 
 
 	* MonoDevelop.Ide.addin.xml: Register new stock icons.

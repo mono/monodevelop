@@ -718,32 +718,37 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void HandleOnEdit (object o, Gtk.EditedArgs e)
 		{
-			editingText = false;
-			text_render.Editable = false;
-			
-			Gtk.TreeIter iter;
-			if (!store.GetIterFromString (out iter, e.Path))
-				throw new Exception("Error calculating iter for path " + e.Path);
+			try {
+				editingText = false;
+				text_render.Editable = false;
+				
+				Gtk.TreeIter iter;
+				if (!store.GetIterFromString (out iter, e.Path))
+					throw new Exception("Error calculating iter for path " + e.Path);
 
-			if (e.NewText != null && e.NewText.Length > 0) {
-				ITreeNavigator nav = new TreeNodeNavigator (this, iter);
-				NodePosition pos = nav.CurrentPosition;
+				if (e.NewText != null && e.NewText.Length > 0) {
+					ITreeNavigator nav = new TreeNodeNavigator (this, iter);
+					NodePosition pos = nav.CurrentPosition;
 
-				NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
-				foreach (NodeBuilder b in chain) {
-					NodeCommandHandler handler = b.CommandHandler;
-					handler.SetCurrentNode (nav);
-					handler.RenameItem (e.NewText);
-					nav.MoveToPosition (pos);
+					NodeBuilder[] chain = (NodeBuilder[]) store.GetValue (iter, BuilderChainColumn);
+					foreach (NodeBuilder b in chain) {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNode (nav);
+						handler.RenameItem (e.NewText);
+						nav.MoveToPosition (pos);
+					}
 				}
-			}
-			
-			// Get the iter again since the tree node may have been replaced.
-			if (!store.GetIterFromString (out iter, e.Path))
-				return;
+				
+				// Get the iter again since the tree node may have been replaced.
+				if (!store.GetIterFromString (out iter, e.Path))
+					return;
 
-			ITreeBuilder builder = new TreeBuilder (this, iter);
-			builder.Update ();
+				ITreeBuilder builder = new TreeBuilder (this, iter);
+				builder.Update ();
+			}
+			catch (Exception ex) {
+				IdeApp.Services.MessageService.ShowError (ex, "The item could not be renamed");
+			}
 		}
 		
 		void HandleOnEditCancelled (object s, EventArgs args)
