@@ -45,7 +45,8 @@ namespace MonoDevelop.Ide.Projects
 {
 	public static class ProjectService
 	{
-		static Solution solution;
+		static Solution        solution;
+		static string          solutionFileName;
 		static SolutionProject activeProject;
 		
 		public static Solution Solution {
@@ -67,8 +68,8 @@ namespace MonoDevelop.Ide.Projects
 		
 		public static IAsyncOperation OpenSolution (string fileName)
 		{
+			solutionFileName = fileName;
 			solution = Solution.Load (fileName);
-			Console.WriteLine ("loaded : " + solution);
 			ActiveProject = null;
 			OnSolutionOpened (new SolutionEventArgs (solution));
 			return NullAsyncOperation.Success;
@@ -82,6 +83,17 @@ namespace MonoDevelop.Ide.Projects
 				solution = null;
 				OnSolutionClosed (EventArgs.Empty);
 			}
+		}
+		
+		public static void SaveProject (IProject project)
+		{
+			project.Save ();
+		}
+		
+		public static void SaveSolution ()
+		{
+			if (Solution != null)
+				Solution.Save (solutionFileName);
 		}
 		
 		public static bool IsSolution (string fileName)

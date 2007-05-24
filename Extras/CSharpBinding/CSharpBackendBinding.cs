@@ -96,8 +96,9 @@ namespace CSharpBinding
 			return ".dll";
 		}
 		
-		public override CompilerResult Compile (IProject project, IProgressMonitor monitor)
+		public override CompilerResult Compile (IProject prj, IProgressMonitor monitor)
 		{
+			MSBuildProject project = prj as MSBuildProject;
 			string responseFileName = Path.GetTempFileName ();
 			Console.WriteLine (responseFileName);
 			StreamWriter writer = new StreamWriter (responseFileName);

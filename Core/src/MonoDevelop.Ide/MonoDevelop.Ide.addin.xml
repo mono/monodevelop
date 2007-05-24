@@ -339,6 +339,8 @@
 				icon  = "md-new-folder-icon" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
 				_label = "Include To Project" />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject"
+				_label = "Exclude From Project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution"
 				defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
 				_label = "Buil_d Solution"
@@ -723,16 +725,18 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
 		<SeparatorItem id = "OpenSeparator" />
+	<!--
 		<ItemSet id = "Include" _label = "Include">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInBuild" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeInDeploy" />
-		</ItemSet>
-		<SeparatorItem id = "IncludeSeparator" />
+		</ItemSet> 
+		<SeparatorItem id = "IncludeSeparator" /> -->
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<SeparatorItem id = "CutSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject" />
 	</Extension>
 		
 	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFileNode"  extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a file (not belonging to a project) in the solution pad.">
@@ -834,6 +838,7 @@
 			
 			
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.DirectoryNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SystemFileNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FileNodeBuilder"/>
 			
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ReferenceFolderNodeBuilder"/>

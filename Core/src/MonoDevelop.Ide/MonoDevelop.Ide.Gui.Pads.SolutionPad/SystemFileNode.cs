@@ -1,5 +1,5 @@
 //
-// FileNode.cs
+// SystemFileNode.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class FileNode
+	public class SystemFileNode
 	{
 		SolutionProject solutionProject;
 		string          fileName;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 		}
 		
-		public FileNode (SolutionProject solutionProject, string fileName)
+		public SystemFileNode (SolutionProject solutionProject, string fileName)
 		{
 			this.solutionProject = solutionProject;
 			this.fileName        = fileName;

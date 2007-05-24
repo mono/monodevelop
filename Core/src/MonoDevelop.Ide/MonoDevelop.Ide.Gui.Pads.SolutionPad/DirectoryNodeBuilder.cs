@@ -111,8 +111,12 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			foreach (string fileName in Directory.GetFiles(basePath)) {
 				bool isInProject = IsFileInProject(directoryNode.Project.Project, fileName);
 				
-				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
-					ctx.AddChild (new FileNode (directoryNode.Project, fileName, isInProject));
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) { 
+					if (isInProject)
+						ctx.AddChild (new FileNode (directoryNode.Project, fileName));
+					else
+						ctx.AddChild (new SystemFileNode (directoryNode.Project, fileName));
+				}
 			}
 			
 			foreach (string directoryName in Directory.GetDirectories(basePath)) {

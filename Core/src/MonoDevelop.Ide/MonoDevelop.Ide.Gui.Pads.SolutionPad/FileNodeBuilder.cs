@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Utils;
 using MonoDevelop.Components.Commands;
@@ -50,6 +51,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 
 		public override Type NodeDataType {
 			get { return typeof(FileNode); }
+		}
+		
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectFileNode"; }
 		}
 		
 		public override Type CommandHandlerType {
@@ -80,15 +85,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			if (fileNode == null) 
 				return;
 			label = Path.GetFileName (fileNode.FileName);
-			if (fileNode.IsInProject) {
-				string ic = Services.Icons.GetImageForFile (fileNode.FileName);
-				if (ic != Stock.MiscFiles || !File.Exists (fileNode.FileName))
-					icon = Context.GetIcon (ic);
-				else
-					icon = FileIconLoader.GetPixbufForFile (fileNode.FileName, 16);
-			} else {
-				icon = Context.GetIcon (Stock.DashedFileIcon);
-			}
+			string ic = Services.Icons.GetImageForFile (fileNode.FileName);
+			if (ic != Stock.MiscFiles || !File.Exists (fileNode.FileName))
+				icon = Context.GetIcon (ic);
+			else
+				icon = FileIconLoader.GetPixbufForFile (fileNode.FileName, 16);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
@@ -110,6 +111,63 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 	
 	public class FileNodeCommandHandler: NodeCommandHandler
 	{
+		public override void RenameItem (string newName)
+		{
+			FileNode fileNode = CurrentNode.DataItem as FileNode;
+			if (fileNode == null) 
+				return;
+			
+			string oldPath = fileNode.FileName;
+			string newPath = Path.Combine (Path.GetDirectoryName (oldPath), newName);
+			
+			if (oldPath != newPath) {
+				try {
+					if (Runtime.FileService.IsValidFileName (newPath)) {
+						Runtime.FileService.RenameFile (oldPath, newName);
+						ProjectService.SaveSolution ();
+					}
+				} catch (System.IO.IOException) {   // assume duplicate file
+					Services.MessageService.ShowError (GettextCatalog.GetString ("File or directory name is already in use, choose a different one."));
+				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
+					Services.MessageService.ShowError (GettextCatalog.GetString ("The file name you have chosen contains illegal characters. Please choose a different file name."));
+				}
+			}
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		public void RemoveItem ()
+		{
+			FileNode fileNode = CurrentNode.DataItem as FileNode;
+			if (fileNode == null) 
+				return;
+			DeleteFileDialog deleteDialog = new DeleteFileDialog (GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?", Path.GetFileName (fileNode.FileName), fileNode.Project.Name));
+			try {
+				bool dialogResult = deleteDialog.Run ();
+				if (!dialogResult) 
+					return;
+				Runtime.FileService.DeleteFile (fileNode.FileName);
+				ProjectService.SaveSolution ();
+			} finally {
+				deleteDialog.Destroy ();
+			}
+		}
+		
+		[CommandHandler (ProjectCommands.ExcludeFromProject)]
+		public void ExcludeFromProject ()
+		{
+			FileNode fileNode = CurrentNode.DataItem as FileNode;
+			if (fileNode == null) 
+				return;
+			foreach (ProjectItem item in fileNode.Project.Project.Items) {
+				string fileName = Path.GetFullPath (Path.Combine (fileNode.Project.Project.BasePath, SolutionProject.NormalizePath (item.Include)));
+				if (fileName == fileNode.FileName) {
+					fileNode.Project.Project.Items.Remove (item);
+					ProjectService.SaveProject (fileNode.Project.Project);
+					break;
+				}
+			}
+		}
+		
 		public override void ActivateItem ()
 		{
 			FileNode fileNode = CurrentNode.DataItem as FileNode;

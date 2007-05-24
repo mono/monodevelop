@@ -166,6 +166,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionItemNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/SolutionProjectNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SystemFileNode.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/SystemFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs \
 	MonoDevelop.Ide.Gui.Pads/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs \

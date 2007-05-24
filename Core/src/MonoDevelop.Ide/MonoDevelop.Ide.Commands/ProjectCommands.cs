@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Commands
 		AddNewFiles,
 		AddFiles,
 		NewFolder,
+		ExcludeFromProject,
 		IncludeToProject,
 		Build,
 		BuildSolution,

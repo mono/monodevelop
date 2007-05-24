@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			//Project_ project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
-			IProject project = new MSBuildProject ();
+			MSBuildProject project = new MSBuildProject ();
 			
 			if (project == null) {
 				Services.MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", projectType));

@@ -57,41 +57,6 @@ namespace MonoDevelop.Ide.Projects
 			get;
 		}
 		
-		string Configuration {
-			get;
-			set;
-		}
-		
-		string Platform {
-			get;
-			set;
-		}
-		
-		string AssemblyName {
-			get;
-			set;
-		}
-		
-		string RootNamespace {
-			get;
-			set;
-		}
-		
-		string OutputType {
-			get;
-			set;
-		}
-		
-		string OutputPath {
-			get;
-			set;
-		}
-		
-		string DefineConstants {
-			get;
-			set;
-		}
-		
 		void Save ();
 	}
 }
