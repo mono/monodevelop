@@ -63,7 +63,7 @@ namespace MonoDevelop.Autotools
 			foreach( DictionaryEntry de in vars )
 				sb.AppendFormat("{0} = {1}\n", de.Key, de.Value);
 
-			tw.Write ( content + sb.ToString() );
+			tw.Write ( sb.ToString() + content);
 		}
 	}
 }

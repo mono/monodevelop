@@ -1,3 +1,26 @@
+2007-05-25  Ankit Jain  <jankit@novell.com>
+	    Raja R Harinath  <rharinath@novell.com>
+	
+	* SolutionMakefileHandler.cs (Deploy): If a project is in the same
+	directory as the solution, then directly "include" the project specific
+	makefile in the solution's Makefile.am .
+	* SimpleProjectMakefileHandler.cs (Deploy): Treat all assembly
+	references as globalReferencedFiles. Emit path relative to $(BUILD_DIR).
+	Emit deploy-files path relative to project's directory.
+	Emit project specific makefiles.
+	* SolutionDeployer.cs: Normalize paths emitted.
+
+	* AutotoolsContext.cs (AddGlobalReferencedFile): New.
+	* Makefile.cs (Write): Write variables before the "content".
+	* Makefile.am: Add new Project.make.template .
+	* MonoDevelop.Autotools.mdp: Update.
+
+	* templates/Makefile.include (EXTRA_DIST): Use += .
+	(DISTCLEANFILES): Add $(BUILD_DIR)/* . 
+	* templates/Makefile.am.project.template: Add placeholder for including
+	project specific makefile. Move older contents to ..
+	* templates/Project.make.template: .. here.
+
 2007-05-22  Ankit Jain  <jankit@novell.com>
 	    Raja R Harinath  <rharinath@novell.com>
 

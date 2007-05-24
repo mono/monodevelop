@@ -132,6 +132,11 @@ namespace MonoDevelop.Autotools
 			}
 		}
 
+		public void AddGlobalReferencedFile (string filePath)
+		{
+			globalFilesReferences.Add (filePath);
+		}
+
 		public IEnumerable GetAutoConfFiles ()
 		{
 			return autoconfConfigFiles;

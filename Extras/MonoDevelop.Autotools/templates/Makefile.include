@@ -21,9 +21,9 @@ build_references_ref = $(REFERENCES)
 build_references_ref += $(foreach ref, $(DLL_REFERENCES), -r:$(ref))
 build_references_ref += $(foreach ref, $(PROJECT_REFERENCES), -r:$(ref))
 
-EXTRA_DIST = $(build_sources) $(build_resx_files) $(build_others_files) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES)
+EXTRA_DIST += $(build_sources) $(build_resx_files) $(build_others_files) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BINARIES) $(build_resx_resources)
-DISTCLEANFILES = $(GENERATED_FILES) $(pc_files)
+DISTCLEANFILES = $(GENERATED_FILES) $(pc_files) $(BUILD_DIR)/*
 
 pkglib_SCRIPTS = $(ASSEMBLY)
 bin_SCRIPTS = $(BINARIES)

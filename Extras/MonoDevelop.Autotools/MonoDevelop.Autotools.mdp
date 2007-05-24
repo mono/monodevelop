@@ -56,6 +56,7 @@
     <File name="./gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./PropertyProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Autotools.addin.xml" subtype="Code" buildaction="FileCopy" />
+    <File name="./templates/Project.make.template" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
@@ -76,6 +77,11 @@
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.DesignerSupport" />
     <ProjectReference type="Assembly" localcopy="False" refto="../../contrib/log4net.dll" />
   </References>
+  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
+    <ExportedWidgets>
+      <Widget>MonoDevelop.Autotools.MakefileIntegrationFeatureWidget</Widget>
+    </ExportedWidgets>
+  </GtkDesignInfo>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../">
     <ExcludedFiles>
       <File>./MonoDevelop.Autotools.addin.xml</File>
@@ -88,9 +94,4 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo partialTypes="True" isWidgetLibrary="True">
-    <ExportedWidgets>
-      <Widget>MonoDevelop.Autotools.MakefileIntegrationFeatureWidget</Widget>
-    </ExportedWidgets>
-  </GtkDesignInfo>
 </Project>

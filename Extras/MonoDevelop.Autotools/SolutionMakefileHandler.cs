@@ -60,18 +60,20 @@ namespace MonoDevelop.Autotools
 					
 					foreach ( CombineEntry ce in CalculateSubDirOrder ( config ) )
 					{
-						if ( combine.BaseDirectory == ce.BaseDirectory )
-							throw new Exception ( GettextCatalog.GetString ("Child projects / solutions cannot be in the same directory as their parent") );
-
-						if ( !ce.BaseDirectory.StartsWith (combine.BaseDirectory) )
-							throw new Exception ( GettextCatalog.GetString ("Child projects / solutions must be in sub-directories of their parent") );
-						
-						// add the subdirectory to the list
-						string path = Path.GetDirectoryName (ce.RelativeFileName);
-						if (path.StartsWith ("." + Path.DirectorySeparatorChar) )
-							path = path.Substring (2);
-						subdirs.Append (" ");
-						subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
+						if (combine.BaseDirectory == ce.BaseDirectory) {
+							subdirs.Append (" . ");
+						} else {
+							if ( !ce.BaseDirectory.StartsWith (combine.BaseDirectory) )
+								throw new Exception ( GettextCatalog.GetString (
+									"Child projects / solutions must be in sub-directories of their parent") );
+							
+							// add the subdirectory to the list
+							string path = Path.GetDirectoryName (ce.RelativeFileName);
+							if (path.StartsWith ("." + Path.DirectorySeparatorChar) )
+								path = path.Substring (2);
+							subdirs.Append (" ");
+							subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
+						}
 
 						if (!children.Contains (ce))
 							children.Add ( ce );
@@ -79,6 +81,8 @@ namespace MonoDevelop.Autotools
 					subdirs.Append ( "\nendif\n" );
 				}
 				mfile.Append ( subdirs.ToString () );
+
+				string includedProject = null;
 
 				// deploy recursively
 				foreach ( CombineEntry ce in children )
@@ -88,6 +92,16 @@ namespace MonoDevelop.Autotools
 					if ( handler != null && handler.CanDeploy ( ce ) )
 					{
 						makefile = handler.Deploy ( ctx, ce, monitor );
+						if (combine.BaseDirectory == ce.BaseDirectory) {
+							if (includedProject != null)
+								throw new Exception ( GettextCatalog.GetString (
+									"More than 1 project in the same directory as the top-level solution is not supported."));
+
+							// project is in the solution directory
+							includedProject = String.Format ("include {0}.make", ce.Name);
+							continue;
+						}
+
 						string outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
 						StreamWriter writer = new StreamWriter ( outpath + ".am" );
 						makefile.Write ( writer );
@@ -98,6 +112,8 @@ namespace MonoDevelop.Autotools
 						monitor.Log .WriteLine("Project '{0}' skipped.", ce.Name); 
 					}
 				}
+				mfile.Append (GettextCatalog.GetString ("# Include project specific makefile"));
+				mfile.Append (includedProject);
 
 				monitor.Step (1);
 			}

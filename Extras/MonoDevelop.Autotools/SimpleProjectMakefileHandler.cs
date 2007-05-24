@@ -111,7 +111,11 @@ namespace MonoDevelop.Autotools
 						
 						dllReferences.WriteLine (" \\");
 						dllReferences.Write ("\t");
-						dllReferences.Write ( ctx.GetRelativePath (project, assemblyPath, false) );
+
+						ctx.AddGlobalReferencedFile (Runtime.FileService.AbsoluteToRelativePath (
+							Path.GetFullPath (ctx.BaseDirectory), assemblyPath));
+						dllReferences.Write ("$(BUILD_DIR)" + Path.DirectorySeparatorChar +
+								Path.GetFileName (assemblyPath));
 					} 
 					else if (reference.ReferenceType == ReferenceType.Project)
 						continue; // handled elsewhere
@@ -140,6 +144,7 @@ namespace MonoDevelop.Autotools
 				foreach (ProjectFile projectFile in project.ProjectFiles) 
 				{
 					pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? projectFile.RelativePath : projectFile.RelativePath.Replace("\\","/");
+					pfpath = AutotoolsContext.NormalizeRelativePath (pfpath);
 					switch ( projectFile.BuildAction )
 					{
 						case BuildAction.Compile:
@@ -163,6 +168,7 @@ namespace MonoDevelop.Autotools
 								string newPath = Path.Combine (rdir, Path.GetFileName ( projectFile.FilePath ));
 								Runtime.FileService.CopyFile ( projectFile.FilePath, newPath ) ;
 								pfpath = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath (newPath) : project.GetRelativeChildPath (newPath).Replace("\\","/");
+								pfpath = AutotoolsContext.NormalizeRelativePath (pfpath);
 							}
 							if (!String.IsNullOrEmpty (projectFile.ResourceId) && projectFile.ResourceId != Path.GetFileName (pfpath))
 								res_files.AppendFormat ( "\\\n\t{0},{1} ", pfpath, projectFile.ResourceId);
@@ -208,7 +214,9 @@ namespace MonoDevelop.Autotools
 						ctx.AddAutoconfFile (fname);
 						fname = ctx.GetRelativePath (project, fname, true);
 					} else {
-						fname = ctx.GetRelativePath (project, dfile.SourcePath, false);
+						fname = Runtime.FileService.AbsoluteToRelativePath (
+								Path.GetFullPath (project.BaseDirectory),
+								Path.GetFullPath (dfile.SourcePath));
 					}
 					
 					string targetDeployFile = "$(BUILD_DIR)" + Path.DirectorySeparatorChar + Path.GetFileName (dfile.RelativeTargetPath); 
@@ -218,7 +226,7 @@ namespace MonoDevelop.Autotools
 					deployFileCopy.AppendFormat ("{0} = {1}\n", deployVar, targetDeployFile);
 					deployFileCopy.AppendFormat ("$({0}): {1}\n", deployVar, srcDeployFile);
 					deployFileCopy.AppendFormat ("\tmkdir -p $(BUILD_DIR)\n");
-					deployFileCopy.AppendFormat ("\tcp {0} $({1})\n", srcDeployFile, deployVar);
+					deployFileCopy.AppendFormat ("\tcp '$<' '$@'\n");
 					deployFileCopy.Append ("\n");
 					
 					switch (dfile.TargetDirectoryID) {
@@ -342,11 +350,25 @@ namespace MonoDevelop.Autotools
 
 //				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
 				
-				// Create makefile
-				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");
+				// Create project specific makefile
+				Stream stream = ctx.GetTemplateStream ("Project.make.template");
 				StreamReader reader = new StreamReader (stream);			                                          
 				string txt = templateEngine.Process ( reader );
 				reader.Close();
+
+				using (StreamWriter sw = new StreamWriter (Path.Combine (Path.GetDirectoryName (entry.FileName), entry.Name + ".make")))
+					sw.Write (txt);
+
+				templateEngine = new TemplateEngine ();
+				templateEngine.Variables ["INCLUDE_PER_PROJECT_MAKEFILE"] = String.Format (
+						"{0}\ninclude {1}.make", 
+						GettextCatalog.GetString ("# Include project specific makefile"),
+						entry.Name);
+
+				StreamReader sr = new StreamReader (ctx.GetTemplateStream ("Makefile.am.project.template"));
+				txt = templateEngine.Process (sr);
+				sr.Close ();
+
 				makefile.Append ( txt );
 
 				monitor.Step (1);
