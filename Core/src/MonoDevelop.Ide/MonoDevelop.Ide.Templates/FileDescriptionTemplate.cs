@@ -35,7 +35,8 @@ namespace MonoDevelop.Ide.Templates
 					return t;
 				}
 			}
-			throw new InvalidOperationException ("Unknown file template type: " + element.Name);
+			return null;
+			//throw new InvalidOperationException ("Unknown file template type: " + element.Name);
 		}
 		
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)

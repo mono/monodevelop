@@ -422,6 +422,8 @@ namespace MonoDevelop.Ide.Projects
 			using (XmlTextWriter writer = new XmlTextWriter (FileName, System.Text.Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement ("Project");
+				writer.WriteAttributeString ("DefaultTargets", "Build");
+				writer.WriteAttributeString ("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 				foreach (PropertyGroup propertyGroup in this.propertyGroups) {
 					propertyGroup.Write (writer);
 				}

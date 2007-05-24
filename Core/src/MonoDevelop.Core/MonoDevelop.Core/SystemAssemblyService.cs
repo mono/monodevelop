@@ -105,12 +105,13 @@ namespace MonoDevelop.Core
 			
 			// Try to find a newer version of the same assembly.
 			AssemblyName reqName = ParseAssemblyName (fullname);
-			foreach (string asm in assemblyFullNameToPath.Keys) {
-				AssemblyName foundName = ParseAssemblyName (asm);
-				if (reqName.Name == foundName.Name && reqName.Version.CompareTo (foundName.Version) < 0)
-					return asm;
+			if (reqName != null) {
+				foreach (string asm in assemblyFullNameToPath.Keys) {
+					AssemblyName foundName = ParseAssemblyName (asm);
+					if (foundName != null && reqName.Name == foundName.Name && reqName.Version.CompareTo (foundName.Version) < 0)
+						return asm;
+				}
 			}
-			
 			return null;
 		}
 	

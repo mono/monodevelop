@@ -99,7 +99,7 @@ namespace CSharpBinding
 		public override CompilerResult Compile (IProject project, IProgressMonitor monitor)
 		{
 			string responseFileName = Path.GetTempFileName ();
-			
+			Console.WriteLine (responseFileName);
 			StreamWriter writer = new StreamWriter (responseFileName);
 			try {
 				writer.WriteLine ("/noconfig");
@@ -121,7 +121,20 @@ namespace CSharpBinding
 				}
 				
 				foreach (ProjectItem item in project.Items) {
-					Console.WriteLine (item);
+					ReferenceProjectItem referenceItem = item as ReferenceProjectItem;
+					if (referenceItem != null) {
+						string reference = referenceItem.Include;
+						if (!String.IsNullOrEmpty (referenceItem.HintPath)) {
+							string fileName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (referenceItem.HintPath));
+							if (File.Exists (fileName))
+								reference = fileName;
+						}
+						writer.WriteLine ("\"/r:{0}\"", reference);
+					}
+				}
+				
+				foreach (ProjectItem item in project.Items) {
+					Console.WriteLine ("item:" + item);
 					if (item is ProjectFile) {
 						writer.WriteLine ("\"{0}\"", item.Include);
 					}
@@ -149,7 +162,7 @@ namespace CSharpBinding
 			
 			Runtime.FileService.DeleteFile (error);
 			Runtime.FileService.DeleteFile (output);
-			Runtime.FileService.DeleteFile (responseFileName);
+			//Runtime.FileService.DeleteFile (responseFileName);
 			
 			return result;
 		}

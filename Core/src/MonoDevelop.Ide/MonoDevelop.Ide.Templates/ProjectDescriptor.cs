@@ -96,8 +96,8 @@ namespace MonoDevelop.Ide.Templates
 			project.FileName = Runtime.FileService.GetDirectoryNameWithSeparator(projectCreateInformation.ProjectBasePath) + newProjectName + ".csproj";
 			
 			// Add References
-			foreach (MonoDevelop.Projects.ProjectReference projectReference in references) {
-				project.Items.Add (new ReferenceProjectItem (projectReference.Reference));
+			foreach (string reference in references) {
+				project.Items.Add (new ReferenceProjectItem (reference));
 			}
 
 			foreach (FileDescriptionTemplate file in resources) {
@@ -172,9 +172,7 @@ namespace MonoDevelop.Ide.Templates
 			if (element["References"] != null) {
 				foreach (XmlNode node in element["References"].ChildNodes) {
 					if (node != null && node.Name == "Reference") {
-						MonoDevelop.Projects.ReferenceType referenceType = (MonoDevelop.Projects.ReferenceType)Enum.Parse(typeof(MonoDevelop.Projects.ReferenceType), node.Attributes["type"].InnerXml);
-						MonoDevelop.Projects.ProjectReference projectReference = new MonoDevelop.Projects.ProjectReference (referenceType, node.Attributes["refto"].InnerXml);
-						projectDescriptor.references.Add(projectReference);
+						projectDescriptor.references.Add (node.Attributes["refto"].InnerXml);
 					}
 				}
 			}

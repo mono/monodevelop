@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects.Item
 		
 		public string GetMetadata (string name)
 		{
-			return metaData[name];
+			return metaData.ContainsKey (name) ? metaData[name] : null;
 		}
 		
 		public void SetMetadata (string name, string value)
