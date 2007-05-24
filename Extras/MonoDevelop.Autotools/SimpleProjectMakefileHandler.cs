@@ -194,7 +194,7 @@ namespace MonoDevelop.Autotools
 				foreach (DeployFile dfile in deployFiles) {
 					if (dfile.SourcePath == project.GetOutputFileName ())
 						continue;
-					
+
 					string fname = null;
 					
 					string deployVar = GetDeployVar (deployFileVars, Path.GetFileName (dfile.RelativeTargetPath));
@@ -351,23 +351,10 @@ namespace MonoDevelop.Autotools
 //				if ( pkgconfig ) CreatePkgConfigFile ( project, pkgs, dlls, monitor, ctx );
 				
 				// Create project specific makefile
-				Stream stream = ctx.GetTemplateStream ("Project.make.template");
+				Stream stream = ctx.GetTemplateStream ("Makefile.am.project.template");
 				StreamReader reader = new StreamReader (stream);			                                          
 				string txt = templateEngine.Process ( reader );
 				reader.Close();
-
-				using (StreamWriter sw = new StreamWriter (Path.Combine (Path.GetDirectoryName (entry.FileName), entry.Name + ".make")))
-					sw.Write (txt);
-
-				templateEngine = new TemplateEngine ();
-				templateEngine.Variables ["INCLUDE_PER_PROJECT_MAKEFILE"] = String.Format (
-						"{0}\ninclude {1}.make", 
-						GettextCatalog.GetString ("# Include project specific makefile"),
-						entry.Name);
-
-				StreamReader sr = new StreamReader (ctx.GetTemplateStream ("Makefile.am.project.template"));
-				txt = templateEngine.Process (sr);
-				sr.Close ();
 
 				makefile.Append ( txt );
 

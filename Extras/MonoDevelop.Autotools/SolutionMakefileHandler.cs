@@ -89,6 +89,7 @@ namespace MonoDevelop.Autotools
 				{
 					IMakefileHandler handler = AutotoolsContext.GetMakefileHandler ( ce );
 					Makefile makefile;
+					string outpath;
 					if ( handler != null && handler.CanDeploy ( ce ) )
 					{
 						makefile = handler.Deploy ( ctx, ce, monitor );
@@ -99,21 +100,27 @@ namespace MonoDevelop.Autotools
 
 							// project is in the solution directory
 							includedProject = String.Format ("include {0}.make", ce.Name);
-							continue;
+							outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), ce.Name + ".make");
+						} else {
+							makefile.SetVariable ("EXTRA_DIST", "");
+							outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
+							ctx.AddAutoconfFile (outpath);
+							outpath = outpath + ".am";
 						}
 
-						string outpath = Path.Combine(Path.GetDirectoryName(ce.FileName), "Makefile");
-						StreamWriter writer = new StreamWriter ( outpath + ".am" );
+						StreamWriter writer = new StreamWriter (outpath);
 						makefile.Write ( writer );
 						writer.Close ();
-						ctx.AddAutoconfFile ( outpath );
 					}
 					else {
 						monitor.Log .WriteLine("Project '{0}' skipped.", ce.Name); 
 					}
 				}
-				mfile.Append (GettextCatalog.GetString ("# Include project specific makefile"));
-				mfile.Append (includedProject);
+
+				if (includedProject != null) {
+					mfile.Append (GettextCatalog.GetString ("# Include project specific makefile"));
+					mfile.Append (includedProject);
+				}
 
 				monitor.Step (1);
 			}

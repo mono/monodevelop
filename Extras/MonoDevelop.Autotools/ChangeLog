@@ -1,4 +1,18 @@
-2007-05-25  Ankit Jain  <jankit@novell.com>
+2007-05-24  Ankit Jain  <jankit@novell.com>
+
+	* SolutionMakefileHandler.cs (Deploy): Emit an empty initializer for
+	EXTRA_DIST in makefiles for projects which have their own directory.
+	Include project specific makefile only if required.
+	* SimpleProjectMakefileHandler.cs (Deploy): Don't emit a project
+	specific *.make file.
+
+	* templates/Makefile.include (EXTRA_DIST): Use = instead of +=.
+	* templates/Project.make.template: Remove the file and move contents .. 
+	* templates/Makefile.am.project.template: .. here.
+	* Makefile.am: Update.
+	* MonoDevelop.Autotools.mdp: Update.
+
+2007-05-24  Ankit Jain  <jankit@novell.com>
 	    Raja R Harinath  <rharinath@novell.com>
 	
 	* SolutionMakefileHandler.cs (Deploy): If a project is in the same

@@ -61,8 +61,7 @@ DATA_FILES =  \
 	templates/exe.wrapper.in.template \
 	templates/Makefile.am.project.template \
 	templates/Makefile.include \
-	templates/package.pc.template \
-	templates/Project.make.template
+	templates/package.pc.template
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 

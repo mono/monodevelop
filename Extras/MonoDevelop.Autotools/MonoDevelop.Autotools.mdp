@@ -56,7 +56,6 @@
     <File name="./gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs" subtype="Code" buildaction="Compile" />
     <File name="./PropertyProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="./MonoDevelop.Autotools.addin.xml" subtype="Code" buildaction="FileCopy" />
-    <File name="./templates/Project.make.template" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Project" localcopy="False" refto="MonoDevelop.Core.Gui" />
