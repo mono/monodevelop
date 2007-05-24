@@ -239,7 +239,8 @@ namespace MonoDevelop.Prj2Make
 				EnsureChildValue (configElement, "OutputType", ns, config.CompileTarget);
 				EnsureChildValue (configElement, "AssemblyName", ns, config.OutputAssembly);
 				EnsureChildValue (configElement, "OutputPath", ns, 
-					Runtime.FileService.AbsoluteToRelativePath (project.BaseDirectory, config.OutputDirectory));
+					NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+						project.BaseDirectory, config.OutputDirectory)));
 				EnsureChildValue (configElement, "DebugSymbols", ns, config.DebugMode);
 
 				if (project.LanguageName == "VBNet") {
@@ -256,13 +257,13 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (configElement, "OptionStrict", ns, vbparams.OptionStrict);
 					if (vbparams.Win32Icon != null && vbparams.Win32Icon.Length > 0)
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, vbparams.Win32Icon));
+							NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+								project.BaseDirectory, vbparams.Win32Icon)));
 
 					if (vbparams.Win32Resource != null && vbparams.Win32Resource.Length > 0)
 						EnsureChildValue (configElement, "Win32Resource", ns,
-							Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, vbparams.Win32Resource));
+							NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+								project.BaseDirectory, vbparams.Win32Resource)));
 
 					//FIXME: VB.net Imports
 				}
@@ -278,13 +279,13 @@ namespace MonoDevelop.Prj2Make
 					EnsureChildValue (configElement, "WarningLevel", ns, csparams.WarningLevel);
 					if (csparams.Win32Icon != null && csparams.Win32Icon.Length > 0)
 						EnsureChildValue (configElement, "ApplicationIcon", ns,
-							Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, csparams.Win32Icon));
+							NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+								project.BaseDirectory, csparams.Win32Icon)));
 
 					if (csparams.Win32Resource != null && csparams.Win32Resource.Length > 0)
 						EnsureChildValue (configElement, "Win32Resource", ns,
-							Runtime.FileService.AbsoluteToRelativePath (
-								project.BaseDirectory, csparams.Win32Resource));
+							NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+								project.BaseDirectory, csparams.Win32Resource)));
 				}
 			}
 
@@ -630,8 +631,8 @@ namespace MonoDevelop.Prj2Make
 				if (c != null) {
 					Project p = c.FindProject (projectRef.Reference);
 					//FIXME: if (p == null) : This should not happen!
-					reference = Runtime.FileService.AbsoluteToRelativePath (
-						project.BaseDirectory, p.FileName);
+					reference = NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+						project.BaseDirectory, p.FileName));
 
 					if (p.ExtendedProperties.Contains (typeof (MSBuildFileFormat))) {
 						MSBuildData data = (MSBuildData) p.ExtendedProperties [typeof (MSBuildFileFormat)];
@@ -691,7 +692,7 @@ namespace MonoDevelop.Prj2Make
 
 			XmlDocument doc = d.Document;
 			XmlElement elem = doc.CreateElement (name, ns);
-			elem.SetAttribute ("Include", projectFile.RelativePath);
+			elem.SetAttribute ("Include", NormalizeRelativePath (projectFile.RelativePath));
 
 			XmlNode n = doc.SelectSingleNode (String.Format (
 					"/tns:Project/tns:ItemGroup/tns:{0}", name), NamespaceManager);
@@ -717,8 +718,8 @@ namespace MonoDevelop.Prj2Make
 				//DependentUpon is relative to the basedir of the 'pf' (resource file)
 				if (!String.IsNullOrEmpty (projectFile.DependsOn))
 					EnsureChildValue (elem, "DependentUpon", ns,
-						Runtime.FileService.AbsoluteToRelativePath (
-							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn));
+						NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+							Path.GetDirectoryName (projectFile.Name), projectFile.DependsOn)));
 			}
 			
 			return elem;
@@ -732,7 +733,7 @@ namespace MonoDevelop.Prj2Make
 
 			//FIXME: Check whether this file is a ApplicationIcon and accordingly update that?
 			XmlElement elem = d.ProjectFileElements [e.ProjectFile];
-			elem.SetAttribute ("Include", e.ProjectFile.RelativePath);
+			elem.SetAttribute ("Include", NormalizeRelativePath (e.ProjectFile.RelativePath));
 		}
 
 		static void HandleFilePropertyChanged (object sender, ProjectFileEventArgs e)
@@ -779,8 +780,8 @@ namespace MonoDevelop.Prj2Make
 			//DependentUpon is relative to the basedir of the 'pf' (resource file)
 			if (!String.IsNullOrEmpty (e.ProjectFile.DependsOn))
 				EnsureChildValue (d.ProjectFileElements [e.ProjectFile], "DependentUpon", ns,
-					Runtime.FileService.AbsoluteToRelativePath (
-						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn));
+					NormalizeRelativePath (Runtime.FileService.AbsoluteToRelativePath (
+						Path.GetDirectoryName (e.ProjectFile.Name), e.ProjectFile.DependsOn)));
 			//FIXME: Subtype, Data
 		}
 
@@ -1291,6 +1292,19 @@ namespace MonoDevelop.Prj2Make
 				return "VBNet";
 
 			return null;
+		}
+
+		public static string NormalizeRelativePath (string path)
+		{
+			path = path.Trim (Path.DirectorySeparatorChar,' ');
+			while (path.StartsWith ("." + Path.DirectorySeparatorChar)) {
+				path = path.Substring (2);
+				path = path.Trim (Path.DirectorySeparatorChar,' ');
+			}
+			if (path == ".")
+				return string.Empty;
+			else
+				return path;
 		}
 
 		static Regex conditionRegex = null;
