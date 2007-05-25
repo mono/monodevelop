@@ -135,18 +135,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			string name = entryPropertyName.Text;
-			CodeMemberProperty member;
 			
-			member = new CodeMemberProperty ();
-			member.Name = name;
-			
-			member.Type = new CodeTypeReference (field.ReturnType.Name);
-			member.Attributes = MemberAttributes.Public;
-			
-			member.HasGet = true;
-			member.HasSet = true;
-			
-			refactorer.EncapsulateField (monitor, field.DeclaringType, field, member, radioUpdateAll.Active);
+			refactorer.EncapsulateField (monitor, field.DeclaringType, field, name, radioUpdateAll.Active);
 			
 			((Widget) this).Destroy ();
 		}

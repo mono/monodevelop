@@ -1,7 +1,16 @@
 2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
-	* MonoDevelop.Ide.Commands/RefactoryCommands.cs (ImplementInterface):
-	Moved the bulk of the logic to CodeRefactorer.
+	* MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs: Moved the
+	logic that constructed the CodeDom property object into the
+	IRefactorer implementation instead, allowing us to take advantage
+	of the new code I wrote to generate a CodeTypeReference given an
+	IReturnType.
+
+2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Ide.Commands/RefactoryCommands.cs
+	(ImplementInterface): Moved the bulk of the logic to
+	CodeRefactorer.
 
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
