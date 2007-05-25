@@ -291,6 +291,17 @@ namespace CSharpBinding.Parser
 				name = resolver.SearchNamespace (resolver.CallingClass.Namespace + "." + identifierExpression.Identifier, resolver.CompilationUnit);
 				if (name != null)
 					return new ReturnType (name);
+				
+				// check parent namespaces
+				string ns = resolver.CallingClass.Namespace;
+				int dot = ns.Length;
+				
+				while (dot > 1 && (dot = ns.LastIndexOf ('.', dot - 1)) != -1) {
+					name = ns.Substring (0, dot + 1) + identifierExpression.Identifier;
+					name = resolver.SearchNamespace (name, resolver.CompilationUnit);
+					if (name != null)
+						return new ReturnType (name);
+				}
 			}
 			
 			IClass c = resolver.SearchType(identifierExpression.Identifier, null, resolver.CompilationUnit);

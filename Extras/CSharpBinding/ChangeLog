@@ -1,3 +1,8 @@
+2007-05-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Parser/TypeVisitor.cs (Visit::IdentifierExpression): Scan parent
+	namespaces of the calling class as well. Fixes bug #81543.
+
 2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/CodeGenerator.cs (GetOptions): Override our base
