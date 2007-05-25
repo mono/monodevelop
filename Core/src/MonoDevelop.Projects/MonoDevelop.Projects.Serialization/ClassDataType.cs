@@ -183,6 +183,20 @@ namespace MonoDevelop.Projects.Serialization
 			}
 		}
 		
+		public void RemoveProperty (string name)
+		{
+			ItemProperty prop = (ItemProperty) properties [name];
+			if (prop == null)
+				return;
+			properties.Remove (name);
+			sortedPoperties.Remove (prop);
+			
+			if (subtypes != null && subtypes.Count > 0) {
+				foreach (ClassDataType subtype in subtypes)
+					subtype.RemoveProperty (name);
+			}
+		}
+		
 		Exception CreateNestedConflictException (ItemProperty p1, ItemProperty p2)
 		{
 			return new InvalidOperationException ("There is a conflict between the properties '" + p1.Name + "' and '" + p2.Name + "'. Nested element properties can't be mixed with normal element properties.");

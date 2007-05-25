@@ -42,6 +42,11 @@ namespace MonoDevelop.Projects
 			fileFormats.Add (format);
 		}
 		
+		public void UnregisterFileFormat (IFileFormat format)
+		{
+			fileFormats.Remove (format);
+		}
+		
 		public IFileFormat[] GetFileFormats (string fileName)
 		{
 			ArrayList list = new ArrayList ();

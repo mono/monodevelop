@@ -76,6 +76,12 @@ namespace MonoDevelop.Projects.Serialization
 			ctype.AddProperty (prop);
 		}
 		
+		public void UnregisterProperty (Type targetType, string name)
+		{
+			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (targetType);
+			ctype.RemoveProperty (name);
+		}
+		
 		public void IncludeType (Type type)
 		{
 			GetConfigurationDataType (type);

@@ -310,6 +310,8 @@ namespace MonoDevelop.Projects
 		{
 			if (args.Change == ExtensionChange.Add)
 				formatManager.RegisterFileFormat ((IFileFormat) args.ExtensionObject);
+			else
+				formatManager.UnregisterFileFormat ((IFileFormat) args.ExtensionObject);
 		}
 		
 		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
@@ -321,6 +323,7 @@ namespace MonoDevelop.Projects
 				}
 				DataContext.IncludeType (t);
 			}
+			// Types can't be excluded from a DataContext, but that's not a big problem anyway
 		}
 		
 		void OnPropertiesExtensionChanged (object s, ExtensionNodeEventArgs args)
@@ -329,6 +332,11 @@ namespace MonoDevelop.Projects
 				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
 				if (cls.Class != null && cls.PropertyType != null)
 					DataContext.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType);
+			}
+			else {
+				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
+				if (cls.Class != null && cls.PropertyType != null)
+					DataContext.UnregisterProperty (cls.Class, cls.PropertyName);
 			}
 		}
 		

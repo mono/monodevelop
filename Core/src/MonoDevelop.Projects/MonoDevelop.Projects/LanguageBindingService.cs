@@ -130,6 +130,8 @@ namespace MonoDevelop.Projects
 				// Make sure the langs list is re-created
 				langs = null;
 			}
+			else
+				bindings.Remove ((LanguageBindingCodon) args.ExtensionNode);
 		}
 	}
 }

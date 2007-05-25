@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects
 				DefaultCompilerResult refres = null;
 				if (pr.ReferenceType == ReferenceType.Project) {
 					// Ignore non-dotnet projects
-					Project p = RootCombine.FindProject (pr.Reference);
+					Project p = RootCombine != null ? RootCombine.FindProject (pr.Reference) : null;
 					if (p != null && !(p is DotNetProject))
 						continue;
 
