@@ -218,6 +218,15 @@ namespace MonoDevelop.Ide.Templates
 					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
 				}
 			}
+			else {
+				FileTemplateCodon codon = (FileTemplateCodon) args.ExtensionNode;
+				foreach (FileTemplate t in fileTemplates) {
+					if (t.Id == codon.Id) {
+						fileTemplates.Remove (t);
+						break;
+					}
+				}
+			}
 		}
 		
 		internal static ArrayList GetFileTemplates (Project project)

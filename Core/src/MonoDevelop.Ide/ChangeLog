@@ -1,3 +1,15 @@
+2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs,
+	  MonoDevelop.Ide.Templates/FileDescriptionTemplate.cs,
+	  MonoDevelop.Ide.Templates/ProjectTemplate.cs,
+	  MonoDevelop.Ide.Gui/DisplayBindingService.cs: Properly handle
+	  add-in unload events.
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs,
+	  MonoDevelop.Ide.Gui/IWorkbenchLayout.cs,
+	  MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added support for
+	  removing pads (needed for add-in unloading).
+
 2007-05-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Moved here

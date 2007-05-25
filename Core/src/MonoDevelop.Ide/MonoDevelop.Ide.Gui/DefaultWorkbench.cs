@@ -274,6 +274,14 @@ namespace MonoDevelop.Ide.Gui
 				layout.ShowPad (content);
 		}
 		
+		public void RemovePad (PadCodon codon)
+		{
+			PadContentCollection.Remove (codon);
+			
+			if (layout != null)
+				layout.RemovePad (codon);
+		}
+		
 		public virtual void BringToFront (PadCodon content)
 		{
 			if (!layout.IsVisible (content))
@@ -629,6 +637,10 @@ namespace MonoDevelop.Ide.Gui
 					win.Icon = codon.Icon;
 
 				RedrawAllComponents ();
+			}
+			else {
+				PadCodon codon = (PadCodon) args.ExtensionNode;
+				RemovePad (codon);
 			}
 		}
 		

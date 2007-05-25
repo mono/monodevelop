@@ -353,6 +353,11 @@ namespace MonoDevelop.Ide.Gui
 						collection.Add (pad);
 				}
 			}
+			else {
+				WorkbenchContextCodon codon = (WorkbenchContextCodon) args.ExtensionNode;
+				WorkbenchContext ctx = WorkbenchContext.GetContext (codon.Id);
+				padCollections.Remove (ctx);
+			}
 		}
 		
 		public void Detach()
@@ -532,6 +537,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 			else
 				AddPad (content, content.DefaultPlacement);
+		}
+		
+		public void RemovePad (PadCodon content)
+		{
+			DockItem item = GetDockItem (content);
+			if (item != null) {
+				if (item.IsAttached) {
+					Gtk.Container c = (Gtk.Container) item.Parent;
+					c.Remove (item);
+				}
+				item.Destroy ();
+			}
+			PadWindow win = (PadWindow) padWindows [content];
+			padWindows.Remove (content);
+			padCodons.Remove (win);
+			
+			foreach (List<PadCodon> pads in padCollections.Values) {
+				pads.Remove (content);
+			}
 		}
 		
 		public bool IsVisible (PadCodon padContent)

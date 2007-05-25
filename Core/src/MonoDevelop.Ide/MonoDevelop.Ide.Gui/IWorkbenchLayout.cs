@@ -77,6 +77,8 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		void HidePad(PadCodon content);
 		
+		void RemovePad (PadCodon content);
+		
 		/// <summary>
 		/// returns true, if padContent is visible;
 		/// </summary>

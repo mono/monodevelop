@@ -290,6 +290,15 @@ namespace MonoDevelop.Ide.Templates
 					Services.MessageService.ShowError (e, GettextCatalog.GetString ("Error loading template from resource {0}", codon.Resource));
 				}
 			}
+			else {
+				foreach (ProjectTemplate pt in ProjectTemplates) {
+					ProjectTemplateCodon codon = (ProjectTemplateCodon) args.ExtensionNode;
+					if (pt.Id == codon.Id) {
+						ProjectTemplates.Remove (pt);
+						break;
+					}
+				}
+			}
 		}
 	}
 }

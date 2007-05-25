@@ -42,6 +42,8 @@ namespace MonoDevelop.Ide.Templates
 		{
 			if (args.Change == ExtensionChange.Add)
 				templates.Add ((FileTemplateTypeCodon) args.ExtensionNode);
+			else
+				templates.Remove ((FileTemplateTypeCodon) args.ExtensionNode);
 		}
 		
 		public abstract string Name { get; }

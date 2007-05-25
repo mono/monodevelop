@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (args.Change == ExtensionChange.Add)
 				bindings.Add ((DisplayBindingCodon)args.ExtensionNode);
+			else
+				bindings.Remove ((DisplayBindingCodon)args.ExtensionNode);
 		}
 	}
 }
