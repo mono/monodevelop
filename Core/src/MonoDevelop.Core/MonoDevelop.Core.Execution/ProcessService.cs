@@ -157,6 +157,8 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (args.Change == ExtensionChange.Add)
 				executionHandlers.Add (args.ExtensionNode);
+			else
+				executionHandlers.Remove (args.ExtensionNode);
 		}
 		
 		ProcessHostController GetHost (string id, bool shared)

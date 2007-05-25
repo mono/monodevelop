@@ -48,6 +48,7 @@ namespace MonoDevelop.Core.Execution
 			if (controller != null) {
 				controller.ReleaseInstance (this);
 				controller = null;
+				GC.SuppressFinalize (this);
 			}
 		}
 		
