@@ -358,6 +358,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.featureList = new MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector();
             this.featureList.Events = ((Gdk.EventMask)(256));
             this.featureList.Name = "featureList";
+            this.featureList.BorderWidth = ((uint)(0));
             this.vbox5.Add(this.featureList);
             Gtk.Box.BoxChild w28 = ((Gtk.Box.BoxChild)(this.vbox5[this.featureList]));
             w28.Position = 1;

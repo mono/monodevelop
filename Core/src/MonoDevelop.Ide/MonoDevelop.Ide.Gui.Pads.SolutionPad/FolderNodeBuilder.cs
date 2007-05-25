@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Search;
@@ -49,6 +50,14 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 
 		public override Type NodeDataType {
 			get { return typeof(FolderNode); }
+		}
+		
+		public override Type CommandHandlerType {
+			get { return typeof(FolderNodeCommandHandler); }
+		}
+		
+		public override string ContextMenuAddinPath {
+			get { return "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode"; }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -139,6 +148,28 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 				return false;
 			return Directory.GetFiles(folderNode.Path).Length > 0 || Directory.GetDirectories(folderNode.Path).Length > 0;
 		}
+	}
+	
+	public class FolderNodeCommandHandler: NodeCommandHandler
+	{
+		[CommandHandler (ProjectCommands.AddNewFiles)]
+		public void AddNewFileToProject()
+		{
+			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
+			if (folderNode == null) 
+				return;
+			using (AddNewFilesToProjectDialog dialog = new AddNewFilesToProjectDialog ()) {
+				dialog.Run ();
+			}
+/*			using (NewFileDialog nfd = new NewFileDialog (null, folderNode.Project.Project.BasePath)) {
+				nfd.Run ();
+				
+			}*/
+			ProjectService.SaveProject (folderNode.Project.Project);
+			
+			CurrentNode.Expanded = true;
+		}
+		
 	}
 }
 

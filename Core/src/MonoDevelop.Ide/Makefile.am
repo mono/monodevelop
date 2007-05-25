@@ -38,6 +38,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OpenFileInSolutionDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.RenameItemDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateGroup.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateLoader.cs \
@@ -153,6 +154,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFile.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/UnknownEntryNodeBuilder.cs \
+	MonoDevelop.Ide.Gui.Pads.SolutionPad/AddNewFilesToProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNode.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.SolutionPad/FolderNode.cs \
