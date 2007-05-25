@@ -286,7 +286,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		///
 		/// Override this method for each language to fill-in the Get/SetStatements
 		///
-		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, CodeMemberProperty prop)
+		public virtual IMember EncapsulateField (RefactorerContext ctx, IClass cls, IField field, string propName)
 		{
 			// If the field isn't already private/protected/internal, we'll need to fix it to be
 			if (true || field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal)) {
@@ -330,6 +330,17 @@ namespace MonoDevelop.Projects.CodeGeneration
 					//Console.WriteLine ("delete '{0}'", snippet);
 				}
 			}
+			
+			CodeMemberProperty prop = new CodeMemberProperty ();
+			prop.Name = propName;
+			
+			prop.Type = ReturnTypeToDom (field.ReturnType);
+			prop.Attributes = MemberAttributes.Public;
+			
+			prop.HasGet = true;
+			
+			// if the field was public before, then we provide a 'set', else we don't
+			prop.HasSet = (field.IsPublic || (!field.IsPrivate && !field.IsProtectedOrInternal));
 			
 			return AddMember (ctx, cls, prop);
 		}

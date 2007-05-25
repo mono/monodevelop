@@ -1,5 +1,20 @@
 2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs
+	(EncapsulateField): Now takes a string PropName argument instead
+	of a CodeMemberProperty.
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(EncapsulateField): No longer takes a CodeMemberProperty argument,
+	instead we now take a string propName argument.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(EncapsulateField): Now takes a string propName argument instead
+	of a CodeMemberProperty - we create this on our own now so that we
+	can reuse ReturnTypeToDom().
+
+2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
 	(ImplementMember): New method like AddMember(), but takes an
 	IMember argument instead.

@@ -296,7 +296,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return rv;
 		}
 		
-		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, CodeMemberProperty prop, bool updateInternalRefs)
+		public IMember EncapsulateField (IProgressMonitor monitor, IClass cls, IField field, string propName, bool updateInternalRefs)
 		{
 			RefactoryScope scope;
 			
@@ -333,15 +333,15 @@ namespace MonoDevelop.Projects.CodeGeneration
 					}
 					
 					if (rename)
-						mref.Rename (prop.Name);
+						mref.Rename (propName);
 				}
 			} else {
-				refs.RenameAll (prop.Name);
+				refs.RenameAll (propName);
 			}
 			
 			RefactorerContext gctx = GetGeneratorContext (cls);
 			IRefactorer r = GetGeneratorForClass (cls);
-			IMember m = r.EncapsulateField (gctx, cls, field, prop);
+			IMember m = r.EncapsulateField (gctx, cls, field, propName);
 			gctx.Save ();
 			
 			return m;
