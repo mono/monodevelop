@@ -415,62 +415,10 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 		
-		string ExplicitNamePrefix (IClass klass, IClass iface)
-		{
-			if (iface.Namespace == klass.Namespace)
-				return iface.Name + ".";
-			
-			string name = iface.FullyQualifiedName;
-			int maxLen = name.LastIndexOf ('.') - 1;
-			
-			if (maxLen < 0)
-				return iface.Name + ".";
-			
-			string longestMatch = null;
-			
-			if (name.StartsWith (klass.Namespace + "."))
-				longestMatch = klass.Namespace;
-			
-			if (pinfo.BestCompilationUnit != null) {
-				ICompilationUnit compilationUnit = (ICompilationUnit) pinfo.BestCompilationUnit;
-				bool found = false;
-				string prefix;
-				IUsing use;
-				int i, j;
-				
-				for (i = 0; i < compilationUnit.Usings.Count && !found; i++) {
-					if ((use = compilationUnit.Usings[i]) == null)
-						continue;
-					
-					for (j = 0; j < use.Usings.Count; j++) {
-						prefix = use.Usings[j];
-						if (name.StartsWith (prefix + ".")) {
-							if (longestMatch == null || prefix.Length > longestMatch.Length) {
-								longestMatch = prefix;
-								if (longestMatch.Length == maxLen) {
-									found = true;
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			if (longestMatch != null)
-				return name.Substring (longestMatch.Length + 1) + ".";
-			
-			return name + ".";
-		}
-		
 		void ImplementInterface (bool explicitly)
 		{
 			CodeRefactorer refactorer = IdeApp.ProjectOperations.CodeRefactorer;
 			IClass iface = item as IClass;
-			IMember newMember;
-			bool alreadyImplemented;
-			string prefix = null;
-			int i, j;
 			
 			if (klass == null)
 				return;
@@ -478,105 +426,7 @@ namespace MonoDevelop.Ide.Commands
 			if (iface == null)
 				return;
 			
-			if (explicitly)
-				prefix = ExplicitNamePrefix (klass, iface);
-			
-			// Add stubs in reverse order
-			
-			// Stub out non-implemented events defined by @iface
-			for (i = iface.Events.Count - 1; i >= 0; i--) {
-				IEvent ev = iface.Events[i];
-				
-				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
-					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
-						alreadyImplemented = true;
-						break;
-					}
-				}
-				
-				if (alreadyImplemented)
-					continue;
-				
-				CodeMemberEvent member;
-				
-				member = new CodeMemberEvent ();
-				if (explicitly)
-					member.Name = prefix + ev.Name;
-				else
-					member.Name = ev.Name;
-				
-				member.Type = new CodeTypeReference (ev.ReturnType.Name);
-				
-				// Update @klass so we have the most recent info
-				if ((newMember = refactorer.AddMember (klass, member)) != null)
-					klass = newMember.DeclaringType;
-			}
-			
-			// Stub out non-implemented methods defined by @iface
-			for (i = iface.Methods.Count - 1; i >= 0; i--) {
-				IMethod method = iface.Methods[i];
-				
-				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
-					if (klass.Methods[j].FullyQualifiedName == method.FullyQualifiedName) {
-						alreadyImplemented = true;
-						break;
-					}
-				}
-				
-				if (alreadyImplemented)
-					continue;
-				
-				CodeMemberMethod member;
-				member = new CodeMemberMethod ();
-				if (explicitly)
-					member.Name = prefix + method.Name;
-				else
-					member.Name = method.Name;
-				
-				member.ReturnType = new CodeTypeReference (method.ReturnType.Name);
-				member.Attributes = MemberAttributes.Public;
-				foreach (IParameter param in method.Parameters) {
-					CodeParameterDeclarationExpression par;
-					par = new CodeParameterDeclarationExpression (param.ReturnType.Name, param.Name);
-					member.Parameters.Add (par);
-				}
-				
-				// Update @klass so we have the most recent info
-				if ((newMember = refactorer.AddMember (klass, member)) != null)
-					klass = newMember.DeclaringType;
-			}
-			
-			// Stub out non-implemented properties defined by @iface
-			for (i = iface.Properties.Count - 1; i >= 0; i--) {
-				IProperty prop = iface.Properties[i];
-				
-				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
-					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
-						alreadyImplemented = true;
-						break;
-					}
-				}
-				
-				if (alreadyImplemented)
-					continue;
-				
-				CodeMemberProperty member;
-				
-				member = new CodeMemberProperty ();
-				if (explicitly)
-					member.Name = prefix + prop.Name;
-				else
-					member.Name = prop.Name;
-				
-				member.Type = new CodeTypeReference (prop.ReturnType.Name);
-				member.Attributes = MemberAttributes.Public;
-				member.HasGet = prop.CanGet;
-				member.HasSet = prop.CanSet;
-				
-				// Update @klass so we have the most recent info
-				if ((newMember = refactorer.AddMember (klass, member)) != null)
-					klass = newMember.DeclaringType;
-			}
+			refactorer.ImplementInterface (pinfo, klass, iface, explicitly);
 		}
 		
 		public void ImplementImplicitInterface ()
