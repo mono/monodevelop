@@ -1,3 +1,19 @@
+2007-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs
+	(ImplementMember): New method like AddMember(), but takes an
+	IMember argument instead.
+	(ImplementInterface): New method to implement an interface in
+	the specified class.
+
+	* MonoDevelop.Projects.CodeGeneration/IRefactorer.cs: Added an
+	ImplementMember() method.
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs
+	(GenerateCodeFromMember): Fix up methods to have a space before
+	the open paran of the argument list.
+	(ImplementMember): Implemented.
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Projects/ProjectService.cs,

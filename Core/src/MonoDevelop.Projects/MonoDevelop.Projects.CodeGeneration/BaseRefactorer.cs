@@ -98,6 +98,78 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return FindGeneratedMember (ctx, buffer, cls, member);
 		}
 		
+		protected CodeTypeReference ReturnTypeToDom (IReturnType rtype)
+		{
+			CodeTypeReference [] argTypes = null;
+			CodeTypeReference typeRef = null;
+			int i;
+			
+			ReturnTypeList genericArgs = rtype.GenericArguments;
+			if (genericArgs != null && genericArgs.Count > 0) {
+				argTypes = new CodeTypeReference [genericArgs.Count];
+				for (i = 0; i < genericArgs.Count; i++)
+					argTypes[i] = ReturnTypeToDom (genericArgs[i]);
+			}
+			
+			if (argTypes != null)
+				typeRef = new CodeTypeReference (rtype.FullyQualifiedName, argTypes);
+			else
+				typeRef = new CodeTypeReference (rtype.FullyQualifiedName);
+			
+			if (rtype.ArrayCount == 0)
+				return typeRef;
+			
+			int [] dim = rtype.ArrayDimensions;
+			for (i = 0; i < dim.Length; i++)
+				typeRef = new CodeTypeReference (typeRef, dim[i]);
+			
+			return typeRef;
+		}
+		
+		public virtual IMember ImplementMember (RefactorerContext ctx, IClass cls, string prefix, IMember member)
+		{
+			CodeTypeMember m;
+			
+			if (member is IEvent) {
+				CodeMemberEvent mEvent = new CodeMemberEvent ();
+				m = (CodeTypeMember) mEvent;
+				
+				mEvent.Type = ReturnTypeToDom (member.ReturnType);
+			} else if (member is IMethod) {
+				CodeMemberMethod mMethod = new CodeMemberMethod ();
+				IMethod method = (IMethod) member;
+				m = (CodeMemberMethod) mMethod;
+				
+				mMethod.ReturnType = ReturnTypeToDom (member.ReturnType);
+				
+				foreach (IParameter param in method.Parameters) {
+					CodeParameterDeclarationExpression par;
+					par = new CodeParameterDeclarationExpression (ReturnTypeToDom (param.ReturnType), param.Name);
+					mMethod.Parameters.Add (par);
+				}
+			} else if (member is IProperty) {
+				CodeMemberProperty mProperty = new CodeMemberProperty ();
+				IProperty property = (IProperty) member;
+				m = (CodeMemberProperty) mProperty;
+				
+				mProperty.HasGet = property.CanGet;
+				mProperty.HasSet = property.CanSet;
+				
+				mProperty.Type = ReturnTypeToDom (member.ReturnType);
+			} else {
+				return null;
+			}
+			
+			if (prefix != null)
+				m.Name = prefix + member.Name;
+			else
+				m.Name = member.Name;
+			
+			m.Attributes = MemberAttributes.Public;
+			
+			return AddMember (ctx, cls, m);
+		}
+		
 		public virtual void RemoveMember (RefactorerContext ctx, IClass cls, IMember member)
 		{
 			IEditableTextFile buffer = null;
@@ -448,6 +520,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 			int i = code.IndexOf ('{');
 			int j = code.LastIndexOf ('}');
 			code = code.Substring (i+1, j-i-1);
+			if (member is CodeMemberMethod)
+				if ((i = code.IndexOf ('(')) != -1)
+					code = code.Insert (i, " ");
 			return RemoveIndent (code);
 		}
 		

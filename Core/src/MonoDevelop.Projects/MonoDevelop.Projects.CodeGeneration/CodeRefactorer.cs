@@ -104,6 +104,132 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return m;
 		}
 		
+		public IMember ImplementMember (IClass cls, string prefix, IMember member)
+		{
+			RefactorerContext gctx = GetGeneratorContext (cls);
+			IRefactorer gen = GetGeneratorForClass (cls);
+			IMember m = gen.ImplementMember (gctx, cls, prefix, member);
+			gctx.Save ();
+			return m;
+		}
+		
+		string ExplicitNamePrefix (IParseInformation pinfo, IClass klass, IClass iface)
+		{
+			if (iface.Namespace == klass.Namespace)
+				return iface.Name + ".";
+			
+			string name = iface.FullyQualifiedName;
+			int maxLen = name.LastIndexOf ('.') - 1;
+			
+			if (maxLen < 0)
+				return iface.Name + ".";
+			
+			string longestMatch = null;
+			
+			if (name.StartsWith (klass.Namespace + "."))
+				longestMatch = klass.Namespace;
+			
+			if (pinfo != null && pinfo.BestCompilationUnit != null) {
+				ICompilationUnit compilationUnit = (ICompilationUnit) pinfo.BestCompilationUnit;
+				bool found = false;
+				string prefix;
+				IUsing use;
+				int i, j;
+				
+				for (i = 0; i < compilationUnit.Usings.Count && !found; i++) {
+					if ((use = compilationUnit.Usings[i]) == null)
+						continue;
+					
+					for (j = 0; j < use.Usings.Count; j++) {
+						prefix = use.Usings[j];
+						if (name.StartsWith (prefix + ".")) {
+							if (longestMatch == null || prefix.Length > longestMatch.Length) {
+								longestMatch = prefix;
+								if (longestMatch.Length == maxLen) {
+									found = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			if (longestMatch != null)
+				return name.Substring (longestMatch.Length + 1) + ".";
+			
+			return name + ".";
+		}
+		
+		public void ImplementInterface (IParseInformation pinfo, IClass klass, IClass iface, bool explicitly)
+		{
+			RefactorerContext gctx = GetGeneratorContext (klass);
+			IRefactorer gen = GetGeneratorForClass (klass);
+			bool alreadyImplemented;
+			string prefix = null;
+			IMember newMember;
+			int i, j;
+			
+			if (explicitly)
+				prefix = ExplicitNamePrefix (pinfo, klass, iface);
+			
+			// Stub out non-implemented events defined by @iface
+			for (i = 0; i < iface.Events.Count; i++) {
+				IEvent ev = iface.Events[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Events.Count; j++) {
+					if (klass.Events[j].FullyQualifiedName == ev.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, ev)) != null)
+					klass = newMember.DeclaringType;
+			}
+			
+			// Stub out non-implemented methods defined by @iface
+			for (i = 0; i < iface.Methods.Count; i++) {
+				IMethod method = iface.Methods[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Methods.Count; j++) {
+					if (klass.Methods[j].FullyQualifiedName == method.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, method)) != null)
+					klass = newMember.DeclaringType;
+			}
+			
+			// Stub out non-implemented properties defined by @iface
+			for (i = 0; i < iface.Properties.Count; i++) {
+				IProperty prop = iface.Properties[i];
+				
+				for (j = 0, alreadyImplemented = false; j < klass.Properties.Count; j++) {
+					if (klass.Properties[j].FullyQualifiedName == prop.FullyQualifiedName) {
+						alreadyImplemented = true;
+						break;
+					}
+				}
+				
+				if (alreadyImplemented)
+					continue;
+				
+				if ((newMember = gen.ImplementMember (gctx, klass, prefix, prop)) != null)
+					klass = newMember.DeclaringType;
+			}
+			
+			gctx.Save ();
+		}
+		
 		public void RemoveMember (IClass cls, IMember member)
 		{
 			RefactorerContext gctx = GetGeneratorContext (cls);
