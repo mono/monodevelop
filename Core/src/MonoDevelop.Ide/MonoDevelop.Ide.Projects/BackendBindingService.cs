@@ -62,28 +62,29 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		
 		public static BackendBindingCodon GetBackendBindingCodonByGuid (string guid)
 		{
 			foreach (BackendBindingCodon codon in backendBindingCodons) { 
-				Console.WriteLine ("{0} == {1}", codon.Guid, guid); 
 				if (codon.Guid == guid) 
 					return codon;
 			}
 			return null;
 		}
+		
+		public static BackendBindingCodon GetBackendBindingCodon (SolutionProject project)
+		{
+			return project != null ? GetBackendBindingCodonByGuid (project.TypeGuid) : null;
+		}
+		
 		public static IBackendBinding GetBackendBindingByGuid (string guid)
 		{
 			BackendBindingCodon codon = GetBackendBindingCodonByGuid (guid);
-			if (codon != null)
-				return codon.BackendBinding;
-			return null;
+			return codon != null ? codon.BackendBinding : null;
 		}
+		
 		public static IBackendBinding GetBackendBinding (SolutionProject project)
 		{
-			if (project != null)
-				return GetBackendBindingByGuid (project.TypeGuid);
-			return null;
+			return project != null ? GetBackendBindingByGuid (project.TypeGuid) : null;
 		}
 		
 	}

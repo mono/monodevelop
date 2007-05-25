@@ -1,10 +1,10 @@
 //
-// DirectoryNode.cs
+// FolderNode.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -34,11 +34,10 @@ using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class DirectoryNode
+	public class FolderNode
 	{
 		SolutionProject solutionProject;
 		string          path;
-		bool            isInProject;
 		
 		public SolutionProject Project {
 			get {
@@ -52,17 +51,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 		}
 		
-		public bool IsInProject {
-			get {
-				return isInProject;
-			}
-		}
-		
-		public DirectoryNode (SolutionProject solutionProject, string path, bool isInProject)
+		public FolderNode (SolutionProject solutionProject, string path)
 		{
 			this.solutionProject = solutionProject;
 			this.path            = path;
-			this.isInProject     = isInProject;
 		}
 	}
 }

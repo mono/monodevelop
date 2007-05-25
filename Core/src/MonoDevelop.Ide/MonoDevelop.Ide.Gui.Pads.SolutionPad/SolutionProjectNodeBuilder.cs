@@ -4,7 +4,7 @@
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			ctx.AddChild (new ReferenceFolderNode (solutionProject));
 			
 			foreach (string fileName in Directory.GetFiles(basePath)) {
-				bool isInProject = DirectoryNodeBuilder.IsFileInProject(solutionProject.Project, fileName);
+				bool isInProject = FolderNodeBuilder.IsFileInProject(solutionProject.Project, fileName);
 				
 				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) {
 					if (isInProject)
@@ -107,9 +107,13 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			}
 			
 			foreach (string directoryName in Directory.GetDirectories(basePath)) {
-				bool isInProject = DirectoryNodeBuilder.IsDirectoryInProject(solutionProject.Project, directoryName);
-				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
-					ctx.AddChild (new DirectoryNode (solutionProject, directoryName, isInProject));
+				bool isInProject = FolderNodeBuilder.IsDirectoryInProject(solutionProject.Project, directoryName);
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) { 
+					if (isInProject)
+						ctx.AddChild (new FolderNode (solutionProject, directoryName));
+					else
+						ctx.AddChild (new SystemFolderNode (solutionProject, directoryName));
+				}
 			}
 			
 		}

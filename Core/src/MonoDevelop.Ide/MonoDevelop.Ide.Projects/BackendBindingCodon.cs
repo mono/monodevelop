@@ -71,5 +71,18 @@ namespace MonoDevelop.Ide.Projects
 				return (IBackendBinding) GetInstance ();
 			}
 		}
+		
+		public bool IsCompileable (string fileName)
+		{
+			if (String.IsNullOrEmpty (fileName)) 
+				return false;
+			string fileNameExtension = System.IO.Path.GetExtension (fileName);
+			foreach (string extension in this.FileExtensions) {
+				if (extension == fileNameExtension)
+					return true;
+			}
+			return false;
+		}
+		
 	}
 }

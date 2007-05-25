@@ -1,10 +1,10 @@
 //
-// DirectoryNodeBuilder.cs
+// FolderNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -41,23 +41,23 @@ using MonoDevelop.Ide.Projects.Item;
 
 namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public class DirectoryNodeBuilder : TypeNodeBuilder
+	public class FolderNodeBuilder : TypeNodeBuilder
 	{
-		public DirectoryNodeBuilder ()
+		public FolderNodeBuilder ()
 		{
 		}
 
 		public override Type NodeDataType {
-			get { return typeof(DirectoryNode); }
+			get { return typeof(FolderNode); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			DirectoryNode directoryNode = dataObject as DirectoryNode;
-			if (directoryNode == null) 
-				return "DirectoryNode";
+			FolderNode folderNode = dataObject as FolderNode;
+			if (folderNode == null) 
+				return "FolderNode";
 			
-			return Path.GetFileName (directoryNode.Path);
+			return Path.GetFileName (folderNode.Path);
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -71,19 +71,19 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			DirectoryNode directoryNode = dataObject as DirectoryNode;
-			if (directoryNode == null) 
+			FolderNode folderNode = dataObject as FolderNode;
+			if (folderNode == null) 
 				return;
-			label = Path.GetFileName (directoryNode.Path);
+			label = Path.GetFileName (folderNode.Path);
 			
-			icon       = Context.GetIcon (directoryNode.IsInProject ? Stock.OpenFolder : Stock.OpenDashedFolder);
-			closedIcon = Context.GetIcon (directoryNode.IsInProject ? Stock.ClosedFolder : Stock.ClosedDashedFolder);
+			icon       = Context.GetIcon (Stock.OpenFolder);
+			closedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
 		public static bool IsFileInProject (IProject project, string fileName)
 		{
 			foreach (ProjectItem item in project.Items) {
-				string fullName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include));
+				string fullName = Path.GetFullPath (Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include)));
 				if (fullName == fileName) 
 					return true;
 			}
@@ -93,8 +93,10 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		public static bool IsDirectoryInProject (IProject project, string directoryName)
 		{
 			foreach (ProjectItem item in project.Items) {
-				string fullName = Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include));
-				if (fullName.StartsWith(directoryName)) 
+				string fullName = Path.GetFullPath (Path.Combine (project.BasePath, SolutionProject.NormalizePath (item.Include)));
+				if (fullName.StartsWith(directoryName + Path.DirectorySeparatorChar)) 
+					return true;
+				if (item is ProjectFile && ((ProjectFile)item).FileType == FileType.Folder && fullName == directoryName)
 					return true;
 			}
 			return false;
@@ -102,37 +104,40 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			DirectoryNode directoryNode = dataObject as DirectoryNode;
-			if (directoryNode == null) 
+			FolderNode folderNode = dataObject as FolderNode;
+			if (folderNode == null) 
 				return;
 			
-			string basePath = directoryNode.Path;
+			string basePath = folderNode.Path;
 			
 			foreach (string fileName in Directory.GetFiles(basePath)) {
-				bool isInProject = IsFileInProject(directoryNode.Project.Project, fileName);
+				bool isInProject = IsFileInProject(folderNode.Project.Project, fileName);
 				
 				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) { 
 					if (isInProject)
-						ctx.AddChild (new FileNode (directoryNode.Project, fileName));
+						ctx.AddChild (new FileNode (folderNode.Project, fileName));
 					else
-						ctx.AddChild (new SystemFileNode (directoryNode.Project, fileName));
+						ctx.AddChild (new SystemFileNode (folderNode.Project, fileName));
 				}
 			}
 			
 			foreach (string directoryName in Directory.GetDirectories(basePath)) {
-				bool isInProject = IsDirectoryInProject(directoryNode.Project.Project, directoryName);
-				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) 
-					ctx.AddChild (new DirectoryNode (directoryNode.Project, directoryName, isInProject));
+				bool isInProject = IsDirectoryInProject(folderNode.Project.Project, directoryName);
+				if (ProjectSolutionPad.Instance.ShowAllFiles || isInProject) {
+					if (isInProject)
+						ctx.AddChild (new FolderNode (folderNode.Project, directoryName));
+					else
+						ctx.AddChild (new SystemFolderNode (folderNode.Project, directoryName));
+				}
 			}
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			DirectoryNode directoryNode = dataObject as DirectoryNode;
-			if (directoryNode == null) 
+			FolderNode folderNode = dataObject as FolderNode;
+			if (folderNode == null) 
 				return false;
-			string basePath = directoryNode.Path;
-			return Directory.GetFiles(basePath).Length > 0 || Directory.GetDirectories(basePath).Length > 0;
+			return Directory.GetFiles(folderNode.Path).Length > 0 || Directory.GetDirectories(folderNode.Path).Length > 0;
 		}
 	}
 }

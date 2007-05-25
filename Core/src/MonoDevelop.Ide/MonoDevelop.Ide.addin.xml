@@ -82,6 +82,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFolderNode" name = "Folder context menu">
+		<Description>Context menu for a folder (not belonging to a project) in the solution pad.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/DefaultDirectoryNode" name = "Folder context menu">
 		<Description>Context menu for a folder in the solution pad.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Core.Gui.ItemSet"/>
@@ -746,9 +751,13 @@
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
 		<SeparatorItem id = "IncludeToProjectSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
-		<SeparatorItem id = "CutSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
+	</Extension>
+	
+	<Extension path = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/SystemFolderNode"  extension-nodes="CommandItem, SeparatorItem, ItemSet, LinkItem, LocalCommandItem" description="Context menu for a file (not belonging to a project) in the solution pad.">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
+		<SeparatorItem id = "IncludeToProjectSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" />
 	</Extension>
@@ -837,9 +846,10 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SolutionNodeBuilder"/>
 			
 			
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.DirectoryNodeBuilder"/>
-			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SystemFileNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FolderNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SystemFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.FileNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.SystemFileNodeBuilder"/>
 			
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ReferenceFolderNodeBuilder"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.ReferenceProjectItemNodeBuilder"/>

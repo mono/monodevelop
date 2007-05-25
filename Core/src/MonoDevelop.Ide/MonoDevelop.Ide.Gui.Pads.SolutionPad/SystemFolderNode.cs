@@ -1,5 +1,5 @@
 //
-// AbstractBackendBinding.cs
+// SystemFolderNode.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -26,67 +26,36 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.Collections.Generic;
+using System.Collections;
+using System.IO;
 
 using MonoDevelop.Ide.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects.CodeGeneration;
+using MonoDevelop.Ide.Projects.Item;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 {
-	public abstract class AbstractBackendBinding : IBackendBinding
+	public class SystemFolderNode
 	{
-		public virtual IParser Parser { 
+		SolutionProject solutionProject;
+		string          path;
+		
+		public SolutionProject Project {
 			get {
-				return null;
+				return this.solutionProject;
 			}
 		}
 		
-		public virtual IRefactorer Refactorer { 
+		public string Path {
 			get {
-				return null;
-			}	
-		}
-		
-		public abstract string CommentTag {
-			get;
-		}
-		
-		bool hasProjectSupport = false;
-		public bool HasProjectSupport {
-			get {
-				return hasProjectSupport;
+				return path;
 			}
 		}
 		
-		protected AbstractBackendBinding (bool hasProjectSupport)
+		public SystemFolderNode (SolutionProject solutionProject, string path)
 		{
-			this.hasProjectSupport = hasProjectSupport;
-		}
-		
-		public virtual void StartProject (IProject project, IProgressMonitor monitor, ExecutionContext context)
-		{
-		}
-		
-		public virtual void CleanProject (IProject project, IProgressMonitor monitor)
-		{
-		}
-		
-		public virtual IProject LoadProject (string fileName)
-		{
-			return null;
-		}
-		public virtual IProject CreateProject (MonoDevelop.Projects.ProjectCreateInformation info)
-		{
-			return null;
-		}
-		
-		public virtual CompilerResult Compile (IProject project, IProgressMonitor monitor)
-		{
-			return null;
+			this.solutionProject = solutionProject;
+			this.path            = path;
 		}
 	}
 }

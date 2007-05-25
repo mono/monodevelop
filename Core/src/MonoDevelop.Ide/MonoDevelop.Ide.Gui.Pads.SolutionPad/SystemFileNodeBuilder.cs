@@ -4,7 +4,7 @@
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -90,17 +90,18 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 		[CommandHandler (ProjectCommands.IncludeToProject)]
 		public void IncludeToProject ()
 		{
-			FileNode fileNode = CurrentNode.DataItem as FileNode;
-			if (fileNode == null) 
+			SystemFileNode systemFileNode = CurrentNode.DataItem as SystemFileNode;
+			if (systemFileNode == null) 
 				return;
-			foreach (ProjectItem item in fileNode.Project.Project.Items) {
-				string fileName = Path.GetFullPath (Path.Combine (fileNode.Project.Project.BasePath, SolutionProject.NormalizePath (item.Include)));
-				if (fileName == fileNode.FileName) {
-					fileNode.Project.Project.Items.Remove (item);
-					ProjectService.SaveProject (fileNode.Project.Project);
-					break;
-				}
-			}
+			FileType fileType = FileType.Content;
+			BackendBindingCodon codon = BackendBindingService.GetBackendBindingCodon (systemFileNode.Project);
+			if (codon != null && codon.IsCompileable (systemFileNode.FileName))
+				fileType = FileType.Compile;
+			string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFileNode.Project.Project.BasePath, systemFileNode.FileName);
+			if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
+				relativePath = relativePath.Substring (2);
+			systemFileNode.Project.Project.Items.Add (new ProjectFile (relativePath, fileType));
+			ProjectService.SaveProject (systemFileNode.Project.Project);
 		}
 	}
 }
