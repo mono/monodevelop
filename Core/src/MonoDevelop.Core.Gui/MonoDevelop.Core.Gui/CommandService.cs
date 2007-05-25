@@ -55,6 +55,8 @@ namespace MonoDevelop.Core.Gui
 		{
 			if (args.Change == ExtensionChange.Add)
 				manager.RegisterCommand (args.ExtensionObject as Command, null);
+			else
+				manager.UnregisterCommand (args.ExtensionObject as Command);
 		}
 		
 		public void EnableUpdate ()
@@ -153,7 +155,7 @@ namespace MonoDevelop.Core.Gui
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();
-			object[] items = AddinManager.GetExtensionObjects (addinPath);
+			object[] items = AddinManager.GetExtensionObjects (addinPath, false);
 			foreach (CommandEntry e in items)
 				cset.Add (e);
 			return cset;

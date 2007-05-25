@@ -1,3 +1,9 @@
+2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.Gui/CommandService.cs: Unregister commands from
+	  unloaded add-ins. Don't reuse extension objects when creating a
+	  menu, since they may have changed.
+
 2007-05-21  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.Core.Gui/MessageService.cs: Ensure Dialogs are Destroy()'ed.
