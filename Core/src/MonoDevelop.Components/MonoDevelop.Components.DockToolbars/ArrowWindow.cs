@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.DockToolbars
 		Gdk.GC redgc;
 		
 		// Where does the arrow point to
-		public enum Direction {
+		public new enum Direction {
 			Up, Down, Left, Right
 		}
 		

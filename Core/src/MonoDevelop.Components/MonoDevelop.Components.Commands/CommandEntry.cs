@@ -55,6 +55,9 @@ namespace MonoDevelop.Components.Commands
 				return new Gtk.SeparatorToolItem ();
 
 			Command cmd = manager.GetCommand (cmdId);
+			if (cmd == null)
+				return new Gtk.ToolItem ();
+			
 			if (cmd is CustomCommand) {
 				Gtk.Widget child = (Gtk.Widget) Activator.CreateInstance (((CustomCommand)cmd).WidgetType);
 				Gtk.ToolItem ti = new Gtk.ToolItem ();
@@ -88,6 +91,9 @@ namespace MonoDevelop.Components.Commands
 				return new Gtk.SeparatorMenuItem ();
 				
 			Command cmd = manager.GetCommand (cmdId);
+			if (cmd == null)
+				return new Gtk.MenuItem ("<Unknown Command>");
+			
 			if (cmd is CustomCommand) {
 				Gtk.Widget child = (Gtk.Widget) Activator.CreateInstance (((CustomCommand)cmd).WidgetType);
 				CustomMenuItem ti = new CustomMenuItem ();

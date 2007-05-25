@@ -144,6 +144,20 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		public void UnregisterCommand (Command cmd)
+		{
+			if (cmd.AccelKey != null && cmd.AccelKey != "") {
+				// Unregister overloaded key bindings
+				ArrayList list = (ArrayList) overloadedAccelCommands [cmd.AccelKey];
+				if (list != null) {
+					list.Remove (cmd.Id);
+					if (list.Count < 2)
+						overloadedAccelCommands.Remove (cmd.AccelKey);
+				}
+			}
+			cmds.Remove (cmd.Id);
+		}
+		
 		public void RegisterGlobalHandler (object handler)
 		{
 			if (!globalHandlers.Contains (handler))
@@ -171,23 +185,12 @@ namespace MonoDevelop.Components.Commands
 		
 		public Command GetCommand (object cmdId)
 		{
-			Command cmd = cmds [cmdId] as Command;
-			if (cmd == null)
-				throw new InvalidOperationException ("Invalid command id: " + cmdId);
-			return cmd;
-		}
-		
-		internal Command FindCommand (object cmdId)
-		{
 			return cmds [cmdId] as Command;
 		}
 		
 		public ActionCommand GetActionCommand (object cmdId)
 		{
-			ActionCommand cmd = cmds [cmdId] as ActionCommand;
-			if (cmd == null)
-				throw new InvalidOperationException ("Invalid action command id: " + cmdId);
-			return cmd;
+			return cmds [cmdId] as ActionCommand;
 		}
 		
 		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
@@ -273,6 +276,8 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand cmd = null;
 			try {
 				cmd = GetActionCommand (commandId);
+				if (cmd == null)
+					return false;
 				
 				int globalPos = -1;
 				object cmdTarget = initialTarget != null ? initialTarget : GetFirstCommandTarget (out globalPos);
@@ -336,6 +341,9 @@ namespace MonoDevelop.Components.Commands
 		internal CommandInfo GetCommandInfo (object commandId, object initialTarget)
 		{
 			ActionCommand cmd = GetActionCommand (commandId);
+			if (cmd == null)
+				throw new InvalidOperationException ("Invalid action command id: " + commandId);
+			
 			CommandInfo info = new CommandInfo (cmd);
 			
 			try {
@@ -428,6 +436,9 @@ namespace MonoDevelop.Components.Commands
 			// but checking all possible commands would be too slow.
 			
 			Command cmd = GetCommand (commandId);
+			if (cmd == null)
+				return false;
+			
 			string accel = cmd.AccelKey;
 			if (accel == null || accel == "")
 				return DispatchCommand (commandId, dataItem, initialTarget);
