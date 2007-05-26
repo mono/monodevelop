@@ -1,3 +1,8 @@
+2007-05-25  Jeffrey Stedfast  <fejj@gnome.org>
+
+	* Parser/CodeGenerator.cs (EncapsulateFieldImpGetSet):
+	Implemented.
+
 2007-05-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Parser/TypeVisitor.cs (Visit::IdentifierExpression): Scan parent
