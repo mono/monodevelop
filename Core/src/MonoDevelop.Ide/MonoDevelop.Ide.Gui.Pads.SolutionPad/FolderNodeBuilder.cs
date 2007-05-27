@@ -158,16 +158,51 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
 			if (folderNode == null) 
 				return;
-			using (AddNewFilesToProjectDialog dialog = new AddNewFilesToProjectDialog ()) {
+			using (AddNewFilesToProjectDialog dialog = new AddNewFilesToProjectDialog ("C#", folderNode.Path)) {
 				dialog.Run ();
+				if (dialog.CreatedFiles != null) 
+					foreach (string fileName in dialog.CreatedFiles) 
+						folderNode.Project.Project.Items.Add (new ProjectFile (fileName, SystemFileNodeCommandHandler.GetFileType (fileName, folderNode.Project)));
 			}
-/*			using (NewFileDialog nfd = new NewFileDialog (null, folderNode.Project.Project.BasePath)) {
-				nfd.Run ();
-				
-			}*/
 			ProjectService.SaveProject (folderNode.Project.Project);
-			
 			CurrentNode.Expanded = true;
+		}
+		
+		[CommandHandler (ProjectCommands.NewFolder)]
+		public void AddNewFolder ()
+		{
+			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
+			if (folderNode == null) 
+				return;
+			
+			string baseFolderPath = folderNode.Path;
+			string directoryName = Path.Combine (baseFolderPath, GettextCatalog.GetString("New Folder"));
+			int index = -1;
+
+			if (Directory.Exists(directoryName)) {
+				while (Directory.Exists(directoryName + (++index + 1))) 
+					;
+			}
+			
+			if (index >= 0) {
+				directoryName += index + 1;
+			}
+			
+			Directory.CreateDirectory (directoryName);
+			folderNode.Project.Project.Items.Add (new ProjectFile (directoryName, FileType.Folder));
+
+			ProjectService.SaveProject (folderNode.Project.Project);
+			CurrentNode.Expanded = true;
+		}
+		
+		[CommandHandler (SearchCommands.FindInFiles)]
+		public void OnFindInFiles ()
+		{
+			FolderNode folderNode = CurrentNode.DataItem as FolderNode;
+			if (folderNode == null) 
+				return;
+			SearchReplaceInFilesManager.SearchOptions.SearchDirectory = folderNode.Path;
+			SearchReplaceInFilesManager.ShowFindDialog ();
 		}
 		
 	}

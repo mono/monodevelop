@@ -402,7 +402,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				
 				try {
-					if (!item.Create (project, path, titem.Language, nameEntry.Text))
+					string[] files = item.Create (path, titem.Language, nameEntry.Text);
+					if (files == null)
 						return;
 				} catch (Exception ex) {
 					Services.MessageService.ShowError (ex);

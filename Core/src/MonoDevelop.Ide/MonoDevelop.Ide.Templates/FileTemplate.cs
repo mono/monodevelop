@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
@@ -127,6 +128,12 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 		
+		public static ArrayList FileTemplates {
+			get {
+				return fileTemplates;
+			}
+		}
+		
 		static FileTemplate LoadFileTemplate (RuntimeAddin addin, string filename)
 		{
 			Stream stream = addin.GetResource (filename);
@@ -230,7 +237,7 @@ namespace MonoDevelop.Ide.Templates
 			return list;
 		}
 		
-		public virtual bool Create (Project project, string directory, string language, string name)
+		public virtual string[] Create (string directory, string language, string name)
 		{
 			if (WizardPath != null) {
 				//IProperties customizer = new DefaultProperties();
@@ -240,11 +247,12 @@ namespace MonoDevelop.Ide.Templates
 				//if (wizard.ShowDialog() == DialogResult.OK) {
 					//DialogResult = DialogResult.OK;
 				//}
-				return false;
+				return null;
 			} else {
+				List<string> results = new List<string> ();
 				foreach (FileDescriptionTemplate newfile in Files)
-					CreateFile (newfile, project, directory, language, name);
-				return true;
+					results.Add (CreateFile (newfile, directory, language, name));
+				return results.ToArray ();
 			}
 		}
 		
@@ -258,38 +266,35 @@ namespace MonoDevelop.Ide.Templates
 			return valid;
 		}
 		
-		protected virtual void CreateFile (FileDescriptionTemplate newfile, Project project, string directory, string language, string name)
+		protected virtual string CreateFile (FileDescriptionTemplate newfile, string directory, string language, string name)
 		{
-			if (project != null) {
-				newfile.AddToProject (project, language, directory, name);
-				newfile.Show ();
-			} else {
-				SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
-				if (singleFile == null)
-					throw new InvalidOperationException ("Single file template expected");
-				
-				if (directory != null) {
-					string fileName = singleFile.SaveFile (project, language, directory, name);
-					IdeApp.Workbench.OpenDocument (fileName);
-				} else {
-					string fileName = singleFile.GetFileName (project, language, directory, name);
-					Stream stream = singleFile.CreateFile (project, language, fileName);
-				
-					// Guess the mime type of the new file
-					string fn = Path.GetTempFileName ();
-					string ext = Path.GetExtension (fileName);
-					int n=0;
-					while (File.Exists (fn + n + ext))
-						n++;
-					Runtime.FileService.MoveFile (fn, fn + n + ext);
-					string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
-					Runtime.FileService.DeleteFile (fn + n + ext);
-					if (mimeType == null || mimeType == "")
-						mimeType = "text";
-					
-					IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
-				}
-			}
+			SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
+			if (singleFile == null)
+				throw new InvalidOperationException ("Single file template expected");
+			
+			if (directory != null) {
+				string result = singleFile.SaveFile (null, language, directory, name);
+				IdeApp.Workbench.OpenDocument (result);
+				return result;
+			} 
+			
+			string fileName = singleFile.GetFileName (null, language, directory, name);
+			Stream stream = singleFile.CreateFile (null, language, fileName);
+		
+			// Guess the mime type of the new file
+			string fn = Path.GetTempFileName ();
+			string ext = Path.GetExtension (fileName);
+			int n=0;
+			while (File.Exists (fn + n + ext))
+				n++;
+			Runtime.FileService.MoveFile (fn, fn + n + ext);
+			string mimeType = Gnome.Vfs.MimeType.GetMimeTypeForUri (fn + n + ext);
+			Runtime.FileService.DeleteFile (fn + n + ext);
+			if (mimeType == null || mimeType == "")
+				mimeType = "text";
+			
+			IdeApp.Workbench.NewDocument (fileName, mimeType, stream);
+			return fileName;
 		}
 		
 		protected virtual bool IsValidForProject (Project project)

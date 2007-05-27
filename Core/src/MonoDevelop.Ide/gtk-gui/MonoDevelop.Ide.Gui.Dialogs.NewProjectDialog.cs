@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.WindowPosition = ((Gtk.WindowPosition)(1));
             this.DestroyWithParent = true;
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox1";

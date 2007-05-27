@@ -28,8 +28,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             // Widget MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog
             this.Name = "MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog";
             this.Title = Mono.Unix.Catalog.GetString("New Project Features");
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
-            this.HasSeparator = false;
             // Internal child MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";

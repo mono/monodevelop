@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
         
         private Gtk.TreeView treeviewCatalog;
         
-        private Gtk.ScrolledWindow scrolledwindowIcon;
+        private MonoDevelop.Components.IconView iconView;
         
         private Gtk.Frame frame1;
         
@@ -27,15 +27,15 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
         
         private Gtk.Label labelInfo;
         
-        private Gtk.HBox hbox2;
+        private Gtk.HBox hboxName;
         
-        private Gtk.Label label1;
+        private Gtk.Label labelName;
         
-        private Gtk.TextView textview1;
+        private Gtk.Entry entryName;
         
         private Gtk.Button buttonCancel;
         
-        private Gtk.Button buttonOk;
+        private Gtk.Button buttonNew;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize();
@@ -43,9 +43,11 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
             this.Name = "MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add new File");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
-            this.HasSeparator = false;
+            this.Resizable = false;
+            this.AllowGrow = false;
+            this.DefaultWidth = 460;
+            this.DefaultHeight = 300;
             // Internal child MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
@@ -66,18 +68,20 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox1[this.treeviewCatalog]));
             w2.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.scrolledwindowIcon = new Gtk.ScrolledWindow();
-            this.scrolledwindowIcon.CanFocus = true;
-            this.scrolledwindowIcon.Name = "scrolledwindowIcon";
-            this.scrolledwindowIcon.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindowIcon.HscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindowIcon.ShadowType = ((Gtk.ShadowType)(1));
-            this.hbox1.Add(this.scrolledwindowIcon);
-            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindowIcon]));
+            this.iconView = new MonoDevelop.Components.IconView();
+            this.iconView.WidthRequest = 289;
+            this.iconView.HeightRequest = 200;
+            this.iconView.Name = "iconView";
+            this.hbox1.Add(this.iconView);
+            Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox1[this.iconView]));
             w3.Position = 1;
+            w3.Expand = false;
+            w3.Fill = false;
             this.vbox2.Add(this.hbox1);
             Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
             w4.Position = 0;
+            w4.Expand = false;
+            w4.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.frame1 = new Gtk.Frame();
             this.frame1.Name = "frame1";
@@ -98,33 +102,37 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
             w7.Expand = false;
             w7.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
-            this.hbox2 = new Gtk.HBox();
-            this.hbox2.Name = "hbox2";
-            this.hbox2.Spacing = 6;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.label1 = new Gtk.Label();
-            this.label1.Name = "label1";
-            this.label1.LabelProp = Mono.Unix.Catalog.GetString("Name:");
-            this.hbox2.Add(this.label1);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+            this.hboxName = new Gtk.HBox();
+            this.hboxName.Name = "hboxName";
+            this.hboxName.Spacing = 6;
+            // Container child hboxName.Gtk.Box+BoxChild
+            this.labelName = new Gtk.Label();
+            this.labelName.Name = "labelName";
+            this.labelName.LabelProp = Mono.Unix.Catalog.GetString("Name:");
+            this.hboxName.Add(this.labelName);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hboxName[this.labelName]));
             w8.Position = 0;
             w8.Expand = false;
             w8.Fill = false;
-            // Container child hbox2.Gtk.Box+BoxChild
-            this.textview1 = new Gtk.TextView();
-            this.textview1.CanFocus = true;
-            this.textview1.Name = "textview1";
-            this.hbox2.Add(this.textview1);
-            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hbox2[this.textview1]));
+            // Container child hboxName.Gtk.Box+BoxChild
+            this.entryName = new Gtk.Entry();
+            this.entryName.CanFocus = true;
+            this.entryName.Name = "entryName";
+            this.entryName.IsEditable = true;
+            this.entryName.InvisibleChar = '●';
+            this.hboxName.Add(this.entryName);
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.hboxName[this.entryName]));
             w9.Position = 1;
-            this.vbox2.Add(this.hbox2);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+            this.vbox2.Add(this.hboxName);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.vbox2[this.hboxName]));
             w10.Position = 2;
             w10.Expand = false;
             w10.Fill = false;
             w1.Add(this.vbox2);
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(w1[this.vbox2]));
             w11.Position = 0;
+            w11.Expand = false;
+            w11.Fill = false;
             // Internal child MonoDevelop.Ide.Gui.Pads.SolutionViewPad.AddNewFilesToProjectDialog.ActionArea
             Gtk.HButtonBox w12 = this.ActionArea;
             w12.Name = "dialog1_ActionArea";
@@ -144,23 +152,21 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad {
             w13.Expand = false;
             w13.Fill = false;
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-            this.buttonOk = new Gtk.Button();
-            this.buttonOk.CanDefault = true;
-            this.buttonOk.CanFocus = true;
-            this.buttonOk.Name = "buttonOk";
-            this.buttonOk.UseStock = true;
-            this.buttonOk.UseUnderline = true;
-            this.buttonOk.Label = "gtk-new";
-            this.AddActionWidget(this.buttonOk, 0);
-            Gtk.ButtonBox.ButtonBoxChild w14 = ((Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonOk]));
+            this.buttonNew = new Gtk.Button();
+            this.buttonNew.CanDefault = true;
+            this.buttonNew.CanFocus = true;
+            this.buttonNew.Name = "buttonNew";
+            this.buttonNew.UseStock = true;
+            this.buttonNew.UseUnderline = true;
+            this.buttonNew.Label = "gtk-new";
+            this.AddActionWidget(this.buttonNew, 0);
+            Gtk.ButtonBox.ButtonBoxChild w14 = ((Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonNew]));
             w14.Position = 1;
             w14.Expand = false;
             w14.Fill = false;
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 470;
-            this.DefaultHeight = 328;
             this.Show();
         }
     }

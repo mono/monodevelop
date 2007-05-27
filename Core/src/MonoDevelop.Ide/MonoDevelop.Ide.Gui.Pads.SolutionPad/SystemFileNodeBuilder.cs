@@ -87,20 +87,24 @@ namespace MonoDevelop.Ide.Gui.Pads.SolutionViewPad
 	
 	public class SystemFileNodeCommandHandler: FileNodeCommandHandler
 	{
+		public static FileType GetFileType (string fileName, SolutionProject project)
+		{
+			BackendBindingCodon codon = BackendBindingService.GetBackendBindingCodon (project);
+			if (codon != null && codon.IsCompileable (fileName))
+				return FileType.Compile;
+			return FileType.Content;
+		}
+		
 		[CommandHandler (ProjectCommands.IncludeToProject)]
 		public void IncludeToProject ()
 		{
 			SystemFileNode systemFileNode = CurrentNode.DataItem as SystemFileNode;
 			if (systemFileNode == null) 
 				return;
-			FileType fileType = FileType.Content;
-			BackendBindingCodon codon = BackendBindingService.GetBackendBindingCodon (systemFileNode.Project);
-			if (codon != null && codon.IsCompileable (systemFileNode.FileName))
-				fileType = FileType.Compile;
 			string relativePath = Runtime.FileService.AbsoluteToRelativePath (systemFileNode.Project.Project.BasePath, systemFileNode.FileName);
 			if (relativePath.StartsWith ("." + Path.DirectorySeparatorChar))
 				relativePath = relativePath.Substring (2);
-			systemFileNode.Project.Project.Items.Add (new ProjectFile (relativePath, fileType));
+			systemFileNode.Project.Project.Items.Add (new ProjectFile (relativePath, GetFileType (systemFileNode.FileName, systemFileNode.Project)));
 			ProjectService.SaveProject (systemFileNode.Project.Project);
 		}
 	}

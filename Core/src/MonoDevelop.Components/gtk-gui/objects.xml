@@ -1,4 +1,14 @@
 <objects>
+  <object type="MonoDevelop.Components.IconView" palette-category="widget" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups/>
+    <signals>
+      <itemgroup label="Icon Signals">
+        <signal name="IconSelected" />
+        <signal name="IconDoubleClicked" />
+      </itemgroup>
+    </signals>
+  </object>
+  
   <object type="MonoDevelop.Components.FileEntry" palette-category="widget" allow-children="false" base-type="Gtk.Container">
     <itemgroups>
       <itemgroup label="BaseFileEntry Properties">
