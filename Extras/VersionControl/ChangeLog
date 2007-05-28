@@ -1,3 +1,13 @@
+2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:
+	  Properly destroy the commit dialog. Fixes bug #81751.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs:
+	  Fix crash when committing new directory additions.
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:
+	  Properly unregister VersionControlSystem objects on add-in
+	  unloading.
+
 2007-05-22  Ankit Jain  <jankit@novell.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs

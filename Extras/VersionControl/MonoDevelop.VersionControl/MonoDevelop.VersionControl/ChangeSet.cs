@@ -28,7 +28,11 @@ namespace MonoDevelop.VersionControl
 			ArrayList comms = new ArrayList ();
 			foreach (ChangeSetItem it in items) {
 				bool found = false;
-				string relPath = it.LocalPath.Substring (basePath.Length + 1);
+				string relPath;
+				if (it.LocalPath == basePath)
+					relPath = ".";
+				else
+					relPath = it.LocalPath.Substring (basePath.Length + 1);
 				if (it.Comment.Length > 0) {
 					foreach (object[] com in comms) {
 						if (((string)com[0]) == it.Comment) {

@@ -24,12 +24,15 @@ namespace MonoDevelop.VersionControl
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
+			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
 			if (args.Change == ExtensionChange.Add) {
-				VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
 				handlers.Add (vcs);
 				// Include the repository type in the serialization context, so repositories
 				// of this type can be deserialized from the configuration file.
 				dataContext.IncludeType (vcs.CreateRepositoryInstance ().GetType ());
+			}
+			else {
+				handlers.Remove (vcs);
 			}
 		}
 		

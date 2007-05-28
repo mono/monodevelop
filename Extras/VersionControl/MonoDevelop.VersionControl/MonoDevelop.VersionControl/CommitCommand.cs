@@ -32,14 +32,17 @@ namespace MonoDevelop.VersionControl
 					if (!VersionControlProjectService.NotifyPrepareCommit (vc, changeSet))
 						return false;
 					CommitDialog dlg = new CommitDialog (changeSet);
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet)) {
-							new CommitWorker (vc, changeSet, dlg).Start();
-							return true;
+					try {
+						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+							if (VersionControlProjectService.NotifyBeforeCommit (vc, changeSet)) {
+								new CommitWorker (vc, changeSet, dlg).Start();
+								return true;
+							}
 						}
+						dlg.EndCommit (false);
+					} finally {
+						dlg.Destroy ();
 					}
-					dlg.EndCommit (false);
-					dlg.Dispose ();
 					VersionControlProjectService.NotifyAfterCommit (vc, changeSet, false);
 				}
 				return false;
@@ -93,7 +96,7 @@ namespace MonoDevelop.VersionControl
 							VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
 						foreach (string path in files)
 							VersionControlProjectService.NotifyFileStatusChanged (vc, path, false);
-					});
+					}
 				}
 			}
 		}
