@@ -96,7 +96,7 @@ namespace MonoDevelop.VersionControl
 							VersionControlProjectService.NotifyFileStatusChanged (vc, path, true);
 						foreach (string path in files)
 							VersionControlProjectService.NotifyFileStatusChanged (vc, path, false);
-					}
+					});
 				}
 			}
 		}

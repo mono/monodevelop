@@ -1,6 +1,11 @@
 2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:
+	  Fix the build.
+
+2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:
 	  Properly destroy the commit dialog. Fixes bug #81751.
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/ChangeSet.cs:
 	  Fix crash when committing new directory additions.
