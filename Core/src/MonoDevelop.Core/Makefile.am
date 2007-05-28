@@ -35,6 +35,7 @@ FILES =  \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/ConsoleProgressStatus.cs \
+	MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs \
 	MonoDevelop.Core.ProgressMonitoring/LogTextWriter.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullAsyncOperation.cs \
 	MonoDevelop.Core.ProgressMonitoring/NullProgressMonitor.cs \

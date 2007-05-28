@@ -31,7 +31,7 @@ namespace MonoDevelop.Core
 		public static void Initialize ()
 		{
 			// Ensure service extension nodes are created
-			int i = AddinManager.GetExtensionNodes ("/Workspace/Services").Count;
+			AddinManager.GetExtensionNodes ("/Workspace/Services");
 		}
 		
 		public static IService GetService (Type serviceType) {

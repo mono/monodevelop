@@ -1,3 +1,11 @@
+2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Core.ProgressMonitoring/FilteredProgressMonitor.cs,
+	  Makefile.am, MonoDevelop.Core.mdp: Added new
+	  FilteredProgressMonitor class, which can be used to filter out part
+	  of the progress information provided by an operation.
+	* MonoDevelop.Core/ServiceManager.cs: Fix warning.
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Core.Execution/RemoteProcessObject.cs,
