@@ -96,7 +96,11 @@ namespace MonoDevelop.Autotools
 						entry = entry.ParentCombine;
 					}
 					
-					string efile = Services.ProjectService.Export (new NullProgressMonitor (), entry.FileName, childEntries, tmpFolder, null);
+					string efile = Services.ProjectService.Export (new FilteredProgressMonitor (monitor), entry.FileName, childEntries, tmpFolder, null);
+					if (efile == null) {
+						monitor.ReportError (GettextCatalog.GetString ("The project could not be exported."), null);
+						return;
+					}
 					combine = Services.ProjectService.ReadCombineEntry (efile, new NullProgressMonitor ()) as Combine;
 				}
 				else {

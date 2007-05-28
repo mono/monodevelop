@@ -1,3 +1,14 @@
+2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Autotools.mdp,
+	  gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+	* Handler.cs: Report an error when the project can't be exported. This
+	  fixes bug #81755.
+	* TarballBuilderEditorWidget.cs: Make it work when the selected root
+	  entry is not a combine.
+
 2007-05-24  Ankit Jain  <jankit@novell.com>
 
 	* SolutionMakefileHandler.cs (Deploy): Emit an empty initializer for

@@ -15,7 +15,7 @@ namespace MonoDevelop.Autotools
 			this.Build();
 			
 			this.target = target;
-			Combine targetCombine = target.RootCombineEntry as Combine;
+			CombineEntry targetCombine = target.RootCombineEntry;
 			folderEntry.Path = target.TargetDir;
 			
 			if ((target.DefaultConfiguration == null || target.DefaultConfiguration == "") && targetCombine.ActiveConfiguration != null)
