@@ -267,11 +267,13 @@ namespace MonoDevelop.Autotools
 				
 				// handle configuration specific variables
 				StringBuilder conf_vars = new StringBuilder ();
-				foreach ( DotNetProjectConfiguration config in project.Configurations )
+				foreach (CombineConfiguration combineConfig in project.RootCombine.Configurations)
 				{
-					if ( !ctx.IsSupportedConfiguration ( config.Name ) ) continue;
-					
-					conf_vars.AppendFormat ("if ENABLE_{0}\n", ctx.EscapeAndUpperConfigName (config.Name));
+					DotNetProjectConfiguration config = GetProjectConfig (combineConfig, project) as DotNetProjectConfiguration;
+					if (config == null)
+						continue;
+
+					conf_vars.AppendFormat ("if ENABLE_{0}\n", ctx.EscapeAndUpperConfigName (combineConfig.Name));
 					string assembly = (PlatformID.Unix == Environment.OSVersion.Platform) ? project.GetRelativeChildPath ( config.CompiledOutputName ) : project.GetRelativeChildPath ( config.CompiledOutputName ).Replace("\\","/");
 
 					conf_vars.AppendFormat ("ASSEMBLY_COMPILER_COMMAND = {0}\n",
@@ -314,7 +316,7 @@ namespace MonoDevelop.Autotools
 						{
 							Project refp = GetProjectFromName ( reference.Reference, project );
 
-							DotNetProjectConfiguration dnpc = refp.Configurations[config.Name] as DotNetProjectConfiguration;
+							DotNetProjectConfiguration dnpc = GetProjectConfig (combineConfig, refp) as DotNetProjectConfiguration;
 							if ( dnpc == null )
 								throw new Exception ( GettextCatalog.GetString 
 										("Could not add reference to project '{0}'", refp.Name) );
@@ -363,7 +365,18 @@ namespace MonoDevelop.Autotools
 			finally	{ monitor.EndTask (); }
 			return makefile;
 		}
-		
+
+		// Gets the Project config corresponding to the @combineConfig for a project (@entry)
+		IConfiguration GetProjectConfig (CombineConfiguration combineConfig, CombineEntry entry)
+		{
+			foreach (CombineConfigurationEntry cce in combineConfig.Entries) {
+				if (cce.Entry == entry)
+					return entry.Configurations [cce.ConfigurationName];
+			}
+
+			return null;
+		}
+
 		string GetDeployVar (Hashtable hash, string name)
 		{
 			name = name.Replace (Path.DirectorySeparatorChar, '_');

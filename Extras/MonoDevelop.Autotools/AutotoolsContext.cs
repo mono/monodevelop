@@ -248,7 +248,7 @@ namespace MonoDevelop.Autotools
 			foreach (char c in str)
 			{
 				if ( char.IsLetterOrDigit (c) || (c == '.' && allowPeriods) ) sb.Append ( c );
-				else if (c == '-' || c == '_' || c == ' ' || (c == '.' && !allowPeriods) ) sb.Append ( '_' );
+				else if (c == '-' || c == '_' || c == ' ' || c == '|' || (c == '.' && !allowPeriods) ) sb.Append ( '_' );
 			}
 			return sb.ToString ();	
 		}

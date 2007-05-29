@@ -1,3 +1,10 @@
+2007-05-29  Ankit Jain  <jankit@novell.com>
+
+	* SimpleProjectMakefileHandler.cs (Deploy): Enumerate solution level
+	configs, and use the corresponding project config for emitting Makefile.am
+	(GetProjectConfig): New.
+	* AutotoolsContext.cs (EscapeStringForAutoconf): Escape '|' .
+
 2007-05-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* MonoDevelop.Autotools.mdp,
