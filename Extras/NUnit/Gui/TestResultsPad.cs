@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Text;
 using System.Collections;
 using System.Threading;
 using Gtk;
@@ -50,8 +51,8 @@ namespace MonoDevelop.NUnit
 		HPaned book;
 		Gtk.Tooltips tips = new Gtk.Tooltips ();
 		
-		Label infoFailed = new Label (GettextCatalog.GetString ("<b>Failed</b>: ") + "0");
-		Label infoIgnored = new Label (GettextCatalog.GetString ("<b>Ignored</b>: ") + "0");
+		Label infoFailed = new Label (GettextCatalog.GetString ("<b>Failed</b>: {0}", 0));
+		Label infoIgnored = new Label (GettextCatalog.GetString ("<b>Ignored</b>: {0}", 0));
 		Label infoCurrent = new Label ();
 		HBox labels;
 		
@@ -192,6 +193,8 @@ namespace MonoDevelop.NUnit
 			infoSep = new VSeparator ();
 			
 			resultLabel.UseMarkup = true;
+			infoCurrent.Ellipsize = Pango.EllipsizeMode.Start;
+			infoCurrent.WidthRequest = 0;
 			runPanel.PackStart (resultLabel, false, false, 0);
 			runPanel.PackStart (progressBar, false, false, 0);
 			runPanel.PackStart (infoCurrent, true, true, 10);	
@@ -267,8 +270,8 @@ namespace MonoDevelop.NUnit
 		
 		void UpdateCounters ()
 		{
-			infoFailed.Markup = GettextCatalog.GetString ("<b>Failed</b>: ") + testsFailed;
-			infoIgnored.Markup = GettextCatalog.GetString ("<b>Ignored</b>: ") + testsIgnored;
+			infoFailed.Markup = GettextCatalog.GetString ("<b>Failed</b>: {0}", testsFailed);
+			infoIgnored.Markup = GettextCatalog.GetString ("<b>Ignored</b>: {0}", testsIgnored);
 		}
 		
 		public void InitializeTestRun (UnitTest test)
@@ -344,7 +347,11 @@ namespace MonoDevelop.NUnit
 			buttonStop.Sensitive = false;
 			buttonRun.Sensitive = true;
 			
-			resultLabel.Markup = GettextCatalog.GetString ("<b>Tests</b>: ") + testsRun + GettextCatalog.GetString ("  <b>Failed</b>: ") + testsFailed + GettextCatalog.GetString ("  <b>Ignored</b>: ") + testsIgnored;
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (GettextCatalog.GetString ("<b>Tests</b>: {0}", testsRun)).Append ("  ");
+			sb.Append (GettextCatalog.GetString ("<b>Failed</b>: {0}", testsFailed)).Append ("  ");
+			sb.Append (GettextCatalog.GetString ("<b>Ignored</b>: {0}", testsIgnored));
+			resultLabel.Markup = sb.ToString ();
 			
 			Running = false;
 		}

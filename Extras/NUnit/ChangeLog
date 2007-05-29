@@ -1,5 +1,10 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Gui/TestResultsPad.cs: Fixed some status messages. Make sure the
+	  progress label does not grow beyond the available space.
+
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Services/NUnitService.cs: Unregister tests providers of unloaded
 	  add-ins.
 
