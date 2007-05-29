@@ -1,5 +1,17 @@
 2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* MonoDevelop.Projects.Parser/IClass.cs,
+	  MonoDevelop.Projects.Parser/CompoundClass.cs,
+	  MonoDevelop.Projects.Parser/DefaultClass.cs,
+	  MonoDevelop.Projects.Parser/ProjectCodeCompletionDatabase.cs,
+	  MonoDevelop.Projects.Parser/ClassWrapper.cs,
+	  MonoDevelop.Projects.Parser/CodeCompletionDatabase.cs: Added
+	  SourceProject property to IClass, which returns the project where
+	  the class is implemented, or null if there is no project for that
+	  class.
+
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* MonoDevelop.Projects.Parser/AssemblyInformation.cs: Removed unused
 	  code. Load debug symbols if an mdb file exists.
 

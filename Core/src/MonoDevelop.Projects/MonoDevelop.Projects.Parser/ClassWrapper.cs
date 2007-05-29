@@ -73,6 +73,15 @@ namespace MonoDevelop.Projects.Parser
 			}
 		}
 		
+		public virtual CombineEntry SourceProject {
+			get {
+				if (db is ProjectCodeCompletionDatabase)
+					return ((ProjectCodeCompletionDatabase)db).Project;
+				else
+					return null;
+			}
+		}
+		
 		public IRegion Region {
 			get {
 				if ((entry.ContentFlags & ContentFlags.HasRegion) != 0)

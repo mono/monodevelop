@@ -114,6 +114,10 @@ namespace MonoDevelop.Projects.Parser
 			get { return disposed; }
 		}
 		
+		public virtual CombineEntry SourceEntry {
+			get { return null; }
+		}
+		
 		protected void SetLocation (string basePath, string name)
 		{
 			dataFile = Path.Combine (basePath, name + ".pidb");
@@ -220,7 +224,7 @@ namespace MonoDevelop.Projects.Parser
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
 				headers["LastValidTaskListTokens"] = (string)Runtime.Properties.GetProperty ("Monodevelop.TaskListTokens", "");
-							
+
 				Runtime.LoggingService.Debug ("Writing " + dataFile);
 				
 				string tmpDataFile = dataFile + ".tmp";
@@ -304,7 +308,8 @@ namespace MonoDevelop.Projects.Parser
 						Runtime.FileService.DeleteFile (dataFile);
 						
 					Runtime.FileService.MoveFile (tmpDataFile, dataFile);
-				} catch {
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
 					if (dfile != null)
 						dfile.Close ();
 					if (File.Exists (tmpDataFile))
@@ -367,7 +372,9 @@ namespace MonoDevelop.Projects.Parser
 			}
 			datafile.Position = ce.Position;
 			datareader.ReadInt32 ();	// Length of data
-			return PersistentClass.Read (datareader, parserDatabase.DefaultNameDecoder);
+			DefaultClass cls = PersistentClass.Read (datareader, parserDatabase.DefaultNameDecoder);
+			cls.SourceProject = SourceEntry;
+			return cls;
 		}
 		
 		void CloseReader ()
@@ -394,7 +401,7 @@ namespace MonoDevelop.Projects.Parser
 					IClass templateClass = GetClass (typeName, null, caseSensitive);
 					if (templateClass == null)
 						return null;
-						
+
 					if (templateClass.GenericParameters == null || (templateClass.GenericParameters.Count != genericArguments.Count))
 						return null;
 			
@@ -772,6 +779,7 @@ namespace MonoDevelop.Projects.Parser
 				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
 				for (int n=0; n<newClasses.Count; n++) {
 					string[] path = newClasses[n].Namespace.Split ('.');
+					((DefaultClass)newClasses[n]).SourceProject = SourceEntry;
 					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
 				}
 				
@@ -1087,7 +1095,9 @@ namespace MonoDevelop.Projects.Parser
 			bw.Flush ();
 			ms.Position = 0;
 			BinaryReader br = new BinaryReader (ms);
-			return PersistentClass.Read (br, parserDatabase.DefaultNameDecoder);
+			DefaultClass ret = PersistentClass.Read (br, parserDatabase.DefaultNameDecoder);
+			ret.SourceProject = cls.SourceProject;
+			return ret;
 		}
 		
 		bool GetBestNamespaceEntry (string[] path, int length, bool createPath, bool caseSensitive, out NamespaceEntry lastEntry, out int numMatched)

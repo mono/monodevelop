@@ -31,6 +31,10 @@ namespace MonoDevelop.Projects.Parser
 			get;
 		}
 		
+		CombineEntry SourceProject {
+			get;
+		}
+		
 		IRegion Region {
 			get;
 		}

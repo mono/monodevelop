@@ -32,6 +32,7 @@ namespace MonoDevelop.Projects.Parser
 		protected MethodCollection   methods;
 		protected EventCollection    events;
 		protected IndexerCollection  indexer;
+		CombineEntry sourceProject;
 		
 		string ns = string.Empty;
 		
@@ -91,6 +92,11 @@ namespace MonoDevelop.Projects.Parser
 			get { return compilationUnit; }
 		}
 
+		public CombineEntry SourceProject {
+			get { return sourceProject; }
+			internal set { sourceProject = value; }
+		}
+		
 		public virtual ClassType ClassType {
 			get {
 				return classType;

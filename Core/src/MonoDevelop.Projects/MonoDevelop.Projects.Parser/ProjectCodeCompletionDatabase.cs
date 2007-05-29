@@ -67,6 +67,10 @@ namespace MonoDevelop.Projects.Parser
 			get { return project; }
 		}
 		
+		public override CombineEntry SourceEntry {
+			get { return project; }
+		}
+		
 		public override void Dispose ()
 		{
 			base.Dispose ();

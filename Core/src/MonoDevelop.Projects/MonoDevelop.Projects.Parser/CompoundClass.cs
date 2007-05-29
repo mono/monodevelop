@@ -80,7 +80,9 @@ namespace MonoDevelop.Projects.Parser
 			}
 			else if (current.Region != null && cls.Region != null && current.Region.FileName != cls.Region.FileName) {
 				// Classes from different files. Merge them.
-				return new CompoundClass (current, cls);
+				CompoundClass cc = new CompoundClass (current, cls);
+				cc.SourceProject = current.SourceProject;
+				return cc;
 			}
 			else
 				return cls;
