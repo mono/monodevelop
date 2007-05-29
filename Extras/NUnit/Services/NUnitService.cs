@@ -91,6 +91,14 @@ namespace MonoDevelop.NUnit
 					}
 				}
 			}
+			else {
+				ITestProvider provider = args.ExtensionObject as ITestProvider;
+				providers.Remove (provider);
+				
+				// The types returned by provider.GetOptionTypes should probably be unregistered
+				// from the DataContext, but DataContext does not allow unregisterig.
+				// This is not a big issue anyway.
+			}
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test)

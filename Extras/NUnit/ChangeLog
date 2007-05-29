@@ -1,3 +1,8 @@
+2007-05-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Services/NUnitService.cs: Unregister tests providers of unloaded
+	  add-ins.
+
 2007-05-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Gui/TestPad.cs: Added missing null check. Fixes bug #81097.
